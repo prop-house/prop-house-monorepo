@@ -1,9 +1,10 @@
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import classes from './NavBar.module.css';
 
 const NavBar = () => {
   return (
-    <Navbar bg="transparent">
+    <Navbar bg="transparent" className={classes.navbar}>
       <Container>
         <Link to="/">
           <Navbar.Brand>Prop House</Navbar.Brand>
