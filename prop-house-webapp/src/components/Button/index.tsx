@@ -16,7 +16,7 @@ const Button: React.FC<{
     <BSButton
       className={clsx(
         classes.btn,
-        bgColor == ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg
+        bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg
       )}
     >
       {text}
