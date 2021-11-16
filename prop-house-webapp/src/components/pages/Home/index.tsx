@@ -1,9 +1,10 @@
 import { Container } from 'react-bootstrap';
+import HomeHeader from '../../HomeHeader';
 
 const Home = () => {
   return (
     <Container>
-      <h1>Home</h1>
+      <HomeHeader />
     </Container>
   );
 };
