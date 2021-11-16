@@ -1,0 +1,16 @@
+.btn {
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin: 16px;
+}
+
+.btnPinkBg {
+  background-color: var(--brand-pink);
+  border: none;
+}
+
+.btnWhiteBg {
+  background-color: white;
+  color: black;
+  border-color: rgb(102, 102, 102);
+}

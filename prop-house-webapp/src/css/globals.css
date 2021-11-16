@@ -6,3 +6,7 @@
     max-width: 1140px !important;
   }
 }
+
+:root {
+  --brand-pink: #e02ecf;
+}
