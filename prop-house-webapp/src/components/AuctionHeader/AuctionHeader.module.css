@@ -14,7 +14,7 @@
 .leftSectionSubtitle {
   font-size: 20px;
   font-weight: bold;
-  opacity: 40%;
+  opacity: 0.4;
 }
 
 .rightSection {
@@ -24,7 +24,7 @@
 .rightSectionTitle {
   font-size: 20px;
   font-weight: bold;
-  opacity: 40%;
+  opacity: 0.4;
 }
 
 .rightSectionSubtitle {
