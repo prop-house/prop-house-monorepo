@@ -18,7 +18,7 @@ const HomeHeader = () => {
           <Button text="Submit proposal" bgColor={ButtonColor.White} />
         </div>
       </Col>
-      <Col xl={{ span: 4, offset: 1 }}>
+      <Col xl={{ span: 4, offset: 2 }}>
         <Image src={grempBulb} fluid />
       </Col>
     </Row>

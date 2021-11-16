@@ -1,0 +1,42 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  border: 1px #00000025 solid;
+  border-radius: 20px;
+  padding: 2.5rem;
+  margin-top: 30px;
+  color: var(--brand-black);
+}
+.leftSectionTitle {
+  font-size: 35px;
+  font-weight: bold;
+}
+.leftSectionSubtitle {
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 40%;
+}
+
+.rightSection {
+  display: flex;
+}
+
+.rightSectionTitle {
+  font-size: 20px;
+  font-weight: bold;
+  opacity: 40%;
+}
+
+.rightSectionSubtitle {
+  font-size: 32px !important;
+  font-weight: bold;
+}
+
+.rightSection div {
+  text-align: right;
+}
+.rightSection div:nth-child(2) {
+  border-left: 1px solid rgba(0, 0, 0, 0.178);
+  padding-left: 2rem;
+  margin-left: 2rem;
+}
