@@ -7,7 +7,10 @@ const CreateProposalCTA = () => {
   return (
     <Row>
       <Col xl={12}>
-        <Card bgColor={CardBgColor.Dark} borderRadius={CardBorderRadius.twenty}>
+        <Card
+          bgColor={CardBgColor.DarkPurple}
+          borderRadius={CardBorderRadius.twenty}
+        >
           <div className={classes.wrapper}>
             <Form.Control
               size="lg"

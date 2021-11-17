@@ -3,11 +3,14 @@
   padding: 1.85rem;
   margin: 1rem 0;
 }
-.lightBg {
+.lightPurpleBg {
   background-color: #f4f2f6;
 }
-.darkBg {
+.darkPurpleBg {
   background-color: #ece8f0;
+}
+.whiteBg {
+  background-color: white;
 }
 .borderRadius20 {
   border-radius: 20px;
