@@ -1,7 +1,18 @@
-h1 {
-  font-weight: bolder;
+.wrapper {
+  margin: 4rem 0;
 }
 
-.btnContainer button {
+h1 {
+  font-size: 60px;
+  font-weight: 600;
+  line-height: 70px;
+}
+
+p {
+  margin: 1rem 0;
+  font-size: 20px;
+}
+
+.btnsContainer button {
   margin-left: 0;
 }

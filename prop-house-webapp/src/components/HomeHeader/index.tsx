@@ -5,15 +5,18 @@ import grempBulb from '../../assets/gremp-lightbulb.png';
 
 const HomeHeader = () => {
   return (
-    <Row>
+    <Row className={classes.wrapper}>
       <Col xl={6}>
-        <h1 className="display-1">Weekly funding for your ideas</h1>
+        <h1>
+          Weekly funding
+          <br /> for your ideas
+        </h1>
         <p>
-          Bring your ideas to life by submitting a proposal to Nouns DAO.
+          Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
           Auctions are held regularly, and made available to anyone, anywhere.
           Get funded!
         </p>
-        <div className={classes.btnContainer}>
+        <div className={classes.btnsContainer}>
           <Button text="Learn more" bgColor={ButtonColor.Pink} />
           <Button text="Submit proposal" bgColor={ButtonColor.White} />
         </div>

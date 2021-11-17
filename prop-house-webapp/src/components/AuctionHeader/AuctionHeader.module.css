@@ -6,6 +6,7 @@
   border-radius: 20px;
   padding: 2.5rem;
   color: var(--brand-black);
+  margin: 1rem 0;
 }
 .leftSectionTitle {
   font-size: 35px;
