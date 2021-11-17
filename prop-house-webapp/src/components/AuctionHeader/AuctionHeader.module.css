@@ -47,3 +47,15 @@
 .rightSectionSubsection:nth-of-type(3) {
   border-left: 1px solid rgba(0, 0, 0, 0.178);
 }
+
+@media only screen and (max-width: 576px) {
+  .rightSectionSubsection {
+    text-align: left;
+  }
+  .rightSectionSubsection:nth-of-type(2) {
+    margin-top: 1.5rem;
+  }
+  .rightSectionSubsection:nth-of-type(3) {
+    border-left: none;
+  }
+}
