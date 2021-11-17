@@ -1,0 +1,21 @@
+.timestamp {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--brand-light-gray);
+  margin-bottom: 0.8rem;
+}
+
+.title {
+  font-size: 27px;
+  line-height: 140%;
+  font-weight: bold;
+  color: var(--brand-black);
+  margin-bottom: 0.8rem;
+}
+
+.author {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--brand-light-gray);
+  margin-bottom: 0.8rem;
+}
