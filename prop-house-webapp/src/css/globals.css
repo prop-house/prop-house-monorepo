@@ -3,7 +3,7 @@
   .container-lg,
   .container-xl,
   .container-xxl {
-    max-width: 1140px !important;
+    max-width: 992px !important;
   }
 }
 
