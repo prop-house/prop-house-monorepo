@@ -1,9 +1,9 @@
-import Card from '../Card';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
 
 const LiveAuction = () => {
   return (
-    <Card>
+    <Card bgColor={CardBgColor.Light} borderRadius={CardBorderRadius.thirty}>
       <AuctionHeader
         id={1}
         fundingAmount={5}
