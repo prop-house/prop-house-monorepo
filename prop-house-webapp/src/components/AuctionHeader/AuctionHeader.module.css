@@ -1,12 +1,15 @@
-.wrapper {
-  display: flex;
-  justify-content: space-between;
+.container {
   background-color: white;
   border: 1px #00000025 solid;
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2rem 2.5rem;
   color: var(--brand-black);
   margin: 1rem 0;
+}
+.leftSectionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .leftSectionTitle {
   font-size: 35px;
@@ -18,8 +21,11 @@
   color: var(--brand-light-gray);
 }
 
-.rightSection {
+.rightSectionSubsection {
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: right;
 }
 
 .rightSectionTitle {
@@ -31,13 +37,13 @@
 .rightSectionSubtitle {
   font-size: 32px !important;
   font-weight: bold;
+  white-space: nowrap;
 }
 
-.rightSection div {
-  text-align: right;
+.rightSectionSubsection:nth-of-type(2) {
+  padding-right: 3rem;
 }
-.rightSection div:nth-child(2) {
+
+.rightSectionSubsection:nth-of-type(3) {
   border-left: 1px solid rgba(0, 0, 0, 0.178);
-  padding-left: 2rem;
-  margin-left: 2rem;
 }
