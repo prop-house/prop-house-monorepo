@@ -15,7 +15,7 @@
 .leftSectionSubtitle {
   font-size: 20px;
   font-weight: bold;
-  opacity: 0.4;
+  color: var(--brand-light-gray);
 }
 
 .rightSection {
@@ -25,7 +25,7 @@
 .rightSectionTitle {
   font-size: 20px;
   font-weight: bold;
-  opacity: 0.4;
+  color: var(--brand-light-gray);
 }
 
 .rightSectionSubtitle {
