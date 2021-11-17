@@ -1,10 +1,10 @@
 .wrapper {
   display: flex;
   justify-content: space-between;
+  background-color: white;
   border: 1px #00000025 solid;
   border-radius: 20px;
   padding: 2.5rem;
-  margin-top: 30px;
   color: var(--brand-black);
 }
 .leftSectionTitle {

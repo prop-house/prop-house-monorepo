@@ -1,14 +1,10 @@
 import AuctionHeader from '../AuctionHeader';
+import LiveAuction from '../LiveAuction';
 
 const Auctions = () => {
   return (
     <>
-      <AuctionHeader
-        id={1}
-        fundingAmount={5}
-        startDate={Date.now()}
-        endDate={Date.now()}
-      />
+      <LiveAuction />
       <AuctionHeader
         id={2}
         fundingAmount={10}
