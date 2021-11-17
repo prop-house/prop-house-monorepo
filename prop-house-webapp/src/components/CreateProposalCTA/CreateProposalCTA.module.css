@@ -1,0 +1,14 @@
+.wrapper {
+  display: flex;
+}
+
+.formInput {
+  background-color: transparent;
+  border: none;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.wrapper button:nth-child(3) {
+  margin-left: 0;
+}

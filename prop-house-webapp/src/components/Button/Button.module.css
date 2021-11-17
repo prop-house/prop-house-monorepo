@@ -2,6 +2,8 @@
   border-radius: 14px;
   padding: 0.8rem 1rem;
   margin: 16px;
+  white-space: nowrap;
+  text-align: center;
 }
 
 .btnPinkBg {
@@ -12,5 +14,5 @@
 .btnWhiteBg {
   background-color: white;
   color: black;
-  border-color: rgb(102, 102, 102);
+  border-color: rgba(0, 0, 0, 0.1);
 }

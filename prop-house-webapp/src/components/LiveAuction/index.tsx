@@ -1,5 +1,6 @@
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
+import CreateProposalCTA from '../CreateProposalCTA';
 
 const LiveAuction = () => {
   return (
@@ -10,6 +11,7 @@ const LiveAuction = () => {
         startDate={Date.now()}
         endDate={Date.now()}
       />
+      <CreateProposalCTA />
     </Card>
   );
 };
