@@ -7,10 +7,7 @@ const HomeHeader = () => {
   return (
     <Row className={classes.wrapper}>
       <Col xl={6}>
-        <h1>
-          Weekly funding
-          <br /> for your ideas
-        </h1>
+        <h1>Weekly funding for your ideas</h1>
         <p>
           Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
           Auctions are held regularly, and made available to anyone, anywhere.
