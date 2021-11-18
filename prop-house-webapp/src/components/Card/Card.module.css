@@ -12,6 +12,16 @@
 .whiteBg {
   background-color: white;
 }
+.lightPurpleBg.onHoverEffect:hover {
+  background-color: #f4f2f6d0;
+}
+.darkPurpleBg.onHoverEffect:hover {
+  background-color: #ece8f0d0;
+}
+.whiteBg.onHoverEffect:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
 .borderRadius20 {
   border-radius: 20px;
 }
