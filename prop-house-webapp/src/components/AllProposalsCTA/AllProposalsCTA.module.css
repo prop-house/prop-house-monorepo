@@ -1,0 +1,14 @@
+.wrapper a {
+  text-decoration: none;
+}
+
+.wrapper div {
+  text-align: center;
+  color: var(--brand-black);
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.wrapper div span {
+  color: var(--brand-pink);
+}
