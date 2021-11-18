@@ -4,10 +4,10 @@ import '../src/css/globals.css';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Browse from './components/pages/Browse';
+import Learn from './components/pages/Learn';
 import NotFound from './components/pages/NotFound';
 import { Container } from 'react-bootstrap';
 import './App.css';
-
 function App() {
   return (
     <Container>
@@ -15,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/browse" element={<Browse />} />
+        <Route path="/learn" element={<Learn />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Container>
