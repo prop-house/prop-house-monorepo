@@ -4,7 +4,7 @@ import CreateProposalCTA from '../CreateProposalCTA';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 
-const LiveAuction = () => {
+const FullAuction = () => {
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
@@ -23,4 +23,4 @@ const LiveAuction = () => {
   );
 };
 
-export default LiveAuction;
+export default FullAuction;

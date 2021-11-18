@@ -1,10 +1,10 @@
 import AuctionHeader from '../AuctionHeader';
-import LiveAuction from '../LiveAuction';
+import FullAuction from '../FullAuction';
 
 const Auctions = () => {
   return (
     <>
-      <LiveAuction />
+      <FullAuction />
       <AuctionHeader
         id={2}
         fundingAmount={10}

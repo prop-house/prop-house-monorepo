@@ -1,11 +1,11 @@
-import LiveAuction from '../../LiveAuction';
+import FullAuction from '../../FullAuction';
 import BrowseControl from '../../BrowseControl';
 
 const Browse = () => {
   return (
     <>
       <BrowseControl />
-      <LiveAuction />
+      <FullAuction />
     </>
   );
 };
