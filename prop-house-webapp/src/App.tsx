@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
+import Browse from './components/pages/Browse';
 import NotFound from './components/pages/NotFound';
 import { Container } from 'react-bootstrap';
 import './App.css';
@@ -13,6 +14,7 @@ function App() {
       <NavBar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/browse" element={<Browse />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Container>
