@@ -5,7 +5,7 @@ import { Form, Row, Col } from 'react-bootstrap';
 
 const CreateProposalCTA = () => {
   return (
-    <Row>
+    <Row className={classes.row}>
       <Col xl={12}>
         <Card
           bgColor={CardBgColor.DarkPurple}
