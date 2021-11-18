@@ -19,13 +19,13 @@ const AuctionHeader: React.FC<{
           ).toDateString()}`}
         </div>
       </Col>
-      <Col xl={3} xs={12} className={classes.rightSectionSubsection}>
+      <Col xl={3} md={12} className={classes.rightSectionSubsection}>
         <div className={classes.rightSectionTitle}>Funding</div>
         <div className={classes.rightSectionSubtitle}>{`${fundingAmount.toFixed(
           2
         )} Ξ`}</div>
       </Col>
-      <Col xl={3} xs={12} className={classes.rightSectionSubsection}>
+      <Col xl={3} md={12} className={classes.rightSectionSubsection}>
         <div className={classes.rightSectionTitle}>Proposal deadline</div>
         <div className={classes.rightSectionSubtitle}>3 days left</div>
       </Col>
