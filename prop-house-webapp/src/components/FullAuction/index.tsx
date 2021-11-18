@@ -4,7 +4,12 @@ import CreateProposalCTA from '../CreateProposalCTA';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 
-const FullAuction = () => {
+const FullAuction: React.FC<{
+  showCreateProposalCTA: boolean;
+  showAllProposals: boolean;
+}> = (props) => {
+  const { showCreateProposalCTA, showAllProposals } = props;
+  console.log('showCreateProposalCTA: ', showCreateProposalCTA);
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
@@ -16,9 +21,9 @@ const FullAuction = () => {
         startDate={Date.now()}
         endDate={Date.now()}
       />
-      <CreateProposalCTA />
+      {showCreateProposalCTA && <CreateProposalCTA />}
       <ProposalCards />
-      <AllProposalsCTA />
+      {!showAllProposals && <AllProposalsCTA />}
     </Card>
   );
 };
