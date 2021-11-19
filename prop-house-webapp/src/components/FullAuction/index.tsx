@@ -1,15 +1,14 @@
+import classes from './FullAuction.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
-import CreateProposalCTA from '../CreateProposalCTA';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
+import { Row, Col } from 'react-bootstrap';
 
 const FullAuction: React.FC<{
-  showCreateProposalCTA: boolean;
   showAllProposals: boolean;
 }> = (props) => {
-  const { showCreateProposalCTA, showAllProposals } = props;
-  console.log('showCreateProposalCTA: ', showCreateProposalCTA);
+  const { showAllProposals } = props;
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
@@ -21,7 +20,14 @@ const FullAuction: React.FC<{
         startDate={Date.now()}
         endDate={Date.now()}
       />
-      {showCreateProposalCTA && <CreateProposalCTA />}
+      <Row>
+        <Col xs={4} md={2}>
+          <div className={classes.proposalTitle}>Proposals</div>
+        </Col>
+        <Col xs={8} md={10}>
+          <div className={classes.divider} />
+        </Col>
+      </Row>
       <ProposalCards />
       {!showAllProposals && <AllProposalsCTA />}
     </Card>

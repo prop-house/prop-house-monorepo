@@ -4,7 +4,7 @@ import FullAuction from '../FullAuction';
 const Auctions = () => {
   return (
     <>
-      <FullAuction showCreateProposalCTA={true} showAllProposals={false} />
+      <FullAuction showAllProposals={false} />
       <AuctionHeader
         id={2}
         fundingAmount={10}

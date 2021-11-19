@@ -5,7 +5,7 @@ const Browse = () => {
   return (
     <>
       <BrowseControl />
-      <FullAuction showCreateProposalCTA={false} showAllProposals={true} />
+      <FullAuction showAllProposals={true} />
     </>
   );
 };
