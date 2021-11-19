@@ -1,33 +1,58 @@
 import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import Button, { ButtonColor } from '../Button';
 
 const AuctionHeader: React.FC<{
   id: number;
   fundingAmount: number;
   startDate: number;
   endDate: number;
+  displayCreateButton: boolean;
 }> = (props) => {
-  const { id, fundingAmount, startDate, endDate } = props;
+  const { id, fundingAmount, startDate, endDate, displayCreateButton } = props;
 
   return (
-    <Row className={classes.container}>
-      <Col xl={6} className={classes.leftSectionContainer}>
-        <div className={classes.leftSectionTitle}>{`Auction ${id}`}</div>
-        <div className={classes.leftSectionSubtitle}>
-          {`${new Date(startDate).toDateString()} - ${new Date(
-            endDate
-          ).toDateString()}`}
-        </div>
-      </Col>
-      <Col xl={3} md={12} className={classes.rightSectionSubsection}>
-        <div className={classes.rightSectionTitle}>Funding</div>
-        <div className={classes.rightSectionSubtitle}>{`${fundingAmount.toFixed(
-          2
-        )} Ξ`}</div>
-      </Col>
-      <Col xl={3} md={12} className={classes.rightSectionSubsection}>
-        <div className={classes.rightSectionTitle}>Proposal deadline</div>
-        <div className={classes.rightSectionSubtitle}>3 days left</div>
+    <Row>
+      <Col xl={12}>
+        <Card
+          bgColor={CardBgColor.White}
+          borderRadius={CardBorderRadius.twenty}
+        >
+          <Row>
+            <Col xl={5} md={12}>
+              <div className={classes.leftSectionContainer}>
+                <div
+                  className={classes.leftSectionTitle}
+                >{`Auction ${id}`}</div>
+                <div className={classes.leftSectionSubtitle}>
+                  {`${new Date(startDate).toDateString()} - ${new Date(
+                    endDate
+                  ).toDateString()}`}
+                </div>
+              </div>
+            </Col>
+            <Col
+              xl={displayCreateButton ? 2 : { span: 2, offset: 1 }}
+              md={12}
+              className={classes.rightSectionSubsection}
+            >
+              <div className={classes.rightSectionTitle}>Funding</div>
+              <div
+                className={classes.rightSectionSubtitle}
+              >{`${fundingAmount.toFixed(2)} Ξ`}</div>
+            </Col>
+            <Col xl={3} md={12} className={classes.rightSectionSubsection}>
+              <div className={classes.rightSectionTitle}>Proposal deadline</div>
+              <div className={classes.rightSectionSubtitle}>3 days left</div>
+            </Col>
+            {displayCreateButton && (
+              <Col xl={2} className={classes.rightSectionSubsection}>
+                <Button text="Create" bgColor={ButtonColor.Pink} />
+              </Col>
+            )}
+          </Row>
+        </Card>
       </Col>
     </Row>
   );

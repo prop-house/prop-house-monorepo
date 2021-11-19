@@ -10,12 +10,14 @@ const Auctions = () => {
         fundingAmount={10}
         startDate={Date.now()}
         endDate={Date.now()}
+        displayCreateButton={false}
       />
       <AuctionHeader
         id={3}
         fundingAmount={20}
         startDate={Date.now()}
         endDate={Date.now()}
+        displayCreateButton={false}
       />
     </>
   );

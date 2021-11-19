@@ -19,6 +19,7 @@ const FullAuction: React.FC<{
         fundingAmount={5}
         startDate={Date.now()}
         endDate={Date.now()}
+        displayCreateButton={true}
       />
       <Row>
         <Col xs={4} md={2}>
