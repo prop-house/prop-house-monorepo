@@ -8,7 +8,7 @@ const ProposalCards = () => {
         .fill(0)
         .map(() => {
           return (
-            <Col xl={6}>
+            <Col xl={4}>
               <ProposalCard />
             </Col>
           );
