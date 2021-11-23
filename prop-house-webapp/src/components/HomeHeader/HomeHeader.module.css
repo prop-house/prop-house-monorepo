@@ -2,6 +2,16 @@
   margin: 4rem 0;
 }
 
+.poweredByNouns {
+  color: var(--brand-light-gray);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.poweredByNouns a {
+  color: var(--brand-pink);
+  text-decoration: none;
+}
+
 h1 {
   font-size: 60px;
   font-weight: 600;

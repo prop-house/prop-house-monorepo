@@ -7,6 +7,12 @@ const HomeHeader = () => {
   return (
     <Row className={classes.wrapper}>
       <Col xl={6}>
+        <div className={classes.poweredByNouns}>
+          Powered by{' '}
+          <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
+            Nouns
+          </a>
+        </div>
         <h1>Weekly funding for your ideas</h1>
         <p>
           Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
