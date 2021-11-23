@@ -1,6 +1,7 @@
 import { Col, Row, Image } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import classes from './HomeHeader.module.css';
+import { Link } from 'react-router-dom';
 import grempBulb from '../../assets/gremp-lightbulb.png';
 
 const HomeHeader = () => {
@@ -20,8 +21,12 @@ const HomeHeader = () => {
           anywhere.
         </p>
         <div className={classes.btnsContainer}>
-          <Button text="Learn more" bgColor={ButtonColor.Pink} />
-          <Button text="Submit proposal" bgColor={ButtonColor.White} />
+          <Link to="/learn">
+            <Button text="Learn more" bgColor={ButtonColor.Pink} />
+          </Link>
+          <Link to="/browse">
+            <Button text="Browse Proposals" bgColor={ButtonColor.White} />
+          </Link>
         </div>
       </Col>
       <Col xl={{ span: 4, offset: 2 }}>
