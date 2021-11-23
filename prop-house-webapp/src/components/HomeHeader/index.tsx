@@ -7,7 +7,7 @@ import grempBulb from '../../assets/gremp-lightbulb.png';
 const HomeHeader = () => {
   return (
     <Row className={classes.wrapper}>
-      <Col xl={6}>
+      <Col xl={6} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
           Powered by{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
@@ -29,7 +29,7 @@ const HomeHeader = () => {
           </Link>
         </div>
       </Col>
-      <Col xl={{ span: 4, offset: 2 }}>
+      <Col xl={{ span: 4, offset: 2 }} className={classes.rightCol}>
         <Image src={grempBulb} fluid />
       </Col>
     </Row>
