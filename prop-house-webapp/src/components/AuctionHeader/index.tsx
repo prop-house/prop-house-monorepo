@@ -1,6 +1,7 @@
 import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { Link } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 
 const AuctionHeader: React.FC<{
@@ -48,7 +49,9 @@ const AuctionHeader: React.FC<{
             </Col>
             {displayCreateButton && (
               <Col xl={2} className={classes.rightSectionSubsection}>
-                <Button text="Create" bgColor={ButtonColor.Pink} />
+                <Link to="/create">
+                  <Button text="Create" bgColor={ButtonColor.Pink} />
+                </Link>
               </Col>
             )}
           </Row>
