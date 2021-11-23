@@ -10,8 +10,8 @@ const HomeHeader = () => {
         <h1>Weekly funding for your ideas</h1>
         <p>
           Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
-          Auctions are held regularly, and made available to anyone, anywhere.
-          Get funded!
+          Funding auctions are held regularly, and made available to anyone,
+          anywhere.
         </p>
         <div className={classes.btnsContainer}>
           <Button text="Learn more" bgColor={ButtonColor.Pink} />
