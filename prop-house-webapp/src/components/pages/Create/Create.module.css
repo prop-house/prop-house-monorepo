@@ -1,0 +1,41 @@
+.inputGroup {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 0.1px solid #00000020;
+}
+.inputLabel {
+  margin-left: 1rem;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--brand-black);
+}
+
+.input {
+  border: none;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--brand-black);
+}
+.input:focus {
+  box-shadow: none;
+}
+
+.input::placeholder {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--brand-light-gray);
+}
+
+.descriptionInput {
+  height: 20rem;
+  font-size: initial;
+}
+.connectBtnContainer {
+  margin-bottom: 4rem;
+}
+.connectBtnContainer span {
+  color: var(--brand-light-gray);
+  font-weight: 600;
+}
