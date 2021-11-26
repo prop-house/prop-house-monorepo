@@ -1,0 +1,38 @@
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.rightCol {
+  display: flex;
+  justify-content: flex-end;
+}
+.leftCol {
+  display: flex;
+  justify-content: flex-start;
+}
+.img {
+  height: 30rem;
+}
+
+@media (max-width: 1200px) {
+  .breakOutMobile {
+    width: initial !important;
+    position: initial !important;
+    left: initial !important;
+  }
+  .leftCol,
+  .rightCol {
+    justify-content: center;
+  }
+}
+@media (min-width: 1600px) {
+  .breakOutMobile {
+    width: initial !important;
+    position: initial !important;
+    left: initial !important;
+  }
+}

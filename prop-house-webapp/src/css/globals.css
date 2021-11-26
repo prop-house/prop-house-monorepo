@@ -12,3 +12,10 @@
   --brand-black: #14161b;
   --brand-light-gray: #00000060;
 }
+
+/* breaks div out of the bootstrap .container to become full width with the viewport */
+.break-out {
+  width: 100vw;
+  position: relative;
+  left: calc(-1 * (100vw - 100%) / 2);
+}
