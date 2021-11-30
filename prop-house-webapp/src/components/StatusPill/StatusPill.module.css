@@ -1,0 +1,26 @@
+.pillContainer {
+  margin: 0 1rem;
+  padding: 5px 1rem;
+  border-radius: 50px;
+  position: relative;
+  top: -5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.greyBg {
+  background-color: var(--brand-gray-transparent);
+  color: var(--brand-gray);
+}
+.greenBg {
+  background-color: #50ba9a;
+  color: white;
+}
+.yellowBg {
+  background-color: #dbb738;
+  color: white;
+}
+.pinkBg {
+  color: var(--brand-pink);
+  background-color: var(--brand-pink-transparent);
+}
