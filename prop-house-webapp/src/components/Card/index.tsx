@@ -16,8 +16,9 @@ const Card: React.FC<{
   bgColor: CardBgColor;
   borderRadius: CardBorderRadius;
   onHoverEffect?: boolean;
+  classNames?: string | string[];
 }> = (props) => {
-  const { bgColor, borderRadius, onHoverEffect } = props;
+  const { bgColor, borderRadius, onHoverEffect, classNames } = props;
 
   const _classes = clsx(
     classes.card,
@@ -29,7 +30,8 @@ const Card: React.FC<{
     borderRadius === CardBorderRadius.twenty
       ? classes.borderRadius20
       : classes.borderRadius30,
-    onHoverEffect && classes.onHoverEffect
+    onHoverEffect && classes.onHoverEffect,
+    classNames && classNames
   );
   return <div className={_classes}>{props.children}</div>;
 };
