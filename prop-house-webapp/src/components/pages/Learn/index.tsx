@@ -1,6 +1,9 @@
 import classes from './Learn.module.css';
 import { Row, Col, Image } from 'react-bootstrap';
+import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import Button, { ButtonColor } from '../../Button';
 import grempBulb from '../../../assets/gremp-lightbulb.png';
+import tile from '../../../assets/tile.png';
 import clsx from 'clsx';
 
 const Learn = () => {
@@ -62,6 +65,30 @@ const Learn = () => {
             <Image src={grempBulb} fluid className={classes.img} />
           </Col>
         </Row>
+      </div>
+
+      <Card
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.twenty}
+        classNames={classes.cardCTA}
+      >
+        <Row className={classes.flexCenter}>
+          <Col xl={8}>
+            <h2>This is a call to action</h2>
+            <p>
+              Proin tristique at lorem id molestie. Morbi elementum hendrerit
+              nisi, eget luctus urna euismod in.
+            </p>
+          </Col>
+          <Col xl={4} className={classes.flexCenter}>
+            <Button text="Option A" bgColor={ButtonColor.Pink} />
+            <Button text="Option B" bgColor={ButtonColor.White} />
+          </Col>
+        </Row>
+      </Card>
+
+      <div className="break-out">
+        <Image src={tile} fluid />
       </div>
     </>
   );
