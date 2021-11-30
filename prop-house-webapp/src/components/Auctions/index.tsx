@@ -1,5 +1,6 @@
 import AuctionHeader from '../AuctionHeader';
 import FullAuction from '../FullAuction';
+import { Status } from '../StatusPill';
 
 const Auctions = () => {
   return (
@@ -11,6 +12,7 @@ const Auctions = () => {
         startDate={Date.now()}
         endDate={Date.now()}
         displayCreateButton={false}
+        status={Status.AuctionNotStarted}
       />
       <AuctionHeader
         id={3}
@@ -18,6 +20,7 @@ const Auctions = () => {
         startDate={Date.now()}
         endDate={Date.now()}
         displayCreateButton={false}
+        status={Status.AuctionNotStarted}
       />
     </>
   );

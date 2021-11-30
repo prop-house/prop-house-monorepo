@@ -1,6 +1,7 @@
 import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import StatusPill, { Status } from '../StatusPill';
 import { Link } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 
@@ -10,8 +11,10 @@ const AuctionHeader: React.FC<{
   startDate: number;
   endDate: number;
   displayCreateButton: boolean;
+  status: Status;
 }> = (props) => {
-  const { id, fundingAmount, startDate, endDate, displayCreateButton } = props;
+  const { id, fundingAmount, startDate, endDate, displayCreateButton, status } =
+    props;
 
   return (
     <Row>
@@ -23,9 +26,11 @@ const AuctionHeader: React.FC<{
           <Row>
             <Col xl={5} md={12}>
               <div className={classes.leftSectionContainer}>
-                <div
-                  className={classes.leftSectionTitle}
-                >{`Auction ${id}`}</div>
+                <div className={classes.leftSectionTitle}>
+                  {`Auction ${id}`}
+                  <StatusPill status={status} />
+                </div>
+
                 <div className={classes.leftSectionSubtitle}>
                   {`${new Date(startDate).toDateString()} - ${new Date(
                     endDate

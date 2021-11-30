@@ -4,6 +4,7 @@ import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
+import { Status } from '../StatusPill';
 
 const FullAuction: React.FC<{
   showAllProposals: boolean;
@@ -20,6 +21,7 @@ const FullAuction: React.FC<{
         startDate={Date.now()}
         endDate={Date.now()}
         displayCreateButton={true}
+        status={Status.AuctionAcceptingProps}
       />
       <Row>
         <Col xs={4} md={2}>
