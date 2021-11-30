@@ -9,8 +9,11 @@
 
 :root {
   --brand-pink: #e02ecf;
+  --brand-pink-transparent: #e02ece3f;
   --brand-black: #14161b;
-  --brand-light-gray: #00000060;
+  --brand-black-tansparent: #00000060;
+  --brand-gray: #666666;
+  --brand-gray-transparent: #6666662f;
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */

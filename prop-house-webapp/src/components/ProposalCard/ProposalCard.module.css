@@ -7,7 +7,7 @@
 
 .author span {
   font-weight: normal;
-  color: var(--brand-light-gray);
+  color: var(--brand-black-tansparent);
 }
 
 .title {
@@ -25,7 +25,7 @@
 
 .timestamp {
   font-size: 16px;
-  color: var(--brand-light-gray);
+  color: var(--brand-black-tansparent);
 }
 
 .readMore a {

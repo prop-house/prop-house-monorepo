@@ -10,7 +10,7 @@
 .leftSectionSubtitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--brand-light-gray);
+  color: var(--brand-black-tansparent);
 }
 
 .rightSectionSubsection {
@@ -23,7 +23,7 @@
 .rightSectionTitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--brand-light-gray);
+  color: var(--brand-black-tansparent);
 }
 
 .rightSectionSubtitle {
