@@ -26,10 +26,14 @@ const Learn = () => {
 
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row)}>
-          <Col xl={6} className={classes.leftCol}>
+          <Col
+            xl={{ span: 6, order: 'first' }}
+            xs={{ order: 'last' }}
+            className={classes.leftCol}
+          >
             <Image src={grempBulb} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 6, offset: 0 }}>
+          <Col xl={{ span: 6, order: 'last' }} xs={{ order: 'first' }}>
             <h2>This is a statement</h2>
             <p>
               Proin tristique at lorem id molestie. Morbi elementum hendrerit
