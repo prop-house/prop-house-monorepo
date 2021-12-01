@@ -1,38 +1,24 @@
-.inputGroup {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 0.1px solid #00000020;
-}
-.inputLabel {
-  margin-left: 1rem;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--brand-black);
+.card {
+  margin: 2rem 0 4rem 0;
 }
 
-.input {
-  border: none;
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--brand-black);
+.tabsContainer {
+  min-height: 35rem;
 }
-.input:focus {
-  box-shadow: none;
+.activeTab {
+  color: var(--brand-black) !important;
 }
-
-.input::placeholder {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--brand-black-tansparent);
+.inactiveTab {
+  color: var(--brand-gray) !important;
+}
+.previewDisabledTab {
+  color: var(--brand-gray-transparent) !important;
 }
 
-.descriptionInput {
-  height: 20rem;
-  font-size: initial;
-}
 .connectBtnContainer {
+  border-top: 0.1px solid #00000020;
+  padding-top: 2rem;
+  margin-top: 2rem;
   margin-bottom: 4rem;
 }
 .connectBtnContainer span {

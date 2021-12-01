@@ -1,13 +1,28 @@
 import classes from './Create.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
-import { Row, Col, Form } from 'react-bootstrap';
+import { Row, Col, Tabs, Tab } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../Button';
 import { Link } from 'react-router-dom';
-import clsx from 'clsx';
+import { useState } from 'react';
+import ProposalEditor from '../../ProposalEditor';
+import Preview from '../Preview';
 
 const Create = () => {
-  const descriptionPlaceholderCopy =
-    'What will you be building?\n\nWho will you be building with?\n\nWhat timeline do you expect to complete the project?\n\nShare links to experience or supporting work relevant to your project';
+  const [titleText, setTitleText] = useState('');
+  const [bodyText, setBodyText] = useState('');
+  const [previewDisabled, setPreviewDisable] = useState(true);
+  const [selectedTabKey, setSelectedTabKey] = useState<string | null>(
+    'edit-proposal'
+  ); // default selected tab
+
+  const onTitleChange = (title: string) => {
+    setTitleText(title);
+    setPreviewDisable(title === '' || bodyText === '');
+  };
+  const onBodyChange = (body: string) => {
+    setBodyText(body);
+    setPreviewDisable(body === '' || titleText === '');
+  };
 
   return (
     <>
@@ -17,13 +32,17 @@ const Create = () => {
           <p>Proposals will be voted by Nouners to get funded</p>
         </Col>
       </Row>
-      <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
+      <Card
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.twenty}
+        classNames={classes.card}
+      >
         <Row>
           <Col xl={10}>
             <p>
               We encourage proposals which further proliferate Nouns onto the
               world while accurately representing the Nouns culture. If your
-              auction is chosen, you will be given the responsibility of
+              proposal is chosen, you will be given the responsibility of
               completing the work you’ve outlined below. Please be descriptive!
             </p>
           </Col>
@@ -34,31 +53,57 @@ const Create = () => {
           </Col>
         </Row>
       </Card>
-      <Row>
-        <Form>
-          <Form.Group className={classes.inputGroup}>
-            <Form.Label className={classes.inputLabel}>Title</Form.Label>
-            <Form.Control
-              as="textarea"
-              placeholder="Give your proposal a name..."
-              className={classes.input}
-            />
-          </Form.Group>
 
-          <Form.Group className={classes.inputGroup}>
-            <Form.Label className={classes.inputLabel}>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              placeholder={descriptionPlaceholderCopy}
-              className={clsx(classes.input, classes.descriptionInput)}
-            />
-          </Form.Group>
-        </Form>
+      <Row>
+        <Col xl={12}>
+          <div className={classes.tabsContainer}>
+            <Tabs
+              defaultActiveKey="edit-proposal"
+              className="mb-3"
+              transition={true}
+              onSelect={(key) => setSelectedTabKey(key)}
+            >
+              <Tab
+                eventKey="edit-proposal"
+                title="Edit proposal"
+                tabClassName={
+                  selectedTabKey === 'edit-proposal'
+                    ? classes.activeTab
+                    : classes.inactiveTab
+                }
+              >
+                <ProposalEditor
+                  onTitleChange={onTitleChange}
+                  onBodyChange={onBodyChange}
+                />
+              </Tab>
+              <Tab
+                eventKey="preview"
+                title="Preview"
+                disabled={previewDisabled}
+                tabClassName={
+                  selectedTabKey === 'preview'
+                    ? classes.activeTab
+                    : previewDisabled
+                    ? classes.previewDisabledTab
+                    : classes.inactiveTab
+                }
+              >
+                <Preview title={titleText} body={bodyText} />
+              </Tab>
+            </Tabs>
+          </div>
+        </Col>
       </Row>
+
       <Row>
         <Col xl={12} className={classes.connectBtnContainer}>
-          <Button text="Connect wallet" bgColor={ButtonColor.Pink} />
-          <span>to submit proposal</span>
+          <Button
+            text="Connect wallet"
+            bgColor={ButtonColor.Pink}
+            disabled={previewDisabled}
+          />
+          <span>to submit</span>
         </Col>
       </Row>
     </>

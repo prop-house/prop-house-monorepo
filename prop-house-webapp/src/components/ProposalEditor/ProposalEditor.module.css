@@ -1,0 +1,27 @@
+.inputLabel {
+  margin-left: 1rem;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--brand-gray);
+}
+
+.input {
+  border: none;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--brand-black);
+}
+.input:focus {
+  box-shadow: none;
+}
+
+.input::placeholder {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--brand-black-tansparent);
+}
+
+.descriptionInput {
+  height: 20rem;
+  font-size: initial;
+}
