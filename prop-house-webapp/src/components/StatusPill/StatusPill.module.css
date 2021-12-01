@@ -1,5 +1,6 @@
 .pillContainer {
-  margin: 0 1rem;
+  display: inline-block;
+  margin: 1rem 0.75rem;
   padding: 5px 0.75rem;
   border-radius: 50px;
   position: relative;

@@ -56,10 +56,10 @@ const Create = () => {
         </Form>
       </Row>
       <Row>
-        <div className={classes.connectBtnContainer}>
+        <Col xl={12} className={classes.connectBtnContainer}>
           <Button text="Connect wallet" bgColor={ButtonColor.Pink} />
           <span>to submit proposal</span>
-        </div>
+        </Col>
       </Row>
     </>
   );
