@@ -9,8 +9,9 @@ export enum ButtonColor {
 const Button: React.FC<{
   text: string;
   bgColor: ButtonColor;
+  disabled?: boolean;
 }> = (props) => {
-  const { text, bgColor } = props;
+  const { text, bgColor, disabled } = props;
 
   return (
     <BSButton
@@ -18,6 +19,7 @@ const Button: React.FC<{
         classes.btn,
         bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg
       )}
+      disabled={disabled}
     >
       {text}
     </BSButton>
