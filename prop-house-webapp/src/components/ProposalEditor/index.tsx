@@ -1,15 +1,13 @@
 import classes from './ProposalEditor.module.css';
 import { Row, Col, Form } from 'react-bootstrap';
 import clsx from 'clsx';
+import { PropData } from '../pages/Create';
 
 const ProposalEditor: React.FC<{
-  onTitleChange: (body: string) => void;
-  onBodyChange: (body: string) => void;
+  data?: PropData;
+  onDataChange: (data: {}) => void;
 }> = (props) => {
-  const { onTitleChange, onBodyChange } = props;
-  const descriptionPlaceholderCopy =
-    '## What is it?\n\n## Who is building it?\n\n## Timeline?\n\n## Links to relevant work or experience';
-
+  const { onDataChange, data } = props;
   return (
     <>
       <Row>
@@ -18,19 +16,63 @@ const ProposalEditor: React.FC<{
             <Form.Group className={classes.inputGroup}>
               <Form.Label className={classes.inputLabel}>Title</Form.Label>
               <Form.Control
-                as="textarea"
+                as="input"
                 placeholder="Give your proposal a name..."
                 className={classes.input}
-                onChange={(e) => onTitleChange(e.target.value)}
+                onChange={(e) => onDataChange({ title: e.target.value })}
+                value={data && data.title}
               />
             </Form.Group>
 
             <Form.Group className={classes.inputGroup}>
+              <Form.Label className={classes.inputLabel}>
+                Who is building it?
+              </Form.Label>
               <Form.Control
                 as="textarea"
-                placeholder={descriptionPlaceholderCopy}
+                placeholder="Satoshi: engineer, Vitalik: designer and Timmy: project lead..."
+                className={classes.input}
+                onChange={(e) => onDataChange({ who: e.target.value })}
+                value={data && data.who}
+              />
+            </Form.Group>
+
+            <Form.Group className={classes.inputGroup}>
+              <Form.Label className={classes.inputLabel}>
+                What are you building?
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                placeholder="Please be as descriptive as possible"
                 className={clsx(classes.input, classes.descriptionInput)}
-                onChange={(e) => onBodyChange(e.target.value)}
+                onChange={(e) => onDataChange({ what: e.target.value })}
+                value={data && data.what}
+              />
+            </Form.Group>
+
+            <Form.Group className={classes.inputGroup}>
+              <Form.Label className={classes.inputLabel}>
+                What timeline do you expect to complete it by?
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                placeholder="e.g. Four weeks for phase 1, six weeks for phase 2"
+                className={classes.input}
+                onChange={(e) => onDataChange({ timeline: e.target.value })}
+                value={data && data.timeline}
+              />
+            </Form.Group>
+
+            <Form.Group className={classes.inputGroup}>
+              <Form.Label className={classes.inputLabel}>
+                Please share links relevant to your experience
+              </Form.Label>
+              <Form.Control
+                as="textarea"
+                placeholder="e.g. Bitcoin.org, Ethereum.org"
+                className={classes.input}
+                onChange={(e) => onDataChange({ links: e.target.value })}
+                value={data && data.links}
               />
             </Form.Group>
           </Form>

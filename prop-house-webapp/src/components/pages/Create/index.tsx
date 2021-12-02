@@ -1,27 +1,44 @@
 import classes from './Create.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
-import { Row, Col, Tabs, Tab } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../Button';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import ProposalEditor from '../../ProposalEditor';
 import Preview from '../Preview';
 
-const Create = () => {
-  const [titleText, setTitleText] = useState('');
-  const [bodyText, setBodyText] = useState('');
-  const [previewDisabled, setPreviewDisable] = useState(true);
-  const [selectedTabKey, setSelectedTabKey] = useState<string | null>(
-    'edit-proposal'
-  ); // default selected tab
+export interface PropData {
+  title: string;
+  who: string;
+  what: string;
+  timeline: string;
+  links: string;
+}
 
-  const onTitleChange = (title: string) => {
-    setTitleText(title);
-    setPreviewDisable(title === '' || bodyText === '');
-  };
-  const onBodyChange = (body: string) => {
-    setBodyText(body);
-    setPreviewDisable(body === '' || titleText === '');
+const emptyPropData = (): PropData => ({
+  title: '',
+  who: '',
+  what: '',
+  timeline: '',
+  links: '',
+});
+
+const isValidPropData = (data: PropData) => {
+  return data.title !== '' && data.what !== '';
+};
+
+const Create = () => {
+  const [propData, setPropData] = useState<PropData>(emptyPropData());
+  const [showPreview, setShowPreview] = useState(false);
+
+  const onDataChange = (data: {}) => {
+    setPropData((prev) => {
+      const updatedPropData = {
+        ...prev,
+        ...data,
+      };
+      return updatedPropData;
+    });
   };
 
   return (
@@ -56,54 +73,26 @@ const Create = () => {
 
       <Row>
         <Col xl={12}>
-          <div className={classes.tabsContainer}>
-            <Tabs
-              defaultActiveKey="edit-proposal"
-              className="mb-3"
-              transition={true}
-              onSelect={(key) => setSelectedTabKey(key)}
-            >
-              <Tab
-                eventKey="edit-proposal"
-                title="Edit proposal"
-                tabClassName={
-                  selectedTabKey === 'edit-proposal'
-                    ? classes.activeTab
-                    : classes.inactiveTab
-                }
-              >
-                <ProposalEditor
-                  onTitleChange={onTitleChange}
-                  onBodyChange={onBodyChange}
-                />
-              </Tab>
-              <Tab
-                eventKey="preview"
-                title="Preview"
-                disabled={previewDisabled}
-                tabClassName={
-                  selectedTabKey === 'preview'
-                    ? classes.activeTab
-                    : previewDisabled
-                    ? classes.previewDisabledTab
-                    : classes.inactiveTab
-                }
-              >
-                <Preview title={titleText} body={bodyText} />
-              </Tab>
-            </Tabs>
-          </div>
+          {showPreview ? (
+            <Preview propData={propData} />
+          ) : (
+            <ProposalEditor onDataChange={onDataChange} data={propData} />
+          )}
         </Col>
       </Row>
 
       <Row>
-        <Col xl={12} className={classes.connectBtnContainer}>
+        <Col xl={12} className={classes.btnContainer}>
           <Button
-            text="Connect wallet"
+            text={showPreview ? 'Back to editor' : 'Preview'}
             bgColor={ButtonColor.Pink}
-            disabled={previewDisabled}
+            onClick={() =>
+              setShowPreview((prev) => {
+                return !prev;
+              })
+            }
+            disabled={!isValidPropData(propData)}
           />
-          <span>to submit</span>
         </Col>
       </Row>
     </>

@@ -1,27 +1,12 @@
 .card {
-  margin: 2rem 0 4rem 0;
+  margin: 2rem 0;
 }
 
-.tabsContainer {
-  min-height: 35rem;
-}
-.activeTab {
-  color: var(--brand-black) !important;
-}
-.inactiveTab {
-  color: var(--brand-gray) !important;
-}
-.previewDisabledTab {
-  color: var(--brand-gray-transparent) !important;
-}
-
-.connectBtnContainer {
-  border-top: 0.1px solid #00000020;
-  padding-top: 2rem;
-  margin-top: 2rem;
+.btnContainer {
+  margin-top: 1rem;
   margin-bottom: 4rem;
 }
-.connectBtnContainer span {
+.btnContainer span {
   color: var(--brand-black-tansparent);
   font-weight: 600;
 }

@@ -4,12 +4,16 @@
   font-weight: 600;
   color: var(--brand-gray);
 }
-
+.inputGroup {
+  margin: 3rem 0;
+  border-bottom: 1px solid var(--brand-gray-transparent);
+}
 .input {
   border: none;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 600;
   color: var(--brand-black);
+  margin-bottom: 1.75rem;
 }
 .input:focus {
   box-shadow: none;
@@ -22,6 +26,5 @@
 }
 
 .descriptionInput {
-  height: 20rem;
-  font-size: initial;
+  height: 15rem;
 }

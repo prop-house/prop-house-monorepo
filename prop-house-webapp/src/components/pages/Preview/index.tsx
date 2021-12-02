@@ -1,26 +1,22 @@
 import classes from './Preview.module.css';
 import { Row, Col } from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
+import { PropData } from '../Create';
 
-const Preview: React.FC<{ title: string; body: string }> = (props) => {
-  const { title, body } = props;
+const Preview: React.FC<{ propData: PropData }> = (props) => {
+  const { propData } = props;
   return (
     <>
       <Row>
-        <Col xl={12}>
-          <div className={classes.titleContainer}>
-            <ReactMarkdown
-              className={classes.markdown}
-              children={`# ${title}`}
-              remarkPlugins={[remarkBreaks]}
-            />
-          </div>
-          <ReactMarkdown
-            className={classes.markdown}
-            children={body}
-            remarkPlugins={[remarkBreaks]}
-          />
+        <Col xl={12} className={classes.previewCol}>
+          <h1>{propData.title}</h1>
+          <h2>Who is building it?</h2>
+          <p>{propData.who}</p>
+          <h2>What are you building?</h2>
+          <p>{propData.what}</p>
+          <h2>What timeline do you expect to complete it by?</h2>
+          <p>{propData.timeline}</p>
+          <h2>Links relevant to your experience:</h2>
+          <p>{propData.links}</p>
         </Col>
       </Row>
     </>
