@@ -6,12 +6,7 @@ const Footer = () => {
   return (
     <div className={classes.footerContainer}>
       <div className={classes.footer}>
-        Made with
-        <Image src={heartNoun} />
-        by{' '}
-        <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-          Nouns
-        </a>
+        Made with <Image src={heartNoun} />
       </div>
     </div>
   );
