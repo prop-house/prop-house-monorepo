@@ -12,13 +12,12 @@ const Learn = () => {
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row)}>
           <Col xl={{ span: 5, offset: 1 }}>
-            <h2>This is a statement</h2>
+            <h2>Plug into the Nouns treasury</h2>
             <p>
-              Proin tristique at lorem id molestie. Morbi elementum hendrerit
-              nisi, eget luctus urna euismod in. Nam tempor ligula et faucibus
-              rutrum. Praesent in tempus nibh. Integer diam tortor, porttitor in
-              consectetur ac, pretium quis ex. Sed interdum condimentum
-              porttitor. In faucibus iaculis ex eu pharetra.
+              The Nouns DAO treasury has amassed $70M and counting since
+              inception. Prop House aims to make it easy for anyone with an
+              Ethereum address to plug in and use the treasury to build out
+              their ideas.
             </p>
           </Col>
           <Col xl={6} className={classes.rightCol}>
@@ -28,7 +27,7 @@ const Learn = () => {
       </div>
 
       <div className={clsx('break-out', classes.breakOutMobile)}>
-        <Row className={clsx('g-0', classes.row)}>
+        <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
           <Col
             xl={{ span: 6, order: 'first' }}
             xs={{ order: 'last' }}
@@ -36,14 +35,14 @@ const Learn = () => {
           >
             <Image src={grempBulb} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 6, order: 'last' }} xs={{ order: 'first' }}>
-            <h2>This is a statement</h2>
+          <Col xl={{ span: 5, order: 'last' }} xs={{ order: 'first' }}>
+            <h2>Take part in Funding Auctions</h2>
             <p>
-              Proin tristique at lorem id molestie. Morbi elementum hendrerit
-              nisi, eget luctus urna euismod in. Nam tempor ligula et faucibus
-              rutrum. Praesent in tempus nibh. Integer diam tortor, porttitor in
-              consectetur ac, pretium quis ex. Sed interdum condimentum
-              porttitor. In faucibus iaculis ex eu pharetra.
+              Funding auctions are held regularly. They are auctions where the
+              thing being auctioned is ETH and the bids being placed are
+              proposals. Anyone is free to propose anything. At the end of each
+              auction, Noun DAO members (Nouners) vote on which proposal gets
+              funded.
             </p>
           </Col>
         </Row>
@@ -52,13 +51,12 @@ const Learn = () => {
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row)}>
           <Col xl={{ span: 5, offset: 1 }}>
-            <h2>This is a statement</h2>
+            <h2>Become part of the community</h2>
             <p>
-              Proin tristique at lorem id molestie. Morbi elementum hendrerit
-              nisi, eget luctus urna euismod in. Nam tempor ligula et faucibus
-              rutrum. Praesent in tempus nibh. Integer diam tortor, porttitor in
-              consectetur ac, pretium quis ex. Sed interdum condimentum
-              porttitor. In faucibus iaculis ex eu pharetra.
+              Nouns is a builder-first community. As a prop builder, you will
+              become part of a special group of people building the future of
+              open-source IP and get access to resources and support from the
+              Nouns community.
             </p>
           </Col>
           <Col xl={6} className={classes.rightCol}>
