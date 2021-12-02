@@ -6,10 +6,34 @@ import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StatusPillState } from '../StatusPill';
 
+export enum AuctionStatus {
+  NotStarted,
+  AcceptingProposals,
+  Voting,
+  Ended,
+}
+
 const FullAuction: React.FC<{
   showAllProposals: boolean;
+  status: AuctionStatus;
 }> = (props) => {
-  const { showAllProposals } = props;
+  const { showAllProposals, status } = props;
+
+  const statusPillState = () => {
+    switch (status) {
+      case AuctionStatus.NotStarted:
+        return StatusPillState.AuctionNotStarted;
+      case AuctionStatus.AcceptingProposals:
+        return StatusPillState.AuctionAcceptingProps;
+      case AuctionStatus.Voting:
+        return StatusPillState.AuctionVoting;
+      case AuctionStatus.Ended:
+        return StatusPillState.AuctionEnded;
+      // default:
+      //   return StatusPillState.AuctionNotStarted;
+    }
+  };
+
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
@@ -21,7 +45,7 @@ const FullAuction: React.FC<{
         startDate={Date.now()}
         endDate={Date.now()}
         displayCreateButton={true}
-        status={StatusPillState.AuctionAcceptingProps}
+        status={statusPillState()}
       />
       <Row>
         <Col xs={4} md={2}>

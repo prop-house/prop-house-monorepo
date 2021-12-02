@@ -1,11 +1,14 @@
 import AuctionHeader from '../AuctionHeader';
-import FullAuction from '../FullAuction';
+import FullAuction, { AuctionStatus } from '../FullAuction';
 import { StatusPillState } from '../StatusPill';
 
 const Auctions = () => {
   return (
     <>
-      <FullAuction showAllProposals={false} />
+      <FullAuction
+        showAllProposals={false}
+        status={AuctionStatus.AcceptingProposals}
+      />
       <AuctionHeader
         id={2}
         fundingAmount={10}
