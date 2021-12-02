@@ -7,6 +7,7 @@ import Browse from './components/pages/Browse';
 import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
 import NotFound from './components/pages/NotFound';
+import Footer from './components/Footer';
 import { Container } from 'react-bootstrap';
 import './App.css';
 
@@ -21,6 +22,7 @@ function App() {
         <Route path="/learn" element={<Learn />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Footer />
     </Container>
   );
 }
