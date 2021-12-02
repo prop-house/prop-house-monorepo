@@ -10,8 +10,9 @@ const Button: React.FC<{
   text: string;
   bgColor: ButtonColor;
   disabled?: boolean;
+  onClick?: () => void;
 }> = (props) => {
-  const { text, bgColor, disabled } = props;
+  const { text, bgColor, disabled, onClick } = props;
 
   return (
     <BSButton
@@ -20,6 +21,7 @@ const Button: React.FC<{
         bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg
       )}
       disabled={disabled}
+      onClick={onClick}
     >
       {text}
     </BSButton>
