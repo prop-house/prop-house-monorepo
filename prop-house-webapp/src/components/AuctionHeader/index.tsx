@@ -1,7 +1,7 @@
 import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import StatusPill, { Status } from '../StatusPill';
+import StatusPill, { StatusPillState } from '../StatusPill';
 import { Link } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 
@@ -11,7 +11,7 @@ const AuctionHeader: React.FC<{
   startDate: number;
   endDate: number;
   displayCreateButton: boolean;
-  status: Status;
+  status: StatusPillState;
 }> = (props) => {
   const { id, fundingAmount, startDate, endDate, displayCreateButton, status } =
     props;

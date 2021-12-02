@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import classes from './StatusPill.module.css';
 
-export enum Status {
+export enum StatusPillState {
   AuctionNotStarted,
   AuctionAcceptingProps,
   AuctionVoting,
@@ -9,30 +9,30 @@ export enum Status {
   ProposalWon,
 }
 
-const StatusPill: React.FC<{ status: Status }> = (props) => {
+const StatusPill: React.FC<{ status: StatusPillState }> = (props) => {
   const { status } = props;
 
   let copy = '';
   let bgClass = '';
 
   switch (status) {
-    case Status.AuctionNotStarted:
+    case StatusPillState.AuctionNotStarted:
       copy = 'Not started';
       bgClass = classes.greyBg;
       break;
-    case Status.AuctionAcceptingProps:
+    case StatusPillState.AuctionAcceptingProps:
       copy = 'Accepting proposals';
       bgClass = classes.greenBg;
       break;
-    case Status.AuctionVoting:
+    case StatusPillState.AuctionVoting:
       copy = 'Voting open';
       bgClass = classes.yellowBg;
       break;
-    case Status.AuctionEnded:
+    case StatusPillState.AuctionEnded:
       copy = 'Auction ended';
       bgClass = classes.greyBg;
       break;
-    case Status.ProposalWon:
+    case StatusPillState.ProposalWon:
       copy = 'Winner';
       bgClass = classes.pinkBg;
       break;
