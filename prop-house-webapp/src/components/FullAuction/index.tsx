@@ -29,8 +29,6 @@ const FullAuction: React.FC<{
         return StatusPillState.AuctionVoting;
       case AuctionStatus.Ended:
         return StatusPillState.AuctionEnded;
-      // default:
-      //   return StatusPillState.AuctionNotStarted;
     }
   };
 
