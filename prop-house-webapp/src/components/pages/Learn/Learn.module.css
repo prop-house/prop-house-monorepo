@@ -23,7 +23,8 @@
   justify-content: flex-start;
 }
 .img {
-  height: 30rem;
+  height: 100%;
+  width: auto;
 }
 
 .cardCTA {
