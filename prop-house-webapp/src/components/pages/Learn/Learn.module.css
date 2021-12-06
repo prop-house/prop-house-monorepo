@@ -35,11 +35,6 @@
   margin-bottom: 5rem;
 }
 
-.flexCenter {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .cardCTA h2 {
   font-weight: 600;
 }

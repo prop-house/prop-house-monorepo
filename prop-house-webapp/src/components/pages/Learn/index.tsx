@@ -50,16 +50,20 @@ const Learn = () => {
             xl={{ span: 4, offset: 1, order: 'first' }}
             xs={{ order: 'last' }}
           >
-            <h2>Bid with your ideas in Funding Auctions</h2>
-            <p>
-              Funding auctions are held regularly. They are auctions where the
-              thing being auctioned is ETH and the bids being placed are
-              proposals. Anyone is free to propose anything.
-              <br />
-              <br />
-              At the end of each auction, members of the Nouns DAO, also known
-              as Nouners, vote on which proposal will receive funding.
-            </p>
+            <Col xs={12}>
+              <h2>Bid with your ideas in Funding Auctions</h2>
+            </Col>
+            <Col xs={12}>
+              <p>
+                Funding auctions are held regularly. They are auctions where the
+                thing being auctioned is ETH and the bids being placed are
+                proposals. Anyone is free to propose anything.
+                <br />
+                <br />
+                At the end of each auction, members of the Nouns DAO, also known
+                as Nouners, vote on which proposal will receive funding.
+              </p>
+            </Col>
           </Col>
           <Col
             xl={{ span: 6, offset: 1 }}
@@ -125,7 +129,7 @@ const Learn = () => {
               owners might vote for.
             </p>
           </Col>
-          <Col xl={3} className={classes.flexCenter}>
+          <Col xl={3}>
             <Link to="/browse">
               <Button text="Browse auctions" bgColor={ButtonColor.Pink} />
             </Link>
