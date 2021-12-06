@@ -7,6 +7,7 @@ import auctionImg from '../../../assets/learn page/auction.png';
 import auctionFullImg from '../../../assets/learn page/auction_full.png';
 import communityImg from '../../../assets/learn page/community.png';
 import clsx from 'clsx';
+import { Link } from 'react-router-dom';
 
 const Learn = () => {
   return (
@@ -31,6 +32,17 @@ const Learn = () => {
               Ethereum address to plug in and use the treasury to build out
               their ideas.
             </p>
+            <Link to="/browse">
+              <Button
+                text="Browse auctions"
+                bgColor={ButtonColor.Pink}
+                classNames={classes.firstBtn}
+              />
+            </Link>
+
+            <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
+              <Button text="About Nouns" bgColor={ButtonColor.White} />
+            </a>
           </Col>
         </Row>
       </div>
@@ -77,13 +89,28 @@ const Learn = () => {
             xl={{ span: 5, offset: 1, order: 'last' }}
             xs={{ order: 'first' }}
           >
-            <h2>Become part of the community</h2>
+            <h2>Become part of the Nouns community</h2>
             <p>
               Nouns is a builder-first community. As a prop builder, you will
               become part of a special group of people building the future of
               open-source IP and get access to resources and support from the
               Nouns community.
             </p>
+
+            <a href="https://discord.gg/nouns" target="_blank" rel="noreferrer">
+              <Button
+                text="Join discord"
+                bgColor={ButtonColor.White}
+                classNames={classes.firstBtn}
+              />
+            </a>
+            <a href="https://nouns.wtf/docs" target="_blank" rel="noreferrer">
+              <Button
+                text="Visit docs"
+                bgColor={ButtonColor.White}
+                classNames={classes.firstBtn}
+              />
+            </a>
           </Col>
         </Row>
       </div>
@@ -94,16 +121,17 @@ const Learn = () => {
         classNames={classes.cardCTA}
       >
         <Row className={classes.flexCenter}>
-          <Col xl={8}>
-            <h2>This is a call to action</h2>
+          <Col xl={9}>
+            <h2>The easiest way to get funded</h2>
             <p>
-              Proin tristique at lorem id molestie. Morbi elementum hendrerit
-              nisi, eget luctus urna euismod in.
+              All you need is an Ethereum wallet, and an idea you think Noun
+              owners might vote for.
             </p>
           </Col>
-          <Col xl={4} className={classes.flexCenter}>
-            <Button text="Option A" bgColor={ButtonColor.Pink} />
-            <Button text="Option B" bgColor={ButtonColor.White} />
+          <Col xl={3} className={classes.flexCenter}>
+            <Link to="/browse">
+              <Button text="Browse auctions" bgColor={ButtonColor.Pink} />
+            </Link>
           </Col>
         </Row>
       </Card>

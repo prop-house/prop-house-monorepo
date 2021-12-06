@@ -26,6 +26,9 @@
   height: 100%;
   width: auto;
 }
+.firstBtn {
+  margin-left: 0;
+}
 
 .cardCTA {
   margin-top: 5rem;
@@ -36,6 +39,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.cardCTA h2 {
+  font-weight: 600;
 }
 
 @media (max-width: 1200px) {
