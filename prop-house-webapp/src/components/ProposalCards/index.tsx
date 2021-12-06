@@ -6,9 +6,9 @@ const ProposalCards = () => {
     <Row>
       {Array(6)
         .fill(0)
-        .map(() => {
+        .map((_, index) => {
           return (
-            <Col xl={4}>
+            <Col key={index} xl={4}>
               <ProposalCard />
             </Col>
           );
