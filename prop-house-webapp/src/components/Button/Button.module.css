@@ -13,9 +13,30 @@
   background-color: var(--brand-pink);
   border: none;
 }
+.btnPinkBg:hover {
+  background-color: var(--brand-pink-semi-transparent);
+}
+.btnPinkBg:active,
+.btnPinkBg:focus {
+  background-color: var(--brand-pink-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-pink-transparent) !important;
+}
 
 .btnWhiteBg {
   background-color: white;
   color: black;
   border-color: rgba(0, 0, 0, 0.1);
+}
+
+.btnWhiteBg:hover {
+  color: gray;
+  background-color: white !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.btnWhiteBg:active,
+.btnWhiteBg:focus {
+  color: gray !important;
+  background-color: var(--brand-gray-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-gray-transparent) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }
