@@ -25,7 +25,7 @@ const HomeHeader = () => {
             <Button text="Learn more" bgColor={ButtonColor.Pink} />
           </Link>
           <Link to="/browse">
-            <Button text="Browse Proposals" bgColor={ButtonColor.White} />
+            <Button text="Browse auctions" bgColor={ButtonColor.White} />
           </Link>
         </div>
       </Col>
