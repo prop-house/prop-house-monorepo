@@ -15,16 +15,13 @@ const Learn = () => {
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
           <Col
-            xl={{ span: 5, order: 'first' }}
-            xs={{ order: 'last' }}
+            xl={{ span: 5 }}
+            xs={{ order: 'first' }}
             className={classes.leftCol}
           >
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
-          <Col
-            xl={{ span: 5, offset: 1, order: 'last' }}
-            xs={{ order: 'first' }}
-          >
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
             <h2>Plug into the Nouns treasury</h2>
             <p>
               The Nouns DAO treasury has amassed $70M and counting since
@@ -49,7 +46,10 @@ const Learn = () => {
 
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row)}>
-          <Col xl={{ span: 4, offset: 1 }}>
+          <Col
+            xl={{ span: 4, offset: 1, order: 'first' }}
+            xs={{ order: 'last' }}
+          >
             <h2>Bid with your ideas in Funding Auctions</h2>
             <p>
               Funding auctions are held regularly. They are auctions where the
@@ -61,7 +61,11 @@ const Learn = () => {
               as Nouners, vote on which proposal will receive funding.
             </p>
           </Col>
-          <Col xl={{ span: 6, offset: 1 }} className={classes.rightCol}>
+          <Col
+            xl={{ span: 6, offset: 1 }}
+            xs={{ order: 'first' }}
+            className={classes.rightCol}
+          >
             <Image
               src={auctionImg}
               fluid
@@ -78,17 +82,10 @@ const Learn = () => {
 
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
-          <Col
-            xl={{ span: 5, order: 'first' }}
-            xs={{ order: 'last' }}
-            className={classes.leftCol}
-          >
+          <Col xl={5} xs={{ order: 'last' }} className={classes.leftCol}>
             <Image src={communityImg} fluid className={classes.img} />
           </Col>
-          <Col
-            xl={{ span: 5, offset: 1, order: 'last' }}
-            xs={{ order: 'first' }}
-          >
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
             <h2>Become part of the Nouns community</h2>
             <p>
               Nouns is a builder-first community. As a prop builder, you will
