@@ -11,14 +11,16 @@ const Button: React.FC<{
   bgColor: ButtonColor;
   disabled?: boolean;
   onClick?: () => void;
+  classNames?: string[] | string;
 }> = (props) => {
-  const { text, bgColor, disabled, onClick } = props;
+  const { text, bgColor, disabled, onClick, classNames } = props;
 
   return (
     <BSButton
       className={clsx(
         classes.btn,
-        bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg
+        bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg,
+        classNames
       )}
       disabled={disabled}
       onClick={onClick}
