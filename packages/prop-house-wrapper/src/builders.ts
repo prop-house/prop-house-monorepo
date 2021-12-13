@@ -47,10 +47,33 @@ export class Auction extends Signable {
   }
 }
 
+export class StoredAuction extends Auction {
+  //@ts-ignore
+  public readonly id: number;
+  //@ts-ignore
+  public readonly proposals: StoredProposal[]
+  //@ts-ignore
+  public readonly createdDate: Date;
+
+  static FromResponse (response: any): StoredAuction {
+    const parsed =  {
+      ...response,
+      startTime: new Date(response.startTime),
+      proposalEndTime: new Date(response.proposalEndTime),
+      votingEndTime: new Date(response.votingEndTime)
+    }
+    return parsed;
+  }
+
+}
+
 export class Proposal extends Signable {
   constructor(
     public readonly title: string,
-    public readonly body: string,
+    public readonly who: string,
+    public readonly what: string,
+    public readonly timeline: string,
+    public readonly links: string,
     public readonly auctionId: number
   ) {
     super();
@@ -59,10 +82,19 @@ export class Proposal extends Signable {
   toPayload() {
     return {
       title: this.title,
-      body: this.body,
+      who: this.who,
+      what: this.what,
+      timeline: this.timeline,
+      links: this.links,
       parentAuctionId: this.auctionId,
     };
   }
+}
+
+export interface StoredProposal extends Proposal {
+  id: number;
+  address: string;
+  createdDate: Date;
 }
 
 export enum Direction {

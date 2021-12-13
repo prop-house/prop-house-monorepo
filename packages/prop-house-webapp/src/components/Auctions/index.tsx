@@ -1,11 +1,35 @@
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { useAppSelector } from '../../hooks';
 import AuctionHeader from '../AuctionHeader';
 import FullAuction, { AuctionStatus } from '../FullAuction';
 import { StatusPillState } from '../StatusPill';
 
+
+const AuctionPartial = (auction: StoredAuction, i: number) => (
+  <div key={i}>
+  {i === 0 ? (
+      <FullAuction
+        auction={auction}
+        status={AuctionStatus.AcceptingProposals}
+      />
+  ): (
+      <AuctionHeader
+        auction={auction}
+        displayCreateButton={false}
+        status={StatusPillState.AuctionNotStarted}
+      />
+  )}
+  </div>
+)
+
 const Auctions = () => {
+  const auctions = useAppSelector(state => state.propHouse.auctions)
   return (
     <>
-      <FullAuction
+      {
+        auctions.map(AuctionPartial)
+      }
+      {/* <FullAuction
         showAllProposals={false}
         status={AuctionStatus.AcceptingProposals}
       />
@@ -24,7 +48,7 @@ const Auctions = () => {
         endDate={Date.now()}
         displayCreateButton={false}
         status={StatusPillState.AuctionNotStarted}
-      />
+      /> */}
     </>
   );
 };

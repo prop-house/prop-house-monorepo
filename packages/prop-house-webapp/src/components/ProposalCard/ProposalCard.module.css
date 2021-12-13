@@ -3,6 +3,12 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
+  display: flex;
+  flex-direction: row;
+}
+
+.author div {
+  margin-right: 0.3rem;
 }
 
 .author span {

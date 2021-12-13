@@ -4,17 +4,22 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import StatusPill, { StatusPillState } from '../StatusPill';
 import { Link } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
 const AuctionHeader: React.FC<{
-  id: number;
-  fundingAmount: number;
-  startDate: number;
-  endDate: number;
+  auction: StoredAuction;
   displayCreateButton: boolean;
   status: StatusPillState;
 }> = (props) => {
-  const { id, fundingAmount, startDate, endDate, displayCreateButton, status } =
+  const { displayCreateButton, status, auction } =
     props;
+
+  const {
+    id,
+    startTime: startDate,
+    amountEth: fundingAmount,
+    proposalEndTime: proposalEndDate
+  } = auction;
 
   return (
     <Row>
@@ -33,7 +38,7 @@ const AuctionHeader: React.FC<{
 
                 <div className={classes.leftSectionSubtitle}>
                   {`${new Date(startDate).toDateString()} - ${new Date(
-                    endDate
+                    proposalEndDate
                   ).toDateString()}`}
                 </div>
               </div>

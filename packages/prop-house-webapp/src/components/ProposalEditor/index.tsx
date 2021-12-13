@@ -1,13 +1,14 @@
 import classes from './ProposalEditor.module.css';
 import { Row, Col, Form } from 'react-bootstrap';
 import clsx from 'clsx';
-import { PropData } from '../pages/Create';
+import { ProposalFields } from '../../state/slices/editor';
+import { useAppSelector } from '../../hooks';
 
 const ProposalEditor: React.FC<{
-  data?: PropData;
-  onDataChange: (data: {}) => void;
+  onDataChange: (data: Partial<ProposalFields>) => void;
 }> = (props) => {
-  const { onDataChange, data } = props;
+  const data = useAppSelector(state => state.editor.proposal)
+  const { onDataChange } = props;
   return (
     <>
       <Row>

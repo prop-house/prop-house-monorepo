@@ -5,7 +5,7 @@ const Browse = () => {
   return (
     <>
       <BrowseControl />
-      <FullAuction showAllProposals={true} status={AuctionStatus.Voting} />
+      {/* <FullAuction auction={} showAllProposals={true} status={AuctionStatus.Voting} /> */}
     </>
   );
 };

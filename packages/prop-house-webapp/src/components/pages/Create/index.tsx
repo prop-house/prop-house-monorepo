@@ -1,44 +1,29 @@
-import classes from './Create.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../../Card';
-import { Row, Col } from 'react-bootstrap';
-import Button, { ButtonColor } from '../../Button';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import ProposalEditor from '../../ProposalEditor';
-import Preview from '../Preview';
+import classes from "./Create.module.css";
+import Card, { CardBgColor, CardBorderRadius } from "../../Card";
+import { Row, Col } from "react-bootstrap";
+import Button, { ButtonColor } from "../../Button";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ProposalEditor from "../../ProposalEditor";
+import Preview from "../Preview";
+import { clearProposal, patchProposal, ProposalFields, updateProposal } from "../../../state/slices/editor";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { Proposal, StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import { addAuctions } from "../../../state/slices/propHouse";
 
-export interface PropData {
-  title: string;
-  who: string;
-  what: string;
-  timeline: string;
-  links: string;
-}
-
-const emptyPropData = (): PropData => ({
-  title: '',
-  who: '',
-  what: '',
-  timeline: '',
-  links: '',
-});
-
-const isValidPropData = (data: PropData) => {
-  return data.title !== '' && data.what !== '';
+const isValidPropData = (data: ProposalFields) => {
+  return data.title !== "" && data.what !== "";
 };
 
 const Create = () => {
-  const [propData, setPropData] = useState<PropData>(emptyPropData());
   const [showPreview, setShowPreview] = useState(false);
+  const dispatch = useAppDispatch();
+  const proposalEditorData = useAppSelector((state) => state.editor.proposal);
+  const backendClient = useAppSelector((state) => state.backend.backend);
+  const navigate = useNavigate();
 
-  const onDataChange = (data: {}) => {
-    setPropData((prev) => {
-      const updatedPropData = {
-        ...prev,
-        ...data,
-      };
-      return updatedPropData;
-    });
+  const onDataChange = (data: Partial<ProposalFields>) => {
+    dispatch(patchProposal(data));
   };
 
   return (
@@ -74,9 +59,9 @@ const Create = () => {
       <Row>
         <Col xl={12}>
           {showPreview ? (
-            <Preview propData={propData} />
+            <Preview />
           ) : (
-            <ProposalEditor onDataChange={onDataChange} data={propData} />
+            <ProposalEditor onDataChange={onDataChange} />
           )}
         </Col>
       </Row>
@@ -84,14 +69,39 @@ const Create = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? 'Back to editor' : 'Preview'}
+            text={showPreview ? "Back to editor" : "Preview"}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {
                 return !prev;
               })
             }
-            disabled={!isValidPropData(propData)}
+            disabled={!isValidPropData(proposalEditorData)}
+          />
+          <Button
+            text="Submit"
+            bgColor={ButtonColor.Pink}
+            onClick={async () => {
+              await backendClient.createProposal(
+                new Proposal(
+                  proposalEditorData.title,
+                  proposalEditorData.who,
+                  proposalEditorData.what,
+                  proposalEditorData.timeline,
+                  proposalEditorData.links,
+                  // TODO: use current active
+                  1
+                )
+              );
+              await backendClient
+                .getAuctions()
+                .then((auctions: StoredAuction[]) =>
+                  dispatch(addAuctions(auctions))
+                );
+              dispatch(clearProposal())
+              navigate('/')
+            }}
+            disabled={!isValidPropData(proposalEditorData)}
           />
         </Col>
       </Row>

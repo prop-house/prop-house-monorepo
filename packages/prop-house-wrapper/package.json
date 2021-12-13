@@ -1,7 +1,7 @@
 {
   "name": "@nouns/prop-house-wrapper",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.24.0",
@@ -13,7 +13,8 @@
   "scripts": {
     "example": "ts-node example/example.ts",
     "file": "ts-node example/file.ts",
-    "vote": "ts-node example/vote.ts"
+    "vote": "ts-node example/vote.ts",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/node": "^16.11.11"

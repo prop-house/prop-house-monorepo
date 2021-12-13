@@ -5,6 +5,7 @@ import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StatusPillState } from '../StatusPill';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
 export enum AuctionStatus {
   NotStarted,
@@ -14,10 +15,11 @@ export enum AuctionStatus {
 }
 
 const FullAuction: React.FC<{
-  showAllProposals: boolean;
   status: AuctionStatus;
+  auction: StoredAuction;
 }> = (props) => {
-  const { showAllProposals, status } = props;
+  const { status, auction } = props;
+  const showAllProposals = auction.proposals.length > 6
 
   const statusPillState = () => {
     switch (status) {
@@ -38,10 +40,7 @@ const FullAuction: React.FC<{
       borderRadius={CardBorderRadius.thirty}
     >
       <AuctionHeader
-        id={1}
-        fundingAmount={5}
-        startDate={Date.now()}
-        endDate={Date.now()}
+        auction={auction}
         displayCreateButton={true}
         status={statusPillState()}
       />
@@ -53,8 +52,8 @@ const FullAuction: React.FC<{
           <div className={classes.divider} />
         </Col>
       </Row>
-      <ProposalCards />
-      {!showAllProposals && <AllProposalsCTA />}
+      <ProposalCards proposals={auction.proposals} />
+      {showAllProposals && <AllProposalsCTA />}
     </Card>
   );
 };

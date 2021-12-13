@@ -1,22 +1,22 @@
 import classes from './Preview.module.css';
 import { Row, Col } from 'react-bootstrap';
-import { PropData } from '../Create';
+import { useAppSelector } from '../../../hooks';
 
-const Preview: React.FC<{ propData: PropData }> = (props) => {
-  const { propData } = props;
+const Preview: React.FC<{}> = (props) => {
+  const proposalEditorData = useAppSelector(state => state.editor.proposal)
   return (
     <>
       <Row>
         <Col xl={12} className={classes.previewCol}>
-          <h1>{propData.title}</h1>
+          <h1>{proposalEditorData.title}</h1>
           <h2>Who is building it?</h2>
-          <p>{propData.who}</p>
+          <p>{proposalEditorData.who}</p>
           <h2>What are you building?</h2>
-          <p>{propData.what}</p>
+          <p>{proposalEditorData.what}</p>
           <h2>What timeline do you expect to complete it by?</h2>
-          <p>{propData.timeline}</p>
+          <p>{proposalEditorData.timeline}</p>
           <h2>Links relevant to your experience:</h2>
-          <p>{propData.links}</p>
+          <p>{proposalEditorData.links}</p>
         </Col>
       </Row>
     </>
