@@ -1,0 +1,1 @@
+export const isValidVoteDirection = dir => dir === 1 || dir === -1 
