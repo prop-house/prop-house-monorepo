@@ -1,7 +1,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { Wallet } from "@ethersproject/wallet";
 import axios from "axios";
-import { Auction, Proposal, StoredAuction, Vote } from "./builders";
+import { Auction, Proposal, StoredAuction, StoredFile, Vote } from "./builders";
 import FormData from "form-data";
 import fs from 'fs';
 
@@ -46,7 +46,24 @@ export class PropHouseWrapper {
 		return (await axios.post(`${this.host}/votes`, signedPayload)).data
 	}
 
-	async postFile(fileBuffer: Buffer, name: string) {
+	async getAddressFiles(address: string): Promise<StoredFile[]> {
+		return (await axios.get(`${this.host}/file/${address}`)).data
+
+	}
+
+	async postFile(file: File, name: string) {
+		if (!this.signer) return;
+		const form = new FormData();
+		form.append('file', file, name);
+		form.append('name', name);
+		const fileBuffer = Buffer.from(await file.arrayBuffer())
+		const signature = await this.signer.signMessage(fileBuffer);
+		form.append('signature', signature)
+		console.log(form)
+		return (await axios.post(`${this.host}/file`, form ))
+	}
+
+	async postFileBuffer(fileBuffer: Buffer, name: string) {
 		if (!this.signer) return;
 		const form = new FormData();
 		form.append('file', fileBuffer, name);
@@ -54,6 +71,7 @@ export class PropHouseWrapper {
 		const signature = await this.signer.signMessage(fileBuffer);
 		form.append('signature', signature)
 		console.log(form)
+		console.log(form.getHeaders())
 		return (await axios.post(`${this.host}/file`, form, {
 			headers: {
 				...form.getHeaders()
@@ -62,7 +80,7 @@ export class PropHouseWrapper {
 	}
 
 	async postFileFromDisk(path: string, name: string) {
-		return this.postFile(fs.readFileSync(path), name)
+		return this.postFileBuffer(fs.readFileSync(path), name)
 	}
 
 	async getAddress() {

@@ -17,9 +17,15 @@ export class FileService {
 	}
 
   async findAll(): Promise<File[]> {
-    const proposals = await this.fileRepository.find();
+    const proposals = await this.fileRepository.find({where: {hidden: false}});
     return proposals;
   }
+
+  async findAllByAddress(address: string): Promise<File[]> {
+    const proposals = await this.fileRepository.find({where: {address, hidden: false}});
+    return proposals;
+  }
+
 
   findOne(id: number): Promise<File> {
     return this.fileRepository.findOne(id);

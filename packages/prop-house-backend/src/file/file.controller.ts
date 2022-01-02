@@ -2,6 +2,8 @@ import { verifyMessage } from '@ethersproject/wallet';
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -14,9 +16,17 @@ import { FileUploadDto } from './file.types';
 
 @Controller('file')
 export class FileController {
-	constructor(
-		private readonly fileService: FileService
-	) {}
+  constructor(private readonly fileService: FileService) {}
+
+  @Get()
+  async getFiles() {
+    return this.fileService.findAll();
+  }
+
+  @Get('/:address')
+  async getFilesByAddress(@Param('address') address: string) {
+    return this.fileService.findAllByAddress(address);
+  }
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -24,15 +34,15 @@ export class FileController {
     @Body() body: FileUploadDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-		const address = verifyMessage(file.buffer, body.signature);
-		const ipfsResult = await this.fileService.pinBuffer(file.buffer, body.name);
-		const fileEntity = new File();
-		fileEntity.name = body.name;
-		fileEntity.address = address;
-		fileEntity.ipfsHash = ipfsResult.IpfsHash;
-		fileEntity.ipfsTimestamp = ipfsResult.Timestamp;
-		fileEntity.pinSize = ipfsResult.PinSize;
-		fileEntity.mimeType = file.mimetype
-		this.fileService.store(fileEntity);
+    const address = verifyMessage(file.buffer, body.signature);
+    const ipfsResult = await this.fileService.pinBuffer(file.buffer, body.name);
+    const fileEntity = new File();
+    fileEntity.name = body.name;
+    fileEntity.address = address;
+    fileEntity.ipfsHash = ipfsResult.IpfsHash;
+    fileEntity.ipfsTimestamp = ipfsResult.Timestamp;
+    fileEntity.pinSize = ipfsResult.PinSize;
+    fileEntity.mimeType = file.mimetype;
+    this.fileService.store(fileEntity);
   }
 }

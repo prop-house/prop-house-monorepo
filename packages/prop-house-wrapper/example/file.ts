@@ -9,7 +9,7 @@ const run = async () => {
     "test test test test test test test test test test test junk"
   );
 
-  const local = new PropHouseWrapper(exampleWallet, "http://localhost:3000");
+  const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
   const response = await local.postFileFromDisk("./110.png", "110.png")
   console.log(response)

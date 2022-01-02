@@ -129,3 +129,15 @@ export interface StoredVote extends Vote {
   signedData: string;
   id: number;
 }
+
+export interface StoredFile {
+  id: number;
+  hidden: boolean;
+  address: string;
+  name: string;
+  mimeType: string;
+  ipfsHash: string;
+  pinSize: string;
+  ipfsTimestamp: string;
+  createdDate: string;
+}

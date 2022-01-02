@@ -17,6 +17,7 @@ import { addAuctions } from "./state/slices/propHouse";
 import { Mainnet, DAppProvider, Config, useEthers } from "@usedapp/core";
 import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import { useEffect } from "react";
+import Upload from "./components/pages/Upload";
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -49,6 +50,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<Create />} />
           <Route path="/learn" element={<Learn />} />
+          <Route path="/upload" element={<Upload />} />
           <Route path="/auction/:id" element={<Auction />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="*" element={<NotFound />} />
