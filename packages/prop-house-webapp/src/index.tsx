@@ -4,8 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import { Wallet } from "ethers";
 import { Provider } from "react-redux";
 import store from "./state/store";
 import relativeTime from 'dayjs/plugin/relativeTime'

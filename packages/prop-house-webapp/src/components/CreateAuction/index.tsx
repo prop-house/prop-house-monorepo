@@ -5,9 +5,11 @@ import {
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import dayjs from "dayjs";
 import { addAuctions } from "../../state/slices/propHouse";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 
 const CreateAuction = () => {
-  const backendClient = useAppSelector((state) => state.backend.backend);
+  const backendHost = useAppSelector(state => state.configuration.backendHost);
+  const backendClient = new PropHouseWrapper(backendHost)
   const dispatch = useAppDispatch();
 
   return (

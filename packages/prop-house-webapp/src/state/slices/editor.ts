@@ -31,7 +31,7 @@ const proposalSliceFactory =
   };
 
 export const editorSlice = createSlice({
-  name: "backend",
+  name: "editor",
   initialState,
   reducers: {
     updateProposal: (state, action: PayloadAction<ProposalFields>) => {

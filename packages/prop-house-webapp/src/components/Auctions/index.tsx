@@ -15,7 +15,6 @@ const AuctionPartial = (auction: StoredAuction, i: number) => (
   ): (
       <AuctionHeader
         auction={auction}
-        displayCreateButton={false}
         status={StatusPillState.AuctionNotStarted}
       />
   )}
@@ -38,7 +37,6 @@ const Auctions = () => {
         fundingAmount={10}
         startDate={Date.now()}
         endDate={Date.now()}
-        displayCreateButton={false}
         status={StatusPillState.AuctionNotStarted}
       />
       <AuctionHeader
@@ -46,7 +44,6 @@ const Auctions = () => {
         fundingAmount={20}
         startDate={Date.now()}
         endDate={Date.now()}
-        displayCreateButton={false}
         status={StatusPillState.AuctionNotStarted}
       /> */}
     </>

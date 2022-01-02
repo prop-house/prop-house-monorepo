@@ -9,7 +9,7 @@ export class PropHouseWrapper {
 
 	constructor(
 		private readonly host: string,
-		private readonly signer: Signer | Wallet | undefined
+		private readonly signer: Signer | Wallet | undefined = undefined
 	){}
 
 	async createAuction(auction: Auction): Promise<StoredAuction[]> {

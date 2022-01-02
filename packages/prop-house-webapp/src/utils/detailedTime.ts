@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
-export default (time: Date | string) => {
+const detailedTime = (time: Date | string) => {
 	return dayjs(time).format("MMM D, YYYY h:mm:ss a")
 }
+
+export default detailedTime

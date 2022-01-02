@@ -8,18 +8,25 @@ const EthAddress: React.FC<{
   children: string;
   className?: string;
 }> = (props) => {
-	const etherscanHost = useAppSelector(state => state.configuration.etherscanHost)
-	
-	const buildAddressHref = (address: string) => [etherscanHost, "address", address].join('/')
+  const etherscanHost = useAppSelector(
+    (state) => state.configuration.etherscanHost
+  );
 
-	// TODO: handle ens reverse resolution
-	const addressOrEnsName = props.children;
+  const buildAddressHref = (address: string) =>
+    [etherscanHost, "address", address].join("/");
+
+  // TODO: handle ens reverse resolution
+  const addressOrEnsName = props.children;
 
   return (
     <div className={clsx(props.className, classes.ethAddress)}>
-			<a href={buildAddressHref(addressOrEnsName)} target="_blank">
-      	{trimEthAddress(addressOrEnsName)}
-			</a>
+      <a
+        href={buildAddressHref(addressOrEnsName)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {trimEthAddress(addressOrEnsName)}
+      </a>
     </div>
   );
 };

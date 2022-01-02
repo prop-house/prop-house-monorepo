@@ -3,34 +3,61 @@ import Card, { CardBgColor, CardBorderRadius } from "../../Card";
 import { Row, Col } from "react-bootstrap";
 import Button, { ButtonColor } from "../../Button";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProposalEditor from "../../ProposalEditor";
 import Preview from "../Preview";
-import { clearProposal, patchProposal, ProposalFields, updateProposal } from "../../../state/slices/editor";
+import {
+  clearProposal,
+  patchProposal,
+  ProposalFields,
+} from "../../../state/slices/editor";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
-import { Proposal, StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import {
+  Proposal,
+  StoredAuction,
+} from "@nouns/prop-house-wrapper/dist/builders";
 import { addAuctions } from "../../../state/slices/propHouse";
+import { useEthers } from "@usedapp/core";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import isAuctionActive from "../../../utils/isAuctionActive";
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title !== "" && data.what !== "";
 };
 
-const Create = () => {
+const Create: React.FC<{}> = () => {
+  const [parentAuction, setParentAuction] = useState<undefined| number>(undefined);
   const [showPreview, setShowPreview] = useState(false);
   const dispatch = useAppDispatch();
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
-  const backendClient = useAppSelector((state) => state.backend.backend);
   const navigate = useNavigate();
+  const { library: provider, account, activateBrowserWallet } = useEthers();
+  const backendHost = useAppSelector(
+    (state) => state.configuration.backendHost
+  );
+  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  const auctions = useAppSelector(state => state.propHouse.auctions)
+
+  useEffect(() => {
+    if(parentAuction !== undefined) return;
+    const openAuctions = auctions.filter(isAuctionActive)
+    // Set to the first open Auction
+    if(openAuctions.length > 0) setParentAuction(openAuctions[0].id)
+  }, [auctions, parentAuction])
+
+  useEffect(() => {
+    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  }, [provider, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
   };
 
-  return (
+  return parentAuction ? (
     <>
       <Row>
         <Col xl={12}>
-          <h1>Create proposal for Auction 1</h1>
+          <h1>Create proposal for Auction {parentAuction}</h1>
           <p>Proposals will be voted by Nouners to get funded</p>
         </Col>
       </Row>
@@ -78,34 +105,43 @@ const Create = () => {
             }
             disabled={!isValidPropData(proposalEditorData)}
           />
-          <Button
-            text="Submit"
-            bgColor={ButtonColor.Pink}
-            onClick={async () => {
-              await backendClient.createProposal(
-                new Proposal(
-                  proposalEditorData.title,
-                  proposalEditorData.who,
-                  proposalEditorData.what,
-                  proposalEditorData.timeline,
-                  proposalEditorData.links,
-                  // TODO: use current active
-                  1
-                )
-              );
-              await backendClient
-                .getAuctions()
-                .then((auctions: StoredAuction[]) =>
-                  dispatch(addAuctions(auctions))
+          {account ? (
+            <Button
+              text="Sign and Submit"
+              bgColor={ButtonColor.Pink}
+              onClick={async () => {
+                await backendClient.createProposal(
+                  new Proposal(
+                    proposalEditorData.title,
+                    proposalEditorData.who,
+                    proposalEditorData.what,
+                    proposalEditorData.timeline,
+                    proposalEditorData.links,
+                    parentAuction
+                  )
                 );
-              dispatch(clearProposal())
-              navigate('/')
-            }}
-            disabled={!isValidPropData(proposalEditorData)}
-          />
+                await backendClient
+                  .getAuctions()
+                  .then((auctions: StoredAuction[]) =>
+                    dispatch(addAuctions(auctions))
+                  );
+                dispatch(clearProposal());
+                navigate("/");
+              }}
+              disabled={!isValidPropData(proposalEditorData)}
+            />
+          ) : (
+            <Button
+              bgColor={ButtonColor.Pink}
+              text="Connect Wallet To Submit"
+              onClick={() => activateBrowserWallet()}
+            />
+          )}
         </Col>
       </Row>
     </>
+  ) : (
+    <>Loading...</>
   );
 };
 

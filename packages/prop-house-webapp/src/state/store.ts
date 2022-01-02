@@ -6,7 +6,7 @@ import editorReducer from './slices/editor'
 
 const store =  configureStore({
   reducer: {
-		backend: backendReducer,
+		// backend: backendReducer,
 		propHouse: propHouseReducer,
 		configuration: configurationReducer,
 		editor: editorReducer,

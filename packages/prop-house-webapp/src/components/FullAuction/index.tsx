@@ -41,7 +41,6 @@ const FullAuction: React.FC<{
     >
       <AuctionHeader
         auction={auction}
-        displayCreateButton={true}
         status={statusPillState()}
       />
       <Row>

@@ -1,7 +1,4 @@
-import { Signer } from '@ethersproject/abstract-signer'
-import { Wallet } from '@ethersproject/wallet'
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper'
-import { StoredAuction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders'
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface PropHouseSlice {

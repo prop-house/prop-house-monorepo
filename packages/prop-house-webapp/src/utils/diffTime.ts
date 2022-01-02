@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 
-export default (time: Date | string) => {
+const diffTime = (time: Date | string) => {
 	return dayjs(time).fromNow()
 }
+
+export default diffTime;

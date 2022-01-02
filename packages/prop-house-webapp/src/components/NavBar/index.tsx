@@ -1,8 +1,18 @@
-import { Navbar, Nav } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import classes from './NavBar.module.css';
+import { Navbar, Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import classes from "./NavBar.module.css";
+import { useEthers } from "@usedapp/core";
+import EthAddress from "../EthAddress";
+import { useEffect } from "react";
 
 const NavBar = () => {
+  const { activateBrowserWallet, account } = useEthers();
+
+  useEffect(() => {
+    console.log(account)
+
+  }, [account])
+
   return (
     <Navbar bg="transparent" expand="lg" className={classes.navbar}>
       <Navbar.Brand>
@@ -22,6 +32,24 @@ const NavBar = () => {
             <Link to="/browse" className={classes.link}>
               Browse
             </Link>
+          </Nav.Link>
+          <Nav.Link as="div">
+            <div>
+              {account ? (
+                <p>
+                  Account: <EthAddress>{account}</EthAddress>
+                </p>
+              ) : (
+                <div>
+                  <span
+                    className={classes.link}
+                    onClick={() => activateBrowserWallet()}
+                  >
+                    Connect Wallet
+                  </span>
+                </div>
+              )}
+            </div>
           </Nav.Link>
         </Nav>
       </Navbar.Collapse>

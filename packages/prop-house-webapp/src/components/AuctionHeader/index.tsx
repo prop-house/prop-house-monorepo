@@ -1,24 +1,27 @@
-import classes from './AuctionHeader.module.css';
-import { Col, Row } from 'react-bootstrap';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import StatusPill, { StatusPillState } from '../StatusPill';
-import { Link } from 'react-router-dom';
-import Button, { ButtonColor } from '../Button';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import classes from "./AuctionHeader.module.css";
+import { Col, Row } from "react-bootstrap";
+import Card, { CardBgColor, CardBorderRadius } from "../Card";
+import StatusPill, { StatusPillState } from "../StatusPill";
+import { Link } from "react-router-dom";
+import Button, { ButtonColor } from "../Button";
+import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import diffTime from "../../utils/diffTime";
+import formatTime from "../../utils/formatTime";
+import isAuctionClosed from '../../utils/isAuctionClosed';
 
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
-  displayCreateButton: boolean;
   status: StatusPillState;
 }> = (props) => {
-  const { displayCreateButton, status, auction } =
-    props;
+  const { status, auction } = props;
+  const isClosed = isAuctionClosed(auction)
+  const displayCreateButton = !isClosed;
 
   const {
     id,
     startTime: startDate,
     amountEth: fundingAmount,
-    proposalEndTime: proposalEndDate
+    proposalEndTime: proposalEndDate,
   } = auction;
 
   return (
@@ -37,9 +40,8 @@ const AuctionHeader: React.FC<{
                 </div>
 
                 <div className={classes.leftSectionSubtitle}>
-                  {`${new Date(startDate).toDateString()} - ${new Date(
-                    proposalEndDate
-                  ).toDateString()}`}
+                  <span title={startDate.toLocaleString()}>{formatTime(startDate)}</span> -{" "}
+                  <span title={proposalEndDate.toLocaleString()}>{formatTime(proposalEndDate)}</span>
                 </div>
               </div>
             </Col>
@@ -55,7 +57,9 @@ const AuctionHeader: React.FC<{
             </Col>
             <Col xl={3} md={12} className={classes.rightSectionSubsection}>
               <div className={classes.rightSectionTitle}>Proposal deadline</div>
-              <div className={classes.rightSectionSubtitle}>3 days left</div>
+              <div className={classes.rightSectionSubtitle}>
+                {diffTime(auction.proposalEndTime)}
+              </div>
             </Col>
             {displayCreateButton && (
               <Col xl={2} className={classes.rightSectionSubsection}>

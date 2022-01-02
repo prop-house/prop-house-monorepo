@@ -4,7 +4,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface BackendSlice {
-	backend: PropHouseWrapper
+	backend: PropHouseWrapper;
 }
 
 
@@ -22,7 +22,7 @@ console.log(`The admin wallet is using address ${adminWallet.address}`);
 const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
 const initialState: BackendSlice = {
-	backend: local
+	backend: local,
 }
 
 export const backendSlice = createSlice({
