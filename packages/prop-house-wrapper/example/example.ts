@@ -16,7 +16,7 @@ const run = async () => {
   console.log(`The example wallet is using address ${exampleWallet.address}`);
   console.log(`The admin wallet is using address ${adminWallet.address}`);
 
-  const local = new PropHouseWrapper(exampleWallet, "http://localhost:3000");
+  const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
   const auction = new Auction(
     true,

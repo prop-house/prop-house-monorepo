@@ -7,7 +7,7 @@ const run = async () => {
     "test test test test test test test test test test test junk"
   );
 
-  const local = new PropHouseWrapper(exampleWallet, "http://localhost:3000");
+  const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
 
   if (process.argv.length !== 3) {

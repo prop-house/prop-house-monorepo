@@ -5,8 +5,11 @@ import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StatusPillState } from '../StatusPill';
-import { StoredAuction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction, StoredProposal, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import RenderedProposal from '../RenderedProposal';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useState } from 'react';
+import VotingBar from '../VotingBar';
 
 export enum AuctionStatus {
   NotStarted,
@@ -17,14 +20,16 @@ export enum AuctionStatus {
 
 const FullProposal: React.FC<{
   proposal: StoredProposal;
+  votingWrapper: PropHouseWrapper
 }> = (props) => {
-  const { proposal } = props;
+  const { proposal, votingWrapper } = props;
 
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
       borderRadius={CardBorderRadius.thirty}
     >
+      <VotingBar votingWrapper={votingWrapper} />
       <RenderedProposal proposal={proposal} />
     </Card>
   );

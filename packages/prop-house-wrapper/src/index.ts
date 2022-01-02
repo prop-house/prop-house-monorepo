@@ -25,6 +25,11 @@ export class PropHouseWrapper {
 		return (await axios.get(`${this.host}/proposals`)).data
 	}
 
+	async getProposal(id: number) {
+		return (await axios.get(`${this.host}/proposals/${id}`)).data
+
+	}
+
 	async getAuctionProposals(auctionId: number) {
 		return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`)).data
 	}
@@ -58,6 +63,11 @@ export class PropHouseWrapper {
 
 	async postFileFromDisk(path: string, name: string) {
 		return this.postFile(fs.readFileSync(path), name)
+	}
+
+	async getAddress() {
+		if(!this.signer) return undefined;
+		return this.signer.getAddress()
 	}
 
 

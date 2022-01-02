@@ -95,11 +95,17 @@ export interface StoredProposal extends Proposal {
   id: number;
   address: string;
   createdDate: Date;
+  score: number;
+}
+
+export interface StoredProposalWithVotes extends StoredProposal {
+  votes: StoredVote[]
 }
 
 export enum Direction {
   Up = 1,
   Down = -1,
+  Abstain = 0
 }
 
 export class Vote extends Signable {
@@ -116,4 +122,10 @@ export class Vote extends Signable {
       proposalId: this.proposalId,
     };
   }
+}
+
+export interface StoredVote extends Vote {
+  address: string;
+  signedData: string;
+  id: number;
 }
