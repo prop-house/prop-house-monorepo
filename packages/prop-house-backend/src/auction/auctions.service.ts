@@ -12,6 +12,7 @@ export class AuctionsService {
 
   findAll(): Promise<Auction[]> {
     return this.auctionsRepository.find({
+      loadRelationIds: {relations: ['proposals.auction']},
       where: {
         visible: true,
       },

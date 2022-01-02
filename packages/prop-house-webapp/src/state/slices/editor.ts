@@ -1,12 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-export interface ProposalFields {
-  title: string;
-  who: string;
-  what: string;
-  timeline: string;
-  links: string;
-}
+import { ProposalFields } from "../../utils/proposalFields";
 
 export interface EditorSlice {
   proposal: ProposalFields;

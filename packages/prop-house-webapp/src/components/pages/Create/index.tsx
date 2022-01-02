@@ -9,7 +9,6 @@ import Preview from "../Preview";
 import {
   clearProposal,
   patchProposal,
-  ProposalFields,
 } from "../../../state/slices/editor";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
 import {
@@ -20,6 +19,7 @@ import { addAuctions } from "../../../state/slices/propHouse";
 import { useEthers } from "@usedapp/core";
 import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import isAuctionActive from "../../../utils/isAuctionActive";
+import { ProposalFields } from "../../../utils/proposalFields";
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title !== "" && data.what !== "";

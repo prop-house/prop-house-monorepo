@@ -10,12 +10,10 @@ const AuctionPartial = (auction: StoredAuction, i: number) => (
   {i === 0 ? (
       <FullAuction
         auction={auction}
-        status={AuctionStatus.AcceptingProposals}
       />
   ): (
       <AuctionHeader
         auction={auction}
-        status={StatusPillState.AuctionNotStarted}
       />
   )}
   </div>

@@ -3,8 +3,11 @@ import Button, { ButtonColor } from '../Button';
 import classes from './HomeHeader.module.css';
 import { Link } from 'react-router-dom';
 import grempBulb from '../../assets/gremp-lightbulb.png';
+import { useAppSelector } from '../../hooks';
+import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
 
 const HomeHeader = () => {
+  const browseToAuctionId = useAppSelector(state => defaultBrowseToAuctionId(state.propHouse.auctions))
   return (
     <Row className={classes.wrapper}>
       <Col xl={6} className={classes.leftCol}>
@@ -24,7 +27,7 @@ const HomeHeader = () => {
           <Link to="/learn">
             <Button text="Learn more" bgColor={ButtonColor.Pink} />
           </Link>
-          <Link to="/browse">
+          <Link to={`/auction/${browseToAuctionId}`}>
             <Button text="Browse auctions" bgColor={ButtonColor.White} />
           </Link>
         </div>

@@ -11,6 +11,7 @@ import {
   ManyToOne,
   BeforeUpdate,
   BeforeInsert,
+  RelationId,
 } from 'typeorm';
 
 @Entity()
@@ -39,6 +40,9 @@ export class Proposal extends SignedEntity {
   @ManyToOne(() => Auction, (auction) => auction.proposals)
   @JoinColumn()
   auction: Auction;
+
+  @RelationId((proposal: Proposal) => proposal.auction)
+  auctionId: number;
 
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()

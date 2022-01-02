@@ -4,14 +4,16 @@ import classes from "./NavBar.module.css";
 import { useEthers } from "@usedapp/core";
 import EthAddress from "../EthAddress";
 import { useEffect } from "react";
+import { useAppSelector } from "../../hooks";
+import defaultBrowseToAuctionId from "../../utils/defaultBrowseToAuctionId";
 
 const NavBar = () => {
   const { activateBrowserWallet, account } = useEthers();
 
   useEffect(() => {
     console.log(account)
-
   }, [account])
+  const browseToAuctionId = useAppSelector(state => defaultBrowseToAuctionId(state.propHouse.auctions))
 
   return (
     <Navbar bg="transparent" expand="lg" className={classes.navbar}>
@@ -29,7 +31,7 @@ const NavBar = () => {
             </Link>
           </Nav.Link>
           <Nav.Link as="div">
-            <Link to="/browse" className={classes.link}>
+            <Link to={`/auction/${browseToAuctionId}`} className={classes.link}>
               Browse
             </Link>
           </Nav.Link>

@@ -15,24 +15,10 @@ export enum AuctionStatus {
 }
 
 const FullAuction: React.FC<{
-  status: AuctionStatus;
   auction: StoredAuction;
 }> = (props) => {
-  const { status, auction } = props;
+  const { auction } = props;
   const showAllProposals = auction.proposals.length > 6
-
-  const statusPillState = () => {
-    switch (status) {
-      case AuctionStatus.NotStarted:
-        return StatusPillState.AuctionNotStarted;
-      case AuctionStatus.AcceptingProposals:
-        return StatusPillState.AuctionAcceptingProps;
-      case AuctionStatus.Voting:
-        return StatusPillState.AuctionVoting;
-      case AuctionStatus.Ended:
-        return StatusPillState.AuctionEnded;
-    }
-  };
 
   return (
     <Card
@@ -41,7 +27,6 @@ const FullAuction: React.FC<{
     >
       <AuctionHeader
         auction={auction}
-        status={statusPillState()}
       />
       <Row>
         <Col xs={4} md={2}>

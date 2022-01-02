@@ -1,8 +1,8 @@
 import classes from './ProposalEditor.module.css';
 import { Row, Col, Form } from 'react-bootstrap';
 import clsx from 'clsx';
-import { ProposalFields } from '../../state/slices/editor';
 import { useAppSelector } from '../../hooks';
+import { ProposalFields } from '../../utils/proposalFields';
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;

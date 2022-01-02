@@ -21,7 +21,7 @@ export class ProposalsController {
   ) {}
 
   @Get()
-  getVotes(): Promise<Proposal[]> {
+  getProposals(): Promise<Proposal[]> {
     return this.proposalsService.findAll();
   }
 

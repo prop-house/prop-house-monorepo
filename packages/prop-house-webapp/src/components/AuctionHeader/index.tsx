@@ -7,14 +7,13 @@ import Button, { ButtonColor } from "../Button";
 import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
 import diffTime from "../../utils/diffTime";
 import formatTime from "../../utils/formatTime";
-import isAuctionClosed from '../../utils/isAuctionClosed';
+import isAuctionClosed from "../../utils/isAuctionClosed";
 
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
-  status: StatusPillState;
 }> = (props) => {
-  const { status, auction } = props;
-  const isClosed = isAuctionClosed(auction)
+  const { auction } = props;
+  const isClosed = isAuctionClosed(auction);
   const displayCreateButton = !isClosed;
 
   const {
@@ -35,13 +34,19 @@ const AuctionHeader: React.FC<{
             <Col xl={5} md={12}>
               <div className={classes.leftSectionContainer}>
                 <div className={classes.leftSectionTitle}>
-                  {`Auction ${id}`}
-                  <StatusPill status={status} />
+                  <Link to={`/auction/${id}`}>{`Auction ${id}`}</Link>
+                  {/* TODO Refactor */}
+                  <StatusPill status={StatusPillState.AuctionEnded} />
                 </div>
 
                 <div className={classes.leftSectionSubtitle}>
-                  <span title={startDate.toLocaleString()}>{formatTime(startDate)}</span> -{" "}
-                  <span title={proposalEndDate.toLocaleString()}>{formatTime(proposalEndDate)}</span>
+                  <span title={startDate.toLocaleString()}>
+                    {formatTime(startDate)}
+                  </span>{" "}
+                  -{" "}
+                  <span title={proposalEndDate.toLocaleString()}>
+                    {formatTime(proposalEndDate)}
+                  </span>
                 </div>
               </div>
             </Col>
