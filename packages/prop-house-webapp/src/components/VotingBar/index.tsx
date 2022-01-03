@@ -22,6 +22,9 @@ const VotingBar: React.FC<VotingBarProps> = (props) => {
   const activeProposal = useAppSelector(
     (state) => state.propHouse.activeProposal
   );
+  const activeProposalScore = useAppSelector(
+    (state) => state.propHouse.activeProposal?.score
+  );
   const [userVoteDirection, setUserVoteDirection] = useState<
     undefined | Direction
   >(undefined);
@@ -52,7 +55,7 @@ const VotingBar: React.FC<VotingBarProps> = (props) => {
       <Button onClick={() => handleUserVote(Direction.Up)}>
         {userVoteDirection === Direction.Up ? "Remove Vote For" : "Vote For"}
       </Button>
-      <div>Score: {activeProposal.score}</div>
+      <div>Score: {activeProposalScore}</div>
       <Button onClick={() => handleUserVote(Direction.Down)}>
         {userVoteDirection === Direction.Down
           ? "Remove Vote Against"

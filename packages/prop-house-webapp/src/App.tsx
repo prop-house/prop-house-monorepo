@@ -12,10 +12,22 @@ import Footer from "./components/Footer";
 import { Container } from "react-bootstrap";
 import "./App.css";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
-import { addAuctions } from "./state/slices/propHouse";
+import {
+  StoredAuction,
+  StoredProposalWithVotes,
+} from "@nouns/prop-house-wrapper/dist/builders";
+import {
+  addAuctions,
+  ProposalScoreUpdate,
+  updateProposalScore,
+  updateWebsocketConnected,
+  WrappedEvent,
+} from "./state/slices/propHouse";
 import { Mainnet, DAppProvider, Config, useEthers } from "@usedapp/core";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import {
+  PropHouseSubscriber,
+  PropHouseWrapper,
+} from "@nouns/prop-house-wrapper";
 import { useEffect } from "react";
 import Upload from "./components/pages/Upload";
 
@@ -30,15 +42,29 @@ const config: Config = {
 function App() {
   const dispatch = useAppDispatch();
   const { library: provider } = useEthers();
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner())
+  const backendHost = useAppSelector(
+    (state) => state.configuration.backendHost
+  );
+  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  let phSubscriber = new PropHouseSubscriber(backendHost);
+
+  phSubscriber.on(
+    "proposal.scoreUpdate",
+    (e: WrappedEvent<ProposalScoreUpdate>) => dispatch(updateProposalScore(e))
+  );
+  phSubscriber.on("connect", (e: any) =>
+    dispatch(updateWebsocketConnected(true))
+  );
+  phSubscriber.on("disconnect", (e: any) =>
+    dispatch(updateWebsocketConnected(false))
+  );
 
   useEffect(() => {
-    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner())
-  }, [provider, backendHost])
+    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  }, [provider, backendHost]);
 
   // Fetch initial auctions
- backendClient 
+  backendClient
     .getAuctions()
     .then((auctions: StoredAuction[]) => dispatch(addAuctions(auctions)));
 

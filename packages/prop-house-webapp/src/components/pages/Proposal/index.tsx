@@ -18,35 +18,44 @@ import { setActiveProposal } from "../../../state/slices/propHouse";
 
 const Proposal = () => {
   const params = useParams();
-  const {id} = params;
+  const { id } = params;
   const dispatch = useDispatch();
 
-  const {proposal, parentAuction} = useAppSelector(state => {
-    const proposal = findProposalById(Number(id), extractAllProposals(state.propHouse.auctions))
-    const parentAuction = proposal && findAuctionById(proposal.auctionId, state.propHouse.auctions);
-    console.log(proposal?.auctionId)
-    return {proposal, parentAuction}
-  })
+  const { proposal, parentAuction } = useAppSelector((state) => {
+    const proposal = findProposalById(
+      Number(id),
+      extractAllProposals(state.propHouse.auctions)
+    );
+    const parentAuction =
+      proposal && findAuctionById(proposal.auctionId, state.propHouse.auctions);
+    return { proposal, parentAuction };
+  });
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost)
+  const backendHost = useAppSelector(
+    (state) => state.configuration.backendHost
+  );
   const { library: provider } = useEthers();
-  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner())
+  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
 
   useEffect(() => {
-    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner())
-  }, [provider, backendHost])
+    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  }, [provider, backendHost]);
 
   useEffect(() => {
-    if(!proposal) return;
-    backendClient.getProposal(proposal.id).then(proposal => dispatch(setActiveProposal(proposal)))
-  }, [proposal])
+    if (!proposal) return;
+    backendClient
+      .getProposal(proposal.id)
+      .then((proposal) => dispatch(setActiveProposal(proposal)));
+  }, [proposal]);
 
-  console.log(id, proposal, parentAuction)
   return (
     <>
-    {parentAuction && <AuctionHeader auction={parentAuction}/>}
-    {proposal ? <FullProposal proposal={proposal} votingWrapper={backendClient} /> : <NotFound />}
-
+      {parentAuction && <AuctionHeader auction={parentAuction} />}
+      {proposal ? (
+        <FullProposal proposal={proposal} votingWrapper={backendClient} />
+      ) : (
+        <NotFound />
+      )}
     </>
   );
 };

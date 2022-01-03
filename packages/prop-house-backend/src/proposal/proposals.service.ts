@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proposal } from './proposal.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ProposalsService {
   constructor(
     @InjectRepository(Proposal)
     private proposalsRepository: Repository<Proposal>,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   findAll(): Promise<Proposal[]> {
@@ -36,6 +38,7 @@ export class ProposalsService {
     if (!foundProposal) return;
     foundProposal.updateScore();
     this.proposalsRepository.save(foundProposal);
+    this.eventEmitter.emitAsync('proposal.rolledUp', foundProposal)
   }
 
   async store(proposal: Proposal): Promise<Proposal> {

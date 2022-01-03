@@ -3,90 +3,106 @@ import { Wallet } from "@ethersproject/wallet";
 import axios from "axios";
 import { Auction, Proposal, StoredAuction, StoredFile, Vote } from "./builders";
 import FormData from "form-data";
-import fs from 'fs';
+import fs from "fs";
+import { io, Socket } from "socket.io-client";
 
 export class PropHouseWrapper {
+  constructor(
+    private readonly host: string,
+    private readonly signer: Signer | Wallet | undefined = undefined
+  ) {}
 
-	constructor(
-		private readonly host: string,
-		private readonly signer: Signer | Wallet | undefined = undefined
-	){}
+  async createAuction(auction: Auction): Promise<StoredAuction[]> {
+    return (await axios.post(`${this.host}/auctions`, auction)).data;
+  }
 
-	async createAuction(auction: Auction): Promise<StoredAuction[]> {
-		return (await axios.post(`${this.host}/auctions`, auction)).data
-	}
+  async getAuctions(): Promise<StoredAuction[]> {
+    const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
+    return rawAuctions.map(StoredAuction.FromResponse);
+  }
 
-	async getAuctions(): Promise<StoredAuction[]> {
-		const rawAuctions = (await axios.get(`${this.host}/auctions`)).data
-		return rawAuctions.map(StoredAuction.FromResponse)
-	}
+  async getAllProposals() {
+    return (await axios.get(`${this.host}/proposals`)).data;
+  }
 
-	async getAllProposals() {
-		return (await axios.get(`${this.host}/proposals`)).data
-	}
+  async getProposal(id: number) {
+    return (await axios.get(`${this.host}/proposals/${id}`)).data;
+  }
 
-	async getProposal(id: number) {
-		return (await axios.get(`${this.host}/proposals/${id}`)).data
+  async getAuctionProposals(auctionId: number) {
+    return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`))
+      .data;
+  }
 
-	}
+  async createProposal(proposal: Proposal) {
+    if (!this.signer) return;
+    const signedPayload = await proposal.signedPayload(this.signer);
+    return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
+  }
 
-	async getAuctionProposals(auctionId: number) {
-		return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`)).data
-	}
+  async logVote(vote: Vote) {
+    if (!this.signer) return;
+    const signedPayload = await vote.signedPayload(this.signer);
+    return (await axios.post(`${this.host}/votes`, signedPayload)).data;
+  }
 
-	async createProposal(proposal: Proposal) {
-		if (!this.signer) return;
-		const signedPayload = await proposal.signedPayload(this.signer)
-		return (await axios.post(`${this.host}/proposals`, signedPayload)).data
-	}
+  async getAddressFiles(address: string): Promise<StoredFile[]> {
+    return (await axios.get(`${this.host}/file/${address}`)).data;
+  }
 
-	async logVote(vote: Vote) {
-		if (!this.signer) return;
-		const signedPayload = await vote.signedPayload(this.signer)
-		return (await axios.post(`${this.host}/votes`, signedPayload)).data
-	}
+  async postFile(file: File, name: string) {
+    if (!this.signer) return;
+    const form = new FormData();
+    form.append("file", file, name);
+    form.append("name", name);
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+    const signature = await this.signer.signMessage(fileBuffer);
+    form.append("signature", signature);
+    console.log(form);
+    return await axios.post(`${this.host}/file`, form);
+  }
 
-	async getAddressFiles(address: string): Promise<StoredFile[]> {
-		return (await axios.get(`${this.host}/file/${address}`)).data
+  async postFileBuffer(fileBuffer: Buffer, name: string) {
+    if (!this.signer) return;
+    const form = new FormData();
+    form.append("file", fileBuffer, name);
+    form.append("name", name);
+    const signature = await this.signer.signMessage(fileBuffer);
+    form.append("signature", signature);
+    console.log(form);
+    console.log(form.getHeaders());
+    return await axios.post(`${this.host}/file`, form, {
+      headers: {
+        ...form.getHeaders(),
+      },
+    });
+  }
 
-	}
+  async postFileFromDisk(path: string, name: string) {
+    return this.postFileBuffer(fs.readFileSync(path), name);
+  }
 
-	async postFile(file: File, name: string) {
-		if (!this.signer) return;
-		const form = new FormData();
-		form.append('file', file, name);
-		form.append('name', name);
-		const fileBuffer = Buffer.from(await file.arrayBuffer())
-		const signature = await this.signer.signMessage(fileBuffer);
-		form.append('signature', signature)
-		console.log(form)
-		return (await axios.post(`${this.host}/file`, form ))
-	}
+  async getAddress() {
+    if (!this.signer) return undefined;
+    return this.signer.getAddress();
+  }
+}
 
-	async postFileBuffer(fileBuffer: Buffer, name: string) {
-		if (!this.signer) return;
-		const form = new FormData();
-		form.append('file', fileBuffer, name);
-		form.append('name', name);
-		const signature = await this.signer.signMessage(fileBuffer);
-		form.append('signature', signature)
-		console.log(form)
-		console.log(form.getHeaders())
-		return (await axios.post(`${this.host}/file`, form, {
-			headers: {
-				...form.getHeaders()
-			}
-		}))
-	}
+export class PropHouseSubscriber {
+  private io: Socket;
+  private subscribers: { [key: string]: Function[] } = {};
+  private enrolledTopics: string[] = [];
 
-	async postFileFromDisk(path: string, name: string) {
-		return this.postFileBuffer(fs.readFileSync(path), name)
-	}
+  constructor(private readonly host: string) {
+    this.io = io(host);
+  }
 
-	async getAddress() {
-		if(!this.signer) return undefined;
-		return this.signer.getAddress()
-	}
-
-
+  on(topic: string, action: Function) {
+    if (!this.subscribers[topic]) this.subscribers[topic] = [];
+    this.subscribers[topic].push(action);
+    if (!this.enrolledTopics.includes(topic)) {
+      this.io.on(topic, (e) => this.subscribers[topic].forEach((fn) => fn(e)));
+      this.enrolledTopics.push(topic);
+    }
+  }
 }

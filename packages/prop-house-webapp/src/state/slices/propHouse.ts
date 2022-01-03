@@ -7,10 +7,23 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface PropHouseSlice {
   auctions: StoredAuction[];
   activeProposal?: StoredProposalWithVotes;
+  websocketConnected: boolean;
+}
+
+export interface ProposalScoreUpdate {
+  id: number;
+  score: number;
+  auctionId: number;
+}
+
+export interface WrappedEvent<T> {
+  t: number;
+  payload: T;
 }
 
 const initialState: PropHouseSlice = {
   auctions: [],
+  websocketConnected: false,
 };
 
 const containsAuction = (auctions: StoredAuction[], id: number) =>
@@ -62,11 +75,30 @@ export const propHouseSlice = createSlice({
     ) => {
       state.activeProposal = action.payload;
     },
+    updateProposalScore: (
+      state,
+      action: PayloadAction<WrappedEvent<ProposalScoreUpdate>>
+    ) => {
+      if (
+        state.activeProposal === undefined ||
+        state.activeProposal.id !== action.payload.payload.id
+      )
+        return;
+      state.activeProposal.score = action.payload.payload.score;
+    },
+    updateWebsocketConnected: (state, action: PayloadAction<boolean>) => {
+      state.websocketConnected = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addAuction, addAuctions, setActiveProposal } =
-  propHouseSlice.actions;
+export const {
+  addAuction,
+  addAuctions,
+  setActiveProposal,
+  updateProposalScore,
+  updateWebsocketConnected,
+} = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;

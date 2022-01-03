@@ -7,6 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { isValidVoteDirection } from 'src/utils/vote';
 import { Vote } from './vote.entity';
@@ -18,6 +19,7 @@ export class VotesController {
   constructor(
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @Get()
@@ -31,13 +33,13 @@ export class VotesController {
 
   @Get('by/:address')
   findByAddress(@Param('address') address: string) {
-    return this.votesService.findByAddress(address)
+    return this.votesService.findByAddress(address);
   }
 
   @Post()
   async create(@Body() createVoteDto: CreateVoteDto): Promise<Vote> {
     const foundProposal = await this.proposalService.findOne(
-      createVoteDto.proposalId
+      createVoteDto.proposalId,
     );
     if (!foundProposal)
       throw new HttpException('No Proposal with that ID', HttpStatus.NOT_FOUND);
@@ -48,11 +50,19 @@ export class VotesController {
       );
 
     // Verify that signed data equals this payload
-    const signedPayload: CreateVoteDto = JSON.parse(Buffer.from(createVoteDto.signedData.message, "base64").toString());
-    if(!(
-      signedPayload.direction === createVoteDto.direction &&
-      signedPayload.proposalId === createVoteDto.proposalId 
-    )) throw new HttpException("Signed payload and supplied data doesn't match", HttpStatus.BAD_REQUEST);
+    const signedPayload: CreateVoteDto = JSON.parse(
+      Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
+    );
+    if (
+      !(
+        signedPayload.direction === createVoteDto.direction &&
+        signedPayload.proposalId === createVoteDto.proposalId
+      )
+    )
+      throw new HttpException(
+        "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
 
     const vote = new Vote();
     vote.address = createVoteDto.address;
@@ -64,7 +74,7 @@ export class VotesController {
     await Vote.delete({
       address: vote.address,
       proposal: vote.proposal,
-    })
+    });
 
     // Store the new vote
     await this.votesService.store(vote);

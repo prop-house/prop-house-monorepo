@@ -1,6 +1,6 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Repository } from 'typeorm';
 import { Vote } from './vote.entity';
 
@@ -9,6 +9,7 @@ export class VotesService {
   constructor(
     @InjectRepository(Vote)
     private votesRepository: Repository<Vote>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async findAll(): Promise<Vote[]> {
@@ -17,7 +18,7 @@ export class VotesService {
   }
 
   findOne(id: number): Promise<Vote> {
-    return this.votesRepository.findOne(id);
+    return this.votesRepository.findOne(id, { relations: ['proposal'] });
   }
 
   async remove(id: string): Promise<void> {
@@ -25,10 +26,11 @@ export class VotesService {
   }
 
   async store(vote: Vote) {
-    return this.votesRepository.save(vote);
+    const storedVote = await this.votesRepository.save(vote);
+    return storedVote;
   }
 
   async findByAddress(address: string) {
-    return Vote.findByAddress(address)
+    return Vote.findByAddress(address);
   }
 }
