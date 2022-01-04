@@ -55,6 +55,32 @@ const updateAuctionInState = (
   state.auctions[auctionIds.indexOf(auction.id)] = auction;
   return state;
 };
+const updateProposalScoreInState = (
+  state: PropHouseSlice,
+  action: WrappedEvent<ProposalScoreUpdate>
+) => {
+  state.auctions = state.auctions.map((auction) => {
+    auction.proposals = auction.proposals.map((proposal) => {
+      if (proposal.id === action.payload.id)
+        proposal.score = action.payload.score;
+      return proposal;
+    });
+    return auction;
+  });
+  return state;
+};
+const updateProposalScoreInActiveProposal = (
+  state: PropHouseSlice,
+  action: WrappedEvent<ProposalScoreUpdate>
+) => {
+  if (
+    state.activeProposal === undefined ||
+    state.activeProposal.id !== action.payload.id
+  )
+    return state;
+  state.activeProposal.score = action.payload.score;
+  return state;
+};
 
 export const propHouseSlice = createSlice({
   name: "propHouse",
@@ -79,12 +105,8 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<WrappedEvent<ProposalScoreUpdate>>
     ) => {
-      if (
-        state.activeProposal === undefined ||
-        state.activeProposal.id !== action.payload.payload.id
-      )
-        return;
-      state.activeProposal.score = action.payload.payload.score;
+      state = updateProposalScoreInActiveProposal(state, action.payload);
+      state = updateProposalScoreInState(state, action.payload);
     },
     updateWebsocketConnected: (state, action: PayloadAction<boolean>) => {
       state.websocketConnected = action.payload;

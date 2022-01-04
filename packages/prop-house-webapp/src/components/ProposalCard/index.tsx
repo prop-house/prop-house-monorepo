@@ -24,6 +24,10 @@ const ProposalCard: React.FC<{
         >
           {diffTime(proposal.createdDate)}
         </div>
+        <div>
+          {proposal.score}
+
+          </div>
         <div className={classes.readMore}>
           <Link to={`/proposal/${proposal.id}`}>Read more →</Link>
         </div>

@@ -15,6 +15,8 @@ import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import { useEthers } from "@usedapp/core";
 import { useDispatch } from "react-redux";
 import { setActiveProposal } from "../../../state/slices/propHouse";
+import ProposalSignature from '../../ProposalSignature'
+import classes from './Proposal.module.css'
 
 const Proposal = () => {
   const params = useParams();
@@ -52,7 +54,10 @@ const Proposal = () => {
     <>
       {parentAuction && <AuctionHeader auction={parentAuction} />}
       {proposal ? (
+        <div className={classes.proposal}>
+        <ProposalSignature proposal={proposal} className={classes.check} />
         <FullProposal proposal={proposal} votingWrapper={backendClient} />
+        </div>
       ) : (
         <NotFound />
       )}

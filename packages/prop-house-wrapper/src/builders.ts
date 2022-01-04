@@ -51,7 +51,7 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
-  public readonly proposals: StoredProposal[]
+  public proposals: StoredProposal[]
   //@ts-ignore
   public readonly createdDate: Date;
 
@@ -96,6 +96,11 @@ export interface StoredProposal extends Proposal {
   address: string;
   createdDate: Date;
   score: number;
+  signedData: {
+    signer: string;
+    message: string;
+    signature: string;
+  }
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {

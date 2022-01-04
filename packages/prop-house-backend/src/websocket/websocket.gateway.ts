@@ -30,22 +30,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     console.log('disconnected', this.users);
   }
 
-  @SubscribeMessage('chat')
-  async onChat(client, message) {
-    console.log('chat');
-    client.broadcast.emit('chat', message);
-  }
-
-  @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<number> {
-    console.log('idd');
-    return data;
-  }
-
   @OnEvent('vote.stored')
   async onVoteStored(payload: any) {
-    console.log(payload);
-    this.server.emit('chat', payload);
+    this.server.emit('vote', payload);
   }
 
   /**

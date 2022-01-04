@@ -1,0 +1,9 @@
+.proposal {
+	position: relative;
+}
+
+.check {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+}

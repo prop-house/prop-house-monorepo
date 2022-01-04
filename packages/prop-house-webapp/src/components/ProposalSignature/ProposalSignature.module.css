@@ -1,0 +1,18 @@
+.pass {
+  background-color: green;
+
+}
+
+.fail {
+  background-color: orangered;
+}
+
+.icon {
+  padding: 10px;
+  width: 60px;
+  height:  60px;
+  border-radius: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
