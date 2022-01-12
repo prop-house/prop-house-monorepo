@@ -1,0 +1,18 @@
+.auctionNav {
+	display: flex;
+	justify-content: space-between;
+}
+
+.auctionNav div {
+}
+
+.navDisabled {
+	color: grey;
+	pointer-events: none;
+
+}
+
+.navEnabled {
+	cursor: pointer;
+}
+

@@ -1,0 +1,23 @@
+.navbar {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+.navbarBrand {
+  color: var(--brand-black);
+  font-weight: 600;
+  font-size: 22px;
+  text-decoration: none;
+}
+.navbarBrand:hover {
+  color: var(--brand-black);
+}
+.link {
+  text-decoration: none;
+  font-size: 18px;
+  color: var(--brand-black-tansparent);
+  cursor: pointer;
+}
+.link:hover {
+  text-decoration: none;
+  color: var(--brand-black);
+}

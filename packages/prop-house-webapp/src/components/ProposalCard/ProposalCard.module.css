@@ -1,0 +1,40 @@
+.author {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--brand-black);
+  margin-bottom: 0.8rem;
+  display: flex;
+  flex-direction: row;
+}
+
+.author div {
+  margin-right: 0.3rem;
+}
+
+.author span {
+  font-weight: normal;
+  color: var(--brand-black-tansparent);
+}
+
+.title {
+  font-size: 20px;
+  line-height: 140%;
+  font-weight: bold;
+  color: var(--brand-black);
+  margin-bottom: 0.8rem;
+}
+
+.bottomContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.timestamp {
+  font-size: 16px;
+  color: var(--brand-black-tansparent);
+}
+
+.readMore a {
+  color: var(--brand-pink) !important;
+  text-decoration: none;
+}
