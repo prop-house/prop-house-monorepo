@@ -1,11 +1,17 @@
 FROM node:16
 
+WORKDIR /app
+
 ADD package.json .
 ADD yarn.lock .
 
 RUN yarn
 
 ADD . .
+
+WORKDIR /app/packages/prop-house-backend
+
+RUN yarn
 
 RUN yarn build
 
