@@ -1,13 +1,14 @@
-import classes from "./AuctionHeader.module.css";
-import { Col, Row } from "react-bootstrap";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import StatusPill, { StatusPillState } from "../StatusPill";
-import { Link } from "react-router-dom";
-import Button, { ButtonColor } from "../Button";
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
-import diffTime from "../../utils/diffTime";
-import formatTime from "../../utils/formatTime";
-import isAuctionClosed from "../../utils/isAuctionClosed";
+import classes from './AuctionHeader.module.css';
+import { Col, Row } from 'react-bootstrap';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import StatusPill, { StatusPillState } from '../StatusPill';
+import { Link } from 'react-router-dom';
+import Button, { ButtonColor } from '../Button';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import diffTime from '../../utils/diffTime';
+import formatTime from '../../utils/formatTime';
+import isAuctionClosed from '../../utils/isAuctionClosed';
+import auctionStatus from '../../utils/auctionStatus';
 
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
@@ -21,6 +22,7 @@ const AuctionHeader: React.FC<{
     startTime: startDate,
     amountEth: fundingAmount,
     proposalEndTime: proposalEndDate,
+    votingEndTime: votingEndDate,
   } = auction;
 
   return (
@@ -35,15 +37,20 @@ const AuctionHeader: React.FC<{
               <div className={classes.leftSectionContainer}>
                 <div className={classes.leftSectionTitle}>
                   <Link to={`/auction/${id}`}>{`Auction ${id}`}</Link>
-                  {/* TODO Refactor */}
-                  <StatusPill status={StatusPillState.AuctionEnded} />
+                  <StatusPill
+                    status={auctionStatus(
+                      startDate,
+                      proposalEndDate,
+                      votingEndDate
+                    )}
+                  />
                 </div>
 
                 <div className={classes.leftSectionSubtitle}>
                   <span title={startDate.toLocaleString()}>
                     {formatTime(startDate)}
-                  </span>{" "}
-                  -{" "}
+                  </span>
+                  {' - '}
                   <span title={proposalEndDate.toLocaleString()}>
                     {formatTime(proposalEndDate)}
                   </span>
