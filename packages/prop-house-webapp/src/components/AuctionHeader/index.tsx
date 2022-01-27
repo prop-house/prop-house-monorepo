@@ -19,7 +19,7 @@ const AuctionHeader: React.FC<{
   const displayCreateButton = !isClosed;
 
   const location = useLocation();
-  const clickable = !location.pathname.includes('auction'); // disable clickable header when browsing auctions
+  const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
 
   const {
     id,
@@ -33,35 +33,29 @@ const AuctionHeader: React.FC<{
     <Card
       bgColor={CardBgColor.White}
       borderRadius={CardBorderRadius.twenty}
-      onHoverEffect={clickable}
+      onHoverEffect={!onAuctionPage}
     >
       <Row>
-        <Col xl={5} md={12}>
-          <div className={classes.leftSectionContainer}>
-            <div className={classes.leftSectionTitle}>
-              {clickable ? (
-                <Link to={`/auction/${id}`}>{`Auction ${id}`}</Link>
-              ) : (
-                `Auction ${id}`
-              )}
-              <StatusPill
-                status={auctionStatus(
-                  startDate,
-                  proposalEndDate,
-                  votingEndDate
-                )}
-              />
-            </div>
+        <Col xl={5} md={12} className={classes.leftSectionContainer}>
+          <div className={classes.leftSectionTitle}>
+            {!onAuctionPage ? (
+              <Link to={`/auction/${id}`}>{`Auction ${id}`}</Link>
+            ) : (
+              `Auction ${id}`
+            )}
+            <StatusPill
+              status={auctionStatus(startDate, proposalEndDate, votingEndDate)}
+            />
+          </div>
 
-            <div className={classes.leftSectionSubtitle}>
-              <span title={startDate.toLocaleString()}>
-                {formatTime(startDate)}
-              </span>
-              {' - '}
-              <span title={proposalEndDate.toLocaleString()}>
-                {formatTime(proposalEndDate)}
-              </span>
-            </div>
+          <div className={classes.leftSectionSubtitle}>
+            <span title={startDate.toLocaleString()}>
+              {formatTime(startDate)}
+            </span>
+            {' - '}
+            <span title={proposalEndDate.toLocaleString()}>
+              {formatTime(proposalEndDate)}
+            </span>
           </div>
         </Col>
         <Col
@@ -94,7 +88,7 @@ const AuctionHeader: React.FC<{
   return (
     <Row>
       <Col xl={12}>
-        {clickable ? <Link to={`auction/${id}`}>{content}</Link> : content}
+        {!onAuctionPage ? <Link to={`auction/${id}`}>{content}</Link> : content}
       </Col>
     </Row>
   );
