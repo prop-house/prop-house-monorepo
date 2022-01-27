@@ -4,23 +4,27 @@ import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import proposalFields, { ProposalFields } from '../../utils/proposalFields';
 
 export interface RenderedProposalProps {
-fields: ProposalFields
+  fields: ProposalFields;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
-  const {fields} = props;
+  const { fields } = props;
   return (
     <>
       <Row>
         <Col xl={12} className={classes.previewCol}>
           <h1>{fields.title}</h1>
-          <h2>Who is building it?</h2>
-          <p>{fields.who}</p>
-          <h2>What are you building?</h2>
+          <hr />
+          <h2>Description</h2>
           <p>{fields.what}</p>
-          <h2>What timeline do you expect to complete it by?</h2>
+          <hr />
+          <h2>Builders</h2>
+          <p>{fields.who}</p>
+          <hr />
+          <h2>Timeline</h2>
           <p>{fields.timeline}</p>
-          <h2>Links relevant to your experience:</h2>
+          <hr />
+          <h2>Links</h2>
           <p>{fields.links}</p>
         </Col>
       </Row>
