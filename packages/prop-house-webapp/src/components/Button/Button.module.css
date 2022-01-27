@@ -2,9 +2,9 @@
   border-radius: 14px;
   padding: 0.8rem 1rem;
   margin: 16px;
-  white-space: nowrap;
+  white-space: normal;
   text-align: center;
-  font-size: 21;
+  font-size: 14px !important;
   font-weight: bold;
   line-height: 140%;
 }
