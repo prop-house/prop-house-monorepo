@@ -2,6 +2,7 @@ import HomeHeader from '../../HomeHeader';
 import Auctions from '../../Auctions';
 import CreateAuction from '../../CreateAuction';
 import AdminTool from '../../AdminTool';
+import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { useAppSelector } from '../../../hooks';
 import { findProposalById } from '../../../utils/findProposalById';
@@ -15,6 +16,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
 import { setActiveProposal } from '../../../state/slices/propHouse';
+import classes from './Proposal.module.css';
 
 const Proposal = () => {
   const params = useParams();
@@ -28,7 +30,6 @@ const Proposal = () => {
     );
     const parentAuction =
       proposal && findAuctionById(proposal.auctionId, state.propHouse.auctions);
-    console.log(proposal?.auctionId);
     return { proposal, parentAuction };
   });
 
@@ -49,10 +50,13 @@ const Proposal = () => {
       .then((proposal) => dispatch(setActiveProposal(proposal)));
   }, [proposal]);
 
-  console.log(id, proposal, parentAuction);
   return (
     <>
-      {parentAuction && <AuctionHeader auction={parentAuction} />}
+      <Link
+        to={`/auction/1`}
+        className={classes.backToAuction}
+      >{`← Auction ${parentAuction?.id}`}</Link>
+
       {proposal ? (
         <FullProposal proposal={proposal} votingWrapper={backendClient} />
       ) : (
