@@ -1,0 +1,21 @@
+.controlContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.arrow {
+  font-size: xx-large;
+  margin: 0 0.4rem;
+}
+.arrow:first-child {
+  margin-left: 0.8rem;
+}
+.navDisabled {
+  color: grey;
+  pointer-events: none;
+}
+
+.navEnabled {
+  cursor: pointer;
+}
