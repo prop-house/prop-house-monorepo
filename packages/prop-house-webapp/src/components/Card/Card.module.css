@@ -4,9 +4,9 @@
   margin: 1rem 0;
   transition: box-shadow 0.3s;
 }
-.card a {
-  text-decoration: inherit;
-  color: inherit;
+a {
+  text-decoration: none !important;
+  color: inherit !important;
 }
 .lightPurpleBg {
   background-color: #f4f2f6;
@@ -24,6 +24,7 @@
 .borderRadius30 {
   border-radius: 30px;
 }
+
 .onHoverEffect:hover {
   box-shadow: 0 0 5px rgba(33, 33, 33, 0.2);
 }
