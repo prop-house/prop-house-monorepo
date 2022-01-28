@@ -7,7 +7,7 @@ import { StatusPillState } from '../StatusPill';
 const AuctionPartial = (auction: StoredAuction, i: number) => (
   <div key={i}>
     {i === 0 ? (
-      <FullAuction auction={auction} />
+      <FullAuction auction={auction} showAllProposals={false} />
     ) : (
       <AuctionHeader auction={auction} />
     )}

@@ -16,18 +16,16 @@ export enum AuctionStatus {
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
+  showAllProposals: boolean;
 }> = (props) => {
-  const { auction } = props;
-  const showAllProposals = auction.proposals.length > 6
+  const { auction, showAllProposals } = props;
 
   return (
     <Card
       bgColor={CardBgColor.LightPurple}
       borderRadius={CardBorderRadius.thirty}
     >
-      <AuctionHeader
-        auction={auction}
-      />
+      <AuctionHeader auction={auction} />
       <Row>
         <Col xs={4} md={2}>
           <div className={classes.proposalTitle}>Proposals</div>
@@ -36,8 +34,17 @@ const FullAuction: React.FC<{
           <div className={classes.divider} />
         </Col>
       </Row>
-      <ProposalCards proposals={auction.proposals} />
-      {showAllProposals && <AllProposalsCTA />}
+      <ProposalCards
+        proposals={
+          showAllProposals ? auction.proposals : auction.proposals.slice(0, 6)
+        }
+      />
+      {!showAllProposals && (
+        <AllProposalsCTA
+          numProposals={auction.proposals.length}
+          auctionId={auction.id}
+        />
+      )}
     </Card>
   );
 };
