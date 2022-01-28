@@ -6,7 +6,7 @@ import extractAllProposals from '../../../utils/extractAllProposals';
 import NotFound from '../NotFound';
 import { findAuctionById } from '../../../utils/findAuctionById';
 import FullProposal from '../../FullProposal';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
@@ -32,18 +32,23 @@ const Proposal = () => {
     (state) => state.configuration.backendHost
   );
   const { library: provider } = useEthers();
-  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  const backendClient = useRef(
+    new PropHouseWrapper(backendHost, provider?.getSigner())
+  );
 
   useEffect(() => {
-    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+    backendClient.current = new PropHouseWrapper(
+      backendHost,
+      provider?.getSigner()
+    );
   }, [provider, backendHost]);
 
   useEffect(() => {
     if (!proposal) return;
-    backendClient
+    backendClient.current
       .getProposal(proposal.id)
       .then((proposal) => dispatch(setActiveProposal(proposal)));
-  }, [proposal]);
+  }, [proposal, dispatch]);
 
   return (
     <>
@@ -53,7 +58,10 @@ const Proposal = () => {
       >{`← Auction ${parentAuction?.id}`}</Link>
 
       {proposal ? (
-        <FullProposal proposal={proposal} votingWrapper={backendClient} />
+        <FullProposal
+          proposal={proposal}
+          votingWrapper={backendClient.current}
+        />
       ) : (
         <NotFound />
       )}
