@@ -7,9 +7,16 @@ import auctionImg from '../../../assets/learn page/auction.png';
 import auctionFullImg from '../../../assets/learn page/auction_full.png';
 import communityImg from '../../../assets/learn page/community.png';
 import clsx from 'clsx';
-import { Link } from 'react-router-dom';
+import { useAppSelector } from '../../../hooks';
+import defaultBrowseToAuctionId from '../../../utils/defaultBrowseToAuctionId';
+import { useNavigate } from 'react-router-dom';
 
 const Learn = () => {
+  const browseToAuctionId = useAppSelector((state) =>
+    defaultBrowseToAuctionId(state.propHouse.auctions)
+  );
+  const navigate = useNavigate();
+
   return (
     <>
       <div className={clsx('break-out', classes.breakOutMobile)}>
@@ -29,14 +36,14 @@ const Learn = () => {
               Ethereum address to plug in and use the treasury to build out
               their ideas.
             </p>
-            <Link to="/browse">
-              <Button
-                text="Browse auctions"
-                bgColor={ButtonColor.Pink}
-                classNames={classes.firstBtn}
-              />
-            </Link>
-
+            <Button
+              text="Browse auctions"
+              bgColor={ButtonColor.Pink}
+              classNames={classes.firstBtn}
+              onClick={() => {
+                navigate(`/auction/${browseToAuctionId}`);
+              }}
+            />
             <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
               <Button text="About Nouns" bgColor={ButtonColor.White} />
             </a>
@@ -130,9 +137,13 @@ const Learn = () => {
             </p>
           </Col>
           <Col xl={3}>
-            <Link to="/browse">
-              <Button text="Browse auctions" bgColor={ButtonColor.Pink} />
-            </Link>
+            <Button
+              text="Browse auctions"
+              bgColor={ButtonColor.Pink}
+              onClick={() => {
+                navigate(`/auction/${browseToAuctionId}`);
+              }}
+            />
           </Col>
         </Row>
       </Card>
