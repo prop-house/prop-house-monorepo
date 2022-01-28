@@ -1,8 +1,7 @@
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import AuctionHeader from '../AuctionHeader';
-import FullAuction, { AuctionStatus } from '../FullAuction';
-import { StatusPillState } from '../StatusPill';
+import FullAuction from '../FullAuction';
 
 const AuctionPartial = (auction: StoredAuction, i: number) => (
   <div key={i}>

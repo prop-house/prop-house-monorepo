@@ -1,5 +1,3 @@
-import AdminTool from '../../AdminTool';
-import classes from './Auction.module.css';
 import { useParams } from 'react-router';
 import { useAppSelector } from '../../../hooks';
 import { findAuctionById } from '../../../utils/findAuctionById';

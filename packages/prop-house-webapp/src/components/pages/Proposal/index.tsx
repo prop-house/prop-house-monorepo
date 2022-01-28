@@ -1,7 +1,3 @@
-import HomeHeader from '../../HomeHeader';
-import Auctions from '../../Auctions';
-import CreateAuction from '../../CreateAuction';
-import AdminTool from '../../AdminTool';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { useAppSelector } from '../../../hooks';
@@ -9,7 +5,6 @@ import { findProposalById } from '../../../utils/findProposalById';
 import extractAllProposals from '../../../utils/extractAllProposals';
 import NotFound from '../NotFound';
 import { findAuctionById } from '../../../utils/findAuctionById';
-import AuctionHeader from '../../AuctionHeader';
 import FullProposal from '../../FullProposal';
 import { useEffect } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';

@@ -1,7 +1,5 @@
-import classes from "./Preview.module.css";
-import { Row, Col } from "react-bootstrap";
-import { useAppSelector } from "../../../hooks";
-import RenderedProposalFields from "../../RenderedProposalFields";
+import { useAppSelector } from '../../../hooks';
+import RenderedProposalFields from '../../RenderedProposalFields';
 
 const Preview: React.FC<{}> = (props) => {
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);

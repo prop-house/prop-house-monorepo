@@ -4,7 +4,6 @@ import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
-import { StatusPillState } from '../StatusPill';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
 export enum AuctionStatus {

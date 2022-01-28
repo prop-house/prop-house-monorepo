@@ -1,7 +1,6 @@
 import classes from './RenderedProposalFields.module.css';
 import { Row, Col } from 'react-bootstrap';
-import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import proposalFields, { ProposalFields } from '../../utils/proposalFields';
+import { ProposalFields } from '../../utils/proposalFields';
 
 export interface RenderedProposalProps {
   fields: ProposalFields;

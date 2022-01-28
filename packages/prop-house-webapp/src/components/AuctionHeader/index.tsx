@@ -1,7 +1,7 @@
 import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import StatusPill, { StatusPillState } from '../StatusPill';
+import StatusPill from '../StatusPill';
 import { Link } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
