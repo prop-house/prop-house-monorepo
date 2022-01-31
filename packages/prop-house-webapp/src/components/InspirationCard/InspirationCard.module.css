@@ -15,3 +15,9 @@
 .arrow {
   float: right;
 }
+
+@media (max-width: 1200px) {
+  .itemCard {
+    margin-bottom: 1.4rem;
+  }
+}
