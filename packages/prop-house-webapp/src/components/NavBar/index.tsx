@@ -1,19 +1,21 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import classes from "./NavBar.module.css";
-import { useEthers } from "@usedapp/core";
-import EthAddress from "../EthAddress";
-import { useEffect } from "react";
-import { useAppSelector } from "../../hooks";
-import defaultBrowseToAuctionId from "../../utils/defaultBrowseToAuctionId";
+import { Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import classes from './NavBar.module.css';
+import { useEthers } from '@usedapp/core';
+import EthAddress from '../EthAddress';
+import { useEffect } from 'react';
+import { useAppSelector } from '../../hooks';
+import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
 
 const NavBar = () => {
   const { activateBrowserWallet, account } = useEthers();
 
   useEffect(() => {
-    console.log(account)
-  }, [account])
-  const browseToAuctionId = useAppSelector(state => defaultBrowseToAuctionId(state.propHouse.auctions))
+    console.log(account);
+  }, [account]);
+  const browseToAuctionId = useAppSelector((state) =>
+    defaultBrowseToAuctionId(state.propHouse.auctions)
+  );
 
   return (
     <Navbar bg="transparent" expand="lg" className={classes.navbar}>
