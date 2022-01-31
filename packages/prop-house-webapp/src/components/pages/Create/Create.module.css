@@ -10,3 +10,14 @@
   color: var(--brand-black-tansparent);
   font-weight: 600;
 }
+
+.proposalHelperWrapper {
+  margin: 2rem 0;
+}
+.proposalHelperWrapper h1 {
+  color: var(--brand-gray);
+  font-size: x-large;
+}
+.proposalHelperWrapper h1 span {
+  font-weight: bold;
+}

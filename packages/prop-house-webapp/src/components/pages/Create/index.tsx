@@ -25,7 +25,7 @@ const isValidPropData = (data: ProposalFields) => {
 const Create: React.FC<{}> = () => {
   const { library: provider, account, activateBrowserWallet } = useEthers();
 
-  const [parentAuction, setParentAuction] = useState<undefined | number>(
+  const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
     undefined
   );
   const [showPreview, setShowPreview] = useState(false);
@@ -46,7 +46,7 @@ const Create: React.FC<{}> = () => {
     if (parentAuction !== undefined) return;
     const openAuctions = auctions.filter(isAuctionActive);
     // Set to the first open Auction
-    if (openAuctions.length > 0) setParentAuction(openAuctions[0].id);
+    if (openAuctions.length > 0) setParentAuction(openAuctions[0]);
   }, [auctions, parentAuction]);
 
   useEffect(() => {
@@ -64,11 +64,17 @@ const Create: React.FC<{}> = () => {
     <>
       <InspirationCard />
       <Row>
-        <Col xl={12}>
-          <h1>Create proposal for Auction {parentAuction}</h1>
-          <p>Proposals will be voted by Nouners to get funded</p>
+        <Col xl={12} className={classes.proposalHelperWrapper}>
+          <h1 className={classes.proposalHelper}>
+            Creating proposal for{' '}
+            <span>
+              Auction {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
+            </span>
+          </h1>
         </Col>
+        <hr />
       </Row>
+
       <Row>
         <Col xl={12}>
           {showPreview ? (
@@ -103,7 +109,7 @@ const Create: React.FC<{}> = () => {
                     proposalEditorData.what,
                     proposalEditorData.timeline,
                     proposalEditorData.links,
-                    parentAuction
+                    parentAuction.id
                   )
                 );
                 await backendClient.current
