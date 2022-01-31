@@ -1,8 +1,7 @@
 import classes from './Create.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { Row, Col } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../Button';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import ProposalEditor from '../../ProposalEditor';
 import Preview from '../Preview';
@@ -17,6 +16,7 @@ import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../../utils/isAuctionActive';
 import { ProposalFields } from '../../../utils/proposalFields';
+import InspirationCard from '../../InspirationCard';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title !== '' && data.what !== '';
@@ -59,34 +59,13 @@ const Create: React.FC<{}> = () => {
 
   return parentAuction ? (
     <>
+      <InspirationCard />
       <Row>
         <Col xl={12}>
           <h1>Create proposal for Auction {parentAuction}</h1>
           <p>Proposals will be voted by Nouners to get funded</p>
         </Col>
       </Row>
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.twenty}
-        classNames={classes.card}
-      >
-        <Row>
-          <Col xl={10}>
-            <p>
-              We encourage proposals which further proliferate Nouns onto the
-              world while accurately representing the Nouns culture. If your
-              proposal is chosen, you will be given the responsibility of
-              completing the work you’ve outlined below. Please be descriptive!
-            </p>
-          </Col>
-          <Col xl={2}>
-            <Link to="/learn">
-              <Button text="Learn more" bgColor={ButtonColor.White} />
-            </Link>
-          </Col>
-        </Row>
-      </Card>
-
       <Row>
         <Col xl={12}>
           {showPreview ? (
