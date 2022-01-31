@@ -23,21 +23,24 @@ const isValidPropData = (data: ProposalFields) => {
 };
 
 const Create: React.FC<{}> = () => {
+  const { library: provider, account, activateBrowserWallet } = useEthers();
+
   const [parentAuction, setParentAuction] = useState<undefined | number>(
     undefined
   );
   const [showPreview, setShowPreview] = useState(false);
-  const dispatch = useAppDispatch();
+
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { library: provider, account, activateBrowserWallet } = useEthers();
+
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
   );
+  const auctions = useAppSelector((state) => state.propHouse.auctions);
   const backendClient = useRef(
     new PropHouseWrapper(backendHost, provider?.getSigner())
   );
-  const auctions = useAppSelector((state) => state.propHouse.auctions);
 
   useEffect(() => {
     if (parentAuction !== undefined) return;
