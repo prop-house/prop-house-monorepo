@@ -1,18 +1,11 @@
 import { Navbar, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import classes from './NavBar.module.css';
-import { useEthers } from '@usedapp/core';
-import EthAddress from '../EthAddress';
-import { useEffect } from 'react';
 import { useAppSelector } from '../../hooks';
 import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
+import Web3ModalButton from '../Web3ModalButton.tsx';
 
 const NavBar = () => {
-  const { activateBrowserWallet, account } = useEthers();
-
-  useEffect(() => {
-    console.log(account);
-  }, [account]);
   const browseToAuctionId = useAppSelector((state) =>
     defaultBrowseToAuctionId(state.propHouse.auctions)
   );
@@ -38,22 +31,7 @@ const NavBar = () => {
             </Link>
           </Nav.Link>
           <Nav.Link as="div">
-            <div>
-              {account ? (
-                <p>
-                  Account: <EthAddress>{account}</EthAddress>
-                </p>
-              ) : (
-                <div>
-                  <span
-                    className={classes.link}
-                    onClick={() => activateBrowserWallet()}
-                  >
-                    Connect Wallet
-                  </span>
-                </div>
-              )}
-            </div>
+            <Web3ModalButton classNames={classes.link} />
           </Nav.Link>
         </Nav>
       </Navbar.Collapse>

@@ -14,7 +14,7 @@
 .link {
   text-decoration: none;
   font-size: 18px;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-black);
   cursor: pointer;
 }
 .link:hover {
