@@ -25,6 +25,7 @@ const config: Config = {
     [Mainnet.chainId]:
       'https://mainnet.infura.io/v3/bb1bb1143055477dbe59879f4887516c',
   },
+  autoConnect: false,
 };
 
 function App() {
