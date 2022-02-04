@@ -17,13 +17,14 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../../utils/isAuctionActive';
 import { ProposalFields } from '../../../utils/proposalFields';
 import InspirationCard from '../../InspirationCard';
+import useWeb3Modal from '../../../hooks/useWeb3Modal';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title !== '' && data.what !== '';
 };
 
 const Create: React.FC<{}> = () => {
-  const { library: provider, account, activateBrowserWallet } = useEthers();
+  const { library: provider, account } = useEthers();
 
   const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
     undefined
@@ -33,6 +34,7 @@ const Create: React.FC<{}> = () => {
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const connect = useWeb3Modal();
 
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
@@ -126,7 +128,7 @@ const Create: React.FC<{}> = () => {
             <Button
               bgColor={ButtonColor.Pink}
               text="Connect Wallet To Submit"
-              onClick={() => activateBrowserWallet()}
+              onClick={connect}
             />
           )}
         </Col>
