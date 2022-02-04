@@ -120,7 +120,7 @@ const Create: React.FC<{}> = () => {
                     dispatch(addAuctions(auctions))
                   );
                 dispatch(clearProposal());
-                navigate('/');
+                navigate(`/auction/${parentAuction.id}`);
               }}
               disabled={!isValidPropData(proposalEditorData)}
             />
