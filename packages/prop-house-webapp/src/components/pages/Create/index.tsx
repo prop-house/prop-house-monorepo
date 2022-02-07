@@ -18,6 +18,7 @@ import isAuctionActive from '../../../utils/isAuctionActive';
 import { ProposalFields } from '../../../utils/proposalFields';
 import InspirationCard from '../../InspirationCard';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
+import Modal from '../../Modal';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title !== '' && data.what !== '';
@@ -30,6 +31,7 @@ const Create: React.FC<{}> = () => {
     undefined
   );
   const [showPreview, setShowPreview] = useState(false);
+  const [showModal, setShowModal] = useState(true);
 
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
   const dispatch = useAppDispatch();
@@ -74,13 +76,43 @@ const Create: React.FC<{}> = () => {
         parentAuction.id
       )
     );
+
     dispatch(appendProposal({ proposal, auctionId: parentAuction.id }));
     dispatch(clearProposal());
-    navigate(`/auction/${parentAuction.id}`);
+    setShowModal(true);
+  };
+
+  const successfulSubmissionModalContent = {
+    title: 'Congrats!',
+    content: () => {
+      return (
+        <>
+          <p>{`You've successfully submitted your proposal for Auction ${
+            parentAuction && parentAuction.id
+          }`}</p>
+          <Button
+            text="View auction"
+            bgColor={ButtonColor.White}
+            onClick={() =>
+              navigate(`/auction/${parentAuction && parentAuction.id}`)
+            }
+          />
+        </>
+      );
+    },
+    onDismiss: () => navigate(`/auction/${parentAuction && parentAuction.id}`),
   };
 
   return parentAuction ? (
     <>
+      {showModal && (
+        <Modal
+          title={successfulSubmissionModalContent.title}
+          content={successfulSubmissionModalContent.content()}
+          onDismiss={() => successfulSubmissionModalContent.onDismiss()}
+        />
+      )}
+
       <InspirationCard />
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
