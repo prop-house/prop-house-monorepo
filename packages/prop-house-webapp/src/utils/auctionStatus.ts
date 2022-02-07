@@ -1,12 +1,18 @@
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import dayjs from 'dayjs';
-import { StatusPillState } from '../components/StatusPill';
+
+export enum AuctionStatus {
+  AuctionNotStarted,
+  AuctionAcceptingProps,
+  AuctionVoting,
+  AuctionEnded,
+}
 
 /**
  * Calculates auction state
  * @param auction Auction to check status of.
  */
-const auctionStatus = (auction: StoredAuction): StatusPillState => {
+const auctionStatus = (auction: StoredAuction): AuctionStatus => {
   const _now = dayjs();
   const _auctionStartTime = dayjs(auction.startTime);
   const _proposalEndTime = dayjs(auction.proposalEndTime);
@@ -14,15 +20,15 @@ const auctionStatus = (auction: StoredAuction): StatusPillState => {
 
   switch (true) {
     case _now.isBefore(_auctionStartTime):
-      return StatusPillState.AuctionNotStarted;
+      return AuctionStatus.AuctionNotStarted;
     case _now.isAfter(_auctionStartTime) && _now.isBefore(_proposalEndTime):
-      return StatusPillState.AuctionAcceptingProps;
+      return AuctionStatus.AuctionAcceptingProps;
     case _now.isAfter(_proposalEndTime) && _now.isBefore(_votingEndTime):
-      return StatusPillState.AuctionVoting;
+      return AuctionStatus.AuctionVoting;
     case _now.isAfter(_votingEndTime):
-      return StatusPillState.AuctionEnded;
+      return AuctionStatus.AuctionEnded;
     default:
-      return StatusPillState.AuctionEnded;
+      return AuctionStatus.AuctionEnded;
   }
 };
 

@@ -6,14 +6,7 @@ import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import auctionStatus from '../../utils/auctionStatus';
-import { StatusPillState } from '../StatusPill';
-
-export enum AuctionStatus {
-  NotStarted,
-  AcceptingProposals,
-  Voting,
-  Ended,
-}
+import { AuctionStatus } from '../../utils/auctionStatus';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -23,7 +16,7 @@ const FullAuction: React.FC<{
 
   return (
     <>
-      {auctionStatus(auction) === StatusPillState.AuctionVoting && (
+      {auctionStatus(auction) === AuctionStatus.AuctionVoting && (
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.twenty}

@@ -1,10 +1,10 @@
-import classes from "./ProposalCard.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import { Link } from "react-router-dom";
-import { StoredProposal } from "@nouns/prop-house-wrapper/dist/builders";
-import diffTime from "../../utils/diffTime";
-import detailedTime from "../../utils/detailedTime";
-import EthAddress from "../EthAddress";
+import classes from './ProposalCard.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { Link } from 'react-router-dom';
+import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import diffTime from '../../utils/diffTime';
+import detailedTime from '../../utils/detailedTime';
+import EthAddress from '../EthAddress';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposal;
