@@ -31,7 +31,7 @@ const Create: React.FC<{}> = () => {
     undefined
   );
   const [showPreview, setShowPreview] = useState(false);
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
   const dispatch = useAppDispatch();
