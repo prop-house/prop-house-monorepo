@@ -1,8 +1,9 @@
 import {
+  StoredProposal,
   StoredAuction,
   StoredProposalWithVotes,
-} from "@nouns/prop-house-wrapper/dist/builders";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+} from '@nouns/prop-house-wrapper/dist/builders';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface PropHouseSlice {
   auctions: StoredAuction[];
@@ -44,7 +45,7 @@ const updateAuctionInState = (
 };
 
 export const propHouseSlice = createSlice({
-  name: "propHouse",
+  name: 'propHouse',
   initialState,
   reducers: {
     addAuction: (state, action: PayloadAction<StoredAuction>) => {
@@ -62,11 +63,20 @@ export const propHouseSlice = createSlice({
     ) => {
       state.activeProposal = action.payload;
     },
+    appendProposal: (
+      state,
+      action: PayloadAction<{ proposal: StoredProposal; auctionId: number }>
+    ) => {
+      const auction = state.auctions.find(
+        (auction) => auction.id === action.payload.auctionId
+      );
+      auction?.proposals.push(action.payload.proposal);
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addAuction, addAuctions, setActiveProposal } =
+export const { addAuction, addAuctions, setActiveProposal, appendProposal } =
   propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
