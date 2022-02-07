@@ -26,7 +26,6 @@ const AuctionHeader: React.FC<{
     startTime: startDate,
     amountEth: fundingAmount,
     proposalEndTime: proposalEndDate,
-    votingEndTime: votingEndDate,
   } = auction;
 
   const content = (
@@ -43,9 +42,7 @@ const AuctionHeader: React.FC<{
             ) : (
               `Auction ${id}`
             )}
-            <StatusPill
-              status={auctionStatus(startDate, proposalEndDate, votingEndDate)}
-            />
+            <StatusPill status={auctionStatus(auction)} />
           </div>
 
           <div className={classes.leftSectionSubtitle}>
