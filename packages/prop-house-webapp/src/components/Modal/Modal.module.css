@@ -46,6 +46,7 @@
   padding: 1rem;
   max-height: 50vh;
   overflow-y: auto;
+  color: var(--brand-gray);
 }
 
 .modal .closeButton {
