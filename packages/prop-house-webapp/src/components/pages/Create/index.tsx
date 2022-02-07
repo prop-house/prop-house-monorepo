@@ -11,7 +11,7 @@ import {
   Proposal,
   StoredAuction,
 } from '@nouns/prop-house-wrapper/dist/builders';
-import { addAuctions } from '../../../state/slices/propHouse';
+import { appendProposal } from '../../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../../utils/isAuctionActive';
@@ -62,6 +62,23 @@ const Create: React.FC<{}> = () => {
     dispatch(patchProposal(data));
   };
 
+  const submitProposal = async () => {
+    if (!parentAuction) return;
+    const proposal = await backendClient.current.createProposal(
+      new Proposal(
+        proposalEditorData.title,
+        proposalEditorData.who,
+        proposalEditorData.what,
+        proposalEditorData.timeline,
+        proposalEditorData.links,
+        parentAuction.id
+      )
+    );
+    dispatch(appendProposal({ proposal, auctionId: parentAuction.id }));
+    dispatch(clearProposal());
+    navigate(`/auction/${parentAuction.id}`);
+  };
+
   return parentAuction ? (
     <>
       <InspirationCard />
@@ -103,25 +120,7 @@ const Create: React.FC<{}> = () => {
             <Button
               text="Sign and Submit"
               bgColor={ButtonColor.Pink}
-              onClick={async () => {
-                await backendClient.current.createProposal(
-                  new Proposal(
-                    proposalEditorData.title,
-                    proposalEditorData.who,
-                    proposalEditorData.what,
-                    proposalEditorData.timeline,
-                    proposalEditorData.links,
-                    parentAuction.id
-                  )
-                );
-                await backendClient.current
-                  .getAuctions()
-                  .then((auctions: StoredAuction[]) =>
-                    dispatch(addAuctions(auctions))
-                  );
-                dispatch(clearProposal());
-                navigate(`/auction/${parentAuction.id}`);
-              }}
+              onClick={submitProposal}
               disabled={!isValidPropData(proposalEditorData)}
             />
           ) : (
