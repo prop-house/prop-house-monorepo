@@ -35,6 +35,11 @@
 }
 
 .readMore a {
-  color: var(--brand-pink) !important;
+  color: var(--brand-pink);
   text-decoration: none;
+}
+
+.voteBtn {
+  margin: 1.5rem 0 0 0;
+  width: 100%;
 }

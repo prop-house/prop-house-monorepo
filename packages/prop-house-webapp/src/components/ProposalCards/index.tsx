@@ -1,6 +1,6 @@
 import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
-import ProposalCard from '../ProposalCard';
+import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
 
 const ProposalCards: React.FC<{
   proposals: StoredProposal[];
@@ -11,7 +11,10 @@ const ProposalCards: React.FC<{
       {proposals.map((proposal, index) => {
         return (
           <Col key={index} xl={4}>
-            <ProposalCard proposal={proposal} />
+            <ProposalCard
+              proposal={proposal}
+              status={ProposalCardStatus.Default}
+            />
           </Col>
         );
       })}
