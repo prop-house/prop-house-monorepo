@@ -15,6 +15,8 @@
   --brand-black-tansparent: #00000060;
   --brand-gray: #666666;
   --brand-gray-transparent: #6666662f;
+  --brand-yellow: #cba727;
+  --brand-yellow-transparent: #cba7274f;
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */

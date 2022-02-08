@@ -5,6 +5,7 @@ import { Button as BSButton } from 'react-bootstrap';
 export enum ButtonColor {
   Pink,
   White,
+  Yellow,
 }
 const Button: React.FC<{
   text: string;
@@ -19,7 +20,11 @@ const Button: React.FC<{
     <BSButton
       className={clsx(
         classes.btn,
-        bgColor === ButtonColor.Pink ? classes.btnPinkBg : classes.btnWhiteBg,
+        bgColor === ButtonColor.Pink
+          ? classes.btnPinkBg
+          : bgColor === ButtonColor.White
+          ? classes.btnWhiteBg
+          : classes.btnYellowBg,
         classNames
       )}
       disabled={disabled}
