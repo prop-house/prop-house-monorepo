@@ -13,3 +13,13 @@
   line-height: 0.1em;
   margin: 15px 0 20px;
 }
+
+.alertWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alertWrapper p,
+.alertWrapper button {
+  margin: 0;
+}
