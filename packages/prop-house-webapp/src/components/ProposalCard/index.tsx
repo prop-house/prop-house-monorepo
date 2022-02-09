@@ -41,15 +41,16 @@ const ProposalCard: React.FC<{
     <Card
       bgColor={CardBgColor.White}
       borderRadius={CardBorderRadius.twenty}
-      classNames={
+      classNames={clsx(
         status === ProposalCardStatus.VotedFor
           ? globalClasses.yellowBorder
           : status === ProposalCardStatus.Winner
           ? globalClasses.pinkBorder
-          : ''
-      }
+          : '',
+        classes.proposalCard
+      )}
     >
-      <Row>
+      <Row className={classes.proposalCardRow}>
         <div className={classes.author}>
           <EthAddress>{proposal.address}</EthAddress>
           <span>proposed</span>
