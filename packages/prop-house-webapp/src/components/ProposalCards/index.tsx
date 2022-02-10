@@ -1,11 +1,13 @@
 import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
+import VotingBar from '../VotingBar';
 
 const ProposalCards: React.FC<{
   proposals: StoredProposal[];
+  showVoting: boolean;
 }> = (props) => {
-  const { proposals } = props;
+  const { proposals, showVoting } = props;
   return (
     <Row>
       {proposals.map((proposal, index) => {
@@ -13,7 +15,11 @@ const ProposalCards: React.FC<{
           <Col key={index} xl={4}>
             <ProposalCard
               proposal={proposal}
-              status={ProposalCardStatus.Default}
+              status={
+                showVoting
+                  ? ProposalCardStatus.CanVoteFor
+                  : ProposalCardStatus.Default
+              }
             />
           </Col>
         );
