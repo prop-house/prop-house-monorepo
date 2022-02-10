@@ -24,6 +24,9 @@ export class Vote extends SignedEntity {
   @Column()
   createdDate: Date;
 
+  @Column()
+  proposalId: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
