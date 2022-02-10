@@ -1,7 +1,6 @@
 import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
-import VotingBar from '../VotingBar';
 
 const ProposalCards: React.FC<{
   proposals: StoredProposal[];
