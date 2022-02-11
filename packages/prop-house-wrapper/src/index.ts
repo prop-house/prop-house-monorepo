@@ -1,7 +1,14 @@
 import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
-import { Auction, Proposal, StoredAuction, StoredFile, Vote } from './builders';
+import {
+  Auction,
+  Proposal,
+  StoredAuction,
+  StoredFile,
+  StoredVote,
+  Vote,
+} from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
 
@@ -84,5 +91,9 @@ export class PropHouseWrapper {
   async getAddress() {
     if (!this.signer) return undefined;
     return this.signer.getAddress();
+  }
+
+  async getVotesByAddress(address: string): Promise<StoredVote[]> {
+    return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 }
