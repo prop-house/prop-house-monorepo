@@ -20,7 +20,7 @@ const FullAuction: React.FC<{
 }> = (props) => {
   const { auction, showAllProposals } = props;
 
-  const [isNouner, setIsNouner] = useState<undefined | boolean>(undefined);
+  const [isNouner, setIsNouner] = useState(false);
   const { account } = useEthers();
   const connect = useWeb3Modal();
 
@@ -80,7 +80,8 @@ const FullAuction: React.FC<{
           proposals={
             showAllProposals ? auction.proposals : auction.proposals.slice(0, 6)
           }
-          showVoting={isNouner ? true : false}
+          auctionStatus={auctionStatus(auction)}
+          isNouner={isNouner}
         />
         {!showAllProposals && (
           <AllProposalsCTA
