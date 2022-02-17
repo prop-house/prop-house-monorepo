@@ -26,7 +26,7 @@ const ProposalCards: React.FC<{
   const [votes, setVotes] = useState<StoredVote[]>();
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
-    (state) => state.propHouse.delegateVotes
+    (state) => state.propHouse.delegatedVotes
   );
 
   useEffect(() => {

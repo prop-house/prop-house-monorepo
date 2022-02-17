@@ -9,7 +9,7 @@ export interface PropHouseSlice {
   auctions: StoredAuction[];
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
-  delegateVotes?: number;
+  delegatedVotes?: number;
 }
 
 const initialState: PropHouseSlice = {
@@ -81,7 +81,7 @@ export const propHouseSlice = createSlice({
       state.activeProposals = action.payload;
     },
     setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
-      state.delegateVotes = action.payload;
+      state.delegatedVotes = action.payload;
     },
   },
 });
