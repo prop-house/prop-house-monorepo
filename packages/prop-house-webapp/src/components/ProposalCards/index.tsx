@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
-import numVotesForProposal from '../../utils/countNumVotesForProposal';
+import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -62,7 +62,7 @@ const ProposalCards: React.FC<{
                 <ProposalCard
                   proposal={proposal}
                   status={cardStatus(proposal.id)}
-                  votes={votes && numVotesForProposal(votes, proposal.id)}
+                  votes={votes && countNumVotesForProposal(votes, proposal.id)}
                 />
               </Col>
             );
