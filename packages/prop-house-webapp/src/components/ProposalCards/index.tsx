@@ -11,6 +11,9 @@ import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
 import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
+import extractAllVotes from '../../utils/extractAllVotes';
+import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -19,11 +22,15 @@ const ProposalCards: React.FC<{
   const { auction, showAllProposals } = props;
 
   const dispatch = useAppDispatch();
-  const { account } = useEthers();
+  const { account, library: provider } = useEthers();
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  const [votes, setVotes] = useState<StoredVote[]>();
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, provider?.getSigner());
+  }, [provider, host]);
+
+  const [userVotes, setUserVotes] = useState<StoredVote[]>();
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
@@ -33,15 +40,19 @@ const ProposalCards: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
-      const votes = proposals
-        .map((proposal: any) => proposal.votes)
-        .flat()
-        .filter((vote: any) => vote.address === account);
-      setVotes(votes);
+      setUserVotes(extractAllVotes(proposals, account ? account : ''));
     };
 
     fetchAuctionProposals();
   }, [auction.id, dispatch, account]);
+
+  const handleUserVote = async (direction: Direction, proposalId: number) => {
+    if (!delegatedVotes || !userVotes) return;
+
+    // TODO: POLISH VOTING LOGIC IN BACKEND
+    const vote = await client.current.logVote(new Vote(direction, proposalId));
+    refreshActiveProposals(client.current, auction.id, dispatch);
+  };
 
   const cardStatus = (proposalId: number): ProposalCardStatus => {
     // if not in voting or not nouner, return default
@@ -62,7 +73,11 @@ const ProposalCards: React.FC<{
                 <ProposalCard
                   proposal={proposal}
                   status={cardStatus(proposal.id)}
-                  votes={votes && countNumVotesForProposal(votes, proposal.id)}
+                  votes={
+                    userVotes &&
+                    countNumVotesForProposal(userVotes, proposal.id)
+                  }
+                  handleUserVote={handleUserVote}
                 />
               </Col>
             );

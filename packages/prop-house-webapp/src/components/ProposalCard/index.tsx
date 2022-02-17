@@ -6,10 +6,10 @@ import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import detailedTime from '../../utils/detailedTime';
 import EthAddress from '../EthAddress';
-import { Col } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
-
+import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 export enum ProposalCardStatus {
   Default,
   Voting,
@@ -20,21 +20,44 @@ const ProposalCard: React.FC<{
   proposal: StoredProposal;
   status: ProposalCardStatus;
   votes?: number;
+  handleUserVote?: (direction: Direction, proposalId: number) => void;
 }> = (props) => {
-  const { proposal, status, votes } = props;
+  const { proposal, status, votes, handleUserVote } = props;
 
   const ctaButton = (
-    <Col xs={12}>
-      <Button
-        text={
-          status === ProposalCardStatus.Voting
-            ? `Cast Vote (${votes ? votes : 0})`
-            : ''
-        }
-        bgColor={ButtonColor.Yellow}
-        classNames={classes.voteBtn}
-      />
-    </Col>
+    <Row>
+      <Col xs={6}>
+        <Button
+          text={
+            status === ProposalCardStatus.Voting
+              ? `Cast Vote (${votes ? votes : 0})`
+              : ''
+          }
+          bgColor={ButtonColor.Yellow}
+          classNames={classes.voteBtn}
+        />
+      </Col>
+      <Col xs={3}>
+        <Button
+          text="↑"
+          bgColor={ButtonColor.Yellow}
+          classNames={classes.voteBtn}
+          onClick={() =>
+            handleUserVote && handleUserVote(Direction.Up, proposal.id)
+          }
+        />
+      </Col>
+      <Col xs={3}>
+        <Button
+          text="↓"
+          bgColor={ButtonColor.Yellow}
+          classNames={classes.voteBtn}
+          onClick={() =>
+            handleUserVote && handleUserVote(Direction.Down, proposal.id)
+          }
+        />
+      </Col>
+    </Row>
   );
 
   return (
