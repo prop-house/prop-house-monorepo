@@ -12,28 +12,26 @@ import clsx from 'clsx';
 
 export enum ProposalCardStatus {
   Default,
-  CanVoteFor,
-  VotedFor,
+  Voting,
   Winner,
 }
 
 const ProposalCard: React.FC<{
   proposal: StoredProposal;
   status: ProposalCardStatus;
+  votes?: number;
 }> = (props) => {
-  const { proposal, status } = props;
+  const { proposal, status, votes } = props;
 
   const ctaButton = (
     <Col xs={12}>
       <Button
         text={
-          status === ProposalCardStatus.CanVoteFor
-            ? 'Cast your vote'
-            : status === ProposalCardStatus.VotedFor
-            ? 'You voted for this'
+          status === ProposalCardStatus.Voting
+            ? `Cast Vote (${votes ? votes : 0})`
             : ''
         }
-        bgColor={ButtonColor.WhiteYellow}
+        bgColor={ButtonColor.Yellow}
         classNames={classes.voteBtn}
       />
     </Col>
@@ -44,7 +42,7 @@ const ProposalCard: React.FC<{
       bgColor={CardBgColor.White}
       borderRadius={CardBorderRadius.twenty}
       classNames={clsx(
-        status === ProposalCardStatus.VotedFor
+        status === ProposalCardStatus.Voting
           ? globalClasses.yellowBorder
           : status === ProposalCardStatus.Winner
           ? globalClasses.pinkBorder
@@ -68,8 +66,7 @@ const ProposalCard: React.FC<{
           <Link
             to={`/proposal/${proposal.id}`}
             className={
-              status === ProposalCardStatus.CanVoteFor ||
-              status === ProposalCardStatus.VotedFor
+              status === ProposalCardStatus.Voting
                 ? globalClasses.fontYellow
                 : globalClasses.fontPink
             }
@@ -78,9 +75,7 @@ const ProposalCard: React.FC<{
           </Link>
         </div>
       </div>
-      {(status === ProposalCardStatus.CanVoteFor ||
-        status === ProposalCardStatus.VotedFor) &&
-        ctaButton}
+      {status === ProposalCardStatus.Voting && ctaButton}
     </Card>
   );
 };

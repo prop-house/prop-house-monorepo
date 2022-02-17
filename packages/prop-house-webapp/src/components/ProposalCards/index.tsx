@@ -1,11 +1,16 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuction,
+  StoredVote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
 import { setActiveProposals } from '../../state/slices/propHouse';
+import { useEthers } from '@usedapp/core';
+import numVotesForProposal from '../../utils/countNumVotesForProposal';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -14,9 +19,11 @@ const ProposalCards: React.FC<{
   const { auction, showAllProposals } = props;
 
   const dispatch = useAppDispatch();
+  const { account } = useEthers();
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
+  const [votes, setVotes] = useState<StoredVote[]>();
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegateVotes
@@ -26,10 +33,23 @@ const ProposalCards: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
+      const votes = proposals
+        .map((proposal: any) => proposal.votes)
+        .flat()
+        .filter((vote: any) => vote.address === account);
+      setVotes(votes);
     };
 
     fetchAuctionProposals();
-  }, [auction.id, dispatch]);
+  }, [auction.id, dispatch, account]);
+
+  const cardStatus = (proposalId: number): ProposalCardStatus => {
+    // if not in voting or not nouner, return default
+    return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
+      delegatedVotes === undefined
+      ? ProposalCardStatus.Default
+      : ProposalCardStatus.Voting;
+  };
 
   return (
     <Row>
@@ -41,13 +61,8 @@ const ProposalCards: React.FC<{
               <Col key={index} xl={4}>
                 <ProposalCard
                   proposal={proposal}
-                  status={
-                    auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-                    delegatedVotes &&
-                    delegatedVotes > 0
-                      ? ProposalCardStatus.CanVoteFor
-                      : ProposalCardStatus.Default
-                  }
+                  status={cardStatus(proposal.id)}
+                  votes={votes && numVotesForProposal(votes, proposal.id)}
                 />
               </Col>
             );
