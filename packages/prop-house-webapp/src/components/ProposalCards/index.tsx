@@ -26,25 +26,31 @@ const ProposalCards: React.FC<{
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, provider?.getSigner());
-  }, [provider, host]);
-
   const [userVotes, setUserVotes] = useState<StoredVote[]>();
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
   );
 
+  // initial fetch
   useEffect(() => {
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
       setUserVotes(extractAllVotes(proposals, account ? account : ''));
     };
-
     fetchAuctionProposals();
   }, [auction.id, dispatch, account]);
+
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, provider?.getSigner());
+  }, [provider, host]);
+
+  // update user votes on proposal updates
+  useEffect(() => {
+    if (!proposals) return;
+    setUserVotes(extractAllVotes(proposals, account ? account : ''));
+  }, [proposals]);
 
   const handleUserVote = async (direction: Direction, proposalId: number) => {
     if (!delegatedVotes || !userVotes) return;
