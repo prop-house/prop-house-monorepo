@@ -13,6 +13,8 @@ import { delegatedVotesToAddress } from '../../wrappers/subgraph';
 import { useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useDispatch } from 'react-redux';
+import { setDelegatedVotes } from '../../state/slices/propHouse';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -23,18 +25,18 @@ const FullAuction: React.FC<{
   const [isNouner, setIsNouner] = useState(false);
   const { account } = useEthers();
   const connect = useWeb3Modal();
+  const dispatch = useDispatch();
 
   const { loading, error, data } = useQuery(
     delegatedVotesToAddress(account ? account : '')
   );
 
   useEffect(() => {
-    // checks before verifying nouner status
-    account &&
-      !loading &&
-      !error &&
-      setIsNouner(data.delegates[0] && data.delegates[0].delegatedVotesRaw > 0);
-  }, [loading, error, data, account]);
+    if (!account || loading || error || !data.delegates[0]) return;
+    const delegatedVotes = data.delegates[0].delegatedVotesRaw;
+    setIsNouner(delegatedVotes > 0);
+    dispatch(setDelegatedVotes(delegatedVotes));
+  }, [loading, error, data, account, dispatch]);
 
   // alert to get nouners to connect when auctions in voting stage
   const disconnectedCopy = (
@@ -76,13 +78,7 @@ const FullAuction: React.FC<{
             <div className={classes.divider} />
           </Col>
         </Row>
-        <ProposalCards
-          proposals={
-            showAllProposals ? auction.proposals : auction.proposals.slice(0, 6)
-          }
-          auctionStatus={auctionStatus(auction)}
-          isNouner={isNouner}
-        />
+        <ProposalCards auction={auction} showAllProposals={showAllProposals} />
         {!showAllProposals && (
           <AllProposalsCTA
             numProposals={auction.proposals.length}

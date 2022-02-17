@@ -1,55 +1,57 @@
-import {
-  StoredProposal,
-  StoredVote,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEffect, useState, useRef } from 'react';
-import { useEthers } from '@usedapp/core';
-import { AuctionStatus } from '../../utils/auctionStatus';
+import { useEffect, useRef } from 'react';
+import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
+import { setActiveProposals } from '../../state/slices/propHouse';
 
 const ProposalCards: React.FC<{
-  proposals: StoredProposal[];
-  auctionStatus: AuctionStatus;
-  isNouner: boolean;
+  auction: StoredAuction;
+  showAllProposals: boolean;
 }> = (props) => {
-  const { proposals, auctionStatus, isNouner } = props;
+  const { auction, showAllProposals } = props;
 
-  const { account } = useEthers();
-  const [votes, setVotes] = useState<StoredVote[]>();
+  const dispatch = useAppDispatch();
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
+  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
+  const delegatedVotes = useAppSelector(
+    (state) => state.propHouse.delegateVotes
+  );
+
   useEffect(() => {
-    if (!account) return;
-    const fetchVotes = async () => {
-      const votes = await client.current.getVotesByAddress(account);
-      console.log(votes);
-      setVotes(votes);
+    const fetchAuctionProposals = async () => {
+      const proposals = await client.current.getAuctionProposals(auction.id);
+      dispatch(setActiveProposals(proposals));
     };
-    fetchVotes();
-  }, [account]);
+
+    fetchAuctionProposals();
+  }, [auction.id, dispatch]);
 
   return (
     <Row>
-      {proposals.map((proposal, index) => {
-        return (
-          <Col key={index} xl={4}>
-            <ProposalCard
-              proposal={proposal}
-              status={
-                auctionStatus === AuctionStatus.AuctionVoting && isNouner
-                  ? votes?.find((vote) => vote.proposalId === proposal.id)
-                    ? ProposalCardStatus.VotedFor
-                    : ProposalCardStatus.CanVoteFor
-                  : ProposalCardStatus.Default
-              }
-            />
-          </Col>
-        );
-      })}
+      {proposals &&
+        proposals
+          .slice(0, showAllProposals ? proposals.length : 6)
+          .map((proposal, index) => {
+            return (
+              <Col key={index} xl={4}>
+                <ProposalCard
+                  proposal={proposal}
+                  status={
+                    auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+                    delegatedVotes &&
+                    delegatedVotes > 0
+                      ? ProposalCardStatus.CanVoteFor
+                      : ProposalCardStatus.Default
+                  }
+                />
+              </Col>
+            );
+          })}
     </Row>
   );
 };
