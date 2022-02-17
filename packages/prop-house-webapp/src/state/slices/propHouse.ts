@@ -8,6 +8,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface PropHouseSlice {
   auctions: StoredAuction[];
   activeProposal?: StoredProposalWithVotes;
+  activeProposals?: StoredProposalWithVotes[];
+  delegateVotes?: number;
 }
 
 const initialState: PropHouseSlice = {
@@ -72,11 +74,26 @@ export const propHouseSlice = createSlice({
       );
       auction?.proposals.push(action.payload.proposal);
     },
+    setActiveProposals: (
+      state,
+      action: PayloadAction<StoredProposalWithVotes[]>
+    ) => {
+      state.activeProposals = action.payload;
+    },
+    setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
+      state.delegateVotes = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addAuction, addAuctions, setActiveProposal, appendProposal } =
-  propHouseSlice.actions;
+export const {
+  addAuction,
+  addAuctions,
+  setActiveProposal,
+  setActiveProposals,
+  appendProposal,
+  setDelegatedVotes,
+} = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
