@@ -46,6 +46,10 @@ const updateAuctionInState = (
   return state;
 };
 
+const sortProposals = (proposals: StoredProposalWithVotes[]) => {
+  return proposals.sort((a, b) => a.id - b.id);
+};
+
 export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
@@ -78,7 +82,7 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<StoredProposalWithVotes[]>
     ) => {
-      state.activeProposals = action.payload;
+      state.activeProposals = sortProposals(action.payload);
     },
     setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
       state.delegatedVotes = action.payload;
