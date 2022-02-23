@@ -79,9 +79,14 @@ const ProposalCards: React.FC<{
                 <ProposalCard
                   proposal={proposal}
                   status={cardStatus(proposal.id)}
-                  votes={
+                  votesFor={
                     userVotes &&
                     countNumVotesForProposal(userVotes, proposal.id)
+                  }
+                  votesLeft={
+                    delegatedVotes &&
+                    userVotes &&
+                    delegatedVotes - userVotes.length
                   }
                   handleUserVote={handleUserVote}
                 />

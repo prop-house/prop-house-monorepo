@@ -19,43 +19,41 @@ export enum ProposalCardStatus {
 const ProposalCard: React.FC<{
   proposal: StoredProposal;
   status: ProposalCardStatus;
-  votes?: number;
+  votesFor?: number;
+  votesLeft?: number;
   handleUserVote?: (direction: Direction, proposalId: number) => void;
 }> = (props) => {
-  const { proposal, status, votes, handleUserVote } = props;
+  const { proposal, status, votesFor, votesLeft, handleUserVote } = props;
 
   const ctaButton = (
     <Row>
-      <Col xs={6}>
-        <Button
-          text={
-            status === ProposalCardStatus.Voting
-              ? `Cast Vote (${votes ? votes : 0})`
-              : ''
-          }
-          bgColor={ButtonColor.Yellow}
-          classNames={classes.voteBtn}
-        />
-      </Col>
-      <Col xs={3}>
-        <Button
-          text="↑"
-          bgColor={ButtonColor.Yellow}
-          classNames={classes.voteBtn}
-          onClick={() =>
-            handleUserVote && handleUserVote(Direction.Up, proposal.id)
-          }
-        />
-      </Col>
-      <Col xs={3}>
-        <Button
-          text="↓"
-          bgColor={ButtonColor.Yellow}
-          classNames={classes.voteBtn}
-          onClick={() =>
-            handleUserVote && handleUserVote(Direction.Down, proposal.id)
-          }
-        />
+      <Col xs={12} className={classes.bottomContainer}>
+        <div className={classes.votesCopy}>
+          {votesFor && votesFor > 0
+            ? `Votes: ${votesFor}`
+            : votesLeft === 0
+            ? 'No votes left'
+            : `Cast vote`}
+        </div>
+        <div className={classes.votesButtonContainer}>
+          <Button
+            text="↑"
+            bgColor={ButtonColor.Yellow}
+            classNames={classes.voteBtn}
+            onClick={() =>
+              handleUserVote && handleUserVote(Direction.Up, proposal.id)
+            }
+          />
+          <Button
+            text="↓"
+            bgColor={ButtonColor.Yellow}
+            classNames={classes.voteBtn}
+            onClick={() =>
+              handleUserVote && handleUserVote(Direction.Down, proposal.id)
+            }
+            disabled={votesFor && votesFor === 0 ? true : false}
+          />
+        </div>
       </Col>
     </Row>
   );
@@ -78,7 +76,7 @@ const ProposalCard: React.FC<{
         <span>proposed</span>
       </div>
       <div className={classes.title}>{proposal.title}</div>
-      <div className={classes.bottomContainer}>
+      <div className={classes.timestampAndlinkContainer}>
         <div
           className={classes.timestamp}
           title={detailedTime(proposal.createdDate)}
