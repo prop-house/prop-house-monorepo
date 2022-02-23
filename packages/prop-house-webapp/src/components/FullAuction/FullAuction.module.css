@@ -23,3 +23,8 @@
 .alertWrapper button {
   margin: 0;
 }
+
+.connectedCopy {
+  color: var(--brand-gray);
+  font-weight: 500;
+}

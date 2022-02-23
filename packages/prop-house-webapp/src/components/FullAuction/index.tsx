@@ -58,8 +58,12 @@ const FullAuction: React.FC<{
   );
 
   // alert verifying that connected wallet is a nouner
-  const connectedCopy =
-    'You are a Noun owner! Cast your vote for the proposal you believe should receive funding.';
+  const connectedCopy = (
+    <div className={classes.connectedCopy}>
+      You are a Noun owner! Cast your vote for the proposal you believe should
+      receive funding.
+    </div>
+  );
 
   return (
     <>
