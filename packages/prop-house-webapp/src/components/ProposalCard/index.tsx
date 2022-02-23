@@ -9,7 +9,7 @@ import EthAddress from '../EthAddress';
 import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
-import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 export enum ProposalCardStatus {
   Default,
   Voting,

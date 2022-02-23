@@ -36,9 +36,7 @@ const VotingBar: React.FC<VotingBarProps> = (props) => {
     const newDirection =
       direction === userVoteDirection ? Direction.Abstain : direction;
 
-    const loggedVote = await votingWrapper.logVote(
-      new Vote(newDirection, activeProposal.id)
-    );
+    await votingWrapper.logVote(new Vote(newDirection, activeProposal.id));
     setUserVoteDirection(direction);
     refreshActiveProposal(votingWrapper, activeProposal, dispatch);
   };

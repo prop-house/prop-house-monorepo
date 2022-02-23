@@ -5,7 +5,6 @@ import {
   setActiveProposal,
   setActiveProposals,
 } from '../state/slices/propHouse';
-import { RootState } from '../state/store';
 
 const refreshActiveProposal = (
   client: PropHouseWrapper,
