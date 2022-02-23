@@ -55,9 +55,12 @@ const ProposalCards: React.FC<{
   const handleUserVote = async (direction: Direction, proposalId: number) => {
     if (!delegatedVotes || !userVotes) return;
 
-    // TODO: POLISH VOTING LOGIC IN BACKEND
-    const vote = await client.current.logVote(new Vote(direction, proposalId));
-    refreshActiveProposals(client.current, auction.id, dispatch);
+    try {
+      await client.current.logVote(new Vote(direction, proposalId));
+      refreshActiveProposals(client.current, auction.id, dispatch);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const cardStatus = (proposalId: number): ProposalCardStatus => {
