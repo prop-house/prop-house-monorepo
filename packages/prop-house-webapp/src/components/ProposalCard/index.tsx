@@ -56,7 +56,7 @@ const ProposalCard: React.FC<{
             onClick={() =>
               handleUserVote && handleUserVote(Direction.Down, proposal.id)
             }
-            disabled={votesFor && votesFor === 0 ? true : false}
+            disabled={votesFor === 0 ? true : false}
           />
         </div>
       </Col>
