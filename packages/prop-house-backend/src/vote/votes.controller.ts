@@ -84,7 +84,7 @@ export class VotesController {
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
       // Verify that user has not reached max votes
-      if (delegatedVotes === submittedVotesForAuction)
+      if (submittedVotesForAuction.length >= delegatedVotes)
         throw new HttpException(
           'Signer has consumed all delegated votes',
           HttpStatus.BAD_REQUEST,
