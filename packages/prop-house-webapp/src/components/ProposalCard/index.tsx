@@ -28,12 +28,17 @@ const ProposalCard: React.FC<{
   const ctaButton = (
     <Row>
       <Col xs={12} className={classes.bottomContainer}>
-        <div className={classes.votesCopy}>
+        <div
+          className={clsx(
+            classes.votesCopy,
+            votesFor === 0 ? classes.noVotesLeft : ''
+          )}
+        >
           {votesFor && votesFor > 0
             ? `Votes: ${votesFor}`
             : votesLeft === 0
             ? 'No votes left'
-            : `Cast vote`}
+            : 'Cast vote'}
         </div>
         <div className={classes.votesButtonContainer}>
           <Button

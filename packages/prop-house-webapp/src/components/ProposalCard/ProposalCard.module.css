@@ -63,7 +63,11 @@
 .votesCopy {
   font-weight: bold;
   font-size: medium;
-  color: var(--brand-gray);
+  color: var(--brand-black);
+}
+
+.noVotesLeft {
+  color: var(--brand-gray-semi-transparent);
 }
 
 .votesButtonContainer {

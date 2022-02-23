@@ -14,7 +14,10 @@ import { useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../hooks';
 import { setDelegatedVotes } from '../../state/slices/propHouse';
+import extractAllVotes from '../../utils/extractAllVotes';
+import VotesLeft from '../VotesLeft';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -26,6 +29,10 @@ const FullAuction: React.FC<{
   const { account } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
+  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
+  const delegatedVotes = useAppSelector(
+    (state) => state.propHouse.delegatedVotes
+  );
 
   const { loading, error, data } = useQuery(
     delegatedVotesToAddress(account ? account : '')
@@ -78,6 +85,13 @@ const FullAuction: React.FC<{
             <div className={classes.divider} />
           </Col>
         </Row>
+        {isNouner && proposals && account && delegatedVotes && (
+          <VotesLeft
+            numVotesLeft={
+              delegatedVotes - extractAllVotes(proposals, account).length
+            }
+          />
+        )}
         <ProposalCards auction={auction} showAllProposals={showAllProposals} />
         {!showAllProposals && (
           <AllProposalsCTA
