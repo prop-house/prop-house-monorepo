@@ -24,14 +24,11 @@ export class Vote extends SignedEntity {
   @Column()
   createdDate: Date;
 
+  @Column()
+  proposalId: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
-  }
-
-  static findByAddress(address: string) {
-    return this.createQueryBuilder('vote')
-      .where('vote.address = :address', { address })
-      .getMany();
   }
 }

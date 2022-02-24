@@ -1,32 +1,44 @@
-.author {
+.proposalCard {
+  min-height: 12rem;
+  display: flex;
+  flex-direction: column;
+}
+.authorContainer {
   font-size: 16px;
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
   display: flex;
-  flex-direction: row;
 }
-
-.author div {
-  margin-right: 0.3rem;
-}
-
-.author span {
+.authorContainer span {
+  margin-left: 0.3rem;
   font-weight: normal;
   color: var(--brand-black-tansparent);
+  display: inline;
 }
 
 .title {
-  font-size: 20px;
+  font-size: 18px;
+  height: 3rem;
   line-height: 140%;
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  line-height: X; /* fallback */
+  max-height: X * N; /* fallback */
 }
 
 .bottomContainer {
+  margin-top: auto;
   display: flex;
   justify-content: space-between;
+  align-items: flex-end;
 }
 
 .timestamp {
@@ -35,6 +47,11 @@
 }
 
 .readMore a {
-  color: var(--brand-pink) !important;
+  color: var(--brand-pink);
   text-decoration: none;
+}
+
+.voteBtn {
+  margin: 1.3rem 0 0 0;
+  width: 100%;
 }

@@ -1,87 +1,130 @@
-import classes from "./Create.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../../Card";
-import { Row, Col } from "react-bootstrap";
-import Button, { ButtonColor } from "../../Button";
-import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import ProposalEditor from "../../ProposalEditor";
-import Preview from "../Preview";
-import {
-  clearProposal,
-  patchProposal,
-} from "../../../state/slices/editor";
-import { useAppDispatch, useAppSelector } from "../../../hooks";
+import classes from './Create.module.css';
+import { Row, Col } from 'react-bootstrap';
+import Button, { ButtonColor } from '../../Button';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import ProposalEditor from '../../ProposalEditor';
+import Preview from '../Preview';
+import { clearProposal, patchProposal } from '../../../state/slices/editor';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import {
   Proposal,
   StoredAuction,
-} from "@nouns/prop-house-wrapper/dist/builders";
-import { addAuctions } from "../../../state/slices/propHouse";
-import { useEthers } from "@usedapp/core";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import isAuctionActive from "../../../utils/isAuctionActive";
-import { ProposalFields } from "../../../utils/proposalFields";
+} from '@nouns/prop-house-wrapper/dist/builders';
+import { appendProposal } from '../../../state/slices/propHouse';
+import { useEthers } from '@usedapp/core';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import isAuctionActive from '../../../utils/isAuctionActive';
+import { ProposalFields } from '../../../utils/proposalFields';
+import InspirationCard from '../../InspirationCard';
+import useWeb3Modal from '../../../hooks/useWeb3Modal';
+import Modal from '../../Modal';
 
 const isValidPropData = (data: ProposalFields) => {
-  return data.title !== "" && data.what !== "";
+  return data.title !== '' && data.what !== '';
 };
 
 const Create: React.FC<{}> = () => {
-  const [parentAuction, setParentAuction] = useState<undefined| number>(undefined);
+  const { library: provider, account } = useEthers();
+
+  const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
+    undefined
+  );
   const [showPreview, setShowPreview] = useState(false);
-  const dispatch = useAppDispatch();
+  const [showModal, setShowModal] = useState(false);
+
   const proposalEditorData = useAppSelector((state) => state.editor.proposal);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { library: provider, account, activateBrowserWallet } = useEthers();
+  const connect = useWeb3Modal();
+
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
   );
-  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
-  const auctions = useAppSelector(state => state.propHouse.auctions)
+  const auctions = useAppSelector((state) => state.propHouse.auctions);
+  const backendClient = useRef(
+    new PropHouseWrapper(backendHost, provider?.getSigner())
+  );
 
   useEffect(() => {
-    if(parentAuction !== undefined) return;
-    const openAuctions = auctions.filter(isAuctionActive)
+    if (parentAuction !== undefined) return;
+    const openAuctions = auctions.filter(isAuctionActive);
     // Set to the first open Auction
-    if(openAuctions.length > 0) setParentAuction(openAuctions[0].id)
-  }, [auctions, parentAuction])
+    if (openAuctions.length > 0) setParentAuction(openAuctions[0]);
+  }, [auctions, parentAuction]);
 
   useEffect(() => {
-    backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+    backendClient.current = new PropHouseWrapper(
+      backendHost,
+      provider?.getSigner()
+    );
   }, [provider, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
   };
 
+  const submitProposal = async () => {
+    if (!parentAuction) return;
+    const proposal = await backendClient.current.createProposal(
+      new Proposal(
+        proposalEditorData.title,
+        proposalEditorData.who,
+        proposalEditorData.what,
+        proposalEditorData.timeline,
+        proposalEditorData.links,
+        parentAuction.id
+      )
+    );
+
+    dispatch(appendProposal({ proposal, auctionId: parentAuction.id }));
+    dispatch(clearProposal());
+    setShowModal(true);
+  };
+
+  const successfulSubmissionModalContent = {
+    title: 'Congrats!',
+    content: () => {
+      return (
+        <>
+          <p>{`You've successfully submitted your proposal for Auction ${
+            parentAuction && parentAuction.id
+          }`}</p>
+          <Button
+            text="View auction"
+            bgColor={ButtonColor.White}
+            onClick={() =>
+              navigate(`/auction/${parentAuction && parentAuction.id}`)
+            }
+          />
+        </>
+      );
+    },
+    onDismiss: () => navigate(`/auction/${parentAuction && parentAuction.id}`),
+  };
+
   return parentAuction ? (
     <>
+      {showModal && (
+        <Modal
+          title={successfulSubmissionModalContent.title}
+          content={successfulSubmissionModalContent.content()}
+          onDismiss={() => successfulSubmissionModalContent.onDismiss()}
+        />
+      )}
+
+      <InspirationCard />
       <Row>
-        <Col xl={12}>
-          <h1>Create proposal for Auction {parentAuction}</h1>
-          <p>Proposals will be voted by Nouners to get funded</p>
+        <Col xl={12} className={classes.proposalHelperWrapper}>
+          <h1 className={classes.proposalHelper}>
+            Creating proposal for{' '}
+            <span>
+              Auction {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
+            </span>
+          </h1>
         </Col>
+        <hr />
       </Row>
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.twenty}
-        classNames={classes.card}
-      >
-        <Row>
-          <Col xl={10}>
-            <p>
-              We encourage proposals which further proliferate Nouns onto the
-              world while accurately representing the Nouns culture. If your
-              proposal is chosen, you will be given the responsibility of
-              completing the work you’ve outlined below. Please be descriptive!
-            </p>
-          </Col>
-          <Col xl={2}>
-            <Link to="/learn">
-              <Button text="Learn more" bgColor={ButtonColor.White} />
-            </Link>
-          </Col>
-        </Row>
-      </Card>
 
       <Row>
         <Col xl={12}>
@@ -96,7 +139,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? "Back to editor" : "Preview"}
+            text={showPreview ? 'Back to editor' : 'Preview'}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {
@@ -109,32 +152,14 @@ const Create: React.FC<{}> = () => {
             <Button
               text="Sign and Submit"
               bgColor={ButtonColor.Pink}
-              onClick={async () => {
-                await backendClient.createProposal(
-                  new Proposal(
-                    proposalEditorData.title,
-                    proposalEditorData.who,
-                    proposalEditorData.what,
-                    proposalEditorData.timeline,
-                    proposalEditorData.links,
-                    parentAuction
-                  )
-                );
-                await backendClient
-                  .getAuctions()
-                  .then((auctions: StoredAuction[]) =>
-                    dispatch(addAuctions(auctions))
-                  );
-                dispatch(clearProposal());
-                navigate("/");
-              }}
+              onClick={submitProposal}
               disabled={!isValidPropData(proposalEditorData)}
             />
           ) : (
             <Button
               bgColor={ButtonColor.Pink}
               text="Connect Wallet To Submit"
-              onClick={() => activateBrowserWallet()}
+              onClick={connect}
             />
           )}
         </Col>

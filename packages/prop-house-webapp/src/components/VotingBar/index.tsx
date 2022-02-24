@@ -1,17 +1,13 @@
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import {
-  Direction,
-  StoredProposalWithVotes,
-  Vote,
-} from "@nouns/prop-house-wrapper/dist/builders";
-import Button from "@restart/ui/esm/Button";
-import { useEthers } from "@usedapp/core";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks";
-import accountVoteDirection from "../../utils/accountVoteDirection";
-import refreshActiveProposal from "../../utils/refreshActiveProposal";
-import classes from "./VotingBar.module.css";
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import Button from '@restart/ui/esm/Button';
+import { useEthers } from '@usedapp/core';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../hooks';
+import accountVoteDirection from '../../utils/accountVoteDirection';
+import refreshActiveProposal from '../../utils/refreshActiveProposal';
+import classes from './VotingBar.module.css';
 
 export interface VotingBarProps {
   votingWrapper: PropHouseWrapper;
@@ -50,13 +46,13 @@ const VotingBar: React.FC<VotingBarProps> = (props) => {
   return (
     <div className={classes.votingBar}>
       <Button onClick={() => handleUserVote(Direction.Up)}>
-        {userVoteDirection === Direction.Up ? "Remove Vote For" : "Vote For"}
+        {userVoteDirection === Direction.Up ? 'Remove Vote For' : 'Vote For'}
       </Button>
       <div>Score: {activeProposal.score}</div>
       <Button onClick={() => handleUserVote(Direction.Down)}>
         {userVoteDirection === Direction.Down
-          ? "Remove Vote Against"
-          : "Vote Against"}
+          ? 'Remove Vote Against'
+          : 'Vote Against'}
       </Button>
     </div>
   );

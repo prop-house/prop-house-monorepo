@@ -4,41 +4,89 @@ import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
-import { StatusPillState } from '../StatusPill';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-
-export enum AuctionStatus {
-  NotStarted,
-  AcceptingProposals,
-  Voting,
-  Ended,
-}
+import auctionStatus from '../../utils/auctionStatus';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import { useEthers } from '@usedapp/core';
+import { useQuery } from '@apollo/client';
+import { delegatedVotesToAddress } from '../../wrappers/subgraph';
+import { useEffect, useState } from 'react';
+import Button, { ButtonColor } from '../Button';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useDispatch } from 'react-redux';
+import { setDelegatedVotes } from '../../state/slices/propHouse';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
+  showAllProposals: boolean;
 }> = (props) => {
-  const { auction } = props;
-  const showAllProposals = auction.proposals.length > 6
+  const { auction, showAllProposals } = props;
+
+  const [isNouner, setIsNouner] = useState(false);
+  const { account } = useEthers();
+  const connect = useWeb3Modal();
+  const dispatch = useDispatch();
+
+  const { loading, error, data } = useQuery(
+    delegatedVotesToAddress(account ? account : '')
+  );
+
+  useEffect(() => {
+    if (!account || loading || error || !data.delegates[0]) return;
+    const delegatedVotes = data.delegates[0].delegatedVotesRaw;
+    setIsNouner(delegatedVotes > 0);
+    dispatch(setDelegatedVotes(delegatedVotes));
+  }, [loading, error, data, account, dispatch]);
+
+  // alert to get nouners to connect when auctions in voting stage
+  const disconnectedCopy = (
+    <div className={classes.alertWrapper}>
+      <p>The voting period is now open. Noun owners can vote for proposals.</p>
+      <Button
+        text="Connect wallet"
+        bgColor={ButtonColor.Pink}
+        onClick={connect}
+      />
+    </div>
+  );
+
+  // alert verifying that connected wallet is a nouner
+  const connectedCopy =
+    'You are a Noun owner! Cast your vote for the proposal you believe should receive funding.';
 
   return (
-    <Card
-      bgColor={CardBgColor.LightPurple}
-      borderRadius={CardBorderRadius.thirty}
-    >
-      <AuctionHeader
-        auction={auction}
-      />
-      <Row>
-        <Col xs={4} md={2}>
-          <div className={classes.proposalTitle}>Proposals</div>
-        </Col>
-        <Col xs={8} md={10}>
-          <div className={classes.divider} />
-        </Col>
-      </Row>
-      <ProposalCards proposals={auction.proposals} />
-      {showAllProposals && <AllProposalsCTA />}
-    </Card>
+    <>
+      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+        (isNouner === true || account === undefined) && (
+          <Card
+            bgColor={CardBgColor.White}
+            borderRadius={CardBorderRadius.twenty}
+          >
+            <div>{isNouner ? connectedCopy : disconnectedCopy}</div>
+          </Card>
+        )}
+      <Card
+        bgColor={CardBgColor.LightPurple}
+        borderRadius={CardBorderRadius.thirty}
+      >
+        <AuctionHeader auction={auction} />
+        <Row>
+          <Col xs={4} md={2}>
+            <div className={classes.proposalTitle}>Proposals</div>
+          </Col>
+          <Col xs={8} md={10}>
+            <div className={classes.divider} />
+          </Col>
+        </Row>
+        <ProposalCards auction={auction} showAllProposals={showAllProposals} />
+        {!showAllProposals && (
+          <AllProposalsCTA
+            numProposals={auction.proposals.length}
+            auctionId={auction.id}
+          />
+        )}
+      </Card>
+    </>
   );
 };
 

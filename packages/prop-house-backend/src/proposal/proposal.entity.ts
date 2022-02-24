@@ -19,7 +19,7 @@ export class Proposal extends SignedEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default: true})
+  @Column({ default: true })
   visible: boolean;
 
   @Column()
@@ -42,13 +42,14 @@ export class Proposal extends SignedEntity {
   auction: Auction;
 
   @RelationId((proposal: Proposal) => proposal.auction)
+  @Column({ type: 'number' })
   auctionId: number;
 
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()
   votes: Vote[];
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   score: number;
 
   @BeforeUpdate()
@@ -59,7 +60,7 @@ export class Proposal extends SignedEntity {
   @Column()
   createdDate: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lastUpdatedDate: Date;
 
   @BeforeInsert()

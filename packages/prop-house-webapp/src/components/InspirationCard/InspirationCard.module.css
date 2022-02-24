@@ -1,0 +1,23 @@
+.inspoHeader {
+  padding-left: 2rem;
+}
+.inspoHeader h2 {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.itemCard {
+  border-radius: 20px !important;
+}
+.itemCard img {
+  border-top-left-radius: 19px !important;
+  border-top-right-radius: 19px !important;
+}
+.arrow {
+  float: right;
+}
+
+@media (max-width: 1200px) {
+  .itemCard {
+    margin-bottom: 1.4rem;
+  }
+}

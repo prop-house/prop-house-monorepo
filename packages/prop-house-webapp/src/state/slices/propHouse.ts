@@ -1,12 +1,15 @@
 import {
+  StoredProposal,
   StoredAuction,
   StoredProposalWithVotes,
-} from "@nouns/prop-house-wrapper/dist/builders";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+} from '@nouns/prop-house-wrapper/dist/builders';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface PropHouseSlice {
   auctions: StoredAuction[];
   activeProposal?: StoredProposalWithVotes;
+  activeProposals?: StoredProposalWithVotes[];
+  delegatedVotes?: number;
 }
 
 const initialState: PropHouseSlice = {
@@ -43,8 +46,12 @@ const updateAuctionInState = (
   return state;
 };
 
+const sortProposals = (proposals: StoredProposalWithVotes[]) => {
+  return proposals.sort((a, b) => a.id - b.id);
+};
+
 export const propHouseSlice = createSlice({
-  name: "propHouse",
+  name: 'propHouse',
   initialState,
   reducers: {
     addAuction: (state, action: PayloadAction<StoredAuction>) => {
@@ -62,11 +69,35 @@ export const propHouseSlice = createSlice({
     ) => {
       state.activeProposal = action.payload;
     },
+    appendProposal: (
+      state,
+      action: PayloadAction<{ proposal: StoredProposal; auctionId: number }>
+    ) => {
+      const auction = state.auctions.find(
+        (auction) => auction.id === action.payload.auctionId
+      );
+      auction?.proposals.push(action.payload.proposal);
+    },
+    setActiveProposals: (
+      state,
+      action: PayloadAction<StoredProposalWithVotes[]>
+    ) => {
+      state.activeProposals = sortProposals(action.payload);
+    },
+    setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
+      state.delegatedVotes = action.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { addAuction, addAuctions, setActiveProposal } =
-  propHouseSlice.actions;
+export const {
+  addAuction,
+  addAuctions,
+  setActiveProposal,
+  setActiveProposals,
+  appendProposal,
+  setDelegatedVotes,
+} = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
