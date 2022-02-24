@@ -7,6 +7,7 @@ import { delegatedVotesToAddressQuery } from 'src/wrappers/subgraph';
 import { gql } from '@apollo/client';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
+import { isDevEnv } from 'src/config/configuration';
 
 @Injectable()
 export class VotesService {
@@ -40,13 +41,16 @@ export class VotesService {
   }
 
   async getNumDelegatedVotes(address: string) {
+    // Return 10 votes if in development mode
+    if (isDevEnv()) return 10;
+
     const result = await client.query({
       query: gql(delegatedVotesToAddressQuery(address)),
     });
 
     return result.data.delegates[0]
       ? result.data.delegates[0].delegatedVotesRaw
-      : undefined;
+      : 0;
   }
 
   async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
