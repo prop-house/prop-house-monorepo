@@ -50,13 +50,12 @@ const ProposalCards: React.FC<{
   useEffect(() => {
     if (!proposals) return;
     setUserVotes(extractAllVotes(proposals, account ? account : ''));
-  }, [proposals]);
+  }, [proposals, account]);
 
   const handleUserVote = async (direction: Direction, proposalId: number) => {
     if (!delegatedVotes || !userVotes) return;
 
-    // TODO: POLISH VOTING LOGIC IN BACKEND
-    const vote = await client.current.logVote(new Vote(direction, proposalId));
+    await client.current.logVote(new Vote(direction, proposalId));
     refreshActiveProposals(client.current, auction.id, dispatch);
   };
 
