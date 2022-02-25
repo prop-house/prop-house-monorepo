@@ -31,10 +31,4 @@ export class Vote extends SignedEntity {
   setCreatedDate() {
     this.createdDate = new Date();
   }
-
-  static findByAddress(address: string) {
-    return this.createQueryBuilder('vote')
-      .where('vote.address = :address', { address })
-      .getMany();
-  }
 }

@@ -1,8 +1,13 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vote } from './vote.entity';
+import { client } from 'src/wrappers/subgraph';
+import { delegatedVotesToAddressQuery } from 'src/wrappers/subgraph';
+import { gql } from '@apollo/client';
+import { CreateVoteDto } from './vote.types';
+import { Proposal } from 'src/proposal/proposal.entity';
+import { isDevEnv } from 'src/config/configuration';
 
 @Injectable()
 export class VotesService {
@@ -29,6 +34,36 @@ export class VotesService {
   }
 
   async findByAddress(address: string) {
-    return Vote.findByAddress(address)
+    return this.votesRepository.find({
+      relations: ['proposal'],
+      where: { address },
+    });
+  }
+
+  async getNumDelegatedVotes(address: string) {
+    // Return 10 votes if in development mode
+    if (isDevEnv()) return 10;
+
+    const result = await client.query({
+      query: gql(delegatedVotesToAddressQuery(address)),
+    });
+
+    return result.data.delegates[0]
+      ? result.data.delegates[0].delegatedVotesRaw
+      : 0;
+  }
+
+  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
+    // Create vote for proposal
+    const vote = new Vote();
+    vote.address = createVoteDto.address;
+    vote.proposal = proposal;
+    vote.direction = createVoteDto.direction;
+    vote.signedData = createVoteDto.signedData;
+
+    // Store the new vote
+    await this.store(vote);
+
+    return vote;
   }
 }

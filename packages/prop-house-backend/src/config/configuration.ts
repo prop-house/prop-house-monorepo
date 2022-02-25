@@ -1,16 +1,17 @@
 export interface DbConfig {
-	port: number;
-	host: string;
-	username: string;
-	password: string;
-	database: string;
+  port: number;
+  host: string;
+  username: string;
+  password: string;
+  database: string;
 }
 
 export interface Config {
-	database: DbConfig
+  database: DbConfig;
+  env: string;
 }
 
-export default ():Config => ({
+const config = (): Config => ({
   database: {
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     host: process.env.DB_HOST,
@@ -18,4 +19,17 @@ export default ():Config => ({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
   },
+  env: process.env.NODE_ENV ?? 'development',
 });
+
+export const subgraphApiUri =
+  'https://api.thegraph.com/subgraphs/name/nounsdao/nouns-subgraph';
+
+export const envComparitorFactory = (value: RegExp) => () =>
+  config().env.match(value) !== null;
+
+export const isDevEnv = envComparitorFactory(/^dev(elopment)?$/);
+
+export const isProdEnv = envComparitorFactory(/^prod(uction)?$/);
+
+export default config;
