@@ -41,10 +41,12 @@
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-.btnYellowBg {
+.btnYellowBg,
+.btnYellowBg:disabled {
   color: white;
   background-color: var(--brand-yellow);
   border-color: var(--brand-yellow);
+  opacity: 1;
 }
 
 .btnYellowBg:hover {

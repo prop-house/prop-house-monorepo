@@ -34,7 +34,7 @@
   max-height: X * N; /* fallback */
 }
 
-.bottomContainer {
+.timestampAndlinkContainer {
   margin-top: auto;
   display: flex;
   justify-content: space-between;
@@ -51,7 +51,35 @@
   text-decoration: none;
 }
 
+.bottomContainer {
+  border-top: 1px var(--brand-gray-transparent) solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+
+.votesCopy {
+  font-weight: bold;
+  font-size: medium;
+  color: var(--brand-black);
+}
+
+.noVotesLeft {
+  color: var(--brand-gray-semi-transparent);
+}
+
+.votesButtonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .voteBtn {
-  margin: 1.3rem 0 0 0;
-  width: 100%;
+  margin: 0 0 0 1rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
 }
