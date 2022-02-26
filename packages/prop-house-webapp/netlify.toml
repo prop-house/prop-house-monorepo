@@ -1,2 +1,0 @@
-[context."master".environment]
-    NODE_ENV = "development"
