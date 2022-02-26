@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface ConfigurationSlice {
   etherscanHost: string;
@@ -7,10 +7,10 @@ export interface ConfigurationSlice {
 }
 
 const initialState: ConfigurationSlice = {
-  etherscanHost: "https://etherscan.io",
-  backendHost: "http://localhost:3000",
-  displayAdmin: process.env.NODE_ENV === "production" ? false : true
-}
+  etherscanHost: 'https://etherscan.io',
+  backendHost: 'https://dev.backend.prop.house',
+  displayAdmin: process.env.NODE_ENV === 'production' ? false : true,
+};
 
 export const configSlice = createSlice({
   name: 'config',
@@ -20,12 +20,12 @@ export const configSlice = createSlice({
       state.displayAdmin = action.payload;
     },
     toggleDisplayAdmin: (state, action: PayloadAction<void>) => {
-      state.displayAdmin = !state.displayAdmin
+      state.displayAdmin = !state.displayAdmin;
     },
-  }
-})
+  },
+});
 
 // Action creators are generated for each case reducer function
-export const { setDisplayAdmin, toggleDisplayAdmin } = configSlice.actions
+export const { setDisplayAdmin, toggleDisplayAdmin } = configSlice.actions;
 
-export default configSlice.reducer
+export default configSlice.reducer;
