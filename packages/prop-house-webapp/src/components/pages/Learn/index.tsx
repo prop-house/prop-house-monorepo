@@ -31,7 +31,7 @@ const Learn = () => {
           <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
             <h2>Plug into the Nouns treasury</h2>
             <p>
-              The Nouns DAO treasury has amassed $70M and counting since
+              The Nouns DAO treasury has amassed $50M+ and counting since
               inception. Prop House aims to make it easy for anyone with an
               Ethereum address to plug in and use the treasury to build out
               their ideas.
