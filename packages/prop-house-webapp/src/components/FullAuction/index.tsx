@@ -40,7 +40,7 @@ const FullAuction: React.FC<{
 
   useEffect(() => {
     // development env delegated votes
-    if (process.env.REACT_APP_NODE_ENV === 'development') {
+    if (process.env.REACT_APP_NODE_ENV === 'development' && account) {
       setIsNouner(true);
       dispatch(setDelegatedVotes(10));
       return;
