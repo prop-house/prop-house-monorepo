@@ -9,7 +9,7 @@ export interface ConfigurationSlice {
 const initialState: ConfigurationSlice = {
   etherscanHost: 'https://etherscan.io',
   backendHost: 'https://dev.backend.prop.house',
-  displayAdmin: process.env.NODE_ENV === 'production' ? false : true,
+  displayAdmin: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
 };
 
 export const configSlice = createSlice({
