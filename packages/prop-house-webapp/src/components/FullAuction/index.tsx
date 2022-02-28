@@ -74,7 +74,8 @@ const FullAuction: React.FC<{
 
   return (
     <>
-      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+      {showAllProposals &&
+        auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         (isNouner === true || account === undefined) && (
           <Card
             bgColor={CardBgColor.White}
