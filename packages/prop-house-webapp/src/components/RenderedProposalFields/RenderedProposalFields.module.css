@@ -1,5 +1,5 @@
 .previewCol h1 {
-  margin: 2rem 0rem;
+  margin: 2rem 0rem 0.5rem 0rem;
 }
 
 .previewCol h2 {
@@ -16,4 +16,13 @@
 
 hr {
   background-color: var(--brand-gray);
+}
+
+.submittedBy {
+  display: flex;
+  color: var(--brand-gray);
+  font-weight: 500;
+}
+.submittedBy a {
+  margin-left: 0.5rem;
 }
