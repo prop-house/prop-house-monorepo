@@ -41,12 +41,15 @@
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-.btnYellowBg,
-.btnYellowBg:disabled {
+.btnYellowBg {
   color: white;
   background-color: var(--brand-yellow);
   border-color: var(--brand-yellow);
   opacity: 1;
+}
+.btnYellowBg:disabled {
+  border-color: var(--brand-gray);
+  background-color: var(--brand-gray);
 }
 
 .btnYellowBg:hover {
