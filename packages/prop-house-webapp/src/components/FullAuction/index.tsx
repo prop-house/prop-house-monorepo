@@ -97,7 +97,11 @@ const FullAuction: React.FC<{
             <div className={classes.divider} />
           </Col>
         </Row>
-        {isNouner && proposals && account && delegatedVotes && (
+        {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+          isNouner &&
+          proposals &&
+          account &&
+          delegatedVotes && (
           <VotesLeft
             numVotesLeft={
               delegatedVotes - extractAllVotes(proposals, account).length
