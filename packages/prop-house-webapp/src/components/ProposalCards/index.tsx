@@ -70,8 +70,8 @@ const ProposalCards: React.FC<{
         title: 'Voting',
         content:
           direction === Direction.Up
-            ? `Please sign the message with your wallet to vote on proposal #${proposalId}`
-            : `Please sign the message with your wallet to remove your vote on proposal #${proposalId}`,
+            ? `Please sign the message to vote for proposal #${proposalId}`
+            : `Please sign the message to remove your vote on proposal #${proposalId}`,
       });
 
       await client.current.logVote(new Vote(direction, proposalId));
@@ -81,7 +81,7 @@ const ProposalCards: React.FC<{
         content:
           direction === Direction.Up
             ? `You have successfully voted for proposal #${proposalId}`
-            : `You have successfully removed a vote FOR #${proposalId}`,
+            : `You have successfully removed a vote for proposal #${proposalId}`,
       });
 
       refreshActiveProposals(client.current, auction.id, dispatch);
