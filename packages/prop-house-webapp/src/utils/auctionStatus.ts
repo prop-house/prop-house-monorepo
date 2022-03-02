@@ -32,4 +32,26 @@ const auctionStatus = (auction: StoredAuction): AuctionStatus => {
   }
 };
 
+/**
+ * Returns copy for deadline corresponding to auction status
+ */
+export const deadlineCopy = (auction: StoredAuction) => {
+  const status = auctionStatus(auction);
+  return status === AuctionStatus.AuctionAcceptingProps
+    ? 'Proposal deadline'
+    : status === AuctionStatus.AuctionVoting
+    ? 'Voting deadline'
+    : status === AuctionStatus.AuctionEnded
+    ? 'Auction ended'
+    : '';
+};
+
+/**
+ * Returns deadlione date for corresponding to auction status
+ */
+export const deadlineTime = (auction: StoredAuction) =>
+  auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
+    ? auction.proposalEndTime
+    : auction.votingEndTime;
+
 export default auctionStatus;

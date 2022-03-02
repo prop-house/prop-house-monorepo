@@ -8,7 +8,10 @@ import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import formatTime from '../../utils/formatTime';
 import isAuctionClosed from '../../utils/isAuctionClosed';
-import auctionStatus from '../../utils/auctionStatus';
+import auctionStatus, {
+  deadlineCopy,
+  deadlineTime,
+} from '../../utils/auctionStatus';
 import { useLocation } from 'react-router-dom';
 
 const AuctionHeader: React.FC<{
@@ -66,9 +69,11 @@ const AuctionHeader: React.FC<{
           >{`${fundingAmount.toFixed(2)} Ξ`}</div>
         </Col>
         <Col xl={3} md={12} className={classes.rightSectionSubsection}>
-          <div className={classes.rightSectionTitle}>Proposal deadline</div>
+          <div className={classes.rightSectionTitle}>
+            {deadlineCopy(auction)}
+          </div>
           <div className={classes.rightSectionSubtitle}>
-            {diffTime(auction.proposalEndTime)}
+            {diffTime(deadlineTime(auction))}
           </div>
         </Col>
         {displayCreateButton && (
