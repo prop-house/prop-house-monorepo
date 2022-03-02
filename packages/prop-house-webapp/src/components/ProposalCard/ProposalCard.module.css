@@ -60,10 +60,21 @@
   padding-top: 1rem;
 }
 
-.votesCopy {
+.votesCopyContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.yourVotesCopy {
   font-weight: bold;
-  font-size: medium;
+  font-size: small;
   color: var(--brand-black);
+}
+
+.totalVotesCopy {
+  font-weight: bold;
+  font-size: small;
+  color: var(--brand-gray);
 }
 
 .noVotesLeft {

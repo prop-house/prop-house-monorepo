@@ -2,7 +2,7 @@ import classes from './ProposalCard.module.css';
 import globalClasses from '../../css/globals.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { Link } from 'react-router-dom';
-import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import detailedTime from '../../utils/detailedTime';
 import EthAddress from '../EthAddress';
@@ -10,6 +10,7 @@ import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+
 export enum ProposalCardStatus {
   Default,
   Voting,
@@ -17,7 +18,7 @@ export enum ProposalCardStatus {
 }
 
 const ProposalCard: React.FC<{
-  proposal: StoredProposal;
+  proposal: StoredProposalWithVotes;
   status: ProposalCardStatus;
   votesFor?: number;
   votesLeft?: number;
@@ -28,17 +29,13 @@ const ProposalCard: React.FC<{
   const ctaButton = (
     <Row>
       <Col xs={12} className={classes.bottomContainer}>
-        <div
-          className={clsx(
-            classes.votesCopy,
-            votesFor === 0 ? classes.noVotesLeft : ''
+        <div className={classes.votesCopyContainer}>
+          {status === ProposalCardStatus.Voting && (
+            <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-        >
-          {votesFor && votesFor > 0
-            ? `Votes: ${votesFor}`
-            : votesLeft === 0
-            ? 'No votes left'
-            : 'Cast vote'}
+          <div className={classes.totalVotesCopy}>
+            Total votes: {proposal.votes.length}
+          </div>
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
