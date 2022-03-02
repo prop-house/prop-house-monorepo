@@ -16,15 +16,6 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
           <hr />
           <h2>Description</h2>
           <p>{fields.what}</p>
-          <hr />
-          <h2>Builders</h2>
-          <p>{fields.who}</p>
-          <hr />
-          <h2>Timeline</h2>
-          <p>{fields.timeline}</p>
-          <hr />
-          <h2>Links</h2>
-          <p>{fields.links}</p>
         </Col>
       </Row>
     </>
