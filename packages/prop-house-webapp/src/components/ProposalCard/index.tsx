@@ -48,6 +48,7 @@ const ProposalCard: React.FC<{
             onClick={() =>
               handleUserVote && handleUserVote(Direction.Up, proposal.id)
             }
+            disabled={votesLeft === 0}
           />
           <Button
             text="↓"
