@@ -19,69 +19,109 @@ export class PropHouseWrapper {
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {
-    return (await axios.post(`${this.host}/auctions`, auction)).data;
+    try {
+      return (await axios.post(`${this.host}/auctions`, auction)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getAuctions(): Promise<StoredAuction[]> {
-    const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
-    return rawAuctions.map(StoredAuction.FromResponse);
+    try {
+      const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
+      return rawAuctions.map(StoredAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getAllProposals() {
-    return (await axios.get(`${this.host}/proposals`)).data;
+    try {
+      return (await axios.get(`${this.host}/proposals`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getProposal(id: number) {
-    return (await axios.get(`${this.host}/proposals/${id}`)).data;
+    try {
+      return (await axios.get(`${this.host}/proposals/${id}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getAuctionProposals(auctionId: number) {
-    return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`))
-      .data;
+    try {
+      return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`))
+        .data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async createProposal(proposal: Proposal) {
     if (!this.signer) return;
-    const signedPayload = await proposal.signedPayload(this.signer);
-    return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
+    try {
+      const signedPayload = await proposal.signedPayload(this.signer);
+      return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async logVote(vote: Vote) {
     if (!this.signer) return;
-    const signedPayload = await vote.signedPayload(this.signer);
-    return (await axios.post(`${this.host}/votes`, signedPayload)).data;
+    try {
+      const signedPayload = await vote.signedPayload(this.signer);
+      return (await axios.post(`${this.host}/votes`, signedPayload)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getAddressFiles(address: string): Promise<StoredFile[]> {
-    return (await axios.get(`${this.host}/file/${address}`)).data;
+    try {
+      return (await axios.get(`${this.host}/file/${address}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async postFile(file: File, name: string) {
     if (!this.signer) return;
-    const form = new FormData();
-    form.append('file', file, name);
-    form.append('name', name);
-    const fileBuffer = Buffer.from(await file.arrayBuffer());
-    const signature = await this.signer.signMessage(fileBuffer);
-    form.append('signature', signature);
-    console.log(form);
-    return await axios.post(`${this.host}/file`, form);
+    try {
+      const form = new FormData();
+      form.append('file', file, name);
+      form.append('name', name);
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
+      const signature = await this.signer.signMessage(fileBuffer);
+      form.append('signature', signature);
+      console.log(form);
+      return await axios.post(`${this.host}/file`, form);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async postFileBuffer(fileBuffer: Buffer, name: string) {
     if (!this.signer) return;
-    const form = new FormData();
-    form.append('file', fileBuffer, name);
-    form.append('name', name);
-    const signature = await this.signer.signMessage(fileBuffer);
-    form.append('signature', signature);
-    console.log(form);
-    console.log(form.getHeaders());
-    return await axios.post(`${this.host}/file`, form, {
-      headers: {
-        ...form.getHeaders(),
-      },
-    });
+    try {
+      const form = new FormData();
+      form.append('file', fileBuffer, name);
+      form.append('name', name);
+      const signature = await this.signer.signMessage(fileBuffer);
+      form.append('signature', signature);
+      console.log(form);
+      console.log(form.getHeaders());
+      return await axios.post(`${this.host}/file`, form, {
+        headers: {
+          ...form.getHeaders(),
+        },
+      });
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async postFileFromDisk(path: string, name: string) {
@@ -94,6 +134,10 @@ export class PropHouseWrapper {
   }
 
   async getVotesByAddress(address: string): Promise<StoredVote[]> {
+    try {
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 }
