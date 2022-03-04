@@ -47,6 +47,7 @@
   max-height: 50vh;
   overflow-y: auto;
   color: var(--brand-gray);
+  white-space: pre-line;
 }
 
 .modal .closeButton {
