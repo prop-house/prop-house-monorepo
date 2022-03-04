@@ -90,8 +90,8 @@ const ProposalCards: React.FC<{
         title: 'Error',
         content:
           direction === Direction.Up
-            ? `Failed to vote on proposal #${proposalId}`
-            : `Failed to remove vote on proposal #${proposalId}`,
+            ? `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`
+            : `Failed to remove vote on proposal #${proposalId}.\n\nError message: ${e}`,
       });
     }
   };
