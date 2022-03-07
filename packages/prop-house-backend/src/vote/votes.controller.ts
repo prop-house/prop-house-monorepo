@@ -40,7 +40,7 @@ export class VotesController {
   }
 
   @Post()
-  async create(@Body() createVoteDto: CreateVoteDto): Promise<Vote> {
+  async create(@Body() createVoteDto: CreateVoteDto) {
     const foundProposal = await this.proposalService.findOne(
       createVoteDto.proposalId,
     );
@@ -101,8 +101,6 @@ export class VotesController {
       );
       // Rollup the score for the proposal
       await this.proposalService.rollupScore(foundProposal.id);
-      // Return the vote _with_ the new proposal state
-      return this.votesService.findOne(newVote.id);
     }
 
     // Voting down
