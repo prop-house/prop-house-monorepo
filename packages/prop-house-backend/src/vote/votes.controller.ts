@@ -95,10 +95,7 @@ export class VotesController {
           HttpStatus.BAD_REQUEST,
         );
 
-      const newVote = await this.votesService.createNewVote(
-        createVoteDto,
-        foundProposal,
-      );
+      await this.votesService.createNewVote(createVoteDto, foundProposal);
       // Rollup the score for the proposal
       await this.proposalService.rollupScore(foundProposal.id);
     }
