@@ -84,7 +84,9 @@ export class VotesController {
     // Get votes by user for auction
     const signerVotesForAuction = (
       await this.votesService.findByAddress(createVoteDto.address)
-    ).filter((vote) => vote.proposal.auctionId === foundProposal.auctionId);
+    )
+      .filter((vote) => vote.proposal.auctionId === foundProposal.auctionId)
+      .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
 
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
@@ -113,11 +115,11 @@ export class VotesController {
           HttpStatus.BAD_REQUEST,
         );
 
-      // Signer does have votes on proposal, delete one vote
+      // Delete *last* vote submitted on proposal
       await Vote.delete(
-        signerVotesForAuction.find(
-          (vote) => vote.proposalId === foundProposal.id,
-        ),
+        signerVotesForAuction
+          .reverse()
+          .find((vote) => vote.proposalId === foundProposal.id),
       );
       // Rollup the score for the proposal
       await this.proposalService.rollupScore(foundProposal.id);
