@@ -82,14 +82,14 @@ export class VotesController {
       );
 
     // Get votes by user for auction
-    const submittedVotesForAuction = (
+    const signerVotesForAuction = (
       await this.votesService.findByAddress(createVoteDto.address)
     ).filter((vote) => vote.proposal.auctionId === foundProposal.auctionId);
 
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
       // Verify that user has not reached max votes
-      if (submittedVotesForAuction.length >= delegatedVotes)
+      if (signerVotesForAuction.length >= delegatedVotes)
         throw new HttpException(
           'Signer has consumed all delegated votes',
           HttpStatus.BAD_REQUEST,
@@ -107,7 +107,7 @@ export class VotesController {
     if (createVoteDto.direction === VoteDirections.Down) {
       // Verify that proposal has votes
       if (
-        submittedVotesForAuction.filter(
+        signerVotesForAuction.filter(
           (vote) => vote.proposalId === foundProposal.id,
         ).length === 0
       )
@@ -118,7 +118,7 @@ export class VotesController {
 
       // Signer does have votes on proposal, delete one vote
       await Vote.delete(
-        submittedVotesForAuction.find(
+        signerVotesForAuction.find(
           (vote) => vote.proposalId === foundProposal.id,
         ),
       );
