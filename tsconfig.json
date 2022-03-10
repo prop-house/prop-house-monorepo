@@ -1,0 +1,9 @@
+{
+  "references": [
+    { "path": "packages/prop-house-backend" },
+    { "path": "packages/prop-house-community-contracts" },
+    { "path": "packages/prop-house-webapp" },
+    { "path": "packages/prop-house-wrapper" }
+  ],
+  "files": []
+}
