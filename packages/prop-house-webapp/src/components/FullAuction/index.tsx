@@ -40,7 +40,11 @@ const FullAuction: React.FC<{
 
   useEffect(() => {
     // development env delegated votes
-    if (process.env.REACT_APP_NODE_ENV === 'development' && account) {
+    if (
+      (process.env.REACT_APP_NODE_ENV === 'development' ||
+        !process.env.REACT_APP_NODE_ENV) &&
+      account
+    ) {
       setIsNouner(true);
       dispatch(setDelegatedVotes(10));
       return;
@@ -102,12 +106,12 @@ const FullAuction: React.FC<{
           proposals &&
           account &&
           delegatedVotes && (
-          <VotesLeft
-            numVotesLeft={
-              delegatedVotes - extractAllVotes(proposals, account).length
-            }
-          />
-        )}
+            <VotesLeft
+              numVotesLeft={
+                delegatedVotes - extractAllVotes(proposals, account).length
+              }
+            />
+          )}
         <ProposalCards auction={auction} showAllProposals={showAllProposals} />
         {!showAllProposals && (
           <AllProposalsCTA
