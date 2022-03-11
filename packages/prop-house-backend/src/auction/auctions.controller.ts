@@ -13,6 +13,7 @@ import { CreateAuctionDto } from './auction.types';
 import { AuctionsService } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
+import { NounPunksABI } from 'prop-house-community-contracts';
 
 @Controller('auctions')
 export class AuctionsController {
@@ -53,5 +54,10 @@ export class AuctionsController {
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
     return foundProposals;
+  }
+
+  @Get(':id/test')
+  testFN() {
+    return NounPunksABI;
   }
 }
