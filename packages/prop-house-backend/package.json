@@ -35,7 +35,6 @@
     "ethers": "^5.5.1",
     "graphql": "^16.3.0",
     "pg": "^8.7.1",
-    "prop-house-community-contracts": "file:./packages/prop-house-community-contracts",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
