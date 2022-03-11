@@ -16,9 +16,6 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
-    "paths": {
-      "prop-house-community-contracts": ["../prop-house-community-contracts"]
-    }
+    "noFallthroughCasesInSwitch": false
   }
 }
