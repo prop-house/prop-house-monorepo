@@ -2,6 +2,7 @@
   "name": "prop-house-community-contracts",
   "version": "0.0.1",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "build": "tsc"
