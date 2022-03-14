@@ -58,13 +58,18 @@ export class VotesService {
     return { votes: 0, type: VoteType.Nounish };
   }
 
-  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
+  async createNewVote(
+    createVoteDto: CreateVoteDto,
+    proposal: Proposal,
+    voteType: VoteType,
+  ) {
     // Create vote for proposal
     const vote = new Vote();
     vote.address = createVoteDto.address;
     vote.proposal = proposal;
     vote.direction = createVoteDto.direction;
     vote.signedData = createVoteDto.signedData;
+    vote.type = voteType;
 
     // Store the new vote
     await this.store(vote);
