@@ -75,7 +75,7 @@ export class VotesController {
     const delegatedVotes = await this.votesService.getNumDelegatedVotes(
       createVoteDto.address,
     );
-    if (delegatedVotes === 0)
+    if (delegatedVotes.votes === 0)
       throw new HttpException(
         'Signer does not have delegated votes',
         HttpStatus.BAD_REQUEST,
@@ -91,7 +91,7 @@ export class VotesController {
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
       // Verify that user has not reached max votes
-      if (signerVotesForAuction.length >= delegatedVotes)
+      if (signerVotesForAuction.length >= delegatedVotes.votes)
         throw new HttpException(
           'Signer has consumed all delegated votes',
           HttpStatus.BAD_REQUEST,

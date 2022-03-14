@@ -8,6 +8,10 @@ import { gql } from '@apollo/client';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { isDevEnv } from 'src/config/configuration';
+import { contracts } from 'prop-house-community-contracts';
+import { ethers } from 'ethers';
+import { DelegatedVotes, VoteType } from 'src/utils/vote';
+import config from 'src/config/configuration';
 
 @Injectable()
 export class VotesService {
@@ -40,17 +44,18 @@ export class VotesService {
     });
   }
 
-  async getNumDelegatedVotes(address: string) {
+  async getNumDelegatedVotes(address: string): Promise<DelegatedVotes> {
     // Return 10 votes if in development mode
-    if (isDevEnv()) return 10;
+    if (isDevEnv()) return { votes: 10, type: VoteType.Nouner };
 
-    const result = await client.query({
-      query: gql(delegatedVotesToAddressQuery(address)),
-    });
+    const nounerVotes = await this.getNounerVotes(address);
+    if (nounerVotes > 0) return { votes: nounerVotes, type: VoteType.Nouner };
 
-    return result.data.delegates[0]
-      ? result.data.delegates[0].delegatedVotesRaw
-      : 0;
+    const nounishVotes = await this.getNounishVotes(address);
+    if (nounishVotes > 0)
+      return { votes: nounishVotes, type: VoteType.Nounish };
+
+    return { votes: 0, type: VoteType.Nounish };
   }
 
   async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
@@ -65,5 +70,44 @@ export class VotesService {
     await this.store(vote);
 
     return vote;
+  }
+
+  /**
+   * Fetches number of delegated votes to address
+   * @param address address votes were delegated to
+   * @returns number of delegated votes
+   */
+  async getNounerVotes(address: string): Promise<number> {
+    const result = await client.query({
+      query: gql(delegatedVotesToAddressQuery(address)),
+    });
+
+    return result.data.delegates[0]
+      ? result.data.delegates[0].delegatedVotesRaw
+      : 0;
+  }
+
+  /**
+   * Fetches accumulative balance of owned NFTs of approved contracts from `prop-house-community-contracts` package
+   * @param address
+   * @returns
+   */
+  async getNounishVotes(address: string): Promise<number> {
+    const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
+
+    let delegatedVotes = 0;
+
+    for (let i = 0; i < contracts.length; i++) {
+      const contract = new ethers.Contract(
+        contracts[i].address,
+        contracts[i].abi,
+        provider,
+      );
+
+      const balance = await contract.balanceOf(address);
+      delegatedVotes += Number(balance);
+    }
+
+    return delegatedVotes;
   }
 }
