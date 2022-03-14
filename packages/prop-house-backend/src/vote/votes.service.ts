@@ -8,7 +8,7 @@ import { gql } from '@apollo/client';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { isDevEnv } from 'src/config/configuration';
-import { contracts } from 'prop-house-community-contracts';
+import { contracts } from 'prop-house-nounish-contracts';
 import { ethers } from 'ethers';
 import { DelegatedVotes, VoteType } from 'src/utils/vote';
 import config from 'src/config/configuration';
@@ -93,7 +93,7 @@ export class VotesService {
   }
 
   /**
-   * Fetches accumulative balance of owned NFTs of approved contracts from `prop-house-community-contracts` package
+   * Fetches accumulative balance of owned NFTs of approved contracts from `prop-house-nounish-contracts` package
    * @param address
    * @returns
    */

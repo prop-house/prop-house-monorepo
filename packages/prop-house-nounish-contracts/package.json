@@ -1,5 +1,5 @@
 {
-  "name": "prop-house-community-contracts",
+  "name": "prop-house-nounish-contracts",
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
