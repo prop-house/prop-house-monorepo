@@ -9,6 +9,7 @@ export interface DbConfig {
 export interface Config {
   database: DbConfig;
   env: string;
+  JSONRPC: string;
 }
 
 const config = (): Config => ({
@@ -20,6 +21,7 @@ const config = (): Config => ({
     database: process.env.DB_NAME,
   },
   env: process.env.NODE_ENV ?? 'development',
+  JSONRPC: 'https://mainnet.infura.io/v3/bb1bb1143055477dbe59879f4887516c',
 });
 
 export const subgraphApiUri =
