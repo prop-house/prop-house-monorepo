@@ -11,7 +11,7 @@ ADD . .
 
 WORKDIR /app/packages/prop-house-nounish-contracts
 
-ADD . .
+RUN yarn
 
 RUN yarn build
 
