@@ -6,5 +6,14 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.5.10",
+    "@ethersproject/providers": "^5.6.0",
+    "ethers": "^5.6.0",
+    "graphql": "^16.3.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2"
   }
 }
