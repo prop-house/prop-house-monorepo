@@ -1,11 +1,5 @@
 FROM node:16
 
-WORKDIR /app/packages/prop-house-nounish-contracts
-
-ADD . .
-
-RUN yarn build
-
 WORKDIR /app
 
 ADD package.json .
@@ -14,6 +8,12 @@ ADD yarn.lock .
 RUN yarn
 
 ADD . .
+
+WORKDIR /app/packages/prop-house-nounish-contracts
+
+ADD . .
+
+RUN yarn build
 
 WORKDIR /app/packages/prop-house-backend
 
