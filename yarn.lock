@@ -13297,11 +13297,6 @@ prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-house-nounish-contracts@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/prop-house-nounish-contracts/-/prop-house-nounish-contracts-0.0.1.tgz#583529ddbbb7e1633d9a388cbef9f52b339ddebe"
-  integrity sha512-t5tQAICxVzYj0NuJj+Ov8wC/dPrcId1axx3Ug+TlY2zZcsz2Y9T9d2/zXTLYvnFhn63+YQfVCFt7zezC2XdHBg==
-
 prop-types-extra@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/prop-types-extra/-/prop-types-extra-1.1.1.tgz#58c3b74cbfbb95d304625975aa2f0848329a010b"
