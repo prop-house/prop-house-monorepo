@@ -22,7 +22,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@apollo/client": "^3.5.9",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^1.1.2",
     "@nestjs/core": "^8.0.0",
@@ -32,8 +31,6 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "cross-fetch": "^3.1.5",
-    "ethers": "^5.5.1",
-    "graphql": "^16.3.0",
     "pg": "^8.7.1",
     "prop-house-nounish-contracts": "^0.0.1",
     "reflect-metadata": "^0.1.13",
