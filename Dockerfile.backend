@@ -2,6 +2,8 @@ FROM node:16
 
 WORKDIR /app/packages/prop-house-nounish-contracts
 
+ADD . .
+
 RUN yarn build
 
 WORKDIR /app
