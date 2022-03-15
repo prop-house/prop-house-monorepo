@@ -1,5 +1,9 @@
 FROM node:16
 
+WORKDIR /app/packages/prop-house-nounish-contracts
+
+RUN yarn build
+
 WORKDIR /app
 
 ADD package.json .
