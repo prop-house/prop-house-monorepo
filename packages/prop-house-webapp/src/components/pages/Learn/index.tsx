@@ -58,7 +58,7 @@ const Learn = () => {
             xs={{ order: 'last' }}
           >
             <Col xs={12}>
-              <h2>Bid with your ideas in Funding Auctions</h2>
+              <h2>Bid with your ideas in Funding Rounds</h2>
             </Col>
             <Col xs={12}>
               <p>
