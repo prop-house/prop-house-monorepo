@@ -97,7 +97,7 @@ const ProposalCards: React.FC<{
   };
 
   const cardStatus = (proposalId: number): ProposalCardStatus => {
-    // if not in voting or not nouner, return default
+    // if not in voting or not eligible to vote, return default
     return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
       delegatedVotes === undefined
       ? ProposalCardStatus.Default

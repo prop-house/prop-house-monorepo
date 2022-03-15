@@ -7,9 +7,9 @@ import { Row, Col } from 'react-bootstrap';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import auctionStatus from '../../utils/auctionStatus';
 import { AuctionStatus } from '../../utils/auctionStatus';
+import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
-import { useQuery } from '@apollo/client';
-import { delegatedVotesToAddress } from '../../wrappers/subgraph';
+
 import { useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
@@ -25,8 +25,8 @@ const FullAuction: React.FC<{
 }> = (props) => {
   const { auction, showAllProposals } = props;
 
-  const [isNouner, setIsNouner] = useState(false);
-  const { account } = useEthers();
+  const [eligibleToVote, setEligibleToVote] = useState(false);
+  const { account, library } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
@@ -34,27 +34,27 @@ const FullAuction: React.FC<{
     (state) => state.propHouse.delegatedVotes
   );
 
-  const { loading, error, data } = useQuery(
-    delegatedVotesToAddress(account ? account : '')
-  );
-
   useEffect(() => {
-    // development env delegated votes
-    if (
-      (process.env.REACT_APP_NODE_ENV === 'development' ||
-        !process.env.REACT_APP_NODE_ENV) &&
-      account
-    ) {
-      setIsNouner(true);
-      dispatch(setDelegatedVotes(10));
-      return;
+    if (!account || !library) return;
+
+    const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
+      const votes = await getVotes;
+      console.log('votes: ', votes);
+      if (votes === 0) return false;
+      dispatch(setDelegatedVotes(votes));
+      setEligibleToVote(true);
+      return true;
+    };
+
+    try {
+      const nouner = fetchVotes(getNounerVotes(account));
+      if (!nouner) fetchVotes(getNounishVotes(account, library));
+    } catch (e) {
+      console.log('error getting votes');
     }
 
-    if (!account || loading || error || !data.delegates[0]) return;
-    const delegatedVotes = data.delegates[0].delegatedVotesRaw;
-    setIsNouner(delegatedVotes > 0);
-    dispatch(setDelegatedVotes(delegatedVotes));
-  }, [loading, error, data, account, dispatch]);
+    fetchVotes(getNounishVotes(account, library));
+  }, [account, library, dispatch]);
 
   // alert to get nouners to connect when auctions in voting stage
   const disconnectedCopy = (
@@ -68,11 +68,11 @@ const FullAuction: React.FC<{
     </div>
   );
 
-  // alert verifying that connected wallet is a nouner
+  // alert verifying that connected wallet is a eligible to vote
   const connectedCopy = (
     <div className={classes.connectedCopy}>
-      You are a Noun owner! Cast your vote for the proposal you believe should
-      receive funding.
+      You are eligible to vote! Cast your vote for the proposal you believe
+      should receive funding.
     </div>
   );
 
@@ -80,12 +80,12 @@ const FullAuction: React.FC<{
     <>
       {showAllProposals &&
         auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-        (isNouner === true || account === undefined) && (
+        (eligibleToVote === true || account === undefined) && (
           <Card
             bgColor={CardBgColor.White}
             borderRadius={CardBorderRadius.twenty}
           >
-            <div>{isNouner ? connectedCopy : disconnectedCopy}</div>
+            <div>{eligibleToVote ? connectedCopy : disconnectedCopy}</div>
           </Card>
         )}
       <Card
@@ -102,7 +102,7 @@ const FullAuction: React.FC<{
           </Col>
         </Row>
         {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-          isNouner &&
+          eligibleToVote &&
           proposals &&
           account &&
           delegatedVotes && (
