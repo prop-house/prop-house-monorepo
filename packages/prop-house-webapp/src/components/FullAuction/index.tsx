@@ -59,7 +59,10 @@ const FullAuction: React.FC<{
   // alert to get nouners to connect when auctions in voting stage
   const disconnectedCopy = (
     <div className={classes.alertWrapper}>
-      <p>The voting period is now open. Noun owners can vote for proposals.</p>
+      <p>
+        The voting period is now open. Members of the Nouns ecosystem can vote
+        for proposals.
+      </p>
       <Button
         text="Connect wallet"
         bgColor={ButtonColor.Pink}

@@ -62,13 +62,13 @@ const Learn = () => {
             </Col>
             <Col xs={12}>
               <p>
-                Funding auctions are held regularly. They are auctions where the
+                Funding rounds are held regularly. They are auctions where the
                 thing being auctioned is ETH and the bids being placed are
                 proposals. Anyone is free to propose anything.
                 <br />
                 <br />
-                At the end of each auction, members of the Nouns DAO, also known
-                as Nouners, vote on which proposal will receive funding.
+                At the end of each auction, members of the Nouns ecosystem, vote
+                on which proposal will receive funding.
               </p>
             </Col>
           </Col>

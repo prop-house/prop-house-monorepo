@@ -7,7 +7,9 @@ import { useAppSelector } from '../../hooks';
 import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
 
 const HomeHeader = () => {
-  const browseToAuctionId = useAppSelector(state => defaultBrowseToAuctionId(state.propHouse.auctions))
+  const browseToAuctionId = useAppSelector((state) =>
+    defaultBrowseToAuctionId(state.propHouse.auctions)
+  );
   return (
     <Row className={classes.wrapper}>
       <Col xl={6} className={classes.leftCol}>
@@ -20,7 +22,7 @@ const HomeHeader = () => {
         <h1>Weekly funding for your ideas</h1>
         <p>
           Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
-          Funding auctions are held regularly, and made available to anyone,
+          Funding rounds are held regularly, and made available to anyone,
           anywhere.
         </p>
         <div className={classes.btnsContainer}>
