@@ -1,6 +1,6 @@
 import { Auction } from 'src/auction/auction.entity';
 import { SignedEntity } from 'src/entities/signed.entity';
-import { Address } from 'src/types/address';
+import { IndividualVoteWeights, VoteDirections } from 'src/utils/vote';
 import { Vote } from 'src/vote/vote.entity';
 import {
   Entity,
@@ -49,12 +49,11 @@ export class Proposal extends SignedEntity {
   @JoinColumn()
   votes: Vote[];
 
-  @Column({ default: 0 })
+  @Column({ type: 'numeric', precision: 2, scale: 2, default: 0 })
   score: number;
 
-  @BeforeUpdate()
-  updateScore() {
-    this.score = this.votes.reduce((acc, v) => acc + v.direction, 0);
+  updateScore(voteWeights: IndividualVoteWeights) {
+    this.score = this.votes.reduce((acc, v) => acc + voteWeights[v.type], 0);
   }
 
   @Column()
