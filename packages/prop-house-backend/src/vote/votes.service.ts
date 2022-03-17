@@ -22,6 +22,10 @@ export class VotesService {
     return proposals;
   }
 
+  async findAllByAuctionId(auctionId: number): Promise<Vote[]> {
+    return await this.votesRepository.find({ where: { auctionId } });
+  }
+
   findOne(id: number): Promise<Vote> {
     return this.votesRepository.findOne(id);
   }
