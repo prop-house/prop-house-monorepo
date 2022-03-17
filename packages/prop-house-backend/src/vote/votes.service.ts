@@ -68,6 +68,7 @@ export class VotesService {
     vote.direction = createVoteDto.direction;
     vote.signedData = createVoteDto.signedData;
     vote.type = voteType;
+    vote.auctionId = proposal.auctionId;
 
     // Store the new vote
     await this.store(vote);
