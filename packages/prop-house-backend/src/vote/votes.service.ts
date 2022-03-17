@@ -46,9 +46,6 @@ export class VotesService {
   }
 
   async getNumDelegatedVotes(address: string): Promise<DelegatedVotes> {
-    // Return 10 votes if in development mode
-    if (isDevEnv()) return { votes: 10, type: VoteType.Nouner };
-
     const nounerVotes = await getNounerVotes(address);
     if (nounerVotes > 0) return { votes: nounerVotes, type: VoteType.Nouner };
 
