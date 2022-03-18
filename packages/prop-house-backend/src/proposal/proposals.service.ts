@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IndividualVoteWeights } from 'src/utils/vote';
 import { Repository } from 'typeorm';
 import { Proposal } from './proposal.entity';
+import { Vote } from 'src/vote/vote.entity';
+import { calcIndividualVoteWeight, VoteType } from 'src/utils/vote';
 
 @Injectable()
 export class ProposalsService {
@@ -38,11 +39,19 @@ export class ProposalsService {
     await this.proposalsRepository.delete(id);
   }
 
-  async rollupScores(auctionId: number, votesWeights: IndividualVoteWeights) {
+  async rollupScores(votes: Vote[], auctionId: number) {
+    const nounerVoteWeight = calcIndividualVoteWeight(VoteType.Nouner, votes);
+    const nounishVoteWeight = calcIndividualVoteWeight(VoteType.Nounish, votes);
+
+    const indVoteWeights = {
+      [VoteType.Nouner]: nounerVoteWeight,
+      [VoteType.Nounish]: nounishVoteWeight,
+    };
+
     const proposals = await this.findAllWithAuctionId(auctionId);
 
     proposals.forEach((proposal) => {
-      proposal.updateScore(votesWeights);
+      proposal.updateScore(indVoteWeights);
       this.proposalsRepository.save(proposal);
     });
   }

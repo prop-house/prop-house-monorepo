@@ -107,7 +107,10 @@ export class VotesController {
         delegatedVotes.type,
       );
 
-      await this.rollUpScores(foundProposal);
+      const votes = await this.votesService.findAllByAuctionId(
+        foundProposal.auctionId,
+      );
+      await this.proposalService.rollupScores(votes, foundProposal.auctionId);
     }
 
     // Voting down
@@ -130,23 +133,10 @@ export class VotesController {
           .find((vote) => vote.proposalId === foundProposal.id),
       );
 
-      await this.rollUpScores(foundProposal);
+      const votes = await this.votesService.findAllByAuctionId(
+        foundProposal.auctionId,
+      );
+      await this.proposalService.rollupScores(votes, foundProposal.auctionId);
     }
-  }
-
-  async rollUpScores(proposal: Proposal) {
-    const votes = await this.votesService.findAllByAuctionId(
-      proposal.auctionId,
-    );
-
-    const nounerVoteWeight = calcIndividualVoteWeight(VoteType.Nouner, votes);
-    const nounishVoteWeight = calcIndividualVoteWeight(VoteType.Nounish, votes);
-
-    const voteWeights = {
-      [VoteType.Nouner]: nounerVoteWeight,
-      [VoteType.Nounish]: nounishVoteWeight,
-    };
-
-    await this.proposalService.rollupScores(proposal.auctionId, voteWeights);
   }
 }
