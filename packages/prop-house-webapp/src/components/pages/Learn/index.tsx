@@ -67,7 +67,7 @@ const Learn = () => {
                 proposals. Anyone is free to propose anything.
                 <br />
                 <br />
-                At the end of each auction, members of the Nouns ecosystem, vote
+                At the end of each auction, members of the Nouns ecosystem vote
                 on which proposal will receive funding.
               </p>
             </Col>

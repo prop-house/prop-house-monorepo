@@ -33,7 +33,7 @@ const BrowseControl: React.FC<{ auctionId: number; highestId: number }> = (
           </Link>
         </div>
 
-        <p>Discover proposals & winners from previous auctions.</p>
+        <p>Discover proposals & winners from previous funding rounds.</p>
       </Col>
     </Row>
   );

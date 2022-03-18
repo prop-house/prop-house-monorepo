@@ -41,9 +41,9 @@ const AuctionHeader: React.FC<{
         <Col xl={5} md={12} className={classes.leftSectionContainer}>
           <div className={classes.leftSectionTitle}>
             {!onAuctionPage ? (
-              <Link to={`/auction/${id}`}>{`Auction ${id}`}</Link>
+              <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
             ) : (
-              `Auction ${id}`
+              `Funding round ${id}`
             )}
             <StatusPill status={auctionStatus(auction)} />
           </div>
