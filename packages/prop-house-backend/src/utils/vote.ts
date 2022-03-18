@@ -42,5 +42,6 @@ export const calcIndividualVoteWeight = (
   votes: Vote[],
 ): number => {
   const votesForType = votes.filter((vote) => vote.type === voteType).length;
+  if (votesForType === 0) return 0;
   return (votes.length * ACC_VOTE_WEIGHTS[voteType]) / votesForType;
 };
