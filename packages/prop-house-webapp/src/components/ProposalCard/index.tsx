@@ -33,9 +33,7 @@ const ProposalCard: React.FC<{
           {status === ProposalCardStatus.Voting && (
             <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-          <div className={classes.totalVotesCopy}>
-            Total votes: {proposal.votes.length}
-          </div>
+          <div className={classes.totalVotesCopy}>Score: {proposal.score}</div>
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
