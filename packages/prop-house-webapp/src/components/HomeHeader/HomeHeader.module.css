@@ -23,7 +23,9 @@
   margin: 1rem 0;
   font-size: 20px;
 }
-
+.btnsContainer {
+  display: flex;
+}
 .btnsContainer button {
   margin-left: 0;
 }
@@ -32,4 +34,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@media (max-width: 992px) {
+  .btnsContainer {
+    margin-bottom: 2rem;
+  }
+  .btnsContainer div {
+    text-align: center;
+  }
+  .btnsContainer button {
+    width: 95%;
+  }
 }

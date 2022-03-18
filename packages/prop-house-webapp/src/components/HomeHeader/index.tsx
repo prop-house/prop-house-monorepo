@@ -26,12 +26,16 @@ const HomeHeader = () => {
           anywhere.
         </p>
         <div className={classes.btnsContainer}>
-          <Link to="/learn">
-            <Button text="Learn more" bgColor={ButtonColor.Pink} />
-          </Link>
-          <Link to={`/auction/${browseToAuctionId}`}>
-            <Button text="Browse auctions" bgColor={ButtonColor.White} />
-          </Link>
+          <Col xs={6} md="auto">
+            <Link to="/learn">
+              <Button text="Learn more" bgColor={ButtonColor.Pink} />
+            </Link>
+          </Col>
+          <Col xs={6} md="auto">
+            <Link to={`/auction/${browseToAuctionId}`}>
+              <Button text="Browse auctions" bgColor={ButtonColor.White} />
+            </Link>
+          </Col>
         </div>
       </Col>
       <Col xl={{ span: 4, offset: 2 }} className={classes.rightCol}>
