@@ -22,6 +22,10 @@ export class VotesService {
     return proposals;
   }
 
+  async findAllByAuctionId(auctionId: number): Promise<Vote[]> {
+    return await this.votesRepository.find({ where: { auctionId } });
+  }
+
   findOne(id: number): Promise<Vote> {
     return this.votesRepository.findOne(id);
   }
@@ -42,9 +46,6 @@ export class VotesService {
   }
 
   async getNumDelegatedVotes(address: string): Promise<DelegatedVotes> {
-    // Return 10 votes if in development mode
-    if (isDevEnv()) return { votes: 10, type: VoteType.Nouner };
-
     const nounerVotes = await getNounerVotes(address);
     if (nounerVotes > 0) return { votes: nounerVotes, type: VoteType.Nouner };
 
@@ -68,6 +69,7 @@ export class VotesService {
     vote.direction = createVoteDto.direction;
     vote.signedData = createVoteDto.signedData;
     vote.type = voteType;
+    vote.auctionId = proposal.auctionId;
 
     // Store the new vote
     await this.store(vote);

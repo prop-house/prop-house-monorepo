@@ -28,6 +28,9 @@ export class Vote extends SignedEntity {
   proposalId: number;
 
   @Column()
+  auctionId: number;
+
+  @Column()
   type: number;
 
   @BeforeInsert()
