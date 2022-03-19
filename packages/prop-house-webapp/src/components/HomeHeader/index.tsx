@@ -22,7 +22,7 @@ const HomeHeader = () => {
         <h1>Weekly funding for your ideas</h1>
         <p>
           Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
-          Funding rounds are held regularly, and made available to anyone,
+          Funding rounds are held regularly and are available to anyone,
           anywhere.
         </p>
         <div className={classes.btnsContainer}>
@@ -33,7 +33,7 @@ const HomeHeader = () => {
           </Col>
           <Col xs={6} md="auto">
             <Link to={`/auction/${browseToAuctionId}`}>
-              <Button text="Browse auctions" bgColor={ButtonColor.White} />
+              <Button text="Browse rounds" bgColor={ButtonColor.White} />
             </Link>
           </Col>
         </div>

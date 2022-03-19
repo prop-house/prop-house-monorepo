@@ -37,7 +37,7 @@ const Learn = () => {
               their ideas.
             </p>
             <Button
-              text="Browse auctions"
+              text="Browse rounds"
               bgColor={ButtonColor.Pink}
               classNames={classes.firstBtn}
               onClick={() => {
@@ -138,7 +138,7 @@ const Learn = () => {
           </Col>
           <Col xl={3}>
             <Button
-              text="Browse auctions"
+              text="Browse rounds"
               bgColor={ButtonColor.Pink}
               onClick={() => {
                 navigate(`/auction/${browseToAuctionId}`);

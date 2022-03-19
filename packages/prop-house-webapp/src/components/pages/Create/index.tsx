@@ -87,11 +87,11 @@ const Create: React.FC<{}> = () => {
     content: () => {
       return (
         <>
-          <p>{`You've successfully submitted your proposal for Auction ${
+          <p>{`You've successfully submitted your proposal for funding round ${
             parentAuction && parentAuction.id
           }`}</p>
           <Button
-            text="View auction"
+            text="View round"
             bgColor={ButtonColor.White}
             onClick={() =>
               navigate(`/auction/${parentAuction && parentAuction.id}`)
@@ -119,7 +119,8 @@ const Create: React.FC<{}> = () => {
           <h1 className={classes.proposalHelper}>
             Creating proposal for{' '}
             <span>
-              Auction {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
+              funding round{' '}
+              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
             </span>
           </h1>
         </Col>
