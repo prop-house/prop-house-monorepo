@@ -21,7 +21,7 @@ import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 
 const isValidPropData = (data: ProposalFields) => {
-  return data.title !== '' && data.what !== '';
+  return data.title.length > 5 && data.what.length > 50;
 };
 
 const Create: React.FC<{}> = () => {
