@@ -69,8 +69,8 @@ const InspirationCard = () => {
         <Col xl={12} className={classes.inspoHeader}>
           <h2>Need inspiration?</h2>
           <p>
-            Proposals which proliferate Nouns culture are encouraged. You can
-            learn more below. Be descriptive!
+            Proposals which proliferate Nouns culture are encouraged. Learn more
+            below:
           </p>
         </Col>
         {itemCards}
