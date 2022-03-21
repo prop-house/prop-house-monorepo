@@ -53,7 +53,7 @@ const Proposal = () => {
   return (
     <>
       <Link
-        to={`/auction/1`}
+        to={`/auction/${parentAuction?.id}`}
         className={classes.backToAuction}
       >{`← Auction ${parentAuction?.id}`}</Link>
 
