@@ -38,7 +38,7 @@ const AuctionHeader: React.FC<{
       onHoverEffect={!onAuctionPage}
     >
       <Row>
-        <Col xl={5} md={12} className={classes.leftSectionContainer}>
+        <Col md={6} className={classes.leftSectionContainer}>
           <div className={classes.leftSectionTitle}>
             {!onAuctionPage ? (
               <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
@@ -58,26 +58,25 @@ const AuctionHeader: React.FC<{
             </span>
           </div>
         </Col>
-        <Col
-          xl={displayCreateButton ? 2 : { span: 2, offset: 1 }}
-          md={12}
-          className={classes.rightSectionSubsection}
-        >
-          <div className={classes.rightSectionTitle}>Funding</div>
-          <div
-            className={classes.rightSectionSubtitle}
-          >{`${fundingAmount.toFixed(2)} Ξ`}</div>
-        </Col>
-        <Col xl={3} md={12} className={classes.rightSectionSubsection}>
-          <div className={classes.rightSectionTitle}>
-            {deadlineCopy(auction)}
+        <Col md={displayCreateButton ? 4 : 6} className={classes.subsection}>
+          <div className={classes.infoSubsection}>
+            <div className={classes.rightSectionTitle}>Funding</div>
+            <div
+              className={classes.rightSectionSubtitle}
+            >{`${fundingAmount.toFixed(2)} Ξ`}</div>
           </div>
-          <div className={classes.rightSectionSubtitle}>
-            {diffTime(deadlineTime(auction))}
+          <div className={classes.infoSubsection}>
+            <div className={classes.rightSectionTitle}>
+              {deadlineCopy(auction)}
+            </div>
+            <div className={classes.rightSectionSubtitle}>
+              {diffTime(deadlineTime(auction))}
+            </div>
           </div>
         </Col>
+
         {displayCreateButton && (
-          <Col xl={2} className={classes.rightSectionSubsection}>
+          <Col md={2} className={classes.rightSectionSubsection}>
             <Link to="/create">
               <Button text="Create Proposal" bgColor={ButtonColor.Pink} />
             </Link>
