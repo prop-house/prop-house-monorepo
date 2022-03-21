@@ -9,6 +9,10 @@
   line-height: 140%;
 }
 
+.btn:disabled {
+  background-color: var(--brand-gray);
+}
+
 .btnPinkBg {
   background-color: var(--brand-pink);
   border: none;
