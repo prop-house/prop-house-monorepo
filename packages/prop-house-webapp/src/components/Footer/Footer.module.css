@@ -1,0 +1,24 @@
+.footerContainer {
+  margin: 6rem auto 1rem auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.footer {
+  font-size: 16px;
+  color: var(--brand-gray);
+  font-weight: 600;
+}
+
+.footer a {
+  color: var(--brand-gray) !important;
+  text-decoration: none;
+}
+
+.footer img {
+  position: relative;
+  bottom: 2px;
+  width: 25px;
+  height: auto;
+  margin: 0 0.05rem;
+}

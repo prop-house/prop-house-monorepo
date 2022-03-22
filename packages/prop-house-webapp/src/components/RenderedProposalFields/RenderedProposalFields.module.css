@@ -1,0 +1,28 @@
+.previewCol h1 {
+  margin: 2rem 0rem 0.5rem 0rem;
+}
+
+.previewCol h2 {
+  margin-top: 3rem;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--brand-gray);
+}
+
+.previewCol p {
+  font-size: 18px;
+  color: var(--brand-black);
+}
+
+hr {
+  background-color: var(--brand-gray);
+}
+
+.submittedBy {
+  display: flex;
+  color: var(--brand-gray);
+  font-weight: 500;
+}
+.submittedBy a {
+  margin-left: 0.5rem;
+}

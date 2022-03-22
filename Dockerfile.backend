@@ -1,0 +1,24 @@
+FROM node:16
+
+WORKDIR /app
+
+ADD package.json .
+ADD yarn.lock .
+
+RUN yarn
+
+ADD . .
+
+WORKDIR /app/packages/prop-house-nounish-contracts
+
+RUN yarn
+
+RUN yarn build
+
+WORKDIR /app/packages/prop-house-backend
+
+RUN yarn
+
+RUN yarn build
+
+CMD [ "node", "dist/main.js" ]

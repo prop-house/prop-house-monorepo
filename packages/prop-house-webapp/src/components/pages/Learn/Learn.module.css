@@ -1,0 +1,76 @@
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.row h2 {
+  font-size: 38px;
+  font-weight: 700;
+}
+.row p {
+  font-size: 18px;
+}
+
+.rightCol {
+  display: flex;
+  justify-content: flex-end;
+}
+.leftCol {
+  display: flex;
+  justify-content: flex-start;
+}
+.img {
+  height: 100%;
+  width: auto;
+}
+.firstBtn {
+  margin-left: 0;
+}
+
+.cardCTA {
+  margin-top: 5rem;
+  margin-bottom: 5rem;
+}
+
+.cardCTA h2 {
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .breakOutMobile {
+    width: initial !important;
+    position: initial !important;
+    left: initial !important;
+  }
+  .leftCol,
+  .rightCol {
+    justify-content: center;
+  }
+  .auctionFullImg {
+    display: block;
+  }
+  .auctionImg {
+    display: none;
+  }
+  .row h2 {
+    margin-top: 2rem;
+  }
+}
+@media (min-width: 1200px) {
+  .auctionFullImg {
+    display: none;
+  }
+  .auctionImg {
+    display: block;
+  }
+}
+@media (min-width: 1600px) {
+  .breakOutMobile {
+    width: initial !important;
+    position: initial !important;
+    left: initial !important;
+  }
+}

@@ -1,0 +1,30 @@
+.proposalTitle {
+  text-align: left;
+  padding-left: 1rem;
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 20px;
+  font-weight: 600;
+  padding-bottom: 10px;
+}
+
+.divider {
+  text-align: center;
+  border-bottom: 1.5px solid rgba(0, 0, 0, 0.1);
+  line-height: 0.1em;
+  margin: 15px 0 20px;
+}
+
+.alertWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.alertWrapper p,
+.alertWrapper button {
+  margin: 0;
+}
+
+.connectedCopy {
+  color: var(--brand-gray);
+  font-weight: 500;
+}
