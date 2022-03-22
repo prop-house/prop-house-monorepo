@@ -30,8 +30,8 @@ export interface IndividualVoteWeights {
  * Accumulate voting power for vote types
  */
 const ACC_VOTE_WEIGHTS = {
-  [VoteType.Nouner]: 0.6,
-  [VoteType.Nounish]: 0.4,
+  [VoteType.Nouner]: 0.5,
+  [VoteType.Nounish]: 0.5,
 };
 
 /**
