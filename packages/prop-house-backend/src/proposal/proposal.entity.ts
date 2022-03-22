@@ -49,7 +49,7 @@ export class Proposal extends SignedEntity {
   @JoinColumn()
   votes: Vote[];
 
-  @Column({ type: 'numeric', precision: 2, scale: 2, default: 0 })
+  @Column({ type: 'numeric', default: 0 })
   score: number;
 
   updateScore(voteWeights: IndividualVoteWeights) {

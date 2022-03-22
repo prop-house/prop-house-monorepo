@@ -35,6 +35,11 @@ const ACC_VOTE_WEIGHTS = {
 };
 
 /**
+ * Multiplier of individual vote weight so vote score is always > 1 (solely for ux considerations)
+ */
+const VOTE_MULTIPLIER = 10;
+
+/**
  * Individual voting weight for vote types. Dependant on variable total votes.
  */
 export const calcIndividualVoteWeight = (
@@ -43,5 +48,8 @@ export const calcIndividualVoteWeight = (
 ): number => {
   const votesForType = votes.filter((vote) => vote.type === voteType).length;
   if (votesForType === 0) return 0;
-  return (votes.length * ACC_VOTE_WEIGHTS[voteType]) / votesForType;
+  return (
+    ((votes.length * ACC_VOTE_WEIGHTS[voteType]) / votesForType) *
+    VOTE_MULTIPLIER
+  );
 };
