@@ -39,21 +39,22 @@ const FullAuction: React.FC<{
 
     const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
       const votes = await getVotes;
-      console.log('votes: ', votes);
       if (votes === 0) return false;
       dispatch(setDelegatedVotes(votes));
       setEligibleToVote(true);
       return true;
     };
 
-    try {
-      const nouner = fetchVotes(getNounerVotes(account));
-      if (!nouner) fetchVotes(getNounishVotes(account, library));
-    } catch (e) {
-      console.log('error getting votes');
-    }
+    const fetch = async () => {
+      try {
+        const nouner = await fetchVotes(getNounerVotes(account));
+        if (!nouner) fetchVotes(getNounishVotes(account, library));
+      } catch (e) {
+        console.log('error getting votes');
+      }
+    };
 
-    fetchVotes(getNounishVotes(account, library));
+    fetch();
   }, [account, library, dispatch]);
 
   // alert to get nouners to connect when auctions in voting stage
