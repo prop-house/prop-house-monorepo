@@ -95,8 +95,15 @@ const content: ContentItem[] = [
     content: (
       <>
         <ul>
-          <li>ext_comm</li> <li>ext_comm</li> <li>ext_comm</li>
-          <li>ext_comm</li>
+          <li>
+            <a
+              href="https://twitter.com/nounpunks"
+              target="_blank"
+              rel="noreferrer"
+            >
+              NounPunks
+            </a>
+          </li>
         </ul>
         If your nounish community would like to participate in Prop House
         voting, please reach out via{' '}
