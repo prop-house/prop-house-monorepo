@@ -31,6 +31,11 @@ const NavBar = () => {
             </Link>
           </Nav.Link>
           <Nav.Link as="div">
+            <Link to="/faq" className={classes.link}>
+              FAQ
+            </Link>
+          </Nav.Link>
+          <Nav.Link as="div">
             <Web3ModalButton classNames={classes.link} />
           </Nav.Link>
         </Nav>

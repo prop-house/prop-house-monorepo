@@ -28,7 +28,7 @@ const itemCardData: ItemData[] = [
     destination: 'https://nouns.wtf/vote',
   },
   {
-    title: 'What to expect',
+    title: 'FAQ',
     external: false,
     imgSrc: inspo3img,
     destination: '/faq/',

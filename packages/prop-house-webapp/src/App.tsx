@@ -18,6 +18,7 @@ import { Mainnet, DAppProvider, Config, useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEffect, useRef } from 'react';
 import Upload from './components/pages/Upload';
+import FAQ from './components/pages/FAQ';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -61,6 +62,7 @@ function App() {
           <Route path="/upload" element={<Upload />} />
           <Route path="/auction/:id" element={<Auction />} />
           <Route path="/proposal/:id" element={<Proposal />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
