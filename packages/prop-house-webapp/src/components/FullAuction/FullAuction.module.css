@@ -28,3 +28,9 @@
   color: var(--brand-gray);
   font-weight: 500;
 }
+
+.noPropCard {
+  font-size: 14px;
+  color: var(--brand-black-tansparent);
+  text-align: center;
+}

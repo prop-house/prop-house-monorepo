@@ -117,11 +117,23 @@ const FullAuction: React.FC<{
             />
           )}
         <ProposalCards auction={auction} showAllProposals={showAllProposals} />
-        {!showAllProposals && (
-          <AllProposalsCTA
-            numProposals={auction.proposals.length}
-            auctionId={auction.id}
-          />
+
+        {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ||
+        auction.proposals.length === 0 ? (
+          <Card
+            bgColor={CardBgColor.LightPurple}
+            borderRadius={CardBorderRadius.twenty}
+            classNames={classes.noPropCard}
+          >
+            Submitted proposals will show up here
+          </Card>
+        ) : (
+          !showAllProposals && (
+            <AllProposalsCTA
+              numProposals={auction.proposals.length}
+              auctionId={auction.id}
+            />
+          )
         )}
       </Card>
     </>
