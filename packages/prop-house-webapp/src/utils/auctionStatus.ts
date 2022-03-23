@@ -37,7 +37,9 @@ const auctionStatus = (auction: StoredAuction): AuctionStatus => {
  */
 export const deadlineCopy = (auction: StoredAuction) => {
   const status = auctionStatus(auction);
-  return status === AuctionStatus.AuctionAcceptingProps
+  return status === AuctionStatus.AuctionNotStarted
+    ? 'Begins'
+    : status === AuctionStatus.AuctionAcceptingProps
     ? 'Proposal deadline'
     : status === AuctionStatus.AuctionVoting
     ? 'Voting deadline'
@@ -50,7 +52,9 @@ export const deadlineCopy = (auction: StoredAuction) => {
  * Returns deadlione date for corresponding to auction status
  */
 export const deadlineTime = (auction: StoredAuction) =>
-  auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
+  auctionStatus(auction) === AuctionStatus.AuctionNotStarted
+    ? auction.startTime
+    : auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
     ? auction.proposalEndTime
     : auction.votingEndTime;
 
