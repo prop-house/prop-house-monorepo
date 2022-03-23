@@ -8,7 +8,7 @@
   font-weight: bold;
 }
 .leftSectionSubtitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--brand-black-tansparent);
 }
@@ -21,15 +21,15 @@
 .infoSubsection {
   display: flex;
   flex-direction: column;
-  text-align: right;
+  text-align: center;
 }
 
 .infoSubsection:nth-child(2) {
-  margin-left: 2rem;
+  margin-left: 3rem;
 }
 
 .rightSectionTitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--brand-black-tansparent);
 }
