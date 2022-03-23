@@ -6,7 +6,10 @@ import FullAuction from '../FullAuction';
 const AuctionPartial = (auction: StoredAuction, i: number) => (
   <div key={i}>
     {i === 0 ? (
-      <FullAuction auction={auction} showAllProposals={false} />
+      <FullAuction
+        auction={auction}
+        showAllProposals={auction.proposals.length <= 6}
+      />
     ) : (
       <AuctionHeader auction={auction} />
     )}
