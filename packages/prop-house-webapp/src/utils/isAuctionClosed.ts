@@ -1,6 +1,9 @@
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders"
-import isAuctionActive from "./isAuctionActive"
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import isAuctionActive from './isAuctionActive';
 
-const isAuctionClosed = (auction: StoredAuction) => !isAuctionActive(auction)
+/**
+ * Auction is not accepting proposals
+ */
+const isAuctionClosed = (auction: StoredAuction) => !isAuctionActive(auction);
 
 export default isAuctionClosed;

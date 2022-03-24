@@ -131,10 +131,7 @@ const Learn = () => {
         <Row className={classes.flexCenter}>
           <Col xl={9}>
             <h2>The easiest way to get funded</h2>
-            <p>
-              All you need is an Ethereum wallet, and an idea you think Noun
-              owners might vote for.
-            </p>
+            <p>All you need is an Ethereum wallet and a nounish idea.</p>
           </Col>
           <Col xl={3}>
             <Button

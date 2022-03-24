@@ -1,6 +1,11 @@
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
-import dayjs from "dayjs";
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import dayjs from 'dayjs';
 
-const isAuctionActive = (auction: StoredAuction) => dayjs(auction.proposalEndTime).isAfter(dayjs())
+/**
+ * Auction is has started and is accepting proposals.
+ */
+const isAuctionActive = (auction: StoredAuction) =>
+  dayjs().isAfter(dayjs(auction.startTime)) &&
+  dayjs(auction.proposalEndTime).isAfter(dayjs());
 
 export default isAuctionActive;
