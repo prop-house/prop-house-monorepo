@@ -4,3 +4,9 @@
 .wrapper div {
   padding: 0 0.25rem;
 }
+
+@media (max-width: 992px) {
+  .wrapper div {
+    padding-left: 0;
+  }
+}
