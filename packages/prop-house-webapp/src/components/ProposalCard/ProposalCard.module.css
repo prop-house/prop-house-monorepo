@@ -71,7 +71,7 @@
   color: var(--brand-black);
 }
 
-.totalVotesCopy {
+.scoreCopy {
   font-weight: bold;
   font-size: small;
   color: var(--brand-gray);

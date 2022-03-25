@@ -122,7 +122,8 @@ const ProposalCards: React.FC<{
                 <Col key={index} xl={4}>
                   <ProposalCard
                     proposal={proposal}
-                    status={cardStatus(proposal.id)}
+                    auctionStatus={auctionStatus(auction)}
+                    cardStatus={cardStatus(proposal.id)}
                     votesFor={
                       userVotes &&
                       countNumVotesForProposal(userVotes, proposal.id)

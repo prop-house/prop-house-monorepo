@@ -10,6 +10,7 @@ import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import { AuctionStatus } from '../../utils/auctionStatus';
 
 export enum ProposalCardStatus {
   Default,
@@ -19,21 +20,31 @@ export enum ProposalCardStatus {
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
-  status: ProposalCardStatus;
+  auctionStatus: AuctionStatus;
+  cardStatus: ProposalCardStatus;
   votesFor?: number;
   votesLeft?: number;
   handleUserVote?: (direction: Direction, proposalId: number) => void;
 }> = (props) => {
-  const { proposal, status, votesFor, votesLeft, handleUserVote } = props;
+  const {
+    proposal,
+    auctionStatus,
+    cardStatus,
+    votesFor,
+    votesLeft,
+    handleUserVote,
+  } = props;
 
   const ctaButton = (
     <Row>
       <Col xs={12} className={classes.bottomContainer}>
         <div className={classes.votesCopyContainer}>
-          {status === ProposalCardStatus.Voting && (
+          {cardStatus === ProposalCardStatus.Voting && (
             <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-          <div className={classes.totalVotesCopy}>Score: {proposal.score}</div>
+          <div className={classes.scoreCopy}>
+            Score: {Math.trunc(proposal.score)}
+          </div>
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
@@ -64,9 +75,9 @@ const ProposalCard: React.FC<{
       bgColor={CardBgColor.White}
       borderRadius={CardBorderRadius.twenty}
       classNames={clsx(
-        status === ProposalCardStatus.Voting
+        cardStatus === ProposalCardStatus.Voting
           ? globalClasses.yellowBorder
-          : status === ProposalCardStatus.Winner
+          : cardStatus === ProposalCardStatus.Winner
           ? globalClasses.pinkBorder
           : '',
         classes.proposalCard
@@ -78,17 +89,25 @@ const ProposalCard: React.FC<{
       </div>
       <div className={classes.title}>{proposal.title}</div>
       <div className={classes.timestampAndlinkContainer}>
-        <div
-          className={classes.timestamp}
-          title={detailedTime(proposal.createdDate)}
-        >
-          {diffTime(proposal.createdDate)}
-        </div>
+        {auctionStatus === AuctionStatus.AuctionVoting &&
+        cardStatus !== ProposalCardStatus.Voting ? (
+          <div className={classes.scoreCopy}>
+            Score: {Math.trunc(proposal.score)}
+          </div>
+        ) : (
+          <div
+            className={classes.timestamp}
+            title={detailedTime(proposal.createdDate)}
+          >
+            {diffTime(proposal.createdDate)}
+          </div>
+        )}
+
         <div className={clsx(classes.readMore)}>
           <Link
             to={`/proposal/${proposal.id}`}
             className={
-              status === ProposalCardStatus.Voting
+              cardStatus === ProposalCardStatus.Voting
                 ? globalClasses.fontYellow
                 : globalClasses.fontPink
             }
@@ -97,7 +116,7 @@ const ProposalCard: React.FC<{
           </Link>
         </div>
       </div>
-      {status === ProposalCardStatus.Voting && ctaButton}
+      {cardStatus === ProposalCardStatus.Voting && ctaButton}
     </Card>
   );
 };
