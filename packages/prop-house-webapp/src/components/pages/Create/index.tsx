@@ -19,6 +19,7 @@ import { ProposalFields } from '../../../utils/proposalFields';
 import InspirationCard from '../../InspirationCard';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
+import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title.length > 5 && data.what.length > 50;
@@ -128,6 +129,20 @@ const Create: React.FC<{}> = () => {
       </Row>
 
       <Row>
+        <Card
+          bgColor={CardBgColor.LightPurple}
+          borderRadius={CardBorderRadius.twenty}
+          classNames={classes.tipCard}
+        >
+          <b>Tip:</b> Use markdown to style your proposal properly!{' '}
+          <a
+            href="https://www.markdownguide.org/basic-syntax/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Explore the syntax →
+          </a>
+        </Card>
         <Col xl={12}>
           {showPreview ? (
             <Preview />

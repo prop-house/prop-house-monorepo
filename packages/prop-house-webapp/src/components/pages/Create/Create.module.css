@@ -21,3 +21,7 @@
 .proposalHelperWrapper h1 span {
   font-weight: bold;
 }
+
+.tipCard a {
+  text-decoration: underline !important;
+}
