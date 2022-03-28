@@ -26,3 +26,8 @@ hr {
 .submittedBy a {
   margin-left: 0.5rem;
 }
+
+.markdown a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline !important;
+}
