@@ -2,6 +2,7 @@ import classes from './RenderedProposalFields.module.css';
 import { Row, Col } from 'react-bootstrap';
 import { ProposalFields } from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
+import ReactMarkdown from 'react-markdown';
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -21,7 +22,10 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             </div>
           )}
           <h2>Description</h2>
-          <p>{fields.what}</p>
+          <ReactMarkdown
+            className={classes.markdown}
+            children={fields.what}
+          ></ReactMarkdown>
         </Col>
       </Row>
     </>

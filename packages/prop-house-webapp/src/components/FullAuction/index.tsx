@@ -19,6 +19,20 @@ import { setDelegatedVotes } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
 import VotesLeft from '../VotesLeft';
 
+const emptyCard = (copy: string) => (
+  <Card
+    bgColor={CardBgColor.LightPurple}
+    borderRadius={CardBorderRadius.twenty}
+    classNames={classes.noPropCard}
+  >
+    <>{copy}</>
+  </Card>
+);
+const auctionNotStartedContent = emptyCard(
+  'Submission of proposals will be enabled once the funding round begins. Proposals will show up here.'
+);
+const auctionEmptyContent = emptyCard('Submitted proposals will show up here.');
+
 const FullAuction: React.FC<{
   auction: StoredAuction;
   showAllProposals: boolean;
@@ -116,24 +130,24 @@ const FullAuction: React.FC<{
               }
             />
           )}
-        <ProposalCards auction={auction} showAllProposals={showAllProposals} />
 
-        {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ||
-        auction.proposals.length === 0 ? (
-          <Card
-            bgColor={CardBgColor.LightPurple}
-            borderRadius={CardBorderRadius.twenty}
-            classNames={classes.noPropCard}
-          >
-            Submitted proposals will show up here
-          </Card>
+        {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+          auctionNotStartedContent
+        ) : auction.proposals.length === 0 ? (
+          auctionEmptyContent
         ) : (
-          !showAllProposals && (
-            <AllProposalsCTA
-              numProposals={auction.proposals.length}
-              auctionId={auction.id}
+          <>
+            <ProposalCards
+              auction={auction}
+              showAllProposals={showAllProposals}
             />
-          )
+            {!showAllProposals && (
+              <AllProposalsCTA
+                numProposals={auction.proposals.length}
+                auctionId={auction.id}
+              />
+            )}
+          </>
         )}
       </Card>
     </>
