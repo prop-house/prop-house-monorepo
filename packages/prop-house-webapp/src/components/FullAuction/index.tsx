@@ -125,7 +125,10 @@ const FullAuction: React.FC<{
             borderRadius={CardBorderRadius.twenty}
             classNames={classes.noPropCard}
           >
-            Submitted proposals will show up here
+            <>
+              Submission of proposals will be enabled once the funding round
+              begins. Proposals will show up here
+            </>
           </Card>
         ) : (
           !showAllProposals && (
