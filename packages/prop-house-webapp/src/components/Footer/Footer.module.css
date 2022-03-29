@@ -11,14 +11,6 @@
 }
 
 .footer a {
-  color: var(--brand-gray) !important;
-  text-decoration: none;
-}
-
-.footer img {
-  position: relative;
-  bottom: 2px;
-  width: 25px;
-  height: auto;
-  margin: 0 0.05rem;
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
 }
