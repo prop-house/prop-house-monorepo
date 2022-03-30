@@ -84,7 +84,7 @@ const ProposalCard: React.FC<{
       )}
     >
       <div className={classes.authorContainer}>
-        <EthAddress>{proposal.address}</EthAddress>
+        <EthAddress address={proposal.address} />
         <span>proposed</span>
       </div>
 
