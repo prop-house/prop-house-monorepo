@@ -84,10 +84,14 @@ const ProposalCard: React.FC<{
       )}
     >
       <div className={classes.authorContainer}>
-        <EthAddress>{proposal.address}</EthAddress>
+        <EthAddress address={proposal.address} />
         <span>proposed</span>
       </div>
-      <div className={classes.title}>{proposal.title}</div>
+
+      <Link to={`/proposal/${proposal.id}`} className={classes.title}>
+        {proposal.title}
+      </Link>
+
       <div className={classes.timestampAndlinkContainer}>
         {auctionStatus === AuctionStatus.AuctionVoting &&
         cardStatus !== ProposalCardStatus.Voting ? (

@@ -6,7 +6,7 @@ import extractAllProposals from '../../../utils/extractAllProposals';
 import NotFound from '../NotFound';
 import { findAuctionById } from '../../../utils/findAuctionById';
 import FullProposal from '../../FullProposal';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useLayoutEffect } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
@@ -36,6 +36,10 @@ const Proposal = () => {
     new PropHouseWrapper(backendHost, provider?.getSigner())
   );
 
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  });
+
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(
       backendHost,
@@ -55,7 +59,7 @@ const Proposal = () => {
       <Link
         to={`/auction/${parentAuction?.id}`}
         className={classes.backToAuction}
-      >{`← Auction ${parentAuction?.id}`}</Link>
+      >{`← Funding round ${parentAuction?.id}`}</Link>
 
       {proposal ? (
         <FullProposal
