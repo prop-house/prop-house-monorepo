@@ -55,7 +55,7 @@ const Proposal = () => {
       <Link
         to={`/auction/${parentAuction?.id}`}
         className={classes.backToAuction}
-      >{`← Auction ${parentAuction?.id}`}</Link>
+      >{`← Funding round ${parentAuction?.id}`}</Link>
 
       {proposal ? (
         <FullProposal
