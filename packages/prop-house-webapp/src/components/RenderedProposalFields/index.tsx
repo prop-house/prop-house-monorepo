@@ -18,7 +18,8 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
           <h1>{fields.title}</h1>
           {address && (
             <div className={classes.submittedBy}>
-              submitted by <EthAddress address={address} />
+              submitted by&nbsp;
+              <EthAddress address={address} />
             </div>
           )}
           <h2>Description</h2>

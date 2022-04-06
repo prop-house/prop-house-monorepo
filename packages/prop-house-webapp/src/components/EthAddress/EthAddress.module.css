@@ -1,9 +1,10 @@
 .ethAddress a {
-	cursor: pointer;
-	color: inherit;
-	text-decoration: none;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  margin: 0 !important;
 }
 
 .ethAddress a:visited {
-	color: inherit;
+  color: inherit;
 }
