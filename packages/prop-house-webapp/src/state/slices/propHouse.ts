@@ -47,7 +47,8 @@ const updateAuctionInState = (
 };
 
 const sortProposals = (proposals: StoredProposalWithVotes[]) => {
-  return proposals.sort((a, b) => a.id + b.id);
+  const sorted = proposals.sort((a, b) => (a.id < b.id ? -1 : 1));
+  return sorted.sort((a, b) => (Number(a.score) > Number(b.score) ? -1 : 1));
 };
 
 export const propHouseSlice = createSlice({
