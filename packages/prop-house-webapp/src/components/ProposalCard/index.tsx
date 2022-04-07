@@ -87,6 +87,9 @@ const ProposalCard: React.FC<{
         <EthAddress address={proposal.address} />
         <span>proposed</span>
       </div>
+      <div>
+        <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
+      </div>
 
       <Link to={`/proposal/${proposal.id}`} className={classes.title}>
         {proposal.title}
