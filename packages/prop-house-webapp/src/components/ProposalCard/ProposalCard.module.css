@@ -3,6 +3,9 @@
   display: flex;
   flex-direction: column;
 }
+.proposalCardVoting {
+  min-height: 20rem;
+}
 
 .propCopy {
   font-size: small;
@@ -34,7 +37,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-line-clamp: 3; /* number of lines to show */
   line-height: X; /* fallback */
   max-height: X * N; /* fallback */
 }
