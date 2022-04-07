@@ -24,7 +24,7 @@ const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
     [Mainnet.chainId]:
-      'https://mainnet.infura.io/v3/bb1bb1143055477dbe59879f4887516c',
+      'https://mainnet.infura.io/v3/0be66e03abae4c0583466f8bc3d003a4',
   },
   autoConnect: false,
 };
