@@ -76,7 +76,7 @@ const ProposalCard: React.FC<{
       borderRadius={CardBorderRadius.twenty}
       classNames={clsx(
         cardStatus === ProposalCardStatus.Voting
-          ? globalClasses.yellowBorder
+          ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
           : cardStatus === ProposalCardStatus.Winner
           ? globalClasses.pinkBorder
           : '',
