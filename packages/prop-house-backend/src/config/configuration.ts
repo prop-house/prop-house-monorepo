@@ -21,7 +21,7 @@ const config = (): Config => ({
     database: process.env.DB_NAME,
   },
   env: process.env.NODE_ENV ?? 'development',
-  JSONRPC: 'https://mainnet.infura.io/v3/bb1bb1143055477dbe59879f4887516c',
+  JSONRPC: 'https://mainnet.infura.io/v3/0be66e03abae4c0583466f8bc3d003a4',
 });
 
 export const subgraphApiUri =
