@@ -6,7 +6,6 @@ import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
-import NotFound from './components/pages/NotFound';
 import Community from './components/pages/Community';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
@@ -64,8 +63,7 @@ function App() {
           <Route path="/auction/:id" element={<Auction />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/community/:contract_address" element={<Community />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<Community />} />
         </Routes>
         <Footer />
       </Container>
