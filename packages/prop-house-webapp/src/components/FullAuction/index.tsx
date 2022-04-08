@@ -53,7 +53,7 @@ const FullAuction: React.FC<{
 
     const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
       const votes = await getVotes;
-      if (votes === 0) return false;
+      if (Number(votes) === 0) return false;
       dispatch(setDelegatedVotes(votes));
       setEligibleToVote(true);
       return true;
