@@ -19,7 +19,7 @@ const initialState: PropHouseSlice = {
 const containsAuction = (auctions: StoredAuction[], id: number) =>
   auctions.map((auction) => auction.id).includes(id);
 const sortAuctions = (auctions: StoredAuction[]) =>
-  auctions.sort((a, b) => a.id - b.id);
+  auctions.sort((a, b) => (Number(a.id) > Number(b.id) ? -1 : 1));
 const addAuctionToState = (state: PropHouseSlice, auction: StoredAuction) => {
   if (containsAuction(state.auctions, auction.id)) return state;
   state.auctions.push(auction);
