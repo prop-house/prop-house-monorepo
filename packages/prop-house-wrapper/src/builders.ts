@@ -44,6 +44,7 @@ export class Auction extends Signable {
       proposalEndTime: this.proposalEndTime.toISOString(),
       votingEndTime: this.votingEndTime.toISOString(),
       amountEth: this.amountEth,
+      numWinners: this.numWinners,
     };
   }
 }
