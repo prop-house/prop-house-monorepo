@@ -1,15 +1,17 @@
 import {
   Auction,
   StoredAuction,
-} from "@nouns/prop-house-wrapper/dist/builders";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import dayjs from "dayjs";
-import { addAuctions } from "../../state/slices/propHouse";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+} from '@nouns/prop-house-wrapper/dist/builders';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import dayjs from 'dayjs';
+import { addAuctions } from '../../state/slices/propHouse';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
 const CreateAuction = () => {
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = new PropHouseWrapper(backendHost)
+  const backendHost = useAppSelector(
+    (state) => state.configuration.backendHost
+  );
+  const backendClient = new PropHouseWrapper(backendHost);
   const dispatch = useAppDispatch();
 
   return (
@@ -19,11 +21,12 @@ const CreateAuction = () => {
           await backendClient.createAuction(
             new Auction(
               true,
-              "New Auction",
+              'New Auction',
               new Date(),
-              dayjs().add(1, "day").toDate(),
-              dayjs().add(2, "day").toDate(),
-              10
+              dayjs().add(1, 'day').toDate(),
+              dayjs().add(2, 'day').toDate(),
+              10,
+              1
             )
           );
           await backendClient
