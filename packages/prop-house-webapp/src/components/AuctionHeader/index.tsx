@@ -78,7 +78,7 @@ const AuctionHeader: React.FC<{
         {displayCreateButton && (
           <Col md={2} className={classes.rightSectionSubsection}>
             <Link to="/create">
-              <Button text="Create Proposal" bgColor={ButtonColor.Pink} />
+              <Button text="Propose" bgColor={ButtonColor.Pink} />
             </Link>
           </Col>
         )}
