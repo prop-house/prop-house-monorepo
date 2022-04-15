@@ -20,7 +20,6 @@ import InspirationCard from '../../InspirationCard';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
-import { ModalData } from '../../Modal';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title.length > 5 && data.what.length > 50;

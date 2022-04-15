@@ -98,7 +98,8 @@ const ProposalCards: React.FC<{
 
   const handleResubmission = async (
     proposal: StoredProposal,
-    auctionIdToSubmitTo: number
+    auctionIdToSubmitTo: number,
+    callback: () => void
   ) => {
     await client.current.createProposal(
       new Proposal(
@@ -110,6 +111,7 @@ const ProposalCards: React.FC<{
         auctionIdToSubmitTo
       )
     );
+    callback();
   };
 
   const cardStatus = (proposalId: number): ProposalCardStatus => {

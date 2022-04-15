@@ -1,7 +1,7 @@
 import classes from './ProposalCard.module.css';
 import globalClasses from '../../css/globals.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   StoredProposal,
   StoredProposalWithVotes,
@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { useEffect, useState } from 'react';
-import Modal from '../Modal';
+import Modal, { ModalData } from '../Modal';
 import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
 
@@ -35,7 +35,8 @@ const ProposalCard: React.FC<{
   showResubmissionBtn: boolean;
   handleResubmission: (
     proposal: StoredProposal,
-    auctionIdToSubmitTo: number
+    auctionIdToSubmitTo: number,
+    callback: () => void
   ) => void;
 }> = (props) => {
   const {
@@ -49,8 +50,11 @@ const ProposalCard: React.FC<{
     handleResubmission,
   } = props;
 
+  const navigate = useNavigate();
   const [resubmitAuctionId, setResubmitAuctionId] = useState<number>();
   const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState<ModalData>();
+
   const activeAuctions = useAppSelector((state) =>
     state.propHouse.auctions.filter(isAuctionActive)
   );
@@ -94,14 +98,24 @@ const ProposalCard: React.FC<{
     </Row>
   );
 
-  const resubmitButton = (
-    <Button
-      text="Resubmit"
-      bgColor={ButtonColor.Pink}
-      classNames={classes.cardResubmitBtn}
-      onClick={() => setShowModal(true)}
-    />
-  );
+  const resubmissionSuccessModalData = (fundingRoundId: number) => ({
+    title: 'Success!',
+    content: (
+      <Row>
+        <Col xl={12}>
+          Your proposal has been resubmitted to funding round {fundingRoundId}
+        </Col>
+        <Col xl={12}>
+          <Button
+            text="View Round"
+            bgColor={ButtonColor.White}
+            onClick={() => navigate(`/auction/${fundingRoundId}`)}
+          />
+        </Col>
+      </Row>
+    ),
+    onDismiss: () => setShowModal(false),
+  });
 
   const resubmitModalData = {
     title: 'Resubmit Proposal',
@@ -135,7 +149,11 @@ const ProposalCard: React.FC<{
                 classNames={classes.resubmitProposalButton}
                 onClick={() =>
                   resubmitAuctionId &&
-                  handleResubmission(proposal, resubmitAuctionId)
+                  handleResubmission(proposal, resubmitAuctionId, () =>
+                    setModalData(
+                      resubmissionSuccessModalData(resubmitAuctionId)
+                    )
+                  )
                 }
               />
             </Col>
@@ -146,11 +164,21 @@ const ProposalCard: React.FC<{
     onDismiss: () => setShowModal(false),
   };
 
-  const resubmitModal = <Modal data={resubmitModalData} />;
+  const resubmitProposalBtn = (
+    <Button
+      text="Resubmit"
+      bgColor={ButtonColor.Pink}
+      classNames={classes.cardResubmitBtn}
+      onClick={() => {
+        setModalData(resubmitModalData);
+        setShowModal(true);
+      }}
+    />
+  );
 
   return (
     <>
-      {showModal && resubmitModal}
+      {showModal && modalData && <Modal data={modalData} />}
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
@@ -204,7 +232,7 @@ const ProposalCard: React.FC<{
           </div>
         </div>
         {cardStatus === ProposalCardStatus.Voting && ctaButton}
-        {showResubmissionBtn && resubmitButton}
+        {showResubmissionBtn && resubmitProposalBtn}
       </Card>
     </>
   );
