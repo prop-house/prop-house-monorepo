@@ -1,10 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
 import { useAppSelector } from '../../../hooks';
-import { findProposalById } from '../../../utils/findProposalById';
-import extractAllProposals from '../../../utils/extractAllProposals';
 import NotFound from '../NotFound';
-import { findAuctionById } from '../../../utils/findAuctionById';
 import FullProposal from '../../FullProposal';
 import { useEffect, useRef, useLayoutEffect } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -18,15 +15,7 @@ const Proposal = () => {
   const { id } = params;
   const dispatch = useDispatch();
 
-  const { proposal, parentAuction } = useAppSelector((state) => {
-    const proposal = findProposalById(
-      Number(id),
-      extractAllProposals(state.propHouse.auctions)
-    );
-    const parentAuction =
-      proposal && findAuctionById(proposal.auctionId, state.propHouse.auctions);
-    return { proposal, parentAuction };
-  });
+  const proposal = useAppSelector((state) => state.propHouse.activeProposal);
 
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
@@ -48,24 +37,25 @@ const Proposal = () => {
   }, [provider, backendHost]);
 
   useEffect(() => {
-    if (!proposal) return;
+    if (!id) return;
     backendClient.current
-      .getProposal(proposal.id)
+      .getProposal(Number(id))
       .then((proposal) => dispatch(setActiveProposal(proposal)));
-  }, [proposal, dispatch]);
+  }, [id, dispatch]);
 
   return (
     <>
-      <Link
-        to={`/auction/${parentAuction?.id}`}
-        className={classes.backToAuction}
-      >{`← Funding round ${parentAuction?.id}`}</Link>
-
       {proposal ? (
-        <FullProposal
-          proposal={proposal}
-          votingWrapper={backendClient.current}
-        />
+        <>
+          <Link
+            to={`/auction/${proposal.auctionId}`}
+            className={classes.backToAuction}
+          >{`← Funding round ${proposal.auctionId}`}</Link>
+          <FullProposal
+            proposal={proposal}
+            votingWrapper={backendClient.current}
+          />
+        </>
       ) : (
         <NotFound />
       )}
