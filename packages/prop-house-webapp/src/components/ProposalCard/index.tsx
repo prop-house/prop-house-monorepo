@@ -109,7 +109,10 @@ const ProposalCard: React.FC<{
           <Button
             text="View Round"
             bgColor={ButtonColor.White}
-            onClick={() => navigate(`/auction/${fundingRoundId}`)}
+            onClick={() => {
+              setShowModal(false);
+              navigate(`/auction/${fundingRoundId}`);
+            }}
           />
         </Col>
       </Row>
