@@ -1,5 +1,7 @@
 import {
+  Proposal,
   StoredAuction,
+  StoredProposal,
   StoredVote,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
@@ -96,6 +98,22 @@ const ProposalCards: React.FC<{
     }
   };
 
+  const handleResubmission = async (
+    proposal: StoredProposal,
+    auctionIdToSubmitTo: number
+  ) => {
+    await client.current.createProposal(
+      new Proposal(
+        proposal.title,
+        proposal.who,
+        proposal.what,
+        proposal.timeline,
+        proposal.links,
+        auctionIdToSubmitTo
+      )
+    );
+  };
+
   const cardStatus = (proposalId: number): ProposalCardStatus => {
     // if not in voting or not eligible to vote, return default
     return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
@@ -134,6 +152,11 @@ const ProposalCards: React.FC<{
                       delegatedVotes - userVotes.length
                     }
                     handleUserVote={handleUserVote}
+                    showResubmissionBtn={
+                      auctionStatus(auction) === AuctionStatus.AuctionEnded &&
+                      account === proposal.address
+                    }
+                    handleResubmission={handleResubmission}
                   />
                 </Col>
               );

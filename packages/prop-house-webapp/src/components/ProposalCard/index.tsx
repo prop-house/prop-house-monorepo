@@ -2,20 +2,22 @@ import classes from './ProposalCard.module.css';
 import globalClasses from '../../css/globals.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { Link } from 'react-router-dom';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredProposal,
+  StoredProposalWithVotes,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import detailedTime from '../../utils/detailedTime';
 import EthAddress from '../EthAddress';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Form } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus } from '../../utils/auctionStatus';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
-import { Form, FormSelect } from 'react-bootstrap';
 
 export enum ProposalCardStatus {
   Default,
@@ -29,7 +31,12 @@ const ProposalCard: React.FC<{
   cardStatus: ProposalCardStatus;
   votesFor?: number;
   votesLeft?: number;
-  handleUserVote?: (direction: Direction, proposalId: number) => void;
+  handleUserVote: (direction: Direction, proposalId: number) => void;
+  showResubmissionBtn: boolean;
+  handleResubmission: (
+    proposal: StoredProposal,
+    auctionIdToSubmitTo: number
+  ) => void;
 }> = (props) => {
   const {
     proposal,
@@ -38,12 +45,19 @@ const ProposalCard: React.FC<{
     votesFor,
     votesLeft,
     handleUserVote,
+    showResubmissionBtn,
+    handleResubmission,
   } = props;
 
+  const [resubmitAuctionId, setResubmitAuctionId] = useState<number>();
   const [showModal, setShowModal] = useState(false);
   const activeAuctions = useAppSelector((state) =>
     state.propHouse.auctions.filter(isAuctionActive)
   );
+
+  useEffect(() => {
+    if (activeAuctions.length > 0) setResubmitAuctionId(activeAuctions[0].id);
+  }, [activeAuctions]);
 
   const ctaButton = (
     <Row>
@@ -94,24 +108,40 @@ const ProposalCard: React.FC<{
       title="Resubmit Proposal"
       content={
         <Row>
-          <Col md={12}>
-            Resubmit to funding round:{'   '}
-            <Form.Select className={classes.roundSelectionInput} size="sm">
-              {activeAuctions.map((auction, _) => (
-                <option>{auction.id}</option>
-              ))}
-            </Form.Select>
-          </Col>
-          <Col md={12}>
-            <Button
-              text="Submit"
-              bgColor={ButtonColor.Green}
-              classNames={classes.resubmitProposalButton}
-              onClick={() => {
-                // todo: resubmit proposal
-              }}
-            />
-          </Col>
+          {activeAuctions.length === 0 ? (
+            <Col md={12}>
+              Currently, there are no open funding rounds to resubmit your
+              proposal to. Try again later!
+            </Col>
+          ) : (
+            <>
+              <Col md={12}>
+                Resubmit to funding round:{'   '}
+                <Form.Select
+                  className={classes.roundSelectionInput}
+                  size="sm"
+                  onChange={(event) => {
+                    setResubmitAuctionId(Number(event.target.value));
+                  }}
+                >
+                  {activeAuctions.map((auction, _) => {
+                    return <option>{auction.id}</option>;
+                  })}
+                </Form.Select>
+              </Col>
+              <Col md={12}>
+                <Button
+                  text="Submit"
+                  bgColor={ButtonColor.Green}
+                  classNames={classes.resubmitProposalButton}
+                  onClick={() =>
+                    resubmitAuctionId &&
+                    handleResubmission(proposal, resubmitAuctionId)
+                  }
+                />
+              </Col>
+            </>
+          )}
         </Row>
       }
       onDismiss={() => setShowModal(false)}
@@ -174,7 +204,7 @@ const ProposalCard: React.FC<{
           </div>
         </div>
         {cardStatus === ProposalCardStatus.Voting && ctaButton}
-        {auctionStatus === AuctionStatus.AuctionEnded && resubmitButton}
+        {showResubmissionBtn && resubmitButton}
       </Card>
     </>
   );
