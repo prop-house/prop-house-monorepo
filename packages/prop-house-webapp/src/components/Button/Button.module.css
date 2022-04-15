@@ -13,6 +13,8 @@
   background-color: var(--brand-gray);
 }
 
+/* PINK BG */
+
 .btnPinkBg {
   background-color: var(--brand-pink);
   border: none;
@@ -25,6 +27,8 @@
   background-color: var(--brand-pink-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-pink-transparent) !important;
 }
+
+/* WHITE BG */
 
 .btnWhiteBg {
   background-color: white;
@@ -44,6 +48,8 @@
   box-shadow: 0 0 0 0.25rem var(--brand-gray-transparent) !important;
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
+
+/* YELLOW BG */
 
 .btnYellowBg {
   color: white;
@@ -69,6 +75,8 @@
   border-color: var(--brand-yellow-transparent) !important;
 }
 
+/* WHITE-YELLOW BG */
+
 .btnWhiteYellowBg {
   color: var(--brand-yellow);
   background-color: white;
@@ -86,4 +94,21 @@
   background-color: var(--brand-yellow-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-gray-transparent) !important;
   border-color: var(--brand-yellow-transparent) !important;
+}
+
+/* GREEN BG */
+
+.btnGreenBg {
+  background-color: var(--brand-green) !important;
+  border: none;
+  color: white;
+}
+.btnGreenBg:hover {
+  color: rgba(255, 255, 255, 0.8) !important;
+  background-color: var(--brand-green-semi-transparent) !important;
+}
+.btnGreenBg:active,
+.btnGreenBg:focus {
+  background-color: var(--brand-green-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-green-semi-transparent) !important;
 }
