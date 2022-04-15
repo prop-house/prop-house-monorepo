@@ -102,3 +102,18 @@
   justify-content: center;
   width: 3rem;
 }
+
+.cardResubmitBtn {
+  margin: 1rem 0 0 0;
+}
+
+.roundSelectionInput {
+  display: inline;
+  width: 4rem;
+  margin-left: 1rem;
+}
+
+.resubmitProposalButton {
+  margin: 2rem auto 0 auto;
+  width: 15rem;
+}

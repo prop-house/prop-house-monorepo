@@ -11,6 +11,11 @@ import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus } from '../../utils/auctionStatus';
+import { useState } from 'react';
+import Modal from '../Modal';
+import { useAppSelector } from '../../hooks';
+import isAuctionActive from '../../utils/isAuctionActive';
+import { Form, FormSelect } from 'react-bootstrap';
 
 export enum ProposalCardStatus {
   Default,
@@ -34,6 +39,11 @@ const ProposalCard: React.FC<{
     votesLeft,
     handleUserVote,
   } = props;
+
+  const [showModal, setShowModal] = useState(false);
+  const activeAuctions = useAppSelector((state) =>
+    state.propHouse.auctions.filter(isAuctionActive)
+  );
 
   const ctaButton = (
     <Row>
@@ -70,61 +80,103 @@ const ProposalCard: React.FC<{
     </Row>
   );
 
+  const resubmitButton = (
+    <Button
+      text="Resubmit"
+      bgColor={ButtonColor.Pink}
+      classNames={classes.cardResubmitBtn}
+      onClick={() => setShowModal(true)}
+    />
+  );
+
+  const resubmitModal = (
+    <Modal
+      title="Resubmit Proposal"
+      content={
+        <Row>
+          <Col md={12}>
+            Resubmit to funding round:{'   '}
+            <Form.Select className={classes.roundSelectionInput} size="sm">
+              {activeAuctions.map((auction, _) => (
+                <option>{auction.id}</option>
+              ))}
+            </Form.Select>
+          </Col>
+          <Col md={12}>
+            <Button
+              text="Submit"
+              bgColor={ButtonColor.Green}
+              classNames={classes.resubmitProposalButton}
+              onClick={() => {
+                // todo: resubmit proposal
+              }}
+            />
+          </Col>
+        </Row>
+      }
+      onDismiss={() => setShowModal(false)}
+    />
+  );
+
   return (
-    <Card
-      bgColor={CardBgColor.White}
-      borderRadius={CardBorderRadius.twenty}
-      classNames={clsx(
-        cardStatus === ProposalCardStatus.Voting
-          ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
-          : cardStatus === ProposalCardStatus.Winner
-          ? globalClasses.pinkBorder
-          : '',
-        classes.proposalCard
-      )}
-    >
-      <div className={classes.authorContainer}>
-        <EthAddress address={proposal.address} />
-        <span>proposed</span>
-      </div>
-      <div>
-        <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
-      </div>
-
-      <Link to={`/proposal/${proposal.id}`} className={classes.title}>
-        {proposal.title}
-      </Link>
-
-      <div className={classes.timestampAndlinkContainer}>
-        {auctionStatus === AuctionStatus.AuctionVoting &&
-        cardStatus !== ProposalCardStatus.Voting ? (
-          <div className={classes.scoreCopy}>
-            Score: {Math.trunc(proposal.score)}
-          </div>
-        ) : (
-          <div
-            className={classes.timestamp}
-            title={detailedTime(proposal.createdDate)}
-          >
-            {diffTime(proposal.createdDate)}
-          </div>
+    <>
+      {showModal && resubmitModal}
+      <Card
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.twenty}
+        classNames={clsx(
+          cardStatus === ProposalCardStatus.Voting
+            ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
+            : cardStatus === ProposalCardStatus.Winner
+            ? globalClasses.pinkBorder
+            : '',
+          classes.proposalCard
         )}
-
-        <div className={clsx(classes.readMore)}>
-          <Link
-            to={`/proposal/${proposal.id}`}
-            className={
-              cardStatus === ProposalCardStatus.Voting
-                ? globalClasses.fontYellow
-                : globalClasses.fontPink
-            }
-          >
-            Read more →
-          </Link>
+      >
+        <div className={classes.authorContainer}>
+          <EthAddress address={proposal.address} />
+          <span>proposed</span>
         </div>
-      </div>
-      {cardStatus === ProposalCardStatus.Voting && ctaButton}
-    </Card>
+        <div>
+          <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
+        </div>
+
+        <Link to={`/proposal/${proposal.id}`} className={classes.title}>
+          {proposal.title}
+        </Link>
+
+        <div className={classes.timestampAndlinkContainer}>
+          {auctionStatus === AuctionStatus.AuctionVoting &&
+          cardStatus !== ProposalCardStatus.Voting ? (
+            <div className={classes.scoreCopy}>
+              Score: {Math.trunc(proposal.score)}
+            </div>
+          ) : (
+            <div
+              className={classes.timestamp}
+              title={detailedTime(proposal.createdDate)}
+            >
+              {diffTime(proposal.createdDate)}
+            </div>
+          )}
+
+          <div className={clsx(classes.readMore)}>
+            <Link
+              to={`/proposal/${proposal.id}`}
+              className={
+                cardStatus === ProposalCardStatus.Voting
+                  ? globalClasses.fontYellow
+                  : globalClasses.fontPink
+              }
+            >
+              Read more →
+            </Link>
+          </div>
+        </div>
+        {cardStatus === ProposalCardStatus.Voting && ctaButton}
+        {auctionStatus === AuctionStatus.AuctionEnded && resubmitButton}
+      </Card>
+    </>
   );
 };
 
