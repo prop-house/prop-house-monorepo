@@ -103,50 +103,50 @@ const ProposalCard: React.FC<{
     />
   );
 
-  const resubmitModal = (
-    <Modal
-      title="Resubmit Proposal"
-      content={
-        <Row>
-          {activeAuctions.length === 0 ? (
+  const resubmitModalData = {
+    title: 'Resubmit Proposal',
+    content: (
+      <Row>
+        {activeAuctions.length === 0 ? (
+          <Col md={12}>
+            Currently, there are no open funding rounds to resubmit your
+            proposal to. Try again later!
+          </Col>
+        ) : (
+          <>
             <Col md={12}>
-              Currently, there are no open funding rounds to resubmit your
-              proposal to. Try again later!
+              Resubmit to funding round:{'   '}
+              <Form.Select
+                className={classes.roundSelectionInput}
+                size="sm"
+                onChange={(event) => {
+                  setResubmitAuctionId(Number(event.target.value));
+                }}
+              >
+                {activeAuctions.map((auction, _) => {
+                  return <option>{auction.id}</option>;
+                })}
+              </Form.Select>
             </Col>
-          ) : (
-            <>
-              <Col md={12}>
-                Resubmit to funding round:{'   '}
-                <Form.Select
-                  className={classes.roundSelectionInput}
-                  size="sm"
-                  onChange={(event) => {
-                    setResubmitAuctionId(Number(event.target.value));
-                  }}
-                >
-                  {activeAuctions.map((auction, _) => {
-                    return <option>{auction.id}</option>;
-                  })}
-                </Form.Select>
-              </Col>
-              <Col md={12}>
-                <Button
-                  text="Submit"
-                  bgColor={ButtonColor.Green}
-                  classNames={classes.resubmitProposalButton}
-                  onClick={() =>
-                    resubmitAuctionId &&
-                    handleResubmission(proposal, resubmitAuctionId)
-                  }
-                />
-              </Col>
-            </>
-          )}
-        </Row>
-      }
-      onDismiss={() => setShowModal(false)}
-    />
-  );
+            <Col md={12}>
+              <Button
+                text="Submit"
+                bgColor={ButtonColor.Green}
+                classNames={classes.resubmitProposalButton}
+                onClick={() =>
+                  resubmitAuctionId &&
+                  handleResubmission(proposal, resubmitAuctionId)
+                }
+              />
+            </Col>
+          </>
+        )}
+      </Row>
+    ),
+    onDismiss: () => setShowModal(false),
+  };
+
+  const resubmitModal = <Modal data={resubmitModalData} />;
 
   return (
     <>

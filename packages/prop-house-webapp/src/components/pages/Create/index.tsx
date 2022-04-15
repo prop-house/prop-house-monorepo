@@ -20,6 +20,7 @@ import InspirationCard from '../../InspirationCard';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import { ModalData } from '../../Modal';
 
 const isValidPropData = (data: ProposalFields) => {
   return data.title.length > 5 && data.what.length > 50;
@@ -106,13 +107,7 @@ const Create: React.FC<{}> = () => {
 
   return parentAuction ? (
     <>
-      {showModal && (
-        <Modal
-          title={successfulSubmissionModalContent.title}
-          content={successfulSubmissionModalContent.content()}
-          onDismiss={() => successfulSubmissionModalContent.onDismiss()}
-        />
-      )}
+      {showModal && <Modal data={successfulSubmissionModalContent} />}
 
       <InspirationCard />
       <Row>
