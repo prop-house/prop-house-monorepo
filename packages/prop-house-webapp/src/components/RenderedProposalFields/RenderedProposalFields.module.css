@@ -18,13 +18,14 @@ hr {
   background-color: var(--brand-gray);
 }
 
-.submittedBy {
+.subinfo {
   display: flex;
   color: var(--brand-gray);
   font-weight: 500;
 }
-.submittedBy a {
+.subinfo a {
   margin-left: 0.5rem;
+  font-weight: 650;
 }
 
 .markdown a {
