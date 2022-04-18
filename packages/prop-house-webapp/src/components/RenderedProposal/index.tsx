@@ -9,7 +9,11 @@ export interface RenderedProposalProps {
 const RenderedProposal: React.FC<RenderedProposalProps> = (props) => {
   const fields = proposalFields(props.proposal);
   return (
-    <RenderedProposalFields fields={fields} address={props.proposal.address} />
+    <RenderedProposalFields
+      fields={fields}
+      address={props.proposal.address}
+      proposalId={props.proposal.id}
+    />
   );
 };
 
