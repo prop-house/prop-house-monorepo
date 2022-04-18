@@ -18,6 +18,8 @@
   --brand-gray-transparent: #6666662f;
   --brand-yellow: #cba727;
   --brand-yellow-transparent: #cba7274f;
+  --brand-green: #50ba9a;
+  --brand-green-semi-transparent: #50ba9ac7;
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */

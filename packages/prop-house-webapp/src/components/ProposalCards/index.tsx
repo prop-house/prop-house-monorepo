@@ -1,5 +1,7 @@
 import {
+  Proposal,
   StoredAuction,
+  StoredProposal,
   StoredVote,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
@@ -14,12 +16,7 @@ import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 import extractAllVotes from '../../utils/extractAllVotes';
 import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import Modal from '../Modal';
-
-interface VotingAlert {
-  title: string;
-  content: string;
-}
+import Modal, { ModalData } from '../Modal';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -34,7 +31,7 @@ const ProposalCards: React.FC<{
 
   const [userVotes, setUserVotes] = useState<StoredVote[]>();
   const [showModal, setShowModal] = useState(false);
-  const [votingAlert, setVotingAlert] = useState<VotingAlert>();
+  const [modalData, setModalData] = useState<ModalData>();
 
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
@@ -66,34 +63,55 @@ const ProposalCards: React.FC<{
 
     setShowModal(true);
     try {
-      setVotingAlert({
+      setModalData({
         title: 'Voting',
         content:
           direction === Direction.Up
             ? `Please sign the message to vote for proposal #${proposalId}`
             : `Please sign the message to remove your vote on proposal #${proposalId}`,
+        onDismiss: () => setShowModal(false),
       });
 
       await client.current.logVote(new Vote(direction, proposalId));
 
-      setVotingAlert({
+      setModalData({
         title: 'Success',
         content:
           direction === Direction.Up
             ? `You have successfully voted for proposal #${proposalId}`
             : `You have successfully removed a vote for proposal #${proposalId}`,
+        onDismiss: () => setShowModal(false),
       });
 
       refreshActiveProposals(client.current, auction.id, dispatch);
     } catch (e) {
-      setVotingAlert({
+      setModalData({
         title: 'Error',
         content:
           direction === Direction.Up
             ? `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`
             : `Failed to remove vote on proposal #${proposalId}.\n\nError message: ${e}`,
+        onDismiss: () => setShowModal(false),
       });
     }
+  };
+
+  const handleResubmission = async (
+    proposal: StoredProposal,
+    auctionIdToSubmitTo: number,
+    callback: () => void
+  ) => {
+    await client.current.createProposal(
+      new Proposal(
+        proposal.title,
+        proposal.who,
+        proposal.what,
+        proposal.timeline,
+        proposal.links,
+        auctionIdToSubmitTo
+      )
+    );
+    callback();
   };
 
   const cardStatus = (proposalId: number): ProposalCardStatus => {
@@ -106,13 +124,7 @@ const ProposalCards: React.FC<{
 
   return (
     <>
-      {showModal && (
-        <Modal
-          title={votingAlert?.title}
-          content={votingAlert?.content}
-          onDismiss={() => setShowModal(false)}
-        />
-      )}
+      {showModal && modalData && <Modal data={modalData} />}
       <Row>
         {proposals &&
           proposals
@@ -134,6 +146,11 @@ const ProposalCards: React.FC<{
                       delegatedVotes - userVotes.length
                     }
                     handleUserVote={handleUserVote}
+                    showResubmissionBtn={
+                      auctionStatus(auction) === AuctionStatus.AuctionEnded &&
+                      account === proposal.address
+                    }
+                    handleResubmission={handleResubmission}
                   />
                 </Col>
               );
