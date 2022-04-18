@@ -41,7 +41,6 @@ const ProposalCard: React.FC<{
 }> = (props) => {
   const {
     proposal,
-    auctionStatus,
     cardStatus,
     votesFor,
     votesLeft,
@@ -207,19 +206,12 @@ const ProposalCard: React.FC<{
         </Link>
 
         <div className={classes.timestampAndlinkContainer}>
-          {auctionStatus === AuctionStatus.AuctionVoting &&
-          cardStatus !== ProposalCardStatus.Voting ? (
-            <div className={classes.scoreCopy}>
-              Score: {Math.trunc(proposal.score)}
-            </div>
-          ) : (
-            <div
-              className={classes.timestamp}
-              title={detailedTime(proposal.createdDate)}
-            >
-              {diffTime(proposal.createdDate)}
-            </div>
-          )}
+          <div
+            className={classes.timestamp}
+            title={detailedTime(proposal.createdDate)}
+          >
+            {diffTime(proposal.createdDate)}
+          </div>
 
           <div className={clsx(classes.readMore)}>
             <Link
