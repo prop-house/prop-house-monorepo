@@ -14,7 +14,7 @@
   color: var(--brand-gray);
 }
 .greenBg {
-  background-color: #50ba9a;
+  background-color: var(--brand-green);
   color: white;
 }
 .yellowBg {

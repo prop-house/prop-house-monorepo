@@ -1,19 +1,19 @@
-import { Signer } from "@ethersproject/abstract-signer";
-import { Wallet } from "@ethersproject/wallet";
+import { Signer } from '@ethersproject/abstract-signer';
+import { Wallet } from '@ethersproject/wallet';
 
 export abstract class Signable {
   abstract toPayload(): any;
 
   async signedPayload(signer: Signer | Wallet) {
     const jsonPayload = this.jsonPayload();
-		const address = await signer.getAddress()
+    const address = await signer.getAddress();
     return {
       signedData: {
-				message: Buffer.from(jsonPayload).toString('base64'),
-				signature: await signer.signMessage(jsonPayload),
-				signer: address,
-			},
-			address,
+        message: Buffer.from(jsonPayload).toString('base64'),
+        signature: await signer.signMessage(jsonPayload),
+        signer: address,
+      },
+      address,
       ...this.toPayload(),
     };
   }
@@ -28,9 +28,10 @@ export class Auction extends Signable {
     public readonly visible: boolean,
     public readonly title: string,
     public readonly startTime: Date,
-		public readonly proposalEndTime: Date,
+    public readonly proposalEndTime: Date,
     public readonly votingEndTime: Date,
-    public readonly amountEth: number
+    public readonly amountEth: number,
+    public readonly numWinners: number
   ) {
     super();
   }
@@ -40,9 +41,10 @@ export class Auction extends Signable {
       visible: this.visible,
       title: this.title,
       startTime: this.startTime.toISOString(),
-			proposalEndTime: this.proposalEndTime.toISOString(),
+      proposalEndTime: this.proposalEndTime.toISOString(),
       votingEndTime: this.votingEndTime.toISOString(),
       amountEth: this.amountEth,
+      numWinners: this.numWinners,
     };
   }
 }
@@ -51,20 +53,19 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
-  public readonly proposals: StoredProposal[]
+  public readonly proposals: StoredProposal[];
   //@ts-ignore
   public readonly createdDate: Date;
 
-  static FromResponse (response: any): StoredAuction {
-    const parsed =  {
+  static FromResponse(response: any): StoredAuction {
+    const parsed = {
       ...response,
       startTime: new Date(response.startTime),
       proposalEndTime: new Date(response.proposalEndTime),
-      votingEndTime: new Date(response.votingEndTime)
-    }
+      votingEndTime: new Date(response.votingEndTime),
+    };
     return parsed;
   }
-
 }
 
 export class Proposal extends Signable {
@@ -99,13 +100,13 @@ export interface StoredProposal extends Proposal {
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {
-  votes: StoredVote[]
+  votes: StoredVote[];
 }
 
 export enum Direction {
   Up = 1,
   Down = -1,
-  Abstain = 0
+  Abstain = 0,
 }
 
 export class Vote extends Signable {

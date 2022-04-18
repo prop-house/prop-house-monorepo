@@ -6,6 +6,6 @@ import dayjs from 'dayjs';
  */
 const isAuctionActive = (auction: StoredAuction) =>
   dayjs().isAfter(dayjs(auction.startTime)) &&
-  dayjs(auction.proposalEndTime).isAfter(dayjs());
+  dayjs().isBefore(dayjs(auction.proposalEndTime));
 
 export default isAuctionActive;

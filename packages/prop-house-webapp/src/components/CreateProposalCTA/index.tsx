@@ -18,7 +18,7 @@ const CreateProposalCTA = () => {
               placeholder="Describe what you want funding for..."
               className={classes.formInput}
             />
-            <Button text="Create proposal" bgColor={ButtonColor.Pink} />
+            <Button text="Propose" bgColor={ButtonColor.Pink} />
             <Button text="About" bgColor={ButtonColor.White} />
           </div>
         </Card>
