@@ -1,4 +1,4 @@
-[context.deploy-preview]
+[context.deploy-preview.environment]
     REACT_APP_NODE_ENV = "development"
 
 [context.branch-deploy.environment]
