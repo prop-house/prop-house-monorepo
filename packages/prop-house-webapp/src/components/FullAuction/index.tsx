@@ -123,7 +123,7 @@ const FullAuction: React.FC<{
           <Col xs={4} md={2}>
             <div className={classes.proposalTitle}>
               Proposals{' '}
-              <span onClick={handleSort}>{earliestFirst ? '↓' : '↑'}</span>
+              <span onClick={handleSort}>{earliestFirst ? '↑' : '↓'}</span>
             </div>
           </Col>
           <Col xs={8} md={10}>
