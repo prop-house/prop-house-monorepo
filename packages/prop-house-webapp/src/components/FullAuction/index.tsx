@@ -15,7 +15,7 @@ import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
-import { setDelegatedVotes } from '../../state/slices/propHouse';
+import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
 import VotesLeft from '../VotesLeft';
 
@@ -40,6 +40,7 @@ const FullAuction: React.FC<{
   const { auction, showAllProposals } = props;
 
   const [eligibleToVote, setEligibleToVote] = useState(false);
+  const [earliestFirst, setEarliestFirst] = useState(true);
   const { account, library } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
@@ -70,6 +71,13 @@ const FullAuction: React.FC<{
 
     fetch();
   }, [account, library, dispatch]);
+
+  const handleSort = () => {
+    setEarliestFirst((prev) => {
+      dispatch(sortProposals(!prev));
+      return !prev;
+    });
+  };
 
   // alert to get nouners to connect when auctions in voting stage
   const disconnectedCopy = (
@@ -113,7 +121,10 @@ const FullAuction: React.FC<{
         <AuctionHeader auction={auction} />
         <Row>
           <Col xs={4} md={2}>
-            <div className={classes.proposalTitle}>Proposals</div>
+            <div className={classes.proposalTitle}>
+              Proposals{' '}
+              <span onClick={handleSort}>{earliestFirst ? '↓' : '↑'}</span>
+            </div>
           </Col>
           <Col xs={8} md={10}>
             <div className={classes.divider} />

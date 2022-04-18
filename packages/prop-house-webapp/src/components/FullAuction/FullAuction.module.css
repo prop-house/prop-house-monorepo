@@ -6,6 +6,9 @@
   font-weight: 600;
   padding-bottom: 10px;
 }
+.proposalTitle span:hover {
+  cursor: pointer;
+}
 
 .divider {
   text-align: center;

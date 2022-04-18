@@ -46,9 +46,13 @@ const updateAuctionInState = (
   return state;
 };
 
-const sortProposals = (proposals: StoredProposalWithVotes[]) => {
-  const sorted = proposals.sort((a, b) => (a.id < b.id ? -1 : 1));
-  return sorted.sort((a, b) => (Number(a.score) > Number(b.score) ? -1 : 1));
+const _sortProps = (
+  proposals: StoredProposalWithVotes[],
+  ascending: boolean
+) => {
+  return ascending
+    ? proposals.sort((a, b) => (a.id < b.id ? -1 : 1))
+    : proposals.sort((a, b) => (a.id > b.id ? -1 : 1));
 };
 
 export const propHouseSlice = createSlice({
@@ -83,10 +87,14 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<StoredProposalWithVotes[]>
     ) => {
-      state.activeProposals = sortProposals(action.payload);
+      state.activeProposals = _sortProps(action.payload, true);
     },
     setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
       state.delegatedVotes = action.payload;
+    },
+    sortProposals: (state, action: PayloadAction<boolean>) => {
+      if (!state.activeProposals) return;
+      state.activeProposals = _sortProps(state.activeProposals, action.payload);
     },
   },
 });
@@ -99,6 +107,7 @@ export const {
   setActiveProposals,
   appendProposal,
   setDelegatedVotes,
+  sortProposals,
 } = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
