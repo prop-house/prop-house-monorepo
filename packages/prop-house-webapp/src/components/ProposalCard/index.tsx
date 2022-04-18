@@ -70,9 +70,9 @@ const ProposalCard: React.FC<{
           {cardStatus === ProposalCardStatus.Voting && (
             <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-          <div className={classes.scoreCopy}>
+          {/* <div className={classes.scoreCopy}>
             Score: {Math.trunc(proposal.score)}
-          </div>
+          </div> */}
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
@@ -84,7 +84,7 @@ const ProposalCard: React.FC<{
             }
             disabled={votesLeft === 0}
           />
-          <Button
+          {/* <Button
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
@@ -92,7 +92,7 @@ const ProposalCard: React.FC<{
               handleUserVote && handleUserVote(Direction.Down, proposal.id)
             }
             disabled={votesFor === 0 ? true : false}
-          />
+          /> */}
         </div>
       </Col>
     </Row>
