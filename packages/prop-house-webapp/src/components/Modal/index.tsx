@@ -7,12 +7,16 @@ export const Backdrop: React.FC<{ onDismiss: () => void }> = (props) => {
   return <div className={classes.backdrop} onClick={props.onDismiss} />;
 };
 
-const ModalOverlay: React.FC<{
-  title?: string;
-  content?: React.ReactNode;
+export interface ModalData {
+  title: string;
+  content: React.ReactNode;
   onDismiss: () => void;
+}
+
+const ModalOverlay: React.FC<{
+  data: ModalData;
 }> = (props) => {
-  const { title, content, onDismiss } = props;
+  const { title, content, onDismiss } = props.data;
   return (
     <div className={classes.modal}>
       <button className={classes.closeButton} onClick={onDismiss}>
@@ -25,19 +29,17 @@ const ModalOverlay: React.FC<{
 };
 
 const Modal: React.FC<{
-  title?: string;
-  content?: React.ReactNode;
-  onDismiss: () => void;
+  data: ModalData;
 }> = (props) => {
-  const { title, content, onDismiss } = props;
+  const { data } = props;
   return (
     <>
       {ReactDOM.createPortal(
-        <Backdrop onDismiss={onDismiss} />,
+        <Backdrop onDismiss={data.onDismiss} />,
         document.getElementById('backdrop-root')!
       )}
       {ReactDOM.createPortal(
-        <ModalOverlay title={title} content={content} onDismiss={onDismiss} />,
+        <ModalOverlay data={data} />,
         document.getElementById('overlay-root')!
       )}
     </>

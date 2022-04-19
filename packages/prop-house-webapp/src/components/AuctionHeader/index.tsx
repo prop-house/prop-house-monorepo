@@ -28,6 +28,7 @@ const AuctionHeader: React.FC<{
     id,
     startTime: startDate,
     amountEth: fundingAmount,
+    numWinners,
     proposalEndTime: proposalEndDate,
   } = auction;
 
@@ -38,7 +39,7 @@ const AuctionHeader: React.FC<{
       onHoverEffect={!onAuctionPage}
     >
       <Row>
-        <Col md={6} className={classes.leftSectionContainer}>
+        <Col md={5} className={classes.leftSectionContainer}>
           <div className={classes.leftSectionTitle}>
             {!onAuctionPage ? (
               <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
@@ -58,12 +59,13 @@ const AuctionHeader: React.FC<{
             </span>
           </div>
         </Col>
-        <Col md={displayCreateButton ? 4 : 6} className={classes.subsection}>
+        <Col md={displayCreateButton ? 5 : 6} className={classes.subsection}>
           <div className={classes.infoSubsection}>
             <div className={classes.rightSectionTitle}>Funding</div>
-            <div
-              className={classes.rightSectionSubtitle}
-            >{`${fundingAmount.toFixed(2)} Ξ`}</div>
+            <div className={classes.rightSectionSubtitle}>
+              {`${fundingAmount.toFixed(2)} Ξ `}
+              <span>x {numWinners}</span>
+            </div>
           </div>
           <div className={classes.infoSubsection}>
             <div className={classes.rightSectionTitle}>
@@ -78,7 +80,7 @@ const AuctionHeader: React.FC<{
         {displayCreateButton && (
           <Col md={2} className={classes.rightSectionSubsection}>
             <Link to="/create">
-              <Button text="Create Proposal" bgColor={ButtonColor.Pink} />
+              <Button text="Propose" bgColor={ButtonColor.Pink} />
             </Link>
           </Col>
         )}

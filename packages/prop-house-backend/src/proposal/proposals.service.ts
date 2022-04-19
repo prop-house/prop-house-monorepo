@@ -15,7 +15,7 @@ export class ProposalsService {
   findAll(): Promise<Proposal[]> {
     return this.proposalsRepository.find({
       loadRelationIds: {
-        relations: ['auction', 'votes'],
+        relations: ['votes'],
       },
       where: { visible: true },
     });
@@ -23,7 +23,7 @@ export class ProposalsService {
 
   findAllWithAuctionId(auctionId: number): Promise<Proposal[]> {
     return this.proposalsRepository.find({
-      relations: ['auction', 'votes'],
+      relations: ['votes'],
       where: { visible: true, auctionId: auctionId },
     });
   }

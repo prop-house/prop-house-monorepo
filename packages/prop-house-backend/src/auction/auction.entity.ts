@@ -14,7 +14,7 @@ export class Auction {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default: true})
+  @Column({ default: true })
   visible: boolean;
 
   @Column()
@@ -32,6 +32,9 @@ export class Auction {
   @Column()
   amountEth: number;
 
+  @Column()
+  numWinners: number;
+
   @OneToMany(() => Proposal, (proposal) => proposal.auction, {
     eager: true,
   })
@@ -41,7 +44,7 @@ export class Auction {
   @Column()
   createdDate: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lastUpdatedDate: Date;
 
   @BeforeInsert()

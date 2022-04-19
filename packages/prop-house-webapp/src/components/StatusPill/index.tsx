@@ -14,15 +14,15 @@ const StatusPill: React.FC<{ status: AuctionStatus }> = (props) => {
       bgClass = classes.greyBg;
       break;
     case AuctionStatus.AuctionAcceptingProps:
-      copy = 'Accepting proposals';
+      copy = 'Open';
       bgClass = classes.greenBg;
       break;
     case AuctionStatus.AuctionVoting:
-      copy = 'Voting open';
+      copy = 'Voting';
       bgClass = classes.yellowBg;
       break;
     case AuctionStatus.AuctionEnded:
-      copy = 'Auction ended';
+      copy = 'Ended';
       bgClass = classes.greyBg;
       break;
   }

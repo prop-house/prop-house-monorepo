@@ -85,34 +85,26 @@ const Create: React.FC<{}> = () => {
 
   const successfulSubmissionModalContent = {
     title: 'Congrats!',
-    content: () => {
-      return (
-        <>
-          <p>{`You've successfully submitted your proposal for funding round ${
-            parentAuction && parentAuction.id
-          }`}</p>
-          <Button
-            text="View round"
-            bgColor={ButtonColor.White}
-            onClick={() =>
-              navigate(`/auction/${parentAuction && parentAuction.id}`)
-            }
-          />
-        </>
-      );
-    },
+    content: (
+      <>
+        <p>{`You've successfully submitted your proposal for funding round ${
+          parentAuction && parentAuction.id
+        }`}</p>
+        <Button
+          text="View round"
+          bgColor={ButtonColor.White}
+          onClick={() =>
+            navigate(`/auction/${parentAuction && parentAuction.id}`)
+          }
+        />
+      </>
+    ),
     onDismiss: () => navigate(`/auction/${parentAuction && parentAuction.id}`),
   };
 
   return parentAuction ? (
     <>
-      {showModal && (
-        <Modal
-          title={successfulSubmissionModalContent.title}
-          content={successfulSubmissionModalContent.content()}
-          onDismiss={() => successfulSubmissionModalContent.onDismiss()}
-        />
-      )}
+      {showModal && <Modal data={successfulSubmissionModalContent} />}
 
       <InspirationCard />
       <Row>

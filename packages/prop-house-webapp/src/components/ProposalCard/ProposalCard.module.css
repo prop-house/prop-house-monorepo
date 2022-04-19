@@ -1,8 +1,17 @@
 .proposalCard {
-  min-height: 12rem;
+  min-height: 15rem;
   display: flex;
   flex-direction: column;
 }
+.proposalCardVoting {
+  min-height: 20rem;
+}
+
+.propCopy {
+  font-size: small;
+  color: var(--brand-black-tansparent);
+}
+
 .authorContainer {
   font-size: 16px;
   font-weight: bold;
@@ -28,7 +37,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-line-clamp: 3; /* number of lines to show */
   line-height: X; /* fallback */
   max-height: X * N; /* fallback */
 }
@@ -92,4 +101,19 @@
   align-items: center;
   justify-content: center;
   width: 3rem;
+}
+
+.cardResubmitBtn {
+  margin: 1rem 0 0 0;
+}
+
+.roundSelectionInput {
+  display: inline;
+  width: 4rem;
+  margin-left: 1rem;
+}
+
+.resubmitProposalButton {
+  margin: 2rem auto 0 auto;
+  width: 15rem;
 }

@@ -5,7 +5,7 @@ export const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider, // required
     options: {
-      infuraId: 'bb1bb1143055477dbe59879f4887516c', // required
+      infuraId: '0be66e03abae4c0583466f8bc3d003a4', // required
     },
   },
 };
