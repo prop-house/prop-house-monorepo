@@ -1,4 +1,5 @@
 import { Auction } from 'src/auction/auction.entity';
+import { Community } from 'src/community/community.entity';
 import { SignedEntity } from 'src/entities/signed.entity';
 import { IndividualVoteWeights, VoteDirections } from 'src/utils/vote';
 import { Vote } from 'src/vote/vote.entity';
@@ -21,6 +22,9 @@ export class Proposal extends SignedEntity {
 
   @Column({ default: true })
   visible: boolean;
+
+  @Column({ default: false })
+  isWinner: boolean;
 
   @Column()
   title: string;
@@ -48,6 +52,10 @@ export class Proposal extends SignedEntity {
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()
   votes: Vote[];
+
+  @ManyToOne(() => Community, (community) => community.proposals)
+  @JoinColumn()
+  community: Community;
 
   @Column({ type: 'numeric', default: 0 })
   score: number;
