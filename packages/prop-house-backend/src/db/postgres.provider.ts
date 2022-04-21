@@ -9,6 +9,7 @@ import { Proposal } from "src/proposal/proposal.entity";
 import { ProposalsModule } from "src/proposal/proposals.module";
 import { Vote } from "src/vote/vote.entity";
 import { VotesModule } from "src/vote/votes.module";
+import config from '../../ormconfig';
 
 /**
  * Import and provide base typeorm (mysql) related classes.
@@ -23,17 +24,7 @@ import { VotesModule } from "src/vote/votes.module";
     VotesModule,
     AuctionsModule,
     ProposalsModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST || "localhost",
-      port: parseInt(process.env.DB_PORT, 10) || 5432,
-      username: process.env.DB_USER || "postgres",
-      password: process.env.DB_PASS || "example",
-      database: process.env.DB_NAME || "postgres",
-      entities: [Vote, Proposal, Auction, File],
-      synchronize: true,
-    }),
-	  
+    TypeOrmModule.forRoot(config)
   ],
 })
 export class PostgresDatabaseProviderModule {}
