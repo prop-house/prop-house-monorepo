@@ -58,7 +58,7 @@ const FullAuction: React.FC<{
       try {
         const votes = await getNumVotes(account, contract_address, library);
         dispatch(setDelegatedVotes(votes));
-        setEligibleToVote(true);
+        setEligibleToVote(votes > 0);
       } catch (e) {
         console.log('Error fetching votes: ', e);
       }
