@@ -114,10 +114,11 @@ const ProposalCards: React.FC<{
     callback();
   };
 
-  const cardStatus = (proposalId: number): ProposalCardStatus => {
+  const cardStatus = (): ProposalCardStatus => {
     // if not in voting or not eligible to vote, return default
     return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
-      delegatedVotes === undefined
+      delegatedVotes === undefined ||
+      delegatedVotes === 0
       ? ProposalCardStatus.Default
       : ProposalCardStatus.Voting;
   };
@@ -135,7 +136,7 @@ const ProposalCards: React.FC<{
                   <ProposalCard
                     proposal={proposal}
                     auctionStatus={auctionStatus(auction)}
-                    cardStatus={cardStatus(proposal.id)}
+                    cardStatus={cardStatus()}
                     votesFor={
                       userVotes &&
                       countNumVotesForProposal(userVotes, proposal.id)
