@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { isActiveCommunity } from 'prop-house-nounish-contracts';
+import { isActiveCommunity } from 'prop-house-communities';
 import FullAuction from '../../FullAuction';
 import { useAppSelector } from '../../../hooks';
 import { findAuctionById } from '../../../utils/findAuctionById';
@@ -21,7 +21,6 @@ const Community = () => {
   const auction = useAppSelector((state) =>
     findAuctionById(11, state.propHouse.auctions)
   );
-  console.log(auction);
 
   if (!isValidAddress) return <>invalid address, please check it!</>;
   if (!isActiveCommunity(contract_address))
