@@ -55,4 +55,7 @@
     text-align: center;
     margin-bottom: 2rem;
   }
+  .communityInfoCol {
+    margin: 0 1rem;
+  }
 }
