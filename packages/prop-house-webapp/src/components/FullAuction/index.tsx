@@ -7,9 +7,7 @@ import { Row, Col } from 'react-bootstrap';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import auctionStatus from '../../utils/auctionStatus';
 import { AuctionStatus } from '../../utils/auctionStatus';
-import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
-
 import { useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
@@ -18,6 +16,7 @@ import { useAppSelector } from '../../hooks';
 import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
 import VotesLeft from '../VotesLeft';
+import { getNumVotes } from 'prop-house-communities';
 
 const emptyCard = (copy: string) => (
   <Card
@@ -39,6 +38,9 @@ const FullAuction: React.FC<{
 }> = (props) => {
   const { auction, showAllProposals } = props;
 
+  // use auction.contractAddress
+  const contract_address = '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03';
+
   const [eligibleToVote, setEligibleToVote] = useState(false);
   const [earliestFirst, setEarliestFirst] = useState(true);
   const { account, library } = useEthers();
@@ -52,20 +54,13 @@ const FullAuction: React.FC<{
   useEffect(() => {
     if (!account || !library) return;
 
-    const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
-      const votes = await getVotes;
-      if (Number(votes) === 0) return false;
-      dispatch(setDelegatedVotes(votes));
-      setEligibleToVote(true);
-      return true;
-    };
-
     const fetch = async () => {
       try {
-        const nouner = await fetchVotes(getNounerVotes(account));
-        if (!nouner) fetchVotes(getNounishVotes(account, library));
+        const votes = await getNumVotes(account, contract_address, library);
+        dispatch(setDelegatedVotes(votes));
+        setEligibleToVote(true);
       } catch (e) {
-        console.log('error getting votes');
+        console.log('Error fetching votes: ', e);
       }
     };
 
