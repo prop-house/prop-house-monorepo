@@ -1,2 +1,2 @@
 export { isActiveCommunity } from './utils/isActiveCommunity';
-export { getBalanceOfActiveCommunity } from './utils/getBalanceOfActiveCommunity';
+export { getNumVotes } from './utils/getNumVotes';
