@@ -51,8 +51,8 @@ const _sortProps = (
   ascending: boolean
 ) => {
   return ascending
-    ? proposals.sort((a, b) => (a.id < b.id ? -1 : 1))
-    : proposals.sort((a, b) => (a.id > b.id ? -1 : 1));
+    ? proposals.sort((a, b) => (Number(a.score) < Number(b.score) ? -1 : 1))
+    : proposals.sort((a, b) => (Number(a.score) > Number(b.score) ? -1 : 1));
 };
 
 export const propHouseSlice = createSlice({
@@ -87,7 +87,7 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<StoredProposalWithVotes[]>
     ) => {
-      state.activeProposals = _sortProps(action.payload, true);
+      state.activeProposals = _sortProps(action.payload, false);
     },
     setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
       state.delegatedVotes = action.payload;
