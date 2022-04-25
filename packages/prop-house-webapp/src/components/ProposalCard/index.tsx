@@ -41,6 +41,7 @@ const ProposalCard: React.FC<{
 }> = (props) => {
   const {
     proposal,
+    auctionStatus,
     cardStatus,
     votesFor,
     votesLeft,
@@ -69,9 +70,9 @@ const ProposalCard: React.FC<{
           {cardStatus === ProposalCardStatus.Voting && (
             <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-          {/* <div className={classes.scoreCopy}>
+          <div className={classes.scoreCopy}>
             Score: {Math.trunc(proposal.score)}
-          </div> */}
+          </div>
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
@@ -83,7 +84,7 @@ const ProposalCard: React.FC<{
             }
             disabled={votesLeft === 0}
           />
-          {/* <Button
+          <Button
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
@@ -91,7 +92,7 @@ const ProposalCard: React.FC<{
               handleUserVote && handleUserVote(Direction.Down, proposal.id)
             }
             disabled={votesFor === 0 ? true : false}
-          /> */}
+          />
         </div>
       </Col>
     </Row>
@@ -206,12 +207,20 @@ const ProposalCard: React.FC<{
         </Link>
 
         <div className={classes.timestampAndlinkContainer}>
-          <div
-            className={classes.timestamp}
-            title={detailedTime(proposal.createdDate)}
-          >
-            {diffTime(proposal.createdDate)}
-          </div>
+          {auctionStatus === AuctionStatus.AuctionVoting ||
+          (auctionStatus === AuctionStatus.AuctionEnded &&
+            cardStatus !== ProposalCardStatus.Voting) ? (
+            <div className={classes.scoreCopy}>
+              Score: {Math.trunc(proposal.score)}
+            </div>
+          ) : (
+            <div
+              className={classes.timestamp}
+              title={detailedTime(proposal.createdDate)}
+            >
+              {diffTime(proposal.createdDate)}
+            </div>
+          )}
 
           <div className={clsx(classes.readMore)}>
             <Link
