@@ -17,10 +17,15 @@ const ProfileHeader: React.FC<{ contractAddress: string }> = (props) => {
         <Col className={classes.communityInfoCol}>
           <Col className={classes.titleRow}>
             <div className={classes.title}>mf'ers</div>
-            <div>{trimEthAddress(contractAddress)}</div>
+            <div className={classes.contractAddressPill}>
+              {trimEthAddress(contractAddress)}
+            </div>
           </Col>
           <Col className={classes.subInfoRow}>
-            <div>Funded by NounsDAO</div>
+            <div>
+              Funded by <span className={classes.funder}>NounsDAO</span>
+            </div>
+            <div className={classes.spacer}>·</div>
             <div>prop.house/{trimEthAddress(contractAddress)}</div>
           </Col>
           <Col className={classes.propHouseDataRow}>
