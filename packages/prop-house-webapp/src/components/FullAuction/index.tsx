@@ -120,13 +120,13 @@ const FullAuction: React.FC<{
       >
         <AuctionHeader auction={auction} />
         <Row>
-          <Col xs={4} md={2}>
+          <Col xs={6} md={2}>
             <div className={classes.proposalTitle}>
               Proposals{' '}
               <span onClick={handleSort}>{earliestFirst ? '↓' : '↑'}</span>
             </div>
           </Col>
-          <Col xs={8} md={10}>
+          <Col xs={6} md={10}>
             <div className={classes.divider} />
           </Col>
         </Row>
