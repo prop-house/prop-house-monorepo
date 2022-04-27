@@ -161,20 +161,22 @@ const Create: React.FC<{}> = () => {
             }
             disabled={!isValidPropData(proposalEditorData)}
           />
-          {account ? (
-            <Button
-              text="Sign and Submit"
-              bgColor={ButtonColor.Pink}
-              onClick={submitProposal}
-              disabled={!isValidPropData(proposalEditorData)}
-            />
-          ) : (
-            <Button
-              bgColor={ButtonColor.Pink}
-              text="Connect Wallet To Submit"
-              onClick={connect}
-            />
-          )}
+
+          {showPreview &&
+            (account ? (
+              <Button
+                text="Sign and Submit"
+                bgColor={ButtonColor.Pink}
+                onClick={submitProposal}
+                disabled={!isValidPropData(proposalEditorData)}
+              />
+            ) : (
+              <Button
+                bgColor={ButtonColor.Pink}
+                text="Connect Wallet To Submit"
+                onClick={connect}
+              />
+            ))}
         </Col>
       </Row>
     </>
