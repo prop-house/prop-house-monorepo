@@ -27,13 +27,16 @@ export class ProposalsController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<Proposal> {
-    const foundProposal = await  this.proposalsService.findOne(id);
-    if (!foundProposal) throw new HttpException("Proposal not found", HttpStatus.NOT_FOUND);
+    const foundProposal = await this.proposalsService.findOne(id);
+    if (!foundProposal)
+      throw new HttpException('Proposal not found', HttpStatus.NOT_FOUND);
     return foundProposal;
   }
 
   @Post()
-  async create(@Body(SignedPayloadValidationPipe) createProposalDto: CreateProposalDto): Promise<Proposal> {
+  async create(
+    @Body(SignedPayloadValidationPipe) createProposalDto: CreateProposalDto,
+  ): Promise<Proposal> {
     const foundAuction = await this.auctionsService.findOne(
       createProposalDto.parentAuctionId,
     );
@@ -44,21 +47,29 @@ export class ProposalsController {
       );
 
     // Verify that signed data equals this payload
-    const signedPayload: CreateProposalDto = JSON.parse(createProposalDto.signedData.message);
-    if(!(
-      signedPayload.who === createProposalDto.who &&
-      signedPayload.what === createProposalDto.what &&
-      signedPayload.timeline === createProposalDto.timeline &&
-      signedPayload.links === createProposalDto.links &&
-      signedPayload.title === createProposalDto.title &&
-      signedPayload.parentAuctionId === createProposalDto.parentAuctionId
-    )) throw new HttpException("Signed payload and supplied data doesn't match", HttpStatus.BAD_REQUEST);
+    const signedPayload: CreateProposalDto = JSON.parse(
+      createProposalDto.signedData.message,
+    );
+    if (
+      !(
+        signedPayload.who === createProposalDto.who &&
+        signedPayload.what === createProposalDto.what &&
+        signedPayload.tldr === createProposalDto.tldr &&
+        signedPayload.links === createProposalDto.links &&
+        signedPayload.title === createProposalDto.title &&
+        signedPayload.parentAuctionId === createProposalDto.parentAuctionId
+      )
+    )
+      throw new HttpException(
+        "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
 
     const proposal = new Proposal();
     proposal.address = createProposalDto.address;
     proposal.who = createProposalDto.who;
     proposal.what = createProposalDto.what;
-    proposal.timeline = createProposalDto.timeline;
+    proposal.tldr = createProposalDto.tldr;
     proposal.links = createProposalDto.links;
     proposal.title = createProposalDto.title;
     proposal.signedData = createProposalDto.signedData;
