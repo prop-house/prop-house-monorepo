@@ -72,7 +72,7 @@ const Create: React.FC<{}> = () => {
         proposalEditorData.title,
         proposalEditorData.who,
         proposalEditorData.what,
-        proposalEditorData.timeline,
+        proposalEditorData.tldr,
         proposalEditorData.links,
         parentAuction.id
       )
