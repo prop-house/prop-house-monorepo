@@ -22,7 +22,12 @@ import Modal from '../../Modal';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 
 const isValidPropData = (data: ProposalFields) => {
-  return data.title.length > 5 && data.what.length > 50;
+  return (
+    data.title.length > 5 &&
+    data.what.length > 50 &&
+    data.tldr.length > 20 &&
+    data.tldr.length < 120
+  );
 };
 
 const Create: React.FC<{}> = () => {
