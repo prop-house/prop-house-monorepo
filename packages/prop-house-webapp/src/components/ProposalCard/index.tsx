@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import Modal, { ModalData } from '../Modal';
 import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
+import Tooltip from '../Tooltip';
 
 export enum ProposalCardStatus {
   Default,
@@ -202,9 +203,20 @@ const ProposalCard: React.FC<{
           <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
         </div>
 
-        <Link to={`/proposal/${proposal.id}`} className={classes.title}>
-          {proposal.title}
-        </Link>
+        {proposal.tldr.length > 0 ? (
+          <Tooltip
+            content={proposal.title}
+            contentClass={classes.title}
+            tooltipContent={proposal.tldr}
+          />
+        ) : (
+          <Link
+            to={`/proposal/${proposal.id}`}
+            className={clsx(classes.title, classes.noTooltip)}
+          >
+            {proposal.title}
+          </Link>
+        )}
 
         <div className={classes.timestampAndlinkContainer}>
           {auctionStatus === AuctionStatus.AuctionVoting ||
