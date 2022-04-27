@@ -1,0 +1,23 @@
+.content {
+  cursor: help;
+}
+
+.tooltip [class$='inner'] {
+  background-color: white;
+  border: 1px solid var(--brand-gray-semi-transparent);
+  color: black;
+  border-radius: 17px;
+  padding: 1rem;
+  text-align: left;
+  box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.15) !important;
+  max-width: 15rem;
+}
+.tooltipTitle {
+  color: var(--brand-gray-semi-transparent);
+  font-weight: 500;
+  display: block;
+  text-align: left;
+}
+.tooltip [class$='arrow'] {
+  display: none;
+}
