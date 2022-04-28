@@ -2,7 +2,7 @@ import classes from './AuctionHeader.module.css';
 import { Col, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import StatusPill from '../StatusPill';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
@@ -26,6 +26,7 @@ const AuctionHeader: React.FC<{
 }> = (props) => {
   const { auction, clickable, classNames, totalVotes, votesLeft } = props;
 
+  const navigate = useNavigate();
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
   const status = auctionStatus(auction);
@@ -95,16 +96,23 @@ const AuctionHeader: React.FC<{
           </div>
           {status === AuctionStatus.AuctionAcceptingProps ? (
             <div className={classes.infoSubsection}>
-              <Link to="/create">
-                <Button text="Propose" bgColor={ButtonColor.Pink} />
-              </Link>
+              <Button
+                text="Propose"
+                bgColor={ButtonColor.Pink}
+                onClick={() => navigate('/create')}
+              />
             </div>
           ) : (
-            status === AuctionStatus.AuctionVoting && (
+            status === AuctionStatus.AuctionVoting &&
+            totalVotes &&
+            totalVotes > 0 && (
               <div className={classes.infoSubsection}>
-                <Link to="/create">
-                  <Button text="Vote" bgColor={ButtonColor.Yellow} />
-                </Link>
+                <Button
+                  text="Vote"
+                  disabled={votesLeft && votesLeft > 0 ? false : true}
+                  bgColor={ButtonColor.Yellow}
+                  onClick={() => console.log('VOTEORR!')}
+                />
               </div>
             )
           )}
