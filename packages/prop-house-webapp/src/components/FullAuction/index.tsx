@@ -9,7 +9,7 @@ import auctionStatus from '../../utils/auctionStatus';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
-
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
@@ -122,7 +122,7 @@ const FullAuction: React.FC<{
       <Card
         bgColor={CardBgColor.LightPurple}
         borderRadius={CardBorderRadius.thirty}
-        classNames={classes.customCardHeader}
+        classNames={clsx(classes.customCardHeader, classes.fixedHeight)}
       >
         <Row>
           <Col xs={6} md={2}>

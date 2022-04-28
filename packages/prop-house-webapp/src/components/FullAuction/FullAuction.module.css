@@ -3,7 +3,7 @@
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
   border-bottom: 0 !important;
-  box-shadow: 0 4px 2px -2px rgb(33 33 33 / 5%) !important;
+  box-shadow: 0 4px 2px -2px rgb(33 33 33 / 10%) !important;
 }
 
 .customCardHeader {
@@ -11,6 +11,11 @@
   border-top: 0 !important;
   border-top-left-radius: 0 !important;
   border-top-right-radius: 0 !important;
+}
+
+.fixedHeight {
+  max-height: 30rem;
+  overflow-y: auto;
 }
 
 .proposalTitle {
