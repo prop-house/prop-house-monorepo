@@ -19,14 +19,14 @@
 
 .alertWrapper {
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
 }
 .alertWrapper p,
 .alertWrapper button {
   margin: 0;
 }
-
 .connectedCopy {
   color: var(--brand-gray);
   font-weight: 500;
@@ -36,4 +36,13 @@
   font-size: 14px;
   color: var(--brand-black-tansparent);
   text-align: center;
+}
+
+@media (max-width: 992px) {
+  .alertWrapper {
+    flex-direction: column;
+  }
+  .alertWrapper button {
+    margin-top: 1rem;
+  }
 }

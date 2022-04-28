@@ -13,12 +13,11 @@ export class CreateProposalDto extends SignedEntity {
   what: string;
 
   @IsString()
-  timeline: string;
+  tldr: string;
 
   @IsString()
   links: string;
 
   @IsNumber()
   parentAuctionId: number;
-
 }

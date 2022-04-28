@@ -106,7 +106,7 @@ const ProposalCards: React.FC<{
         proposal.title,
         proposal.who,
         proposal.what,
-        proposal.timeline,
+        proposal.tldr,
         proposal.links,
         auctionIdToSubmitTo
       )

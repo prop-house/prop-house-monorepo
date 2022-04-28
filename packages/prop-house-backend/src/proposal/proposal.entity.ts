@@ -32,7 +32,7 @@ export class Proposal extends SignedEntity {
   what: string;
 
   @Column({ type: 'text' })
-  timeline: string;
+  tldr: string;
 
   @Column({ type: 'text' })
   links: string;

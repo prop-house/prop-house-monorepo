@@ -40,7 +40,7 @@ const FullAuction: React.FC<{
   const { auction, showAllProposals } = props;
 
   const [eligibleToVote, setEligibleToVote] = useState(false);
-  const [earliestFirst, setEarliestFirst] = useState(true);
+  const [earliestFirst, setEarliestFirst] = useState(false);
   const { account, library } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
@@ -120,13 +120,13 @@ const FullAuction: React.FC<{
       >
         <AuctionHeader auction={auction} />
         <Row>
-          <Col xs={4} md={2}>
+          <Col xs={6} md={2}>
             <div className={classes.proposalTitle}>
               Proposals{' '}
-              <span onClick={handleSort}>{earliestFirst ? '↑' : '↓'}</span>
+              <span onClick={handleSort}>{earliestFirst ? '↓' : '↑'}</span>
             </div>
           </Col>
-          <Col xs={8} md={10}>
+          <Col xs={6} md={10}>
             <div className={classes.divider} />
           </Col>
         </Row>
