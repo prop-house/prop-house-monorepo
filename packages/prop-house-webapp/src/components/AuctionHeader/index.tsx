@@ -21,8 +21,10 @@ const AuctionHeader: React.FC<{
   auction: StoredAuction;
   clickable: boolean;
   classNames?: string | string[];
+  totalVotes?: number;
+  votesLeft?: number;
 }> = (props) => {
-  const { auction, clickable, classNames } = props;
+  const { auction, clickable, classNames, totalVotes, votesLeft } = props;
 
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
@@ -65,10 +67,17 @@ const AuctionHeader: React.FC<{
           </div>
         </Col>
         <Col lg={8} className={classes.infoSection}>
-          <div className={classes.infoSubsection}>
-            <div className={classes.infoSubsectionTitle}>Votes</div>
-            <div className={classes.infoSubsectionContent}>2 of 5</div>
-          </div>
+          {status === AuctionStatus.AuctionVoting &&
+            totalVotes &&
+            totalVotes > 0 && (
+              <div className={classes.infoSubsection}>
+                <div className={classes.infoSubsectionTitle}>Votes left</div>
+                <div
+                  className={classes.infoSubsectionContent}
+                >{`${votesLeft} of ${totalVotes}`}</div>
+              </div>
+            )}
+
           <div className={classes.infoSubsection}>
             <div className={classes.infoSubsectionTitle}>Funding</div>
             <div className={classes.infoSubsectionContent}>
@@ -84,7 +93,6 @@ const AuctionHeader: React.FC<{
               {diffTime(deadlineTime(auction))}
             </div>
           </div>
-
           {status === AuctionStatus.AuctionAcceptingProps ? (
             <div className={classes.infoSubsection}>
               <Link to="/create">

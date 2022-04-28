@@ -17,7 +17,6 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
-import VotesLeft from '../VotesLeft';
 
 const emptyCard = (copy: string) => (
   <Card
@@ -48,6 +47,10 @@ const FullAuction: React.FC<{
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
   );
+  const userVotes = () => {
+    if (!account || !proposals) return 0;
+    return extractAllVotes(proposals, account).length;
+  };
 
   useEffect(() => {
     if (!account || !library) return;
@@ -118,6 +121,8 @@ const FullAuction: React.FC<{
         auction={auction}
         clickable={false}
         classNames={classes.auctionHeader}
+        totalVotes={delegatedVotes}
+        votesLeft={delegatedVotes && delegatedVotes - userVotes()}
       />
       <Card
         bgColor={CardBgColor.LightPurple}
@@ -135,17 +140,6 @@ const FullAuction: React.FC<{
             <div className={classes.divider} />
           </Col>
         </Row>
-        {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-          eligibleToVote &&
-          proposals &&
-          account &&
-          delegatedVotes && (
-            <VotesLeft
-              numVotesLeft={
-                delegatedVotes - extractAllVotes(proposals, account).length
-              }
-            />
-          )}
 
         {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
           auctionNotStartedContent
