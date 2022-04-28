@@ -114,11 +114,16 @@ const FullAuction: React.FC<{
             <div>{eligibleToVote ? connectedCopy : disconnectedCopy}</div>
           </Card>
         )}
+      <AuctionHeader
+        auction={auction}
+        clickable={false}
+        classNames={classes.auctionHeader}
+      />
       <Card
         bgColor={CardBgColor.LightPurple}
         borderRadius={CardBorderRadius.thirty}
+        classNames={classes.customCardHeader}
       >
-        <AuctionHeader auction={auction} />
         <Row>
           <Col xs={6} md={2}>
             <div className={classes.proposalTitle}>

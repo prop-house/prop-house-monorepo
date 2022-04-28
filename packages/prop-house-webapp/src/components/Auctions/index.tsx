@@ -11,7 +11,7 @@ const AuctionPartial = (auction: StoredAuction, i: number) => (
         showAllProposals={auction.proposals.length <= 6}
       />
     ) : (
-      <AuctionHeader auction={auction} />
+      <AuctionHeader auction={auction} clickable={true} />
     )}
   </div>
 );

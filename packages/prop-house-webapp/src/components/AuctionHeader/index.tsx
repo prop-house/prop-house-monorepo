@@ -14,10 +14,15 @@ import auctionStatus, {
 } from '../../utils/auctionStatus';
 import { useLocation } from 'react-router-dom';
 
+/**
+ * @param clickable sets the entire card to be a button to click through to the round's page
+ */
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
+  clickable: boolean;
+  classNames?: string | string[];
 }> = (props) => {
-  const { auction } = props;
+  const { auction, clickable, classNames } = props;
   const isClosed = isAuctionClosed(auction);
   const displayCreateButton = !isClosed;
 
@@ -36,7 +41,8 @@ const AuctionHeader: React.FC<{
     <Card
       bgColor={CardBgColor.White}
       borderRadius={CardBorderRadius.twenty}
-      onHoverEffect={!onAuctionPage}
+      onHoverEffect={clickable}
+      classNames={classNames}
     >
       <Row>
         <Col md={5} className={classes.leftSectionContainer}>
@@ -91,7 +97,11 @@ const AuctionHeader: React.FC<{
   return (
     <Row>
       <Col xl={12}>
-        {!onAuctionPage ? <Link to={`auction/${id}`}>{content}</Link> : content}
+        {!onAuctionPage && clickable ? (
+          <Link to={`auction/${id}`}>{content}</Link>
+        ) : (
+          content
+        )}
       </Col>
     </Row>
   );
