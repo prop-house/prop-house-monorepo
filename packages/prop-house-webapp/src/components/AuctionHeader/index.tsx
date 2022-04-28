@@ -7,8 +7,8 @@ import Button, { ButtonColor } from '../Button';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import formatTime from '../../utils/formatTime';
-import isAuctionClosed from '../../utils/isAuctionClosed';
 import auctionStatus, {
+  AuctionStatus,
   deadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
@@ -23,11 +23,10 @@ const AuctionHeader: React.FC<{
   classNames?: string | string[];
 }> = (props) => {
   const { auction, clickable, classNames } = props;
-  const isClosed = isAuctionClosed(auction);
-  const displayCreateButton = !isClosed;
 
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
+  const status = auctionStatus(auction);
 
   const {
     id,
@@ -45,7 +44,7 @@ const AuctionHeader: React.FC<{
       classNames={classNames}
     >
       <Row>
-        <Col md={5} className={classes.leftSectionContainer}>
+        <Col lg={4} className={classes.leftSectionContainer}>
           <div className={classes.leftSectionTitle}>
             {!onAuctionPage ? (
               <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
@@ -65,31 +64,43 @@ const AuctionHeader: React.FC<{
             </span>
           </div>
         </Col>
-        <Col md={displayCreateButton ? 5 : 6} className={classes.subsection}>
+        <Col lg={8} className={classes.infoSection}>
           <div className={classes.infoSubsection}>
-            <div className={classes.rightSectionTitle}>Funding</div>
-            <div className={classes.rightSectionSubtitle}>
+            <div className={classes.infoSubsectionTitle}>Votes</div>
+            <div className={classes.infoSubsectionContent}>2 of 5</div>
+          </div>
+          <div className={classes.infoSubsection}>
+            <div className={classes.infoSubsectionTitle}>Funding</div>
+            <div className={classes.infoSubsectionContent}>
               {`${fundingAmount.toFixed(2)} Ξ `}
               <span>x {numWinners}</span>
             </div>
           </div>
           <div className={classes.infoSubsection}>
-            <div className={classes.rightSectionTitle}>
+            <div className={classes.infoSubsectionTitle}>
               {deadlineCopy(auction)}
             </div>
-            <div className={classes.rightSectionSubtitle}>
+            <div className={classes.infoSubsectionContent}>
               {diffTime(deadlineTime(auction))}
             </div>
           </div>
-        </Col>
 
-        {displayCreateButton && (
-          <Col md={2} className={classes.rightSectionSubsection}>
-            <Link to="/create">
-              <Button text="Propose" bgColor={ButtonColor.Pink} />
-            </Link>
-          </Col>
-        )}
+          {status === AuctionStatus.AuctionAcceptingProps ? (
+            <div className={classes.infoSubsection}>
+              <Link to="/create">
+                <Button text="Propose" bgColor={ButtonColor.Pink} />
+              </Link>
+            </div>
+          ) : (
+            status === AuctionStatus.AuctionVoting && (
+              <div className={classes.infoSubsection}>
+                <Link to="/create">
+                  <Button text="Vote" bgColor={ButtonColor.Yellow} />
+                </Link>
+              </div>
+            )
+          )}
+        </Col>
       </Row>
     </Card>
   );
