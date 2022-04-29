@@ -1,15 +1,13 @@
 import {
-  Proposal,
   StoredAuction,
-  StoredProposal,
   StoredVote,
 } from '@nouns/prop-house-wrapper/dist/builders';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEffect, useRef, useState } from 'react';
-import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
+import { auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
@@ -153,24 +151,6 @@ const ProposalCards: React.FC<{
     }
   };
 
-  const handleResubmission = async (
-    proposal: StoredProposal,
-    auctionIdToSubmitTo: number,
-    callback: () => void
-  ) => {
-    await client.current.createProposal(
-      new Proposal(
-        proposal.title,
-        proposal.who,
-        proposal.what,
-        proposal.tldr,
-        proposal.links,
-        auctionIdToSubmitTo
-      )
-    );
-    callback();
-  };
-
   return (
     <>
       {showModal && modalData && <Modal data={modalData} />}
@@ -192,7 +172,6 @@ const ProposalCards: React.FC<{
                       userVotes ? userVotes : [],
                       proposal.id
                     )}
-                    handleResubmission={handleResubmission}
                     canAllotVotes={canAllotVotes}
                     voteAllotments={voteAllotments}
                     handleVoteAllotment={handleVoteAllotment}
