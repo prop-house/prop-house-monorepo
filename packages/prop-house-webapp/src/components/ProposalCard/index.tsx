@@ -6,15 +6,14 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import diffTime from '../../utils/diffTime';
 import detailedTime from '../../utils/detailedTime';
 import EthAddress from '../EthAddress';
-import { Col, Row } from 'react-bootstrap';
-import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import Tooltip from '../Tooltip';
-import { VoteAllotment, votesForProp } from '../ProposalCards';
+import { VoteAllotment } from '../ProposalCards';
 import { useEthers } from '@usedapp/core';
 import ResubmitPropBtn from '../ResubmitPropBtn';
+import PropCardVotingContainer from '../PropCardVotingContainer';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -37,39 +36,6 @@ const ProposalCard: React.FC<{
 
   const { account } = useEthers();
 
-  const allotedVotesForProp = votesForProp(voteAllotments, proposal.id);
-
-  const votingContainer = (
-    <Row>
-      <Col xs={12} className={classes.bottomContainer}>
-        <div className={classes.votesCopyContainer}>
-          {cardStatus === ProposalCardStatus.Voting && (
-            <div className={classes.yourVotesCopy}>Votes: {votesFor}</div>
-          )}
-        </div>
-        <div className={classes.votesButtonContainer}>
-          <Button
-            text="↓"
-            bgColor={ButtonColor.Yellow}
-            classNames={classes.voteBtn}
-            onClick={() => handleVoteAllotment(proposal.id, false)}
-            disabled={allotedVotesForProp === 0}
-          />
-          <div className={classes.votesAllotedDisplay}>
-            {allotedVotesForProp}
-          </div>
-          <Button
-            text="↑"
-            bgColor={ButtonColor.Yellow}
-            classNames={classes.voteBtn}
-            onClick={() => handleVoteAllotment(proposal.id, true)}
-            disabled={canAllotVotes()}
-          />
-        </div>
-      </Col>
-    </Row>
-  );
-
   return (
     <>
       <Card
@@ -88,6 +54,7 @@ const ProposalCard: React.FC<{
           <EthAddress address={proposal.address} />
           <span>proposed</span>
         </div>
+
         <div>
           <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
         </div>
@@ -137,7 +104,18 @@ const ProposalCard: React.FC<{
           </div>
         </div>
 
-        {cardStatus === ProposalCardStatus.Voting && votingContainer}
+        {cardStatus === ProposalCardStatus.Voting && (
+          <PropCardVotingContainer
+            props={{
+              proposal,
+              cardStatus,
+              votesFor,
+              voteAllotments,
+              canAllotVotes,
+              handleVoteAllotment,
+            }}
+          />
+        )}
 
         {auctionStatus === AuctionStatus.AuctionEnded &&
           account === proposal.address && (

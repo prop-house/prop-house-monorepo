@@ -1,0 +1,45 @@
+.bottomContainer {
+  border-top: 1px var(--brand-gray-transparent) solid;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+.votesCopyContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.yourVotesCopy {
+  font-weight: bold;
+  font-size: small;
+  color: var(--brand-black);
+}
+
+.votesButtonContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.votesAllotedDisplay {
+  background-color: white;
+  color: var(--brand-gray);
+  border: 1px var(--brand-gray-semi-transparent) solid;
+  border-radius: 15px;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voteBtn {
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+}
