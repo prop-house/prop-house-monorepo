@@ -5,11 +5,12 @@ import {
   StoredVote,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
-import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
+import ProposalCard from '../ProposalCard';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEffect, useRef, useState } from 'react';
-import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
+import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
+import { cardStatus } from '../../utils/cardStatus';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
 import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
@@ -38,7 +39,11 @@ const ProposalCards: React.FC<{
     (state) => state.propHouse.delegatedVotes
   );
 
-  // initial fetch
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, provider?.getSigner());
+  }, [provider, host]);
+
+  // fetch proposals
   useEffect(() => {
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
@@ -47,10 +52,6 @@ const ProposalCards: React.FC<{
     };
     fetchAuctionProposals();
   }, [auction.id, dispatch, account]);
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, provider?.getSigner());
-  }, [provider, host]);
 
   // update user votes on proposal updates
   useEffect(() => {
@@ -114,14 +115,6 @@ const ProposalCards: React.FC<{
     callback();
   };
 
-  const cardStatus = (proposalId: number): ProposalCardStatus => {
-    // if not in voting or not eligible to vote, return default
-    return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
-      delegatedVotes === undefined
-      ? ProposalCardStatus.Default
-      : ProposalCardStatus.Voting;
-  };
-
   return (
     <>
       {showModal && modalData && <Modal data={modalData} />}
@@ -135,7 +128,10 @@ const ProposalCards: React.FC<{
                   <ProposalCard
                     proposal={proposal}
                     auctionStatus={auctionStatus(auction)}
-                    cardStatus={cardStatus(proposal.id)}
+                    cardStatus={cardStatus(
+                      delegatedVotes ? delegatedVotes > 0 : false,
+                      auction
+                    )}
                     votesFor={
                       userVotes &&
                       countNumVotesForProposal(userVotes, proposal.id)

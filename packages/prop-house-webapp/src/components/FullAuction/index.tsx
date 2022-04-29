@@ -5,8 +5,7 @@ import ProposalCards from '../ProposalCards';
 import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import auctionStatus from '../../utils/auctionStatus';
-import { AuctionStatus } from '../../utils/auctionStatus';
+import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
@@ -52,6 +51,7 @@ const FullAuction: React.FC<{
     return extractAllVotes(proposals, account).length;
   };
 
+  // fetch votes
   useEffect(() => {
     if (!account || !library) return;
 

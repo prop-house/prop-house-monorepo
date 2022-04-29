@@ -7,7 +7,8 @@ import Button, { ButtonColor } from '../Button';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import formatTime from '../../utils/formatTime';
-import auctionStatus, {
+import {
+  auctionStatus,
   AuctionStatus,
   deadlineCopy,
   deadlineTime,

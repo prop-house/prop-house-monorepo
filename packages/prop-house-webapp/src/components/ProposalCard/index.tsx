@@ -19,12 +19,7 @@ import Modal, { ModalData } from '../Modal';
 import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
 import Tooltip from '../Tooltip';
-
-export enum ProposalCardStatus {
-  Default,
-  Voting,
-  Winner,
-}
+import { ProposalCardStatus } from '../../utils/cardStatus';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
