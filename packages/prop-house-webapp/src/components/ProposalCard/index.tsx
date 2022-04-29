@@ -55,6 +55,7 @@ const ProposalCard: React.FC<{
   const [resubmitAuctionId, setResubmitAuctionId] = useState<number>();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
+  const [votesToBeSubmitted, setVotesToBeSubmitted] = useState(0);
 
   const activeAuctions = useAppSelector((state) =>
     state.propHouse.auctions.filter(isAuctionActive)
@@ -69,30 +70,32 @@ const ProposalCard: React.FC<{
       <Col xs={12} className={classes.bottomContainer}>
         <div className={classes.votesCopyContainer}>
           {cardStatus === ProposalCardStatus.Voting && (
-            <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
+            <div className={classes.yourVotesCopy}>
+              Votes alloted: {votesFor}
+            </div>
           )}
-          <div className={classes.scoreCopy}>
-            Score: {Math.trunc(proposal.score)}
-          </div>
         </div>
         <div className={classes.votesButtonContainer}>
-          <Button
-            text="↑"
-            bgColor={ButtonColor.Yellow}
-            classNames={classes.voteBtn}
-            onClick={() =>
-              handleUserVote && handleUserVote(Direction.Up, proposal.id)
-            }
-            disabled={votesLeft === 0}
-          />
           <Button
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
             onClick={() =>
-              handleUserVote && handleUserVote(Direction.Down, proposal.id)
+              setVotesToBeSubmitted((prev) => (prev > 0 ? prev - 1 : 0))
             }
-            disabled={votesFor === 0 ? true : false}
+            disabled={votesToBeSubmitted === 0}
+          />
+          <div className={classes.votesAllotedDisplay}>
+            {votesToBeSubmitted}
+          </div>
+          <Button
+            text="↑"
+            bgColor={ButtonColor.Yellow}
+            classNames={classes.voteBtn}
+            onClick={() => setVotesToBeSubmitted((prev) => prev + 1)}
+            disabled={
+              votesLeft && votesToBeSubmitted < votesLeft ? false : true
+            }
           />
         </div>
       </Col>
