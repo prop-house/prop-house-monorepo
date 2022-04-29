@@ -16,20 +16,12 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
-
-const emptyCard = (copy: string) => (
-  <Card
-    bgColor={CardBgColor.LightPurple}
-    borderRadius={CardBorderRadius.twenty}
-    classNames={classes.noPropCard}
-  >
-    <>{copy}</>
-  </Card>
-);
-const auctionNotStartedContent = emptyCard(
-  'Submission of proposals will be enabled once the funding round begins. Proposals will show up here.'
-);
-const auctionEmptyContent = emptyCard('Submitted proposals will show up here.');
+import {
+  auctionEmptyContent,
+  auctionNotStartedContent,
+  connectedCopy,
+  disconnectedCopy,
+} from './content';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -80,29 +72,6 @@ const FullAuction: React.FC<{
     });
   };
 
-  // alert to get nouners to connect when auctions in voting stage
-  const disconnectedCopy = (
-    <div className={classes.alertWrapper}>
-      <p>
-        The voting period is now open. Members of the Nouns ecosystem can vote
-        for proposals.
-      </p>
-      <Button
-        text="Connect wallet"
-        bgColor={ButtonColor.Pink}
-        onClick={connect}
-      />
-    </div>
-  );
-
-  // alert verifying that connected wallet is a eligible to vote
-  const connectedCopy = (
-    <div className={classes.connectedCopy}>
-      You are eligible to vote! Cast your vote for the proposal you believe
-      should receive funding.
-    </div>
-  );
-
   return (
     <>
       {showAllProposals &&
@@ -115,7 +84,7 @@ const FullAuction: React.FC<{
             <div>
               {delegatedVotes && delegatedVotes > 0
                 ? connectedCopy
-                : disconnectedCopy}
+                : disconnectedCopy(connect)}
             </div>
           </Card>
         )}
