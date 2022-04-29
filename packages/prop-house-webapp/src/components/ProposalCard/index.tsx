@@ -20,37 +20,39 @@ import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
 import Tooltip from '../Tooltip';
 import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment, votesForProp } from '../ProposalCards';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  votesFor?: number;
-  votesLeft?: number;
-  handleUserVote: (direction: Direction, proposalId: number) => void;
   showResubmissionBtn: boolean;
   handleResubmission: (
     proposal: StoredProposal,
     auctionIdToSubmitTo: number,
     callback: () => void
   ) => void;
+  votesFor: number;
+  voteAllotments: VoteAllotment[];
+  canAllotVotes: () => boolean;
+  handleVoteAllotment: (proposalId: number, support: boolean) => void;
 }> = (props) => {
   const {
     proposal,
     auctionStatus,
     cardStatus,
-    votesFor,
-    votesLeft,
-    handleUserVote,
     showResubmissionBtn,
     handleResubmission,
+    votesFor,
+    voteAllotments,
+    canAllotVotes,
+    handleVoteAllotment,
   } = props;
 
   const navigate = useNavigate();
   const [resubmitAuctionId, setResubmitAuctionId] = useState<number>();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
-  const [votesToBeSubmitted, setVotesToBeSubmitted] = useState(0);
 
   const activeAuctions = useAppSelector((state) =>
     state.propHouse.auctions.filter(isAuctionActive)
@@ -60,14 +62,14 @@ const ProposalCard: React.FC<{
     if (activeAuctions.length > 0) setResubmitAuctionId(activeAuctions[0].id);
   }, [activeAuctions]);
 
+  const allotedVotesForProp = votesForProp(voteAllotments, proposal.id);
+
   const votingContainer = (
     <Row>
       <Col xs={12} className={classes.bottomContainer}>
         <div className={classes.votesCopyContainer}>
           {cardStatus === ProposalCardStatus.Voting && (
-            <div className={classes.yourVotesCopy}>
-              Votes alloted: {votesFor}
-            </div>
+            <div className={classes.yourVotesCopy}>Votes: {votesFor}</div>
           )}
         </div>
         <div className={classes.votesButtonContainer}>
@@ -75,22 +77,18 @@ const ProposalCard: React.FC<{
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            onClick={() =>
-              setVotesToBeSubmitted((prev) => (prev > 0 ? prev - 1 : 0))
-            }
-            disabled={votesToBeSubmitted === 0}
+            onClick={() => handleVoteAllotment(proposal.id, false)}
+            disabled={allotedVotesForProp === 0}
           />
           <div className={classes.votesAllotedDisplay}>
-            {votesToBeSubmitted}
+            {allotedVotesForProp}
           </div>
           <Button
             text="↑"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            onClick={() => setVotesToBeSubmitted((prev) => prev + 1)}
-            disabled={
-              votesLeft && votesToBeSubmitted < votesLeft ? false : true
-            }
+            onClick={() => handleVoteAllotment(proposal.id, true)}
+            disabled={canAllotVotes()}
           />
         </div>
       </Col>

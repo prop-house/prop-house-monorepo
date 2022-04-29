@@ -19,6 +19,27 @@ import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
 
+export interface VoteAllotment {
+  proposalId: number;
+  votes: number;
+}
+
+const updateAllotmentVote = (
+  v: VoteAllotment,
+  support: boolean
+): VoteAllotment => ({
+  proposalId: v.proposalId,
+  votes: support ? v.votes + 1 : v.votes === 0 ? 0 : v.votes - 1,
+});
+
+export const votesForProp = (
+  voteAllotments: VoteAllotment[],
+  proposalId: number
+) => {
+  const a = voteAllotments.find((a) => a.proposalId === proposalId);
+  return a ? a.votes : 0;
+};
+
 const ProposalCards: React.FC<{
   auction: StoredAuction;
   showAllProposals: boolean;
@@ -30,6 +51,7 @@ const ProposalCards: React.FC<{
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
+  const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [userVotes, setUserVotes] = useState<StoredVote[]>();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
@@ -58,6 +80,40 @@ const ProposalCards: React.FC<{
     if (!proposals) return;
     setUserVotes(extractAllVotes(proposals, account ? account : ''));
   }, [proposals, account]);
+
+  const canAllotVotes = () => {
+    if (!delegatedVotes || !userVotes) return false;
+
+    const numAllotedVotes = voteAllotments.reduce(
+      (counter, allotment) => counter + allotment.votes,
+      0
+    );
+    return userVotes.length < numAllotedVotes;
+  };
+
+  // manage alloting
+  const handleVoteAllotment = (proposalId: number, support: boolean) => {
+    setVoteAllotments((prev) => {
+      // if not votes have been allotted yet, add new
+      if (prev.length === 0) return [{ proposalId, votes: 1 }];
+
+      const preexistingVoteAllotment = prev.find(
+        (allotment) => allotment.proposalId === proposalId
+      );
+
+      // if not already alloted to proposal,  add new allotment
+      if (!preexistingVoteAllotment) return [...prev, { proposalId, votes: 1 }];
+
+      // if already allotted, add one vote to allotment
+      const updated = prev.map((a) =>
+        a.proposalId === preexistingVoteAllotment.proposalId
+          ? updateAllotmentVote(a, support)
+          : a
+      );
+
+      return updated;
+    });
+  };
 
   const handleUserVote = async (direction: Direction, proposalId: number) => {
     if (!delegatedVotes || !userVotes) return;
@@ -132,21 +188,18 @@ const ProposalCards: React.FC<{
                       delegatedVotes ? delegatedVotes > 0 : false,
                       auction
                     )}
-                    votesFor={
-                      userVotes &&
-                      countNumVotesForProposal(userVotes, proposal.id)
-                    }
-                    votesLeft={
-                      delegatedVotes &&
-                      userVotes &&
-                      delegatedVotes - userVotes.length
-                    }
-                    handleUserVote={handleUserVote}
                     showResubmissionBtn={
                       auctionStatus(auction) === AuctionStatus.AuctionEnded &&
                       account === proposal.address
                     }
+                    votesFor={countNumVotesForProposal(
+                      userVotes ? userVotes : [],
+                      proposal.id
+                    )}
                     handleResubmission={handleResubmission}
+                    canAllotVotes={canAllotVotes}
+                    voteAllotments={voteAllotments}
+                    handleVoteAllotment={handleVoteAllotment}
                   />
                 </Col>
               );
