@@ -37,7 +37,6 @@ const FullAuction: React.FC<{
 }> = (props) => {
   const { auction, showAllProposals } = props;
 
-  const [eligibleToVote, setEligibleToVote] = useState(false);
   const [earliestFirst, setEarliestFirst] = useState(false);
   const { account, library } = useEthers();
   const connect = useWeb3Modal();
@@ -59,7 +58,6 @@ const FullAuction: React.FC<{
       const votes = await getVotes;
       if (Number(votes) === 0) return false;
       dispatch(setDelegatedVotes(votes));
-      setEligibleToVote(true);
       return true;
     };
 
@@ -109,12 +107,16 @@ const FullAuction: React.FC<{
     <>
       {showAllProposals &&
         auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-        (eligibleToVote === true || account === undefined) && (
+        ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
           <Card
             bgColor={CardBgColor.White}
             borderRadius={CardBorderRadius.twenty}
           >
-            <div>{eligibleToVote ? connectedCopy : disconnectedCopy}</div>
+            <div>
+              {delegatedVotes && delegatedVotes > 0
+                ? connectedCopy
+                : disconnectedCopy}
+            </div>
           </Card>
         )}
       <AuctionHeader
