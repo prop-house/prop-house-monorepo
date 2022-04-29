@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import Tooltip from '../Tooltip';
-import { VoteAllotment } from '../ProposalCards';
+import { VoteAllotment } from '../../utils/voteAllotment';
 import { useEthers } from '@usedapp/core';
 import ResubmitPropBtn from '../ResubmitPropBtn';
 import PropCardVotingContainer from '../PropCardVotingContainer';

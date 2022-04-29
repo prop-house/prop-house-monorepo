@@ -1,8 +1,7 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './PropCardVotingContainer.module.css';
 import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../ProposalCards';
-import { votesForProp } from '../ProposalCards';
+import { VoteAllotment, votesForProp } from '../../utils/voteAllotment';
 import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import Button, { ButtonColor } from '../Button';
 

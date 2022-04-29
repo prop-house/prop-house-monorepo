@@ -16,27 +16,7 @@ import extractAllVotes from '../../utils/extractAllVotes';
 import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
-
-export interface VoteAllotment {
-  proposalId: number;
-  votes: number;
-}
-
-const updateVoteAllotment = (
-  v: VoteAllotment,
-  support: boolean
-): VoteAllotment => ({
-  proposalId: v.proposalId,
-  votes: support ? v.votes + 1 : v.votes === 0 ? 0 : v.votes - 1,
-});
-
-export const votesForProp = (
-  voteAllotments: VoteAllotment[],
-  proposalId: number
-) => {
-  const a = voteAllotments.find((a) => a.proposalId === proposalId);
-  return a ? a.votes : 0;
-};
+import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
