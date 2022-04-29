@@ -60,7 +60,7 @@ const ProposalCard: React.FC<{
     if (activeAuctions.length > 0) setResubmitAuctionId(activeAuctions[0].id);
   }, [activeAuctions]);
 
-  const ctaButton = (
+  const votingContainer = (
     <Row>
       <Col xs={12} className={classes.bottomContainer}>
         <div className={classes.votesCopyContainer}>
@@ -245,7 +245,7 @@ const ProposalCard: React.FC<{
             </Link>
           </div>
         </div>
-        {cardStatus === ProposalCardStatus.Voting && ctaButton}
+        {cardStatus === ProposalCardStatus.Voting && votingContainer}
         {showResubmissionBtn && resubmitProposalBtn}
       </Card>
     </>
