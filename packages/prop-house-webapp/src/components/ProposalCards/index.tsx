@@ -24,7 +24,7 @@ export interface VoteAllotment {
   votes: number;
 }
 
-const updateAllotmentVote = (
+const updateVoteAllotment = (
   v: VoteAllotment,
   support: boolean
 ): VoteAllotment => ({
@@ -107,7 +107,7 @@ const ProposalCards: React.FC<{
       // if already allotted, add one vote to allotment
       const updated = prev.map((a) =>
         a.proposalId === preexistingVoteAllotment.proposalId
-          ? updateAllotmentVote(a, support)
+          ? updateVoteAllotment(a, support)
           : a
       );
 
@@ -188,10 +188,6 @@ const ProposalCards: React.FC<{
                       delegatedVotes ? delegatedVotes > 0 : false,
                       auction
                     )}
-                    showResubmissionBtn={
-                      auctionStatus(auction) === AuctionStatus.AuctionEnded &&
-                      account === proposal.address
-                    }
                     votesFor={countNumVotesForProposal(
                       userVotes ? userVotes : [],
                       proposal.id

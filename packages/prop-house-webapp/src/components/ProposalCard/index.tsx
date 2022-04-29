@@ -21,12 +21,12 @@ import isAuctionActive from '../../utils/isAuctionActive';
 import Tooltip from '../Tooltip';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import { VoteAllotment, votesForProp } from '../ProposalCards';
+import { useEthers } from '@usedapp/core';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  showResubmissionBtn: boolean;
   handleResubmission: (
     proposal: StoredProposal,
     auctionIdToSubmitTo: number,
@@ -41,7 +41,6 @@ const ProposalCard: React.FC<{
     proposal,
     auctionStatus,
     cardStatus,
-    showResubmissionBtn,
     handleResubmission,
     votesFor,
     voteAllotments,
@@ -53,6 +52,7 @@ const ProposalCard: React.FC<{
   const [resubmitAuctionId, setResubmitAuctionId] = useState<number>();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
+  const { account } = useEthers();
 
   const activeAuctions = useAppSelector((state) =>
     state.propHouse.auctions.filter(isAuctionActive)
@@ -244,7 +244,9 @@ const ProposalCard: React.FC<{
           </div>
         </div>
         {cardStatus === ProposalCardStatus.Voting && votingContainer}
-        {showResubmissionBtn && resubmitProposalBtn}
+        {auctionStatus === AuctionStatus.AuctionEnded &&
+          account === proposal.address &&
+          resubmitProposalBtn}
       </Card>
     </>
   );
