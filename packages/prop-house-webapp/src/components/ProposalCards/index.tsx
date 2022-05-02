@@ -20,9 +20,8 @@ import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
-  showAllProposals: boolean;
 }> = (props) => {
-  const { auction, showAllProposals } = props;
+  const { auction } = props;
 
   const dispatch = useAppDispatch();
   const { account, library: provider } = useEthers();
@@ -136,29 +135,27 @@ const ProposalCards: React.FC<{
       {showModal && modalData && <Modal data={modalData} />}
       <Row>
         {proposals &&
-          proposals
-            .slice(0, showAllProposals ? proposals.length : 6)
-            .map((proposal, index) => {
-              return (
-                <Col key={index} xl={4}>
-                  <ProposalCard
-                    proposal={proposal}
-                    auctionStatus={auctionStatus(auction)}
-                    cardStatus={cardStatus(
-                      delegatedVotes ? delegatedVotes > 0 : false,
-                      auction
-                    )}
-                    votesFor={countNumVotesForProposal(
-                      userVotes ? userVotes : [],
-                      proposal.id
-                    )}
-                    canAllotVotes={canAllotVotes}
-                    voteAllotments={voteAllotments}
-                    handleVoteAllotment={handleVoteAllotment}
-                  />
-                </Col>
-              );
-            })}
+          proposals.map((proposal, index) => {
+            return (
+              <Col key={index} xl={4}>
+                <ProposalCard
+                  proposal={proposal}
+                  auctionStatus={auctionStatus(auction)}
+                  cardStatus={cardStatus(
+                    delegatedVotes ? delegatedVotes > 0 : false,
+                    auction
+                  )}
+                  votesFor={countNumVotesForProposal(
+                    userVotes ? userVotes : [],
+                    proposal.id
+                  )}
+                  canAllotVotes={canAllotVotes}
+                  voteAllotments={voteAllotments}
+                  handleVoteAllotment={handleVoteAllotment}
+                />
+              </Col>
+            );
+          })}
       </Row>
     </>
   );

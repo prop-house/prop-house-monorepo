@@ -2,7 +2,6 @@ import classes from './FullAuction.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
-import AllProposalsCTA from '../AllProposalsCTA';
 import { Row, Col } from 'react-bootstrap';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
@@ -24,9 +23,8 @@ import {
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
-  showAllProposals: boolean;
 }> = (props) => {
-  const { auction, showAllProposals } = props;
+  const { auction } = props;
 
   const [earliestFirst, setEarliestFirst] = useState(false);
   const { account, library } = useEthers();
@@ -73,8 +71,7 @@ const FullAuction: React.FC<{
 
   return (
     <>
-      {showAllProposals &&
-        auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
           <Card
             bgColor={CardBgColor.White}
@@ -117,16 +114,7 @@ const FullAuction: React.FC<{
           auctionEmptyContent
         ) : (
           <>
-            <ProposalCards
-              auction={auction}
-              showAllProposals={showAllProposals}
-            />
-            {!showAllProposals && (
-              <AllProposalsCTA
-                numProposals={auction.proposals.length}
-                auctionId={auction.id}
-              />
-            )}
+            <ProposalCards auction={auction} />
           </>
         )}
       </Card>

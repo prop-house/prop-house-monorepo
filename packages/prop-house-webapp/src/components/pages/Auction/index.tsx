@@ -21,11 +21,7 @@ const Auction = () => {
   return (
     <>
       <BrowseControl auctionId={id} highestId={highestId} />
-      {auction ? (
-        <FullAuction auction={auction} showAllProposals={true} />
-      ) : (
-        <NotFound />
-      )}
+      {auction ? <FullAuction auction={auction} /> : <NotFound />}
     </>
   );
 };
