@@ -20,8 +20,18 @@ export class CommunitiesService {
 
   findOne(id: number): Promise<Community> {
     return this.communitiesRepository.findOne(id, {
-      relations: ['proposals'],
+      relations: ['auctions'],
       where: { visible: true },
+    });
+  }
+
+  findByAddress(address: string): Promise<Community> {
+    return this.communitiesRepository.findOne({
+      where: {
+        contractAddress: address,
+        visible: true
+      },
+      relations: ['auctions'],
     });
   }
 

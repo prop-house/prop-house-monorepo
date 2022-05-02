@@ -53,15 +53,8 @@ export class Proposal extends SignedEntity {
   @JoinColumn()
   votes: Vote[];
 
-  @ManyToOne(() => Community, (community) => community.proposals)
-  @JoinColumn()
-  community: Community;
-
   @Column({ type: 'numeric', default: 0 })
   score: number;
-
-  @Column({ default: 'false' })
-  isWinner: boolean;
 
   updateScore(voteWeights: IndividualVoteWeights) {
     this.score = this.votes.reduce((acc, v) => acc + voteWeights[v.type], 0);

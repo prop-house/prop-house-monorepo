@@ -1,3 +1,4 @@
+import { Auction } from 'src/auction/auction.entity';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
@@ -28,20 +29,14 @@ export class Community {
   profileImageUrl: string;
 
   // TODO: refactor to not use deprecated decorator
-  @RelationCount((community: Community) => community.proposals)
-  numProposals: number;
+  @RelationCount((community: Community) => community.auctions)
+  numAuctions: number;
 
-  @Column()
-  numRounds: number;
-
-  @Column()
-  amountEthFunded: number;
-
-  @OneToMany(() => Proposal, (proposal) => proposal.community, {
+  @OneToMany(() => Auction, (auction) => auction.community, {
     eager: true,
   })
   @JoinColumn()
-  proposals: Proposal[];
+  auctions: Auction[];
 
   @Column()
   createdDate: Date;

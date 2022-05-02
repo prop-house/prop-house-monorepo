@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Auction } from "src/auction/auction.entity";
 import { AuctionsModule } from "src/auction/auctions.module";
+import { CommunitiesModule } from "src/community/community.module";
 import configuration from "src/config/configuration";
 import { File } from "src/file/file.entity";
 import { Proposal } from "src/proposal/proposal.entity";
@@ -24,6 +25,7 @@ import config from '../../ormconfig';
     VotesModule,
     AuctionsModule,
     ProposalsModule,
+    CommunitiesModule,
     TypeOrmModule.forRoot(config)
   ],
 })

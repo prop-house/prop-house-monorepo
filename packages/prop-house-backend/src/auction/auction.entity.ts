@@ -1,3 +1,4 @@
+import { Community } from 'src/community/community.entity';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
@@ -7,6 +8,7 @@ import {
   JoinColumn,
   BeforeInsert,
   BeforeUpdate,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -40,6 +42,10 @@ export class Auction {
   })
   @JoinColumn()
   proposals: Proposal[];
+
+  @ManyToOne(() => Community, (community) => community.auctions)
+  @JoinColumn()
+  community: Community;
 
   @Column()
   createdDate: Date;

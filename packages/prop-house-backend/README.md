@@ -45,7 +45,7 @@ To generate a migration for your schema change run:
 $ yarn migration:generate AddProposalLanguage
 ```
 
-This will cause the TypeORM CLI to generate a new migration file under `src/db/migrations` with the SQL commands to apply and revert the schema changes.
+This will cause the TypeORM CLI to generate a new migration file under `src/db/migrations` with the SQL commands to apply and revert the schema changes. **Note: this will compare against your locally connected database, so ensure you've run all migrations already.**
 
 When checking out new code or deploying to production, the following command will apply any local migrations:
 
@@ -60,3 +60,22 @@ The initial migration has been seeded to match the production database at type o
 | ID    | timestamp     | name                          |
 | ----- | ------------- | ----------------------------- |
 | _auto_ | 1650506499501 | InitialMigration1650506499501 |
+| _auto_ | 1651112951360 | AddTldr1651112951360          |
+
+
+```sql
+
+CREATE SEQUENCE migrations_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."migrations" (
+    "id" integer DEFAULT nextval('migrations_id_seq') NOT NULL,
+    "timestamp" bigint NOT NULL,
+    "name" character varying NOT NULL,
+    CONSTRAINT "PK_8c82d7f526340ab734260ea46be" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+
+INSERT INTO "migrations" ("id", "timestamp", "name") VALUES
+(1,	1650506499501,	'InitialMigration1650506499501'),
+(2,	1651112951360,	'AddTldr1651112951360');
+```
