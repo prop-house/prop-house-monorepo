@@ -16,19 +16,21 @@ import extractAllVotes from '../../utils/extractAllVotes';
 import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
-import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
+import { VoteAllotment } from '../../utils/voteAllotment';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
+  voteAllotments: VoteAllotment[];
+  canAllotVotes: () => boolean;
+  handleVoteAllotment: (proposalId: number, support: boolean) => void;
 }> = (props) => {
-  const { auction } = props;
+  const { auction, voteAllotments, canAllotVotes, handleVoteAllotment } = props;
 
   const dispatch = useAppDispatch();
   const { account, library: provider } = useEthers();
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [userVotes, setUserVotes] = useState<StoredVote[]>();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
@@ -57,40 +59,6 @@ const ProposalCards: React.FC<{
     if (!proposals) return;
     setUserVotes(extractAllVotes(proposals, account ? account : ''));
   }, [proposals, account]);
-
-  const canAllotVotes = () => {
-    if (!delegatedVotes || !userVotes) return false;
-
-    const numAllotedVotes = voteAllotments.reduce(
-      (counter, allotment) => counter + allotment.votes,
-      0
-    );
-    return userVotes.length < numAllotedVotes;
-  };
-
-  // manage alloting
-  const handleVoteAllotment = (proposalId: number, support: boolean) => {
-    setVoteAllotments((prev) => {
-      // if not votes have been allotted yet, add new
-      if (prev.length === 0) return [{ proposalId, votes: 1 }];
-
-      const preexistingVoteAllotment = prev.find(
-        (allotment) => allotment.proposalId === proposalId
-      );
-
-      // if not already alloted to proposal,  add new allotment
-      if (!preexistingVoteAllotment) return [...prev, { proposalId, votes: 1 }];
-
-      // if already allotted, add one vote to allotment
-      const updated = prev.map((a) =>
-        a.proposalId === preexistingVoteAllotment.proposalId
-          ? updateVoteAllotment(a, support)
-          : a
-      );
-
-      return updated;
-    });
-  };
 
   const handleUserVote = async (direction: Direction, proposalId: number) => {
     if (!delegatedVotes || !userVotes) return;

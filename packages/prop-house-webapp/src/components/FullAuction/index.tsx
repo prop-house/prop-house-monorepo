@@ -14,6 +14,8 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
 import extractAllVotes from '../../utils/extractAllVotes';
+import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
+
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -27,6 +29,7 @@ const FullAuction: React.FC<{
   const { auction } = props;
 
   const [earliestFirst, setEarliestFirst] = useState(false);
+  const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const { account, library } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
@@ -39,7 +42,7 @@ const FullAuction: React.FC<{
     return extractAllVotes(proposals, account).length;
   };
 
-  // fetch votes
+  // fetch votes allowed for user to use
   useEffect(() => {
     if (!account || !library) return;
 
@@ -61,6 +64,42 @@ const FullAuction: React.FC<{
 
     fetch();
   }, [account, library, dispatch]);
+
+  // check vote allotment against vote user is allowed to use
+  const canAllotVotes = () => {
+    if (!delegatedVotes || !userVotes) return false;
+
+    const numAllotedVotes = voteAllotments.reduce(
+      (counter, allotment) => counter + allotment.votes,
+      0
+    );
+
+    return userVotes.length <= numAllotedVotes;
+  };
+
+  // manage vote alloting
+  const handleVoteAllotment = (proposalId: number, support: boolean) => {
+    setVoteAllotments((prev) => {
+      // if no votes have been allotted yet, add new
+      if (prev.length === 0) return [{ proposalId, votes: 1 }];
+
+      const preexistingVoteAllotment = prev.find(
+        (allotment) => allotment.proposalId === proposalId
+      );
+
+      // if not already alloted to specific proposal,  add new allotment
+      if (!preexistingVoteAllotment) return [...prev, { proposalId, votes: 1 }];
+
+      // if already allotted to a specific proposal, add one vote to allotment
+      const updated = prev.map((a) =>
+        a.proposalId === preexistingVoteAllotment.proposalId
+          ? updateVoteAllotment(a, support)
+          : a
+      );
+
+      return updated;
+    });
+  };
 
   const handleSort = () => {
     setEarliestFirst((prev) => {
@@ -114,7 +153,12 @@ const FullAuction: React.FC<{
           auctionEmptyContent
         ) : (
           <>
-            <ProposalCards auction={auction} />
+            <ProposalCards
+              auction={auction}
+              voteAllotments={voteAllotments}
+              canAllotVotes={canAllotVotes}
+              handleVoteAllotment={handleVoteAllotment}
+            />
           </>
         )}
       </Card>
