@@ -1,6 +1,6 @@
 import { Auction } from 'src/auction/auction.entity';
 import { Community } from 'src/community/community.entity';
-import { SignedEntity } from 'src/entities/signed.entity';
+import { SignedEntity } from 'src/entities/signed';
 import { IndividualVoteWeights, VoteDirections } from 'src/utils/vote';
 import { Vote } from 'src/vote/vote.entity';
 import {
@@ -36,7 +36,7 @@ export class Proposal extends SignedEntity {
   what: string;
 
   @Column({ type: 'text' })
-  timeline: string;
+  tldr: string;
 
   @Column({ type: 'text' })
   links: string;
@@ -59,6 +59,9 @@ export class Proposal extends SignedEntity {
 
   @Column({ type: 'numeric', default: 0 })
   score: number;
+
+  @Column({ default: 'false' })
+  isWinner: boolean;
 
   updateScore(voteWeights: IndividualVoteWeights) {
     this.score = this.votes.reduce((acc, v) => acc + voteWeights[v.type], 0);

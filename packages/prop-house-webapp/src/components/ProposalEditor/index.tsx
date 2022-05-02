@@ -23,15 +23,20 @@ const ProposalEditor: React.FC<{
                 onChange={(e) => onDataChange({ title: e.target.value })}
                 value={data && data.title}
               />
-            </Form.Group>
-
-            <Form.Group className={classes.inputGroup}>
+              <Form.Label className={classes.inputLabel}>tl;dr</Form.Label>
+              <Form.Control
+                as="input"
+                placeholder="In the simplest language possible, explain your proposal in one sentence."
+                className={classes.input}
+                onChange={(e) => onDataChange({ tldr: e.target.value })}
+                value={data && data.tldr}
+              />
               <Form.Label className={classes.inputLabel}>
                 Proposal description
               </Form.Label>
               <Form.Control
                 as="textarea"
-                placeholder="· Project details: what are you building?&#10;· Roadmap: when do you expect to complete it by?&#10;· Team: who is building this?&#10;· Links: please share relevant links to the team and project."
+                placeholder="Project details: what are you building?&#10;Roadmap: when do you expect to complete it by?&#10;Team: who is building this?&#10;Links: share relevant links to the team and project"
                 className={clsx(classes.input, classes.descriptionInput)}
                 onChange={(e) => onDataChange({ what: e.target.value })}
                 value={data && data.what}

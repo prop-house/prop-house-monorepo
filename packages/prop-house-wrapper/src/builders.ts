@@ -73,7 +73,7 @@ export class Proposal extends Signable {
     public readonly title: string,
     public readonly who: string,
     public readonly what: string,
-    public readonly timeline: string,
+    public readonly tldr: string,
     public readonly links: string,
     public readonly auctionId: number
   ) {
@@ -85,7 +85,7 @@ export class Proposal extends Signable {
       title: this.title,
       who: this.who,
       what: this.what,
-      timeline: this.timeline,
+      tldr: this.tldr,
       links: this.links,
       parentAuctionId: this.auctionId,
     };

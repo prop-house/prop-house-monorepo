@@ -28,7 +28,10 @@
   position: relative;
   left: calc(-1 * (100vw - 100%) / 2);
 }
-
+/* set react tooltip bg opacity */
+.tooltip.show {
+  opacity: 1;
+}
 @media (max-width: 1200px) {
   /* set width to 100% on mobile */
   .btn {

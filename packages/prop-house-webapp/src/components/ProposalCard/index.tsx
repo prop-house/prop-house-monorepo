@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 import Modal, { ModalData } from '../Modal';
 import { useAppSelector } from '../../hooks';
 import isAuctionActive from '../../utils/isAuctionActive';
+import Tooltip from '../Tooltip';
 
 export enum ProposalCardStatus {
   Default,
@@ -41,6 +42,7 @@ const ProposalCard: React.FC<{
 }> = (props) => {
   const {
     proposal,
+    auctionStatus,
     cardStatus,
     votesFor,
     votesLeft,
@@ -69,9 +71,9 @@ const ProposalCard: React.FC<{
           {cardStatus === ProposalCardStatus.Voting && (
             <div className={classes.yourVotesCopy}>Your votes: {votesFor}</div>
           )}
-          {/* <div className={classes.scoreCopy}>
+          <div className={classes.scoreCopy}>
             Score: {Math.trunc(proposal.score)}
-          </div> */}
+          </div>
         </div>
         <div className={classes.votesButtonContainer}>
           <Button
@@ -83,7 +85,7 @@ const ProposalCard: React.FC<{
             }
             disabled={votesLeft === 0}
           />
-          {/* <Button
+          <Button
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
@@ -91,7 +93,7 @@ const ProposalCard: React.FC<{
               handleUserVote && handleUserVote(Direction.Down, proposal.id)
             }
             disabled={votesFor === 0 ? true : false}
-          /> */}
+          />
         </div>
       </Col>
     </Row>
@@ -201,17 +203,36 @@ const ProposalCard: React.FC<{
           <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
         </div>
 
-        <Link to={`/proposal/${proposal.id}`} className={classes.title}>
-          {proposal.title}
-        </Link>
+        {proposal.tldr.length > 0 ? (
+          <Tooltip
+            content={proposal.title}
+            contentClass={classes.title}
+            tooltipContent={proposal.tldr}
+          />
+        ) : (
+          <Link
+            to={`/proposal/${proposal.id}`}
+            className={clsx(classes.title, classes.noTooltip)}
+          >
+            {proposal.title}
+          </Link>
+        )}
 
         <div className={classes.timestampAndlinkContainer}>
-          <div
-            className={classes.timestamp}
-            title={detailedTime(proposal.createdDate)}
-          >
-            {diffTime(proposal.createdDate)}
-          </div>
+          {auctionStatus === AuctionStatus.AuctionVoting ||
+          (auctionStatus === AuctionStatus.AuctionEnded &&
+            cardStatus !== ProposalCardStatus.Voting) ? (
+            <div className={classes.scoreCopy}>
+              Score: {Math.trunc(proposal.score)}
+            </div>
+          ) : (
+            <div
+              className={classes.timestamp}
+              title={detailedTime(proposal.createdDate)}
+            >
+              {diffTime(proposal.createdDate)}
+            </div>
+          )}
 
           <div className={clsx(classes.readMore)}>
             <Link

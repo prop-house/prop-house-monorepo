@@ -1,5 +1,5 @@
 import { IsNumber, IsString } from 'class-validator';
-import { SignedEntity } from 'src/entities/signed.entity';
+import { SignedEntity } from 'src/entities/signed';
 import { SignedDataDto } from 'src/types/signedDataDto';
 
 export class CreateProposalDto extends SignedEntity {
@@ -13,12 +13,11 @@ export class CreateProposalDto extends SignedEntity {
   what: string;
 
   @IsString()
-  timeline: string;
+  tldr: string;
 
   @IsString()
   links: string;
 
   @IsNumber()
   parentAuctionId: number;
-
 }
