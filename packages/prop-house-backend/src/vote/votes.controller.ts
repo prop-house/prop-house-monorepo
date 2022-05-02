@@ -64,10 +64,15 @@ export class VotesController {
     const signedPayload: CreateVoteDto = JSON.parse(
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
+
+    var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
+    const correspondingVote = arr.find(
+      (v) => v.proposalId === foundProposal.id,
+    );
     if (
       !(
-        signedPayload.direction === createVoteDto.direction &&
-        signedPayload.proposalId === createVoteDto.proposalId
+        correspondingVote.direction === createVoteDto.direction &&
+        correspondingVote.proposalId === createVoteDto.proposalId
       )
     )
       throw new HttpException(
