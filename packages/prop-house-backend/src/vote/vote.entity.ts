@@ -33,6 +33,9 @@ export class Vote extends SignedEntity {
   @Column()
   type: number;
 
+  @Column()
+  weight: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
