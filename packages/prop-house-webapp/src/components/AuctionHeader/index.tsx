@@ -24,8 +24,10 @@ const AuctionHeader: React.FC<{
   classNames?: string | string[];
   totalVotes?: number;
   votesLeft?: number;
+  handleVote?: () => void;
 }> = (props) => {
-  const { auction, clickable, classNames, totalVotes, votesLeft } = props;
+  const { auction, clickable, classNames, totalVotes, votesLeft, handleVote } =
+    props;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,7 +114,7 @@ const AuctionHeader: React.FC<{
                   text="Vote"
                   disabled={votesLeft && votesLeft > 0 ? false : true}
                   bgColor={ButtonColor.Yellow}
-                  onClick={() => console.log('VOTEORR!')}
+                  onClick={handleVote}
                 />
               </div>
             )

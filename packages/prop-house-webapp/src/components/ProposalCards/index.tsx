@@ -13,9 +13,6 @@ import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
 import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 import extractAllVotes from '../../utils/extractAllVotes';
-import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
-import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import Modal, { ModalData } from '../Modal';
 import { VoteAllotment } from '../../utils/voteAllotment';
 
 const ProposalCards: React.FC<{
@@ -32,8 +29,6 @@ const ProposalCards: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [userVotes, setUserVotes] = useState<StoredVote[]>();
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState<ModalData>();
 
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
@@ -60,47 +55,8 @@ const ProposalCards: React.FC<{
     setUserVotes(extractAllVotes(proposals, account ? account : ''));
   }, [proposals, account]);
 
-  const handleUserVote = async (direction: Direction, proposalId: number) => {
-    if (!delegatedVotes || !userVotes) return;
-
-    setShowModal(true);
-    try {
-      setModalData({
-        title: 'Voting',
-        content:
-          direction === Direction.Up
-            ? `Please sign the message to vote for proposal #${proposalId}`
-            : `Please sign the message to remove your vote on proposal #${proposalId}`,
-        onDismiss: () => setShowModal(false),
-      });
-
-      await client.current.logVote(new Vote(direction, proposalId));
-
-      setModalData({
-        title: 'Success',
-        content:
-          direction === Direction.Up
-            ? `You have successfully voted for proposal #${proposalId}`
-            : `You have successfully removed a vote for proposal #${proposalId}`,
-        onDismiss: () => setShowModal(false),
-      });
-
-      refreshActiveProposals(client.current, auction.id, dispatch);
-    } catch (e) {
-      setModalData({
-        title: 'Error',
-        content:
-          direction === Direction.Up
-            ? `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`
-            : `Failed to remove vote on proposal #${proposalId}.\n\nError message: ${e}`,
-        onDismiss: () => setShowModal(false),
-      });
-    }
-  };
-
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}
       <Row>
         {proposals &&
           proposals.map((proposal, index) => {
