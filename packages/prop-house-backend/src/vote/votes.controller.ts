@@ -65,6 +65,7 @@ export class VotesController {
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
 
+    // Get corresponding vote within signed payload (bulk voting payloads may have multiple votes)
     var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
     const correspondingVote = arr.find(
       (v) => v.proposalId === foundProposal.id,
