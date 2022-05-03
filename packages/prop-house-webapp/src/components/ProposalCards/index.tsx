@@ -1,17 +1,10 @@
-import {
-  StoredAuction,
-  StoredVote,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useEffect, useRef, useState } from 'react';
+import { useAppSelector } from '../../hooks';
 import { auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
-import { setActiveProposals } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
-import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 import extractAllVotes from '../../utils/extractAllVotes';
 import { VoteAllotment } from '../../utils/voteAllotment';
 import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
@@ -24,37 +17,12 @@ const ProposalCards: React.FC<{
 }> = (props) => {
   const { auction, voteAllotments, canAllotVotes, handleVoteAllotment } = props;
 
-  const dispatch = useAppDispatch();
-  const { account, library: provider } = useEthers();
-  const host = useAppSelector((state) => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  const [userVotes, setUserVotes] = useState<StoredVote[]>();
+  const { account } = useEthers();
 
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
   );
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, provider?.getSigner());
-  }, [provider, host]);
-
-  // fetch proposals
-  useEffect(() => {
-    const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(auction.id);
-      dispatch(setActiveProposals(proposals));
-      setUserVotes(extractAllVotes(proposals, account ? account : ''));
-    };
-    fetchAuctionProposals();
-  }, [auction.id, dispatch, account]);
-
-  // update user votes on proposal updates
-  useEffect(() => {
-    if (!proposals) return;
-    setUserVotes(extractAllVotes(proposals, account ? account : ''));
-  }, [proposals, account]);
 
   return (
     <>
@@ -71,7 +39,10 @@ const ProposalCards: React.FC<{
                     auction
                   )}
                   votesFor={aggVoteWeightForProp(
-                    userVotes ? userVotes : [],
+                    extractAllVotes(
+                      proposals ? proposals : [],
+                      account ? account : ''
+                    ),
                     proposal.id
                   )}
                   canAllotVotes={canAllotVotes}
