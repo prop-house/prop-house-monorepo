@@ -54,7 +54,7 @@ export class Proposal extends SignedEntity {
 
   updateScore(voteWeights: IndividualVoteWeights) {
     this.score = this.votes.reduce(
-      (acc, v) => acc + (voteWeights[v.type] + v.weight),
+      (acc, v) => acc + voteWeights[v.type] * v.weight,
       0,
     );
   }
