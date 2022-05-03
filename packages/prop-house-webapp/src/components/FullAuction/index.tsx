@@ -55,6 +55,18 @@ const FullAuction: React.FC<{
     return aggVoteWeightForProps(proposals, account);
   };
 
+  // total votes allotted (these are pre-submitted votes)
+  const numAllotedVotes = voteAllotments.reduce(
+    (counter, allotment) => counter + allotment.votes,
+    0
+  );
+
+  // check vote allotment against vote user is allowed to use
+  const canAllotVotes = () => {
+    if (!delegatedVotes) return false;
+    return numAllotedVotes < delegatedVotes - userVotesWeight();
+  };
+
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
@@ -94,17 +106,6 @@ const FullAuction: React.FC<{
     };
     fetchAuctionProposals();
   }, [auction.id, dispatch, account]);
-
-  // check vote allotment against vote user is allowed to use
-  const canAllotVotes = () => {
-    if (!delegatedVotes) return false;
-
-    const numAllotedVotes = voteAllotments.reduce(
-      (counter, allotment) => counter + allotment.votes,
-      0
-    );
-    return numAllotedVotes < delegatedVotes - userVotesWeight();
-  };
 
   // manage vote alloting
   const handleVoteAllotment = (proposalId: number, support: boolean) => {
@@ -205,6 +206,13 @@ const FullAuction: React.FC<{
         clickable={false}
         classNames={classes.auctionHeader}
         totalVotes={delegatedVotes}
+        voteBtnEnabled={
+          delegatedVotes &&
+          delegatedVotes - userVotesWeight() > 0 &&
+          numAllotedVotes > 0
+            ? true
+            : false
+        }
         votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
         handleVote={handleVote}
       />

@@ -23,11 +23,19 @@ const AuctionHeader: React.FC<{
   clickable: boolean;
   classNames?: string | string[];
   totalVotes?: number;
+  voteBtnEnabled?: boolean;
   votesLeft?: number;
   handleVote?: () => void;
 }> = (props) => {
-  const { auction, clickable, classNames, totalVotes, votesLeft, handleVote } =
-    props;
+  const {
+    auction,
+    clickable,
+    classNames,
+    totalVotes,
+    votesLeft,
+    handleVote,
+    voteBtnEnabled,
+  } = props;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -112,7 +120,7 @@ const AuctionHeader: React.FC<{
               <div className={classes.infoSubsection}>
                 <Button
                   text="Vote"
-                  disabled={votesLeft && votesLeft > 0 ? false : true}
+                  disabled={voteBtnEnabled ? false : true}
                   bgColor={ButtonColor.Yellow}
                   onClick={handleVote}
                 />
