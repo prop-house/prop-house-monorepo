@@ -122,7 +122,6 @@ const Create: React.FC<{}> = () => {
             </span>
           </h1>
         </Col>
-        <hr />
       </Row>
 
       <Row>

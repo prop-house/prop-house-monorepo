@@ -9,11 +9,10 @@ import {
 const extractAllVotes = (
   proposals: StoredProposalWithVotes[],
   address: string
-): StoredVote[] => {
-  return proposals
+): StoredVote[] =>
+  proposals
     .map((proposal: any) => proposal.votes)
     .flat()
     .filter((vote: any) => vote.address === address);
-};
 
 export default extractAllVotes;

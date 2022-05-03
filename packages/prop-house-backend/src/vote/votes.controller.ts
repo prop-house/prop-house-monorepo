@@ -64,10 +64,16 @@ export class VotesController {
     const signedPayload: CreateVoteDto = JSON.parse(
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
+
+    // Get corresponding vote within signed payload (bulk voting payloads may have multiple votes)
+    var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
+    const correspondingVote = arr.find(
+      (v) => v.proposalId === foundProposal.id,
+    );
     if (
       !(
-        signedPayload.direction === createVoteDto.direction &&
-        signedPayload.proposalId === createVoteDto.proposalId
+        correspondingVote.direction === createVoteDto.direction &&
+        correspondingVote.proposalId === createVoteDto.proposalId
       )
     )
       throw new HttpException(
@@ -94,8 +100,13 @@ export class VotesController {
 
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
+      const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
+        (agg, current) => agg + current.weight,
+        0,
+      );
+
       // Verify that user has not reached max votes
-      if (signerVotesForAuction.length >= delegatedVotes.votes)
+      if (aggVoteWeightSubmitted >= delegatedVotes.votes)
         throw new HttpException(
           'Signer has consumed all delegated votes',
           HttpStatus.BAD_REQUEST,

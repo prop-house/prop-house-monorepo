@@ -7,6 +7,10 @@
   }
 }
 
+body {
+  background-color: rgb(252, 252, 252);
+}
+
 :root {
   --brand-pink: #e02ecf;
   --brand-pink-semi-transparent: #e02ece9a;

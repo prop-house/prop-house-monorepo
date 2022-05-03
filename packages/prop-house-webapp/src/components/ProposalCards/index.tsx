@@ -1,160 +1,57 @@
-import {
-  Proposal,
-  StoredAuction,
-  StoredProposal,
-  StoredVote,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
-import ProposalCard, { ProposalCardStatus } from '../ProposalCard';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEffect, useRef, useState } from 'react';
-import auctionStatus, { AuctionStatus } from '../../utils/auctionStatus';
-import { setActiveProposals } from '../../state/slices/propHouse';
+import ProposalCard from '../ProposalCard';
+import { useAppSelector } from '../../hooks';
+import { auctionStatus } from '../../utils/auctionStatus';
+import { cardStatus } from '../../utils/cardStatus';
 import { useEthers } from '@usedapp/core';
-import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 import extractAllVotes from '../../utils/extractAllVotes';
-import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
-import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import Modal, { ModalData } from '../Modal';
+import { VoteAllotment } from '../../utils/voteAllotment';
+import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
-  showAllProposals: boolean;
+  voteAllotments: VoteAllotment[];
+  canAllotVotes: () => boolean;
+  handleVoteAllotment: (proposalId: number, support: boolean) => void;
 }> = (props) => {
-  const { auction, showAllProposals } = props;
+  const { auction, voteAllotments, canAllotVotes, handleVoteAllotment } = props;
 
-  const dispatch = useAppDispatch();
-  const { account, library: provider } = useEthers();
-  const host = useAppSelector((state) => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  const [userVotes, setUserVotes] = useState<StoredVote[]>();
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState<ModalData>();
+  const { account } = useEthers();
 
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
   );
 
-  // initial fetch
-  useEffect(() => {
-    const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(auction.id);
-      dispatch(setActiveProposals(proposals));
-      setUserVotes(extractAllVotes(proposals, account ? account : ''));
-    };
-    fetchAuctionProposals();
-  }, [auction.id, dispatch, account]);
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, provider?.getSigner());
-  }, [provider, host]);
-
-  // update user votes on proposal updates
-  useEffect(() => {
-    if (!proposals) return;
-    setUserVotes(extractAllVotes(proposals, account ? account : ''));
-  }, [proposals, account]);
-
-  const handleUserVote = async (direction: Direction, proposalId: number) => {
-    if (!delegatedVotes || !userVotes) return;
-
-    setShowModal(true);
-    try {
-      setModalData({
-        title: 'Voting',
-        content:
-          direction === Direction.Up
-            ? `Please sign the message to vote for proposal #${proposalId}`
-            : `Please sign the message to remove your vote on proposal #${proposalId}`,
-        onDismiss: () => setShowModal(false),
-      });
-
-      await client.current.logVote(new Vote(direction, proposalId));
-
-      setModalData({
-        title: 'Success',
-        content:
-          direction === Direction.Up
-            ? `You have successfully voted for proposal #${proposalId}`
-            : `You have successfully removed a vote for proposal #${proposalId}`,
-        onDismiss: () => setShowModal(false),
-      });
-
-      refreshActiveProposals(client.current, auction.id, dispatch);
-    } catch (e) {
-      setModalData({
-        title: 'Error',
-        content:
-          direction === Direction.Up
-            ? `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`
-            : `Failed to remove vote on proposal #${proposalId}.\n\nError message: ${e}`,
-        onDismiss: () => setShowModal(false),
-      });
-    }
-  };
-
-  const handleResubmission = async (
-    proposal: StoredProposal,
-    auctionIdToSubmitTo: number,
-    callback: () => void
-  ) => {
-    await client.current.createProposal(
-      new Proposal(
-        proposal.title,
-        proposal.who,
-        proposal.what,
-        proposal.tldr,
-        proposal.links,
-        auctionIdToSubmitTo
-      )
-    );
-    callback();
-  };
-
-  const cardStatus = (proposalId: number): ProposalCardStatus => {
-    // if not in voting or not eligible to vote, return default
-    return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
-      delegatedVotes === undefined
-      ? ProposalCardStatus.Default
-      : ProposalCardStatus.Voting;
-  };
-
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}
       <Row>
         {proposals &&
-          proposals
-            .slice(0, showAllProposals ? proposals.length : 6)
-            .map((proposal, index) => {
-              return (
-                <Col key={index} xl={4}>
-                  <ProposalCard
-                    proposal={proposal}
-                    auctionStatus={auctionStatus(auction)}
-                    cardStatus={cardStatus(proposal.id)}
-                    votesFor={
-                      userVotes &&
-                      countNumVotesForProposal(userVotes, proposal.id)
-                    }
-                    votesLeft={
-                      delegatedVotes &&
-                      userVotes &&
-                      delegatedVotes - userVotes.length
-                    }
-                    handleUserVote={handleUserVote}
-                    showResubmissionBtn={
-                      auctionStatus(auction) === AuctionStatus.AuctionEnded &&
-                      account === proposal.address
-                    }
-                    handleResubmission={handleResubmission}
-                  />
-                </Col>
-              );
-            })}
+          proposals.map((proposal, index) => {
+            return (
+              <Col key={index} xl={4}>
+                <ProposalCard
+                  proposal={proposal}
+                  auctionStatus={auctionStatus(auction)}
+                  cardStatus={cardStatus(
+                    delegatedVotes ? delegatedVotes > 0 : false,
+                    auction
+                  )}
+                  votesFor={aggVoteWeightForProp(
+                    extractAllVotes(
+                      proposals ? proposals : [],
+                      account ? account : ''
+                    ),
+                    proposal.id
+                  )}
+                  canAllotVotes={canAllotVotes}
+                  voteAllotments={voteAllotments}
+                  handleVoteAllotment={handleVoteAllotment}
+                />
+              </Col>
+            );
+          })}
       </Row>
     </>
   );

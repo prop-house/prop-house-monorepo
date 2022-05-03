@@ -53,7 +53,10 @@ export class Proposal extends SignedEntity {
   score: number;
 
   updateScore(voteWeights: IndividualVoteWeights) {
-    this.score = this.votes.reduce((acc, v) => acc + voteWeights[v.type], 0);
+    this.score = this.votes.reduce(
+      (acc, v) => acc + voteWeights[v.type] * v.weight,
+      0,
+    );
   }
 
   @Column()
