@@ -133,6 +133,8 @@ const FullAuction: React.FC<{
     const votes = voteAllotments.map((a) => new Vote(1, a.proposalId, a.votes));
     await client.current.logVotes(votes);
 
+    setVoteAllotments([]);
+
     // setShowModal(true);
     // try {
     //   setModalData({
