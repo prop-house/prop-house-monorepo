@@ -136,6 +136,7 @@ const FullAuction: React.FC<{
 
     const propCopy = voteAllotments
       .sort((a, b) => a.proposalId - b.proposalId)
+      .filter((a) => a.votes > 0)
       .reduce(
         (agg, current) =>
           agg +
@@ -154,9 +155,9 @@ const FullAuction: React.FC<{
         onDismiss: () => setShowModal(false),
       });
 
-      const votes = voteAllotments.map(
-        (a) => new Vote(1, a.proposalId, a.votes)
-      );
+      const votes = voteAllotments
+        .map((a) => new Vote(1, a.proposalId, a.votes))
+        .filter((v) => v.weight > 0);
       await client.current.logVotes(votes);
 
       setModalData({
