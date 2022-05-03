@@ -20,7 +20,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
-
+import { aggVoteWeight } from '../../utils/aggVoteWeight';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -47,9 +47,11 @@ const FullAuction: React.FC<{
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const userVotes = () => {
+
+  // aggregate vote weight of already stored votes
+  const userVotesWeight = () => {
     if (!account || !proposals) return 0;
-    return extractAllVotes(proposals, account).length;
+    return aggVoteWeight(proposals, account);
   };
 
   useEffect(() => {
@@ -81,14 +83,13 @@ const FullAuction: React.FC<{
 
   // check vote allotment against vote user is allowed to use
   const canAllotVotes = () => {
-    if (!delegatedVotes || !userVotes) return false;
+    if (!delegatedVotes || !userVotesWeight()) return false;
 
     const numAllotedVotes = voteAllotments.reduce(
       (counter, allotment) => counter + allotment.votes,
       0
     );
-
-    return userVotes.length <= numAllotedVotes;
+    return numAllotedVotes < delegatedVotes - userVotesWeight();
   };
 
   // manage vote alloting
@@ -117,7 +118,10 @@ const FullAuction: React.FC<{
 
   // handle voting
   const handleVote = async () => {
-    if (!delegatedVotes || !userVotes) return;
+    if (!delegatedVotes || !userVotesWeight()) return;
+
+    const votes = voteAllotments.map((a) => new Vote(1, a.proposalId, a.votes));
+    await client.current.logVotes(votes);
 
     // setShowModal(true);
     // try {
@@ -173,7 +177,7 @@ const FullAuction: React.FC<{
         clickable={false}
         classNames={classes.auctionHeader}
         totalVotes={delegatedVotes}
-        votesLeft={delegatedVotes && delegatedVotes - userVotes()}
+        votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
         handleVote={handleVote}
       />
       <Card
