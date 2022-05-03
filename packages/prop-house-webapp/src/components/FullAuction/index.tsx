@@ -20,7 +20,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
-import { aggVoteWeight } from '../../utils/aggVoteWeight';
+import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -51,7 +51,7 @@ const FullAuction: React.FC<{
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
     if (!account || !proposals) return 0;
-    return aggVoteWeight(proposals, account);
+    return aggVoteWeightForProps(proposals, account);
   };
 
   useEffect(() => {

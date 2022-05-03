@@ -14,6 +14,7 @@ import { useEthers } from '@usedapp/core';
 import countNumVotesForProposal from '../../utils/countNumVotesForProposal';
 import extractAllVotes from '../../utils/extractAllVotes';
 import { VoteAllotment } from '../../utils/voteAllotment';
+import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -69,7 +70,7 @@ const ProposalCards: React.FC<{
                     delegatedVotes ? delegatedVotes > 0 : false,
                     auction
                   )}
-                  votesFor={countNumVotesForProposal(
+                  votesFor={aggVoteWeightForProp(
                     userVotes ? userVotes : [],
                     proposal.id
                   )}
