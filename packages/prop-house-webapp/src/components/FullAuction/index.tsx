@@ -22,6 +22,7 @@ import {
   sortProposals,
   setActiveProposals,
 } from '../../state/slices/propHouse';
+import { SortType } from '../../utils/sortingProposals';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -35,7 +36,7 @@ const FullAuction: React.FC<{
   const { auction } = props;
 
   const { account, library } = useEthers();
-  const [earliestFirst, setEarliestFirst] = useState(false);
+  const [ascending, setAscending] = useState(false);
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
@@ -179,8 +180,10 @@ const FullAuction: React.FC<{
   };
 
   const handleSort = () => {
-    setEarliestFirst((prev) => {
-      dispatch(sortProposals(!prev));
+    setAscending((prev) => {
+      dispatch(
+        sortProposals({ sortType: SortType.CreatedAt, ascending: !prev })
+      );
       return !prev;
     });
   };
@@ -225,7 +228,7 @@ const FullAuction: React.FC<{
           <Col xs={6} md={2}>
             <div className={classes.proposalTitle}>
               Proposals{' '}
-              <span onClick={handleSort}>{earliestFirst ? '↓' : '↑'}</span>
+              <span onClick={handleSort}>{ascending ? '↑' : '↓'}</span>
             </div>
           </Col>
           <Col xs={6} md={10}>
