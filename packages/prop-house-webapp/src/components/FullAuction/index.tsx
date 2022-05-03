@@ -83,7 +83,7 @@ const FullAuction: React.FC<{
 
   // check vote allotment against vote user is allowed to use
   const canAllotVotes = () => {
-    if (!delegatedVotes || !userVotesWeight()) return false;
+    if (!delegatedVotes) return false;
 
     const numAllotedVotes = voteAllotments.reduce(
       (counter, allotment) => counter + allotment.votes,
@@ -118,7 +118,7 @@ const FullAuction: React.FC<{
 
   // handle voting
   const handleVote = async () => {
-    if (!delegatedVotes || !userVotesWeight()) return;
+    if (!delegatedVotes) return;
 
     const votes = voteAllotments.map((a) => new Vote(1, a.proposalId, a.votes));
     await client.current.logVotes(votes);
