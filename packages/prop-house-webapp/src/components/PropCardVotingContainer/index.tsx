@@ -52,7 +52,7 @@ const PropCardVotingContainer: React.FC<{
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
             onClick={() => handleVoteAllotment(proposal.id, true)}
-            disabled={canAllotVotes()}
+            disabled={!canAllotVotes()}
           />
         </div>
       </Col>

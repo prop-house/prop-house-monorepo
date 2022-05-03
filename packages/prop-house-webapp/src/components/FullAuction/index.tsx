@@ -3,24 +3,25 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 import { Row, Col } from 'react-bootstrap';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
-import { setDelegatedVotes, sortProposals } from '../../state/slices/propHouse';
-import extractAllVotes from '../../utils/extractAllVotes';
 import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
-import { useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { Direction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
-
+import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
+import {
+  setDelegatedVotes,
+  sortProposals,
+  setActiveProposals,
+} from '../../state/slices/propHouse';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -47,16 +48,18 @@ const FullAuction: React.FC<{
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const userVotes = () => {
+
+  // aggregate vote weight of already stored votes
+  const userVotesWeight = () => {
     if (!account || !proposals) return 0;
-    return extractAllVotes(proposals, account).length;
+    return aggVoteWeightForProps(proposals, account);
   };
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch votes allowed for user to use
+  // fetch votes/delegated votes allowed for user to use
   useEffect(() => {
     if (!account || !library) return;
 
@@ -79,16 +82,24 @@ const FullAuction: React.FC<{
     fetch();
   }, [account, library, dispatch]);
 
+  // fetch proposals
+  useEffect(() => {
+    const fetchAuctionProposals = async () => {
+      const proposals = await client.current.getAuctionProposals(auction.id);
+      dispatch(setActiveProposals(proposals));
+    };
+    fetchAuctionProposals();
+  }, [auction.id, dispatch, account]);
+
   // check vote allotment against vote user is allowed to use
   const canAllotVotes = () => {
-    if (!delegatedVotes || !userVotes) return false;
+    if (!delegatedVotes) return false;
 
     const numAllotedVotes = voteAllotments.reduce(
       (counter, allotment) => counter + allotment.votes,
       0
     );
-
-    return userVotes.length <= numAllotedVotes;
+    return numAllotedVotes < delegatedVotes - userVotesWeight();
   };
 
   // manage vote alloting
@@ -117,32 +128,48 @@ const FullAuction: React.FC<{
 
   // handle voting
   const handleVote = async () => {
-    if (!delegatedVotes || !userVotes) return;
+    if (!delegatedVotes) return;
 
-    // setShowModal(true);
-    // try {
-    //   setModalData({
-    //     title: 'Voting',
-    //     content: `Please sign the message to vote for proposal #${proposalId}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
+    const propCopy = voteAllotments
+      .sort((a, b) => a.proposalId - b.proposalId)
+      .reduce(
+        (agg, current) =>
+          agg +
+          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${
+            current.proposalId
+          }`,
+        ''
+      );
 
-    //   await client.current.logVote(new Vote(direction, proposalId));
+    setShowModal(true);
 
-    //   setModalData({
-    //     title: 'Success',
-    //     content: `You have successfully voted for proposal #${proposalId}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
+    try {
+      setModalData({
+        title: 'Voting',
+        content: `Please sign the message to vote as follows:\n${propCopy}`,
+        onDismiss: () => setShowModal(false),
+      });
 
-    //   refreshActiveProposals(client.current, auction.id, dispatch);
-    // } catch (e) {
-    //   setModalData({
-    //     title: 'Error',
-    //     content: `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
-    // }
+      const votes = voteAllotments.map(
+        (a) => new Vote(1, a.proposalId, a.votes)
+      );
+      await client.current.logVotes(votes);
+
+      setModalData({
+        title: 'Success',
+        content: `You have successfully voted!\n${propCopy}`,
+        onDismiss: () => setShowModal(false),
+      });
+
+      refreshActiveProposals(client.current, auction.id, dispatch);
+      setVoteAllotments([]);
+    } catch (e) {
+      setModalData({
+        title: 'Error',
+        content: `Failed to submit votes.\n\nError message: ${e}`,
+        onDismiss: () => setShowModal(false),
+      });
+    }
   };
 
   const handleSort = () => {
@@ -173,7 +200,7 @@ const FullAuction: React.FC<{
         clickable={false}
         classNames={classes.auctionHeader}
         totalVotes={delegatedVotes}
-        votesLeft={delegatedVotes && delegatedVotes - userVotes()}
+        votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
         handleVote={handleVote}
       />
       <Card
