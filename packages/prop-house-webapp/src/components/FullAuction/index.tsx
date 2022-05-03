@@ -130,33 +130,46 @@ const FullAuction: React.FC<{
   const handleVote = async () => {
     if (!delegatedVotes) return;
 
-    const votes = voteAllotments.map((a) => new Vote(1, a.proposalId, a.votes));
-    await client.current.logVotes(votes);
+    const propCopy = voteAllotments
+      .sort((a, b) => a.proposalId - b.proposalId)
+      .reduce(
+        (agg, current) =>
+          agg +
+          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${
+            current.proposalId
+          }`,
+        ''
+      );
 
-    setVoteAllotments([]);
+    setShowModal(true);
 
-    // setShowModal(true);
-    // try {
-    //   setModalData({
-    //     title: 'Voting',
-    //     content: `Please sign the message to vote for proposal #${proposalId}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
+    try {
+      setModalData({
+        title: 'Voting',
+        content: `Please sign the message to vote as follows:\n${propCopy}`,
+        onDismiss: () => setShowModal(false),
+      });
 
-    //   setModalData({
-    //     title: 'Success',
-    //     content: `You have successfully voted for proposal #${proposalId}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
+      const votes = voteAllotments.map(
+        (a) => new Vote(1, a.proposalId, a.votes)
+      );
+      await client.current.logVotes(votes);
 
-    refreshActiveProposals(client.current, auction.id, dispatch);
-    // } catch (e) {
-    //   setModalData({
-    //     title: 'Error',
-    //     content: `Failed to vote on proposal #${proposalId}.\n\nError message: ${e}`,
-    //     onDismiss: () => setShowModal(false),
-    //   });
-    // }
+      setModalData({
+        title: 'Success',
+        content: `You have successfully voted!\n${propCopy}}`,
+        onDismiss: () => setShowModal(false),
+      });
+
+      refreshActiveProposals(client.current, auction.id, dispatch);
+      setVoteAllotments([]);
+    } catch (e) {
+      setModalData({
+        title: 'Error',
+        content: `Failed to submit votes.\n\nError message: ${e}`,
+        onDismiss: () => setShowModal(false),
+      });
+    }
   };
 
   const handleSort = () => {
