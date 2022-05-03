@@ -64,10 +64,14 @@ const FullAuction: React.FC<{
     if (!account || !library) return;
 
     const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
-      const votes = await getVotes;
-      if (Number(votes) === 0) return false;
-      dispatch(setDelegatedVotes(votes));
-      return true;
+      try {
+        const votes = await getVotes;
+        if (Number(votes) === 0) return false;
+        dispatch(setDelegatedVotes(votes));
+        return true;
+      } catch (e) {
+        throw e;
+      }
     };
 
     const fetch = async () => {
