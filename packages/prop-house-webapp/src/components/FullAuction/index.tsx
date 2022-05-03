@@ -157,7 +157,7 @@ const FullAuction: React.FC<{
 
       setModalData({
         title: 'Success',
-        content: `You have successfully voted!\n${propCopy}}`,
+        content: `You have successfully voted!\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
