@@ -25,7 +25,7 @@ const isValidPropData = (data: ProposalFields) => {
   return (
     data.title.length > 5 &&
     data.what.length > 50 &&
-    data.tldr.length > 20 &&
+    data.tldr.length > 10 &&
     data.tldr.length < 120
   );
 };
