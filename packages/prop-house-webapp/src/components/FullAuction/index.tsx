@@ -2,7 +2,7 @@ import classes from './FullAuction.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
-import { Row, Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
@@ -28,6 +28,10 @@ import {
   connectedCopy,
   disconnectedCopy,
 } from './content';
+import {
+  IoArrowDownCircleOutline,
+  IoArrowUpCircleOutline,
+} from 'react-icons/io5';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -225,15 +229,22 @@ const FullAuction: React.FC<{
         classNames={clsx(classes.customCardHeader, classes.fixedHeight)}
       >
         <Row>
-          <Col xs={6} md={2}>
-            <div className={classes.proposalTitle}>
-              Proposals{' '}
-              <span onClick={sortTapped}>{ascending ? '↑' : '↓'}</span>
-            </div>
-          </Col>
-          <Col xs={6} md={10}>
+          <div className={classes.dividerSection}>
+            <div className={classes.proposalTitle}>{`Props ${
+              proposals ? `(${proposals.length})` : ''
+            }`}</div>
+            <span onClick={sortTapped}>
+              {ascending ? (
+                <IoArrowUpCircleOutline size={'1.5rem'} />
+              ) : (
+                <IoArrowDownCircleOutline
+                  size={'1.5rem'}
+                  className={classes.icons}
+                />
+              )}
+            </span>
             <div className={classes.divider} />
-          </Col>
+          </div>
         </Row>
 
         {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
