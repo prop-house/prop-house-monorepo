@@ -4,6 +4,7 @@ import {
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SortProps, SortType, _sortProps } from '../../utils/sortingProposals';
 
 export interface PropHouseSlice {
   auctions: StoredAuction[];
@@ -46,15 +47,6 @@ const updateAuctionInState = (
   return state;
 };
 
-const _sortProps = (
-  proposals: StoredProposalWithVotes[],
-  ascending: boolean
-) => {
-  return ascending
-    ? proposals.sort((a, b) => (Number(a.score) < Number(b.score) ? -1 : 1))
-    : proposals.sort((a, b) => (Number(a.score) > Number(b.score) ? -1 : 1));
-};
-
 export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
@@ -87,12 +79,15 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<StoredProposalWithVotes[]>
     ) => {
-      state.activeProposals = _sortProps(action.payload, false);
+      state.activeProposals = _sortProps(action.payload, {
+        sortType: SortType.CreatedAt,
+        ascending: false,
+      });
     },
     setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
       state.delegatedVotes = action.payload;
     },
-    sortProposals: (state, action: PayloadAction<boolean>) => {
+    sortProposals: (state, action: PayloadAction<SortProps>) => {
       if (!state.activeProposals) return;
       state.activeProposals = _sortProps(state.activeProposals, action.payload);
     },

@@ -1,20 +1,41 @@
-.proposalTitle {
-  text-align: left;
-  padding-left: 1rem;
-  color: rgba(0, 0, 0, 0.3);
-  font-size: 20px;
-  font-weight: 600;
-  padding-bottom: 10px;
-}
-.proposalTitle span:hover {
-  cursor: pointer;
+.auctionHeader {
+  margin-bottom: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: 0 4px 2px -2px rgb(33 33 33 / 10%) !important;
 }
 
-.divider {
-  text-align: center;
-  border-bottom: 1.5px solid rgba(0, 0, 0, 0.1);
-  line-height: 0.1em;
-  margin: 15px 0 20px;
+.customCardHeader {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+}
+
+.fixedHeight {
+  max-height: 30rem;
+  overflow-y: auto;
+}
+
+.dividerSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.3);
+  margin: 0.2rem 0;
+}
+.proposalTitle {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 18px;
+  font-weight: 450;
+}
+.dividerSection span {
+  margin-left: 0.5rem;
+}
+.dividerSection span:hover {
+  cursor: pointer;
 }
 
 .alertWrapper {

@@ -12,7 +12,7 @@ export enum AuctionStatus {
  * Calculates auction state
  * @param auction Auction to check status of.
  */
-const auctionStatus = (auction: StoredAuction): AuctionStatus => {
+export const auctionStatus = (auction: StoredAuction): AuctionStatus => {
   const _now = dayjs();
   const _auctionStartTime = dayjs(auction.startTime);
   const _proposalEndTime = dayjs(auction.proposalEndTime);
@@ -57,5 +57,3 @@ export const deadlineTime = (auction: StoredAuction) =>
     : auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
     ? auction.proposalEndTime
     : auction.votingEndTime;
-
-export default auctionStatus;

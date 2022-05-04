@@ -5,6 +5,7 @@
 .accordionItem {
   border: none;
   margin: 2rem 0;
+  background-color: transparent;
 }
 
 .accordionItem > * a {
