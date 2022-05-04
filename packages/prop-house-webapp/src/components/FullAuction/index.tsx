@@ -19,10 +19,9 @@ import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import {
   setDelegatedVotes,
-  sortProposals,
   setActiveProposals,
 } from '../../state/slices/propHouse';
-import { SortType } from '../../utils/sortingProposals';
+import { dispatchSortProposals } from '../../utils/sortingProposals';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
@@ -104,9 +103,11 @@ const FullAuction: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
+      // initial sort
+      dispatchSortProposals(dispatch, auction, false);
     };
     fetchAuctionProposals();
-  }, [auction.id, dispatch, account]);
+  }, [auction.id, dispatch, account, auction]);
 
   // manage vote alloting
   const handleVoteAllotment = (proposalId: number, support: boolean) => {
@@ -179,11 +180,10 @@ const FullAuction: React.FC<{
     }
   };
 
-  const handleSort = () => {
+  // sort button tapped
+  const sortTapped = () => {
     setAscending((prev) => {
-      dispatch(
-        sortProposals({ sortType: SortType.CreatedAt, ascending: !prev })
-      );
+      dispatchSortProposals(dispatch, auction, !prev);
       return !prev;
     });
   };
@@ -228,7 +228,7 @@ const FullAuction: React.FC<{
           <Col xs={6} md={2}>
             <div className={classes.proposalTitle}>
               Proposals{' '}
-              <span onClick={handleSort}>{ascending ? '↑' : '↓'}</span>
+              <span onClick={sortTapped}>{ascending ? '↑' : '↓'}</span>
             </div>
           </Col>
           <Col xs={6} md={10}>
