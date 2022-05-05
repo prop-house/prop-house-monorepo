@@ -5,8 +5,7 @@
   color: var(--brand-gray);
 }
 .inputGroup {
-  margin: 3rem 0;
-  border-bottom: 1px solid var(--brand-gray-transparent);
+  margin-top: 2rem;
 }
 .input {
   border: none;
@@ -15,9 +14,14 @@
   color: var(--brand-black);
   margin-bottom: 1.75rem;
   white-space: pre-line;
+  border-radius: 20px;
+  border: 1px rgba(0, 0, 0, 0.1) solid;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
 }
 .input:focus {
   box-shadow: none;
+  border: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
 .input::placeholder {

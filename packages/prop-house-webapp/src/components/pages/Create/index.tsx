@@ -22,7 +22,12 @@ import Modal from '../../Modal';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 
 const isValidPropData = (data: ProposalFields) => {
-  return data.title.length > 5 && data.what.length > 50;
+  return (
+    data.title.length > 5 &&
+    data.what.length > 50 &&
+    data.tldr.length > 20 &&
+    data.tldr.length < 120
+  );
 };
 
 const Create: React.FC<{}> = () => {
@@ -72,7 +77,7 @@ const Create: React.FC<{}> = () => {
         proposalEditorData.title,
         proposalEditorData.who,
         proposalEditorData.what,
-        proposalEditorData.timeline,
+        proposalEditorData.tldr,
         proposalEditorData.links,
         parentAuction.id
       )
@@ -117,7 +122,6 @@ const Create: React.FC<{}> = () => {
             </span>
           </h1>
         </Col>
-        <hr />
       </Row>
 
       <Row>
@@ -156,20 +160,22 @@ const Create: React.FC<{}> = () => {
             }
             disabled={!isValidPropData(proposalEditorData)}
           />
-          {account ? (
-            <Button
-              text="Sign and Submit"
-              bgColor={ButtonColor.Pink}
-              onClick={submitProposal}
-              disabled={!isValidPropData(proposalEditorData)}
-            />
-          ) : (
-            <Button
-              bgColor={ButtonColor.Pink}
-              text="Connect Wallet To Submit"
-              onClick={connect}
-            />
-          )}
+
+          {showPreview &&
+            (account ? (
+              <Button
+                text="Sign and Submit"
+                bgColor={ButtonColor.Pink}
+                onClick={submitProposal}
+                disabled={!isValidPropData(proposalEditorData)}
+              />
+            ) : (
+              <Button
+                bgColor={ButtonColor.Pink}
+                text="Connect Wallet To Submit"
+                onClick={connect}
+              />
+            ))}
         </Col>
       </Row>
     </>

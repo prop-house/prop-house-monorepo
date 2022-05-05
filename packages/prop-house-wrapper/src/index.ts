@@ -70,6 +70,36 @@ export class PropHouseWrapper {
     }
   }
 
+  async logVotes(votes: Vote[]) {
+    if (!this.signer) return;
+
+    try {
+      // create payload of all votes
+      const filtered = votes.filter((v) => v.weight > 0);
+      const payload = { ...filtered.map((v) => v.toPayload()) };
+      const jsonPayload = JSON.stringify(payload);
+
+      // sign pay load and use for all votes
+      const signature = await this.signer.signMessage(jsonPayload);
+
+      let responses = [];
+
+      for (const vote of votes) {
+        const signedPayload = await vote.presignedPayload(
+          this.signer,
+          jsonPayload,
+          signature
+        );
+        responses.push(
+          (await axios.post(`${this.host}/votes`, signedPayload)).data
+        );
+      }
+      return responses;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async logVote(vote: Vote) {
     if (!this.signer) return;
     try {

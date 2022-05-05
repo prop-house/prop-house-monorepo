@@ -8,4 +8,7 @@ export class CreateVoteDto extends SignedEntity {
 
   @IsNumber()
   proposalId: number;
+
+  @IsNumber()
+  weight: number;
 }

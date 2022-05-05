@@ -59,61 +59,8 @@
   text-decoration: none;
 }
 
-.bottomContainer {
-  border-top: 1px var(--brand-gray-transparent) solid;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1.5rem;
-  padding-top: 1rem;
-}
-
-.votesCopyContainer {
-  display: flex;
-  flex-direction: column;
-}
-
-.yourVotesCopy {
-  font-weight: bold;
-  font-size: small;
-  color: var(--brand-black);
-}
-
 .scoreCopy {
   font-weight: bold;
   font-size: small;
   color: var(--brand-gray);
-}
-
-.noVotesLeft {
-  color: var(--brand-gray-semi-transparent);
-}
-
-.votesButtonContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.voteBtn {
-  margin: 0 0 0 1rem !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 3rem;
-}
-
-.cardResubmitBtn {
-  margin: 1rem 0 0 0;
-}
-
-.roundSelectionInput {
-  display: inline;
-  width: 4rem;
-  margin-left: 1rem;
-}
-
-.resubmitProposalButton {
-  margin: 2rem auto 0 auto;
-  width: 15rem;
 }

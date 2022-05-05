@@ -18,6 +18,23 @@ export abstract class Signable {
     };
   }
 
+  async presignedPayload(
+    signer: Signer | Wallet,
+    jsonPayload: string,
+    signature: string
+  ) {
+    const address = await signer.getAddress();
+    return {
+      signedData: {
+        message: Buffer.from(jsonPayload).toString('base64'),
+        signature,
+        signer: address,
+      },
+      address,
+      ...this.toPayload(),
+    };
+  }
+
   jsonPayload() {
     return JSON.stringify(this.toPayload());
   }
@@ -73,7 +90,7 @@ export class Proposal extends Signable {
     public readonly title: string,
     public readonly who: string,
     public readonly what: string,
-    public readonly timeline: string,
+    public readonly tldr: string,
     public readonly links: string,
     public readonly auctionId: number
   ) {
@@ -85,7 +102,7 @@ export class Proposal extends Signable {
       title: this.title,
       who: this.who,
       what: this.what,
-      timeline: this.timeline,
+      tldr: this.tldr,
       links: this.links,
       parentAuctionId: this.auctionId,
     };
@@ -112,7 +129,8 @@ export enum Direction {
 export class Vote extends Signable {
   constructor(
     public readonly direction: Direction,
-    public readonly proposalId: number
+    public readonly proposalId: number,
+    public readonly weight: number
   ) {
     super();
   }
@@ -121,6 +139,7 @@ export class Vote extends Signable {
     return {
       direction: this.direction,
       proposalId: this.proposalId,
+      weight: this.weight,
     };
   }
 }
@@ -142,3 +161,6 @@ export interface StoredFile {
   ipfsTimestamp: string;
   createdDate: string;
 }
+
+export const signPayload = async (signer: Signer | Wallet, payload: string) =>
+  await signer.signMessage(payload);

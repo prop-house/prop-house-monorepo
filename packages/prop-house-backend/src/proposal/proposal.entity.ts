@@ -32,7 +32,7 @@ export class Proposal extends SignedEntity {
   what: string;
 
   @Column({ type: 'text' })
-  timeline: string;
+  tldr: string;
 
   @Column({ type: 'text' })
   links: string;
@@ -53,7 +53,10 @@ export class Proposal extends SignedEntity {
   score: number;
 
   updateScore(voteWeights: IndividualVoteWeights) {
-    this.score = this.votes.reduce((acc, v) => acc + voteWeights[v.type], 0);
+    this.score = this.votes.reduce(
+      (acc, v) => acc + voteWeights[v.type] * v.weight,
+      0,
+    );
   }
 
   @Column()

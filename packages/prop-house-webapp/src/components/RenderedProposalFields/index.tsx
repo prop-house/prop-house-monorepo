@@ -23,6 +23,11 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
               <EthAddress address={address} />
             </div>
           )}
+          <h2>tl;dr</h2>
+          <ReactMarkdown
+            className={classes.markdown}
+            children={fields.tldr}
+          ></ReactMarkdown>
           <h2>Description</h2>
           <ReactMarkdown
             className={classes.markdown}

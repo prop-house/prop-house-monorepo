@@ -13,7 +13,7 @@
   color: var(--brand-black-tansparent);
 }
 
-.subsection {
+.infoSection {
   display: flex;
   justify-content: flex-end;
 }
@@ -21,57 +21,50 @@
 .infoSubsection {
   display: flex;
   flex-direction: column;
-  text-align: center;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1rem;
+}
+.infoSubsection button {
+  margin: 0;
 }
 
-.infoSubsection:nth-child(2) {
-  margin-left: 3rem;
-}
-
-.rightSectionTitle {
+.infoSubsectionTitle {
   font-size: 14px;
   font-weight: 600;
   color: var(--brand-black-tansparent);
 }
 
-.rightSectionSubtitle {
+.infoSubsectionContent {
   font-size: 24px !important;
   font-weight: bold;
   white-space: nowrap;
   display: flex;
   align-items: center;
 }
-.rightSectionSubtitle span {
+.infoSubsectionContent span {
   margin-left: 0.4rem;
   color: var(--brand-gray);
   opacity: 0.5;
 }
 
-.rightSectionSubsection {
-  display: flex;
-  align-items: center;
-}
-
-.rightSectionSubsection button {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 @media (max-width: 992px) {
-  .subsection {
+  .infoSection {
     margin: 1rem 0;
     flex-direction: column;
   }
   .infoSubsection {
+    margin: 0;
+    align-items: flex-start;
+  }
+  .infoSubsectionTitle {
     text-align: left;
   }
-  .infoSubsection:nth-child(2) {
-    margin-left: 0rem;
+  .infoSubsectionContent {
+    text-align: left;
   }
-  .leftSectionTitle span {
-    margin-bottom: 1rem;
-  }
-  .rightSectionSubsection a {
+  .infoSubsection a {
+    margin-top: 1rem;
     width: 100%;
   }
 }

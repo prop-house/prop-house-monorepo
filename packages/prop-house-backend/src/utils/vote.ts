@@ -46,10 +46,24 @@ export const calcIndividualVoteWeight = (
   voteType: VoteType,
   votes: Vote[],
 ): number => {
-  const votesForType = votes.filter((vote) => vote.type === voteType).length;
-  if (votesForType === 0) return 0;
+  // get votes for type
+  const votesForType = votes.filter((vote) => vote.type === voteType);
+  if (votesForType.length === 0) return 0;
+
+  // agg weight for votes of both types (all)
+  const aggOfAllVotesWeight = votes.reduce(
+    (agg, current) => agg + current.weight,
+    0,
+  );
+  // agg weight for votes of specific type
+  const aggOfVotesForTypeWeight = votesForType.reduce(
+    (agg, current) => agg + current.weight,
+    0,
+  );
+
   return (
-    ((votes.length * ACC_VOTE_WEIGHTS[voteType]) / votesForType) *
+    ((aggOfAllVotesWeight * ACC_VOTE_WEIGHTS[voteType]) /
+      aggOfVotesForTypeWeight) *
     VOTE_MULTIPLIER
   );
 };
