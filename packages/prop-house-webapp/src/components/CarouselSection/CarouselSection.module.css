@@ -1,0 +1,19 @@
+.header {
+  color: var(--brand-black-tansparent);
+  font-weight: 500;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.titleRow .title {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.titleRow button {
+  margin-left: 2rem;
+}
