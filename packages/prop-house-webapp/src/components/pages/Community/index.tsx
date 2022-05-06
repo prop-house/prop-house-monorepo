@@ -27,7 +27,7 @@ const Community = () => {
   return (
     <>
       <ProfileHeader contractAddress={contract_address} />
-      {auction && <FullAuction auction={auction} showAllProposals={true} />}
+      {auction && <FullAuction auction={auction} />}
     </>
   );
 };
