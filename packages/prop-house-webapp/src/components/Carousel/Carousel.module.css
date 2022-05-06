@@ -2,6 +2,7 @@
   display: flex;
   gap: 0 2rem;
   overflow-x: scroll;
+  padding-right: 5rem;
 }
 ::-webkit-scrollbar {
   width: 0; /* Remove scrollbar space */
@@ -10,17 +11,17 @@
 
 @media (min-width: 576px) {
   .carousel {
-    padding-left: calc((100vw - 576px) / 2);
+    padding-left: calc((100vw - 576px) / 2 + 24px);
   }
 }
 
 @media (min-width: 768px) {
   .carousel {
-    padding-left: calc(((100vw - 768px) / 2));
+    padding-left: calc((100vw - 768px) / 2 + 24px);
   }
 }
 @media (min-width: 992px) {
   .carousel {
-    padding-left: calc(((100vw - 992px) / 2));
+    padding-left: calc((100vw - 992px) / 2 + 24px);
   }
 }

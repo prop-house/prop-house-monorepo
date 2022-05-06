@@ -1,3 +1,7 @@
+.row {
+  margin: 3rem 0;
+}
+
 .header {
   color: var(--brand-black-tansparent);
   font-weight: 500;
@@ -6,7 +10,7 @@
 .titleRow {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.2rem;
 }
 
 .titleRow .title {

@@ -11,15 +11,13 @@ const CarouselSection: React.FC<{
 }> = (props) => {
   const { contextTitle, mainTitle, cards } = props;
   return (
-    <Row>
-      <Col xl={12}>
-        <div className={classes.header}>{contextTitle}</div>
-        <div className={classes.titleRow}>
-          <div className={classes.title}>{mainTitle}</div>
-          <Button bgColor={ButtonColor.White} text="View all" />
-        </div>
-        <Carousel>{cards}</Carousel>
-      </Col>
+    <Row className={classes.row}>
+      <div className={classes.header}>{contextTitle}</div>
+      <div className={classes.titleRow}>
+        <div className={classes.title}>{mainTitle}</div>
+        <Button bgColor={ButtonColor.White} text="View all" />
+      </div>
+      <Carousel>{cards}</Carousel>
     </Row>
   );
 };
