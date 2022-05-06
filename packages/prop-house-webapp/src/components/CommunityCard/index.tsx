@@ -10,7 +10,7 @@ const CommunityCard: React.FC<{
   return (
     <div className={classes.container}>
       <Link to="">
-        <img src={img} className={classes.imageCard} />
+        <img src={img} alt="community profile " className={classes.imageCard} />
       </Link>
       <div className={classes.infoContainer}>
         <div className={classes.title}>Nouns</div>

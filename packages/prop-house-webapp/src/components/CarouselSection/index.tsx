@@ -1,6 +1,6 @@
 import classes from './CarouselSection.module.css';
 import Button, { ButtonColor } from '../Button';
-import { Row, Col } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
 import Carousel from '../Carousel';
 import React from 'react';
 

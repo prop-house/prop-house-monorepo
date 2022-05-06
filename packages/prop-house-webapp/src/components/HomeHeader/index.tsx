@@ -1,8 +1,7 @@
-import { Col, Row, Image } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import classes from './HomeHeader.module.css';
 import { Link } from 'react-router-dom';
-import grempBulb from '../../assets/gremp-lightbulb.png';
 import { useAppSelector } from '../../hooks';
 import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
 
