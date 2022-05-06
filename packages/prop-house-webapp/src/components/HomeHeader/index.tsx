@@ -12,18 +12,18 @@ const HomeHeader = () => {
   );
   return (
     <Row className={classes.wrapper}>
-      <Col xl={6} className={classes.leftCol}>
+      <Col xl={12} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
           Powered by{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
             Nouns
           </a>
         </div>
-        <h1>Weekly funding for your ideas</h1>
+        <h1>Plug into your community treasury</h1>
         <p>
-          Bring your ideas to life by submitting a proposal to <b>Nouns DAO</b>.
-          Funding rounds are held regularly and are available to anyone,
-          anywhere.
+          Bring your ideas to life by submitting a proposal to your community
+          treasury. Funding rounds are held regularly and are available to
+          anyone, anywhere.
         </p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">
@@ -37,9 +37,6 @@ const HomeHeader = () => {
             </Link>
           </Col>
         </div>
-      </Col>
-      <Col xl={{ span: 4, offset: 2 }} className={classes.rightCol}>
-        <Image src={grempBulb} fluid />
       </Col>
     </Row>
   );
