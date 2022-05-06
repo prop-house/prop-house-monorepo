@@ -18,7 +18,7 @@ const CommunityCarousel = () => {
   return (
     <CarouselSection
       contextTitle="Browse communities"
-      mainTitle="Explore commmunity prop houses "
+      mainTitle="Discover prop houses "
       cards={cards}
     />
   );

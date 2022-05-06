@@ -15,3 +15,6 @@
   font-weight: 500;
   color: var(--brand-black-tansparent);
 }
+.container {
+  margin: 1rem 0;
+}
