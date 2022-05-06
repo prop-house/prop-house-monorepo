@@ -9,6 +9,12 @@
   background: transparent; /* Optional: just make scrollbar invisible */
 }
 
+@media (max-width: 576px) {
+  .carousel {
+    padding-left: 24px;
+  }
+}
+
 @media (min-width: 576px) {
   .carousel {
     padding-left: calc((100vw - 576px) / 2 + 24px);

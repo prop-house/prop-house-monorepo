@@ -18,6 +18,9 @@
   font-weight: 600;
 }
 
-.titleRow button {
-  margin-left: 2rem;
+@media (max-width: 992px) {
+  .titleRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
