@@ -1,8 +1,9 @@
-@media (min-width: 1400px) {
+@media (min-width: 1200px) {
   .container,
   .container-lg,
   .container-xl,
   .container-xxl {
+    width: 992px !important;
     max-width: 992px !important;
   }
 }
