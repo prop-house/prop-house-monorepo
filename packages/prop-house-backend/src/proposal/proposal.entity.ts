@@ -1,5 +1,6 @@
 import { Auction } from 'src/auction/auction.entity';
-import { SignedEntity } from 'src/entities/signed.entity';
+import { Community } from 'src/community/community.entity';
+import { SignedEntity } from 'src/entities/signed';
 import { IndividualVoteWeights, VoteDirections } from 'src/utils/vote';
 import { Vote } from 'src/vote/vote.entity';
 import {
@@ -21,6 +22,9 @@ export class Proposal extends SignedEntity {
 
   @Column({ default: true })
   visible: boolean;
+
+  @Column({ default: false })
+  isWinner: boolean;
 
   @Column()
   title: string;

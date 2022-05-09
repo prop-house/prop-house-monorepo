@@ -1,4 +1,4 @@
-import { Community } from 'src/community/community.entity';
+import { Auction } from 'src/auction/auction.entity';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
@@ -8,49 +8,40 @@ import {
   JoinColumn,
   BeforeInsert,
   BeforeUpdate,
-  ManyToOne,
+  RelationCount,
 } from 'typeorm';
 
 @Entity()
-export class Auction {
+export class Community {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ default: true })
+  @Column({default: true})
   visible: boolean;
 
   @Column()
-  title: string;
+  contractAddress: string;
 
   @Column()
-  startTime: Date;
+  name: string;
 
   @Column()
-  proposalEndTime: Date;
+  profileImageUrl: string;
 
-  @Column()
-  votingEndTime: Date;
+  // TODO: refactor to not use deprecated decorator
+  @RelationCount((community: Community) => community.auctions)
+  numAuctions: number;
 
-  @Column()
-  amountEth: number;
-
-  @Column()
-  numWinners: number;
-
-  @OneToMany(() => Proposal, (proposal) => proposal.auction, {
+  @OneToMany(() => Auction, (auction) => auction.community, {
     eager: true,
   })
   @JoinColumn()
-  proposals: Proposal[];
-
-  @ManyToOne(() => Community, (community) => community.auctions)
-  @JoinColumn()
-  community: Community;
+  auctions: Auction[];
 
   @Column()
   createdDate: Date;
 
-  @Column({ nullable: true })
+  @Column({nullable: true})
   lastUpdatedDate: Date;
 
   @BeforeInsert()

@@ -1,6 +1,6 @@
 
 import { PipeTransform, Injectable, ArgumentMetadata, HttpException, HttpStatus } from '@nestjs/common';
-import { SignedDataPayload, SignedEntity } from './signed.entity';
+import { SignedDataPayload, SignedEntity } from './signed';
 import { verifyMessage } from "@ethersproject/wallet"
 
 @Injectable()
