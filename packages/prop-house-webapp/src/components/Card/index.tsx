@@ -28,8 +28,8 @@ const Card: React.FC<{
       ? classes.darkPurpleBg
       : classes.whiteBg,
     borderRadius === CardBorderRadius.twenty
-      ? classes.borderRadius20
-      : classes.borderRadius30,
+      ? classes.borderRadius18
+      : classes.borderRadius24,
     onHoverEffect && classes.onHoverEffect,
     classNames && classNames
   );
