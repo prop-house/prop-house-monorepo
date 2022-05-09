@@ -2,6 +2,7 @@ import {
   StoredProposal,
   StoredAuction,
   StoredProposalWithVotes,
+  Community,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SortProps, SortType, _sortProps } from '../../utils/sortingProposals';
@@ -11,6 +12,7 @@ export interface PropHouseSlice {
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
   delegatedVotes?: number;
+  activeCommunity?: Community;
 }
 
 const initialState: PropHouseSlice = {
@@ -91,6 +93,9 @@ export const propHouseSlice = createSlice({
       if (!state.activeProposals) return;
       state.activeProposals = _sortProps(state.activeProposals, action.payload);
     },
+    setActiveCommunity: (state, action: PayloadAction<Community>) => {
+      state.activeCommunity = action.payload;
+    },
   },
 });
 
@@ -103,6 +108,7 @@ export const {
   appendProposal,
   setDelegatedVotes,
   sortProposals,
+  setActiveCommunity,
 } = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
