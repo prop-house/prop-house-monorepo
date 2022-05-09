@@ -1,10 +1,13 @@
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { isActiveCommunity } from 'prop-house-communities';
 import FullAuction from '../../FullAuction';
-import { useAppSelector } from '../../../hooks';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { findAuctionById } from '../../../utils/findAuctionById';
 import ProfileHeader from '../../ProfileHeader';
+import { useEffect, useRef } from 'react';
+import { useEthers } from '@usedapp/core';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { setActiveCommunity } from '../../../state/slices/propHouse';
 
 const Community = () => {
   const location = useLocation();
@@ -16,18 +19,32 @@ const Community = () => {
   const isValidAddress =
     contract_address && ethers.utils.isAddress(contract_address);
 
-  const auction = useAppSelector((state) =>
-    findAuctionById(11, state.propHouse.auctions)
-  );
+  const dispatch = useAppDispatch();
+  const { library } = useEthers();
+  const community = useAppSelector((state) => state.propHouse.activeCommunity);
+  const host = useAppSelector((state) => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
+
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, library?.getSigner());
+  }, [library, host]);
+
+  // fetch community
+  useEffect(() => {
+    const getchCommunity = async () => {
+      const community = await client.current.getCommunity(contract_address);
+      dispatch(setActiveCommunity(community));
+    };
+    getchCommunity();
+  }, []);
 
   if (!isValidAddress) return <>invalid address, please check it!</>;
-  if (!isActiveCommunity(contract_address))
-    return <>community does not have an active prop house yet!</>;
+  if (!community) return <>community does not have an active prop house yet!</>;
 
   return (
     <>
-      <ProfileHeader contractAddress={contract_address} />
-      {auction && <FullAuction auction={auction} />}
+      <ProfileHeader community={community} />
+      {/* {auction && <FullAuction auction={auction} />} */}
     </>
   );
 };
