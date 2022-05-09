@@ -76,7 +76,8 @@ const ProposalCard: React.FC<{
           (auctionStatus === AuctionStatus.AuctionEnded &&
             cardStatus !== ProposalCardStatus.Voting) ? (
             <div className={classes.scoreCopy}>
-              Score: {Math.trunc(proposal.score)}
+              <span style={{marginRight: "0.3rem", fontWeight: "normal"}}>Score</span>
+              {Math.trunc(proposal.score)}
             </div>
           ) : (
             <div
@@ -96,7 +97,7 @@ const ProposalCard: React.FC<{
                   : globalClasses.fontPink
               }
             >
-              Read more →
+              Expand →
             </Link>
           </div>
         </div>
