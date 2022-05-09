@@ -1,7 +1,12 @@
 .proposalCard {
-  min-height: 10rem;
+  min-height: 12.5rem;
   display: flex;
   flex-direction: column;
+  transition: all 0.1s ease-in-out;
+}
+
+.proposalCard:hover {
+  transform: scale(1.02);
 }
 
 .proposalCardVoting {
@@ -65,6 +70,6 @@
 
 .scoreCopy {
   font-weight: bold;
-  font-size: small;
+  font-size: 15px;
   color: var(--brand-gray);
 }
