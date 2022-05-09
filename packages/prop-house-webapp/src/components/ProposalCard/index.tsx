@@ -17,12 +17,12 @@ import PropCardVotingContainer from '../PropCardVotingContainer';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
-  auctionStatus: AuctionStatus;
-  cardStatus: ProposalCardStatus;
-  votesFor: number;
-  voteAllotments: VoteAllotment[];
-  canAllotVotes: () => boolean;
-  handleVoteAllotment: (proposalId: number, support: boolean) => void;
+  auctionStatus?: AuctionStatus;
+  cardStatus?: ProposalCardStatus;
+  votesFor?: number;
+  voteAllotments?: VoteAllotment[];
+  canAllotVotes?: () => boolean;
+  handleVoteAllotment?: (proposalId: number, support: boolean) => void;
 }> = (props) => {
   const {
     proposal,
@@ -104,18 +104,22 @@ const ProposalCard: React.FC<{
           </div>
         </div>
 
-        {cardStatus === ProposalCardStatus.Voting && (
-          <PropCardVotingContainer
-            props={{
-              proposal,
-              cardStatus,
-              votesFor,
-              voteAllotments,
-              canAllotVotes,
-              handleVoteAllotment,
-            }}
-          />
-        )}
+        {cardStatus === ProposalCardStatus.Voting &&
+          votesFor &&
+          voteAllotments &&
+          canAllotVotes &&
+          handleVoteAllotment && (
+            <PropCardVotingContainer
+              props={{
+                proposal,
+                cardStatus,
+                votesFor,
+                voteAllotments,
+                canAllotVotes,
+                handleVoteAllotment,
+              }}
+            />
+          )}
 
         {auctionStatus === AuctionStatus.AuctionEnded &&
           account === proposal.address && (

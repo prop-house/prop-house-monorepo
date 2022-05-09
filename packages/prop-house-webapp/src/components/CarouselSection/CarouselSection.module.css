@@ -1,0 +1,26 @@
+.row {
+  margin: 3rem 0;
+}
+
+.header {
+  color: var(--brand-black-tansparent);
+  font-weight: 500;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.2rem;
+}
+
+.titleRow .title {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .titleRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
