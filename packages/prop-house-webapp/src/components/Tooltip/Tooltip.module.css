@@ -4,20 +4,24 @@
 
 .tooltip [class$='inner'] {
   background-color: white;
-  border: 1px solid var(--brand-gray-semi-transparent);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   color: black;
-  border-radius: 17px;
+  border-radius: 14px;
   padding: 1rem;
   text-align: left;
-  box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.15) !important;
   max-width: 15rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  font-size: 15px;
+  font-weight: medium;
 }
+
 .tooltipTitle {
-  color: var(--brand-gray-semi-transparent);
+  opacity: 0.5;
   font-weight: 500;
   display: block;
   text-align: left;
 }
+
 .tooltip [class$='arrow'] {
   display: none;
 }
