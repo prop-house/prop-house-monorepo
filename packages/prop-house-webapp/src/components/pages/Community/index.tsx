@@ -1,13 +1,15 @@
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-import FullAuction from '../../FullAuction';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { findAuctionById } from '../../../utils/findAuctionById';
 import ProfileHeader from '../../ProfileHeader';
 import { useEffect, useRef } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity } from '../../../state/slices/propHouse';
+import {
+  setActiveCommunity,
+  addAuctions,
+} from '../../../state/slices/propHouse';
+import Auctions from '../../Auctions';
 
 const Community = () => {
   const location = useLocation();
@@ -34,6 +36,7 @@ const Community = () => {
     const getchCommunity = async () => {
       const community = await client.current.getCommunity(contract_address);
       dispatch(setActiveCommunity(community));
+      dispatch(addAuctions(community.auctions));
     };
     getchCommunity();
   }, []);
@@ -44,7 +47,7 @@ const Community = () => {
   return (
     <>
       <ProfileHeader community={community} />
-      {/* {auction && <FullAuction auction={auction} />} */}
+      <Auctions />
     </>
   );
 };
