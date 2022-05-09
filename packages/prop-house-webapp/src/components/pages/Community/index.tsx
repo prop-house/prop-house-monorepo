@@ -1,3 +1,4 @@
+import classes from './Community.module.css';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -10,6 +11,7 @@ import {
   setAuctions,
 } from '../../../state/slices/propHouse';
 import Auctions from '../../Auctions';
+import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 
 const Community = () => {
   const location = useLocation();
@@ -47,7 +49,17 @@ const Community = () => {
   return (
     <>
       <ProfileHeader community={community} />
-      <Auctions />
+      {community.auctions.length > 0 ? (
+        <Auctions />
+      ) : (
+        <Card
+          bgColor={CardBgColor.White}
+          borderRadius={CardBorderRadius.twenty}
+          classNames={classes.noRoundsCard}
+        >
+          <span>{community.name}</span> does not yet have a prop house!
+        </Card>
+      )}
     </>
   );
 };
