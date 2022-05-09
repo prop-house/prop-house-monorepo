@@ -172,7 +172,15 @@ export class PropHouseWrapper {
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 
-  async getCommunity(contractAddress: string): Promise<any> {
+  async getCommunities(): Promise<Community[]> {
+    try {
+      return (await axios.get(`${this.host}/communities`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getCommunity(contractAddress: string): Promise<Community> {
     try {
       return (await axios.get(`${this.host}/${contractAddress}`)).data;
     } catch (e: any) {
