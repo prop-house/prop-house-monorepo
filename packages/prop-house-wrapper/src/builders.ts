@@ -162,5 +162,31 @@ export interface StoredFile {
   createdDate: string;
 }
 
+export class Community extends Signable {
+  constructor(
+    public readonly id: number,
+    public readonly contractAddress: string,
+    public readonly name: string,
+    public readonly profileImageUrl: string,
+    public readonly numAuctions: number,
+    public readonly numProposals: number,
+    public readonly ethFunded: number
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+      contractAddress: this.contractAddress,
+      name: this.name,
+      profileImageUrl: this.profileImageUrl,
+      numAuctions: this.numAuctions,
+      numProposals: this.numProposals,
+      ethFunded: this.ethFunded,
+    };
+  }
+}
+
 export const signPayload = async (signer: Signer | Wallet, payload: string) =>
   await signer.signMessage(payload);
