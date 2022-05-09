@@ -62,6 +62,9 @@ export const propHouseSlice = createSlice({
     updateAuction: (state, action: PayloadAction<StoredAuction>) => {
       state = updateAuctionInState(state, action.payload);
     },
+    setAuctions: (state, action: PayloadAction<StoredAuction[]>) => {
+      state.auctions = action.payload;
+    },
     setActiveProposal: (
       state,
       action: PayloadAction<StoredProposalWithVotes>
@@ -103,6 +106,7 @@ export const propHouseSlice = createSlice({
 export const {
   addAuction,
   addAuctions,
+  setAuctions,
   setActiveProposal,
   setActiveProposals,
   appendProposal,

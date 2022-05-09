@@ -7,7 +7,7 @@ import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   setActiveCommunity,
-  addAuctions,
+  setAuctions,
 } from '../../../state/slices/propHouse';
 import Auctions from '../../Auctions';
 
@@ -36,7 +36,7 @@ const Community = () => {
     const getchCommunity = async () => {
       const community = await client.current.getCommunity(contract_address);
       dispatch(setActiveCommunity(community));
-      dispatch(addAuctions(community.auctions));
+      dispatch(setAuctions(community.auctions));
     };
     getchCommunity();
   }, [contract_address, dispatch]);
