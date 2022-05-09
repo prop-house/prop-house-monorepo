@@ -3,17 +3,17 @@ import CarouselSection from '../CarouselSection';
 import { useAppSelector } from '../../hooks';
 import ProposalCard from '../ProposalCard';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
-import { setActiveProposals } from '../../state/slices/propHouse';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 
 const PropCarousel = () => {
   const { library } = useEthers();
   const dispatch = useDispatch();
+  const [proposals, setProposals] = useState<StoredProposalWithVotes[]>();
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -22,20 +22,18 @@ const PropCarousel = () => {
   // fetch proposals
   useEffect(() => {
     const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(1);
-      dispatch(setActiveProposals(proposals));
+      const proposals = await client.current.getAllProposals();
+      setProposals(proposals);
     };
     fetchAuctionProposals();
   }, [dispatch]);
 
-  console.log(proposals);
-
-  const p =
+  const propCards =
     proposals &&
-    proposals.map((proposal, index) => {
+    proposals.slice(0, 20).map((_, index) => {
       return (
         <div className={classes.propCardContainer}>
-          <ProposalCard proposal={proposal} />
+          <ProposalCard proposal={proposals[index]} />
         </div>
       );
     });
@@ -44,7 +42,7 @@ const PropCarousel = () => {
     <CarouselSection
       contextTitle="Browse proposals"
       mainTitle="Discover recent proposals "
-      cards={p ? p : []}
+      cards={propCards ? propCards : []}
     />
   );
 };
