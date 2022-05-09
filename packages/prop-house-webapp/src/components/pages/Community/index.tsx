@@ -39,7 +39,7 @@ const Community = () => {
       dispatch(addAuctions(community.auctions));
     };
     getchCommunity();
-  }, []);
+  }, [contract_address, dispatch]);
 
   if (!isValidAddress) return <>invalid address, please check it!</>;
   if (!community) return <>community does not have an active prop house yet!</>;

@@ -1,5 +1,4 @@
 import classes from './CommunityCard.module.css';
-import img from '../../assets/gremp-lightbulb.png';
 import { Link } from 'react-router-dom';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
