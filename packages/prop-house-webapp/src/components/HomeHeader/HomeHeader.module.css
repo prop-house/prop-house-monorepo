@@ -8,6 +8,7 @@
   font-weight: medium;
   margin-bottom: 0.5rem;
 }
+
 .poweredByNouns a {
   color: var(--brand-pink);
   text-decoration: none;
@@ -21,7 +22,7 @@
 }
 
 .leftCol p {
-  margin: 1rem 0;
+  margin: 1rem 0.2rem;
   font-size: 18px;
   font-weight: medium;
 }
@@ -41,6 +42,7 @@
   .btnsContainer {
     margin-bottom: 2rem;
   }
+
   .btnsContainer div {
     text-align: center;
   }
