@@ -187,6 +187,9 @@ export class Community extends Signable {
     };
   }
 }
+export interface CommunityWithAuctions extends Community {
+  auctions: StoredAuction[];
+}
 
 export const signPayload = async (signer: Signer | Wallet, payload: string) =>
   await signer.signMessage(payload);

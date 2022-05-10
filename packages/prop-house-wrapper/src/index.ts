@@ -8,7 +8,7 @@ import {
   StoredFile,
   StoredVote,
   Vote,
-  Community,
+  CommunityWithAuctions,
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
@@ -172,7 +172,7 @@ export class PropHouseWrapper {
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 
-  async getCommunities(): Promise<Community[]> {
+  async getCommunities(): Promise<CommunityWithAuctions[]> {
     try {
       return (await axios.get(`${this.host}/communities`)).data;
     } catch (e: any) {
@@ -180,7 +180,7 @@ export class PropHouseWrapper {
     }
   }
 
-  async getCommunity(contractAddress: string): Promise<Community> {
+  async getCommunity(contractAddress: string): Promise<CommunityWithAuctions> {
     try {
       return (await axios.get(`${this.host}/${contractAddress}`)).data;
     } catch (e: any) {
