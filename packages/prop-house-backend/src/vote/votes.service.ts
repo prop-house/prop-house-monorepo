@@ -4,9 +4,7 @@ import { Repository } from 'typeorm';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
-import { isDevEnv } from 'src/config/configuration';
 import { ethers } from 'ethers';
-import { DelegatedVotes, VoteType } from 'src/utils/vote';
 import config from 'src/config/configuration';
 import { getNumVotes } from 'prop-house-communities';
 
@@ -50,18 +48,13 @@ export class VotesService {
     return await getNumVotes(dto.address, dto.communityAddress, provider);
   }
 
-  async createNewVote(
-    createVoteDto: CreateVoteDto,
-    proposal: Proposal,
-    voteType: VoteType,
-  ) {
+  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
     // Create vote for proposal
     const vote = new Vote();
     vote.address = createVoteDto.address;
     vote.proposal = proposal;
     vote.direction = createVoteDto.direction;
     vote.signedData = createVoteDto.signedData;
-    vote.type = voteType;
     vote.auctionId = proposal.auctionId;
     vote.weight = createVoteDto.weight;
 

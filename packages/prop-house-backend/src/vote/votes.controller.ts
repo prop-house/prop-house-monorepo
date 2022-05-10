@@ -8,20 +8,16 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProposalsService } from 'src/proposal/proposals.service';
-import { AuctionsService } from 'src/auction/auctions.service';
 import { isValidVoteDirection, VoteDirections } from 'src/utils/vote';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
-import { calcIndividualVoteWeight, VoteType } from 'src/utils/vote';
-import { Proposal } from 'src/proposal/proposal.entity';
 
 @Controller('votes')
 export class VotesController {
   constructor(
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
-    private readonly auctionService: AuctionsService,
   ) {}
 
   @Get()
@@ -106,12 +102,8 @@ export class VotesController {
           HttpStatus.BAD_REQUEST,
         );
 
-      await this.votesService.createNewVote(createVoteDto, foundProposal, 1);
-
-      const votes = await this.votesService.findAllByAuctionId(
-        foundProposal.auctionId,
-      );
-      await this.proposalService.rollupScores(votes, foundProposal.auctionId);
+      await this.votesService.createNewVote(createVoteDto, foundProposal);
+      await this.proposalService.rollupScore(foundProposal.id);
     }
 
     // Voting down
@@ -134,10 +126,7 @@ export class VotesController {
           .find((vote) => vote.proposalId === foundProposal.id),
       );
 
-      const votes = await this.votesService.findAllByAuctionId(
-        foundProposal.auctionId,
-      );
-      await this.proposalService.rollupScores(votes, foundProposal.auctionId);
+      await this.proposalService.rollupScore(foundProposal.id);
     }
   }
 }

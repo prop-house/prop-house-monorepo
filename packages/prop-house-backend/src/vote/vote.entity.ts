@@ -31,9 +31,6 @@ export class Vote extends SignedEntity {
   auctionId: number;
 
   @Column()
-  type: number;
-
-  @Column()
   weight: number;
 
   @BeforeInsert()
