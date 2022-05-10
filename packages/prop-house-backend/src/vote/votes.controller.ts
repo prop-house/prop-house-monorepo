@@ -76,11 +76,10 @@ export class VotesController {
         HttpStatus.BAD_REQUEST,
       );
 
-    // Verify that signer has delegated votes
-    const delegatedVotes = await this.votesService.getNumDelegatedVotes(
-      createVoteDto.address,
-    );
-    if (delegatedVotes.votes === 0)
+    // Verify that signer has allowed votes
+    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto);
+
+    if (totalVotesAvail === 0)
       throw new HttpException(
         'Signer does not have delegated votes',
         HttpStatus.BAD_REQUEST,
@@ -101,17 +100,13 @@ export class VotesController {
       );
 
       // Verify that user has not reached max votes
-      if (aggVoteWeightSubmitted >= delegatedVotes.votes)
+      if (aggVoteWeightSubmitted >= totalVotesAvail)
         throw new HttpException(
           'Signer has consumed all delegated votes',
           HttpStatus.BAD_REQUEST,
         );
 
-      await this.votesService.createNewVote(
-        createVoteDto,
-        foundProposal,
-        delegatedVotes.type,
-      );
+      await this.votesService.createNewVote(createVoteDto, foundProposal, 1);
 
       const votes = await this.votesService.findAllByAuctionId(
         foundProposal.auctionId,

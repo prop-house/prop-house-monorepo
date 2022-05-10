@@ -132,7 +132,7 @@ const FullAuction: React.FC<{
 
   // handle voting
   const handleVote = async () => {
-    if (!delegatedVotes) return;
+    if (!delegatedVotes || !community) return;
 
     const propCopy = voteAllotments
       .sort((a, b) => a.proposalId - b.proposalId)
@@ -156,7 +156,9 @@ const FullAuction: React.FC<{
       });
 
       const votes = voteAllotments
-        .map((a) => new Vote(1, a.proposalId, a.votes))
+        .map(
+          (a) => new Vote(1, a.proposalId, a.votes, community.contractAddress)
+        )
         .filter((v) => v.weight > 0);
       await client.current.logVotes(votes);
 

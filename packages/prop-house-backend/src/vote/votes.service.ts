@@ -8,7 +8,7 @@ import { isDevEnv } from 'src/config/configuration';
 import { ethers } from 'ethers';
 import { DelegatedVotes, VoteType } from 'src/utils/vote';
 import config from 'src/config/configuration';
-import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
+import { getNumVotes } from 'prop-house-communities';
 
 @Injectable()
 export class VotesService {
@@ -45,16 +45,9 @@ export class VotesService {
     });
   }
 
-  async getNumDelegatedVotes(address: string): Promise<DelegatedVotes> {
-    const nounerVotes = await getNounerVotes(address);
-    if (nounerVotes > 0) return { votes: nounerVotes, type: VoteType.Nouner };
-
+  async getNumVotes(dto: CreateVoteDto): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    const nounishVotes = await getNounishVotes(address, provider);
-    if (nounishVotes > 0)
-      return { votes: nounishVotes, type: VoteType.Nounish };
-
-    return { votes: 0, type: VoteType.Nounish };
+    return await getNumVotes(dto.address, dto.communityAddress, provider);
   }
 
   async createNewVote(
