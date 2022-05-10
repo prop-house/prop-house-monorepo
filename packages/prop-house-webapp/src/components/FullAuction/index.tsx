@@ -5,7 +5,6 @@ import ProposalCards from '../ProposalCards';
 import { Row } from 'react-bootstrap';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
 import { useEffect, useState, useRef } from 'react';
@@ -32,6 +31,7 @@ import {
   IoArrowDownCircleOutline,
   IoArrowUpCircleOutline,
 } from 'react-icons/io5';
+import { getNumVotes } from 'prop-house-communities';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -46,6 +46,7 @@ const FullAuction: React.FC<{
 
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
+  const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
@@ -77,30 +78,22 @@ const FullAuction: React.FC<{
 
   // fetch votes/delegated votes allowed for user to use
   useEffect(() => {
-    if (!account || !library) return;
+    if (!account || !library || !community) return;
 
-    const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
+    const fetchVotes = async () => {
       try {
-        const votes = await getVotes;
-        if (Number(votes) === 0) return false;
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library
+        );
         dispatch(setDelegatedVotes(votes));
-        return true;
       } catch (e) {
-        throw e;
+        console.log('error fetching votes: ', e);
       }
     };
-
-    const fetch = async () => {
-      try {
-        const nouner = await fetchVotes(getNounerVotes(account));
-        if (!nouner) fetchVotes(getNounishVotes(account, library));
-      } catch (e) {
-        console.log('error getting votes');
-      }
-    };
-
-    fetch();
-  }, [account, library, dispatch]);
+    fetchVotes();
+  }, [account, library, dispatch, community]);
 
   // fetch proposals
   useEffect(() => {
