@@ -38,7 +38,6 @@
     "class-validator": "^0.13.2",
     "cross-fetch": "^3.1.5",
     "pg": "^8.7.1",
-    "prop-house-nounish-contracts": "^0.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
