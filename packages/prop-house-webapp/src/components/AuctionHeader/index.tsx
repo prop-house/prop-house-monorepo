@@ -115,7 +115,7 @@ const AuctionHeader: React.FC<{
             </div>
           ) : (
             status === AuctionStatus.AuctionVoting &&
-            totalVotes &&
+            totalVotes !== undefined &&
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <Button
