@@ -38,11 +38,6 @@ export class VotesController {
     return this.votesService.findByAddress(address);
   }
 
-  @Get('delegated/:address')
-  getDelegatedVotes(@Param('address') address: string) {
-    return this.votesService.getNumDelegatedVotes(address);
-  }
-
   @Post()
   async create(@Body() createVoteDto: CreateVoteDto) {
     const foundProposal = await this.proposalService.findOne(
