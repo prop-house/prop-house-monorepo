@@ -105,7 +105,7 @@ const ProposalCard: React.FC<{
         </div>
 
         {cardStatus === ProposalCardStatus.Voting &&
-          votesFor &&
+          votesFor !== undefined &&
           voteAllotments &&
           canAllotVotes &&
           handleVoteAllotment && (
