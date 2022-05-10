@@ -2,13 +2,8 @@ import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import classes from './HomeHeader.module.css';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
-import defaultBrowseToAuctionId from '../../utils/defaultBrowseToAuctionId';
 
 const HomeHeader = () => {
-  const browseToAuctionId = useAppSelector((state) =>
-    defaultBrowseToAuctionId(state.propHouse.auctions)
-  );
   return (
     <Row className={classes.wrapper}>
       <Col xl={12} className={classes.leftCol}>
@@ -31,8 +26,8 @@ const HomeHeader = () => {
             </Link>
           </Col>
           <Col xs={6} md="auto">
-            <Link to={`/auction/${browseToAuctionId}`}>
-              <Button text="Browse rounds" bgColor={ButtonColor.White} />
+            <Link to={`/explore`}>
+              <Button text="View houses" bgColor={ButtonColor.White} />
             </Link>
           </Col>
         </div>

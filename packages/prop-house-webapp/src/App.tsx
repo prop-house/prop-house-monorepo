@@ -19,6 +19,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEffect, useRef } from 'react';
 import Upload from './components/pages/Upload';
 import FAQ from './components/pages/FAQ';
+import Explore from './components/pages/Explore';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -60,6 +61,7 @@ function App() {
           <Route path="/create" element={<Create />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/upload" element={<Upload />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/auction/:id" element={<Auction />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />

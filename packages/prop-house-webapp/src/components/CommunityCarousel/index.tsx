@@ -32,6 +32,7 @@ const CommunityCarousel = () => {
     <CarouselSection
       contextTitle="Browse communities"
       mainTitle="Discover prop houses "
+      linkDest="/explore"
       cards={cards}
     />
   );
