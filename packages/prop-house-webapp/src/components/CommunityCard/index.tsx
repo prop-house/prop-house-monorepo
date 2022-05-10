@@ -1,21 +1,25 @@
 import classes from './CommunityCard.module.css';
-import img from '../../assets/gremp-lightbulb.png';
 import { Link } from 'react-router-dom';
+import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
 const CommunityCard: React.FC<{
-  numProposals: number;
+  community: Community;
 }> = (props) => {
-  const { numProposals } = props;
+  const { community } = props;
 
   return (
     <div className={classes.container}>
-      <Link to="">
-        <img src={img} alt="community profile " className={classes.imageCard} />
+      <Link to={`/${community.contractAddress}`}>
+        <img
+          src={community.profileImageUrl}
+          alt="community profile "
+          className={classes.imageCard}
+        />
       </Link>
       <div className={classes.infoContainer}>
-        <div className={classes.title}>Nouns</div>
+        <div className={classes.title}>{community.name}</div>
         <div className={classes.proposals}>
-          <span>{numProposals}</span> props
+          <span>{community.numProposals}</span> props
         </div>
       </div>
     </div>

@@ -130,7 +130,8 @@ export class Vote extends Signable {
   constructor(
     public readonly direction: Direction,
     public readonly proposalId: number,
-    public readonly weight: number
+    public readonly weight: number,
+    public readonly communityAddress: string
   ) {
     super();
   }
@@ -140,6 +141,7 @@ export class Vote extends Signable {
       direction: this.direction,
       proposalId: this.proposalId,
       weight: this.weight,
+      communityAddress: this.communityAddress,
     };
   }
 }
@@ -160,6 +162,35 @@ export interface StoredFile {
   pinSize: string;
   ipfsTimestamp: string;
   createdDate: string;
+}
+
+export class Community extends Signable {
+  constructor(
+    public readonly id: number,
+    public readonly contractAddress: string,
+    public readonly name: string,
+    public readonly profileImageUrl: string,
+    public readonly numAuctions: number,
+    public readonly numProposals: number,
+    public readonly ethFunded: number
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+      contractAddress: this.contractAddress,
+      name: this.name,
+      profileImageUrl: this.profileImageUrl,
+      numAuctions: this.numAuctions,
+      numProposals: this.numProposals,
+      ethFunded: this.ethFunded,
+    };
+  }
+}
+export interface CommunityWithAuctions extends Community {
+  auctions: StoredAuction[];
 }
 
 export const signPayload = async (signer: Signer | Wallet, payload: string) =>

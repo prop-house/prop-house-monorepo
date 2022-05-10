@@ -80,7 +80,7 @@ const AuctionHeader: React.FC<{
         </Col>
         <Col lg={8} className={classes.infoSection}>
           {status === AuctionStatus.AuctionVoting &&
-            totalVotes &&
+            totalVotes !== undefined &&
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <div className={classes.infoSubsectionTitle}>Votes left</div>

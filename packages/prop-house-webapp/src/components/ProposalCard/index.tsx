@@ -79,7 +79,7 @@ const ProposalCard: React.FC<{
           (auctionStatus === AuctionStatus.AuctionEnded &&
             cardStatus !== ProposalCardStatus.Voting) ? (
             <div className={classes.scoreCopy}>
-              Score: {Math.trunc(proposal.score)}
+              Votes: {Math.trunc(proposal.score)}
             </div>
           ) : (
             <div
@@ -105,7 +105,7 @@ const ProposalCard: React.FC<{
         </div>
 
         {cardStatus === ProposalCardStatus.Voting &&
-          votesFor &&
+          votesFor !== undefined &&
           voteAllotments &&
           canAllotVotes &&
           handleVoteAllotment && (
