@@ -203,21 +203,25 @@ const FullAuction: React.FC<{
             </div>
           </Card>
         )}
-      <AuctionHeader
-        auction={auction}
-        clickable={false}
-        classNames={classes.auctionHeader}
-        totalVotes={delegatedVotes}
-        voteBtnEnabled={
-          delegatedVotes &&
-          delegatedVotes - userVotesWeight() > 0 &&
-          numAllotedVotes > 0
-            ? true
-            : false
-        }
-        votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
-        handleVote={handleVote}
-      />
+      {community && (
+        <AuctionHeader
+          auction={auction}
+          community={community}
+          clickable={false}
+          classNames={classes.auctionHeader}
+          totalVotes={delegatedVotes}
+          voteBtnEnabled={
+            delegatedVotes &&
+            delegatedVotes - userVotesWeight() > 0 &&
+            numAllotedVotes > 0
+              ? true
+              : false
+          }
+          votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
+          handleVote={handleVote}
+        />
+      )}
+
       <Card
         bgColor={CardBgColor.LightPurple}
         borderRadius={CardBorderRadius.thirty}

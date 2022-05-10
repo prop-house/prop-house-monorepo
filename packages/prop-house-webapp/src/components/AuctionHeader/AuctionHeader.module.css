@@ -1,4 +1,23 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+}
 .leftSectionContainer {
+  display: flex;
+  flex-direction: row;
+}
+.commProfImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem;
+}
+.imageCard {
+  height: 4rem;
+  width: auto;
+  border-radius: 50%;
+}
+.titleSectionContainer {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -49,6 +68,12 @@
 }
 
 @media (max-width: 992px) {
+  .row {
+    flex-direction: column;
+  }
+  .commProfImageContainer {
+    display: none;
+  }
   .infoSection {
     margin: 1rem 0;
     flex-direction: column;

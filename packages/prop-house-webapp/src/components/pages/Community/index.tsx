@@ -50,7 +50,7 @@ const Community = () => {
     <>
       <ProfileHeader community={community} />
       {community.auctions.length > 0 ? (
-        <Auctions />
+        <Auctions community={community} />
       ) : (
         <Card
           bgColor={CardBgColor.White}

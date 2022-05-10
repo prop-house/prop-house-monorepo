@@ -4,7 +4,10 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import StatusPill from '../StatusPill';
 import { Link, useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  Community,
+  StoredAuction,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import formatTime from '../../utils/formatTime';
 import {
@@ -20,6 +23,7 @@ import { useLocation } from 'react-router-dom';
  */
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
+  community: Community;
   clickable: boolean;
   classNames?: string | string[];
   totalVotes?: number;
@@ -29,6 +33,7 @@ const AuctionHeader: React.FC<{
 }> = (props) => {
   const {
     auction,
+    community,
     clickable,
     classNames,
     totalVotes,
@@ -57,28 +62,38 @@ const AuctionHeader: React.FC<{
       onHoverEffect={clickable}
       classNames={classNames}
     >
-      <Row>
-        <Col lg={4} className={classes.leftSectionContainer}>
-          <div className={classes.leftSectionTitle}>
-            {!onAuctionPage ? (
-              <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
-            ) : (
-              `Funding round ${id}`
-            )}
-            <StatusPill status={auctionStatus(auction)} />
+      <div className={classes.row}>
+        <div className={classes.leftSectionContainer}>
+          <div className={classes.commProfImageContainer}>
+            <Link to={`/${community.contractAddress}`}>
+              <img
+                src={community.profileImageUrl}
+                alt="community profile "
+                className={classes.imageCard}
+              />
+            </Link>
           </div>
-
-          <div className={classes.leftSectionSubtitle}>
-            <span title={startDate.toLocaleString()}>
-              {formatTime(startDate)}
-            </span>
-            {' - '}
-            <span title={proposalEndDate.toLocaleString()}>
-              {formatTime(proposalEndDate)}
-            </span>
+          <div className={classes.titleSectionContainer}>
+            <div className={classes.leftSectionTitle}>
+              {!onAuctionPage ? (
+                <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
+              ) : (
+                `Funding round ${id}`
+              )}
+              <StatusPill status={auctionStatus(auction)} />
+            </div>
+            <div className={classes.leftSectionSubtitle}>
+              <span title={startDate.toLocaleString()}>
+                {formatTime(startDate)}
+              </span>
+              {' - '}
+              <span title={proposalEndDate.toLocaleString()}>
+                {formatTime(proposalEndDate)}
+              </span>
+            </div>
           </div>
-        </Col>
-        <Col lg={8} className={classes.infoSection}>
+        </div>
+        <div className={classes.infoSection}>
           {status === AuctionStatus.AuctionVoting &&
             totalVotes !== undefined &&
             totalVotes > 0 && (
@@ -127,8 +142,8 @@ const AuctionHeader: React.FC<{
               </div>
             )
           )}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Card>
   );
 
