@@ -98,7 +98,7 @@ export const propHouseSlice = createSlice({
     },
     setActiveCommunity: (
       state,
-      action: PayloadAction<CommunityWithAuctions>
+      action: PayloadAction<CommunityWithAuctions | undefined>
     ) => {
       state.activeCommunity = action.payload;
     },

@@ -2,10 +2,21 @@ import { Row, Col, Image } from 'react-bootstrap';
 import classes from './ProfileHeader.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
+import { useEffect } from 'react';
+import { setActiveCommunity } from '../../state/slices/propHouse';
+import { useAppDispatch } from '../../hooks';
 
 const ProfileHeader: React.FC<{ community: Community }> = (props) => {
   const { community } = props;
-  console.log(community);
+
+  const dispatch = useAppDispatch();
+  // clean up active community on dismount
+  useEffect(
+    () => () => {
+      dispatch(setActiveCommunity(undefined));
+    },
+    [dispatch]
+  );
   return (
     <Row className={classes.profileHeaderRow}>
       <Col xl={4} className={classes.profilePicCol}>
