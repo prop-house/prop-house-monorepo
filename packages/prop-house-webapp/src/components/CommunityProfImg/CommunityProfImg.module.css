@@ -1,0 +1,6 @@
+.img {
+  height: 12.5rem;
+  width: auto;
+  border-radius: 30px;
+  box-shadow: 0 4px 2px -2px rgb(33 33 33 / 14%) !important;
+}

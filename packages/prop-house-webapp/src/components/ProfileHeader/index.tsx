@@ -1,10 +1,11 @@
-import { Row, Col, Image } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import classes from './ProfileHeader.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { useEffect } from 'react';
 import { setActiveCommunity } from '../../state/slices/propHouse';
 import { useAppDispatch } from '../../hooks';
+import CommunityProfImg from '../CommunityProfImg';
 
 const ProfileHeader: React.FC<{ community: Community }> = (props) => {
   const { community } = props;
@@ -20,7 +21,7 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
   return (
     <Row className={classes.profileHeaderRow}>
       <Col xl={4} className={classes.profilePicCol}>
-        <Image src={community.profileImageUrl} rounded={true} fluid />
+        <CommunityProfImg community={community} />
       </Col>
       <Col>
         <Col className={classes.communityInfoCol}>
