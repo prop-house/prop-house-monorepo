@@ -10,7 +10,7 @@ const Tooltip: React.FC<{
   const { content, contentClass, tooltipContent } = props;
   return (
     <OverlayTrigger
-      trigger="hover"
+      trigger={['hover', 'focus']}
       placement="top"
       overlay={
         <TooltipBS className={classes.tooltip}>
