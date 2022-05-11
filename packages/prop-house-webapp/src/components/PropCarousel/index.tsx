@@ -32,7 +32,7 @@ const PropCarousel = () => {
     proposals &&
     proposals.slice(0, 20).map((_, index) => {
       return (
-        <div className={classes.propCardContainer}>
+        <div className={classes.propCardContainer} key={index}>
           <ProposalCard proposal={proposals[index]} />
         </div>
       );

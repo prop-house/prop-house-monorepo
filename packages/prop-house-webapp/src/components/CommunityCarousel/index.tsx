@@ -26,7 +26,9 @@ const CommunityCarousel = () => {
     getCommunities();
   }, []);
 
-  const cards = communities.map((c) => <CommunityCard community={c} />);
+  const cards = communities.map((c, i) => (
+    <CommunityCard community={c} key={i} />
+  ));
 
   return (
     <CarouselSection
