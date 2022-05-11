@@ -11,6 +11,21 @@
 body {
   background-color: rgb(250, 250, 250);
 }
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: var(--brand-gray);
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: var(--brand-gray);
+}
+
+.tooltip.bs-tooltip-start .tooltip-arrow::before {
+  border-left-color: var(--brand-gray);
+}
+
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+  border-right-color: var(--brand-gray);
+}
 
 :root {
   --brand-pink: #e02ecf;

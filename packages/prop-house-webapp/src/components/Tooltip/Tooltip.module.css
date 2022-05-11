@@ -3,9 +3,9 @@
 }
 
 .tooltip [class$='inner'] {
-  background-color: white;
+  background-color: var(--brand-gray);
   border: 1px solid var(--brand-gray-semi-transparent);
-  color: black;
+  color: white;
   border-radius: 17px;
   padding: 1rem;
   text-align: left;
@@ -13,11 +13,8 @@
   max-width: 15rem;
 }
 .tooltipTitle {
-  color: var(--brand-gray-semi-transparent);
+  color: white;
   font-weight: 500;
   display: block;
   text-align: left;
-}
-.tooltip [class$='arrow'] {
-  display: none;
 }
