@@ -9,11 +9,11 @@ import EthAddress from '../EthAddress';
 import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
-import Tooltip from '../Tooltip';
 import { VoteAllotment } from '../../utils/voteAllotment';
 import { useEthers } from '@usedapp/core';
 import ResubmitPropBtn from '../ResubmitPropBtn';
 import PropCardVotingContainer from '../PropCardVotingContainer';
+import Tooltip from '../Tooltip';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -61,8 +61,8 @@ const ProposalCard: React.FC<{
 
         {proposal.tldr.length > 0 ? (
           <Tooltip
-            content={proposal.title}
-            contentClass={classes.title}
+            content={<div className={classes.title}>{proposal.title}</div>}
+            tooltipTitle="TLDR"
             tooltipContent={proposal.tldr}
           />
         ) : (

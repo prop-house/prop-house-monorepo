@@ -32,6 +32,7 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
+  cursor: help;
 
   overflow: hidden;
   text-overflow: ellipsis;
