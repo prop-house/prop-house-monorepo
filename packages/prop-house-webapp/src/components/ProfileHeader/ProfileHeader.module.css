@@ -29,6 +29,7 @@
   font-weight: 500;
   padding: 0.5rem 0.8rem;
   border-radius: 15px;
+  cursor: pointer;
 }
 .titleRow div:nth-child(2) {
   margin-left: 1rem;
@@ -48,6 +49,10 @@
 }
 .subInfoRow div:nth-child(2) {
   margin-left: 1rem;
+}
+.copyIcon {
+  margin-left: 5px;
+  cursor: pointer;
 }
 
 .propHouseDataRow {
