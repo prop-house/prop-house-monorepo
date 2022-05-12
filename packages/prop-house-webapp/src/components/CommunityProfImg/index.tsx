@@ -1,7 +1,8 @@
 import classes from './CommunityProfImg.module.css';
 import { Link } from 'react-router-dom';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import deadNoun from '../../assets/dead-noun.png';
+import loadingNoun from '../../assets/loading-skull-noun.gif';
+import clsx from 'clsx';
 
 const CommunityProfImg: React.FC<{
   community?: Community;
@@ -17,7 +18,11 @@ const CommunityProfImg: React.FC<{
       />
     </Link>
   ) : (
-    <img src={deadNoun} alt="community profile " className={classes.img} />
+    <img
+      src={loadingNoun}
+      alt="community profile "
+      className={clsx(classes.img, classes.loadingImg)}
+    />
   );
 };
 

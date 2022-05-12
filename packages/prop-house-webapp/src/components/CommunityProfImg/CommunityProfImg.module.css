@@ -4,3 +4,6 @@
   border-radius: 30px;
   box-shadow: 0 4px 2px -2px rgb(33 33 33 / 14%) !important;
 }
+.loadingImg {
+  background-color: rgb(230, 230, 230);
+}
