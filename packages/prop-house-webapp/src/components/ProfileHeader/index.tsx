@@ -25,7 +25,7 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
   );
   return (
     <Row className={classes.profileHeaderRow}>
-      <Col xl={4} className={classes.profilePicCol}>
+      <Col lg={4} className={classes.profilePicCol}>
         <CommunityProfImg community={community} />
       </Col>
       <Col>
