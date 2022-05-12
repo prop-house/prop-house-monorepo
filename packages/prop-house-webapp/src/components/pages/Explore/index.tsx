@@ -36,7 +36,7 @@ const Explore = () => {
       </Row>
       <Row className={classes.cardsContainer}>
         {communities.map((c) => (
-          <Col xs={12} xl={3} className={classes.cardContainer}>
+          <Col xs={6} xl={3} className={classes.cardContainer}>
             <CommunityCard community={c} />
           </Col>
         ))}
