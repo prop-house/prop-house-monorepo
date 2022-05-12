@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import ProfileHeader from '../../ProfileHeader';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../../state/slices/propHouse';
 import Auctions from '../../Auctions';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import { getName } from 'prop-house-communities';
 
 const Community = () => {
   const location = useLocation();
@@ -25,6 +26,7 @@ const Community = () => {
 
   const dispatch = useAppDispatch();
   const { library } = useEthers();
+  const [inactiveCommName, setInactiveCommName] = useState<string>();
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -35,21 +37,45 @@ const Community = () => {
 
   // fetch community
   useEffect(() => {
-    const getchCommunity = async () => {
-      const community = await client.current.getCommunity(contract_address);
-      dispatch(setActiveCommunity(community));
-      dispatch(setAuctions(community.auctions));
+    const fetchCommunity = async () => {
+      try {
+        const community = await client.current.getCommunity(contract_address);
+        dispatch(setActiveCommunity(community));
+        dispatch(setAuctions(community.auctions));
+      } catch (e) {
+        console.log(e);
+      }
     };
-    getchCommunity();
+    fetchCommunity();
   }, [contract_address, dispatch]);
 
-  if (!isValidAddress) return <>invalid address, please check it!</>;
-  if (!community) return <>community does not have an active prop house yet!</>;
+  // fetch inactive commmunity
+  useEffect(() => {
+    if (!library || community || !contract_address) return;
+
+    const fetchName = async () => {
+      try {
+        setInactiveCommName(await getName(contract_address, library));
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchName();
+  }, [library, community, contract_address, inactiveCommName]);
+
+  if (!isValidAddress) return <>404: invalid address, please check it!</>;
 
   return (
     <>
-      <ProfileHeader community={community} />
-      {community.auctions.length > 0 ? (
+      <ProfileHeader
+        community={community}
+        inactiveComm={{
+          name: inactiveCommName ? inactiveCommName : 'N/A',
+          contractAddress: contract_address,
+        }}
+      />
+      {community && community.auctions.length > 0 ? (
         <Auctions community={community} />
       ) : (
         <Card
@@ -57,7 +83,8 @@ const Community = () => {
           borderRadius={CardBorderRadius.twenty}
           classNames={classes.noRoundsCard}
         >
-          <span>{community.name}</span> does not yet have a prop house!
+          <span>{community ? community.name : inactiveCommName}</span> does not
+          yet have a prop house!
         </Card>
       )}
     </>

@@ -9,8 +9,16 @@ import CommunityProfImg from '../CommunityProfImg';
 import { IoCopy } from 'react-icons/io5';
 import Tooltip from '../Tooltip';
 
-const ProfileHeader: React.FC<{ community: Community }> = (props) => {
-  const { community } = props;
+interface InactiveCommunity {
+  contractAddress: string;
+  name: string;
+}
+
+const ProfileHeader: React.FC<{
+  community?: Community;
+  inactiveComm?: InactiveCommunity;
+}> = (props) => {
+  const { community, inactiveComm } = props;
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('copy address');
   const [linkTooltipCopy, setlinkTooltipCopy] = useState('copy link');
@@ -31,19 +39,32 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
       <Col>
         <Col className={classes.communityInfoCol}>
           <Col className={classes.titleRow}>
-            <div className={classes.title}>{community.name}</div>
+            <div className={classes.title}>
+              {community ? community.name : inactiveComm?.name}
+            </div>
             <Tooltip
               content={
                 <div
                   className={classes.contractAddressPill}
                   onMouseEnter={() => setAddressTooltipCopy('copy address')}
                   onClick={() => {
-                    console.log('het');
                     setAddressTooltipCopy('copied!');
-                    navigator.clipboard.writeText(community.contractAddress);
+                    navigator.clipboard.writeText(
+                      community
+                        ? community.contractAddress
+                        : inactiveComm
+                        ? inactiveComm.contractAddress
+                        : '0x0000000000000000000000000000000000000000'
+                    );
                   }}
                 >
-                  {trimEthAddress(community.contractAddress)}
+                  {trimEthAddress(
+                    community
+                      ? community.contractAddress
+                      : inactiveComm
+                      ? inactiveComm.contractAddress
+                      : '0x0000000000000000000000000000000000000000'
+                  )}
                 </div>
               }
               tooltipContent={addressTooltipCopy}
@@ -51,10 +72,22 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
           </Col>
           <Col className={classes.subInfoRow}>
             <div>
-              Funded by <span className={classes.funder}>NounsDAO</span>
+              Funded by{' '}
+              <span className={classes.funder}>
+                {community ? 'NounsDAO' : 'N/A'}
+              </span>
             </div>
             <div className={classes.spacer}>·</div>
-            <div>prop.house/{trimEthAddress(community.contractAddress)}</div>
+            <div>
+              prop.house/
+              {trimEthAddress(
+                community
+                  ? community.contractAddress
+                  : inactiveComm
+                  ? inactiveComm.contractAddress
+                  : '0x0000000000000000000000000000000000000000'
+              )}
+            </div>
             <Tooltip
               content={
                 <IoCopy
@@ -64,7 +97,13 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
                   onClick={() => {
                     setlinkTooltipCopy('copied!');
                     navigator.clipboard.writeText(
-                      `prop.house/${community.contractAddress}`
+                      `prop.house/${
+                        community
+                          ? community.contractAddress
+                          : inactiveComm
+                          ? inactiveComm.contractAddress
+                          : '0x0000000000000000000000000000000000000000'
+                      }`
                     );
                   }}
                 />
@@ -75,15 +114,21 @@ const ProfileHeader: React.FC<{ community: Community }> = (props) => {
           <Col className={classes.propHouseDataRow}>
             <div className={classes.item}>
               <div className={classes.itemTitle}>Proposals</div>
-              <div className={classes.itemData}>{community.numProposals}</div>
+              <div className={classes.itemData}>
+                {community ? community.numProposals : 0}
+              </div>
             </div>
             <div className={classes.item}>
               <div className={classes.itemTitle}>Rounds</div>
-              <div className={classes.itemData}>{community.numAuctions}</div>
+              <div className={classes.itemData}>
+                {community ? community.numAuctions : 0}
+              </div>
             </div>
             <div className={classes.item}>
               <div className={classes.itemTitle}>Funded</div>
-              <div className={classes.itemData}>{community.ethFunded} Ξ</div>
+              <div className={classes.itemData}>
+                {community ? community.ethFunded : 0} Ξ
+              </div>
             </div>
           </Col>
         </Col>
