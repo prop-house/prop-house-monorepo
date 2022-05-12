@@ -13,6 +13,7 @@ import {
 import Auctions from '../../Auctions';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { getName } from 'prop-house-communities';
+import hardhatNoun from '../../../assets/hardhat-noun.png';
 
 const Community = () => {
   const location = useLocation();
@@ -64,7 +65,24 @@ const Community = () => {
     fetchName();
   }, [library, community, contract_address, inactiveCommName]);
 
-  if (!isValidAddress) return <>404: invalid address, please check it!</>;
+  if (!isValidAddress)
+    return (
+      <div className={classes.invalidAddressCard}>
+        <img
+          src={hardhatNoun}
+          alt="invalid address noun"
+          className={classes.invalidAddressNoun}
+        />
+        <div className={classes.textContainer}>
+          <h1>404: Invalid URL</h1>
+          <p>
+            Please check that the url follows the format:
+            <br />
+            <code>prop.house/:nft_contract_address</code>
+          </p>
+        </div>
+      </div>
+    );
 
   return (
     <>
