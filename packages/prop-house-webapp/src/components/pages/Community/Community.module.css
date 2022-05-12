@@ -1,3 +1,6 @@
+.noRoundsCard {
+  text-align: center;
+}
 .noRoundsCard span {
   font-weight: 600;
 }

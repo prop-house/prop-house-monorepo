@@ -83,8 +83,14 @@ const Community = () => {
           borderRadius={CardBorderRadius.twenty}
           classNames={classes.noRoundsCard}
         >
-          <span>{community ? community.name : inactiveCommName}</span> does not
-          yet have a prop house!
+          <span>
+            {community
+              ? community.name
+              : inactiveCommName
+              ? inactiveCommName
+              : 'N/A'}
+          </span>{' '}
+          does not yet have an active prop house!
         </Card>
       )}
     </>
