@@ -1,12 +1,13 @@
-import { Col, Row } from 'react-bootstrap';
+import { Col, Row, Image } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import classes from './HomeHeader.module.css';
 import { Link } from 'react-router-dom';
+import grempBulb from '../../assets/gremp-lightbulb.png';
 
 const HomeHeader = () => {
   return (
     <Row className={classes.wrapper}>
-      <Col xl={12} className={classes.leftCol}>
+      <Col lg={7} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
           Powered by{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
@@ -31,6 +32,10 @@ const HomeHeader = () => {
             </Link>
           </Col>
         </div>
+      </Col>
+      <Col lg={{ span: 4, offset: 1 }} className={classes.rightCol}>
+        <Image src={grempBulb} fluid />
+        <p>Artwork by @supergremplin</p>
       </Col>
     </Row>
   );

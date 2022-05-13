@@ -1,6 +1,6 @@
 .wrapper {
   margin-top: 2rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
 
 .poweredByNouns {
@@ -32,8 +32,18 @@
 
 .rightCol {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
+}
+.rightCol img {
+  border-radius: 3px;
+}
+.rightCol p {
+  margin-top: 1rem;
+  margin-bottom: 0;
+  color: var(--brand-gray);
+  font-size: small;
 }
 
 @media (max-width: 992px) {
@@ -45,5 +55,8 @@
   }
   .btnsContainer button {
     width: 95%;
+  }
+  .rightCol {
+    display: none;
   }
 }
