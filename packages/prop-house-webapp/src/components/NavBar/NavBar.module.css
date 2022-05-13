@@ -2,6 +2,10 @@
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
+.navBarCollapse {
+  display: flex;
+  align-items: center;
+}
 .navbarBrand {
   color: var(--brand-black);
   font-weight: 600;

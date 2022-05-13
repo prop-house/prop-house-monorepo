@@ -2,6 +2,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import Web3ModalButton from '../Web3ModalButton.tsx';
+import clsx from 'clsx';
 
 const NavBar = () => {
   return (
@@ -13,7 +14,7 @@ const NavBar = () => {
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ms-auto">
+        <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
           <Nav.Link as="div">
             <Link to="/learn" className={classes.link}>
               Learn

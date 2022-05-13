@@ -5,6 +5,7 @@ import useWeb3Modal from '../../hooks/useWeb3Modal';
 import clsx from 'clsx';
 import { useAppDispatch } from '../../hooks';
 import { setDelegatedVotes } from '../../state/slices/propHouse';
+import Button, { ButtonColor } from '../Button';
 
 const Web3ModalButton: React.FC<{
   classNames?: string | string[];
@@ -33,9 +34,12 @@ const Web3ModalButton: React.FC<{
           </div>
         </>
       ) : (
-        <div className={clsx(classNames)} onClick={connect}>
-          Connect
-        </div>
+        <Button
+          bgColor={ButtonColor.Pink}
+          text="Connect"
+          onClick={connect}
+          classNames={classes.btn}
+        />
       )}
     </div>
   );
