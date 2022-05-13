@@ -11,9 +11,9 @@ import {
   setAuctions,
 } from '../../../state/slices/propHouse';
 import Auctions from '../../Auctions';
-import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { getName } from 'prop-house-communities';
 import hardhatNoun from '../../../assets/hardhat-noun.png';
+import InactiveCommunityCTA from '../../InactiveCommunityCTA';
 
 const Community = () => {
   const location = useLocation();
@@ -96,20 +96,9 @@ const Community = () => {
       {community && community.auctions.length > 0 ? (
         <Auctions community={community} />
       ) : (
-        <Card
-          bgColor={CardBgColor.White}
-          borderRadius={CardBorderRadius.twenty}
-          classNames={classes.noRoundsCard}
-        >
-          <span>
-            {community
-              ? community.name
-              : inactiveCommName
-              ? inactiveCommName
-              : 'N/A'}
-          </span>{' '}
-          does not yet have an active prop house!
-        </Card>
+        <InactiveCommunityCTA
+          communityName={community ? community.name : inactiveCommName}
+        />
       )}
     </>
   );
