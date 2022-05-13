@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
-import Auction from './components/pages/Auction';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Learn from './components/pages/Learn';
@@ -62,7 +61,6 @@ function App() {
           <Route path="/learn" element={<Learn />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/auction/:id" element={<Auction />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<Community />} />
