@@ -42,8 +42,6 @@ const AuctionHeader: React.FC<{
     handleAuctionChange,
   } = props;
 
-  console.log('from auction header: ', isFirstOrLastAuction()[1]);
-
   const navigate = useNavigate();
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
