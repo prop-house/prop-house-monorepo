@@ -1,14 +1,3 @@
-.titleCol {
-  display: flex;
-  justify-content: center;
-  font-size: 50px;
-  font-weight: 600;
-}
-
-.cardsContainer {
-  margin-top: 2rem;
-}
-
 .cardContainer {
   display: flex;
   justify-content: center;

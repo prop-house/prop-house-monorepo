@@ -30,11 +30,6 @@ const Explore = () => {
   return (
     <>
       <Row>
-        <Col xl={12}>
-          <div className={classes.titleCol}>Explore Prop Houses</div>
-        </Col>
-      </Row>
-      <Row className={classes.cardsContainer}>
         {communities.map((c) => (
           <Col xs={6} xl={3} className={classes.cardContainer}>
             <CommunityCard community={c} />
