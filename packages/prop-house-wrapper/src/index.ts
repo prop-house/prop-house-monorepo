@@ -27,6 +27,15 @@ export class PropHouseWrapper {
     }
   }
 
+  async getAuction(id: number): Promise<StoredAuction> {
+    try {
+      const rawAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
+      return StoredAuction.FromResponse(rawAuction);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async getAuctions(): Promise<StoredAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
@@ -183,6 +192,14 @@ export class PropHouseWrapper {
   async getCommunity(contractAddress: string): Promise<CommunityWithAuctions> {
     try {
       return (await axios.get(`${this.host}/${contractAddress}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getCommunityWithId(id: number): Promise<CommunityWithAuctions> {
+    try {
+      return (await axios.get(`${this.host}/communities/${id}`)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
