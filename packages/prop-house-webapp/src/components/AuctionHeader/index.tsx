@@ -116,7 +116,7 @@ const AuctionHeader: React.FC<{
             <div className={classes.infoSubsectionTitle}>Funding</div>
             <div className={classes.infoSubsectionContent}>
               {`${fundingAmount.toFixed(2)} Ξ `}
-              <span>x {numWinners}</span>
+              <span>× {numWinners}</span>
             </div>
           </div>
           <div className={classes.infoSubsection}>

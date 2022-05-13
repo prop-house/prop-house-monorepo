@@ -51,12 +51,10 @@ const ProposalCard: React.FC<{
         )}
       >
         <div className={classes.authorContainer}>
+          <span>#{proposal.id}&nbsp;•</span>&nbsp;
           <EthAddress address={proposal.address} />
+          &nbsp;
           <span>proposed</span>
-        </div>
-
-        <div>
-          <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
         </div>
 
         {proposal.tldr.length > 0 ? (
@@ -99,7 +97,7 @@ const ProposalCard: React.FC<{
                   : globalClasses.fontPink
               }
             >
-              Read more →
+              Expand →
             </Link>
           </div>
         </div>

@@ -11,7 +11,7 @@ const HomeHeader = () => {
         <div className={classes.poweredByNouns}>
           Powered by{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            Nouns
+            NounsDAO
           </a>
         </div>
         <h1>Plug into your community treasury</h1>

@@ -5,9 +5,10 @@
 
 .poweredByNouns {
   color: var(--brand-black-tansparent);
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-weight: medium;
+  margin-bottom: 0.5rem;
 }
+
 .poweredByNouns a {
   color: var(--brand-pink);
   text-decoration: none;
@@ -16,18 +17,18 @@
 .leftCol h1 {
   font-size: 50px;
   font-weight: 600;
-  line-height: 70px;
+  margin-bottom: 0px;
 }
 
 .leftCol p {
-  margin: 1rem 0;
-  font-size: 20px;
+  margin: 1rem 0.2rem;
+  font-size: 18px;
+  font-weight: medium;
 }
+
 .btnsContainer {
   display: flex;
-}
-.btnsContainer button {
-  margin-left: 0;
+  gap: 10px;
 }
 
 .rightCol {
@@ -50,6 +51,7 @@
   .btnsContainer {
     margin-bottom: 2rem;
   }
+
   .btnsContainer div {
     text-align: center;
   }

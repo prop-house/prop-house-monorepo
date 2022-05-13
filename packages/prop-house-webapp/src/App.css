@@ -1,3 +1,45 @@
+@font-face {
+	font-family: 'PT Root UI';
+	src:
+		url('./assets/fonts/PT-Root-UI_Bold.woff2') format('woff2'),
+		url('./assets/fonts/PT-Root-UI_Bold.woff') format('woff');
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'PT Root UI';
+	src:
+		url('./assets/fonts/PT-Root-UI_Medium.woff2') format('woff2'),
+		url('./assets/fonts/PT-Root-UI_Medium.woff') format('woff');
+	font-weight: medium;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'PT Root UI';
+	src:
+		url('./assets/fonts/PT-Root-UI_Regular.woff2') format('woff2'),
+		url('./assets/fonts/PT-Root-UI_Regular.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'PT Root UI';
+	src:
+		url('./assets/fonts/PT-Root-UI_Light.woff2') format('woff2'),
+		url('./assets/fonts/PT-Root-UI_Light.woff') format('woff');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+* {
+  font-family: 'PT Root UI';
+}
+
 .App {
   text-align: center;
 }
@@ -35,4 +77,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+html, body {
+  background-color: #fcfcfc;
+}
+
+h1, h2, h3, h4, h5 {
+  font-weight: bold;
 }

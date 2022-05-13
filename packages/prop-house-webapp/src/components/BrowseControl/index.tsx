@@ -19,6 +19,7 @@ const BrowseControl: React.FC<{ auctionId: number; highestId: number }> = (
               auctionId <= 1 ? classes.navDisabled : classes.navEnabled,
               classes.arrow
             )}
+            style={{fontFamily: "Inter"}}
           >
             ←
           </Link>
@@ -28,6 +29,7 @@ const BrowseControl: React.FC<{ auctionId: number; highestId: number }> = (
               auctionId >= highestId ? classes.navDisabled : classes.navEnabled,
               classes.arrow
             )}
+            style={{fontFamily: "Inter"}}
           >
             →
           </Link>
