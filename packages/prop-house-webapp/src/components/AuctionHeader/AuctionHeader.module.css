@@ -6,17 +6,6 @@
   display: flex;
   flex-direction: row;
 }
-.commProfImageContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 1rem;
-}
-.imageCard {
-  height: 4rem;
-  width: auto;
-  border-radius: 50%;
-}
 .titleSectionContainer {
   display: flex;
   flex-direction: column;
@@ -66,14 +55,27 @@
   color: var(--brand-gray);
   opacity: 0.5;
 }
+.arrowsContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+.arrowsContainer svg {
+  margin-left: 0.2rem;
+}
+.able {
+  cursor: pointer;
+  color: var(--brand-black-tansparent) !important;
+}
+.disable {
+  color: rgba(0, 0, 0, 0.122);
+}
 
 @media (max-width: 992px) {
   .row {
     flex-direction: column;
   }
-  .commProfImageContainer {
-    display: none;
-  }
+
   .infoSection {
     margin: 1rem 0;
     flex-direction: column;

@@ -4,10 +4,7 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import StatusPill from '../StatusPill';
 import { Link, useNavigate } from 'react-router-dom';
 import Button, { ButtonColor } from '../Button';
-import {
-  Community,
-  StoredAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import diffTime from '../../utils/diffTime';
 import formatTime from '../../utils/formatTime';
 import {
@@ -17,30 +14,35 @@ import {
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useLocation } from 'react-router-dom';
+import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
  */
 const AuctionHeader: React.FC<{
   auction: StoredAuction;
-  community: Community;
   clickable: boolean;
   classNames?: string | string[];
   totalVotes?: number;
   voteBtnEnabled?: boolean;
   votesLeft?: number;
   handleVote?: () => void;
+  isFirstOrLastAuction: () => [boolean, boolean];
+  handleAuctionChange: (next: boolean) => void;
 }> = (props) => {
   const {
     auction,
-    community,
     clickable,
     classNames,
     totalVotes,
     votesLeft,
     handleVote,
     voteBtnEnabled,
+    isFirstOrLastAuction,
+    handleAuctionChange,
   } = props;
+
+  console.log('from auction header: ', isFirstOrLastAuction()[1]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,21 +66,28 @@ const AuctionHeader: React.FC<{
     >
       <div className={classes.row}>
         <div className={classes.leftSectionContainer}>
-          <div className={classes.commProfImageContainer}>
-            <Link to={`/${community.contractAddress}`}>
-              <img
-                src={community.profileImageUrl}
-                alt="community profile "
-                className={classes.imageCard}
-              />
-            </Link>
+          <div className={classes.arrowsContainer}>
+            <HiArrowSmLeft
+              size={'2rem'}
+              onClick={() => handleAuctionChange(false)}
+              className={
+                isFirstOrLastAuction()[0] ? classes.disable : classes.able
+              }
+            />
+            <HiArrowSmRight
+              size={'2rem'}
+              onClick={() => handleAuctionChange(true)}
+              className={
+                isFirstOrLastAuction()[1] ? classes.disable : classes.able
+              }
+            />
           </div>
           <div className={classes.titleSectionContainer}>
             <div className={classes.leftSectionTitle}>
               {!onAuctionPage ? (
-                <Link to={`/auction/${id}`}>{`Funding round ${id}`}</Link>
+                <Link to={`/auction/${id}`}>{auction.title}</Link>
               ) : (
-                `Funding round ${id}`
+                auction.title
               )}
               <StatusPill status={auctionStatus(auction)} />
             </div>

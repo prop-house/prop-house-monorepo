@@ -13,11 +13,6 @@
   border-top-right-radius: 0 !important;
 }
 
-.fixedHeight {
-  max-height: 30rem;
-  overflow-y: auto;
-}
-
 .dividerSection {
   display: flex;
   flex-direction: row;

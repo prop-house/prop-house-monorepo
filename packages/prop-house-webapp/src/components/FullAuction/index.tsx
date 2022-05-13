@@ -6,7 +6,6 @@ import { Row } from 'react-bootstrap';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
-import clsx from 'clsx';
 import { useEffect, useState, useRef } from 'react';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
@@ -35,8 +34,10 @@ import { getNumVotes } from 'prop-house-communities';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
+  isFirstOrLastAuction: () => [boolean, boolean];
+  handleAuctionChange: (next: boolean) => void;
 }> = (props) => {
-  const { auction } = props;
+  const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
 
   const { account, library } = useEthers();
   const [ascending, setAscending] = useState(false);
@@ -206,7 +207,6 @@ const FullAuction: React.FC<{
       {community && (
         <AuctionHeader
           auction={auction}
-          community={community}
           clickable={false}
           classNames={classes.auctionHeader}
           totalVotes={delegatedVotes}
@@ -219,13 +219,15 @@ const FullAuction: React.FC<{
           }
           votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
           handleVote={handleVote}
+          isFirstOrLastAuction={isFirstOrLastAuction}
+          handleAuctionChange={handleAuctionChange}
         />
       )}
 
       <Card
         bgColor={CardBgColor.LightPurple}
         borderRadius={CardBorderRadius.thirty}
-        classNames={clsx(classes.customCardHeader, classes.fixedHeight)}
+        classNames={classes.customCardHeader}
       >
         <Row>
           <div className={classes.dividerSection}>
