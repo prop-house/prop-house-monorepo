@@ -40,6 +40,9 @@
   font-size: medium;
   color: var(--brand-gray);
 }
+.phLink {
+  display: flex;
+}
 .subInfoRow .funder {
   color: black;
   font-weight: 600;
@@ -51,7 +54,6 @@
   margin-left: 1rem;
 }
 .copyIcon {
-  margin-left: 5px;
   cursor: pointer;
 }
 
@@ -83,5 +85,14 @@
   }
   .communityInfoCol {
     margin: 0 1rem;
+  }
+  .subInfoRow {
+    display: block;
+  }
+  .spacer {
+    display: none;
+  }
+  .phLink {
+    margin-top: 1rem;
   }
 }

@@ -78,38 +78,41 @@ const ProfileHeader: React.FC<{
               </span>
             </div>
             <div className={classes.spacer}>·</div>
-            <div>
-              prop.house/
-              {trimEthAddress(
-                community
-                  ? community.contractAddress
-                  : inactiveComm
-                  ? inactiveComm.contractAddress
-                  : '0x0000000000000000000000000000000000000000'
-              )}
+            <div className={classes.phLink}>
+              <div>
+                prop.house/
+                {trimEthAddress(
+                  community
+                    ? community.contractAddress
+                    : inactiveComm
+                    ? inactiveComm.contractAddress
+                    : '0x0000000000000000000000000000000000000000'
+                )}
+              </div>
+
+              <Tooltip
+                content={
+                  <IoCopy
+                    size={'1rem'}
+                    className={classes.copyIcon}
+                    onMouseEnter={() => setlinkTooltipCopy('copy link')}
+                    onClick={() => {
+                      setlinkTooltipCopy('copied!');
+                      navigator.clipboard.writeText(
+                        `prop.house/${
+                          community
+                            ? community.contractAddress
+                            : inactiveComm
+                            ? inactiveComm.contractAddress
+                            : '0x0000000000000000000000000000000000000000'
+                        }`
+                      );
+                    }}
+                  />
+                }
+                tooltipContent={linkTooltipCopy}
+              />
             </div>
-            <Tooltip
-              content={
-                <IoCopy
-                  size={'1rem'}
-                  className={classes.copyIcon}
-                  onMouseEnter={() => setlinkTooltipCopy('copy link')}
-                  onClick={() => {
-                    setlinkTooltipCopy('copied!');
-                    navigator.clipboard.writeText(
-                      `prop.house/${
-                        community
-                          ? community.contractAddress
-                          : inactiveComm
-                          ? inactiveComm.contractAddress
-                          : '0x0000000000000000000000000000000000000000'
-                      }`
-                    );
-                  }}
-                />
-              }
-              tooltipContent={linkTooltipCopy}
-            />
           </Col>
           <Col className={classes.propHouseDataRow}>
             <div className={classes.item}>
