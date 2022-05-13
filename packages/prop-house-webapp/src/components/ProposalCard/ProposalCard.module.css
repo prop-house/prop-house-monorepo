@@ -1,8 +1,14 @@
 .proposalCard {
-  min-height: 15rem;
+  min-height: 12.5rem;
   display: flex;
   flex-direction: column;
+  transition: all 0.1s ease-in-out;
 }
+
+.proposalCard:hover {
+  transform: scale(1.02);
+}
+
 .proposalCardVoting {
   min-height: 20rem;
 }
@@ -19,15 +25,15 @@
   margin-bottom: 0.8rem;
   display: flex;
 }
+
 .authorContainer span {
-  margin-left: 0.3rem;
   font-weight: normal;
   color: var(--brand-black-tansparent);
   display: inline;
 }
 
 .title {
-  font-size: 18px;
+  font-size: 22px;
   line-height: 140%;
   font-weight: bold;
   color: var(--brand-black);
@@ -37,9 +43,12 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3; /* number of lines to show */
-  line-height: X; /* fallback */
-  max-height: X * N; /* fallback */
+  -webkit-line-clamp: 3;
+  /* number of lines to show */
+  line-height: X;
+  /* fallback */
+  max-height: X * N;
+  /* fallback */
 }
 
 .timestampAndlinkContainer {
@@ -61,6 +70,6 @@
 
 .scoreCopy {
   font-weight: bold;
-  font-size: small;
+  font-size: 15px;
   color: var(--brand-gray);
 }

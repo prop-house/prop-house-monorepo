@@ -1,19 +1,19 @@
-import classes from './ProposalCard.module.css';
-import globalClasses from '../../css/globals.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { Link } from 'react-router-dom';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import diffTime from '../../utils/diffTime';
-import detailedTime from '../../utils/detailedTime';
-import EthAddress from '../EthAddress';
-import clsx from 'clsx';
-import { AuctionStatus } from '../../utils/auctionStatus';
-import { ProposalCardStatus } from '../../utils/cardStatus';
-import Tooltip from '../Tooltip';
-import { VoteAllotment } from '../../utils/voteAllotment';
-import { useEthers } from '@usedapp/core';
-import ResubmitPropBtn from '../ResubmitPropBtn';
-import PropCardVotingContainer from '../PropCardVotingContainer';
+import classes from "./ProposalCard.module.css";
+import globalClasses from "../../css/globals.module.css";
+import Card, { CardBgColor, CardBorderRadius } from "../Card";
+import { Link } from "react-router-dom";
+import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
+import diffTime from "../../utils/diffTime";
+import detailedTime from "../../utils/detailedTime";
+import EthAddress from "../EthAddress";
+import clsx from "clsx";
+import { AuctionStatus } from "../../utils/auctionStatus";
+import { ProposalCardStatus } from "../../utils/cardStatus";
+import Tooltip from "../Tooltip";
+import { VoteAllotment } from "../../utils/voteAllotment";
+import { useEthers } from "@usedapp/core";
+import ResubmitPropBtn from "../ResubmitPropBtn";
+import PropCardVotingContainer from "../PropCardVotingContainer";
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -46,17 +46,14 @@ const ProposalCard: React.FC<{
             ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
             : cardStatus === ProposalCardStatus.Winner
             ? globalClasses.pinkBorder
-            : '',
+            : "",
           classes.proposalCard
         )}
       >
         <div className={classes.authorContainer}>
-          <EthAddress address={proposal.address} />
+          <span>#{proposal.id}&nbsp;•</span>&nbsp;
+          <EthAddress address={proposal.address} />&nbsp;
           <span>proposed</span>
-        </div>
-
-        <div>
-          <div className={classes.propCopy}>Proposal #{proposal.id}&nbsp;</div>
         </div>
 
         {proposal.tldr.length > 0 ? (
@@ -79,7 +76,8 @@ const ProposalCard: React.FC<{
           (auctionStatus === AuctionStatus.AuctionEnded &&
             cardStatus !== ProposalCardStatus.Voting) ? (
             <div className={classes.scoreCopy}>
-              Score: {Math.trunc(proposal.score)}
+              <span style={{marginRight: "0.3rem", fontWeight: "normal"}}>Score</span>
+              {Math.trunc(proposal.score)}
             </div>
           ) : (
             <div
@@ -99,7 +97,7 @@ const ProposalCard: React.FC<{
                   : globalClasses.fontPink
               }
             >
-              Read more →
+              Expand →
             </Link>
           </div>
         </div>
