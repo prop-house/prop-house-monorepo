@@ -7,12 +7,15 @@ import { setActiveCommunity } from '../../state/slices/propHouse';
 import { useAppDispatch } from '../../hooks';
 import CommunityProfImg from '../CommunityProfImg';
 import { IoCopy } from 'react-icons/io5';
+import clsx from 'clsx';
 import Tooltip from '../Tooltip';
 
 interface InactiveCommunity {
   contractAddress: string;
   name: string;
 }
+
+const isLongName = (name: string) => name.length > 9;
 
 const ProfileHeader: React.FC<{
   community?: Community;
@@ -38,7 +41,14 @@ const ProfileHeader: React.FC<{
       </Col>
       <Col>
         <Col className={classes.communityInfoCol}>
-          <Col className={classes.titleRow}>
+          <Col
+            className={clsx(
+              classes.titleRow,
+              isLongName(community ? community.name : '') ||
+                (isLongName(inactiveComm ? inactiveComm.name : '') &&
+                  classes.longName)
+            )}
+          >
             <div className={classes.title}>
               {community ? community.name : inactiveComm?.name}
             </div>

@@ -30,8 +30,6 @@
   padding: 0.5rem 0.8rem;
   border-radius: 15px;
   cursor: pointer;
-}
-.titleRow div:nth-child(2) {
   margin-left: 1rem;
 }
 
@@ -81,7 +79,7 @@
 @media (max-width: 992px) {
   .profilePicCol {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
   }
   .communityInfoCol {
     margin: 0 1rem;
@@ -94,5 +92,11 @@
   }
   .phLink {
     margin-top: 1rem;
+  }
+  .longName {
+    flex-direction: column;
+  }
+  .longName .contractAddressPill {
+    margin-left: 0 !important;
   }
 }
