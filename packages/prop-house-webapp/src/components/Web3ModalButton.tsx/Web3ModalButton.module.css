@@ -12,4 +12,7 @@
   .wrapper div {
     padding-left: 0;
   }
+  .btn {
+    margin-left: 0 !important;
+  }
 }
