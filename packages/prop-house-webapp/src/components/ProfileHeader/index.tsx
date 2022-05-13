@@ -2,9 +2,7 @@ import { Row, Col } from 'react-bootstrap';
 import classes from './ProfileHeader.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import { useEffect, useState } from 'react';
-import { setActiveCommunity } from '../../state/slices/propHouse';
-import { useAppDispatch } from '../../hooks';
+import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import { IoCopy } from 'react-icons/io5';
 import clsx from 'clsx';
@@ -26,14 +24,6 @@ const ProfileHeader: React.FC<{
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('copy address');
   const [linkTooltipCopy, setlinkTooltipCopy] = useState('copy link');
 
-  const dispatch = useAppDispatch();
-  // clean up active community on dismount
-  useEffect(
-    () => () => {
-      dispatch(setActiveCommunity(undefined));
-    },
-    [dispatch]
-  );
   return (
     <Row className={classes.profileHeaderRow}>
       <Col lg={4} className={classes.profilePicCol}>
