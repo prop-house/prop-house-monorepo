@@ -21,8 +21,8 @@ const ProfileHeader: React.FC<{
 }> = (props) => {
   const { community, inactiveComm } = props;
 
-  const [addressTooltipCopy, setAddressTooltipCopy] = useState('copy address');
-  const [linkTooltipCopy, setlinkTooltipCopy] = useState('copy link');
+  const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
+  const [linkTooltipCopy, setlinkTooltipCopy] = useState('Copy link');
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -46,9 +46,9 @@ const ProfileHeader: React.FC<{
               content={
                 <div
                   className={classes.contractAddressPill}
-                  onMouseEnter={() => setAddressTooltipCopy('copy address')}
+                  onMouseEnter={() => setAddressTooltipCopy('Click to copy')}
                   onClick={() => {
-                    setAddressTooltipCopy('copied!');
+                    setAddressTooltipCopy('Copied!');
                     navigator.clipboard.writeText(
                       community
                         ? community.contractAddress
