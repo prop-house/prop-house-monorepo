@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import NotFound from '../NotFound';
 import FullProposal from '../../FullProposal';
@@ -11,11 +11,14 @@ import {
   setActiveCommunity,
   setActiveProposal,
 } from '../../../state/slices/propHouse';
-import classes from './Proposal.module.css';
 
 const Proposal = () => {
   const params = useParams();
   const { id } = params;
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isEntryPoint = !location.state?.fromRoundPage;
 
   const dispatch = useDispatch();
   const proposal = useAppSelector((state) => state.propHouse.activeProposal);
@@ -67,10 +70,16 @@ const Proposal = () => {
     <>
       {proposal ? (
         <>
-          <Link
-            to={`/${community?.contractAddress}`}
-            className={classes.backToAuction}
-          >{`← Back to ${community?.name}`}</Link>
+          <div
+            onClick={() => {
+              isEntryPoint
+                ? navigate(`/${community?.contractAddress}`)
+                : navigate(-1);
+            }}
+          >
+            {community && `← Back to ${community?.name}`}
+          </div>
+
           <FullProposal
             proposal={proposal}
             votingWrapper={backendClient.current}
