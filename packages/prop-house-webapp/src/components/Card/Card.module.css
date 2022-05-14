@@ -3,6 +3,7 @@
   padding: 1rem 1.25rem;
   margin: 1rem 0;
   transition: box-shadow 0.3s;
+  box-shadow: none;
 }
 
 a {
@@ -31,5 +32,5 @@ a {
 }
 
 .onHoverEffect:hover {
-  box-shadow: 0 0 5px rgba(33, 33, 33, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
