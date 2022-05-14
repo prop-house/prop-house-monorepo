@@ -1,3 +1,10 @@
 .backToAuction {
-  text-decoration: underline !important;
+  cursor: pointer;
+  border-radius: 15px;
+  font-weight: 700;
+  padding: 1rem;
+  color: var(--brand-black-transparent);
+  border: 1px solid var(--brand-black-transparent);
+  background-color: rgb(245, 245, 245);
+  display: inline;
 }

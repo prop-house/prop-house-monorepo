@@ -1,3 +1,4 @@
+import classes from './Proposal.module.css';
 import { useParams } from 'react-router';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
@@ -23,6 +24,9 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const proposal = useAppSelector((state) => state.propHouse.activeProposal);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
+  const activeAuction = useAppSelector(
+    (state) => state.propHouse.activeAuction
+  );
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
   );
@@ -76,8 +80,12 @@ const Proposal = () => {
                 ? navigate(`/${community?.contractAddress}`)
                 : navigate(-1);
             }}
+            className={classes.backToAuction}
           >
-            {community && `← Back to ${community?.name}`}
+            {community &&
+              `← ${community?.name} ${
+                activeAuction ? `(${activeAuction.title})` : ''
+              }`}
           </div>
 
           <FullProposal
