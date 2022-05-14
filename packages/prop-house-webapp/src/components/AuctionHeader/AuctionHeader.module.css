@@ -2,10 +2,12 @@
   display: flex;
   justify-content: space-between;
 }
+
 .leftSectionContainer {
   display: flex;
   flex-direction: row;
 }
+
 .titleSectionContainer {
   display: flex;
   flex-direction: column;
@@ -20,7 +22,7 @@
 .leftSectionSubtitle {
   font-size: 15px;
   font-weight: medium;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .infoSection {
@@ -43,7 +45,7 @@
 .infoSubsectionTitle {
   font-size: 15px;
   font-weight: 500;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .infoSubsectionContent {
@@ -59,18 +61,22 @@
   color: var(--brand-gray);
   opacity: 0.5;
 }
+
 .arrowsContainer {
   display: flex;
   align-items: center;
   margin-right: 1rem;
 }
+
 .arrowsContainer svg {
   margin-left: 0.2rem;
 }
+
 .able {
   cursor: pointer;
-  color: var(--brand-black-tansparent) !important;
+  color: var(--brand-black-transparent) !important;
 }
+
 .disable {
   color: rgba(0, 0, 0, 0.122);
 }
