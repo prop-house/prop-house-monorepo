@@ -52,10 +52,10 @@ const ProposalCard: React.FC<{
         )}
       >
         <div className={classes.authorContainer}>
-          <span>#{proposal.id}&nbsp;•</span>&nbsp;
+          <span style={{fontWeight: "600"}}>#{proposal.id}&nbsp;•</span>&nbsp;
           <EthAddress address={proposal.address} />
           &nbsp;
-          <span>proposed</span>
+          <span style={{fontWeight: "600"}}>proposed</span>
         </div>
 
         {proposal.tldr.length > 0 ? (
