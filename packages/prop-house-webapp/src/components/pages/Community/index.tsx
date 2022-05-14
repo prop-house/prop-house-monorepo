@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
+  setActiveAuction,
   setActiveCommunity,
   setAuctions,
 } from '../../../state/slices/propHouse';
@@ -29,7 +30,9 @@ const Community = () => {
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
-  const [auctionIndex, setAuctionIndex] = useState(0);
+  const activeAuction = useAppSelector(
+    (state) => state.propHouse.activeAuction
+  );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -44,6 +47,10 @@ const Community = () => {
         const community = await client.current.getCommunity(contract_address);
         dispatch(setActiveCommunity(community));
         dispatch(setAuctions(community.auctions));
+
+        if (!activeAuction || activeAuction.communityId !== community.id) {
+          dispatch(setActiveAuction(community.auctions[0]));
+        }
       } catch (e) {
         console.log(e);
       }
@@ -67,27 +74,35 @@ const Community = () => {
   }, [library, community, contract_address, inactiveCommName]);
 
   const handleAuctionChange = (next: boolean) => {
-    if (!community || community.auctions.length === 0) return;
-    setAuctionIndex((prev) => {
-      const auctions = community.auctions;
-      return next
-        ? auctions[prev + 1]
-          ? prev + 1
-          : prev
-        : auctions[prev - 1]
-        ? prev - 1
-        : prev;
-    });
+    if (!activeAuction || !community || community.auctions.length === 0) return;
+
+    const auctions = community.auctions;
+    const index = community.auctions.findIndex(
+      (a) => a.id === activeAuction.id
+    );
+
+    const updatedIndex = next
+      ? auctions[index + 1]
+        ? index + 1
+        : index
+      : auctions[index - 1]
+      ? index - 1
+      : index;
+
+    dispatch(setActiveAuction(auctions[updatedIndex]));
   };
 
   const isFirstOrLastAuction = (): [boolean, boolean] => {
-    if (!community || community.auctions.length === 0) return [false, false];
-    const auctions = community.auctions;
-    return auctionIndex === 0 && auctions.length === 1
+    if (!activeAuction || !community || community.auctions.length === 0)
+      return [false, false];
+    const index = community.auctions.findIndex(
+      (a) => a.id === activeAuction.id
+    );
+    return index === 0 && community.auctions.length === 1
       ? [true, true]
-      : auctionIndex === 0
+      : index === 0
       ? [true, false]
-      : auctionIndex === auctions.length - 1
+      : index === community.auctions.length - 1
       ? [false, true]
       : [false, false];
   };
@@ -120,9 +135,9 @@ const Community = () => {
           contractAddress: contract_address,
         }}
       />
-      {community && community.auctions.length > 0 ? (
+      {community && activeAuction ? (
         <FullAuction
-          auction={community.auctions[auctionIndex]}
+          auction={activeAuction}
           isFirstOrLastAuction={isFirstOrLastAuction}
           handleAuctionChange={handleAuctionChange}
         />
