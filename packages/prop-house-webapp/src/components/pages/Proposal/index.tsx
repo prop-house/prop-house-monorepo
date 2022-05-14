@@ -3,7 +3,6 @@ import { useParams } from 'react-router';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import NotFound from '../NotFound';
-import RenderedProposal from '../../RenderedProposal';
 import { useEffect, useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
@@ -12,6 +11,9 @@ import {
   setActiveCommunity,
   setActiveProposal,
 } from '../../../state/slices/propHouse';
+import RenderedProposalFields from '../../RenderedProposalFields';
+import proposalFields from '../../../utils/proposalFields';
+import { IoArrowBackCircle } from 'react-icons/io5';
 
 const Proposal = () => {
   const params = useParams();
@@ -24,9 +26,6 @@ const Proposal = () => {
   const dispatch = useDispatch();
   const proposal = useAppSelector((state) => state.propHouse.activeProposal);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
-  const activeAuction = useAppSelector(
-    (state) => state.propHouse.activeAuction
-  );
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
   );
@@ -74,20 +73,24 @@ const Proposal = () => {
     <>
       {proposal ? (
         <>
-          <div
-            onClick={() => {
-              isEntryPoint
-                ? navigate(`/${community?.contractAddress}`)
-                : navigate(-1);
-            }}
-            className={classes.backToAuction}
-          >
-            {community &&
-              `← ${community?.name} ${
-                activeAuction ? `(${activeAuction.title})` : ''
-              }`}
-          </div>
-          <RenderedProposal proposal={proposal} />
+          <RenderedProposalFields
+            fields={proposalFields(proposal)}
+            address={proposal.address}
+            proposalId={proposal.id}
+            backButton={
+              <>
+                <IoArrowBackCircle
+                  onClick={() => {
+                    isEntryPoint
+                      ? navigate(`/${community?.contractAddress}`)
+                      : navigate(-1);
+                  }}
+                  className={classes.backToAuction}
+                  size={'3rem'}
+                />
+              </>
+            }
+          />
         </>
       ) : (
         <NotFound />
