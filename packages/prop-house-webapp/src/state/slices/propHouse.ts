@@ -9,6 +9,7 @@ import { SortProps, SortType, _sortProps } from '../../utils/sortingProposals';
 
 export interface PropHouseSlice {
   auctions: StoredAuction[];
+  activeAuction?: StoredAuction;
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
   delegatedVotes?: number;
@@ -62,6 +63,9 @@ export const propHouseSlice = createSlice({
     updateAuction: (state, action: PayloadAction<StoredAuction>) => {
       state = updateAuctionInState(state, action.payload);
     },
+    setActiveAuction: (state, action: PayloadAction<StoredAuction>) => {
+      state.activeAuction = action.payload;
+    },
     setAuctions: (state, action: PayloadAction<StoredAuction[]>) => {
       state.auctions = action.payload;
     },
@@ -110,6 +114,7 @@ export const {
   addAuction,
   addAuctions,
   setAuctions,
+  setActiveAuction,
   setActiveProposal,
   setActiveProposals,
   appendProposal,
