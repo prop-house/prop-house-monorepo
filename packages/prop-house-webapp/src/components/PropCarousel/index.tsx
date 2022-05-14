@@ -41,7 +41,7 @@ const PropCarousel = () => {
   return (
     <CarouselSection
       contextTitle="Browse proposals"
-      mainTitle="Discover recent proposals "
+      mainTitle="Recent proposals "
       cards={propCards ? propCards : []}
     />
   );
