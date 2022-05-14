@@ -3,7 +3,7 @@ import { useParams } from 'react-router';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
 import NotFound from '../NotFound';
-import FullProposal from '../../FullProposal';
+import RenderedProposal from '../../RenderedProposal';
 import { useEffect, useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
@@ -87,11 +87,7 @@ const Proposal = () => {
                 activeAuction ? `(${activeAuction.title})` : ''
               }`}
           </div>
-
-          <FullProposal
-            proposal={proposal}
-            votingWrapper={backendClient.current}
-          />
+          <RenderedProposal proposal={proposal} />
         </>
       ) : (
         <NotFound />
