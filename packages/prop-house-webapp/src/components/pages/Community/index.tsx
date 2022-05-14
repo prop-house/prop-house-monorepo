@@ -56,7 +56,7 @@ const Community = () => {
       }
     };
     fetchCommunity();
-  }, [contract_address, dispatch]);
+  }, [contract_address, dispatch, activeAuction]);
 
   // fetch inactive commmunity
   useEffect(() => {
