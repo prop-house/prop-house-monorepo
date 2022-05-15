@@ -47,16 +47,13 @@ const Community = () => {
         const community = await client.current.getCommunity(contract_address);
         dispatch(setActiveCommunity(community));
         dispatch(setAuctions(community.auctions));
-
-        if (!activeAuction || activeAuction.communityId !== community.id) {
-          dispatch(setActiveAuction(community.auctions[0]));
-        }
+        dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         console.log(e);
       }
     };
     fetchCommunity();
-  }, [contract_address, dispatch, activeAuction]);
+  }, [contract_address, dispatch]);
 
   // fetch inactive commmunity
   useEffect(() => {
