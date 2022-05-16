@@ -1,4 +1,4 @@
 export interface Contract {
   address: string;
-  abi: any;
+  numVotes: (userAddress: string) => Promise<number>;
 }

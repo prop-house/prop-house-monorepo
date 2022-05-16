@@ -1,10 +1,13 @@
 import { ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import { isActiveCommunity } from './isActiveCommunity';
-import { getActiveCommunity } from './getCommunity';
+import BalanceOfABI from '../abi/BalanceOfABI.json';
+import { hasAltNumVotes } from './hasAltNumVotes';
+import { altNumVotes } from './altNumVotes';
 
 /**
- * Gets balance of `userAddress`-owned NFTs in the `communityAddress` contract
+ * Gets number of votes for an address given a communityAddress:
+ * Checks if commnunity has an alternative approach to calculating votes,
+ * if not, defaults to `balanceOf` call.
  * @param userAddress
  * @param commmunityAddress
  * @param provider
@@ -19,15 +22,13 @@ export const getNumVotes = async (
     throw new Error('User address is not valid');
   if (!ethers.utils.isAddress(commmunityAddress))
     throw new Error('Community address is not valid');
-  if (!isActiveCommunity(commmunityAddress))
-    throw new Error('Community address does not match to an active community.');
 
-  const community = getActiveCommunity(commmunityAddress);
-  if (!community) throw new Error('Community not found');
+  if (hasAltNumVotes(commmunityAddress))
+    return altNumVotes(userAddress, commmunityAddress);
 
   const contract = new ethers.Contract(
-    community.address,
-    community.abi,
+    commmunityAddress,
+    BalanceOfABI,
     provider
   );
   return ethers.BigNumber.from(
