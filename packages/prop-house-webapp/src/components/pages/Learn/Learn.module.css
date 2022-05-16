@@ -18,6 +18,9 @@
   display: flex;
   justify-content: flex-end;
 }
+.leftCol img {
+  border-radius: 0 15px 15px 0;
+}
 .leftCol {
   display: flex;
   justify-content: flex-start;
