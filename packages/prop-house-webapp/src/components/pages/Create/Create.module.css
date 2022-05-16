@@ -25,3 +25,7 @@
 .tipCard a {
   text-decoration: underline !important;
 }
+
+.actionBtn {
+  margin-left: 1rem;
+}

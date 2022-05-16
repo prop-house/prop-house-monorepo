@@ -172,6 +172,7 @@ const Create: React.FC<{}> = () => {
           {showPreview &&
             (account ? (
               <Button
+                classNames={classes.actionBtn}
                 text="Sign and Submit"
                 bgColor={ButtonColor.Pink}
                 onClick={submitProposal}
@@ -179,6 +180,7 @@ const Create: React.FC<{}> = () => {
               />
             ) : (
               <Button
+                classNames={classes.actionBtn}
                 bgColor={ButtonColor.Pink}
                 text="Connect Wallet To Submit"
                 onClick={connect}

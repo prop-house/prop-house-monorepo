@@ -1,6 +1,7 @@
 .headerContainer {
   display: flex;
   align-items: center;
+  margin-top: 2rem;
 }
 
 .previewCol h2 {
