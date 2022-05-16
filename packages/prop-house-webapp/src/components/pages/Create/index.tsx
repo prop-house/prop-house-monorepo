@@ -48,6 +48,13 @@ const Create: React.FC<{}> = () => {
     (state) => state.configuration.backendHost
   );
   const auctions = useAppSelector((state) => state.propHouse.auctions);
+  const activeCommunity = useAppSelector(
+    (state) => state.propHouse.activeCommunity
+  );
+  const activeAuction = useAppSelector(
+    (state) => state.propHouse.activeAuction
+  );
+
   const backendClient = useRef(
     new PropHouseWrapper(backendHost, provider?.getSigner())
   );
@@ -72,6 +79,7 @@ const Create: React.FC<{}> = () => {
 
   const submitProposal = async () => {
     if (!parentAuction) return;
+
     const proposal = await backendClient.current.createProposal(
       new Proposal(
         proposalEditorData.title,
@@ -82,7 +90,6 @@ const Create: React.FC<{}> = () => {
         parentAuction.id
       )
     );
-
     dispatch(appendProposal({ proposal, auctionId: parentAuction.id }));
     dispatch(clearProposal());
     setShowModal(true);
@@ -92,19 +99,20 @@ const Create: React.FC<{}> = () => {
     title: 'Congrats!',
     content: (
       <>
-        <p>{`You've successfully submitted your proposal for funding round ${
-          parentAuction && parentAuction.id
-        }`}</p>
+        <p>{`You've successfully submitted your proposal for \n ${
+          activeCommunity && activeCommunity.name
+        } ${`(${activeAuction && activeAuction.title})`}`}</p>
         <Button
-          text="View round"
+          text="View house"
           bgColor={ButtonColor.White}
           onClick={() =>
-            navigate(`/auction/${parentAuction && parentAuction.id}`)
+            navigate(`/${activeCommunity && activeCommunity.contractAddress}`)
           }
         />
       </>
     ),
-    onDismiss: () => navigate(`/auction/${parentAuction && parentAuction.id}`),
+    onDismiss: () =>
+      navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
   };
 
   return parentAuction ? (
