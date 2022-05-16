@@ -29,12 +29,12 @@ const Learn = () => {
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
           <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>Supercharge your community</h2>
+            <h2>Fund your community builders</h2>
             <p>
               NFT communities have eager members who want to build for their
               communities. Prop House makes it easy for communities to quickly
-              and fairly deploy their capital in order to capture the energy of
-              their builders.
+              and fairly deploy capital in order to capture the energy of their
+              builders.
             </p>
             <Button
               text="Explore houses"
@@ -55,18 +55,18 @@ const Learn = () => {
             xs={{ order: 'last' }}
           >
             <Col xs={12}>
-              <h2>Capture ideas with your own Prop House</h2>
+              <h2>Capture ideas with Funding Rounds</h2>
             </Col>
             <Col xs={12}>
               <p>
-                Communities propose and vote on ideas via Funding Rounds held in
-                their Prop House. Funding rounds are auctions where the thing
-                being auctioned is ETH and the bids being placed are proposals.
-                Anyone is free to propose anything.
+                Communities propose and vote on ideas via Funding Rounds.
+                Funding rounds are auctions where the thing being auctioned is
+                ETH and the bids being placed are proposals. Anyone is free to
+                propose anything.
                 <br />
                 <br />
-                At the end of each auction, members of the Nouns ecosystem vote
-                on which proposal will receive funding.
+                At the end of each auction, members of the corresponding
+                commmunity vote on which proposal will receive funding.
               </p>
             </Col>
           </Col>
@@ -102,7 +102,8 @@ const Learn = () => {
               NFTs have enabled a new class of community. One that not only
               comes together because of shared ideas but also ones that are able
               to transact, transform and create value. Prop House is the
-              permissionless ETH power source that communities build around.
+              permissionless ETH power source that communities gather around to
+              build.
             </p>
           </Col>
         </Row>

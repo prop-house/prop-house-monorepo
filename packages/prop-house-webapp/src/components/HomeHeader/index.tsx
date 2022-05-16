@@ -14,11 +14,10 @@ const HomeHeader = () => {
             NounsDAO
           </a>
         </div>
-        <h1>Plug into your community treasury</h1>
+        <h1>Supercharge your community</h1>
         <p>
-          Bring your ideas to life by submitting a proposal to your community
-          treasury. Funding rounds are held regularly and are available to
-          anyone, anywhere.
+          Fund your community builders by deploying capital via Prop House.
+          Anyone can submit a proposal, your community votes on who gets funded.
         </p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">
