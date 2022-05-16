@@ -1,15 +1,15 @@
-import classes from "./Learn.module.css";
-import { Row, Col, Image } from "react-bootstrap";
-import Card, { CardBgColor, CardBorderRadius } from "../../Card";
-import Button, { ButtonColor } from "../../Button";
-import outletsImg from "../../../assets/learn page/outlets.png";
-import auctionImg from "../../../assets/learn page/auction.png";
-import auctionFullImg from "../../../assets/learn page/auction_full.png";
-import communityImg from "../../../assets/learn page/community.png";
-import clsx from "clsx";
-import { useAppSelector } from "../../../hooks";
-import defaultBrowseToAuctionId from "../../../utils/defaultBrowseToAuctionId";
-import { useNavigate } from "react-router-dom";
+import classes from './Learn.module.css';
+import { Row, Col, Image } from 'react-bootstrap';
+import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import Button, { ButtonColor } from '../../Button';
+import outletsImg from '../../../assets/learn page/outlets.png';
+import auctionImg from '../../../assets/learn page/auction.png';
+import auctionFullImg from '../../../assets/learn page/auction_full.png';
+import communityImg from '../../../assets/learn page/community.png';
+import clsx from 'clsx';
+import { useAppSelector } from '../../../hooks';
+import defaultBrowseToAuctionId from '../../../utils/defaultBrowseToAuctionId';
+import { useNavigate } from 'react-router-dom';
 
 const Learn = () => {
   const browseToAuctionId = useAppSelector((state) =>
@@ -19,16 +19,16 @@ const Learn = () => {
 
   return (
     <>
-      <div className={clsx("break-out", classes.breakOutMobile)}>
-        <Row className={clsx("g-0", classes.row, "justify-content-start")}>
+      <div className={clsx('break-out', classes.breakOutMobile)}>
+        <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
           <Col
             xl={{ span: 5 }}
-            xs={{ order: "first" }}
+            xs={{ order: 'first' }}
             className={classes.leftCol}
           >
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={{ order: "last" }}>
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
             <h2>Plug into the Nouns treasury</h2>
             <p>
               The Nouns DAO treasury has amassed $50M+ and counting since
@@ -48,7 +48,7 @@ const Learn = () => {
               href="https://nouns.wtf"
               target="_blank"
               rel="noreferrer"
-              style={{ marginLeft: "1rem" }}
+              style={{ marginLeft: '1rem' }}
             >
               <Button text="About Nouns" bgColor={ButtonColor.White} />
             </a>
@@ -56,11 +56,11 @@ const Learn = () => {
         </Row>
       </div>
 
-      <div className={clsx("break-out", classes.breakOutMobile)}>
-        <Row className={clsx("g-0", classes.row)}>
+      <div className={clsx('break-out', classes.breakOutMobile)}>
+        <Row className={clsx('g-0', classes.row)}>
           <Col
-            xl={{ span: 4, offset: 1, order: "first" }}
-            xs={{ order: "last" }}
+            xl={{ span: 4, offset: 1, order: 'first' }}
+            xs={{ order: 'last' }}
           >
             <Col xs={12}>
               <h2>Bid with your ideas in Funding Rounds</h2>
@@ -79,7 +79,7 @@ const Learn = () => {
           </Col>
           <Col
             xl={{ span: 6, offset: 1 }}
-            xs={{ order: "first" }}
+            xs={{ order: 'first' }}
             className={classes.rightCol}
           >
             <Image
@@ -96,12 +96,12 @@ const Learn = () => {
         </Row>
       </div>
 
-      <div className={clsx("break-out", classes.breakOutMobile)}>
-        <Row className={clsx("g-0", classes.row, "justify-content-start")}>
-          <Col xl={5} xs={{ order: "last" }} className={classes.leftCol}>
+      <div className={clsx('break-out', classes.breakOutMobile)}>
+        <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
+          <Col xl={5} xs={{ order: 'last' }} className={classes.leftCol}>
             <Image src={communityImg} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={{ order: "last" }}>
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
             <h2>Become part of the Nouns community</h2>
             <p>
               Nouns is a builder-first community. As a prop builder, you will
@@ -114,7 +114,7 @@ const Learn = () => {
               href="https://discord.gg/nouns"
               target="_blank"
               rel="noreferrer"
-              style={{ marginRight: "1rem" }}
+              style={{ marginRight: '1rem' }}
             >
               <Button
                 text="Go to Discord"
@@ -138,7 +138,7 @@ const Learn = () => {
         borderRadius={CardBorderRadius.twenty}
         classNames={classes.cardCTA}
       >
-        <Row className={classes.flexCenter}>
+        <Row className={classes.ctaRow}>
           <Col xl={9}>
             <h2>The easiest way to get funded</h2>
             <p>All you need is an Ethereum wallet and a nounish idea.</p>

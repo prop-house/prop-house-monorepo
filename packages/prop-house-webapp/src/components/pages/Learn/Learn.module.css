@@ -38,6 +38,10 @@
 .cardCTA h2 {
   font-weight: 600;
 }
+.ctaRow {
+  display: flex;
+  align-items: center;
+}
 
 @media (max-width: 1200px) {
   .breakOutMobile {
