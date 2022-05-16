@@ -64,9 +64,10 @@
   color: var(--brand-black-transparent);
 }
 
-.readMore a {
+.readMore div {
   color: var(--brand-pink);
   text-decoration: none;
+  cursor: pointer;
 }
 
 .scoreCopy {
