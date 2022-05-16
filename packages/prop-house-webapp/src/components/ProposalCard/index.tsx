@@ -10,8 +10,6 @@ import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import { VoteAllotment } from '../../utils/voteAllotment';
-import { useEthers } from '@usedapp/core';
-import ResubmitPropBtn from '../ResubmitPropBtn';
 import PropCardVotingContainer from '../PropCardVotingContainer';
 import Tooltip from '../Tooltip';
 
@@ -34,7 +32,6 @@ const ProposalCard: React.FC<{
     handleVoteAllotment,
   } = props;
 
-  const { account } = useEthers();
   const navigate = useNavigate();
 
   return (
@@ -52,10 +49,10 @@ const ProposalCard: React.FC<{
         )}
       >
         <div className={classes.authorContainer}>
-          <span style={{fontWeight: "600"}}>#{proposal.id}&nbsp;•</span>&nbsp;
+          <span style={{ fontWeight: '600' }}>#{proposal.id}&nbsp;•</span>&nbsp;
           <EthAddress address={proposal.address} />
           &nbsp;
-          <span style={{fontWeight: "600"}}>proposed</span>
+          <span style={{ fontWeight: '600' }}>proposed</span>
         </div>
 
         {proposal.tldr.length > 0 ? (
@@ -122,11 +119,6 @@ const ProposalCard: React.FC<{
                 handleVoteAllotment,
               }}
             />
-          )}
-
-        {auctionStatus === AuctionStatus.AuctionEnded &&
-          account === proposal.address && (
-            <ResubmitPropBtn proposal={proposal} />
           )}
       </Card>
     </>
