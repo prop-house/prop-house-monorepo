@@ -54,10 +54,13 @@ const ProposalCard: React.FC<{
           &nbsp;
           <span style={{ fontWeight: '600' }}>proposed</span>
         </div>
-
         {proposal.tldr.length > 0 ? (
           <Tooltip
-            content={<div className={classes.title}>{proposal.title}</div>}
+            content={
+              <div className={clsx(classes.title, classes.tooltipTitle)}>
+                {proposal.title}
+              </div>
+            }
             tooltipTitle="TLDR"
             tooltipContent={proposal.tldr}
           />

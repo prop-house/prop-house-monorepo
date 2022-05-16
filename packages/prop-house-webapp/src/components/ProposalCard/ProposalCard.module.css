@@ -38,7 +38,6 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
-  cursor: help;
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -51,7 +50,9 @@
   max-height: X * N;
   /* fallback */
 }
-
+.tooltipTitle {
+  cursor: help;
+}
 .timestampAndlinkContainer {
   margin-top: auto;
   display: flex;
