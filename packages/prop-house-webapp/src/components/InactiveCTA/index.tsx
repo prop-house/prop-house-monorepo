@@ -1,10 +1,8 @@
 import Button, { ButtonColor } from '../Button';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import classes from './InactiveCommunityCTA.module.css';
+import classes from './InactiveCTA.module.css';
 
-const InactiveCommunityCTA: React.FC<{ communityName?: string }> = (props) => {
-  const { communityName } = props;
-
+const InactiveCTA = () => {
   return (
     <Card
       bgColor={CardBgColor.White}
@@ -14,9 +12,8 @@ const InactiveCommunityCTA: React.FC<{ communityName?: string }> = (props) => {
       <div className={classes.content}>
         <h1 style={{ fontSize: '1.5rem' }}>Supercharge your community</h1>
         <p style={{ marginBottom: '0' }}>
-          <span>{communityName ? communityName : 'This community'}</span> does
-          not have an active Prop House yet. Deploy capital with your own Prop
-          House to build long-term value for your community.
+          Interested in running your own community Prop House? Reach out to see
+          how we can work together to make it happen!
         </p>
       </div>
       <div className={classes.btnContainer}>
@@ -25,11 +22,11 @@ const InactiveCommunityCTA: React.FC<{ communityName?: string }> = (props) => {
           target="_blank"
           rel="noreferrer"
         >
-          <Button text="Reach out" bgColor={ButtonColor.Green} />
+          <Button text="Contact us" bgColor={ButtonColor.Green} />
         </a>
       </div>
     </Card>
   );
 };
 
-export default InactiveCommunityCTA;
+export default InactiveCTA;

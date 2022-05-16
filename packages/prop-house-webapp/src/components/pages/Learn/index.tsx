@@ -1,20 +1,15 @@
 import classes from './Learn.module.css';
 import { Row, Col, Image } from 'react-bootstrap';
-import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import Button, { ButtonColor } from '../../Button';
 import outletsImg from '../../../assets/learn page/outlets.png';
 import auctionImg from '../../../assets/learn page/auction.png';
 import auctionFullImg from '../../../assets/learn page/auction_full.png';
 import communityImg from '../../../assets/learn page/community.png';
 import clsx from 'clsx';
-import { useAppSelector } from '../../../hooks';
-import defaultBrowseToAuctionId from '../../../utils/defaultBrowseToAuctionId';
 import { useNavigate } from 'react-router-dom';
+import InactiveCTA from '../../InactiveCTA';
 
 const Learn = () => {
-  const browseToAuctionId = useAppSelector((state) =>
-    defaultBrowseToAuctionId(state.propHouse.auctions)
-  );
   const navigate = useNavigate();
 
   return (
@@ -108,28 +103,7 @@ const Learn = () => {
           </Col>
         </Row>
       </div>
-
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.twenty}
-        classNames={classes.cardCTA}
-      >
-        <Row className={classes.ctaRow}>
-          <Col xl={9}>
-            <h2>The easiest way to get funded</h2>
-            <p>All you need is an Ethereum wallet and a nounish idea.</p>
-          </Col>
-          <Col xl={3}>
-            <Button
-              text="Browse rounds"
-              bgColor={ButtonColor.Pink}
-              onClick={() => {
-                navigate(`/auction/${browseToAuctionId}`);
-              }}
-            />
-          </Col>
-        </Row>
-      </Card>
+      <InactiveCTA />
     </>
   );
 };
