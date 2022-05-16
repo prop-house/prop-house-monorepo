@@ -82,11 +82,7 @@ const AuctionHeader: React.FC<{
           </div>
           <div className={classes.titleSectionContainer}>
             <div className={classes.leftSectionTitle}>
-              {!onAuctionPage ? (
-                <Link to={`/auction/${id}`}>{auction.title}</Link>
-              ) : (
-                auction.title
-              )}
+              {auction.title}
               <StatusPill status={auctionStatus(auction)} />
             </div>
             <div className={classes.leftSectionSubtitle}>
