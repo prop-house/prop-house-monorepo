@@ -11,8 +11,8 @@ const InactiveCommunityCTA: React.FC<{ communityName?: string }> = (props) => {
       classNames={classes.containerCard}
     >
       <div className={classes.content}>
-        <h1>Make use of your treasury</h1>
-        <p>
+        <h1 style={{fontSize: "1.5rem"}}>Make use of your treasury</h1>
+        <p style={{marginBottom: "0"}}>
           <span>{communityName ? communityName : 'This community'}</span> does
           not have an active Prop House yet. Deploy your treasury with your own
           Prop House to build long-term value for your community.

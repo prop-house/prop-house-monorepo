@@ -17,7 +17,7 @@ const CarouselSection: React.FC<{
     <Row className={classes.row}>
       <div className={classes.header}>{contextTitle}</div>
       <div className={classes.titleRow}>
-        <div className={classes.title}>{mainTitle}</div>
+        <div className={classes.title} style={{marginRight: "1rem"}}>{mainTitle}</div>
         {linkDest && (
           <Button
             bgColor={ButtonColor.White}

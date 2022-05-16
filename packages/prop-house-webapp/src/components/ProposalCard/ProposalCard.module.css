@@ -15,7 +15,7 @@
 
 .propCopy {
   font-size: small;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .authorContainer {
@@ -28,7 +28,7 @@
 
 .authorContainer span {
   font-weight: normal;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
   display: inline;
 }
 
@@ -61,7 +61,7 @@
 
 .timestamp {
   font-size: 16px;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .readMore a {

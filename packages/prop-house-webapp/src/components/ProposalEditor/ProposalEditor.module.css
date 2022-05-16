@@ -27,7 +27,7 @@
 .input::placeholder {
   font-size: 22px;
   font-weight: 600;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .descriptionInput {

@@ -80,7 +80,7 @@ const content: ContentItem[] = [
 const FAQ = () => {
   return (
     <>
-      <h1 className={classes.title}>Frquently Asked Questions:</h1>
+      <h1 className={classes.title}>Frequently asked</h1>
       <Accordion flush className={classes.accordion}>
         {content.map((item, i) => (
           <>
