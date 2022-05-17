@@ -86,6 +86,11 @@
     flex-direction: column;
   }
 
+  .leftSectionContainer {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
   .infoSection {
     margin: 1rem 0;
     flex-direction: column;
