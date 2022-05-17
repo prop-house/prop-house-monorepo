@@ -16,6 +16,7 @@ import hardhatNoun from '../../../assets/hardhat-noun.png';
 import InactiveCommunityCTA from '../../InactiveCommunityCTA';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
+import ComingSoonCard from '../../ComingSoonCard';
 
 const Community = () => {
   const location = useLocation();
@@ -142,6 +143,8 @@ const Community = () => {
           isFirstOrLastAuction={isFirstOrLastAuction}
           handleAuctionChange={handleAuctionChange}
         />
+      ) : community && !activeAuction ? (
+        <ComingSoonCard communityName={community.name} />
       ) : (
         <InactiveCommunityCTA
           communityName={community ? community.name : inactiveCommName}
