@@ -47,6 +47,9 @@
 }
 
 @media (max-width: 1200px) {
+  .leftCol img {
+    border-radius: 15px;
+  }
   .breakOutMobile {
     width: initial !important;
     position: initial !important;
