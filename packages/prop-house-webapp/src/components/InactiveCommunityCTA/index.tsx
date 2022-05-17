@@ -12,7 +12,9 @@ const InactiveCommunityCTA: React.FC<{ communityName?: string }> = (props) => {
       classNames={classes.containerCard}
     >
       <div className={classes.content}>
-        <h1 style={{ fontSize: '1.5rem' }}>Supercharge your community</h1>
+        <h1 style={{ fontSize: '1.5rem' }}>
+          Supercharge your nounish community
+        </h1>
         <p style={{ marginBottom: '0' }}>
           <span>{communityName ? communityName : 'This community'}</span> does
           not have an active Prop House yet. Deploy capital with your own Prop

@@ -14,10 +14,11 @@ const HomeHeader = () => {
             NounsDAO
           </a>
         </div>
-        <h1>Supercharge your community</h1>
+        <h1>Supercharge your nounish community</h1>
         <p>
-          Fund your community builders by deploying capital via Prop House.
-          Anyone can submit a proposal, your community votes on who gets funded.
+          Unleash your community's potential by running your very own Prop
+          House. Anyone can submit a proposal, your community votes on who gets
+          funded.
         </p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">

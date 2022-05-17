@@ -10,7 +10,9 @@ const InactiveCTA = () => {
       classNames={classes.containerCard}
     >
       <div className={classes.content}>
-        <h1 style={{ fontSize: '1.5rem' }}>Supercharge your community</h1>
+        <h1 style={{ fontSize: '1.5rem' }}>
+          Supercharge your nounish community
+        </h1>
         <p style={{ marginBottom: '0' }}>
           Interested in running your own community Prop House? Reach out to see
           how we can work together to make it happen!
