@@ -15,6 +15,7 @@ import { getName } from 'prop-house-communities';
 import hardhatNoun from '../../../assets/hardhat-noun.png';
 import InactiveCommunityCTA from '../../InactiveCommunityCTA';
 import FullAuction from '../../FullAuction';
+import dayjs from 'dayjs';
 
 const Community = () => {
   const location = useLocation();
@@ -45,6 +46,9 @@ const Community = () => {
     const fetchCommunity = async () => {
       try {
         const community = await client.current.getCommunity(contract_address);
+        community.auctions.sort((a, b) =>
+          dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1
+        );
         dispatch(setActiveCommunity(community));
         dispatch(setAuctions(community.auctions));
         dispatch(setActiveAuction(community.auctions[0]));
