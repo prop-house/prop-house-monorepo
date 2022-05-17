@@ -95,6 +95,10 @@
     margin: 0;
     align-items: flex-start;
   }
+  .infoSubsection button {
+    margin: 1rem 0 0 0;
+    width: 100%;
+  }
 
   .infoSubsectionTitle {
     text-align: left;
