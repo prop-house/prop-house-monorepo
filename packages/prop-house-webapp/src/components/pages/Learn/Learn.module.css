@@ -84,3 +84,8 @@
     left: initial !important;
   }
 }
+@media (max-width: 960px) {
+  .firstBtn {
+    width: 100%;
+  }
+}
