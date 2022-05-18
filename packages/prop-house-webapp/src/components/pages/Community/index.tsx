@@ -168,7 +168,7 @@ const Community = () => {
           btnAction={() => {
             window.open(
               'https://www.addressform.io/form/1fa6ca57-60e2-4a16-aee4-37e1adabb0f7',
-              '_blank' // <- This is what makes it open in a new window.
+              '_blank'
             );
           }}
           btnTitle="Contact us"
