@@ -1,7 +1,7 @@
 import HomeHeader from '../../HomeHeader';
 import CommunityCarousel from '../../CommunityCarousel';
 import PropCarousel from '../../PropCarousel';
-import InactiveCTA from '../../InactiveCTA';
+import ContactUsCTA from '../../ContactUsCTA';
 
 const Home = () => {
   return (
@@ -9,7 +9,7 @@ const Home = () => {
       <HomeHeader />
       <CommunityCarousel />
       <PropCarousel />
-      <InactiveCTA />
+      <ContactUsCTA />
     </>
   );
 };

@@ -1,5 +1,5 @@
 import classes from './Community.module.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import ProfileHeader from '../../ProfileHeader';
@@ -13,10 +13,9 @@ import {
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
 import hardhatNoun from '../../../assets/hardhat-noun.png';
-import InactiveCommunityCTA from '../../InactiveCommunityCTA';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
-import ComingSoonCard from '../../ComingSoonCard';
+import CTA from '../../CTA';
 
 const Community = () => {
   const location = useLocation();
@@ -29,6 +28,7 @@ const Community = () => {
     contract_address && ethers.utils.isAddress(contract_address);
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
@@ -144,10 +144,34 @@ const Community = () => {
           handleAuctionChange={handleAuctionChange}
         />
       ) : community && !activeAuction ? (
-        <ComingSoonCard communityName={community.name} />
+        <CTA
+          title="Coming soon! "
+          content={
+            <>
+              <span>{community.name}</span> does not yet have open Funding
+              Rounds but will soon!
+            </>
+          }
+          btnTitle="View houses"
+          btnAction={() => navigate('/explore')}
+        />
       ) : (
-        <InactiveCommunityCTA
-          communityName={community ? community.name : inactiveCommName}
+        <CTA
+          title="Supercharge your nounish community"
+          content={
+            <>
+              <span>{community ? community.name : inactiveCommName}</span> does
+              not have an active Prop House yet. Deploy capital with your own
+              Prop House to build long-term value for your community.
+            </>
+          }
+          btnAction={() => {
+            window.open(
+              'https://www.addressform.io/form/1fa6ca57-60e2-4a16-aee4-37e1adabb0f7',
+              '_blank' // <- This is what makes it open in a new window.
+            );
+          }}
+          btnTitle="Contact us"
         />
       )}
     </>

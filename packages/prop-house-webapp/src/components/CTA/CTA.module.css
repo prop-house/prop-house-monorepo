@@ -3,6 +3,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-top: 5rem;
 }
 .content {
   display: flex;
@@ -18,11 +19,9 @@
 }
 .btnContainer {
   display: flex;
-  align-items: flex-end;
   justify-content: flex-end;
   width: 30%;
   margin: 0;
-  margin-left: 1rem;
 }
 @media (max-width: 996px) {
   .containerCard {
@@ -30,6 +29,9 @@
   }
   .btnContainer {
     width: 100%;
-    margin-left: 0;
+  }
+  .btnContainer * {
+    margin: 1rem 0 0 0;
+    width: 100%;
   }
 }

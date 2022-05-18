@@ -7,7 +7,7 @@ import auctionFullImg from '../../../assets/learn page/auction_full.png';
 import communityImg from '../../../assets/learn page/community.png';
 import clsx from 'clsx';
 import { useNavigate } from 'react-router-dom';
-import InactiveCTA from '../../InactiveCTA';
+import ContactUsCTA from '../../ContactUsCTA';
 
 const Learn = () => {
   const navigate = useNavigate();
@@ -103,7 +103,7 @@ const Learn = () => {
           </Col>
         </Row>
       </div>
-      <InactiveCTA />
+      <ContactUsCTA />
     </>
   );
 };
