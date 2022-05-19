@@ -42,7 +42,7 @@ export const deadlineCopy = (auction: StoredAuction) => {
     : status === AuctionStatus.AuctionAcceptingProps
     ? 'Proposal deadline'
     : status === AuctionStatus.AuctionVoting
-    ? 'Voting deadline'
+    ? 'Voting ends'
     : status === AuctionStatus.AuctionEnded
     ? 'Auction ended'
     : '';

@@ -1,0 +1,19 @@
+{
+  "name": "prop-house-communities",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.6.2",
+    "@ethersproject/providers": "^5.6.0",
+    "ethers": "^5.6.0",
+    "graphql": "^16.5.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2"
+  }
+}

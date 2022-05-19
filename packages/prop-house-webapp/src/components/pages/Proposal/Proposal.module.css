@@ -1,3 +1,5 @@
 .backToAuction {
-  text-decoration: underline !important;
+  cursor: pointer;
+  color: var(--brand-black-more-transparent);
+  margin-right: 1.5rem;
 }

@@ -1,10 +1,9 @@
 .btn {
-  border-radius: 14px;
-  padding: 0.8rem 1rem;
-  margin: 16px;
+  border-radius: 10px;
+  padding: 0.575rem 0.65rem 0.525rem;
   white-space: normal;
   text-align: center;
-  font-size: 14px !important;
+  font-size: 16px !important;
   font-weight: bold;
   line-height: 140%;
 }
@@ -13,7 +12,7 @@
   background-color: var(--brand-gray);
 }
 
-/* PINK BG */
+/* PURPLE BG */
 
 .btnPinkBg {
   background-color: var(--brand-pink);
@@ -26,6 +25,21 @@
 .btnPinkBg:focus {
   background-color: var(--brand-pink-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-pink-transparent) !important;
+}
+
+/* PINK BG */
+
+.btnPurpleBg {
+  background-color: var(--brand-purple);
+  border: none;
+}
+.btnPurpleBg:hover {
+  background-color: var(--brand-purple-semi-transparent);
+}
+.btnPurpleBg:active,
+.btnPurpleBg:focus {
+  background-color: var(--brand-purple-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-purple-transparent) !important;
 }
 
 /* WHITE BG */

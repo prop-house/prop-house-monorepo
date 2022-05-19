@@ -1,7 +1,7 @@
 {
   "references": [
     { "path": "packages/prop-house-backend" },
-    { "path": "packages/prop-house-nounish-contracts" },
+    { "path": "packages/prop-house-communities" },
     { "path": "packages/prop-house-webapp" },
     { "path": "packages/prop-house-wrapper" }
   ],

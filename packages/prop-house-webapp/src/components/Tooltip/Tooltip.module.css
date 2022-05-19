@@ -3,21 +3,21 @@
 }
 
 .tooltip [class$='inner'] {
-  background-color: white;
+  background-color: var(--brand-gray);
   border: 1px solid var(--brand-gray-semi-transparent);
-  color: black;
-  border-radius: 17px;
-  padding: 1rem;
+  color: white;
+  border-radius: 10px;
+  padding: 0.5rem;
   text-align: left;
-  box-shadow: 0 0 0 1px rgba(128, 128, 128, 0.15) !important;
   max-width: 15rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  font-weight: medium;
 }
+
 .tooltipTitle {
-  color: var(--brand-gray-semi-transparent);
+  color: white;
   font-weight: 500;
   display: block;
   text-align: left;
-}
-.tooltip [class$='arrow'] {
-  display: none;
 }

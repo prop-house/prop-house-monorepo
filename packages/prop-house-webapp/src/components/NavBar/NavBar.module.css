@@ -2,21 +2,35 @@
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
+
+.navBarCollapse {
+  display: flex;
+  align-items: center;
+}
+
 .navbarBrand {
   color: var(--brand-black);
-  font-weight: 600;
+  font-weight: bold;
   font-size: 22px;
   text-decoration: none;
 }
+
 .navbarBrand:hover {
   color: var(--brand-black);
 }
+
+.navbar-toggler {
+  border-radius: 10px !important;
+}
+
 .link {
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--brand-black-black);
   cursor: pointer;
 }
+
 .link:hover {
   text-decoration: none;
   color: var(--brand-black);

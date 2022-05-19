@@ -9,8 +9,17 @@ const Footer = () => {
           href="https://twitter.com/nounsprophouse"
           target="_blank"
           rel="noreferrer"
+          style={{ marginRight: '0.5rem' }}
         >
-          DMs are open
+          DMs open.
+        </a>
+        Want to join us?{' '}
+        <a
+          href="https://discord.com/invite/SKPzM8GHts"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Go to Discord.
         </a>
       </div>
     </div>

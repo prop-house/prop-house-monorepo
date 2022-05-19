@@ -18,6 +18,9 @@
   display: flex;
   justify-content: flex-end;
 }
+.leftCol img {
+  border-radius: 0 15px 15px 0;
+}
 .leftCol {
   display: flex;
   justify-content: flex-start;
@@ -38,8 +41,15 @@
 .cardCTA h2 {
   font-weight: 600;
 }
+.ctaRow {
+  display: flex;
+  align-items: center;
+}
 
 @media (max-width: 1200px) {
+  .leftCol img {
+    border-radius: 15px;
+  }
   .breakOutMobile {
     width: initial !important;
     position: initial !important;
@@ -72,5 +82,10 @@
     width: initial !important;
     position: initial !important;
     left: initial !important;
+  }
+}
+@media (max-width: 960px) {
+  .firstBtn {
+    width: 100%;
   }
 }

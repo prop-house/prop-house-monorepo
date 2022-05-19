@@ -5,9 +5,7 @@ import ProposalCards from '../ProposalCards';
 import { Row } from 'react-bootstrap';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
 import { useEthers } from '@usedapp/core';
-import clsx from 'clsx';
 import { useEffect, useState, useRef } from 'react';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
@@ -32,11 +30,14 @@ import {
   IoArrowDownCircleOutline,
   IoArrowUpCircleOutline,
 } from 'react-icons/io5';
+import { getNumVotes } from 'prop-house-communities';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
+  isFirstOrLastAuction: () => [boolean, boolean];
+  handleAuctionChange: (next: boolean) => void;
 }> = (props) => {
-  const { auction } = props;
+  const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
 
   const { account, library } = useEthers();
   const [ascending, setAscending] = useState(false);
@@ -46,6 +47,7 @@ const FullAuction: React.FC<{
 
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
+  const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const proposals = useAppSelector((state) => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(
     (state) => state.propHouse.delegatedVotes
@@ -77,30 +79,22 @@ const FullAuction: React.FC<{
 
   // fetch votes/delegated votes allowed for user to use
   useEffect(() => {
-    if (!account || !library) return;
+    if (!account || !library || !community) return;
 
-    const fetchVotes = async (getVotes: Promise<number>): Promise<boolean> => {
+    const fetchVotes = async () => {
       try {
-        const votes = await getVotes;
-        if (Number(votes) === 0) return false;
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library
+        );
         dispatch(setDelegatedVotes(votes));
-        return true;
       } catch (e) {
-        throw e;
+        console.log('error fetching votes: ', e);
       }
     };
-
-    const fetch = async () => {
-      try {
-        const nouner = await fetchVotes(getNounerVotes(account));
-        if (!nouner) fetchVotes(getNounishVotes(account, library));
-      } catch (e) {
-        console.log('error getting votes');
-      }
-    };
-
-    fetch();
-  }, [account, library, dispatch]);
+    fetchVotes();
+  }, [account, library, dispatch, community]);
 
   // fetch proposals
   useEffect(() => {
@@ -139,7 +133,7 @@ const FullAuction: React.FC<{
 
   // handle voting
   const handleVote = async () => {
-    if (!delegatedVotes) return;
+    if (!delegatedVotes || !community) return;
 
     const propCopy = voteAllotments
       .sort((a, b) => a.proposalId - b.proposalId)
@@ -163,7 +157,9 @@ const FullAuction: React.FC<{
       });
 
       const votes = voteAllotments
-        .map((a) => new Vote(1, a.proposalId, a.votes))
+        .map(
+          (a) => new Vote(1, a.proposalId, a.votes, community.contractAddress)
+        )
         .filter((v) => v.weight > 0);
       await client.current.logVotes(votes);
 
@@ -208,32 +204,37 @@ const FullAuction: React.FC<{
             </div>
           </Card>
         )}
-      <AuctionHeader
-        auction={auction}
-        clickable={false}
-        classNames={classes.auctionHeader}
-        totalVotes={delegatedVotes}
-        voteBtnEnabled={
-          delegatedVotes &&
-          delegatedVotes - userVotesWeight() > 0 &&
-          numAllotedVotes > 0
-            ? true
-            : false
-        }
-        votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
-        handleVote={handleVote}
-      />
+      {community && (
+        <AuctionHeader
+          auction={auction}
+          clickable={false}
+          classNames={classes.auctionHeader}
+          totalVotes={delegatedVotes}
+          voteBtnEnabled={
+            delegatedVotes &&
+            delegatedVotes - userVotesWeight() > 0 &&
+            numAllotedVotes > 0
+              ? true
+              : false
+          }
+          votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
+          handleVote={handleVote}
+          isFirstOrLastAuction={isFirstOrLastAuction}
+          handleAuctionChange={handleAuctionChange}
+        />
+      )}
+
       <Card
         bgColor={CardBgColor.LightPurple}
         borderRadius={CardBorderRadius.thirty}
-        classNames={clsx(classes.customCardHeader, classes.fixedHeight)}
+        classNames={classes.customCardHeader}
       >
         <Row>
           <div className={classes.dividerSection}>
-            <div className={classes.proposalTitle}>{`Props ${
-              proposals ? `(${proposals.length})` : ''
+            <div className={classes.proposalTitle}>{`${
+              proposals ? `${proposals.length} proposals` : ''
             }`}</div>
-            <span onClick={sortTapped}>
+            <span onClick={sortTapped}>Sort &nbsp;
               {ascending ? (
                 <IoArrowUpCircleOutline size={'1.5rem'} />
               ) : (
@@ -243,7 +244,6 @@ const FullAuction: React.FC<{
                 />
               )}
             </span>
-            <div className={classes.divider} />
           </div>
         </Row>
 
