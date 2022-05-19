@@ -1,5 +1,7 @@
-.previewCol h1 {
-  margin: 2rem 0rem 0.5rem 0rem;
+.headerContainer {
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
 }
 
 .previewCol h2 {
@@ -20,8 +22,8 @@ hr {
 
 .subinfo {
   display: flex;
-  color: var(--brand-gray);
-  font-weight: 500;
+  color: var(--brand-black-transparent);
+  font-weight: 700;
 }
 .subinfo a {
   margin-left: 0.5rem;

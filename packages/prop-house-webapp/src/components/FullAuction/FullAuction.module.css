@@ -13,11 +13,6 @@
   border-top-right-radius: 0 !important;
 }
 
-.fixedHeight {
-  max-height: 30rem;
-  overflow-y: auto;
-}
-
 .dividerSection {
   display: flex;
   flex-direction: row;
@@ -60,7 +55,7 @@
 
 .noPropCard {
   font-size: 14px;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
   text-align: center;
 }
 

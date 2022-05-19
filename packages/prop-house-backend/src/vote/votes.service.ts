@@ -4,11 +4,9 @@ import { Repository } from 'typeorm';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
-import { isDevEnv } from 'src/config/configuration';
 import { ethers } from 'ethers';
-import { DelegatedVotes, VoteType } from 'src/utils/vote';
 import config from 'src/config/configuration';
-import { getNounerVotes, getNounishVotes } from 'prop-house-nounish-contracts';
+import { getNumVotes } from 'prop-house-communities';
 
 @Injectable()
 export class VotesService {
@@ -45,30 +43,18 @@ export class VotesService {
     });
   }
 
-  async getNumDelegatedVotes(address: string): Promise<DelegatedVotes> {
-    const nounerVotes = await getNounerVotes(address);
-    if (nounerVotes > 0) return { votes: nounerVotes, type: VoteType.Nouner };
-
+  async getNumVotes(dto: CreateVoteDto): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    const nounishVotes = await getNounishVotes(address, provider);
-    if (nounishVotes > 0)
-      return { votes: nounishVotes, type: VoteType.Nounish };
-
-    return { votes: 0, type: VoteType.Nounish };
+    return await getNumVotes(dto.address, dto.communityAddress, provider);
   }
 
-  async createNewVote(
-    createVoteDto: CreateVoteDto,
-    proposal: Proposal,
-    voteType: VoteType,
-  ) {
+  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
     // Create vote for proposal
     const vote = new Vote();
     vote.address = createVoteDto.address;
     vote.proposal = proposal;
     vote.direction = createVoteDto.direction;
     vote.signedData = createVoteDto.signedData;
-    vote.type = voteType;
     vote.auctionId = proposal.auctionId;
     vote.weight = createVoteDto.weight;
 

@@ -1,0 +1,15 @@
+.img {
+  height: 12.5rem;
+  width: auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.15s ease-in-out;
+}
+
+.img:hover {
+  transform: scale(102%);
+}
+
+.loadingImg {
+  background-color: rgb(230, 230, 230);
+}

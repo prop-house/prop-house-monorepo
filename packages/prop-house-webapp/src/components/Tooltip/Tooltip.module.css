@@ -3,25 +3,21 @@
 }
 
 .tooltip [class$='inner'] {
-  background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: black;
-  border-radius: 14px;
-  padding: 1rem;
+  background-color: var(--brand-gray);
+  border: 1px solid var(--brand-gray-semi-transparent);
+  color: white;
+  border-radius: 10px;
+  padding: 0.5rem;
   text-align: left;
   max-width: 15rem;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: medium;
 }
 
 .tooltipTitle {
-  opacity: 0.5;
+  color: white;
   font-weight: 500;
   display: block;
   text-align: left;
-}
-
-.tooltip [class$='arrow'] {
-  display: none;
 }

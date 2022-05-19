@@ -1,4 +1,14 @@
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
 .leftSectionContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.titleSectionContainer {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -12,7 +22,7 @@
 .leftSectionSubtitle {
   font-size: 15px;
   font-weight: medium;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .infoSection {
@@ -35,7 +45,7 @@
 .infoSubsectionTitle {
   font-size: 15px;
   font-weight: 500;
-  color: var(--brand-black-tansparent);
+  color: var(--brand-black-transparent);
 }
 
 .infoSubsectionContent {
@@ -52,7 +62,35 @@
   opacity: 0.5;
 }
 
+.arrowsContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.arrowsContainer svg {
+  margin-left: 0.2rem;
+}
+
+.able {
+  cursor: pointer;
+  color: var(--brand-black-transparent) !important;
+}
+
+.disable {
+  color: rgba(0, 0, 0, 0.122);
+}
+
 @media (max-width: 992px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .leftSectionContainer {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+  }
+
   .infoSection {
     margin: 1rem 0;
     flex-direction: column;
@@ -61,6 +99,10 @@
   .infoSubsection {
     margin: 0;
     align-items: flex-start;
+  }
+  .infoSubsection button {
+    margin: 1rem 0 0 0;
+    width: 100%;
   }
 
   .infoSubsectionTitle {

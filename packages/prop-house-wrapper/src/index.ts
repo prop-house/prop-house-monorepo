@@ -8,6 +8,7 @@ import {
   StoredFile,
   StoredVote,
   Vote,
+  CommunityWithAuctions,
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
@@ -21,6 +22,15 @@ export class PropHouseWrapper {
   async createAuction(auction: Auction): Promise<StoredAuction[]> {
     try {
       return (await axios.post(`${this.host}/auctions`, auction)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getAuction(id: number): Promise<StoredAuction> {
+    try {
+      const rawAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
+      return StoredAuction.FromResponse(rawAuction);
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -169,5 +179,29 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
+  }
+
+  async getCommunities(): Promise<CommunityWithAuctions[]> {
+    try {
+      return (await axios.get(`${this.host}/communities`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getCommunity(contractAddress: string): Promise<CommunityWithAuctions> {
+    try {
+      return (await axios.get(`${this.host}/${contractAddress}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getCommunityWithId(id: number): Promise<CommunityWithAuctions> {
+    try {
+      return (await axios.get(`${this.host}/communities/${id}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 }

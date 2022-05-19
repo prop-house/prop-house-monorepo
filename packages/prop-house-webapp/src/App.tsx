@@ -1,12 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
-import Auction from './components/pages/Auction';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
-import NotFound from './components/pages/NotFound';
+import Community from './components/pages/Community';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
 import { Container } from 'react-bootstrap';
@@ -19,6 +18,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEffect, useRef } from 'react';
 import Upload from './components/pages/Upload';
 import FAQ from './components/pages/FAQ';
+import Explore from './components/pages/Explore';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -60,10 +60,10 @@ function App() {
           <Route path="/create" element={<Create />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/upload" element={<Upload />} />
-          <Route path="/auction/:id" element={<Auction />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<Community />} />
         </Routes>
         <Footer />
       </Container>

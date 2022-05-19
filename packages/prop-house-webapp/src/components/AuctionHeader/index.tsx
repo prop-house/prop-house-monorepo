@@ -14,6 +14,7 @@ import {
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useLocation } from 'react-router-dom';
+import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -26,6 +27,8 @@ const AuctionHeader: React.FC<{
   voteBtnEnabled?: boolean;
   votesLeft?: number;
   handleVote?: () => void;
+  isFirstOrLastAuction: () => [boolean, boolean];
+  handleAuctionChange: (next: boolean) => void;
 }> = (props) => {
   const {
     auction,
@@ -35,6 +38,8 @@ const AuctionHeader: React.FC<{
     votesLeft,
     handleVote,
     voteBtnEnabled,
+    isFirstOrLastAuction,
+    handleAuctionChange,
   } = props;
 
   const navigate = useNavigate();
@@ -57,30 +62,43 @@ const AuctionHeader: React.FC<{
       onHoverEffect={clickable}
       classNames={classNames}
     >
-      <Row>
-        <Col lg={4} className={classes.leftSectionContainer}>
-          <div className={classes.leftSectionTitle}>
-            {!onAuctionPage ? (
-              <Link to={`/auction/${id}`}>{`Round ${id}`}</Link>
-            ) : (
-              `Round ${id}`
-            )}
-            <StatusPill status={auctionStatus(auction)} />
+      <div className={classes.row}>
+        <div className={classes.leftSectionContainer}>
+          <div className={classes.arrowsContainer}>
+            <HiArrowSmLeft
+              size={'2rem'}
+              onClick={() => handleAuctionChange(false)}
+              className={
+                isFirstOrLastAuction()[0] ? classes.disable : classes.able
+              }
+            />
+            <HiArrowSmRight
+              size={'2rem'}
+              onClick={() => handleAuctionChange(true)}
+              className={
+                isFirstOrLastAuction()[1] ? classes.disable : classes.able
+              }
+            />
           </div>
-
-          <div className={classes.leftSectionSubtitle}>
-            <span title={startDate.toLocaleString()}>
-              {formatTime(startDate)}
-            </span>
-            {' - '}
-            <span title={proposalEndDate.toLocaleString()}>
-              {formatTime(proposalEndDate)}
-            </span>
+          <div className={classes.titleSectionContainer}>
+            <div className={classes.leftSectionTitle}>
+              {auction.title}
+              <StatusPill status={auctionStatus(auction)} />
+            </div>
+            <div className={classes.leftSectionSubtitle}>
+              <span title={startDate.toLocaleString()}>
+                {formatTime(startDate)}
+              </span>
+              {' - '}
+              <span title={proposalEndDate.toLocaleString()}>
+                {formatTime(proposalEndDate)}
+              </span>
+            </div>
           </div>
-        </Col>
-        <Col lg={8} className={classes.infoSection}>
+        </div>
+        <div className={classes.infoSection}>
           {status === AuctionStatus.AuctionVoting &&
-            totalVotes &&
+            totalVotes !== undefined &&
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <div className={classes.infoSubsectionTitle}>Votes left</div>
@@ -115,7 +133,7 @@ const AuctionHeader: React.FC<{
             </div>
           ) : (
             status === AuctionStatus.AuctionVoting &&
-            totalVotes &&
+            totalVotes !== undefined &&
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <Button
@@ -127,8 +145,8 @@ const AuctionHeader: React.FC<{
               </div>
             )
           )}
-        </Col>
-      </Row>
+        </div>
+      </div>
     </Card>
   );
 

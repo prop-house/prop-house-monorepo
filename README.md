@@ -10,7 +10,7 @@ From the monorepo root:
 yarn
 cd packages/prop-house-wrapper
 yarn build
-cd packages/prop-house-nounish-contracts
+cd packages/prop-house-communities
 yarn build
 cd ../prop-house-backend
 docker-compose up -d

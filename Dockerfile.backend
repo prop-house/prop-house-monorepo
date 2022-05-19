@@ -9,7 +9,7 @@ RUN yarn
 
 ADD . .
 
-WORKDIR /app/packages/prop-house-nounish-contracts
+WORKDIR /app/packages/prop-house-communities
 
 RUN yarn
 

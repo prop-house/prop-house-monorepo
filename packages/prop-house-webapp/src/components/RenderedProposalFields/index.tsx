@@ -8,21 +8,28 @@ export interface RenderedProposalProps {
   fields: ProposalFields;
   address?: string;
   proposalId?: number;
+  backButton?: React.ReactNode;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
-  const { fields, address, proposalId } = props;
+  const { fields, address, proposalId, backButton } = props;
   return (
     <>
       <Row>
         <Col xl={12} className={classes.previewCol}>
-          <h1>{fields.title}</h1>
-          {address && proposalId && (
-            <div className={classes.subinfo}>
-              Proposal #{proposalId} • Submitted by&nbsp;
-              <EthAddress address={address} />
+          <div className={classes.headerContainer}>
+            {backButton && backButton}
+            <div>
+              {address && proposalId && (
+                <div className={classes.subinfo}>
+                  Proposal #{proposalId} • Submitted by&nbsp;
+                  <EthAddress address={address} />
+                </div>
+              )}
+              <h1>{fields.title}</h1>
             </div>
-          )}
+          </div>
+          <hr></hr>
           <h2>tl;dr</h2>
           <ReactMarkdown
             className={classes.markdown}

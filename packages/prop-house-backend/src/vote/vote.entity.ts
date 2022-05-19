@@ -1,4 +1,4 @@
-import { SignedEntity } from 'src/entities/signed.entity';
+import { SignedEntity } from 'src/entities/signed';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
@@ -29,9 +29,6 @@ export class Vote extends SignedEntity {
 
   @Column()
   auctionId: number;
-
-  @Column()
-  type: number;
 
   @Column()
   weight: number;

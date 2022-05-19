@@ -1,4 +1,4 @@
-import { SignedDataPayload } from 'src/entities/signed.entity';
+import { SignedDataPayload } from 'src/entities/signed';
 
 export class SignedDataDto {
   signedData: SignedDataPayload;
