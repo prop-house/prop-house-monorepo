@@ -16,6 +16,7 @@ import hardhatNoun from '../../../assets/hardhat-noun.png';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
 import CTA from '../../CTA';
+import { addressFormLink } from '../../../utils/addressFormLink';
 
 const Community = () => {
   const location = useLocation();
@@ -166,10 +167,7 @@ const Community = () => {
             </>
           }
           btnAction={() => {
-            window.open(
-              'https://www.addressform.io/form/1fa6ca57-60e2-4a16-aee4-37e1adabb0f7',
-              '_blank'
-            );
+            window.open(addressFormLink, '_blank');
           }}
           btnTitle="Contact us"
         />
