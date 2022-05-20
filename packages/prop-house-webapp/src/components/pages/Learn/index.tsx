@@ -24,7 +24,7 @@ const Learn = () => {
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
           <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>Fund nounish builders</h2>
+            <h2>Fund Nounish builders</h2>
             <p>
               NFT communities have eager members who want to build for their
               communities. Prop House makes it easy for communities to quickly
