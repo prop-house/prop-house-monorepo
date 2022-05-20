@@ -3,7 +3,7 @@ import CTA from '../CTA';
 
 const ContactUsCTA = () => (
   <CTA
-    title="Supercharge your nounish community"
+    title="Supercharge your Nounish community"
     content="Interested in running your own community Prop House? Reach out to see
 how we can work together to make it happen!"
     btnAction={() => {

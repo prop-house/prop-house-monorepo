@@ -158,7 +158,7 @@ const Community = () => {
         />
       ) : (
         <CTA
-          title="Supercharge your nounish community"
+          title="Supercharge your Nounish community"
           content={
             <>
               <span>{community ? community.name : inactiveCommName}</span> does

@@ -14,7 +14,7 @@ const HomeHeader = () => {
             NounsDAO
           </a>
         </div>
-        <h1>Supercharge your nounish community</h1>
+        <h1>Supercharge your Nounish community</h1>
         <p>
           Unleash your community's potential by running your very own Prop
           House. Anyone can submit a proposal, your community votes on who gets
