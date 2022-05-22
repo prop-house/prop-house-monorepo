@@ -7,6 +7,7 @@ import CommunityProfImg from '../CommunityProfImg';
 import { IoCopy } from 'react-icons/io5';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
+import { tempFundedBy } from '../../utils/tempFundingByFiller';
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -74,7 +75,7 @@ const ProfileHeader: React.FC<{
             <div>
               Funded by{' '}
               <span className={classes.funder}>
-                {community ? 'NounsDAO' : 'N/A'}
+                {community ? tempFundedBy(community.contractAddress) : 'N/A'}
               </span>
             </div>
             <div className={classes.spacer}>·</div>
