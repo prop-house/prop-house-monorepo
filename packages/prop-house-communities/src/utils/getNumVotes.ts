@@ -1,8 +1,7 @@
 import { ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
-import { hasAltNumVotes } from './hasAltNumVotes';
-import { altNumVotes } from './altNumVotes';
+import { getAltCommunity } from './getAltCommunity';
 
 /**
  * Gets number of votes for an address given a communityAddress:
@@ -23,9 +22,16 @@ export const getNumVotes = async (
   if (!ethers.utils.isAddress(commmunityAddress))
     throw new Error('Community address is not valid');
 
-  if (hasAltNumVotes(commmunityAddress))
-    return altNumVotes(userAddress, commmunityAddress);
+  // check if community has alt approach to fetching votes
+  const altCommunity = getAltCommunity(commmunityAddress);
+  if (altCommunity) {
+    const votes = await altCommunity.numVotes(
+      '0x2573c60a6d127755aa2dc85e342f7da2378a0cc5'
+    );
+    return altCommunity.multiplier ? votes * altCommunity.multiplier : votes;
+  }
 
+  // else, use `balanceOf`
   const contract = new ethers.Contract(
     commmunityAddress,
     BalanceOfABI,
