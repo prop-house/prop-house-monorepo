@@ -20,5 +20,6 @@ export const contracts: Contract[] = [
         ? result.data.delegates[0].delegatedVotesRaw
         : 0;
     },
+    multiplier: 10,
   },
 ];
