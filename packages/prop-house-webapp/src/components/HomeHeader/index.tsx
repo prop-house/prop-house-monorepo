@@ -14,11 +14,11 @@ const HomeHeader = () => {
             NounsDAO
           </a>
         </div>
-        <h1>Supercharge your Nounish community</h1>
+        <h1>Weekly funding for your Nounish ideas</h1>
         <p>
-          Unleash your community's potential by running your very own Prop
-          House. Anyone can submit a proposal, your community votes on who gets
-          funded.
+          Bring your ideas to life by submitting a proposal to a Prop House.
+          Funding rounds are held regularly and are available to anyone,
+          anywhere.
         </p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">

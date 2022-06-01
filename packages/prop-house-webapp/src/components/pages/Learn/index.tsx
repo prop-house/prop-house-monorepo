@@ -24,12 +24,12 @@ const Learn = () => {
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
           <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>Fund Nounish builders</h2>
+            <h2>Plug into the Nouns treasury</h2>
             <p>
-              NFT communities have eager members who want to build for their
-              communities. Prop House makes it easy for communities to quickly
-              and fairly deploy capital in order to capture the energy of their
-              builders.
+              The Nouns DAO treasury has amassed $50M+ and counting since
+              inception. Prop House aims to make it easy for anyone with an
+              Ethereum address to plug in and use the treasury through Nounish
+              communities.
             </p>
             <Button
               text="Explore houses"
@@ -50,18 +50,17 @@ const Learn = () => {
             xs={{ order: 'last' }}
           >
             <Col xs={12}>
-              <h2>Capture ideas with Funding Rounds</h2>
+              <h2>Bid with your ideas in Funding Rounds</h2>
             </Col>
             <Col xs={12}>
               <p>
-                Communities propose and vote on ideas via Funding Rounds.
-                Funding rounds are auctions where the thing being auctioned is
-                ETH and the bids being placed are proposals. Anyone is free to
-                propose anything.
+                Funding rounds are held regularly. They are auctions where the
+                thing being auctioned is ETH and the bids being placed are
+                proposals. Anyone is free to propose anything.
                 <br />
                 <br />
-                At the end of each auction, members of the corresponding
-                commmunity vote on which proposal will receive funding.
+                At the end of each auction, members of the corresponding Prop
+                House vote on which proposal will receive funding.
               </p>
             </Col>
           </Col>
@@ -90,16 +89,33 @@ const Learn = () => {
             <Image src={communityImg} fluid className={classes.img} />
           </Col>
           <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>
-              Bring your community together by <i>building</i> together
-            </h2>
+            <h2>Become part of the Nouns community</h2>
             <p>
-              NFTs have enabled a new class of community. One that not only
-              comes together because of shared ideas but also ones that are able
-              to transact, transform and create value. Prop House is the
-              permissionless ETH power source that communities gather around to
-              build.
+              Nouns is a builder-first community. As a prop builder, you will
+              become part of a special group of people building the future of
+              open-source IP and get access to resources and support from the
+              Nouns community.
             </p>
+
+            <a
+              href="https://discord.gg/nouns"
+              target="_blank"
+              rel="noreferrer"
+              style={{ marginRight: '1rem' }}
+            >
+              <Button
+                text="Go to Discord"
+                bgColor={ButtonColor.Purple}
+                classNames={classes.firstBtn}
+              />
+            </a>
+            <a href="https://nouns.wtf/docs" target="_blank" rel="noreferrer">
+              <Button
+                text="Learn more"
+                bgColor={ButtonColor.White}
+                classNames={classes.firstBtn}
+              />
+            </a>
           </Col>
         </Row>
       </div>
