@@ -54,4 +54,16 @@ export class AuctionsController {
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
     return foundProposals;
   }
+  l;
+
+  @Get(':id/rollUpProposals')
+  async findAll(@Param('id') id: number): Promise<Proposal[]> {
+    const foundProposals = await this.proposalService.findAllWithAuctionId(id);
+    if (!foundProposals)
+      throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
+    for (let index = 0; index < foundProposals.length; index++) {
+      await this.proposalService.rollupScore(foundProposals[index].id);
+    }
+    return foundProposals;
+  }
 }
