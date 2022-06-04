@@ -199,7 +199,15 @@ export class PropHouseWrapper {
 
   async getCommunityWithId(id: number): Promise<CommunityWithAuctions> {
     try {
-      return (await axios.get(`${this.host}/communities/${id}`)).data;
+      return (await axios.get(`${this.host}/communities/id/${id}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getCommunityWithName(name: string): Promise<CommunityWithAuctions> {
+    try {
+      return (await axios.get(`${this.host}/communities/name/${name}`)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
