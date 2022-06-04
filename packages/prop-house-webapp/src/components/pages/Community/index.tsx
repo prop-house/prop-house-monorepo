@@ -17,16 +17,13 @@ import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
 import CTA from '../../CTA';
 import { addressFormLink } from '../../../utils/addressFormLink';
+import { slugToName } from '../../../utils/communitySlugs';
 
 const Community = () => {
   const location = useLocation();
-  const contract_address = location.pathname.substring(
-    1,
-    location.pathname.length
-  );
+  const slug = location.pathname.substring(1, location.pathname.length);
 
-  const isValidAddress =
-    contract_address && ethers.utils.isAddress(contract_address);
+  const isValidAddress = slug && ethers.utils.isAddress(slug);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -47,7 +44,11 @@ const Community = () => {
   useEffect(() => {
     const fetchCommunity = async () => {
       try {
-        const community = await client.current.getCommunity(contract_address);
+        // fetch by address or name
+        const community = isValidAddress
+          ? await client.current.getCommunity(slug)
+          : await client.current.getCommunityWithName(slugToName(slug));
+
         community.auctions.sort((a, b) =>
           dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1
         );
@@ -59,22 +60,22 @@ const Community = () => {
       }
     };
     fetchCommunity();
-  }, [contract_address, dispatch]);
+  }, [slug, dispatch, isValidAddress]);
 
   // fetch inactive commmunity
   useEffect(() => {
-    if (!library || community || !contract_address) return;
+    if (!library || community || !slug) return;
 
     const fetchName = async () => {
       try {
-        setInactiveCommName(await getName(contract_address, library));
+        setInactiveCommName(await getName(slug, library));
       } catch (e) {
         console.log(e);
       }
     };
 
     fetchName();
-  }, [library, community, contract_address, inactiveCommName]);
+  }, [library, community, slug, inactiveCommName]);
 
   const handleAuctionChange = (next: boolean) => {
     if (!activeAuction || !community || community.auctions.length === 0) return;
@@ -110,7 +111,7 @@ const Community = () => {
       : [false, false];
   };
 
-  if (!isValidAddress)
+  if (!isValidAddress && !community)
     return (
       <div className={classes.invalidAddressCard}>
         <img
@@ -123,7 +124,7 @@ const Community = () => {
           <p>
             Please check that the url follows the format:
             <br />
-            <code>prop.house/:nft_contract_address</code>
+            <code>prop.house/:nft_slug</code>
           </p>
         </div>
       </div>
@@ -135,7 +136,7 @@ const Community = () => {
         community={community}
         inactiveComm={{
           name: inactiveCommName ? inactiveCommName : 'N/A',
-          contractAddress: contract_address,
+          contractAddress: slug,
         }}
       />
       {community && activeAuction ? (

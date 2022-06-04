@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { Community } from './community.entity';
 
 @Injectable()
@@ -29,8 +29,15 @@ export class CommunitiesService {
     return this.communitiesRepository.findOne({
       where: {
         contractAddress: address,
-        visible: true
+        visible: true,
       },
+      relations: ['auctions'],
+    });
+  }
+
+  findByName(name: string): Promise<Community> {
+    return this.communitiesRepository.findOne({
+      where: `"name" ILIKE '${name}'`, // case insensitive comparison
       relations: ['auctions'],
     });
   }
