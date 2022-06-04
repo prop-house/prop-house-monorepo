@@ -23,7 +23,7 @@ export class CommunitiesController {
       });
   }
 
-  @Get('communities/id:/:id')
+  @Get('communities/id/:id')
   async findOne(@Param('id') id: number): Promise<ExtendedCommunity> {
     const foundCommunity = await this.communitiesService.findOne(id);
     if (!foundCommunity)
