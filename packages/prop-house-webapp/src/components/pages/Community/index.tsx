@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import CTA from '../../CTA';
 import { addressFormLink } from '../../../utils/addressFormLink';
 import { slugToName } from '../../../utils/communitySlugs';
+import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
 
 const Community = () => {
@@ -28,6 +29,7 @@ const Community = () => {
   const navigate = useNavigate();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
+  const [failedFetch, setFailedFetch] = useState(false);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const activeAuction = useAppSelector(
     (state) => state.propHouse.activeAuction
@@ -55,6 +57,7 @@ const Community = () => {
         dispatch(setAuctions(community.auctions));
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
+        setFailedFetch(true);
         console.log(e);
       }
     };
@@ -110,7 +113,8 @@ const Community = () => {
       : [false, false];
   };
 
-  if (!isValidAddress && !community) return <NotFound />;
+  if (!community && !failedFetch) return <LoadingIndicator />;
+  if (!isValidAddress && failedFetch) return <NotFound />;
 
   return (
     <>
