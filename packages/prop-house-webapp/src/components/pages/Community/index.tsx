@@ -1,4 +1,3 @@
-import classes from './Community.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -12,12 +11,13 @@ import {
   setAuctions,
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
-import hardhatNoun from '../../../assets/hardhat-noun.png';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
 import CTA from '../../CTA';
 import { addressFormLink } from '../../../utils/addressFormLink';
 import { slugToName } from '../../../utils/communitySlugs';
+import LoadingIndicator from '../../LoadingIndicator';
+import NotFound from '../../NotFound';
 
 const Community = () => {
   const location = useLocation();
@@ -29,6 +29,7 @@ const Community = () => {
   const navigate = useNavigate();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
+  const [failedFetch, setFailedFetch] = useState(false);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const activeAuction = useAppSelector(
     (state) => state.propHouse.activeAuction
@@ -56,10 +57,14 @@ const Community = () => {
         dispatch(setAuctions(community.auctions));
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
+        setFailedFetch(true);
         console.log(e);
       }
     };
     fetchCommunity();
+    return () => {
+      dispatch(setActiveCommunity());
+    };
   }, [slug, dispatch, isValidAddress]);
 
   // fetch inactive commmunity
@@ -111,24 +116,8 @@ const Community = () => {
       : [false, false];
   };
 
-  if (!isValidAddress && !community)
-    return (
-      <div className={classes.invalidAddressCard}>
-        <img
-          src={hardhatNoun}
-          alt="invalid address noun"
-          className={classes.invalidAddressNoun}
-        />
-        <div className={classes.textContainer}>
-          <h1>404: Invalid URL</h1>
-          <p>
-            Please check that the url follows the format:
-            <br />
-            <code>prop.house/:nft_slug</code>
-          </p>
-        </div>
-      </div>
-    );
+  if (!community && !failedFetch) return <LoadingIndicator />;
+  if (!isValidAddress && failedFetch) return <NotFound />;
 
   return (
     <>

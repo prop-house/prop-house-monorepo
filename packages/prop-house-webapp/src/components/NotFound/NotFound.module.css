@@ -1,0 +1,26 @@
+.invalidAddressCard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+.invalidAddressCard img {
+  width: auto;
+  border-radius: 25px;
+  height: 15rem;
+}
+.textContainer {
+  text-align: center;
+}
+.textContainer p {
+  margin-top: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .invalidAddressCard {
+    flex-direction: column;
+  }
+  .invalidAddressCard img {
+    margin-bottom: 2rem;
+  }
+}
