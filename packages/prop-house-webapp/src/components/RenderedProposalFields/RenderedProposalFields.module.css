@@ -4,6 +4,10 @@
   margin-top: 2rem;
 }
 
+.previewCol {
+  word-break: break-all;
+}
+
 .previewCol h2 {
   margin-top: 3rem;
   font-size: 18px;
