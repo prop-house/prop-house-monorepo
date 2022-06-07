@@ -1,5 +1,40 @@
+/* .backButton {
+  /* cursor: pointer; */
+/* color: var(--brand-black-more-transparent); */
+/* margin-right: 1.5rem; */
+/* } */
+
 .backToAuction {
+  color: var(--brand-black-transparent);
   cursor: pointer;
-  color: var(--brand-black-more-transparent);
-  margin-right: 1.5rem;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+  align-items: center;
+  font-size: 1.25rem;
+}
+
+.backToAuction:hover {
+  color: var(--brand-black);
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+@media (min-width: 577px) {
+  .backToAuction svg {
+    height: 2rem;
+    width: 2rem;
+  }
+  .backToAuction span {
+    display: none;
+  }
+}
+@media (max-width: 576px) {
+  .backToAuction {
+    padding-bottom: 25px;
+  }
 }

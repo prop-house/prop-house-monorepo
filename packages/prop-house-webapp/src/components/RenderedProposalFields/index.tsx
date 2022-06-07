@@ -19,18 +19,20 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
         <Col xl={12} className={classes.previewCol}>
           <div className={classes.headerContainer}>
             {backButton && backButton}
+
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  <span>Proposal #{proposalId}</span>
-                  <span className={classes.titleSpacer}>&nbsp;•&nbsp;</span>
-                  <span className={classes.submittedBy}>
-                    Submitted by&nbsp;
-                    <EthAddress address={address} />
-                  </span>
+                  Prop #{proposalId}
+                  &nbsp;• Submitted by&nbsp;
+                  <EthAddress address={address} />
                 </div>
               )}
-              <h1>{fields.title}</h1>
+
+              <h1>
+                Nouns Runner - A nounish app which could star your Noun,
+                NounPunk or Invisible!
+              </h1>
             </div>
           </div>
           <hr></hr>

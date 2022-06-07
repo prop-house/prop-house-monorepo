@@ -1,19 +1,19 @@
-import classes from './Proposal.module.css';
-import { useParams } from 'react-router';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../hooks';
-import NotFound from '../NotFound';
-import { useEffect, useRef } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
-import { useDispatch } from 'react-redux';
+import classes from "./Proposal.module.css";
+import { useParams } from "react-router";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAppSelector } from "../../../hooks";
+import NotFound from "../NotFound";
+import { useEffect, useRef } from "react";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import { useEthers } from "@usedapp/core";
+import { useDispatch } from "react-redux";
 import {
   setActiveCommunity,
   setActiveProposal,
-} from '../../../state/slices/propHouse';
-import RenderedProposalFields from '../../RenderedProposalFields';
-import proposalFields from '../../../utils/proposalFields';
-import { IoArrowBackCircle } from 'react-icons/io5';
+} from "../../../state/slices/propHouse";
+import RenderedProposalFields from "../../RenderedProposalFields";
+import proposalFields from "../../../utils/proposalFields";
+import { IoArrowBackCircleOutline } from "react-icons/io5";
 
 const Proposal = () => {
   const params = useParams();
@@ -78,17 +78,20 @@ const Proposal = () => {
             address={proposal.address}
             proposalId={proposal.id}
             backButton={
-              <>
-                <IoArrowBackCircle
-                  onClick={() => {
-                    isEntryPoint
-                      ? navigate(`/${community?.contractAddress}`)
-                      : navigate(-1);
-                  }}
-                  className={classes.backToAuction}
-                  size={'3rem'}
+              <div
+                className={classes.backToAuction}
+                onClick={() => {
+                  isEntryPoint
+                    ? navigate(`/${community?.contractAddress}`)
+                    : navigate(-1);
+                }}
+              >
+                <IoArrowBackCircleOutline
+                  className={classes.backButton}
+                  size={"1.5rem"}
                 />
-              </>
+                <span>Back</span>
+              </div>
             }
           />
         </>
