@@ -2,7 +2,7 @@ import classes from './Proposal.module.css';
 import { useParams } from 'react-router';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../hooks';
-import NotFound from '../NotFound';
+import NotFound from '../../NotFound';
 import { useEffect, useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';

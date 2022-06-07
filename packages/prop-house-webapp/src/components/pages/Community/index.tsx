@@ -1,4 +1,3 @@
-import classes from './Community.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -12,12 +11,12 @@ import {
   setAuctions,
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
-import hardhatNoun from '../../../assets/hardhat-noun.png';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
 import CTA from '../../CTA';
 import { addressFormLink } from '../../../utils/addressFormLink';
 import { slugToName } from '../../../utils/communitySlugs';
+import NotFound from '../../NotFound';
 
 const Community = () => {
   const location = useLocation();
@@ -111,24 +110,7 @@ const Community = () => {
       : [false, false];
   };
 
-  if (!isValidAddress && !community)
-    return (
-      <div className={classes.invalidAddressCard}>
-        <img
-          src={hardhatNoun}
-          alt="invalid address noun"
-          className={classes.invalidAddressNoun}
-        />
-        <div className={classes.textContainer}>
-          <h1>404: Invalid URL</h1>
-          <p>
-            Please check that the url follows the format:
-            <br />
-            <code>prop.house/:nft_slug</code>
-          </p>
-        </div>
-      </div>
-    );
+  if (!isValidAddress && !community) return <NotFound />;
 
   return (
     <>
