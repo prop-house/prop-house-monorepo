@@ -62,6 +62,9 @@ const Community = () => {
       }
     };
     fetchCommunity();
+    return () => {
+      dispatch(setActiveCommunity());
+    };
   }, [slug, dispatch, isValidAddress]);
 
   // fetch inactive commmunity
