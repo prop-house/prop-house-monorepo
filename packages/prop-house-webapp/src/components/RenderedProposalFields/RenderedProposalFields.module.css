@@ -24,10 +24,22 @@ hr {
   display: flex;
   color: var(--brand-black-transparent);
   font-weight: 700;
+  flex-direction: row;
 }
 .subinfo a {
   margin-left: 0.5rem;
   font-weight: 650;
+}
+.submittedBy {
+  display: flex;
+}
+@media (max-width: 576px) {
+  .subinfo {
+    flex-direction: column;
+  }
+  .titleSpacer {
+    display: none;
+  }
 }
 
 .markdown a {

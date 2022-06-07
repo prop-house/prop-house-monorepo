@@ -1,8 +1,8 @@
-import classes from './RenderedProposalFields.module.css';
-import { Row, Col } from 'react-bootstrap';
-import { ProposalFields } from '../../utils/proposalFields';
-import EthAddress from '../EthAddress';
-import ReactMarkdown from 'react-markdown';
+import classes from "./RenderedProposalFields.module.css";
+import { Row, Col } from "react-bootstrap";
+import { ProposalFields } from "../../utils/proposalFields";
+import EthAddress from "../EthAddress";
+import ReactMarkdown from "react-markdown";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -22,8 +22,12 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  Proposal #{proposalId} • Submitted by&nbsp;
-                  <EthAddress address={address} />
+                  <span>Proposal #{proposalId}</span>
+                  <span className={classes.titleSpacer}>&nbsp;•&nbsp;</span>
+                  <span className={classes.submittedBy}>
+                    Submitted by&nbsp;
+                    <EthAddress address={address} />
+                  </span>
                 </div>
               )}
               <h1>{fields.title}</h1>
