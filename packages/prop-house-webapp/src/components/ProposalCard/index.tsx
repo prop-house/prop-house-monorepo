@@ -1,17 +1,17 @@
-import classes from './ProposalCard.module.css';
-import globalClasses from '../../css/globals.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { Link, useNavigate } from 'react-router-dom';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import diffTime from '../../utils/diffTime';
-import detailedTime from '../../utils/detailedTime';
-import EthAddress from '../EthAddress';
-import clsx from 'clsx';
-import { AuctionStatus } from '../../utils/auctionStatus';
-import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
-import PropCardVotingContainer from '../PropCardVotingContainer';
-import Tooltip from '../Tooltip';
+import classes from "./ProposalCard.module.css";
+import globalClasses from "../../css/globals.module.css";
+import Card, { CardBgColor, CardBorderRadius } from "../Card";
+import { Link } from "react-router-dom";
+import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
+import diffTime from "../../utils/diffTime";
+import detailedTime from "../../utils/detailedTime";
+import EthAddress from "../EthAddress";
+import clsx from "clsx";
+import { AuctionStatus } from "../../utils/auctionStatus";
+import { ProposalCardStatus } from "../../utils/cardStatus";
+import { VoteAllotment } from "../../utils/voteAllotment";
+import PropCardVotingContainer from "../PropCardVotingContainer";
+import Tooltip from "../Tooltip";
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -31,8 +31,6 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
-
-  const navigate = useNavigate();
 
   return (
     <>
@@ -90,20 +88,17 @@ const ProposalCard: React.FC<{
           )}
 
           <div className={clsx(classes.readMore)}>
-            <div
-              className={
-                cardStatus === ProposalCardStatus.Voting
-                  ? globalClasses.fontYellow
-                  : globalClasses.fontPink
-              }
-              onClick={() =>
-                navigate(`/proposal/${proposal.id}`, {
-                  state: { fromRoundPage: true },
-                })
-              }
-            >
-              Expand →
-            </div>
+            <Link to={{ pathname: `/proposal/${proposal.id}` }}>
+              <div
+                className={
+                  cardStatus === ProposalCardStatus.Voting
+                    ? globalClasses.fontYellow
+                    : globalClasses.fontPink
+                }
+              >
+                Expand →
+              </div>
+            </Link>
           </div>
         </div>
 
