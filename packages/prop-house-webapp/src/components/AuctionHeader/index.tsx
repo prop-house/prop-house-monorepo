@@ -66,17 +66,17 @@ const AuctionHeader: React.FC<{
         <div className={classes.leftSectionContainer}>
           <div className={classes.arrowsContainer}>
             <HiArrowSmLeft
-              size={'2rem'}
-              onClick={() => handleAuctionChange(false)}
-              className={
-                isFirstOrLastAuction()[0] ? classes.disable : classes.able
-              }
-            />
-            <HiArrowSmRight
-              size={'2rem'}
+              size={"2rem"}
               onClick={() => handleAuctionChange(true)}
               className={
                 isFirstOrLastAuction()[1] ? classes.disable : classes.able
+              }
+            />
+            <HiArrowSmRight
+              size={"2rem"}
+              onClick={() => handleAuctionChange(false)}
+              className={
+                isFirstOrLastAuction()[0] ? classes.disable : classes.able
               }
             />
           </div>
