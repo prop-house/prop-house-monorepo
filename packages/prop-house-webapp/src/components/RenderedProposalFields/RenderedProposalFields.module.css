@@ -1,7 +1,21 @@
 .headerContainer {
   display: flex;
-  align-items: center;
   margin-top: 2rem;
+  flex-direction: column;
+}
+.headerContainer {
+  margin-top: 0rem;
+}
+
+@media (min-width: 577px) {
+  .headerContainer {
+    flex-direction: row;
+    gap: 20px;
+  }
+}
+
+.previewCol {
+  word-break: break-word;
 }
 
 .previewCol h2 {
@@ -24,6 +38,8 @@ hr {
   display: flex;
   color: var(--brand-black-transparent);
   font-weight: 700;
+  flex-direction: row;
+  padding-bottom: 5px;
 }
 .subinfo a {
   margin-left: 0.5rem;

@@ -1,8 +1,8 @@
-import classes from './RenderedProposalFields.module.css';
-import { Row, Col } from 'react-bootstrap';
-import { ProposalFields } from '../../utils/proposalFields';
-import EthAddress from '../EthAddress';
-import ReactMarkdown from 'react-markdown';
+import classes from "./RenderedProposalFields.module.css";
+import { Row, Col } from "react-bootstrap";
+import { ProposalFields } from "../../utils/proposalFields";
+import EthAddress from "../EthAddress";
+import ReactMarkdown from "react-markdown";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -19,14 +19,20 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
         <Col xl={12} className={classes.previewCol}>
           <div className={classes.headerContainer}>
             {backButton && backButton}
+
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  Proposal #{proposalId} • Submitted by&nbsp;
+                  Prop #{proposalId}
+                  &nbsp;• Submitted by&nbsp;
                   <EthAddress address={address} />
                 </div>
               )}
-              <h1>{fields.title}</h1>
+
+              <h1>
+                Nouns Runner - A nounish app which could star your Noun,
+                NounPunk or Invisible!
+              </h1>
             </div>
           </div>
           <hr></hr>
