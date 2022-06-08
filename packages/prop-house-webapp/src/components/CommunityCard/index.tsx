@@ -13,7 +13,8 @@ const CommunityCard: React.FC<{
       <div className={classes.infoContainer}>
         <div className={classes.title}>{community.name}</div>
         <div className={classes.proposals}>
-          <span>{community.numProposals}</span> props
+          <span>{community.numProposals}</span>{" "}
+          {community.numProposals === 1 ? "prop" : "props"}
         </div>
       </div>
     </div>
