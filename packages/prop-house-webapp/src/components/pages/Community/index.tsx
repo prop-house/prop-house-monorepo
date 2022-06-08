@@ -101,6 +101,9 @@ const Community = () => {
     dispatch(setActiveAuction(auctions[updatedIndex]));
   };
 
+  /**
+   * @returns tuple indicating whether `activeAuction` is first or last [first, last].
+   */
   const isFirstOrLastAuction = (): [boolean, boolean] => {
     if (!activeAuction || !community || community.auctions.length === 0)
       return [false, false];
