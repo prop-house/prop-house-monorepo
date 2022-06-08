@@ -86,10 +86,7 @@ const Proposal = () => {
                     : navigate(-1);
                 }}
               >
-                <IoArrowBackCircleOutline
-                  className={classes.backButton}
-                  size={"1.5rem"}
-                />
+                <IoArrowBackCircleOutline size={"1.5rem"} />
                 <span>Back</span>
               </div>
             }

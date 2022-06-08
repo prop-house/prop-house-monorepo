@@ -1,6 +1,5 @@
 .headerContainer {
   display: flex;
-  /* align-items: center; */
   margin-top: 2rem;
   flex-direction: column;
 }
