@@ -88,13 +88,7 @@ const ProposalCard: React.FC<{
           )}
 
           <div className={clsx(classes.readMore)}>
-            <Link
-              to={{
-                pathname: `/proposal/${proposal.id}`,
-                // @ts-ignore
-                state: { fromRoundPage: true },
-              }}
-            >
+            <Link to={{ pathname: `/proposal/${proposal.id}` }}>
               <div
                 className={
                   cardStatus === ProposalCardStatus.Voting
