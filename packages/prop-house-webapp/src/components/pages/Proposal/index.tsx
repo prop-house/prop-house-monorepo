@@ -2,8 +2,8 @@ import classes from "./Proposal.module.css";
 import { useParams } from "react-router";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector } from "../../../hooks";
-import NotFound from "../NotFound";
-import { useEffect, useRef } from "react";
+import NotFound from "../../NotFound";
+import { useEffect, useRef, useState } from "react";
 import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import { useEthers } from "@usedapp/core";
 import { useDispatch } from "react-redux";
@@ -14,6 +14,7 @@ import {
 import RenderedProposalFields from "../../RenderedProposalFields";
 import proposalFields from "../../../utils/proposalFields";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
+import LoadingIndicator from "../../LoadingIndicator";
 
 const Proposal = () => {
   const params = useParams();
@@ -24,6 +25,7 @@ const Proposal = () => {
   const isEntryPoint = !location.state?.fromRoundPage;
 
   const dispatch = useDispatch();
+  const [failedFetch, setFailedFetch] = useState(false);
   const proposal = useAppSelector((state) => state.propHouse.activeProposal);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const backendHost = useAppSelector(
@@ -44,10 +46,18 @@ const Proposal = () => {
   // fetch proposal
   useEffect(() => {
     if (!id) return;
-    backendClient.current
-      .getProposal(Number(id))
-      .then((proposal) => dispatch(setActiveProposal(proposal)));
-  }, [id, dispatch]);
+
+    const fetch = async () => {
+      try {
+        const proposal = await backendClient.current.getProposal(Number(id));
+        dispatch(setActiveProposal(proposal));
+      } catch (e) {
+        setFailedFetch(true);
+      }
+    };
+
+    fetch();
+  }, [id, dispatch, failedFetch]);
 
   /**
    * when /proposal/:id is entry point, community is not yet
@@ -92,8 +102,10 @@ const Proposal = () => {
             }
           />
         </>
-      ) : (
+      ) : failedFetch ? (
         <NotFound />
+      ) : (
+        <LoadingIndicator />
       )}
     </>
   );
