@@ -101,6 +101,7 @@ const Community = () => {
     dispatch(setActiveAuction(auctions[updatedIndex]));
   };
 
+  // add comment here
   const isFirstOrLastAuction = (): [boolean, boolean] => {
     if (!activeAuction || !community || community.auctions.length === 0)
       return [false, false];
