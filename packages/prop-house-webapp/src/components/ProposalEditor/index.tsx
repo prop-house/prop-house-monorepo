@@ -1,12 +1,9 @@
 import classes from "./ProposalEditor.module.css";
 import { Row, Col, Form } from "react-bootstrap";
-import clsx from "clsx";
 import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
 import ReactQuill from "react-quill";
-import { useState } from "react";
 import "react-quill/dist/quill.snow.css";
-import sanitizeHtml from "sanitize-html";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -56,9 +53,12 @@ const ProposalEditor: React.FC<{
   ];
 
   const modules = {
+    clipboard: {
+      matchVisual: false,
+    },
     toolbar: [
       [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
+      ["bold", "underline", "strike", "blockquote"],
       [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
       ["link", "image"],
     ],
@@ -67,7 +67,6 @@ const ProposalEditor: React.FC<{
   const formats = [
     "header",
     "bold",
-    "italic",
     "underline",
     "strike",
     "blockquote",
@@ -135,7 +134,7 @@ const ProposalEditor: React.FC<{
                   modules={modules}
                   formats={formats}
                   theme={"snow"}
-                  value={data && sanitizeHtml(data.what)}
+                  value={data && data.what}
                   onChange={(value) => onDataChange({ what: value })}
                 />
               </div>

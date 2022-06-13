@@ -15,7 +15,6 @@ code {
 .ql-container {
   border: none;
   font-size: 20px;
-  /* font-weight: 600; */
   color: var(--brand-black);
   margin-bottom: 1.75rem;
   white-space: pre-line;
