@@ -59,6 +59,9 @@ code {
 .ql-editor strong {
   font-weight: 600 !important;
 }
+.ql-editor.ql-blank::before {
+  font-style: normal !important;
+}
 
 .hideBorderBox {
   background: #fcfcfc;
