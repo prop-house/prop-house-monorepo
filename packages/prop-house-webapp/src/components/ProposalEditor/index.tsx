@@ -129,14 +129,18 @@ const ProposalEditor: React.FC<{
                   Proposal description
                 </Form.Label>
 
-                <ReactQuill
-                  placeholder="Project details: what are you building?&#10;Roadmap: when do you expect to complete it by?&#10;Team: who is building this?&#10;Links: share relevant links to the team and project"
-                  modules={modules}
-                  formats={formats}
-                  theme={"snow"}
-                  value={data && data.what}
-                  onChange={(value) => onDataChange({ what: value })}
-                />
+                <div>
+                  <div className="hideBorderBox"></div>
+
+                  <ReactQuill
+                    placeholder="Project details: what are you building?&#10;Roadmap: when do you expect to complete it by?&#10;Team: who is building this?&#10;Links: share relevant links to the team and project"
+                    modules={modules}
+                    formats={formats}
+                    theme={"snow"}
+                    value={data && data.what}
+                    onChange={(value) => onDataChange({ what: value })}
+                  />
+                </div>
               </div>
             </Form.Group>
           </Form>

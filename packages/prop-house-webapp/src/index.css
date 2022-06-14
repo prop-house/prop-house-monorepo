@@ -32,12 +32,14 @@ code {
   border-top-right-radius: 20px;
   border-bottom: none;
   padding: 1.5rem !important;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 }
 .ql-editor {
   font-size: 20px !important;
   padding: 0 !important;
 }
-
 .ql-editor.ql-blank::before {
   left: auto !important;
   right: auto !important;
@@ -45,7 +47,6 @@ code {
   font-weight: 600 !important;
   color: var(--brand-black-transparent) !important;
 }
-
 .ql-editor a {
   text-decoration: underline !important;
   color: var(--brand-gray) !important;
@@ -57,4 +58,12 @@ code {
 }
 .ql-editor strong {
   font-weight: 600 !important;
+}
+
+.hideBorderBox {
+  background: #fcfcfc;
+  top: 0;
+  position: sticky !important;
+  z-index: 9;
+  height: 40px;
 }
