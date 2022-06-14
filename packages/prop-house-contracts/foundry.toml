@@ -1,0 +1,5 @@
+[default]
+libs = ['lib', '../../node_modules']
+auto_detect_solc = true
+bytecode_hash = "none"
+optimizer_runs = 10000
