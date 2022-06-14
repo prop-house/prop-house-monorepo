@@ -58,7 +58,7 @@ const ProposalEditor: React.FC<{
     },
     toolbar: [
       [{ header: [1, 2, false] }],
-      ["bold", "underline", "strike", "blockquote"],
+      ["bold", "underline", "strike", "blockquote", "code-block"],
       [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
       ["link", "image"],
     ],
@@ -70,9 +70,9 @@ const ProposalEditor: React.FC<{
     "underline",
     "strike",
     "blockquote",
+    "code-block",
     "list",
     "bullet",
-    "indent",
     "link",
     "image",
   ];
