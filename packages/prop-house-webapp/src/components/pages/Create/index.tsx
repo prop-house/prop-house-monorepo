@@ -19,7 +19,6 @@ import { ProposalFields } from "../../../utils/proposalFields";
 import InspirationCard from "../../InspirationCard";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import Modal from "../../Modal";
-import Card, { CardBgColor, CardBorderRadius } from "../../Card";
 
 const isValidPropData = (data: ProposalFields) => {
   return (
@@ -96,7 +95,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: 'Congrats!',
+    title: "Congrats!",
     content: (
       <>
         <p>{`You've successfully submitted your proposal for \n ${
@@ -145,7 +144,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? 'Back to editor' : 'Preview'}
+            text={showPreview ? "Back to editor" : "Preview"}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {
