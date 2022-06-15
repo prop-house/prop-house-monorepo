@@ -62,6 +62,9 @@ code {
 .ql-editor.ql-blank::before {
   font-style: normal !important;
 }
+.ql-editor img {
+  width: 100%;
+}
 
 .hideBorderBox {
   background: #fcfcfc;
