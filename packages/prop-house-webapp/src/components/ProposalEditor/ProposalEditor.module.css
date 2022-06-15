@@ -56,3 +56,6 @@
 .quillArea {
   width: 100%;
 }
+.quill {
+  margin-top: -20px;
+}
