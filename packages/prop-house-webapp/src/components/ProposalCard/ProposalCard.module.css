@@ -6,7 +6,6 @@
 }
 
 .proposalCard:hover {
-  /* transform: scale(1.02); */
   border: 1px solid var(--brand-pink);
   cursor: pointer;
 }
@@ -21,7 +20,6 @@
 }
 
 .authorContainer {
-  /* font-size: 16px; */
   font-size: 18px;
   font-weight: bold;
   color: var(--brand-black);
@@ -62,6 +60,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  padding-top: 20px;
 }
 
 .timestamp {
@@ -75,7 +74,7 @@
   text-decoration: none;
   cursor: pointer;
 }
-.readMore div:hover {
+.proposalCard:hover .readMore div {
   font-weight: 900;
 }
 
