@@ -42,26 +42,29 @@ const ProposalCard: React.FC<{
             ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
             : cardStatus === ProposalCardStatus.Winner
             ? globalClasses.pinkBorder
-            : '',
+            : "",
           classes.proposalCard
         )}
       >
         <div className={classes.authorContainer}>
-          <span style={{ fontWeight: '600' }}>#{proposal.id}&nbsp;•</span>&nbsp;
+          {/* <span style={{ fontWeight: '600' }}>#{proposal.id}&nbsp;•</span>&nbsp;
           <EthAddress address={proposal.address} />
           &nbsp;
-          <span style={{ fontWeight: '600' }}>proposed</span>
+          <span style={{ fontWeight: '600' }}>proposed</span> */}
+          {proposal.title}
         </div>
+
         {proposal.tldr.length > 0 ? (
-          <Tooltip
-            content={
-              <div className={clsx(classes.title, classes.tooltipTitle)}>
-                {proposal.title}
-              </div>
-            }
-            tooltipTitle="TLDR"
-            tooltipContent={proposal.tldr}
-          />
+          // <Tooltip
+          //   content={
+          //     <div className={clsx(classes.title, classes.tooltipTitle)}>
+          //       {proposal.title}
+          //     </div>
+          //   }
+          //   tooltipTitle="TLDR"
+          //   tooltipContent={proposal.tldr}
+          // />
+          <div className={classes.truncatedTldr}>{proposal.tldr}</div>
         ) : (
           <Link
             to={`/proposal/${proposal.id}`}
@@ -83,7 +86,9 @@ const ProposalCard: React.FC<{
               className={classes.timestamp}
               title={detailedTime(proposal.createdDate)}
             >
-              {diffTime(proposal.createdDate)}
+              {/* {diffTime(proposal.createdDate)}*/}#{proposal.id}&nbsp;
+              {/* •{" "} */}
+              {/* {diffTime(proposal.createdDate)} */}
             </div>
           )}
 
@@ -96,7 +101,7 @@ const ProposalCard: React.FC<{
                     : globalClasses.fontPink
                 }
               >
-                Expand →
+                View →{/* Expand → */}
               </div>
             </Link>
           </div>

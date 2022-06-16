@@ -6,7 +6,9 @@
 }
 
 .proposalCard:hover {
-  transform: scale(1.02);
+  /* transform: scale(1.02); */
+  border: 1px solid var(--brand-pink);
+  cursor: pointer;
 }
 
 .proposalCardVoting {
@@ -19,11 +21,13 @@
 }
 
 .authorContainer {
-  font-size: 16px;
+  /* font-size: 16px; */
+  font-size: 18px;
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
   display: flex;
+  height: 50px;
 }
 
 .authorContainer span {
@@ -63,6 +67,7 @@
 .timestamp {
   font-size: 16px;
   color: var(--brand-black-transparent);
+  padding-top: 15px;
 }
 
 .readMore div {
@@ -70,9 +75,19 @@
   text-decoration: none;
   cursor: pointer;
 }
+.readMore div:hover {
+  font-weight: 900;
+}
 
 .scoreCopy {
   font-weight: bold;
   font-size: 15px;
   color: var(--brand-gray);
+}
+.truncatedTldr {
+  height: 4.5rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
