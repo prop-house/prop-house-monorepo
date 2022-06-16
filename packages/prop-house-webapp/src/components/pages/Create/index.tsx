@@ -1,25 +1,26 @@
-import classes from './Create.module.css';
-import { Row, Col } from 'react-bootstrap';
-import Button, { ButtonColor } from '../../Button';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
-import ProposalEditor from '../../ProposalEditor';
-import Preview from '../Preview';
-import { clearProposal, patchProposal } from '../../../state/slices/editor';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
+import classes from "./Create.module.css";
+import { Row, Col } from "react-bootstrap";
+import Button, { ButtonColor } from "../../Button";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import ProposalEditor from "../../ProposalEditor";
+import Preview from "../Preview";
+import { clearProposal, patchProposal } from "../../../state/slices/editor";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
 import {
+  CommunityWithAuctions,
   Proposal,
   StoredAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import { appendProposal } from '../../../state/slices/propHouse';
-import { useEthers } from '@usedapp/core';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import isAuctionActive from '../../../utils/isAuctionActive';
-import { ProposalFields } from '../../../utils/proposalFields';
-import InspirationCard from '../../InspirationCard';
-import useWeb3Modal from '../../../hooks/useWeb3Modal';
-import Modal from '../../Modal';
-import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+} from "@nouns/prop-house-wrapper/dist/builders";
+import { appendProposal } from "../../../state/slices/propHouse";
+import { useEthers } from "@usedapp/core";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import isAuctionActive from "../../../utils/isAuctionActive";
+import { ProposalFields } from "../../../utils/proposalFields";
+import InspirationCard from "../../InspirationCard";
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
+import Modal from "../../Modal";
+import Card, { CardBgColor, CardBorderRadius } from "../../Card";
 
 const isValidPropData = (data: ProposalFields) => {
   return (
