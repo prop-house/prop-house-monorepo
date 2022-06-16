@@ -36,9 +36,9 @@ const Create: React.FC<{}> = () => {
   const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
     undefined
   );
-  const [currentAuction, setCurrentAuction] = useState<undefined | any>(
-    undefined
-  );
+  const [currentAuction, setCurrentAuction] = useState<
+    undefined | CommunityWithAuctions
+  >(undefined);
   const [showPreview, setShowPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
