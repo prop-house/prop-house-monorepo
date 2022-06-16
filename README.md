@@ -43,7 +43,7 @@ yarn build
 cd packages/prop-house-backend
 # start up containers
 docker-compose up -d
-## Populate table with initial seed
+## Run migrations
 yarn migration:run
 # Copy example environment file
 cp .env.example .env
