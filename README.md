@@ -1,6 +1,10 @@
-## Prop House
+# Prop House
 
-Nouns Proposal Auction House (or Prop House) is an experimental approach to deploying capital: an auction of ETH where the bids placed are proxy NounsDAO proposals. At the end of each auction, Noun owners (Nouners) vote on which proposal gets funded.
+Nouns Proposal Auction House (or Prop House) is a public infrastructure project by [Nouns DAO](https://nouns.wtf).
+
+## About
+
+Prop House uses a novel mechanism for communities to deploy capital within their ecosystems: auctions of ETH where the bids placed are proposals. At the end of each auction, members of corresponding communities vote on which proposals get funded.
 
 ## Packages
 
