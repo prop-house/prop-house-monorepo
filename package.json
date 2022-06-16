@@ -5,7 +5,10 @@
   "repository": "git@github.com:cryptoseneca/prop-house.git",
   "author": "cryptoseneca <85328329+cryptoseneca@users.noreply.github.com>",
   "license": "MIT",
-  "private":"true",
+  "private": "true",
+  "scripts": {
+    "build": "yarn workspace prop-house-communities build && yarn workspace @nouns/prop-house-wrapper build"
+  },
   "workspaces": [
     "packages/**"
   ]
