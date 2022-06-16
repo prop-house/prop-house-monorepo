@@ -38,18 +38,18 @@ export const auctionStatus = (auction: StoredAuction): AuctionStatus => {
 export const deadlineCopy = (auction: StoredAuction) => {
   const status = auctionStatus(auction);
   return status === AuctionStatus.AuctionNotStarted
-    ? 'Begins'
+    ? "Begins"
     : status === AuctionStatus.AuctionAcceptingProps
-    ? 'Proposal deadline'
+    ? "Proposal deadline"
     : status === AuctionStatus.AuctionVoting
-    ? 'Voting ends'
+    ? "Voting ends"
     : status === AuctionStatus.AuctionEnded
-    ? 'Auction ended'
-    : '';
+    ? "Auction ended"
+    : "";
 };
 
 /**
- * Returns deadlione date for corresponding to auction status
+ * Returns deadline date for corresponding to auction status
  */
 export const deadlineTime = (auction: StoredAuction) =>
   auctionStatus(auction) === AuctionStatus.AuctionNotStarted
