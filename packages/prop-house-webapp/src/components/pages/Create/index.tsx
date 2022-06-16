@@ -36,6 +36,9 @@ const Create: React.FC<{}> = () => {
   const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
     undefined
   );
+  const [currentAuction, setCurrentAuction] = useState<undefined | any>(
+    undefined
+  );
   const [showPreview, setShowPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -64,7 +67,8 @@ const Create: React.FC<{}> = () => {
     const openAuctions = auctions.filter(isAuctionActive);
     // Set to the first open Auction
     if (openAuctions.length > 0) setParentAuction(openAuctions[0]);
-  }, [auctions, parentAuction]);
+    activeCommunity && setCurrentAuction(activeCommunity);
+  }, [activeCommunity, auctions, parentAuction]);
 
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(
@@ -96,23 +100,23 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: 'Congrats!',
+    title: "Congrats!",
     content: (
       <>
         <p>{`You've successfully submitted your proposal for \n ${
-          activeCommunity && activeCommunity.name
+          currentAuction && currentAuction.name
         } ${`(${activeAuction && activeAuction.title})`}`}</p>
         <Button
           text="View house"
           bgColor={ButtonColor.White}
           onClick={() =>
-            navigate(`/${activeCommunity && activeCommunity.contractAddress}`)
+            navigate(`/${currentAuction && currentAuction.contractAddress}`)
           }
         />
       </>
     ),
     onDismiss: () =>
-      navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
+      navigate(`/${currentAuction && currentAuction.contractAddress}`),
   };
 
   return parentAuction ? (
