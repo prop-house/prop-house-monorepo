@@ -31,9 +31,9 @@ body {
   --brand-pink: #e02ecf;
   --brand-pink-semi-transparent: #e02ece9a;
   --brand-pink-transparent: #e02ece3f;
-  --brand-purple: #8A2BE2;
-  --brand-purple-semi-transparent: #8A2BE29a;
-  --brand-purple-transparent: #8A2BE23f;
+  --brand-purple: #8a2be2;
+  --brand-purple-semi-transparent: #8a2be29a;
+  --brand-purple-transparent: #8a2be23f;
   --brand-black: #14161b;
   --brand-black-transparent: #00000060;
   --brand-black-more-transparent: #00000020;
@@ -56,4 +56,41 @@ body {
 /* set react tooltip bg opacity */
 .tooltip.show {
   opacity: 1;
+}
+
+.sortDropdown button {
+  background: none;
+  color: rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+  padding: 0;
+}
+.sortDropdown .dropdown-menu {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+.sortDropdown:hover button {
+  background: none !important;
+  color: black !important;
+}
+.sortDropdown .dropdown-item:active {
+  background-color: gray;
+}
+.sortDropdown .dropdown-item:active {
+  color: black !important;
+  background: none !important;
+}
+
+.show > .btn-primary.dropdown-toggle {
+  color: black !important;
+  background: none !important;
+}
+.show > .btn-primary .dropdown-toggle:focus {
+  box-shadow: none !important;
+}
+.sortDropdown .btn-primary:active,
+.sortDropdown .btn-primary:focus,
+.sortDropdown .btn-primary:focus-visible {
+  background-color: gray;
+  color: black !important;
+  background: none !important;
+  box-shadow: none !important;
 }
