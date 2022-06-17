@@ -1,9 +1,12 @@
 import classes from "./ProposalEditor.module.css";
 import { Row, Col, Form } from "react-bootstrap";
+import clsx from "clsx";
 import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
+import ReactQuill from "react-quill";
 import { useState } from "react";
-import clsx from "clsx";
+import "react-quill/dist/quill.snow.css";
+import sanitizeHtml from "sanitize-html";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -39,17 +42,40 @@ const ProposalEditor: React.FC<{
       maxCount: 120,
       error: "TLDR must be between 10 & 120 characters",
     },
-    {
-      title: "Description",
-      type: "textarea",
-      fieldValue: data.what,
-      fieldName: "what",
-      placeholder:
-        "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
-      value: "",
-      minCount: 50,
-      error: "Description must be 50 characters minimum",
-    },
+    // {
+    //   title: "Description",
+    //   type: "textarea",
+    //   fieldValue: data.what,
+    //   fieldName: "what",
+    //   placeholder:
+    //     "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
+    //   value: "",
+    //   minCount: 50,
+    //   error: "Description must be 50 characters minimum",
+    // },
+  ];
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
+      ["link", "image"],
+    ],
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
   ];
 
   return (
@@ -98,6 +124,21 @@ const ProposalEditor: React.FC<{
                   </div>
                 );
               })}
+
+              <div className="">
+                <Form.Label className={classes.inputLabel}>
+                  Proposal description
+                </Form.Label>
+
+                <ReactQuill
+                  placeholder="Project details: what are you building?&#10;Roadmap: when do you expect to complete it by?&#10;Team: who is building this?&#10;Links: share relevant links to the team and project"
+                  modules={modules}
+                  formats={formats}
+                  theme={"snow"}
+                  value={data && sanitizeHtml(data.what)}
+                  onChange={(value) => onDataChange({ what: value })}
+                />
+              </div>
             </Form.Group>
           </Form>
         </Col>

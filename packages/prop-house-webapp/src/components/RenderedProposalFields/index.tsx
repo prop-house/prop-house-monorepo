@@ -3,6 +3,7 @@ import { Row, Col } from "react-bootstrap";
 import { ProposalFields } from "../../utils/proposalFields";
 import EthAddress from "../EthAddress";
 import ReactMarkdown from "react-markdown";
+import sanitizeHtml from "sanitize-html";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -47,10 +48,25 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             children={fields.tldr}
           ></ReactMarkdown>
           <h2>Description</h2>
-          <ReactMarkdown
-            className={classes.markdown}
-            children={fields.what}
-          ></ReactMarkdown>
+          <div
+            className="ql-editor"
+            dangerouslySetInnerHTML={{
+              __html: sanitizeHtml(fields.what, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
+                  "data",
+                ]),
+                allowedAttributes: {
+                  img: ["src", "alt"],
+                  a: ["href"],
+                },
+                allowedClasses: {
+                  code: ["language-*", "lang-*"],
+                  pre: ["language-*", "lang-*"],
+                },
+              }),
+            }}
+          ></div>
         </Col>
       </Row>
     </>
