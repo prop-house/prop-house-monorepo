@@ -87,6 +87,7 @@ const Proposal = () => {
             fields={proposalFields(proposal)}
             address={proposal.address}
             proposalId={proposal.id}
+            community={community?.name}
             backButton={
               <div
                 className={classes.backToAuction}

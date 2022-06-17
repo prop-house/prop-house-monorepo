@@ -41,9 +41,22 @@ hr {
   flex-direction: row;
   padding-bottom: 5px;
 }
+@media (max-width: 577px) {
+  .subinfo {
+    flex-direction: column;
+  }
+}
 .subinfo a {
   margin-left: 0.5rem;
   font-weight: 650;
+}
+@media (max-width: 577px) {
+  .propSpacer {
+    display: none;
+  }
+}
+.submittedBy {
+  display: flex;
 }
 
 .markdown a {
