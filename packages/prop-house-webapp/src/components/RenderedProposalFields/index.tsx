@@ -9,11 +9,11 @@ export interface RenderedProposalProps {
   address?: string;
   proposalId?: number;
   backButton?: React.ReactNode;
-  community?: string;
+  communityName?: string;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
-  const { fields, address, proposalId, backButton, community } = props;
+  const { fields, address, proposalId, backButton, communityName } = props;
   return (
     <>
       <Row>
@@ -24,9 +24,9 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  {community &&
-                    community.charAt(0).toUpperCase() +
-                      community.slice(1) +
+                  {communityName &&
+                    communityName.charAt(0).toUpperCase() +
+                      communityName.slice(1) +
                       " • "}
                   Prop #{proposalId}{" "}
                   <span className={classes.propSpacer}>&nbsp;•&nbsp;</span>
