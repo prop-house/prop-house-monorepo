@@ -1,6 +1,9 @@
 .ethAddress a {
+  display: flex;
+  align-items: center;
+  column-gap: 0.25rem;
   cursor: pointer;
-  color: inherit;
+  color: black !important;
   text-decoration: none;
   margin: 0 !important;
 }

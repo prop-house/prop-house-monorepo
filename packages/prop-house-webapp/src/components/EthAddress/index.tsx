@@ -1,9 +1,10 @@
-import clsx from 'clsx';
-import React from 'react';
-import { useAppSelector } from '../../hooks';
-import { useReverseENSLookUp } from '../../utils/ensLookup';
-import trimEthAddress from '../../utils/trimEthAddress';
-import classes from './EthAddress.module.css';
+import clsx from "clsx";
+import React from "react";
+import { useAppSelector } from "../../hooks";
+import { useReverseENSLookUp } from "../../utils/ensLookup";
+import trimEthAddress from "../../utils/trimEthAddress";
+import classes from "./EthAddress.module.css";
+import Davatar from "@davatar/react";
 
 const EthAddress: React.FC<{
   address: string;
@@ -15,13 +16,15 @@ const EthAddress: React.FC<{
     (state) => state.configuration.etherscanHost
   );
   const buildAddressHref = (address: string) =>
-    [etherscanHost, 'address', address].join('/');
+    [etherscanHost, "address", address].join("/");
 
   const ens = useReverseENSLookUp(address);
 
   return (
     <div className={clsx(props.className, classes.ethAddress)}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
+        <Davatar size={24} address={address} />
+
         {ens ? ens : trimEthAddress(address)}
       </a>
     </div>
