@@ -1,11 +1,31 @@
 .inputLabel {
-  margin-left: 1rem;
   font-size: 20px;
   font-weight: 600;
   color: var(--brand-gray);
 }
 .inputGroup {
   margin-top: 2rem;
+}
+.inputSection {
+  margin: 3rem 0rem;
+}
+
+.inputInfo {
+  display: flex;
+  margin: 0rem 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+.inputChars {
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+.inputError {
+  color: red;
+  font-weight: 600;
+  margin-left: 1rem;
+  padding: 0.5rem 0rem;
+  margin-bottom: 0rem;
 }
 .input {
   border: none;
@@ -17,7 +37,7 @@
   border-radius: 20px;
   border: 1px rgba(0, 0, 0, 0.1) solid;
   padding: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0rem;
 }
 .input:focus {
   box-shadow: none;
