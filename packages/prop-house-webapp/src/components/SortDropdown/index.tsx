@@ -6,12 +6,15 @@ import { useDispatch } from "react-redux";
 import { sortProposals } from "../../state/slices/propHouse";
 import { dispatchSortProposals, SortType } from "../../utils/sortingProposals";
 import { IoArrowDown, IoArrowUp } from "react-icons/io5";
+import clsx from "clsx";
 
 const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
   const { auction } = props;
 
   const [dateAscending, setDateAscending] = useState(false);
-  const [votesAscending, setVotesAscending] = useState(true);
+  const [votesAscending, setVotesAscending] = useState(false);
+  const [datesSorted, setDatesSorted] = useState(true);
+  const [votesSorted, setVotesSorted] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -20,6 +23,9 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
     auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
   const sortDates = () => {
+    setDatesSorted(true);
+    setVotesSorted(false);
+
     setDateAscending((prev) => {
       dispatchSortProposals(dispatch, auction, !prev);
       return !prev;
@@ -27,6 +33,9 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
   };
 
   const sortVotes = () => {
+    setDatesSorted(false);
+    setVotesSorted(true);
+
     setVotesAscending((prev) => {
       dispatch(
         sortProposals({
@@ -43,22 +52,28 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
     <>
       <div className={classes.sortContainer}>
         {isVotingWindow && (
-          <div onClick={sortVotes} className={classes.sortItem}>
+          <div
+            onClick={sortVotes}
+            className={clsx(classes.sortItem, votesSorted && classes.active)}
+          >
             <div>Votes</div>
             {votesAscending ? (
-              <IoArrowUp size={"1.5rem"} />
+              <IoArrowDown size={"1.5rem"} />
             ) : (
-              <IoArrowDown size={"1.5rem"} className={classes.icons} />
+              <IoArrowUp size={"1.5rem"} />
             )}
           </div>
         )}
 
-        <div onClick={sortDates} className={classes.sortItem}>
+        <div
+          onClick={sortDates}
+          className={clsx(classes.sortItem, datesSorted && classes.active)}
+        >
           <div>Created</div>
           {dateAscending ? (
             <IoArrowUp size={"1.5rem"} />
           ) : (
-            <IoArrowDown size={"1.5rem"} className={classes.icons} />
+            <IoArrowDown size={"1.5rem"} />
           )}
         </div>
       </div>

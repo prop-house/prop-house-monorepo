@@ -21,7 +21,6 @@
 }
 
 .sortItem:hover {
-  border: 2px rgba(0, 0, 0, 0.6) solid;
   border: 2px rgba(80, 186, 154, 1) solid;
 }
 .sortItem svg {
@@ -29,4 +28,7 @@
   border-radius: 50px;
   color: rgba(80, 186, 154, 1);
   padding: 4px;
+}
+.active {
+  border: 2px rgba(80, 186, 154, 1) solid;
 }
