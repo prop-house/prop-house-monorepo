@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { sortProposals } from "../../state/slices/propHouse";
 import { dispatchSortProposals, SortType } from "../../utils/sortingProposals";
-import { IoArrowDownOutline, IoArrowUpOutline } from "react-icons/io5";
+import { IoArrowDown, IoArrowUp } from "react-icons/io5";
 
 const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
   const { auction } = props;
@@ -44,21 +44,21 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
       <div className={classes.sortContainer}>
         {isVotingWindow && (
           <div onClick={sortVotes} className={classes.sortItem}>
-            <div>Votes </div>
+            <div>Votes</div>
             {votesAscending ? (
-              <IoArrowUpOutline size={"1.5rem"} />
+              <IoArrowUp size={"1.5rem"} />
             ) : (
-              <IoArrowDownOutline size={"1.5rem"} className={classes.icons} />
+              <IoArrowDown size={"1.5rem"} className={classes.icons} />
             )}
           </div>
         )}
 
         <div onClick={sortDates} className={classes.sortItem}>
-          <div>Created Date</div>
+          <div>Created</div>
           {dateAscending ? (
-            <IoArrowUpOutline size={"1.5rem"} />
+            <IoArrowUp size={"1.5rem"} />
           ) : (
-            <IoArrowDownOutline size={"1.5rem"} className={classes.icons} />
+            <IoArrowDown size={"1.5rem"} className={classes.icons} />
           )}
         </div>
       </div>

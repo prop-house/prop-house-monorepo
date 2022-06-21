@@ -6,16 +6,27 @@
 .sortItem {
   display: flex;
   align-items: center;
+  background: white;
+  padding: 4px 6px;
+  border-radius: 50px;
   justify-content: space-between;
   gap: 5px;
-  margin: 0rem 0.75rem;
+  margin-left: 0.5rem;
+  border: 2px rgba(0, 0, 0, 0.1) solid;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: box-shadow 0.3s;
-  color: rgba(0, 0, 0, 0.3);
+  color: black;
 }
 
 .sortItem:hover {
-  color: rgba(0, 0, 0, 0.6);
+  border: 2px rgba(0, 0, 0, 0.6) solid;
+  border: 2px rgba(80, 186, 154, 1) solid;
+}
+.sortItem svg {
+  background: rgba(80, 186, 154, 0.2);
+  border-radius: 50px;
+  color: rgba(80, 186, 154, 1);
+  padding: 4px;
 }
