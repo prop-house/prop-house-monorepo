@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { devBackendUri, prodBackendUri } from '../../config';
 
 export interface ConfigurationSlice {
   etherscanHost: string;
@@ -10,10 +9,12 @@ export interface ConfigurationSlice {
 const initialState: ConfigurationSlice = {
   etherscanHost: 'https://etherscan.io',
   backendHost:
-    process.env.REACT_APP_NODE_ENV === 'production'
-      ? prodBackendUri
-      : process.env.REACT_APP_NODE_ENV === 'development'
-      ? devBackendUri
+    process.env.REACT_APP_NODE_ENV === 'production' &&
+    process.env.REACT_APP_PROD_BACKEND_URI
+      ? process.env.REACT_APP_PROD_BACKEND_URI
+      : process.env.REACT_APP_NODE_ENV === 'development' &&
+        process.env.REACT_APP_DEV_BACKEND_URI
+      ? process.env.REACT_APP_DEV_BACKEND_URI
       : 'http://localhost:3000',
   displayAdmin: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
 };

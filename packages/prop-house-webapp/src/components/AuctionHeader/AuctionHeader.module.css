@@ -77,6 +77,11 @@
   color: var(--brand-black-transparent) !important;
 }
 
+.able:hover {
+  color: var(--brand-black) !important;
+  transition: all 0.15s ease-in-out;
+}
+
 .disable {
   color: rgba(0, 0, 0, 0.122);
 }

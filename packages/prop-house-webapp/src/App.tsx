@@ -23,8 +23,7 @@ import Explore from './components/pages/Explore';
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
-    [Mainnet.chainId]:
-      'https://mainnet.infura.io/v3/0be66e03abae4c0583466f8bc3d003a4',
+    [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   },
   autoConnect: false,
 };

@@ -232,14 +232,19 @@ const FullAuction: React.FC<{
         <Row>
           <div className={classes.dividerSection}>
             <div className={classes.proposalTitle}>{`${
-              proposals ? `${proposals.length} proposals` : ''
+              proposals
+                ? `${proposals.length} ${
+                    proposals.length === 1 ? "proposal" : "proposals"
+                  }`
+                : ""
             }`}</div>
-            <span onClick={sortTapped}>Sort &nbsp;
+            <span onClick={sortTapped}>
+              Sort &nbsp;
               {ascending ? (
-                <IoArrowUpCircleOutline size={'1.5rem'} />
+                <IoArrowUpCircleOutline size={"1.5rem"} />
               ) : (
                 <IoArrowDownCircleOutline
-                  size={'1.5rem'}
+                  size={"1.5rem"}
                   className={classes.icons}
                 />
               )}

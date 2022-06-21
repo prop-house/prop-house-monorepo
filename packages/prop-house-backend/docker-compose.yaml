@@ -6,9 +6,15 @@ services:
     environment:
       POSTGRES_PASSWORD: example
     volumes:
-     - ./postgres-data:/var/lib/postgresql/data
+     - postgres-data:/bitnami/postgresql
+     - ./db-init:/docker-entrypoint-initdb.d
 
   adminer:
     image: adminer
     ports:
       - 8080:8080
+
+volumes:
+   postgres-data:
+     driver: local
+
