@@ -21,13 +21,13 @@ files: [
       # Source files filter
       # e.g. "/resources/en/*.json"
       #
-      "source": "",
+      "source": "/packages/prop-house-webapp/crowdin.yml",
 
       #
       # Where translations will be placed
       # e.g. "/resources/%two_letters_code%/%original_file_name%"
       #
-      "translation": "",
+      "translation": "/translations/jp/%original_file_name%",
       #
       # Files or directories for ignore
       # e.g. ["/**/?.txt", "/**/[0-9].txt", "/**/*\?*.txt"]
