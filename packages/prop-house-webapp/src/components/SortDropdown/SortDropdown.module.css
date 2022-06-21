@@ -18,11 +18,11 @@
   cursor: pointer;
   transition: box-shadow 0.3s;
   color: black;
-  opacity: 50%;
+  opacity: 0.5;
 }
 
 .sortItem:hover {
-  opacity: 75%;
+  opacity: 0.75;
   border: 2px rgba(80, 186, 154, 1) solid;
 }
 .sortItem svg {
@@ -32,6 +32,6 @@
   padding: 4px;
 }
 .active {
-  opacity: 100%;
+  opacity: 1;
   border: 2px rgba(80, 186, 154, 1) solid;
 }
