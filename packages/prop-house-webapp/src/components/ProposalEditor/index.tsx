@@ -13,6 +13,7 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector((state) => state.editor.proposal);
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
+  const [editorBlurred, setEditorBlurred] = useState(false);
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -53,6 +54,18 @@ const ProposalEditor: React.FC<{
     //   error: "Description must be 50 characters minimum",
     // },
   ];
+
+  const descriptionData = {
+    title: "Description",
+    type: "textarea",
+    fieldValue: data.what,
+    fieldName: "what",
+    placeholder:
+      "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
+    value: "",
+    minCount: 50,
+    error: "Description must be 50 characters minimum",
+  };
 
   const modules = {
     clipboard: {
@@ -129,23 +142,40 @@ const ProposalEditor: React.FC<{
               <div className="">
                 <div className={classes.inputInfo}>
                   <Form.Label className={classes.inputLabel}>
-                    Proposal description
+                    {descriptionData.title}
                   </Form.Label>
                   <Form.Label className={classes.inputChars}>
-                    {data.what.length}
+                    {descriptionData.fieldValue.length}
                   </Form.Label>
                 </div>
 
                 <div>
                   <div className="hideBorderBox"></div>
                   <ReactQuill
-                    placeholder="Project details: what are you building?&#10;Roadmap: when do you expect to complete it by?&#10;Team: who is building this?&#10;Links: share relevant links to the team and project"
+                    placeholder={descriptionData.placeholder}
                     modules={modules}
                     formats={formats}
                     theme={"snow"}
-                    value={data && data.what}
-                    onChange={(value) => onDataChange({ what: value })}
+                    onChange={(value) => {
+                      setBlurred(false);
+                      onDataChange({
+                        [descriptionData.fieldName]: value,
+                      });
+                    }}
+                    value={data && descriptionData.fieldValue}
+                    onBlur={() => {
+                      setEditorBlurred(true);
+                    }}
                   />
+                  {editorBlurred &&
+                    validateInput(
+                      descriptionData.minCount,
+                      descriptionData.fieldValue.length
+                    ) && (
+                      <p className={classes.inputError}>
+                        {descriptionData.error}
+                      </p>
+                    )}
                 </div>
               </div>
             </Form.Group>
