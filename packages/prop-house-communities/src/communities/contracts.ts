@@ -13,7 +13,7 @@ import LilNounsABI from '../abi/LilNounsABI.json';
  * @numVotes Method to use for fetching number of votes that `userAddress` has allotted
  * @multiplier [optional] multiplier of votes. number to be used against default number of votes (e.g. make each nft count as 10 votes instead of 1)
  */
-interface CommunityContract {
+export interface CommunityContract {
   address: string;
   numVotes: (
     userAddress: string,
