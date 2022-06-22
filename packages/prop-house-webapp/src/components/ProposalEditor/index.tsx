@@ -2,9 +2,10 @@ import classes from "./ProposalEditor.module.css";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuill } from "react-quilljs";
+
 import clsx from "clsx";
 
 const ProposalEditor: React.FC<{
@@ -57,18 +58,6 @@ const ProposalEditor: React.FC<{
     error: "Description must be 50 characters minimum",
   };
 
-  const modules = {
-    clipboard: {
-      matchVisual: false,
-    },
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "underline", "strike", "blockquote", "code-block"],
-      [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
-      ["link", "image"],
-    ],
-  };
-
   const formats = [
     "header",
     "bold",
@@ -81,6 +70,59 @@ const ProposalEditor: React.FC<{
     "link",
     "image",
   ];
+  const imageHandler = () => {
+    quill ? console.log("true") : console.log("false");
+
+    // var range = quill!.getSelection();
+    // var value = prompt("please copy paste the image url here.");
+
+    // console.log("ran!", value, range);
+
+    // if (value) {
+    //   quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
+    // }
+  };
+
+  const modules = {
+    toolbar: {
+      container: [
+        [{ header: [1, 2, false] }],
+        ["bold", "underline", "strike", "blockquote", "code-block"],
+        [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
+        ["link"],
+        ["image"],
+      ],
+      handlers: {
+        image: imageHandler,
+      },
+    },
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+  const theme = "snow";
+  const placeholder = descriptionData.placeholder;
+
+  const { quill, quillRef, Quill } = useQuill({
+    theme,
+    modules,
+    formats,
+    placeholder,
+  });
+
+  useEffect(() => {
+    if (quill) {
+      quill.clipboard.dangerouslyPasteHTML(data.what);
+
+      quill.on("text-change", () => {
+        setEditorBlurred(false);
+
+        onDataChange({ what: quill.root.innerHTML });
+      });
+    }
+  }, [quill]);
+
+  console.log("quill", quill);
 
   return (
     <>
@@ -135,40 +177,35 @@ const ProposalEditor: React.FC<{
                   <Form.Label className={classes.inputLabel}>
                     {descriptionData.title}
                   </Form.Label>
+                  <button type="button" onClick={imageHandler}>
+                    TEST
+                  </button>
                   <Form.Label className={classes.inputChars}>
-                    {descriptionData.fieldValue.length}
+                    {quill && quill.getText().length - 1}
                   </Form.Label>
                 </div>
 
-                <div>
+                <>
                   <div className="hideBorderBox"></div>
-                  <ReactQuill
+                  <div
+                    ref={quillRef}
                     placeholder={descriptionData.placeholder}
-                    modules={modules}
-                    formats={formats}
-                    theme={"snow"}
-                    onChange={(value) => {
-                      setBlurred(false);
-                      onDataChange({
-                        [descriptionData.fieldName]: value,
-                      });
-                    }}
-                    value={data && descriptionData.fieldValue}
                     onBlur={() => {
                       setEditorBlurred(true);
                     }}
                   />
 
                   {editorBlurred &&
+                    quill &&
                     validateInput(
                       descriptionData.minCount,
-                      descriptionData.fieldValue.length
+                      quill.getText().length
                     ) && (
                       <p className={classes.inputError}>
                         {descriptionData.error}
                       </p>
                     )}
-                </div>
+                </>
               </>
             </Form.Group>
           </Form>
