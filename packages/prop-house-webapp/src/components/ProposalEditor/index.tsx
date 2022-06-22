@@ -21,6 +21,7 @@ const ProposalEditor: React.FC<{
   const formData = [
     {
       title: "Title",
+      focus: true,
       type: "input",
       fieldValue: data.title,
       fieldName: "title",
@@ -114,6 +115,7 @@ const ProposalEditor: React.FC<{
 
                     <Form.Control
                       as={input.type as any}
+                      autoFocus={input.focus}
                       maxLength={input.maxCount && input.maxCount}
                       placeholder={input.placeholder}
                       className={clsx(
@@ -139,7 +141,7 @@ const ProposalEditor: React.FC<{
                 );
               })}
 
-              <div className="">
+              <>
                 <div className={classes.inputInfo}>
                   <Form.Label className={classes.inputLabel}>
                     {descriptionData.title}
@@ -167,6 +169,7 @@ const ProposalEditor: React.FC<{
                       setEditorBlurred(true);
                     }}
                   />
+
                   {editorBlurred &&
                     validateInput(
                       descriptionData.minCount,
@@ -177,7 +180,7 @@ const ProposalEditor: React.FC<{
                       </p>
                     )}
                 </div>
-              </div>
+              </>
             </Form.Group>
           </Form>
         </Col>
