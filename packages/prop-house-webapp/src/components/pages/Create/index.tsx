@@ -96,7 +96,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: 'Congrats!',
+    title: "Congrats!",
     content: (
       <>
         <p>{`You've successfully submitted your proposal for \n ${
@@ -123,10 +123,10 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            Creating proposal for{' '}
+            Creating proposal for{" "}
             <span>
-              funding round{' '}
-              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
+              funding round{" "}
+              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{" "}
             </span>
           </h1>
         </Col>
@@ -138,7 +138,7 @@ const Create: React.FC<{}> = () => {
           borderRadius={CardBorderRadius.twenty}
           classNames={classes.tipCard}
         >
-          <b>Tip:</b> Use markdown to style your proposal properly!{' '}
+          <b>Tip:</b> Use markdown to style your proposal properly!{" "}
           <a
             href="https://www.markdownguide.org/basic-syntax/"
             target="_blank"
@@ -159,7 +159,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? 'Back to editor' : 'Preview'}
+            text={showPreview ? "Back to editor" : "Preview"}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {

@@ -1,24 +1,25 @@
-import { Routes, Route } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../src/css/globals.css';
-import NavBar from './components/NavBar';
-import Home from './components/pages/Home';
-import Learn from './components/pages/Learn';
-import Create from './components/pages/Create';
-import Community from './components/pages/Community';
-import Proposal from './components/pages/Proposal';
-import Footer from './components/Footer';
-import { Container } from 'react-bootstrap';
-import './App.css';
-import { useAppDispatch, useAppSelector } from './hooks';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import { addAuctions } from './state/slices/propHouse';
-import { Mainnet, DAppProvider, Config, useEthers } from '@usedapp/core';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEffect, useRef } from 'react';
-import Upload from './components/pages/Upload';
-import FAQ from './components/pages/FAQ';
-import Explore from './components/pages/Explore';
+import { Routes, Route } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../src/css/globals.css";
+import NavBar from "./components/NavBar";
+import Home from "./components/pages/Home";
+import Learn from "./components/pages/Learn";
+import Create from "./components/pages/Create";
+import Community from "./components/pages/Community";
+import Proposal from "./components/pages/Proposal";
+import Footer from "./components/Footer";
+import { Container } from "react-bootstrap";
+import "./App.css";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import { addAuctions } from "./state/slices/propHouse";
+import { Mainnet, DAppProvider, Config, useEthers } from "@usedapp/core";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import { useEffect, useRef } from "react";
+import Upload from "./components/pages/Upload";
+import FAQ from "./components/pages/FAQ";
+import Explore from "./components/pages/Explore";
+import Test from "./components/pages/Test";
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -57,6 +58,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<Create />} />
+          <Route path="/test" element={<Test />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/explore" element={<Explore />} />

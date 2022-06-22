@@ -19,11 +19,11 @@ const EthAddress: React.FC<{
     [etherscanHost, "address", address].join("/");
 
   const ens = useReverseENSLookUp(address);
-
+  console.log("a", address);
   return (
     <div className={clsx(props.className, classes.ethAddress)}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        <Davatar size={24} address={address} />
+        {/* <Davatar size={24} address={address} /> */}
 
         {ens ? ens : trimEthAddress(address)}
       </a>
