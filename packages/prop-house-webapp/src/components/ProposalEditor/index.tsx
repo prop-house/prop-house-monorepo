@@ -4,6 +4,8 @@ import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { useState } from "react";
+import clsx from "clsx";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -125,9 +127,14 @@ const ProposalEditor: React.FC<{
               })}
 
               <div className="">
-                <Form.Label className={classes.inputLabel}>
-                  Proposal description
-                </Form.Label>
+                <div className={classes.inputInfo}>
+                  <Form.Label className={classes.inputLabel}>
+                    Proposal description
+                  </Form.Label>
+                  <Form.Label className={classes.inputChars}>
+                    {data.what.length}
+                  </Form.Label>
+                </div>
 
                 <div>
                   <div className="hideBorderBox"></div>
