@@ -73,3 +73,7 @@ code {
   z-index: 9;
   height: 20px;
 }
+
+.quill {
+  margin-top: -20px;
+}
