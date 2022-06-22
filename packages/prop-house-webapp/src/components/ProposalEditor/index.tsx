@@ -43,17 +43,6 @@ const ProposalEditor: React.FC<{
       maxCount: 120,
       error: "TLDR must be between 10 & 120 characters",
     },
-    // {
-    //   title: "Description",
-    //   type: "textarea",
-    //   fieldValue: data.what,
-    //   fieldName: "what",
-    //   placeholder:
-    //     "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
-    //   value: "",
-    //   minCount: 50,
-    //   error: "Description must be 50 characters minimum",
-    // },
   ];
 
   const descriptionData = {
@@ -101,7 +90,7 @@ const ProposalEditor: React.FC<{
             <Form.Group className={classes.inputGroup}>
               {formData.map((input) => {
                 return (
-                  <div className={classes.inputSection}>
+                  <div className={classes.inputSection} key={input.title}>
                     <div className={classes.inputInfo}>
                       <Form.Label className={classes.inputLabel}>
                         {input.title}
