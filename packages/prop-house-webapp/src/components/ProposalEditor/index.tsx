@@ -193,7 +193,7 @@ const ProposalEditor: React.FC<{
                     quill &&
                     validateInput(
                       descriptionData.minCount,
-                      quill.getText().length
+                      quill.getText().length - 1
                     ) && (
                       <p className={classes.inputError}>
                         {descriptionData.error}
