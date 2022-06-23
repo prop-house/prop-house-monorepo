@@ -15,7 +15,7 @@ contract PropHouseFactory is IPropHouseFactory {
 
     /// @notice Create and initialize a prop house proxy
     /// @param houseImpl The prop house implementation contract address
-    /// @param data Initilization payload sent to the new proxy contract
+    /// @param data Initialization payload sent to the new proxy contract
     function createHouse(address houseImpl, bytes calldata data) external {
         if (DeploymentManager.isValidDeploymentTarget(houseImpl)) {
             revert InvalidDeploymentTarget();

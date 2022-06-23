@@ -23,7 +23,7 @@ contract PropHouse is IPropHouse, UUPSUpgradeable, OwnableUpgradeable {
         // Transfer ownership to the house creator
         transferOwnership(_creator);
 
-        // TODO: Define V1 initilization data
+        // TODO: Define V1 initialization data
         _data;
     }
 
