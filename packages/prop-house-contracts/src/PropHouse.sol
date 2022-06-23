@@ -31,7 +31,7 @@ contract PropHouse is IPropHouse, UUPSUpgradeable, OwnableUpgradeable {
     /// @dev This function is called in UUPS `upgradeTo` & `upgradeToAndCall`
     /// @param _newImpl The address of the new implementation
     function _authorizeUpgrade(address _newImpl) internal override onlyOwner {
-        if (UpgradeManager.isValidUpgrade(_getImplementation(), _newImpl)) {
+        if (!UpgradeManager.isValidUpgrade(_getImplementation(), _newImpl)) {
             revert InvalidUpgrade();
         }
     }
