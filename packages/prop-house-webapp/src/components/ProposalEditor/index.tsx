@@ -171,9 +171,7 @@ const ProposalEditor: React.FC<{
                   <Form.Label className={classes.inputLabel}>
                     {descriptionData.title}
                   </Form.Label>
-                  <button type="button" onClick={imageHandler}>
-                    TEST
-                  </button>
+
                   <Form.Label className={classes.inputChars}>
                     {quill && quill.getText().length - 1}
                   </Form.Label>
