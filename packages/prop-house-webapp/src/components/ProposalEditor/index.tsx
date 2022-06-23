@@ -185,14 +185,7 @@ const ProposalEditor: React.FC<{
                           : input.fieldValue.length}
                       </Form.Label>
                     </div>
-                    <input
-                      type="text"
-                      className={classes.imageLinkInput}
-                      value={imageLink}
-                      onChange={(e) => {
-                        setImageLink(e.target.value);
-                      }}
-                    />
+
                     <Form.Control
                       as={input.type as any}
                       autoFocus={input.focus}
