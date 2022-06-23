@@ -19,15 +19,13 @@ import { ProposalFields } from "../../../utils/proposalFields";
 import InspirationCard from "../../InspirationCard";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import Modal from "../../Modal";
+import removeTags from "../../../utils/removeTags";
 
-const isValidPropData = (data: ProposalFields) => {
-  return (
-    data.title.length > 4 &&
-    data.what.length > 49 &&
-    data.tldr.length > 9 &&
-    data.tldr.length < 120
-  );
-};
+const isValidPropData = (data: ProposalFields) =>
+  data.title.length > 4 &&
+  removeTags(data.what).length > 49 &&
+  data.tldr.length > 9 &&
+  data.tldr.length < 120;
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();

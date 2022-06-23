@@ -116,6 +116,8 @@ const ProposalEditor: React.FC<{
         onDataChange({ what: quill.root.innerHTML });
       });
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quill]);
 
   return (
