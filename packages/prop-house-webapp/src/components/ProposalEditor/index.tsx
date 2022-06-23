@@ -2,7 +2,10 @@ import classes from "./ProposalEditor.module.css";
 import { Row, Col, Form } from "react-bootstrap";
 import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
-import { useState } from "react";
+import "react-quill/dist/quill.snow.css";
+import { useEffect, useState } from "react";
+import { useQuill } from "react-quilljs";
+
 import clsx from "clsx";
 
 const ProposalEditor: React.FC<{
@@ -11,6 +14,7 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector((state) => state.editor.proposal);
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
+  const [editorBlurred, setEditorBlurred] = useState(false);
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -18,6 +22,7 @@ const ProposalEditor: React.FC<{
   const formData = [
     {
       title: "Title",
+      focus: true,
       type: "input",
       fieldValue: data.title,
       fieldName: "title",
@@ -39,18 +44,81 @@ const ProposalEditor: React.FC<{
       maxCount: 120,
       error: "TLDR must be between 10 & 120 characters",
     },
-    {
-      title: "Description",
-      type: "textarea",
-      fieldValue: data.what,
-      fieldName: "what",
-      placeholder:
-        "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
-      value: "",
-      minCount: 50,
-      error: "Description must be 50 characters minimum",
-    },
   ];
+
+  const descriptionData = {
+    title: "Description",
+    type: "textarea",
+    fieldValue: data.what,
+    fieldName: "what",
+    placeholder:
+      "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
+    value: "",
+    minCount: 50,
+    error: "Description must be 50 characters minimum",
+  };
+
+  const formats = [
+    "header",
+    "bold",
+    "underline",
+    "strike",
+    "blockquote",
+    "code-block",
+    "list",
+    "bullet",
+    "link",
+    "image",
+  ];
+  const imageHandler = () => {
+    var range = quill!.getSelection();
+    var value = prompt("please copy paste the image url here.");
+
+    if (value) {
+      quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
+    }
+  };
+
+  const modules = {
+    toolbar: {
+      container: [
+        [{ header: [1, 2, false] }],
+        ["bold", "underline", "strike", "blockquote", "code-block"],
+        [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
+        ["link"],
+        ["image"],
+      ],
+    },
+    clipboard: {
+      matchVisual: false,
+    },
+  };
+  const theme = "snow";
+  const placeholder = descriptionData.placeholder;
+
+  const { quill, quillRef, Quill } = useQuill({
+    theme,
+    modules,
+    formats,
+    placeholder,
+  });
+
+  useEffect(() => {
+    if (quill) {
+      var toolbar = quill.getModule("toolbar");
+      toolbar.addHandler("image", imageHandler);
+
+      quill.clipboard.dangerouslyPasteHTML(data.what);
+
+      quill.on("text-change", () => {
+        setEditorBlurred(false);
+
+        onDataChange({ what: quill.root.innerHTML });
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quill]);
 
   return (
     <>
@@ -60,7 +128,7 @@ const ProposalEditor: React.FC<{
             <Form.Group className={classes.inputGroup}>
               {formData.map((input) => {
                 return (
-                  <div className={classes.inputSection}>
+                  <div className={classes.inputSection} key={input.title}>
                     <div className={classes.inputInfo}>
                       <Form.Label className={classes.inputLabel}>
                         {input.title}
@@ -74,6 +142,7 @@ const ProposalEditor: React.FC<{
 
                     <Form.Control
                       as={input.type as any}
+                      autoFocus={input.focus}
                       maxLength={input.maxCount && input.maxCount}
                       placeholder={input.placeholder}
                       className={clsx(
@@ -98,6 +167,40 @@ const ProposalEditor: React.FC<{
                   </div>
                 );
               })}
+
+              <>
+                <div className={classes.inputInfo}>
+                  <Form.Label className={classes.inputLabel}>
+                    {descriptionData.title}
+                  </Form.Label>
+
+                  <Form.Label className={classes.inputChars}>
+                    {quill && quill.getText().length - 1}
+                  </Form.Label>
+                </div>
+
+                <>
+                  <div className="hideBorderBox"></div>
+                  <div
+                    ref={quillRef}
+                    placeholder={descriptionData.placeholder}
+                    onBlur={() => {
+                      setEditorBlurred(true);
+                    }}
+                  />
+
+                  {editorBlurred &&
+                    quill &&
+                    validateInput(
+                      descriptionData.minCount,
+                      quill.getText().length
+                    ) && (
+                      <p className={classes.inputError}>
+                        {descriptionData.error}
+                      </p>
+                    )}
+                </>
+              </>
             </Form.Group>
           </Form>
         </Col>
