@@ -74,3 +74,13 @@ code {
 .quill {
   margin-top: -20px;
 }
+.ql-syntax {
+  background: #2f3136 !important;
+  padding: 22px !important;
+}
+.ql-editor pre {
+  background: #2f3136 !important;
+  color: white !important;
+  padding: 22px !important;
+  overflow-x: auto;
+}
