@@ -71,16 +71,12 @@ const ProposalEditor: React.FC<{
     "image",
   ];
   const imageHandler = () => {
-    quill ? console.log("true") : console.log("false");
+    var range = quill!.getSelection();
+    var value = prompt("please copy paste the image url here.");
 
-    // var range = quill!.getSelection();
-    // var value = prompt("please copy paste the image url here.");
-
-    // console.log("ran!", value, range);
-
-    // if (value) {
-    //   quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
-    // }
+    if (value) {
+      quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
+    }
   };
 
   const modules = {
@@ -92,9 +88,6 @@ const ProposalEditor: React.FC<{
         ["link"],
         ["image"],
       ],
-      handlers: {
-        image: imageHandler,
-      },
     },
     clipboard: {
       matchVisual: false,
@@ -112,6 +105,9 @@ const ProposalEditor: React.FC<{
 
   useEffect(() => {
     if (quill) {
+      var toolbar = quill.getModule("toolbar");
+      toolbar.addHandler("image", imageHandler);
+
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
       quill.on("text-change", () => {
@@ -121,8 +117,6 @@ const ProposalEditor: React.FC<{
       });
     }
   }, [quill]);
-
-  console.log("quill", quill);
 
   return (
     <>
