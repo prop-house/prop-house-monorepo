@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 
 import clsx from "clsx";
+import Modal, { ModalData } from "../Modal";
+import Button, { ButtonColor } from "../Button";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -15,6 +17,9 @@ const ProposalEditor: React.FC<{
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState<ModalData>();
+  const [imageLink, setImageLink] = useState("");
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -70,13 +75,52 @@ const ProposalEditor: React.FC<{
     "link",
     "image",
   ];
-  const imageHandler = () => {
-    var range = quill!.getSelection();
-    var value = prompt("please copy paste the image url here.");
 
-    if (value) {
-      quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
-    }
+  const imageHandler = () => {
+    setShowModal(true);
+    setModalData(imageData);
+  };
+
+  const imageData = {
+    title: "Add Image Link",
+    content: (
+      <div>
+        {
+          <>
+            <div className={classes.imageLinkInfo}>
+              <p>Please paste the image url</p>
+              <input
+                type="text"
+                placeholder="ex. https://noun.pics/1.jpg"
+                className={classes.imageLinkInput}
+                value={imageLink}
+                onChange={(e) => {
+                  setImageLink(e.target.value);
+                }}
+              />
+            </div>
+
+            <Button
+              text="Submit"
+              bgColor={ButtonColor.Green}
+              disabled={imageLink === ""}
+              onClick={() => {
+                quill!.insertEmbed(
+                  quill!.getSelection()!.index,
+                  "image",
+                  imageLink,
+                  Quill.sources.USER
+                );
+
+                setShowModal(false);
+                setImageLink("");
+              }}
+            />
+          </>
+        }
+      </div>
+    ),
+    onDismiss: () => setShowModal(false),
   };
 
   const modules = {
@@ -122,6 +166,8 @@ const ProposalEditor: React.FC<{
 
   return (
     <>
+      {showModal && modalData && <Modal data={modalData} />}
+
       <Row>
         <Col xl={12}>
           <Form>
@@ -139,7 +185,14 @@ const ProposalEditor: React.FC<{
                           : input.fieldValue.length}
                       </Form.Label>
                     </div>
-
+                    <input
+                      type="text"
+                      className={classes.imageLinkInput}
+                      value={imageLink}
+                      onChange={(e) => {
+                        setImageLink(e.target.value);
+                      }}
+                    />
                     <Form.Control
                       as={input.type as any}
                       autoFocus={input.focus}

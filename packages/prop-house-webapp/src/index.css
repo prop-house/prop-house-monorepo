@@ -34,7 +34,7 @@ code {
   padding: 1.5rem !important;
   position: sticky;
   top: 0;
-  z-index: 9999;
+  z-index: 9;
 }
 .ql-editor {
   font-size: 20px !important;
