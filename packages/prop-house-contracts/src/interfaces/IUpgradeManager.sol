@@ -3,9 +3,6 @@ pragma solidity ^0.8.13;
 
 /// @notice Interface for the Upgrade Manager
 interface IUpgradeManager {
-    /// @notice Thrown when the caller of a guarded function is not the registrar
-    error OnlyRegistrar();
-
     /// @notice Emitted when an upgrade is registered
     /// @param prevImpl The address of the previous implementation
     /// @param newImpl The address of the registered upgrade

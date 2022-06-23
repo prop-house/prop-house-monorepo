@@ -16,7 +16,7 @@ contract UpgradeManager is IUpgradeManager {
     /// @notice Require that the sender is the registrar
     modifier onlyRegistrar() {
         if (msg.sender != RegistrarManager.registrar()) {
-            revert OnlyRegistrar();
+            revert IRegistrarManager.OnlyRegistrar();
         }
         _;
     }

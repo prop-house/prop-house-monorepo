@@ -7,5 +7,7 @@ interface IPropHouse {
     error InvalidUpgrade();
 
     /// @notice Initialize a prop house contract
-    function initialize(address _creator) external;
+    /// @param creator The creator of the prop house
+    /// @param data Initialization data
+    function initialize(address creator, bytes calldata data) external;
 }

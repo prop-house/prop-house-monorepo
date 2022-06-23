@@ -3,9 +3,6 @@ pragma solidity ^0.8.13;
 
 /// @notice Interface for the Deployment Manager
 interface IDeploymentManager {
-    /// @notice Thrown when the caller of a guarded function is not the registrar
-    error OnlyRegistrar();
-
     /// @notice Emitted when a deployment target is registered
     /// @param impl The address of the registered deployment target
     event DeploymentTargetRegistered(address impl);

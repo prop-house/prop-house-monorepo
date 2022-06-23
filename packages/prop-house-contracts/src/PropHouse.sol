@@ -16,11 +16,15 @@ contract PropHouse is IPropHouse, UUPSUpgradeable, OwnableUpgradeable {
 
     /// @notice Initialize the prop house implementation
     /// @param _creator The creator of the prop house
-    function initialize(address _creator) external initializer {
+    /// @param _data Initialization data
+    function initialize(address _creator, bytes calldata _data) external initializer {
         __Ownable_init();
 
         // Transfer ownership to the house creator
         transferOwnership(_creator);
+
+        // TODO: Define V1 initilization data
+        _data;
     }
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation
