@@ -55,25 +55,3 @@
 .quillArea {
   width: 100%;
 }
-
-.imageLinkInfo {
-  padding-bottom: 20px;
-}
-.imageLinkInput {
-  border: none;
-  font-size: 16px;
-  width: 100%;
-  color: var(--brand-black);
-  margin-bottom: 1.75rem;
-  white-space: pre-line;
-  border-radius: 20px;
-  border: 1px rgba(0, 0, 0, 0.1) solid;
-  padding: 1rem;
-  margin-bottom: 0rem;
-}
-
-.imageLinkInput::placeholder {
-  font-style: italic;
-  font-weight: 600;
-  color: var(--brand-black-transparent);
-}

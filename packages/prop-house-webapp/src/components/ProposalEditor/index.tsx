@@ -5,10 +5,8 @@ import { ProposalFields } from "../../utils/proposalFields";
 import "react-quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
-
 import clsx from "clsx";
-import Modal, { ModalData } from "../Modal";
-import Button, { ButtonColor } from "../Button";
+import ProposalImageModal from "../ProposalImageModal";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -18,8 +16,6 @@ const ProposalEditor: React.FC<{
   const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState<ModalData>();
-  const [imageLink, setImageLink] = useState("");
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -78,49 +74,6 @@ const ProposalEditor: React.FC<{
 
   const imageHandler = () => {
     setShowModal(true);
-    setModalData(imageData);
-  };
-
-  const imageData = {
-    title: "Add Image Link",
-    content: (
-      <div>
-        {
-          <>
-            <div className={classes.imageLinkInfo}>
-              <p>Please paste the image url</p>
-              <input
-                type="text"
-                placeholder="ex. https://noun.pics/1.jpg"
-                className={classes.imageLinkInput}
-                value={imageLink}
-                onChange={(e) => {
-                  setImageLink(e.target.value);
-                }}
-              />
-            </div>
-
-            <Button
-              text="Submit"
-              bgColor={ButtonColor.Green}
-              disabled={imageLink === ""}
-              onClick={() => {
-                quill!.insertEmbed(
-                  quill!.getSelection()!.index,
-                  "image",
-                  imageLink,
-                  Quill.sources.USER
-                );
-
-                setShowModal(false);
-                setImageLink("");
-              }}
-            />
-          </>
-        }
-      </div>
-    ),
-    onDismiss: () => setShowModal(false),
   };
 
   const modules = {
@@ -166,8 +119,6 @@ const ProposalEditor: React.FC<{
 
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}
-
       <Row>
         <Col xl={12}>
           <Form>
@@ -251,6 +202,15 @@ const ProposalEditor: React.FC<{
           </Form>
         </Col>
       </Row>
+
+      <ProposalImageModal
+        quill={quill}
+        Quill={Quill}
+        title="Add Image Link"
+        subtitle="Please paste the image url"
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
     </>
   );
 };
