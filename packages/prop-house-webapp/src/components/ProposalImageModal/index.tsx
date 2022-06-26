@@ -20,53 +20,50 @@ const ProposalImageModal: React.FC<{
   function closeModal() {
     setShowModal(false);
   }
+
   return (
     <Modal
       isOpen={showModal}
       onRequestClose={closeModal}
       className={clsx(classes.modal)}
     >
-      {quill && (
-        <>
-          <div className={classes.imageLinkInfo}>
-            <button className={classes.closeButton} onClick={closeModal}>
-              <img src={xIcon} alt="Button to close modal" />
-            </button>
-            <h3>{title}</h3>
+      <div className={classes.imageLinkInfo}>
+        <button className={classes.closeButton} onClick={closeModal}>
+          <img src={xIcon} alt="Button to close modal" />
+        </button>
+        <h3>{title}</h3>
 
-            <p>{subtitle}</p>
-            <input
-              type="text"
-              autoFocus
-              placeholder="ex. https://noun.pics/1.jpg"
-              className={classes.imageLinkInput}
-              value={imageLink}
-              onChange={(e) => {
-                setImageLink(e.target.value);
-              }}
-            />
-          </div>
+        <p>{subtitle}</p>
+        <input
+          type="text"
+          autoFocus
+          placeholder="ex. https://noun.pics/1.jpg"
+          className={classes.imageLinkInput}
+          value={imageLink}
+          onChange={(e) => {
+            setImageLink(e.target.value);
+          }}
+        />
+      </div>
 
-          <Button
-            text="Submit"
-            bgColor={ButtonColor.Green}
-            disabled={imageLink === ""}
-            onClick={() => {
-              console.log("q", quill, imageLink);
+      <Button
+        text="Submit"
+        bgColor={ButtonColor.Green}
+        disabled={imageLink === ""}
+        onClick={() => {
+          quill.setSelection(quill.getLength(), 0);
 
-              quill.insertEmbed(
-                quill.getSelection().index,
-                "image",
-                imageLink,
-                Quill.sources.USER
-              );
+          quill.insertEmbed(
+            quill.getSelection().index,
+            "image",
+            imageLink,
+            Quill.sources.USER
+          );
 
-              setShowModal(false);
-              setImageLink("");
-            }}
-          />
-        </>
-      )}
+          setShowModal(false);
+          setImageLink("");
+        }}
+      />
     </Modal>
   );
 };
