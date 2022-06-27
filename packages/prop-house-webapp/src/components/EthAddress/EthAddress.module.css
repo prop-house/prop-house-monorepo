@@ -4,9 +4,9 @@
   text-decoration: none;
   color: black !important;
   margin: 0 !important;
-}
-.ethAddress img {
-  margin-right: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .ethAddress a:visited {
