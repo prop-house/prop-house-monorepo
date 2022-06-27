@@ -19,7 +19,6 @@ import { useEffect, useRef } from "react";
 import Upload from "./components/pages/Upload";
 import FAQ from "./components/pages/FAQ";
 import Explore from "./components/pages/Explore";
-import Test from "./components/pages/Test";
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -58,7 +57,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<Create />} />
-          <Route path="/test" element={<Test />} />
           <Route path="/learn" element={<Learn />} />
           <Route path="/upload" element={<Upload />} />
           <Route path="/explore" element={<Explore />} />

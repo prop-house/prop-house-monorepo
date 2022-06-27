@@ -24,11 +24,14 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  {communityName &&
-                    communityName.charAt(0).toUpperCase() +
-                      communityName.slice(1) +
-                      " • "}
-                  Prop #{proposalId}{" "}
+                  <div>
+                    {" "}
+                    {communityName &&
+                      communityName.charAt(0).toUpperCase() +
+                        communityName.slice(1) +
+                        " • "}
+                    <span style={{ color: "black" }}>#{proposalId} </span>
+                  </div>
                   <span className={classes.propSpacer}>&nbsp;•&nbsp;</span>
                   <div className={classes.submittedBy}>
                     Submitted by&nbsp;
