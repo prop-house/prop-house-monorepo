@@ -5,6 +5,9 @@
   color: black !important;
   margin: 0 !important;
 }
+.ethAddress img {
+  margin-right: 4px;
+}
 
 .ethAddress a:visited {
   color: inherit;
