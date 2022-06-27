@@ -65,8 +65,8 @@
 
 .timestamp {
   font-size: 16px;
-  color: var(--brand-black-transparent);
-  padding-top: 15px;
+  color: var(--brand-black);
+  font-weight: 600;
 }
 
 .readMore div {
@@ -89,4 +89,9 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+.avatarAndPropNumber {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

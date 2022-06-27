@@ -9,6 +9,8 @@ import { AuctionStatus } from "../../utils/auctionStatus";
 import { ProposalCardStatus } from "../../utils/cardStatus";
 import { VoteAllotment } from "../../utils/voteAllotment";
 import PropCardVotingContainer from "../PropCardVotingContainer";
+import Davatar from "@davatar/react";
+import { useEthers } from "@usedapp/core";
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -28,6 +30,8 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
+
+  const { library: provider } = useEthers();
 
   return (
     <>
@@ -51,20 +55,29 @@ const ProposalCard: React.FC<{
           )}
 
           <div className={classes.timestampAndlinkContainer}>
-            {auctionStatus === AuctionStatus.AuctionVoting ||
-            (auctionStatus === AuctionStatus.AuctionEnded &&
-              cardStatus !== ProposalCardStatus.Voting) ? (
-              <div className={classes.scoreCopy}>
-                Votes: {Math.trunc(proposal.score)}
-              </div>
-            ) : (
-              <div
-                className={classes.timestamp}
-                title={detailedTime(proposal.createdDate)}
-              >
-                #{proposal.id}
-              </div>
-            )}
+            <div className={classes.avatarAndPropNumber}>
+              <Davatar
+                size={24}
+                address={proposal.address}
+                provider={provider}
+                generatedAvatarType="blockies"
+              />
+
+              {auctionStatus === AuctionStatus.AuctionVoting ||
+              (auctionStatus === AuctionStatus.AuctionEnded &&
+                cardStatus !== ProposalCardStatus.Voting) ? (
+                <div className={classes.scoreCopy}>
+                  Votes: {Math.trunc(proposal.score)}
+                </div>
+              ) : (
+                <div
+                  className={classes.timestamp}
+                  title={detailedTime(proposal.createdDate)}
+                >
+                  #{proposal.id}
+                </div>
+              )}
+            </div>
 
             <div className={clsx(classes.readMore)}>
               <div
