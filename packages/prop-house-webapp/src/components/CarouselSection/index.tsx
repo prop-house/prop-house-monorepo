@@ -1,9 +1,22 @@
-import classes from './CarouselSection.module.css';
-import Button, { ButtonColor } from '../Button';
-import { Row } from 'react-bootstrap';
-import Carousel from '../Carousel';
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import classes from "./CarouselSection.module.css";
+import Button, { ButtonColor } from "../Button";
+import { Row } from "react-bootstrap";
+import Carousel from "../Carousel";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 const CarouselSection: React.FC<{
   contextTitle: string;
@@ -13,15 +26,19 @@ const CarouselSection: React.FC<{
 }> = (props) => {
   const { contextTitle, mainTitle, cards, linkDest } = props;
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   return (
     <Row className={classes.row}>
       <div className={classes.header}>{contextTitle}</div>
       <div className={classes.titleRow}>
-        <div className={classes.title} style={{marginRight: "1rem"}}>{mainTitle}</div>
+        <div className={classes.title} style={{ marginRight: "1rem" }}>
+          {mainTitle}
+        </div>
         {linkDest && (
           <Button
             bgColor={ButtonColor.White}
-            text="View all"
+            text={t("viewAll")}
             onClick={() => navigate(linkDest)}
           />
         )}

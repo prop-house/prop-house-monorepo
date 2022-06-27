@@ -12,6 +12,19 @@ import { ProposalCardStatus } from "../../utils/cardStatus";
 import { VoteAllotment } from "../../utils/voteAllotment";
 import PropCardVotingContainer from "../PropCardVotingContainer";
 import Tooltip from "../Tooltip";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -31,6 +44,7 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -42,15 +56,15 @@ const ProposalCard: React.FC<{
             ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
             : cardStatus === ProposalCardStatus.Winner
             ? globalClasses.pinkBorder
-            : '',
+            : "",
           classes.proposalCard
         )}
       >
         <div className={classes.authorContainer}>
-          <span style={{ fontWeight: '600' }}>#{proposal.id}&nbsp;•</span>&nbsp;
+          <span style={{ fontWeight: "600" }}>#{proposal.id}&nbsp;•</span>&nbsp;
           <EthAddress address={proposal.address} />
           &nbsp;
-          <span style={{ fontWeight: '600' }}>proposed</span>
+          <span style={{ fontWeight: "600" }}>{t("proposed")}</span>
         </div>
         {proposal.tldr.length > 0 ? (
           <Tooltip
@@ -76,7 +90,7 @@ const ProposalCard: React.FC<{
           (auctionStatus === AuctionStatus.AuctionEnded &&
             cardStatus !== ProposalCardStatus.Voting) ? (
             <div className={classes.scoreCopy}>
-              Votes: {Math.trunc(proposal.score)}
+              {t("votes")}: {Math.trunc(proposal.score)}
             </div>
           ) : (
             <div
@@ -96,7 +110,7 @@ const ProposalCard: React.FC<{
                     : globalClasses.fontPink
                 }
               >
-                Expand →
+                {t("expand")} →
               </div>
             </Link>
           </div>

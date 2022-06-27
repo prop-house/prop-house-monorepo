@@ -1,41 +1,54 @@
-import { Col, Row, Image } from 'react-bootstrap';
-import Button, { ButtonColor } from '../Button';
-import classes from './HomeHeader.module.css';
-import { Link } from 'react-router-dom';
-import grempBulb from '../../assets/gremp-lightbulb.png';
+import { Col, Row, Image } from "react-bootstrap";
+import Button, { ButtonColor } from "../Button";
+import classes from "./HomeHeader.module.css";
+import { Link } from "react-router-dom";
+import grempBulb from "../../assets/gremp-lightbulb.png";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 const HomeHeader = () => {
+  const { t } = useTranslation();
+
   return (
     <Row className={classes.wrapper}>
       <Col lg={7} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
-          Powered by{' '}
+          {t("powered")}{" "}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            NounsDAO
+            {t("nounsdao")}
           </a>
         </div>
-        <h1>Weekly funding for your Nounish ideas</h1>
-        <p>
-          Bring your ideas to life by submitting a proposal to a Prop House.
-          Funding rounds are held regularly and are available to anyone,
-          anywhere.
-        </p>
+
+        <h1>{t("weekly")}</h1>
+
+        <p>{t("bringToLife")}</p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">
             <Link to="/learn">
-              <Button text="Learn more" bgColor={ButtonColor.Pink} />
+              <Button text={t(`learnMore`)} bgColor={ButtonColor.Pink} />
             </Link>
           </Col>
           <Col xs={6} md="auto">
             <Link to={`/explore`}>
-              <Button text="View houses" bgColor={ButtonColor.White} />
+              <Button text={t(`viewHouses`)} bgColor={ButtonColor.White} />
             </Link>
           </Col>
         </div>
       </Col>
       <Col lg={{ span: 4, offset: 1 }} className={classes.rightCol}>
         <Image src={grempBulb} fluid />
-        <p>Artwork by @supergremplin</p>
+        <p>{t("artByGremplin")}</p>
       </Col>
     </Row>
   );

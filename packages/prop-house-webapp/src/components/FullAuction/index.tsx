@@ -21,10 +21,10 @@ import {
 } from "../../state/slices/propHouse";
 import { dispatchSortProposals } from "../../utils/sortingProposals";
 import {
-  auctionEmptyContent,
-  auctionNotStartedContent,
-  connectedCopy,
-  disconnectedCopy,
+  AuctionEmptyContent,
+  AuctionNotStartedContent,
+  ConnectedCopy,
+  DisconnectedCopy,
 } from "./content";
 
 import { getNumVotes } from "prop-house-communities";
@@ -188,8 +188,8 @@ const FullAuction: React.FC<{
           >
             <div>
               {delegatedVotes && delegatedVotes > 0
-                ? connectedCopy
-                : disconnectedCopy(connect)}
+                ? ConnectedCopy
+                : DisconnectedCopy(connect)}
             </div>
           </Card>
         )}
@@ -235,9 +235,9 @@ const FullAuction: React.FC<{
         </Row>
 
         {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-          auctionNotStartedContent
+          AuctionNotStartedContent
         ) : auction.proposals.length === 0 ? (
-          auctionEmptyContent
+          AuctionEmptyContent
         ) : (
           <>
             <ProposalCards
