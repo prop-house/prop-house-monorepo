@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
-/// @title ResgistrarManager
+/// @title RegistrarManager
 /// @notice This contract allows the registrar to update itself for many contracts in one call
-contract ResgistrarManager is IRegistrarManager {
+contract RegistrarManager is IRegistrarManager {
     /// @notice The address of the registrar
     address public registrar;
 
