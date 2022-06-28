@@ -4,6 +4,7 @@ import xIcon from "../../assets/icons/x-icon.png";
 import clsx from "clsx";
 import Modal from "react-modal";
 import Button, { ButtonColor } from "../Button";
+import httpsChecker from "../../utils/httpsChecker";
 
 const ProposalImageModal: React.FC<{
   quill: any;
@@ -15,7 +16,7 @@ const ProposalImageModal: React.FC<{
 }> = (props) => {
   const { quill, Quill, title, subtitle, showModal, setShowModal } = props;
 
-  const [imageLink, setImageLink] = useState("");
+  const [imageLink, setImageLink] = useState("https://");
 
   function closeModal() {
     setShowModal(false);
@@ -56,12 +57,12 @@ const ProposalImageModal: React.FC<{
           quill.insertEmbed(
             quill.getSelection().index,
             "image",
-            imageLink,
+            httpsChecker(imageLink),
             Quill.sources.USER
           );
 
           setShowModal(false);
-          setImageLink("");
+          setImageLink("https://");
         }}
       />
     </Modal>
