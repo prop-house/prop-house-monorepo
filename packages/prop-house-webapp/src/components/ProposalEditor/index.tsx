@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 import clsx from "clsx";
 import ProposalImageModal from "../ProposalImageModal";
+import "../../quill.css";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
