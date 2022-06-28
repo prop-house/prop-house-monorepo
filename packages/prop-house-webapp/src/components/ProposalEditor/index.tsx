@@ -206,7 +206,7 @@ const ProposalEditor: React.FC<{
       <ProposalImageModal
         quill={quill}
         Quill={Quill}
-        title="Add Image Link"
+        title="Add Image"
         subtitle="Please paste the image url"
         showModal={showModal}
         setShowModal={setShowModal}
