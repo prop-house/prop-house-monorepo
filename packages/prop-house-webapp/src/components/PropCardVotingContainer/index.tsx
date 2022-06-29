@@ -17,14 +17,8 @@ interface PropCardVotingContainerProps {
 const PropCardVotingContainer: React.FC<{
   props: PropCardVotingContainerProps;
 }> = (props) => {
-  const {
-    proposal,
-    cardStatus,
-    votesFor,
-    voteAllotments,
-    canAllotVotes,
-    handleVoteAllotment,
-  } = props.props;
+  const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } =
+    props.props;
 
   const allotedVotesForProp = votesForProp(voteAllotments, proposal.id);
 
@@ -40,11 +34,6 @@ const PropCardVotingContainer: React.FC<{
         className={classes.bottomContainer}
         onClick={(e: any) => e.stopPropagation()}
       >
-        <div className={classes.votesCopyContainer}>
-          {cardStatus === ProposalCardStatus.Voting && (
-            <div className={classes.yourVotesCopy}>Votes: {votesFor}</div>
-          )}
-        </div>
         <div className={classes.votesButtonContainer}>
           <Button
             text="↓"
