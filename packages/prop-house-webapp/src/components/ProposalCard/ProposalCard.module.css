@@ -10,10 +10,6 @@
   cursor: pointer;
 }
 
-.proposalCardVoting {
-  min-height: 20rem;
-}
-
 .propCopy {
   font-size: small;
   color: var(--brand-black-transparent);

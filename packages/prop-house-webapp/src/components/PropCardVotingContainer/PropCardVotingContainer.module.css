@@ -5,6 +5,7 @@
   align-items: center;
   margin-top: 1.5rem;
   padding-top: 1rem;
+  cursor: default;
 }
 .votesCopyContainer {
   display: flex;
