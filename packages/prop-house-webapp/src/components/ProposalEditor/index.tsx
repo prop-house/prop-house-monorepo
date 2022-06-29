@@ -31,7 +31,7 @@ const ProposalEditor: React.FC<{
       placeholder: "Give your proposal a name",
       value: "",
       minCount: 5,
-      maxCount: 100,
+      maxCount: 80,
       error: "Title must be 5 characters minimum",
     },
     {

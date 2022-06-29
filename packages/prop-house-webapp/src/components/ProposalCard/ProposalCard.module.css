@@ -24,6 +24,11 @@
   margin-bottom: 0.8rem;
   display: flex;
   height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 
 .authorContainer span {
@@ -78,6 +83,8 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+
+  word-break: break-word;
 }
 .avatarAndPropNumber {
   display: flex;
