@@ -8,6 +8,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   setActiveAuction,
   setActiveCommunity,
+  setActiveProposals,
   setAuctions,
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
@@ -64,6 +65,7 @@ const Community = () => {
     fetchCommunity();
     return () => {
       dispatch(setActiveCommunity());
+      dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
 

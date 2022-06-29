@@ -12,7 +12,7 @@
 }
 
 .proposalHelperWrapper {
-  margin: 2rem 0;
+  margin-top: 2rem;
 }
 .proposalHelperWrapper h1 {
   color: var(--brand-gray);
