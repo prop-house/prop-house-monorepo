@@ -32,7 +32,9 @@ const EthAddress: React.FC<{
           generatedAvatarType="blockies"
         />
 
-        {ens ? ens : trimEthAddress(address)}
+        <span className={classes.address}>
+          {ens ? ens : trimEthAddress(address)}
+        </span>
       </a>
     </div>
   );
