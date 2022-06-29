@@ -2,7 +2,11 @@
   cursor: pointer;
   color: inherit;
   text-decoration: none;
+  color: black !important;
   margin: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .ethAddress a:visited {

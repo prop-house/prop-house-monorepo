@@ -1,13 +1,13 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import { Row, Col } from 'react-bootstrap';
-import ProposalCard from '../ProposalCard';
-import { useAppSelector } from '../../hooks';
-import { auctionStatus } from '../../utils/auctionStatus';
-import { cardStatus } from '../../utils/cardStatus';
-import { useEthers } from '@usedapp/core';
-import extractAllVotes from '../../utils/extractAllVotes';
-import { VoteAllotment } from '../../utils/voteAllotment';
-import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
+import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import { Row, Col } from "react-bootstrap";
+import ProposalCard from "../ProposalCard";
+import { useAppSelector } from "../../hooks";
+import { auctionStatus } from "../../utils/auctionStatus";
+import { cardStatus } from "../../utils/cardStatus";
+import { useEthers } from "@usedapp/core";
+import extractAllVotes from "../../utils/extractAllVotes";
+import { VoteAllotment } from "../../utils/voteAllotment";
+import { aggVoteWeightForProp } from "../../utils/aggVoteWeight";
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -41,7 +41,7 @@ const ProposalCards: React.FC<{
                   votesFor={aggVoteWeightForProp(
                     extractAllVotes(
                       proposals ? proposals : [],
-                      account ? account : ''
+                      account ? account : ""
                     ),
                     proposal.id
                   )}
