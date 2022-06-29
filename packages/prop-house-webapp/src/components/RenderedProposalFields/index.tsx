@@ -58,7 +58,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
                 ]),
                 allowedAttributes: {
                   img: ["src", "alt"],
-                  a: ["href"],
+                  a: ["href", "target"],
                 },
                 allowedClasses: {
                   code: ["language-*", "lang-*"],
