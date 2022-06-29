@@ -6,8 +6,10 @@
 }
 
 .proposalCard:hover {
-  border: 1px solid var(--brand-pink);
+  border: 1px solid var(--brand-gray-semi-transparent);
   cursor: pointer;
+  transform: scale(1.01);
+  transition: all 0.15s ease-in-out;
 }
 
 .propCopy {
