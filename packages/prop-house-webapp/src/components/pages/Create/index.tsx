@@ -25,7 +25,7 @@ const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
   removeTags(data.what).length > 49 &&
   data.tldr.length > 9 &&
-  data.tldr.length < 120;
+  data.tldr.length < 121;
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
