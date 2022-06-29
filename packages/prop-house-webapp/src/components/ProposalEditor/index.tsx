@@ -5,8 +5,9 @@ import { ProposalFields } from "../../utils/proposalFields";
 import "react-quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
-
 import clsx from "clsx";
+import ProposalImageModal from "../ProposalImageModal";
+import "../../quill.css";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -15,6 +16,7 @@ const ProposalEditor: React.FC<{
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -70,13 +72,9 @@ const ProposalEditor: React.FC<{
     "link",
     "image",
   ];
-  const imageHandler = () => {
-    var range = quill!.getSelection();
-    var value = prompt("please copy paste the image url here.");
 
-    if (value) {
-      quill!.insertEmbed(range!.index, "image", value, Quill.sources.USER);
-    }
+  const imageHandler = () => {
+    setShowModal(true);
   };
 
   const modules = {
@@ -193,7 +191,7 @@ const ProposalEditor: React.FC<{
                     quill &&
                     validateInput(
                       descriptionData.minCount,
-                      quill.getText().length
+                      quill.getText().length - 1
                     ) && (
                       <p className={classes.inputError}>
                         {descriptionData.error}
@@ -205,6 +203,15 @@ const ProposalEditor: React.FC<{
           </Form>
         </Col>
       </Row>
+
+      <ProposalImageModal
+        quill={quill}
+        Quill={Quill}
+        title="Add Image"
+        subtitle="Please paste the image url"
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
     </>
   );
 };
