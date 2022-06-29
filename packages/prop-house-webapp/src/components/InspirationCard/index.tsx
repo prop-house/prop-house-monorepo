@@ -49,7 +49,7 @@ const itemCard = (item: ItemData) => (
 
 const InspirationCard = () => {
   const itemCards = itemCardData.map((item) => (
-    <Col xl={4} key={item.title}>
+    <Col xl={4}>
       {item.external ? (
         <a href={item.destination} target="_blank" rel="noreferrer">
           {itemCard(item)}
