@@ -122,3 +122,8 @@ ALTER TABLE ONLY "public"."proposal" ADD CONSTRAINT "FK_4903e953d99225f0b6f9d5ad
 ALTER TABLE ONLY "public"."vote" ADD CONSTRAINT "FK_a6099cc53a32762d8c69e71dcd1" FOREIGN KEY ("proposalId") REFERENCES proposal(id) NOT DEFERRABLE;
 
 -- 2022-06-15 19:10:50.929309+00
+
+-- 2022-06-28 add missing id sequence resets
+
+ALTER SEQUENCE auction_id_seq RESTART WITH 5;
+ALTER SEQUENCE proposal_id_seq RESTART WITH 7;
