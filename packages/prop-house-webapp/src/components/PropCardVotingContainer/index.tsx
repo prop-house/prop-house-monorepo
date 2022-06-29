@@ -50,7 +50,6 @@ const PropCardVotingContainer: React.FC<{
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            // @ts-ignore
             onClick={(e) => handleClick(e, false)}
             disabled={allotedVotesForProp === 0}
           />
@@ -61,7 +60,6 @@ const PropCardVotingContainer: React.FC<{
             text="↑"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            // @ts-ignore
             onClick={(e) => handleClick(e, true)}
             disabled={!canAllotVotes()}
           />
