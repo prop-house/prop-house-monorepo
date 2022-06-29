@@ -15,7 +15,6 @@ import RenderedProposalFields from "../../RenderedProposalFields";
 import proposalFields from "../../../utils/proposalFields";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import LoadingIndicator from "../../LoadingIndicator";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
 
 const Proposal = () => {
   const params = useParams();
@@ -50,10 +49,7 @@ const Proposal = () => {
 
     const fetch = async () => {
       try {
-        const proposal = (await backendClient.current.getProposal(
-          Number(id)
-        )) as StoredProposalWithVotes;
-        document.title = `${proposal.title}`;
+        const proposal = await backendClient.current.getProposal(Number(id));
         dispatch(setActiveProposal(proposal));
       } catch (e) {
         setFailedFetch(true);
@@ -61,10 +57,6 @@ const Proposal = () => {
     };
 
     fetch();
-
-    return () => {
-      document.title = "Prop House";
-    };
   }, [id, dispatch, failedFetch]);
 
   /**
@@ -95,7 +87,7 @@ const Proposal = () => {
             fields={proposalFields(proposal)}
             address={proposal.address}
             proposalId={proposal.id}
-            community={community}
+            communityName={community?.name}
             backButton={
               <div
                 className={classes.backToAuction}

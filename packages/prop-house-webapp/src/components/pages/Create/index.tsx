@@ -19,13 +19,16 @@ import { ProposalFields } from "../../../utils/proposalFields";
 import InspirationCard from "../../InspirationCard";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import Modal from "../../Modal";
-import removeTags from "../../../utils/removeTags";
+import Card, { CardBgColor, CardBorderRadius } from "../../Card";
 
-const isValidPropData = (data: ProposalFields) =>
-  data.title.length > 4 &&
-  removeTags(data.what).length > 49 &&
-  data.tldr.length > 9 &&
-  data.tldr.length < 120;
+const isValidPropData = (data: ProposalFields) => {
+  return (
+    data.title.length > 4 &&
+    data.what.length > 49 &&
+    data.tldr.length > 9 &&
+    data.tldr.length < 120
+  );
+};
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
@@ -93,7 +96,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: "Congrats!",
+    title: 'Congrats!',
     content: (
       <>
         <p>{`You've successfully submitted your proposal for \n ${
@@ -120,16 +123,30 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            Creating proposal for{" "}
+            Creating proposal for{' '}
             <span>
-              funding round{" "}
-              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{" "}
+              funding round{' '}
+              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
             </span>
           </h1>
         </Col>
       </Row>
 
       <Row>
+        <Card
+          bgColor={CardBgColor.LightPurple}
+          borderRadius={CardBorderRadius.twenty}
+          classNames={classes.tipCard}
+        >
+          <b>Tip:</b> Use markdown to style your proposal properly!{' '}
+          <a
+            href="https://www.markdownguide.org/basic-syntax/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Explore the syntax →
+          </a>
+        </Card>
         <Col xl={12}>
           {showPreview ? (
             <Preview />
@@ -142,7 +159,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? "Back to editor" : "Preview"}
+            text={showPreview ? 'Back to editor' : 'Preview'}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {

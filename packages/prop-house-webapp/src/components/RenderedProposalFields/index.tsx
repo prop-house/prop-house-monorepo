@@ -3,20 +3,17 @@ import { Row, Col } from "react-bootstrap";
 import { ProposalFields } from "../../utils/proposalFields";
 import EthAddress from "../EthAddress";
 import ReactMarkdown from "react-markdown";
-import sanitizeHtml from "sanitize-html";
-import { Link } from "react-router-dom";
-import { nameToSlug } from "../../utils/communitySlugs";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
   address?: string;
   proposalId?: number;
   backButton?: React.ReactNode;
-  community?: any;
+  communityName?: string;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
-  const { fields, address, proposalId, backButton, community } = props;
+  const { fields, address, proposalId, backButton, communityName } = props;
   return (
     <>
       <Row>
@@ -27,29 +24,14 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  <div className={classes.communityAndPropNumber}>
-                    {community && (
-                      <Link
-                        to={`/${nameToSlug(community.name)}`}
-                        className={classes.communityProfImgContainer}
-                      >
-                        <img
-                          src={community.profileImageUrl}
-                          alt="community profile "
-                          className={classes.communityProfImg}
-                        />
-                        {community.name.charAt(0).toUpperCase() +
-                          community.name.slice(1)}
-                      </Link>
-                    )}
-                    <span>&nbsp;•&nbsp;</span>
-                    <span className={classes.propNumber}>#{proposalId} </span>
-                  </div>
-
+                  {communityName &&
+                    communityName.charAt(0).toUpperCase() +
+                      communityName.slice(1) +
+                      " • "}
+                  Prop #{proposalId}{" "}
                   <span className={classes.propSpacer}>&nbsp;•&nbsp;</span>
-
                   <div className={classes.submittedBy}>
-                    by&nbsp;
+                    Submitted by&nbsp;
                     <EthAddress address={address} />
                   </div>
                 </div>
@@ -65,25 +47,10 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             children={fields.tldr}
           ></ReactMarkdown>
           <h2>Description</h2>
-          <div
-            className="ql-editor"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(fields.what, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
-                  "data",
-                ]),
-                allowedAttributes: {
-                  img: ["src", "alt"],
-                  a: ["href", "target"],
-                },
-                allowedClasses: {
-                  code: ["language-*", "lang-*"],
-                  pre: ["language-*", "lang-*"],
-                },
-              }),
-            }}
-          ></div>
+          <ReactMarkdown
+            className={classes.markdown}
+            children={fields.what}
+          ></ReactMarkdown>
         </Col>
       </Row>
     </>
