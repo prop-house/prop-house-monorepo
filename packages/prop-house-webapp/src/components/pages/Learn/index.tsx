@@ -8,19 +8,8 @@ import communityImg from "../../../assets/learn page/community.png";
 import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import ContactUsCTA from "../../ContactUsCTA";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
+import { useTranslation } from "react-i18next";
 
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
 const Learn = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();

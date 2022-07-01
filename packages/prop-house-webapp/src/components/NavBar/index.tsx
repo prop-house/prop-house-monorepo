@@ -3,20 +3,8 @@ import { Link } from "react-router-dom";
 import classes from "./NavBar.module.css";
 import Web3ModalButton from "../Web3ModalButton.tsx";
 import clsx from "clsx";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
 import LocaleSwitcher from "../LocaleSwitcher";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 const NavBar = () => {
   const { t } = useTranslation();

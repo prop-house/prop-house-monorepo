@@ -1,11 +1,11 @@
 import classes from "./LocaleSwitcher.module.css";
 import clsx from "clsx";
 import { Dropdown, DropdownButton } from "react-bootstrap";
+import { useState } from "react";
+import { BiWorld as World } from "react-icons/bi";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
-import { useState } from "react";
-import { BiWorld as World } from "react-icons/bi";
 
 i18n
   .use(initReactI18next)

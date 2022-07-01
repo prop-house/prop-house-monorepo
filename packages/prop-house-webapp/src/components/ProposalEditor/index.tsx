@@ -4,6 +4,7 @@ import { useAppSelector } from "../../hooks";
 import { ProposalFields } from "../../utils/proposalFields";
 import { useState } from "react";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -11,44 +12,43 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector((state) => state.editor.proposal);
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
+  const { t } = useTranslation();
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
 
   const formData = [
     {
-      title: "Title",
+      title: t("title"),
       type: "input",
       fieldValue: data.title,
       fieldName: "title",
-      placeholder: "Give your proposal a name",
+      placeholder: t("titlePlaceholder"),
       value: "",
       minCount: 5,
       maxCount: 100,
-      error: "Title must be 5 characters minimum",
+      error: t("titleError"),
     },
     {
-      title: "tl;dr",
+      title: t("tldr2"),
       type: "input",
       fieldValue: data.tldr,
       fieldName: "tldr",
-      placeholder:
-        "In the simplest language possible, explain your proposal in one sentence",
+      placeholder: t("tldrPlaceholder"),
       value: "",
       minCount: 10,
       maxCount: 120,
-      error: "TLDR must be between 10 & 120 characters",
+      error: t("tldrError"),
     },
     {
-      title: "Description",
+      title: t("description"),
       type: "textarea",
       fieldValue: data.what,
       fieldName: "what",
-      placeholder:
-        "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
+      placeholder: t("descriptionPlaceholder"),
       value: "",
       minCount: 50,
-      error: "Description must be 50 characters minimum",
+      error: t("descriptionError"),
     },
   ];
 

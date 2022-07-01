@@ -4,19 +4,7 @@ import { Row } from "react-bootstrap";
 import Carousel from "../Carousel";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 const CarouselSection: React.FC<{
   contextTitle: string;

@@ -8,19 +8,7 @@ import { IoCopy } from "react-icons/io5";
 import clsx from "clsx";
 import Tooltip from "../Tooltip";
 import { tempFundedBy } from "../../utils/tempFundingByFiller";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -131,7 +119,7 @@ const ProfileHeader: React.FC<{
           </Col>
           <Col className={classes.propHouseDataRow}>
             <div className={classes.item}>
-              <div className={classes.itemTitle}>{t("proposals")}</div>
+              <div className={classes.itemTitle}>{t("proposals2")}</div>
               <div className={classes.itemData}>
                 {community ? community.numProposals : 0}
               </div>

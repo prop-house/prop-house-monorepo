@@ -12,19 +12,7 @@ import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import Modal, { ModalData } from "../Modal";
 import { useNavigate } from "react-router-dom";
 import { useEthers } from "@usedapp/core";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
   const { proposal } = props;
@@ -55,14 +43,12 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
     content: (
       <Row>
         {activeAuctions.length === 0 ? (
-          <Col md={12}>
-            Currently, there are no open funding rounds to resubmit your
-            proposal to. Try again later!
-          </Col>
+          <Col md={12}>{t("noOpenRounds")}</Col>
         ) : (
           <>
             <Col md={12}>
-              Resubmit to funding round:{"   "}
+              {t("resubmitRound")}
+              {"   "}
               <Form.Select
                 className={classes.roundSelectionInput}
                 size="sm"
@@ -145,7 +131,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
     <>
       {showModal && modalData && <Modal data={modalData} />}{" "}
       <Button
-        text="Resubmit"
+        text={t("resubmit")}
         bgColor={ButtonColor.Pink}
         classNames={classes.cardResubmitBtn}
         onClick={() => {

@@ -20,19 +20,7 @@ import InspirationCard from "../../InspirationCard";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import Modal from "../../Modal";
 import Card, { CardBgColor, CardBorderRadius } from "../../Card";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 const isValidPropData = (data: ProposalFields) => {
   return (
@@ -177,7 +165,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? "Back to editor" : "Preview"}
+            text={showPreview ? t("backToEditor") : t("preview")}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {

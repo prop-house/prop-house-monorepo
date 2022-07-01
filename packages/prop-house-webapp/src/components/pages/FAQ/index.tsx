@@ -1,18 +1,6 @@
 import { Accordion } from "react-bootstrap";
 import classes from "./FAQ.module.css";
-import i18n from "i18next";
-import { useTranslation, initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+import { useTranslation } from "react-i18next";
 
 interface ContentItem {
   title: string;
@@ -20,7 +8,7 @@ interface ContentItem {
 }
 const content: ContentItem[] = [
   {
-    title: "What is Prop House?",
+    title: "faq1title",
     content: (
       <>
         Nouns Proposal Auction House (or Prop House) is an experimental approach
@@ -30,7 +18,7 @@ const content: ContentItem[] = [
     ),
   },
   {
-    title: "Who can submit a proposal?",
+    title: "faq2title",
     content: (
       <>
         Anyone with an Ethereum address can submit a proposal to any funding
@@ -39,7 +27,7 @@ const content: ContentItem[] = [
     ),
   },
   {
-    title: "What type of proposals are expected?",
+    title: "faq3title",
     content: (
       <>
         All things that further proliferate Nouns culture are encouraged.
@@ -53,7 +41,7 @@ const content: ContentItem[] = [
     ),
   },
   {
-    title: "How are winners decided?",
+    title: "faq4title",
     content: (
       <>
         Noun owners and holders of Nouns extension communities NFTs will decide
@@ -63,7 +51,7 @@ const content: ContentItem[] = [
     ),
   },
   {
-    title: "What happens if I win?",
+    title: "faq5title",
     content: (
       <>
         Congrats! As the winner of a funding round, you'll received the round's
@@ -74,7 +62,7 @@ const content: ContentItem[] = [
     ),
   },
   {
-    title: "More questions?",
+    title: "faq6title",
     content: (
       <>
         Twitter DMs are open:{" "}
@@ -100,7 +88,7 @@ const FAQ = () => {
         {content.map((item, i) => (
           <>
             <Accordion.Item eventKey={`${i}`} className={classes.accordionItem}>
-              <Accordion.Header>{content[i].title}</Accordion.Header>
+              <Accordion.Header>{t(content[i].title)}</Accordion.Header>
               <Accordion.Body>{content[i].content}</Accordion.Body>
             </Accordion.Item>
           </>

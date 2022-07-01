@@ -29,6 +29,7 @@ import {
 
 import { getNumVotes } from "prop-house-communities";
 import SortDropdown from "../SortDropdown";
+import { useTranslation } from "react-i18next";
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -51,6 +52,7 @@ const FullAuction: React.FC<{
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -223,7 +225,7 @@ const FullAuction: React.FC<{
             <div className={classes.proposalTitle}>{`${
               proposals
                 ? `${proposals.length} ${
-                    proposals.length === 1 ? "proposal" : "proposals"
+                    proposals.length === 1 ? t("proposal") : t("proposals")
                   }`
                 : ""
             }`}</div>
