@@ -1,17 +1,30 @@
-import classes from './ResubmitPropBtn.module.css';
-import { Row, Col, Form } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks';
-import isAuctionActive from '../../utils/isAuctionActive';
-import { useState, useRef, useEffect } from 'react';
-import Button, { ButtonColor } from '../Button';
+import classes from "./ResubmitPropBtn.module.css";
+import { Row, Col, Form } from "react-bootstrap";
+import { useAppSelector } from "../../hooks";
+import isAuctionActive from "../../utils/isAuctionActive";
+import { useState, useRef, useEffect } from "react";
+import Button, { ButtonColor } from "../Button";
 import {
   StoredProposal,
   Proposal,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import Modal, { ModalData } from '../Modal';
-import { useNavigate } from 'react-router-dom';
-import { useEthers } from '@usedapp/core';
+} from "@nouns/prop-house-wrapper/dist/builders";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import Modal, { ModalData } from "../Modal";
+import { useNavigate } from "react-router-dom";
+import { useEthers } from "@usedapp/core";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
   const { proposal } = props;
@@ -27,6 +40,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -37,7 +51,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
   }, [activeAuctions]);
 
   const resubmitModalData = {
-    title: 'Resubmit Proposal',
+    title: `${t("resubmit")}`,
     content: (
       <Row>
         {activeAuctions.length === 0 ? (
@@ -48,7 +62,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
         ) : (
           <>
             <Col md={12}>
-              Resubmit to funding round:{'   '}
+              Resubmit to funding round:{"   "}
               <Form.Select
                 className={classes.roundSelectionInput}
                 size="sm"
@@ -63,7 +77,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
             </Col>
             <Col md={12}>
               <Button
-                text="Submit"
+                text={t("submit")}
                 bgColor={ButtonColor.Green}
                 classNames={classes.resubmitProposalButton}
                 onClick={() =>
@@ -84,15 +98,15 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
   };
 
   const resubmissionSuccessModalData = (fundingRoundId: number) => ({
-    title: 'Success!',
+    title: t("success"),
     content: (
       <Row>
         <Col xl={12}>
-          Your proposal has been resubmitted to funding round {fundingRoundId}
+          {t("hasBeenResubmitted")} {fundingRoundId}
         </Col>
         <Col xl={12}>
           <Button
-            text="View Round"
+            text={t("viewRound")}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowModal(false);
@@ -129,7 +143,7 @@ const ResubmitPropBtn: React.FC<{ proposal: StoredProposal }> = (props) => {
 
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}{' '}
+      {showModal && modalData && <Modal data={modalData} />}{" "}
       <Button
         text="Resubmit"
         bgColor={ButtonColor.Pink}

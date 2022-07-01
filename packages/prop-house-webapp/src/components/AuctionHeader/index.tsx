@@ -17,6 +17,19 @@ import { useLocation } from "react-router-dom";
 import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
 import Tooltip from "../Tooltip";
 import dayjs from "dayjs";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -46,8 +59,9 @@ const AuctionHeader: React.FC<{
 
   const navigate = useNavigate();
   const location = useLocation();
-  const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
+  const onAuctionPage = location.pathname.includes("auction"); // disable clickable header when browsing auctions
   const status = auctionStatus(auction);
+  const { t } = useTranslation();
 
   const {
     id,
@@ -91,7 +105,7 @@ const AuctionHeader: React.FC<{
               <span title={startDate.toLocaleString()}>
                 {formatTime(startDate)}
               </span>
-              {' - '}
+              {" - "}
               <span title={proposalEndDate.toLocaleString()}>
                 {formatTime(proposalEndDate)}
               </span>
@@ -111,7 +125,7 @@ const AuctionHeader: React.FC<{
             )}
 
           <div className={classes.infoSubsection}>
-            <div className={classes.infoSubsectionTitle}>Funding</div>
+            <div className={classes.infoSubsectionTitle}>{t("funding")}</div>
             <div className={classes.infoSubsectionContent}>
               {`${fundingAmount.toFixed(2)} Ξ `}
               <span>× {numWinners}</span>
@@ -139,7 +153,7 @@ const AuctionHeader: React.FC<{
           {status === AuctionStatus.AuctionAcceptingProps ? (
             <div className={classes.infoSubsection}>
               <Button
-                text="Propose"
+                text={t("propose")}
                 bgColor={ButtonColor.Pink}
                 onClick={() => navigate("/create")}
               />
@@ -150,7 +164,7 @@ const AuctionHeader: React.FC<{
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <Button
-                  text="Vote"
+                  text={t("vote")}
                   disabled={voteBtnEnabled ? false : true}
                   bgColor={ButtonColor.Yellow}
                   onClick={handleVote}

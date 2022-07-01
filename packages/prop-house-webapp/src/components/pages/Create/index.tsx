@@ -20,6 +20,19 @@ import InspirationCard from "../../InspirationCard";
 import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import Modal from "../../Modal";
 import Card, { CardBgColor, CardBorderRadius } from "../../Card";
+import i18n from "i18next";
+import { useTranslation, initReactI18next } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+
+i18n
+  .use(initReactI18next)
+  .use(HttpBackend)
+  .init({
+    backend: { loadPath: "/locales/{{lng}}.json" },
+    lng: "en",
+    fallbackLng: "en",
+    interpolation: { escapeValue: false },
+  });
 
 const isValidPropData = (data: ProposalFields) => {
   return (
@@ -32,6 +45,7 @@ const isValidPropData = (data: ProposalFields) => {
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
+  const { t } = useTranslation();
 
   const [parentAuction, setParentAuction] = useState<undefined | StoredAuction>(
     undefined
@@ -96,14 +110,18 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: 'Congrats!',
+    title: t("congrats"),
     content: (
       <>
-        <p>{`You've successfully submitted your proposal for \n ${
-          activeCommunity && activeCommunity.name
-        } ${`(${activeAuction && activeAuction.title})`}`}</p>
+        <p>
+          {`
+          ${t(`successfulSubmission`)} \n
+           ${activeCommunity && activeCommunity.name} ${`(${
+            activeAuction && activeAuction.title
+          })`}`}
+        </p>
         <Button
-          text="View house"
+          text={t("viewHouse")}
           bgColor={ButtonColor.White}
           onClick={() =>
             navigate(`/${activeCommunity && activeCommunity.contractAddress}`)
@@ -123,10 +141,10 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            Creating proposal for{' '}
+            {t("creatingProp")}{" "}
             <span>
-              funding round{' '}
-              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{' '}
+              {t("fundingRound")}{" "}
+              {`${parentAuction.id} (${parentAuction.amountEth} ETH)`}{" "}
             </span>
           </h1>
         </Col>
@@ -138,13 +156,13 @@ const Create: React.FC<{}> = () => {
           borderRadius={CardBorderRadius.twenty}
           classNames={classes.tipCard}
         >
-          <b>Tip:</b> Use markdown to style your proposal properly!{' '}
+          <b>{t("tip")}</b> {t("useMarkdown")}{" "}
           <a
             href="https://www.markdownguide.org/basic-syntax/"
             target="_blank"
             rel="noreferrer"
           >
-            Explore the syntax →
+            {t("exploreSyntax")} →
           </a>
         </Card>
         <Col xl={12}>
@@ -159,7 +177,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? 'Back to editor' : 'Preview'}
+            text={showPreview ? "Back to editor" : "Preview"}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {
@@ -173,7 +191,7 @@ const Create: React.FC<{}> = () => {
             (account ? (
               <Button
                 classNames={classes.actionBtn}
-                text="Sign and Submit"
+                text={t("signSubmit")}
                 bgColor={ButtonColor.Pink}
                 onClick={submitProposal}
                 disabled={!isValidPropData(proposalEditorData)}
@@ -182,7 +200,7 @@ const Create: React.FC<{}> = () => {
               <Button
                 classNames={classes.actionBtn}
                 bgColor={ButtonColor.Pink}
-                text="Connect Wallet To Submit"
+                text={t("connectWallet")}
                 onClick={connect}
               />
             ))}

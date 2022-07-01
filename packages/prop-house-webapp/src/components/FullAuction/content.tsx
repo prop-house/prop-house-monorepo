@@ -52,7 +52,11 @@ export const DisconnectedCopy = (onClick: () => void) => {
         </h4>
         <p>{t("votingPeriod")}</p>
       </div>
-      <Button text="Connect" bgColor={ButtonColor.Pink} onClick={onClick} />
+      <Button
+        text={t("connect")}
+        bgColor={ButtonColor.Pink}
+        onClick={onClick}
+      />
     </div>
   );
 };
