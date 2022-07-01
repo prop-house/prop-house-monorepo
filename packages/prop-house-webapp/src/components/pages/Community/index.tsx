@@ -9,7 +9,6 @@ import {
   setActiveAuction,
   setActiveCommunity,
   setActiveProposals,
-  setAuctions,
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
 import FullAuction from '../../FullAuction';
@@ -55,7 +54,6 @@ const Community = () => {
           dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1
         );
         dispatch(setActiveCommunity(community));
-        dispatch(setAuctions(community.auctions));
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         setFailedFetch(true);
