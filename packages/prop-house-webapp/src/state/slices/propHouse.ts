@@ -20,7 +20,10 @@ export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
   reducers: {
-    setActiveAuction: (state, action: PayloadAction<StoredAuction>) => {
+    setActiveAuction: (
+      state,
+      action: PayloadAction<StoredAuction | undefined>
+    ) => {
       state.activeAuction = action.payload;
     },
     setActiveProposal: (

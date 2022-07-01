@@ -30,6 +30,7 @@ const Community = () => {
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
   const [failedFetch, setFailedFetch] = useState(false);
+  const cleanedUp = useRef(false);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const activeAuction = useAppSelector(
     (state) => state.propHouse.activeAuction
@@ -53,16 +54,19 @@ const Community = () => {
         community.auctions.sort((a, b) =>
           dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1
         );
+
+        if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         setFailedFetch(true);
-        console.log(e);
       }
     };
     fetchCommunity();
     return () => {
+      cleanedUp.current = true;
       dispatch(setActiveCommunity());
+      dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
