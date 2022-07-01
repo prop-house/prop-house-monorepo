@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "./state/store";
 import relativeTime from "dayjs/plugin/relativeTime";
 import dayjs from "dayjs";
+import "./i18n";
 
 dayjs.extend(relativeTime);
 
