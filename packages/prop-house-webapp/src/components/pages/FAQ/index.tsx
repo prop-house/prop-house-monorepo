@@ -1,6 +1,7 @@
 import { Accordion } from "react-bootstrap";
 import classes from "./FAQ.module.css";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import ReactHtmlParser from "react-html-parser";
 
 interface ContentItem {
   title: string;
@@ -8,67 +9,12 @@ interface ContentItem {
 }
 
 const content: ContentItem[] = [
-  {
-    title: "faq1title",
-    content: (
-      <>
-        <Trans i18nKey="faq1answer"></Trans>
-      </>
-    ),
-  },
-  {
-    title: "faq2title",
-    content: (
-      <>
-        <Trans i18nKey="faq2answer"></Trans>
-      </>
-    ),
-  },
-  {
-    title: "faq3title",
-    content: (
-      <>
-        <Trans i18nKey="faq3answer"></Trans>
-        <a href="https://nouns.wtf/vote" target="_blank" rel="noreferrer">
-          {" "}
-          <Trans i18nKey="here"></Trans>
-        </a>
-        .
-      </>
-    ),
-  },
-  {
-    title: "faq4title",
-    content: (
-      <>
-        <Trans i18nKey="faq4answer"></Trans>
-      </>
-    ),
-  },
-  {
-    title: "faq5title",
-    content: (
-      <>
-        <Trans i18nKey="faq5answer"></Trans>
-      </>
-    ),
-  },
-  {
-    title: "faq6title",
-    content: (
-      <>
-        <Trans i18nKey="faq6answer"></Trans>
-        <a
-          href="https://twitter.com/nounsprophouse"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {" "}
-          twitter.com/nounsprophouse →
-        </a>
-      </>
-    ),
-  },
+  { title: "faq1title", content: "faq1answer" },
+  { title: "faq2title", content: "faq2answer" },
+  { title: "faq3title", content: "faq3answer" },
+  { title: "faq4title", content: "faq4answer" },
+  { title: "faq5title", content: "faq5answer" },
+  { title: "faq6title", content: "faq6answer" },
 ];
 
 const FAQ = () => {
@@ -82,7 +28,9 @@ const FAQ = () => {
           <div key={item.title}>
             <Accordion.Item eventKey={`${i}`} className={classes.accordionItem}>
               <Accordion.Header>{t(content[i].title)}</Accordion.Header>
-              <Accordion.Body>{content[i].content}</Accordion.Body>
+              <Accordion.Body>
+                {ReactHtmlParser(t(`${content[i].content}`))}
+              </Accordion.Body>
             </Accordion.Item>
           </div>
         ))}
