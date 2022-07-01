@@ -1,44 +1,40 @@
 import classes from "./LocaleSwitcher.module.css";
 import clsx from "clsx";
 import { Dropdown, DropdownButton } from "react-bootstrap";
-import { useState } from "react";
 import { BiWorld as World } from "react-icons/bi";
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
 
-i18n
-  .use(initReactI18next)
-  .use(HttpBackend)
-  .init({
-    backend: { loadPath: "/locales/{{lng}}.json" },
-    lng: "en",
-    fallbackLng: "en",
-    interpolation: { escapeValue: false },
-  });
+interface Languages {
+  en: Language;
+  jp: Language;
+}
+
+interface Language {
+  nativeName: string;
+}
 
 const LocalSwitcher: React.FC<{}> = () => {
-  const [lang, setLang] = useState("");
-
-  const handleClick = (e: any) => {
-    const target = e.target as HTMLElement;
-    setLang(target.innerText);
+  const lngs: Languages = {
+    en: {
+      nativeName: "English",
+    },
+    jp: {
+      nativeName: "日本語",
+    },
   };
 
   return (
-    <DropdownButton
-      title={<World />}
-      // title={lang ? lang : <World />}
-      className={clsx(classes.langBtn, "lang")}
-      onSelect={(e) => i18n.changeLanguage(e!)}
-    >
-      <Dropdown.Item as="button" eventKey="en" onClick={handleClick}>
-        English
-      </Dropdown.Item>
-
-      <Dropdown.Item as="button" eventKey="jp" onClick={handleClick}>
-        Japanese
-      </Dropdown.Item>
+    <DropdownButton title={<World />} className={clsx(classes.langBtn, "lang")}>
+      {Object.keys(lngs).map((lng) => (
+        <Dropdown.Item
+          key={lng}
+          as="button"
+          onClick={() => i18n.changeLanguage(lng)}
+          disabled={i18n.resolvedLanguage === lng}
+        >
+          {lngs[lng as keyof Languages].nativeName}
+        </Dropdown.Item>
+      ))}
     </DropdownButton>
   );
 };
