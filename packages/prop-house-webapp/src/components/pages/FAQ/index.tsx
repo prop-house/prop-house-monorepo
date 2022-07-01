@@ -1,19 +1,18 @@
 import { Accordion } from "react-bootstrap";
 import classes from "./FAQ.module.css";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 
 interface ContentItem {
   title: string;
   content: React.ReactNode;
 }
+
 const content: ContentItem[] = [
   {
     title: "faq1title",
     content: (
       <>
-        Nouns Proposal Auction House (or Prop House) is an experimental approach
-        to deploying capital. Through funding rounds, ETH is auctioned off to
-        the best bidder. The bids are proxy community proposals.
+        <Trans i18nKey="faq1answer"></Trans>
       </>
     ),
   },
@@ -21,8 +20,7 @@ const content: ContentItem[] = [
     title: "faq2title",
     content: (
       <>
-        Anyone with an Ethereum address can submit a proposal to any funding
-        round.
+        <Trans i18nKey="faq2answer"></Trans>
       </>
     ),
   },
@@ -30,11 +28,10 @@ const content: ContentItem[] = [
     title: "faq3title",
     content: (
       <>
-        All things that further proliferate Nouns culture are encouraged.
-        Submissions can be both for entire projects or trial of potential
-        projects. You can see examples of official proposals that have passed{" "}
+        <Trans i18nKey="faq3answer"></Trans>
         <a href="https://nouns.wtf/vote" target="_blank" rel="noreferrer">
-          here
+          {" "}
+          <Trans i18nKey="here"></Trans>
         </a>
         .
       </>
@@ -44,9 +41,7 @@ const content: ContentItem[] = [
     title: "faq4title",
     content: (
       <>
-        Noun owners and holders of Nouns extension communities NFTs will decide
-        who wins by voting. The proposals with the highest most votes will get
-        funded.
+        <Trans i18nKey="faq4answer"></Trans>
       </>
     ),
   },
@@ -54,10 +49,7 @@ const content: ContentItem[] = [
     title: "faq5title",
     content: (
       <>
-        Congrats! As the winner of a funding round, you'll received the round's
-        funding amount and be invited to the Prop House builders discord. You'll
-        have the support of the Nouns community to complete your proposal and
-        apply for follow-on funding if needed.
+        <Trans i18nKey="faq5answer"></Trans>
       </>
     ),
   },
@@ -65,12 +57,13 @@ const content: ContentItem[] = [
     title: "faq6title",
     content: (
       <>
-        Twitter DMs are open:{" "}
+        <Trans i18nKey="faq6answer"></Trans>
         <a
           href="https://twitter.com/nounsprophouse"
           target="_blank"
           rel="noreferrer"
         >
+          {" "}
           twitter.com/nounsprophouse →
         </a>
       </>
@@ -86,12 +79,12 @@ const FAQ = () => {
       <h1 className={classes.title}>{t("frequentlyAsked")}</h1>
       <Accordion flush className={classes.accordion}>
         {content.map((item, i) => (
-          <>
+          <div key={item.title}>
             <Accordion.Item eventKey={`${i}`} className={classes.accordionItem}>
               <Accordion.Header>{t(content[i].title)}</Accordion.Header>
               <Accordion.Body>{content[i].content}</Accordion.Body>
             </Accordion.Item>
-          </>
+          </div>
         ))}
       </Accordion>
     </>
