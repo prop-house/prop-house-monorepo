@@ -107,5 +107,13 @@
   "descriptionPlaceholder": "プロジェクトの詳細：何を構築していますか？\nロードマップ:いつまでに完了する予定ですか?\nチーム:これを構築しているのは誰ですか?\nリンク:チームとプロジェクトに関連するリンクを共有します",
   "titleError": "タイトルは5文字以上である必要があります",
   "tldrError": "TLDRは10〜120文字である必要があります",
-  "descriptionError": "説明は50文字以上である必要があります"
+  "descriptionError": "説明は50文字以上である必要があります",
+  "yourFiles": "あなたのファイル",
+  "uploadMessage": "行は表示されますがファイルが表示されない場合、アップロードは成功しましたが、画像がありませんPinataが遅いだけです",
+  "copyableMarkdown": "コピー可能なマークダウン:",
+  "fetchYourFiles": "ファイルを取得する",
+  "uploadNewFile": "新しいファイルをアップロードする:",
+  "onlyAccepts": "PNGとJPEGのみを受け入れます。",
+  "publicFiles": "アップロードするすべてのファイルは公開されます！",
+  "upload": "アップロード！"
 }

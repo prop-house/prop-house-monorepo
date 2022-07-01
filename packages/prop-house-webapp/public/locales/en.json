@@ -107,5 +107,13 @@
   "descriptionPlaceholder": "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
   "titleError": "Title must be 5 characters minimum",
   "tldrError": "TLDR must be between 10 & 120 characters",
-  "descriptionError": "Description must be 50 characters minimum"
+  "descriptionError": "Description must be 50 characters minimum",
+  "yourFiles": "Your files",
+  "uploadMessage": "If you see a row but no file, your upload succeeded but no image Pinata is just being slow",
+  "copyableMarkdown": "Copyable markdown:",
+  "fetchYourFiles": "Fetch Your Files",
+  "uploadNewFile": "Upload New File:",
+  "onlyAccepts": "Only accepts PNGs and JPEGs.",
+  "publicFiles": "Every file you upload will be public!",
+  "upload": "Upload!"
 }
