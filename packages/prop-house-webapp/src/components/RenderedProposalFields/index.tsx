@@ -60,13 +60,17 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
               <h1>{fields.title}</h1>
             </div>
           </div>
-          <hr></hr>
-          <h2>tl;dr</h2>
 
-          <ReactMarkdown
-            className={classes.markdown}
-            children={fields.tldr}
-          ></ReactMarkdown>
+          {fields.tldr && (
+            <>
+              <hr></hr>
+              <h2>tl;dr</h2>
+              <ReactMarkdown
+                className={classes.markdown}
+                children={fields.tldr}
+              ></ReactMarkdown>
+            </>
+          )}
 
           <h2>Description</h2>
           {/*
