@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
 import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
+import { useAppSelector } from '../../hooks';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -48,6 +49,7 @@ const AuctionHeader: React.FC<{
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
   const status = auctionStatus(auction);
+  const community = useAppSelector((state) => state.propHouse.activeCommunity);
 
   const {
     id,
@@ -141,7 +143,9 @@ const AuctionHeader: React.FC<{
               <Button
                 text="Propose"
                 bgColor={ButtonColor.Pink}
-                onClick={() => navigate('/create', { state: { auction } })}
+                onClick={() =>
+                  navigate('/create', { state: { auction, community } })
+                }
               />
             </div>
           ) : (

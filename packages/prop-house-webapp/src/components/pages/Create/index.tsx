@@ -30,6 +30,7 @@ const Create: React.FC<{}> = () => {
   // auction to submit prop to is passed via react-router from propse btn
   const location = useLocation();
   const activeAuction = location.state.auction;
+  const activeCommunity = location.state.community;
 
   const [showPreview, setShowPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -41,9 +42,6 @@ const Create: React.FC<{}> = () => {
 
   const backendHost = useAppSelector(
     (state) => state.configuration.backendHost
-  );
-  const activeCommunity = useAppSelector(
-    (state) => state.propHouse.activeCommunity
   );
 
   const backendClient = useRef(
