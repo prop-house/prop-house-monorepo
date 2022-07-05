@@ -68,7 +68,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             children={fields.tldr}
           ></ReactMarkdown>
 
-          <h2>description</h2>
+          <h2>Description</h2>
           <Markdown>
             {sanitizeHtml(fields.what, {
               allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
