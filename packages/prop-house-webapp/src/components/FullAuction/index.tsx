@@ -41,7 +41,6 @@ const FullAuction: React.FC<{
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
-  const cleanedUp = useRef(false);
 
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
@@ -98,14 +97,12 @@ const FullAuction: React.FC<{
   useEffect(() => {
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
-
-      if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
       dispatch(setActiveProposals(proposals));
       dispatchSortProposals(dispatch, auction, false); // initial sort
     };
     fetchAuctionProposals();
     return () => {
-      cleanedUp.current = true;
+      dispatch(setActiveProposals([]));
     };
   }, [auction.id, dispatch, account, auction]);
 
