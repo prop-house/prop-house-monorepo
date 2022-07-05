@@ -9,9 +9,9 @@ const HomeHeader = () => {
     <Row className={classes.wrapper}>
       <Col lg={7} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
-          Powered by{' '}
+          Public infrastructure by{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            NounsDAO
+            Nouns DAO
           </a>
         </div>
         <h1>Weekly funding for your Nounish ideas</h1>
