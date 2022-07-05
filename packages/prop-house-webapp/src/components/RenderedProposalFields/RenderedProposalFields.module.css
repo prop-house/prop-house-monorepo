@@ -20,7 +20,10 @@
 .previewCol img {
   max-width: 100%;
 }
-
+.previewCol a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline !important;
+}
 .previewCol h2 {
   margin-top: 3rem;
   font-size: 18px;
