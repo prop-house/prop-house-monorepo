@@ -69,6 +69,11 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
           ></ReactMarkdown>
 
           <h2>Description</h2>
+          {/*
+           * We sanitize HTML coming from rich text editor to prevent xss attacks.
+           *
+           * <Markdown/> component used to render HTML, while supporting Markdown.
+           */}
           <Markdown>
             {sanitizeHtml(fields.what, {
               allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
@@ -83,6 +88,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
                 code: ["language-*", "lang-*"],
                 pre: ["language-*", "lang-*"],
               },
+              // edge case: handle ampersands in img links encoded from sanitization
             }).replaceAll("&amp;", "&")}
           </Markdown>
         </Col>
