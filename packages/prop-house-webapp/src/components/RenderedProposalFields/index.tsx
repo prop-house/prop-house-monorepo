@@ -1,12 +1,12 @@
-import classes from "./RenderedProposalFields.module.css";
-import { Row, Col } from "react-bootstrap";
-import { ProposalFields } from "../../utils/proposalFields";
-import EthAddress from "../EthAddress";
-import ReactMarkdown from "react-markdown";
-import { Link } from "react-router-dom";
-import { nameToSlug } from "../../utils/communitySlugs";
-import Markdown from "markdown-to-jsx";
-import sanitizeHtml from "sanitize-html";
+import classes from './RenderedProposalFields.module.css';
+import { Row, Col } from 'react-bootstrap';
+import { ProposalFields } from '../../utils/proposalFields';
+import EthAddress from '../EthAddress';
+import ReactMarkdown from 'react-markdown';
+import { Link } from 'react-router-dom';
+import { nameToSlug } from '../../utils/communitySlugs';
+import Markdown from 'markdown-to-jsx';
+import sanitizeHtml from 'sanitize-html';
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -76,20 +76,20 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
            */}
           <Markdown>
             {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
               allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
-                "data",
+                'data',
               ]),
               allowedAttributes: {
-                img: ["src", "alt"],
-                a: ["href", "target"],
+                img: ['src', 'alt'],
+                a: ['href', 'target'],
               },
               allowedClasses: {
-                code: ["language-*", "lang-*"],
-                pre: ["language-*", "lang-*"],
+                code: ['language-*', 'lang-*'],
+                pre: ['language-*', 'lang-*'],
               },
               // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll("&amp;", "&")}
+            }).replaceAll('&amp;', '&')}
           </Markdown>
         </Col>
       </Row>

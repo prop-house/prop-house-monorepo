@@ -1,13 +1,13 @@
-import classes from "./ProposalEditor.module.css";
-import { Row, Col, Form } from "react-bootstrap";
-import { useAppSelector } from "../../hooks";
-import { ProposalFields } from "../../utils/proposalFields";
-import "react-quill/dist/quill.snow.css";
-import { useEffect, useState } from "react";
-import { useQuill } from "react-quilljs";
-import clsx from "clsx";
-import QuillEditorModal from "../QuillEditorModal";
-import "../../quill.css";
+import classes from './ProposalEditor.module.css';
+import { Row, Col, Form } from 'react-bootstrap';
+import { useAppSelector } from '../../hooks';
+import { ProposalFields } from '../../utils/proposalFields';
+import 'react-quill/dist/quill.snow.css';
+import { useEffect, useState } from 'react';
+import { useQuill } from 'react-quilljs';
+import clsx from 'clsx';
+import QuillEditorModal from '../QuillEditorModal';
+import '../../quill.css';
 
 const ProposalEditor: React.FC<{
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -24,54 +24,54 @@ const ProposalEditor: React.FC<{
 
   const formData = [
     {
-      title: "Title",
+      title: 'Title',
       focus: true,
-      type: "input",
+      type: 'input',
       fieldValue: data.title,
-      fieldName: "title",
-      placeholder: "Give your proposal a name",
-      value: "",
+      fieldName: 'title',
+      placeholder: 'Give your proposal a name',
+      value: '',
       minCount: 5,
       maxCount: 80,
-      error: "Title must be 5 characters minimum",
+      error: 'Title must be 5 characters minimum',
     },
     {
-      title: "tl;dr",
-      type: "input",
+      title: 'tl;dr',
+      type: 'input',
       fieldValue: data.tldr,
-      fieldName: "tldr",
+      fieldName: 'tldr',
       placeholder:
-        "In the simplest language possible, explain your proposal in one sentence",
-      value: "",
+        'In the simplest language possible, explain your proposal in one sentence',
+      value: '',
       minCount: 10,
       maxCount: 120,
-      error: "TLDR must be between 10 & 120 characters",
+      error: 'TLDR must be between 10 & 120 characters',
     },
   ];
 
   const descriptionData = {
-    title: "Description",
-    type: "textarea",
+    title: 'Description',
+    type: 'textarea',
     fieldValue: data.what,
-    fieldName: "what",
+    fieldName: 'what',
     placeholder:
-      "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
-    value: "",
+      'Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project',
+    value: '',
     minCount: 50,
-    error: "Description must be 50 characters minimum",
+    error: 'Description must be 50 characters minimum',
   };
 
   const formats = [
-    "header",
-    "bold",
-    "underline",
-    "strike",
-    "blockquote",
-    "code-block",
-    "list",
-    "bullet",
-    "link",
-    "image",
+    'header',
+    'bold',
+    'underline',
+    'strike',
+    'blockquote',
+    'code-block',
+    'list',
+    'bullet',
+    'link',
+    'image',
   ];
 
   const imageHandler = () => {
@@ -85,17 +85,17 @@ const ProposalEditor: React.FC<{
     toolbar: {
       container: [
         [{ header: [1, 2, false] }],
-        ["bold", "underline", "strike", "blockquote", "code-block"],
-        [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
-        ["link"],
-        ["image"],
+        ['bold', 'underline', 'strike', 'blockquote', 'code-block'],
+        [{ list: 'ordered' }, { indent: '-1' }, { indent: '+1' }],
+        ['link'],
+        ['image'],
       ],
     },
     clipboard: {
       matchVisual: false,
     },
   };
-  const theme = "snow";
+  const theme = 'snow';
   const placeholder = descriptionData.placeholder;
 
   const { quill, quillRef, Quill } = useQuill({
@@ -107,13 +107,13 @@ const ProposalEditor: React.FC<{
 
   useEffect(() => {
     if (quill) {
-      var toolbar = quill.getModule("toolbar");
-      toolbar.addHandler("image", imageHandler);
-      toolbar.addHandler("link", linkHandler);
+      var toolbar = quill.getModule('toolbar');
+      toolbar.addHandler('image', imageHandler);
+      toolbar.addHandler('link', linkHandler);
 
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
-      quill.on("text-change", () => {
+      quill.on('text-change', () => {
         setEditorBlurred(false);
 
         onDataChange({ what: quill.root.innerHTML });
@@ -150,7 +150,7 @@ const ProposalEditor: React.FC<{
                       placeholder={input.placeholder}
                       className={clsx(
                         classes.input,
-                        input.fieldName === "what" && classes.descriptionInput
+                        input.fieldName === 'what' && classes.descriptionInput
                       )}
                       onChange={(e) => {
                         setBlurred(false);

@@ -21,7 +21,7 @@
 }
 
 .modal {
-  font-family: "PT Root UI", sans-serif;
+  font-family: 'PT Root UI', sans-serif;
   font-weight: bold;
   position: fixed;
   top: 30vh;
@@ -34,12 +34,12 @@
   border-radius: 15px;
   left: calc(50% - 17.5rem);
   width: 35rem;
-  top: "50%";
-  left: "50%";
-  right: "auto";
-  bottom: "auto";
-  marginright: "-50%";
-  transform: "translate(-50%, -50%)";
+  top: '50%';
+  left: '50%';
+  right: 'auto';
+  bottom: 'auto';
+  marginright: '-50%';
+  transform: 'translate(-50%, -50%)';
 }
 
 .modal button {

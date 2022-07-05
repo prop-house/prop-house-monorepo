@@ -106,7 +106,6 @@ const FullAuction: React.FC<{
     fetchAuctionProposals();
     return () => {
       cleanedUp.current = true;
-      dispatch(setActiveProposals([]));
     };
   }, [auction.id, dispatch, account, auction]);
 
