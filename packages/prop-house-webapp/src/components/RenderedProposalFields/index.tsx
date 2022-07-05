@@ -3,9 +3,10 @@ import { Row, Col } from "react-bootstrap";
 import { ProposalFields } from "../../utils/proposalFields";
 import EthAddress from "../EthAddress";
 import ReactMarkdown from "react-markdown";
-import sanitizeHtml from "sanitize-html";
 import { Link } from "react-router-dom";
 import { nameToSlug } from "../../utils/communitySlugs";
+import Markdown from "markdown-to-jsx";
+import sanitizeHtml from "sanitize-html";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -17,6 +18,7 @@ export interface RenderedProposalProps {
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
   const { fields, address, proposalId, backButton, community } = props;
+
   return (
     <>
       <Row>
@@ -60,30 +62,35 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
           </div>
           <hr></hr>
           <h2>tl;dr</h2>
+
           <ReactMarkdown
             className={classes.markdown}
             children={fields.tldr}
           ></ReactMarkdown>
+
           <h2>Description</h2>
-          <div
-            className="ql-editor"
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(fields.what, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
-                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
-                  "data",
-                ]),
-                allowedAttributes: {
-                  img: ["src", "alt"],
-                  a: ["href", "target"],
-                },
-                allowedClasses: {
-                  code: ["language-*", "lang-*"],
-                  pre: ["language-*", "lang-*"],
-                },
-              }),
-            }}
-          ></div>
+          {/*
+           * We sanitize HTML coming from rich text editor to prevent xss attacks.
+           *
+           * <Markdown/> component used to render HTML, while supporting Markdown.
+           */}
+          <Markdown>
+            {sanitizeHtml(fields.what, {
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
+              allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
+                "data",
+              ]),
+              allowedAttributes: {
+                img: ["src", "alt"],
+                a: ["href", "target"],
+              },
+              allowedClasses: {
+                code: ["language-*", "lang-*"],
+                pre: ["language-*", "lang-*"],
+              },
+              // edge case: handle ampersands in img links encoded from sanitization
+            }).replaceAll("&amp;", "&")}
+          </Markdown>
         </Col>
       </Row>
     </>

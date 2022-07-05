@@ -60,9 +60,10 @@
 .quill {
   margin-top: -20px;
 }
-.ql-syntax {
+pre {
   background: #2f3136 !important;
   padding: 22px !important;
+  color: white;
 }
 .ql-editor pre {
   background: #2f3136 !important;
@@ -70,6 +71,7 @@
   padding: 22px !important;
   overflow-x: auto;
 }
+
 .ReactModal__Overlay--after-open {
   position: fixed;
   top: 0;
@@ -79,4 +81,11 @@
   z-index: 10;
   background: rgba(0, 0, 0, 0.6) !important;
   backdrop-filter: blur(10px);
+}
+
+blockquote {
+  border-left: 4px solid #ccc !important;
+  margin-bottom: 5px !important;
+  margin-top: 5px !important;
+  padding-left: 16px !important;
 }
