@@ -83,7 +83,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
                 code: ["language-*", "lang-*"],
                 pre: ["language-*", "lang-*"],
               },
-            })}
+            }).replace("&amp;", "&")}
           </Markdown>
         </Col>
       </Row>
