@@ -17,6 +17,9 @@
 .previewCol {
   word-break: break-word;
 }
+.previewCol img {
+  max-width: 100%;
+}
 
 .previewCol h2 {
   margin-top: 3rem;
