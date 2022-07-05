@@ -6,7 +6,7 @@ import "react-quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import { useQuill } from "react-quilljs";
 import clsx from "clsx";
-import ProposalImageModal from "../ProposalImageModal";
+import QuillEditorModal from "../QuillEditorModal";
 import "../../quill.css";
 
 const ProposalEditor: React.FC<{
@@ -16,7 +16,8 @@ const ProposalEditor: React.FC<{
   const { onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const validateInput = (min: number, count: number) =>
     0 < count && count < min;
@@ -74,7 +75,10 @@ const ProposalEditor: React.FC<{
   ];
 
   const imageHandler = () => {
-    setShowModal(true);
+    setShowImageModal(true);
+  };
+  const linkHandler = () => {
+    setShowLinkModal(true);
   };
 
   const modules = {
@@ -105,6 +109,7 @@ const ProposalEditor: React.FC<{
     if (quill) {
       var toolbar = quill.getModule("toolbar");
       toolbar.addHandler("image", imageHandler);
+      toolbar.addHandler("link", linkHandler);
 
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
@@ -204,13 +209,26 @@ const ProposalEditor: React.FC<{
         </Col>
       </Row>
 
-      <ProposalImageModal
+      <QuillEditorModal
+        quill={quill}
+        Quill={Quill}
+        title="Add Link"
+        subtitle="Please paste the link url"
+        showModal={showLinkModal}
+        setShowModal={setShowLinkModal}
+        placeholder="ex. https://nouns.wtf/"
+        quillModule="link"
+      />
+
+      <QuillEditorModal
         quill={quill}
         Quill={Quill}
         title="Add Image"
         subtitle="Please paste the image url"
-        showModal={showModal}
-        setShowModal={setShowModal}
+        showModal={showImageModal}
+        setShowModal={setShowImageModal}
+        placeholder="ex. https://noun.pics/1.jpg"
+        quillModule="image"
       />
     </>
   );
