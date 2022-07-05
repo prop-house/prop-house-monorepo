@@ -1,7 +1,7 @@
 import classes from './Create.module.css';
 import { Row, Col } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../Button';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import ProposalEditor from '../../ProposalEditor';
 import Preview from '../Preview';
@@ -27,6 +27,10 @@ const isValidPropData = (data: ProposalFields) =>
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
 
+  // auction to submit prop to is passed via react-router from propse btn
+  const location = useLocation();
+  const activeAuction = location.state.auction;
+
   const [showPreview, setShowPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -40,9 +44,6 @@ const Create: React.FC<{}> = () => {
   );
   const activeCommunity = useAppSelector(
     (state) => state.propHouse.activeCommunity
-  );
-  const activeAuction = useAppSelector(
-    (state) => state.propHouse.activeAuction
   );
 
   const backendClient = useRef(

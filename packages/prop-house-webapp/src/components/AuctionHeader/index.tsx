@@ -1,22 +1,22 @@
-import classes from "./AuctionHeader.module.css";
-import { Col, Row } from "react-bootstrap";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import StatusPill from "../StatusPill";
-import { Link, useNavigate } from "react-router-dom";
-import Button, { ButtonColor } from "../Button";
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
-import diffTime from "../../utils/diffTime";
-import formatTime from "../../utils/formatTime";
+import classes from './AuctionHeader.module.css';
+import { Col, Row } from 'react-bootstrap';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import StatusPill from '../StatusPill';
+import { Link, useNavigate } from 'react-router-dom';
+import Button, { ButtonColor } from '../Button';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import diffTime from '../../utils/diffTime';
+import formatTime from '../../utils/formatTime';
 import {
   auctionStatus,
   AuctionStatus,
   deadlineCopy,
   deadlineTime,
-} from "../../utils/auctionStatus";
-import { useLocation } from "react-router-dom";
-import { HiArrowSmLeft, HiArrowSmRight } from "react-icons/hi";
-import Tooltip from "../Tooltip";
-import dayjs from "dayjs";
+} from '../../utils/auctionStatus';
+import { useLocation } from 'react-router-dom';
+import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
+import Tooltip from '../Tooltip';
+import dayjs from 'dayjs';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -68,14 +68,14 @@ const AuctionHeader: React.FC<{
         <div className={classes.leftSectionContainer}>
           <div className={classes.arrowsContainer}>
             <HiArrowSmLeft
-              size={"2rem"}
+              size={'2rem'}
               onClick={() => handleAuctionChange(true)}
               className={
                 isFirstOrLastAuction()[1] ? classes.disable : classes.able
               }
             />
             <HiArrowSmRight
-              size={"2rem"}
+              size={'2rem'}
               onClick={() => handleAuctionChange(false)}
               className={
                 isFirstOrLastAuction()[0] ? classes.disable : classes.able
@@ -130,7 +130,7 @@ const AuctionHeader: React.FC<{
                 </>
               }
               tooltipContent={`${dayjs(deadlineTime(auction)).format(
-                "MMMM D, YYYY h:mm A"
+                'MMMM D, YYYY h:mm A'
               )}
               
                `}
@@ -141,7 +141,7 @@ const AuctionHeader: React.FC<{
               <Button
                 text="Propose"
                 bgColor={ButtonColor.Pink}
-                onClick={() => navigate("/create")}
+                onClick={() => navigate('/create', { state: { auction } })}
               />
             </div>
           ) : (
