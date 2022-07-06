@@ -16,3 +16,6 @@
     margin-left: 0 !important;
   }
 }
+.connectBtn {
+  min-width: 85px !important;
+}

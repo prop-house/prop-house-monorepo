@@ -8,6 +8,7 @@ import { useEthers } from "@usedapp/core";
 import { useDispatch } from "react-redux";
 import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
 import LoadingIndicator from "../LoadingIndicator";
+import { useTranslation } from "react-i18next";
 
 const PropCarousel = () => {
   const { library } = useEthers();
@@ -16,6 +17,7 @@ const PropCarousel = () => {
   const [isLoading, setIsLoading] = useState(false);
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -46,8 +48,8 @@ const PropCarousel = () => {
     <LoadingIndicator />
   ) : (
     <CarouselSection
-      contextTitle="Browse proposals"
-      mainTitle="Recent proposals "
+      contextTitle={t("browseProps")}
+      mainTitle={t("recentProps")}
       cards={propCards ? propCards : []}
     />
   );

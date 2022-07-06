@@ -1,12 +1,13 @@
-import classes from './RenderedProposalFields.module.css';
-import { Row, Col } from 'react-bootstrap';
-import { ProposalFields } from '../../utils/proposalFields';
-import EthAddress from '../EthAddress';
-import ReactMarkdown from 'react-markdown';
-import { Link } from 'react-router-dom';
-import { nameToSlug } from '../../utils/communitySlugs';
-import Markdown from 'markdown-to-jsx';
-import sanitizeHtml from 'sanitize-html';
+import classes from "./RenderedProposalFields.module.css";
+import { Row, Col } from "react-bootstrap";
+import { ProposalFields } from "../../utils/proposalFields";
+import EthAddress from "../EthAddress";
+import ReactMarkdown from "react-markdown";
+import { Link } from "react-router-dom";
+import { nameToSlug } from "../../utils/communitySlugs";
+import Markdown from "markdown-to-jsx";
+import sanitizeHtml from "sanitize-html";
+import { useTranslation } from "react-i18next";
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -18,6 +19,7 @@ export interface RenderedProposalProps {
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
   const { fields, address, proposalId, backButton, community } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -64,7 +66,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
           {fields.tldr && (
             <>
               <hr></hr>
-              <h2>tl;dr</h2>
+              <h2>{t("tldr2")}</h2>
               <ReactMarkdown
                 className={classes.markdown}
                 children={fields.tldr}
@@ -72,7 +74,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
             </>
           )}
 
-          <h2>Description</h2>
+          <h2>{t("description")}</h2>
           {/*
            * We sanitize HTML coming from rich text editor to prevent xss attacks.
            *
@@ -80,20 +82,20 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = (props) => {
            */}
           <Markdown>
             {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+              allowedTags: sanitizeHtml.defaults.allowedTags.concat(["img"]),
               allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat([
-                'data',
+                "data",
               ]),
               allowedAttributes: {
-                img: ['src', 'alt'],
-                a: ['href', 'target'],
+                img: ["src", "alt"],
+                a: ["href", "target"],
               },
               allowedClasses: {
-                code: ['language-*', 'lang-*'],
-                pre: ['language-*', 'lang-*'],
+                code: ["language-*", "lang-*"],
+                pre: ["language-*", "lang-*"],
               },
               // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
+            }).replaceAll("&amp;", "&")}
           </Markdown>
         </Col>
       </Row>

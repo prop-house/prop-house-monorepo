@@ -1,38 +1,35 @@
-import classes from './Learn.module.css';
-import { Row, Col, Image } from 'react-bootstrap';
-import Button, { ButtonColor } from '../../Button';
-import outletsImg from '../../../assets/learn page/outlets.png';
-import auctionImg from '../../../assets/learn page/auction.png';
-import auctionFullImg from '../../../assets/learn page/auction_full.png';
-import communityImg from '../../../assets/learn page/community.png';
-import clsx from 'clsx';
-import { useNavigate } from 'react-router-dom';
-import ContactUsCTA from '../../ContactUsCTA';
+import classes from "./Learn.module.css";
+import { Row, Col, Image } from "react-bootstrap";
+import Button, { ButtonColor } from "../../Button";
+import outletsImg from "../../../assets/learn page/outlets.png";
+import auctionImg from "../../../assets/learn page/auction.png";
+import auctionFullImg from "../../../assets/learn page/auction_full.png";
+import communityImg from "../../../assets/learn page/community.png";
+import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
+import ContactUsCTA from "../../ContactUsCTA";
+import { useTranslation } from "react-i18next";
 
 const Learn = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <>
-      <div className={clsx('break-out', classes.breakOutMobile)}>
-        <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
+      <div className={clsx("break-out", classes.breakOutMobile)}>
+        <Row className={clsx("g-0", classes.row, "justify-content-start")}>
           <Col
             xl={{ span: 5 }}
-            xs={{ order: 'first' }}
+            xs={{ order: "first" }}
             className={classes.leftCol}
           >
             <Image src={outletsImg} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>Plug into the Nouns treasury</h2>
-            <p>
-              The Nouns DAO treasury has amassed $50M+ and counting since
-              inception. Prop House aims to make it easy for anyone with an
-              Ethereum address to plug in and use the treasury through Nounish
-              communities.
-            </p>
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: "last" }}>
+            <h2>{t("plugInto")}</h2>
+            <p>{t("treasury")}</p>
             <Button
-              text="Explore houses"
+              text={t("exploreHouses")}
               bgColor={ButtonColor.Pink}
               classNames={classes.firstBtn}
               onClick={() => {
@@ -43,30 +40,27 @@ const Learn = () => {
         </Row>
       </div>
 
-      <div className={clsx('break-out', classes.breakOutMobile)}>
-        <Row className={clsx('g-0', classes.row)}>
+      <div className={clsx("break-out", classes.breakOutMobile)}>
+        <Row className={clsx("g-0", classes.row)}>
           <Col
-            xl={{ span: 4, offset: 1, order: 'first' }}
-            xs={{ order: 'last' }}
+            xl={{ span: 4, offset: 1, order: "first" }}
+            xs={{ order: "last" }}
           >
             <Col xs={12}>
-              <h2>Bid with your ideas in Funding Rounds</h2>
+              <h2>{t("fundingRoundsTitle")}</h2>
             </Col>
             <Col xs={12}>
               <p>
-                Funding rounds are held regularly. They are auctions where the
-                thing being auctioned is ETH and the bids being placed are
-                proposals. Anyone is free to propose anything.
+                {t("fundingRounds")}
                 <br />
                 <br />
-                At the end of each auction, members of the corresponding Prop
-                House vote on which proposal will receive funding.
+                {t("auctionEnd")}
               </p>
             </Col>
           </Col>
           <Col
             xl={{ span: 6, offset: 1 }}
-            xs={{ order: 'first' }}
+            xs={{ order: "first" }}
             className={classes.rightCol}
           >
             <Image
@@ -83,35 +77,30 @@ const Learn = () => {
         </Row>
       </div>
 
-      <div className={clsx('break-out', classes.breakOutMobile)}>
-        <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
-          <Col xl={5} xs={{ order: 'last' }} className={classes.leftCol}>
+      <div className={clsx("break-out", classes.breakOutMobile)}>
+        <Row className={clsx("g-0", classes.row, "justify-content-start")}>
+          <Col xl={5} xs={{ order: "last" }} className={classes.leftCol}>
             <Image src={communityImg} fluid className={classes.img} />
           </Col>
-          <Col xl={{ span: 5, offset: 1 }} xs={{ order: 'last' }}>
-            <h2>Become part of the Nouns community</h2>
-            <p>
-              Nouns is a builder-first community. As a prop builder, you will
-              become part of a special group of people building the future of
-              open-source IP and get access to resources and support from the
-              Nouns community.
-            </p>
+          <Col xl={{ span: 5, offset: 1 }} xs={{ order: "last" }}>
+            <h2>{t("community")}</h2>
+            <p>{t("builderFirst")}</p>
 
             <a
               href="https://discord.gg/nouns"
               target="_blank"
               rel="noreferrer"
-              style={{ marginRight: '1rem' }}
+              style={{ marginRight: "1rem" }}
             >
               <Button
-                text="Go to Discord"
+                text={t("goToDiscord")}
                 bgColor={ButtonColor.Purple}
                 classNames={classes.firstBtn}
               />
             </a>
             <a href="https://nouns.wtf/docs" target="_blank" rel="noreferrer">
               <Button
-                text="Learn more"
+                text={t("learnMore")}
                 bgColor={ButtonColor.White}
                 classNames={classes.firstBtn}
               />

@@ -11,6 +11,7 @@ import PropCardVotingContainer from "../PropCardVotingContainer";
 import diffTime from "../../utils/diffTime";
 import EthAddress from "../EthAddress";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -30,6 +31,7 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
+  const { t } = useTranslation();
 
   let navigate = useNavigate();
 
@@ -62,7 +64,7 @@ const ProposalCard: React.FC<{
             (auctionStatus === AuctionStatus.AuctionEnded &&
               cardStatus !== ProposalCardStatus.Voting) ? (
               <div className={classes.scoreCopy}>
-                Votes: {Math.trunc(proposal.score)}
+                {t("votes")}: {Math.trunc(proposal.score)}
               </div>
             ) : (
               <EthAddress address={proposal.address} />

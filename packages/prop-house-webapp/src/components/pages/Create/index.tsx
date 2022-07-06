@@ -1,22 +1,23 @@
-import classes from './Create.module.css';
-import { Row, Col } from 'react-bootstrap';
-import Button, { ButtonColor } from '../../Button';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
-import ProposalEditor from '../../ProposalEditor';
-import Preview from '../Preview';
-import { clearProposal, patchProposal } from '../../../state/slices/editor';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { Proposal } from '@nouns/prop-house-wrapper/dist/builders';
-import { appendProposal } from '../../../state/slices/propHouse';
-import { useEthers } from '@usedapp/core';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import isAuctionActive from '../../../utils/isAuctionActive';
-import { ProposalFields } from '../../../utils/proposalFields';
-import InspirationCard from '../../InspirationCard';
-import useWeb3Modal from '../../../hooks/useWeb3Modal';
-import Modal from '../../Modal';
-import removeTags from '../../../utils/removeTags';
+import classes from "./Create.module.css";
+import { Row, Col } from "react-bootstrap";
+import Button, { ButtonColor } from "../../Button";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
+import ProposalEditor from "../../ProposalEditor";
+import Preview from "../Preview";
+import { clearProposal, patchProposal } from "../../../state/slices/editor";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { Proposal } from "@nouns/prop-house-wrapper/dist/builders";
+import { appendProposal } from "../../../state/slices/propHouse";
+import { useEthers } from "@usedapp/core";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import isAuctionActive from "../../../utils/isAuctionActive";
+import { ProposalFields } from "../../../utils/proposalFields";
+import InspirationCard from "../../InspirationCard";
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
+import Modal from "../../Modal";
+import removeTags from "../../../utils/removeTags";
+import { useTranslation } from "react-i18next";
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -26,6 +27,7 @@ const isValidPropData = (data: ProposalFields) =>
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
+  const { t } = useTranslation();
 
   // auction to submit prop to is passed via react-router from propse btn
   const location = useLocation();
@@ -78,14 +80,18 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: 'Congrats!',
+    title: t("congrats"),
     content: (
       <>
-        <p>{`You've successfully submitted your proposal for \n ${
-          activeCommunity && activeCommunity.name
-        } ${`(${activeAuction && activeAuction.title})`}`}</p>
+        <p>
+          {`
+          ${t(`successfulSubmission`)} \n
+           ${activeCommunity && activeCommunity.name} ${`(${
+            activeAuction && activeAuction.title
+          })`}`}
+        </p>
         <Button
-          text="View house"
+          text={t("viewHouse")}
           bgColor={ButtonColor.White}
           onClick={() =>
             navigate(`/${activeCommunity && activeCommunity.contractAddress}`)
@@ -105,10 +111,10 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            Creating proposal for{' '}
+            {t("creatingProp")}{" "}
             <span>
-              funding round{' '}
-              {`${activeAuction.id} (${activeAuction.amountEth} ETH)`}{' '}
+              {t("fundingRound")}{" "}
+              {`${activeAuction.id} (${activeAuction.amountEth} ETH)`}{" "}
             </span>
           </h1>
         </Col>
@@ -127,7 +133,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? 'Back to editor' : 'Preview'}
+            text={showPreview ? t("backToEditor") : t("preview")}
             bgColor={ButtonColor.Pink}
             onClick={() =>
               setShowPreview((prev) => {
@@ -141,7 +147,7 @@ const Create: React.FC<{}> = () => {
             (account ? (
               <Button
                 classNames={classes.actionBtn}
-                text="Sign and Submit"
+                text={t("signSubmit")}
                 bgColor={ButtonColor.Pink}
                 onClick={submitProposal}
                 disabled={!isValidPropData(proposalEditorData)}
@@ -150,7 +156,7 @@ const Create: React.FC<{}> = () => {
               <Button
                 classNames={classes.actionBtn}
                 bgColor={ButtonColor.Pink}
-                text="Connect Wallet To Submit"
+                text={t("connectWallet")}
                 onClick={connect}
               />
             ))}
