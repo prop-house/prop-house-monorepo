@@ -103,7 +103,7 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            {`Creating proposal for ${activeCommunity.name}'s ${activeAuction.title} (${activeAuction.amountEth} ETH)`}
+            {`Creating proposal for ${activeCommunity.name} ${activeAuction.title} (${activeAuction.amountEth} ETH)`}
           </h1>
         </Col>
       </Row>
