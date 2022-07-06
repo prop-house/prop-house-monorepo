@@ -85,17 +85,17 @@ const ProposalEditor: React.FC<{
     toolbar: {
       container: [
         [{ header: [1, 2, false] }],
-        ['bold', 'underline', 'strike', 'blockquote', 'code-block'],
-        [{ list: 'ordered' }, { indent: '-1' }, { indent: '+1' }],
-        ['link'],
-        ['image'],
+        ["bold", "underline", "strike", "blockquote", "code-block"],
+        [{ list: "ordered" }],
+        ["link"],
+        ["image"],
       ],
     },
     clipboard: {
       matchVisual: false,
     },
   };
-  const theme = 'snow';
+  const theme = "snow";
   const placeholder = descriptionData.placeholder;
 
   const { quill, quillRef, Quill } = useQuill({
