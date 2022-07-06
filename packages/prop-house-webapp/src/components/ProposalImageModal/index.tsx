@@ -73,7 +73,7 @@ const QuillEditorModal: React.FC<{
             );
           } else if (quillModule === "link") {
             quill.setSelection();
-            console.log("ran");
+
             quill.format("link", imageLink, Quill.sources.USER);
           } else return;
 
