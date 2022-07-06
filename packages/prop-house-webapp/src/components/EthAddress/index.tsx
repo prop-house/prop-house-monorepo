@@ -23,7 +23,10 @@ const EthAddress: React.FC<{
   const ens = useReverseENSLookUp(address);
 
   return (
-    <div className={clsx(props.className, classes.ethAddress)}>
+    <div
+      onClick={(e: any) => e.stopPropagation()}
+      className={clsx(props.className, classes.ethAddress)}
+    >
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
         <Davatar
           size={24}
