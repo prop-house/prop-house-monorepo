@@ -16,6 +16,7 @@ import proposalFields from '../../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { nameToSlug } from '../../../utils/communitySlugs';
 
 const Proposal = () => {
   const params = useParams();
@@ -101,7 +102,7 @@ const Proposal = () => {
                 className={classes.backToAuction}
                 onClick={() => {
                   isEntryPoint && community
-                    ? navigate(`/${community?.contractAddress}`)
+                    ? navigate(`/${nameToSlug(community.name)}`)
                     : navigate(-1);
                 }}
               >
