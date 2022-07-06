@@ -30,6 +30,6 @@ jobs:
           context: .
           file: ./Dockerfile.backend
           push: true
-          tags: ghcr.io/cryptoseneca/prop-house-backend:${{ github.sha }}
+          tags: ghcr.io/prop-house/prop-house-backend:${{ github.sha }}
       - name: Image digest
-        run: "echo TAG: ghcr.io/cryptoseneca/prop-house-backend:${{ github.sha }} SHA: ${{ steps.docker_build.outputs.digest }}"
+        run: "echo TAG: ghcr.io/prop-house/prop-house-backend:${{ github.sha }} SHA: ${{ steps.docker_build.outputs.digest }}"
