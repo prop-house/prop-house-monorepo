@@ -4,7 +4,7 @@ import { auctionStatus, AuctionStatus } from "../../utils/auctionStatus";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { sortProposals } from "../../state/slices/propHouse";
-import { dispatchSortProposals, SortType } from "../../utils/sortingProposals";
+import { SortType } from "../../utils/sortingProposals";
 import { IoArrowDown, IoArrowUp } from "react-icons/io5";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
@@ -13,23 +13,33 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
   const { t } = useTranslation();
   const { auction } = props;
 
-  const [dateAscending, setDateAscending] = useState(false);
-  const [votesAscending, setVotesAscending] = useState(false);
-  const [datesSorted, setDatesSorted] = useState(true);
-  const [votesSorted, setVotesSorted] = useState(false);
+  const auctionEnded = auctionStatus(auction) === AuctionStatus.AuctionEnded;
+  const isVotingWindow =
+    auctionStatus(auction) === AuctionStatus.AuctionVoting || auctionEnded;
+
+  const [datesSorted, setDatesSorted] = useState(auctionEnded ? false : true);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
+  const [dateAscending, setDateAscending] = useState(
+    auctionEnded ? false : true
+  );
+  const [votesAscending, setVotesAscending] = useState(
+    auctionEnded ? true : false
+  );
 
   const dispatch = useDispatch();
-
-  const isVotingWindow =
-    auctionStatus(auction) === AuctionStatus.AuctionVoting ||
-    auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
   const sortDates = () => {
     setDatesSorted(true);
     setVotesSorted(false);
 
     setDateAscending((prev) => {
-      dispatchSortProposals(dispatch, auction, !prev);
+      dispatch(
+        sortProposals({
+          sortType: SortType.CreatedAt,
+          ascending: dateAscending,
+        })
+      );
+
       return !prev;
     });
   };
