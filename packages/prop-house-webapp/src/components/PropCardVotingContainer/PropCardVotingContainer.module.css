@@ -1,10 +1,11 @@
 .bottomContainer {
   border-top: 1px var(--brand-gray-transparent) solid;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-top: 1.5rem;
   padding-top: 1rem;
+  cursor: default;
 }
 .votesCopyContainer {
   display: flex;

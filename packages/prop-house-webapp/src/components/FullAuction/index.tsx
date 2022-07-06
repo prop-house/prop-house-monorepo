@@ -1,34 +1,34 @@
-import classes from "./FullAuction.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import AuctionHeader from "../AuctionHeader";
-import ProposalCards from "../ProposalCards";
-import { Row } from "react-bootstrap";
-import { StoredAuction, Vote } from "@nouns/prop-house-wrapper/dist/builders";
-import { auctionStatus, AuctionStatus } from "../../utils/auctionStatus";
-import { useEthers } from "@usedapp/core";
-import { useEffect, useState, useRef } from "react";
-import useWeb3Modal from "../../hooks/useWeb3Modal";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks";
-import { VoteAllotment, updateVoteAllotment } from "../../utils/voteAllotment";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import { refreshActiveProposals } from "../../utils/refreshActiveProposal";
-import Modal, { ModalData } from "../Modal";
-import { aggVoteWeightForProps } from "../../utils/aggVoteWeight";
+import classes from './FullAuction.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import AuctionHeader from '../AuctionHeader';
+import ProposalCards from '../ProposalCards';
+import { Row } from 'react-bootstrap';
+import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
+import { useEthers } from '@usedapp/core';
+import { useEffect, useState, useRef } from 'react';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../hooks';
+import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import Modal, { ModalData } from '../Modal';
+import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import {
   setDelegatedVotes,
   setActiveProposals,
-} from "../../state/slices/propHouse";
-import { dispatchSortProposals } from "../../utils/sortingProposals";
+} from '../../state/slices/propHouse';
+import { dispatchSortProposals } from '../../utils/sortingProposals';
 import {
   auctionEmptyContent,
   auctionNotStartedContent,
   connectedCopy,
   disconnectedCopy,
-} from "./content";
+} from './content';
 
-import { getNumVotes } from "prop-house-communities";
-import SortDropdown from "../SortDropdown";
+import { getNumVotes } from 'prop-house-communities';
+import SortDropdown from '../SortDropdown';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -87,7 +87,7 @@ const FullAuction: React.FC<{
         );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
-        console.log("error fetching votes: ", e);
+        console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
@@ -98,10 +98,12 @@ const FullAuction: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
-      // initial sort
-      dispatchSortProposals(dispatch, auction, false);
+      dispatchSortProposals(dispatch, auction, false); // initial sort
     };
     fetchAuctionProposals();
+    return () => {
+      dispatch(setActiveProposals([]));
+    };
   }, [auction.id, dispatch, account, auction]);
 
   // manage vote alloting
@@ -138,17 +140,17 @@ const FullAuction: React.FC<{
       .reduce(
         (agg, current) =>
           agg +
-          `\n${current.votes} vote${current.votes > 1 ? "s" : ""} for prop ${
+          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${
             current.proposalId
           }`,
-        ""
+        ''
       );
 
     setShowModal(true);
 
     try {
       setModalData({
-        title: "Voting",
+        title: 'Voting',
         content: `Please sign the message to vote as follows:\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
@@ -161,7 +163,7 @@ const FullAuction: React.FC<{
       await client.current.logVotes(votes);
 
       setModalData({
-        title: "Success",
+        title: 'Success',
         content: `You have successfully voted!\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
@@ -170,7 +172,7 @@ const FullAuction: React.FC<{
       setVoteAllotments([]);
     } catch (e) {
       setModalData({
-        title: "Error",
+        title: 'Error',
         content: `Failed to submit votes.\n\nError message: ${e}`,
         onDismiss: () => setShowModal(false),
       });
@@ -223,9 +225,9 @@ const FullAuction: React.FC<{
             <div className={classes.proposalTitle}>{`${
               proposals
                 ? `${proposals.length} ${
-                    proposals.length === 1 ? "proposal" : "proposals"
+                    proposals.length === 1 ? 'proposal' : 'proposals'
                   }`
-                : ""
+                : ''
             }`}</div>
 
             {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (

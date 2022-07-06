@@ -17,7 +17,13 @@
 .previewCol {
   word-break: break-word;
 }
-
+.previewCol img {
+  max-width: 100%;
+}
+.previewCol a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline !important;
+}
 .previewCol h2 {
   margin-top: 3rem;
   font-size: 18px;
@@ -41,18 +47,21 @@ hr {
   flex-direction: row;
   padding-bottom: 5px;
 }
+.propNumber {
+  color: black;
+}
 @media (max-width: 577px) {
   .subinfo {
     flex-direction: column;
+    gap: 5px;
   }
 }
 .subinfo a {
-  margin-left: 0.5rem;
   font-weight: 650;
 }
 @media (max-width: 577px) {
   .propSpacer {
-    display: none;
+    display: none !important;
   }
 }
 .submittedBy {
@@ -66,4 +75,21 @@ hr {
 .markdown img {
   max-width: 100%;
   height: auto;
+}
+
+.communityAndPropNumber {
+  display: flex;
+  align-items: center;
+}
+
+.communityProfImgContainer {
+  display: flex;
+  align-items: center;
+}
+
+.communityProfImg {
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  margin-right: 4px;
 }
