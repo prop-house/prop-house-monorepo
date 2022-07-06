@@ -13,7 +13,6 @@ import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../../utils/isAuctionActive';
 import { ProposalFields } from '../../../utils/proposalFields';
-import InspirationCard from '../../InspirationCard';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 import removeTags from '../../../utils/removeTags';
@@ -101,15 +100,10 @@ const Create: React.FC<{}> = () => {
     <>
       {showModal && <Modal data={successfulSubmissionModalContent} />}
 
-      <InspirationCard />
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            Creating proposal for{' '}
-            <span>
-              funding round{' '}
-              {`${activeAuction.id} (${activeAuction.amountEth} ETH)`}{' '}
-            </span>
+            {`Creating proposal for ${activeCommunity.name}'s ${activeAuction.title} (${activeAuction.amountEth} ETH)`}
           </h1>
         </Col>
       </Row>
