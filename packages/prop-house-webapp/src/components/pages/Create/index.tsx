@@ -101,7 +101,6 @@ const Create: React.FC<{}> = () => {
     <>
       {showModal && <Modal data={successfulSubmissionModalContent} />}
 
-      <InspirationCard />
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
