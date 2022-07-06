@@ -16,7 +16,7 @@
 .address {
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 95px;
+  max-width: 95px;
   display: block;
   overflow: hidden;
 }
