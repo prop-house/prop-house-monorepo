@@ -1,16 +1,16 @@
-import classes from "./ProposalCard.module.css";
-import globalClasses from "../../css/globals.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
-import detailedTime from "../../utils/detailedTime";
-import clsx from "clsx";
-import { AuctionStatus } from "../../utils/auctionStatus";
-import { ProposalCardStatus } from "../../utils/cardStatus";
-import { VoteAllotment } from "../../utils/voteAllotment";
-import PropCardVotingContainer from "../PropCardVotingContainer";
-import diffTime from "../../utils/diffTime";
-import EthAddress from "../EthAddress";
-import { useNavigate } from "react-router-dom";
+import classes from './ProposalCard.module.css';
+import globalClasses from '../../css/globals.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import detailedTime from '../../utils/detailedTime';
+import clsx from 'clsx';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment } from '../../utils/voteAllotment';
+import PropCardVotingContainer from '../PropCardVotingContainer';
+import diffTime from '../../utils/diffTime';
+import EthAddress from '../EthAddress';
+import { useNavigate } from 'react-router-dom';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -35,7 +35,15 @@ const ProposalCard: React.FC<{
 
   return (
     <>
-      <div onClick={() => navigate(`/proposal/${proposal.id}`)}>
+      <div
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey) {
+            window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
+          } else {
+            navigate(`/proposal/${proposal.id}`);
+          }
+        }}
+      >
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.twenty}
@@ -44,7 +52,7 @@ const ProposalCard: React.FC<{
               ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
-              : "",
+              : '',
             classes.proposalCard
           )}
         >
