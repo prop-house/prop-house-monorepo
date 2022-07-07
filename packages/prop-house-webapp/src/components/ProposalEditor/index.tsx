@@ -212,8 +212,8 @@ const ProposalEditor: React.FC<{
       <QuillEditorModal
         quill={quill}
         Quill={Quill}
-        title="Add Link"
-        subtitle="Please paste the link url"
+        title={t("addLink")}
+        subtitle={t("pasteLink")}
         showModal={showLinkModal}
         setShowModal={setShowLinkModal}
         placeholder="ex. https://nouns.wtf/"
@@ -223,8 +223,8 @@ const ProposalEditor: React.FC<{
       <QuillEditorModal
         quill={quill}
         Quill={Quill}
-        title="Add Image"
-        subtitle="Please paste the image url"
+        title={t("addImage")}
+        subtitle={t("pasteImage")}
         showModal={showImageModal}
         setShowModal={setShowImageModal}
         placeholder="ex. https://noun.pics/1.jpg"

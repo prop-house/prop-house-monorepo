@@ -152,8 +152,8 @@ const FullAuction: React.FC<{
 
     try {
       setModalData({
-        title: "Voting",
-        content: `Please sign the message to vote as follows:\n${propCopy}`,
+        title: t("voting"),
+        content: `${t("pleaseSign")}:\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
@@ -165,8 +165,8 @@ const FullAuction: React.FC<{
       await client.current.logVotes(votes);
 
       setModalData({
-        title: "Success",
-        content: `You have successfully voted!\n${propCopy}`,
+        title: t("success"),
+        content: `${t("successfullyVoted")}\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
@@ -174,8 +174,8 @@ const FullAuction: React.FC<{
       setVoteAllotments([]);
     } catch (e) {
       setModalData({
-        title: "Error",
-        content: `Failed to submit votes.\n\nError message: ${e}`,
+        title: t("error"),
+        content: `${t("failedSubmit")}\n\n${t("errorMessage")}: ${e}`,
         onDismiss: () => setShowModal(false),
       });
     }

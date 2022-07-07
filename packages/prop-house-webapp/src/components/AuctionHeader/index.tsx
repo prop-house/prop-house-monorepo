@@ -10,7 +10,7 @@ import formatTime from "../../utils/formatTime";
 import {
   auctionStatus,
   AuctionStatus,
-  deadlineCopy,
+  DeadlineCopy,
   deadlineTime,
 } from "../../utils/auctionStatus";
 import { useLocation } from "react-router-dom";
@@ -126,7 +126,7 @@ const AuctionHeader: React.FC<{
               content={
                 <>
                   <div className={classes.infoSubsectionTitle}>
-                    {deadlineCopy(auction)}
+                    {DeadlineCopy(auction)}
                   </div>
                   <div className={classes.infoSubsectionContent}>
                     {diffTime(deadlineTime(auction))}
