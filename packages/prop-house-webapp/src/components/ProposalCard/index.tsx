@@ -13,6 +13,7 @@ import EthAddress from "../EthAddress";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus?: AuctionStatus;
@@ -37,7 +38,15 @@ const ProposalCard: React.FC<{
 
   return (
     <>
-      <div onClick={() => navigate(`/proposal/${proposal.id}`)}>
+      <div
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey) {
+            window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
+          } else {
+            navigate(`/proposal/${proposal.id}`);
+          }
+        }}
+      >
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.twenty}
@@ -46,7 +55,7 @@ const ProposalCard: React.FC<{
               ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
-              : "",
+              : '',
             classes.proposalCard
           )}
         >

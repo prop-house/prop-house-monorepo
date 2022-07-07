@@ -86,7 +86,7 @@ const ProposalEditor: React.FC<{
       container: [
         [{ header: [1, 2, false] }],
         ["bold", "underline", "strike", "blockquote", "code-block"],
-        [{ list: "ordered" }, { indent: "-1" }, { indent: "+1" }],
+        [{ list: "ordered" }],
         ["link"],
         ["image"],
       ],
