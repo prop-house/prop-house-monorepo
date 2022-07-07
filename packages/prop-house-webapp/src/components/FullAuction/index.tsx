@@ -59,15 +59,15 @@ const FullAuction: React.FC<{
   };
 
   // total votes allotted (these are pre-submitted votes)
-  const numAllotedVotes = voteAllotments.reduce(
+  const numAllottedVotes = voteAllotments.reduce(
     (counter, allotment) => counter + allotment.votes,
-    0
+    0,
   );
 
   // check vote allotment against vote user is allowed to use
   const canAllotVotes = () => {
     if (!delegatedVotes) return false;
-    return numAllotedVotes < delegatedVotes - userVotesWeight();
+    return numAllottedVotes < delegatedVotes - userVotesWeight();
   };
 
   useEffect(() => {
@@ -202,9 +202,7 @@ const FullAuction: React.FC<{
           classNames={classes.auctionHeader}
           totalVotes={delegatedVotes}
           voteBtnEnabled={
-            delegatedVotes &&
-            delegatedVotes - userVotesWeight() > 0 &&
-            numAllotedVotes > 0
+            delegatedVotes && delegatedVotes - userVotesWeight() > 0 && numAllottedVotes > 0
               ? true
               : false
           }
