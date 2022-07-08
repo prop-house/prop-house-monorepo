@@ -155,8 +155,8 @@ const AuctionHeader: React.FC<{
 
   return (
     <>
-      {isVotingWindow && <div className={classes.hideBorderBox}></div>}
-      <Row className={isVotingWindow ? classes.votingRow : ''}>
+      <div className={classes.hideBorderBox}></div>
+      <Row className={classes.votingRow}>
         <Col xl={12}>
           {!onAuctionPage && clickable ? <Link to={`auction/${id}`}>{content}</Link> : content}
         </Col>
