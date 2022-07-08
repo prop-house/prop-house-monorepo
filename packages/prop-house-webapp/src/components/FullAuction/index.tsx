@@ -134,7 +134,7 @@ const FullAuction: React.FC<{
       return updated;
     });
   };
-  j;
+
   // handle voting
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
