@@ -7,8 +7,10 @@ import { sortProposals } from "../../state/slices/propHouse";
 import { dispatchSortProposals, SortType } from "../../utils/sortingProposals";
 import { IoArrowDown, IoArrowUp } from "react-icons/io5";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
+  const { t } = useTranslation();
   const { auction } = props;
 
   const [dateAscending, setDateAscending] = useState(false);
@@ -56,7 +58,7 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
             onClick={sortVotes}
             className={clsx(classes.sortItem, votesSorted && classes.active)}
           >
-            <div>Votes</div>
+            <div>{t("votes")}</div>
             {votesAscending ? (
               <IoArrowDown size={"1.5rem"} />
             ) : (
@@ -69,7 +71,7 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = (props) => {
           onClick={sortDates}
           className={clsx(classes.sortItem, datesSorted && classes.active)}
         >
-          <div>Created</div>
+          <div>{t("created")}</div>
           {dateAscending ? (
             <IoArrowUp size={"1.5rem"} />
           ) : (

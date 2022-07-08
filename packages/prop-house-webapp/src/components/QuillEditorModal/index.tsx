@@ -5,6 +5,7 @@ import clsx from "clsx";
 import Modal from "react-modal";
 import Button, { ButtonColor } from "../Button";
 import httpsChecker from "../../utils/httpsChecker";
+import { useTranslation } from "react-i18next";
 
 const QuillEditorModal: React.FC<{
   quill: any;
@@ -28,6 +29,7 @@ const QuillEditorModal: React.FC<{
   } = props;
 
   const [imageLink, setImageLink] = useState("https://");
+  const { t } = useTranslation();
 
   function closeModal() {
     setShowModal(false);
@@ -59,7 +61,7 @@ const QuillEditorModal: React.FC<{
       </div>
 
       <Button
-        text="Submit"
+        text={t("submit")}
         bgColor={ButtonColor.Green}
         disabled={imageLink === ""}
         onClick={() => {

@@ -1,16 +1,20 @@
-import { addressFormLink } from '../../utils/addressFormLink';
-import CTA from '../CTA';
+import { addressFormLink } from "../../utils/addressFormLink";
+import CTA from "../CTA";
+import { useTranslation } from "react-i18next";
 
-const ContactUsCTA = () => (
-  <CTA
-    title="Supercharge your Nounish community"
-    content="Interested in running your own community Prop House? Reach out to see
-how we can work together to make it happen!"
-    btnAction={() => {
-      window.open(addressFormLink, '_blank');
-    }}
-    btnTitle="Contact us"
-  />
-);
+const ContactUsCTA = () => {
+  const { t } = useTranslation();
+
+  return (
+    <CTA
+      title={t("supercharge")}
+      content={t("interested")}
+      btnAction={() => {
+        window.open(addressFormLink, "_blank");
+      }}
+      btnTitle={t("contactUs")}
+    />
+  );
+};
 
 export default ContactUsCTA;
