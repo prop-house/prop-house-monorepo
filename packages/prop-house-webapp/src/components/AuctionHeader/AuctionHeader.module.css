@@ -123,3 +123,16 @@
     width: 100%;
   }
 }
+.hideBorderBox {
+  background: #fcfcfc;
+  top: 0;
+  position: sticky !important;
+  z-index: 1;
+  height: 35px;
+}
+
+.votingRow {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+}
