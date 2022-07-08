@@ -1,5 +1,6 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import dayjs from 'dayjs';
+import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 export enum AuctionStatus {
   AuctionNotStarted,
@@ -35,16 +36,17 @@ export const auctionStatus = (auction: StoredAuction): AuctionStatus => {
 /**
  * Returns copy for deadline corresponding to auction status
  */
-export const deadlineCopy = (auction: StoredAuction) => {
+export const DeadlineCopy = (auction: StoredAuction) => {
+  const { t } = useTranslation();
   const status = auctionStatus(auction);
   return status === AuctionStatus.AuctionNotStarted
-    ? "Begins"
+    ? t("auctionNotStarted")
     : status === AuctionStatus.AuctionAcceptingProps
-    ? "Proposal deadline"
+    ? t("auctionAcceptingProps")
     : status === AuctionStatus.AuctionVoting
-    ? "Voting ends"
+    ? t("auctionVoting")
     : status === AuctionStatus.AuctionEnded
-    ? "Auction ended"
+    ? t("auctionEnded")
     : "";
 };
 

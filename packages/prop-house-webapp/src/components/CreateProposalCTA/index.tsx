@@ -1,9 +1,12 @@
-import classes from './CreateProposalCTA.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import Button, { ButtonColor } from '../Button';
-import { Form, Row, Col } from 'react-bootstrap';
+import classes from "./CreateProposalCTA.module.css";
+import Card, { CardBgColor, CardBorderRadius } from "../Card";
+import Button, { ButtonColor } from "../Button";
+import { Form, Row, Col } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const CreateProposalCTA = () => {
+  const { t } = useTranslation();
+
   return (
     <Row className={classes.row}>
       <Col xl={12}>
@@ -15,11 +18,11 @@ const CreateProposalCTA = () => {
             <Form.Control
               size="lg"
               type="text"
-              placeholder="Describe what you want funding for..."
+              placeholder={t("describe")}
               className={classes.formInput}
             />
-            <Button text="Propose" bgColor={ButtonColor.Pink} />
-            <Button text="About" bgColor={ButtonColor.White} />
+            <Button text={t("propose")} bgColor={ButtonColor.Pink} />
+            <Button text={t("about")} bgColor={ButtonColor.White} />
           </div>
         </Card>
       </Col>

@@ -1,16 +1,18 @@
-import classes from './ProposalCard.module.css';
-import globalClasses from '../../css/globals.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import detailedTime from '../../utils/detailedTime';
-import clsx from 'clsx';
-import { AuctionStatus } from '../../utils/auctionStatus';
-import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
-import PropCardVotingContainer from '../PropCardVotingContainer';
-import diffTime from '../../utils/diffTime';
-import EthAddress from '../EthAddress';
-import { useNavigate } from 'react-router-dom';
+import classes from "./ProposalCard.module.css";
+import globalClasses from "../../css/globals.module.css";
+import Card, { CardBgColor, CardBorderRadius } from "../Card";
+import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
+import detailedTime from "../../utils/detailedTime";
+import clsx from "clsx";
+import { AuctionStatus } from "../../utils/auctionStatus";
+import { ProposalCardStatus } from "../../utils/cardStatus";
+import { VoteAllotment } from "../../utils/voteAllotment";
+import PropCardVotingContainer from "../PropCardVotingContainer";
+import diffTime from "../../utils/diffTime";
+import EthAddress from "../EthAddress";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -30,6 +32,7 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
+  const { t } = useTranslation();
 
   let navigate = useNavigate();
 
@@ -70,7 +73,7 @@ const ProposalCard: React.FC<{
             (auctionStatus === AuctionStatus.AuctionEnded &&
               cardStatus !== ProposalCardStatus.Voting) ? (
               <div className={classes.scoreCopy}>
-                Votes: {Math.trunc(proposal.score)}
+                {t("votes")}: {Math.trunc(proposal.score)}
               </div>
             ) : (
               <EthAddress address={proposal.address} />

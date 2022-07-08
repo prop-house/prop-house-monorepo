@@ -11,7 +11,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-
-
-
-
+.dropdown-toggle::after {
+  vertical-align: inherit !important;
+}
+.lang .btn-primary.dropdown-toggle {
+  background-color: white !important;
+  color: black !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.lang .btn-primary.dropdown-toggle:hover {
+  color: gray !important;
+}
+.lang .dropdown-item.active {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-radius: 0px !important;
+  color: black;
+}
