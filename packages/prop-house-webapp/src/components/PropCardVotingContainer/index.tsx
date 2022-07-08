@@ -16,11 +16,10 @@ interface PropCardVotingContainerProps {
 
 const PropCardVotingContainer: React.FC<{
   props: PropCardVotingContainerProps;
-}> = (props) => {
-  const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } =
-    props.props;
+}> = props => {
+  const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } = props.props;
 
-  const allotedVotesForProp = votesForProp(voteAllotments, proposal.id);
+  const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
 
   const handleClick = (e: any, direction: boolean) => {
     e.stopPropagation();
@@ -29,27 +28,21 @@ const PropCardVotingContainer: React.FC<{
 
   return (
     <Row>
-      <Col
-        xs={12}
-        className={classes.bottomContainer}
-        onClick={(e: any) => e.stopPropagation()}
-      >
+      <Col xs={12} className={classes.bottomContainer} onClick={(e: any) => e.stopPropagation()}>
         <div className={classes.votesButtonContainer}>
           <Button
             text="↓"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            onClick={(e) => handleClick(e, false)}
-            disabled={allotedVotesForProp === 0}
+            onClick={e => handleClick(e, false)}
+            disabled={allottedVotesForProp === 0}
           />
-          <div className={classes.votesAllotedDisplay}>
-            {allotedVotesForProp}
-          </div>
+          <div className={classes.votesAllottedDisplay}>{allottedVotesForProp}</div>
           <Button
             text="↑"
             bgColor={ButtonColor.Yellow}
             classNames={classes.voteBtn}
-            onClick={(e) => handleClick(e, true)}
+            onClick={e => handleClick(e, true)}
             disabled={!canAllotVotes()}
           />
         </div>

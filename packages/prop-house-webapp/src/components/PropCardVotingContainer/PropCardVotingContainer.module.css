@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: center;
 }
-.votesAllotedDisplay {
+.votesAllottedDisplay {
   background-color: white;
   color: var(--brand-gray);
   border: 1px var(--brand-gray-semi-transparent) solid;
