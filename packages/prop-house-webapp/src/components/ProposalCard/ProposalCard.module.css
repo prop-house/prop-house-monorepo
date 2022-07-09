@@ -99,3 +99,13 @@
   justify-content: space-between;
   gap: 15px;
 }
+
+.winner {
+  border: 3px solid pink !important;
+}
+
+.winner .scoreCopy {
+  align-items: center;
+  gap: 5px;
+  display: flex;
+}

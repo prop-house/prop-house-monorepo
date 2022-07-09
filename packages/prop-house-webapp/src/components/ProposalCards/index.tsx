@@ -2,7 +2,7 @@ import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppSelector } from '../../hooks';
-import { auctionStatus } from '../../utils/auctionStatus';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
 import { useEthers } from '@usedapp/core';
 import extractAllVotes from '../../utils/extractAllVotes';
@@ -14,15 +14,25 @@ const ProposalCards: React.FC<{
   voteAllotments: VoteAllotment[];
   canAllotVotes: () => boolean;
   handleVoteAllotment: (proposalId: number, support: boolean) => void;
-}> = (props) => {
+}> = props => {
   const { auction, voteAllotments, canAllotVotes, handleVoteAllotment } = props;
 
   const { account } = useEthers();
 
-  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
-  const delegatedVotes = useAppSelector(
-    (state) => state.propHouse.delegatedVotes
-  );
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+
+  // empty array to story
+  const winningIds: number[] = [];
+  const auctionEnded = auctionStatus(auction) === AuctionStatus.AuctionEnded;
+
+  auctionEnded &&
+    proposals &&
+    proposals
+      .slice()
+      .sort((a, b) => (Number(a.score) < Number(b.score) ? 1 : -1))
+      .slice(0, auction.numWinners)
+      .map(p => winningIds.push(p.id));
 
   return (
     <>
@@ -34,20 +44,15 @@ const ProposalCards: React.FC<{
                 <ProposalCard
                   proposal={proposal}
                   auctionStatus={auctionStatus(auction)}
-                  cardStatus={cardStatus(
-                    delegatedVotes ? delegatedVotes > 0 : false,
-                    auction
-                  )}
+                  cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, auction)}
                   votesFor={aggVoteWeightForProp(
-                    extractAllVotes(
-                      proposals ? proposals : [],
-                      account ? account : ''
-                    ),
-                    proposal.id
+                    extractAllVotes(proposals ? proposals : [], account ? account : ''),
+                    proposal.id,
                   )}
                   canAllotVotes={canAllotVotes}
                   voteAllotments={voteAllotments}
                   handleVoteAllotment={handleVoteAllotment}
+                  winner={auctionEnded && winningIds.includes(proposal.id)}
                 />
               </Col>
             );

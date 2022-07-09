@@ -1,18 +1,18 @@
-import classes from "./ProposalCard.module.css";
-import globalClasses from "../../css/globals.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
-import detailedTime from "../../utils/detailedTime";
-import clsx from "clsx";
-import { AuctionStatus } from "../../utils/auctionStatus";
-import { ProposalCardStatus } from "../../utils/cardStatus";
-import { VoteAllotment } from "../../utils/voteAllotment";
-import PropCardVotingContainer from "../PropCardVotingContainer";
-import diffTime from "../../utils/diffTime";
-import EthAddress from "../EthAddress";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-
+import classes from './ProposalCard.module.css';
+import globalClasses from '../../css/globals.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import detailedTime from '../../utils/detailedTime';
+import clsx from 'clsx';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment } from '../../utils/voteAllotment';
+import PropCardVotingContainer from '../PropCardVotingContainer';
+import diffTime from '../../utils/diffTime';
+import EthAddress from '../EthAddress';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { IoMdTrophy as TrophyIcon } from 'react-icons/io';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -22,7 +22,8 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
-}> = (props) => {
+  winner?: boolean;
+}> = props => {
   const {
     proposal,
     auctionStatus,
@@ -31,6 +32,7 @@ const ProposalCard: React.FC<{
     voteAllotments,
     canAllotVotes,
     handleVoteAllotment,
+    winner,
   } = props;
   const { t } = useTranslation();
 
@@ -39,7 +41,7 @@ const ProposalCard: React.FC<{
   return (
     <>
       <div
-        onClick={(e) => {
+        onClick={e => {
           if (e.metaKey || e.ctrlKey) {
             window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
           } else {
@@ -56,7 +58,8 @@ const ProposalCard: React.FC<{
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
               : '',
-            classes.proposalCard
+            classes.proposalCard,
+            winner && classes.winner,
           )}
         >
           <div className={classes.titleContainer}>
@@ -64,26 +67,22 @@ const ProposalCard: React.FC<{
             <div className={classes.timestamp}>#{proposal.id}</div>
           </div>
 
-          {proposal.tldr.length > 0 && (
-            <div className={classes.truncatedTldr}>{proposal.tldr}</div>
-          )}
+          {proposal.tldr.length > 0 && <div className={classes.truncatedTldr}>{proposal.tldr}</div>}
 
           <div className={classes.timestampAndlinkContainer}>
             {auctionStatus === AuctionStatus.AuctionVoting ||
             (auctionStatus === AuctionStatus.AuctionEnded &&
               cardStatus !== ProposalCardStatus.Voting) ? (
               <div className={classes.scoreCopy}>
-                {t("votes")}: {Math.trunc(proposal.score)}
+                {winner && <TrophyIcon />}
+                {t('votes')}: {Math.trunc(proposal.score)}
               </div>
             ) : (
               <EthAddress address={proposal.address} />
             )}
 
             <div className={classes.avatarAndPropNumber}>
-              <div
-                className={classes.scoreCopy}
-                title={detailedTime(proposal.createdDate)}
-              >
+              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
                 {diffTime(proposal.createdDate)}
               </div>
             </div>
