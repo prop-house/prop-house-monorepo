@@ -54,6 +54,11 @@ const FullAuction: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
+  const auctionNotStartedContent = AuctionNotStartedContent();
+  const auctionEmptyContent = AuctionEmptyContent();
+  const disconnectedCopy = DisconnectedCopy(connect);
+  const connectedCopy = ConnectedCopy();
+
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
     if (!account || !proposals) return 0;
@@ -187,9 +192,7 @@ const FullAuction: React.FC<{
       {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
           <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
-            <div>
-              {delegatedVotes && delegatedVotes > 0 ? ConnectedCopy() : DisconnectedCopy(connect)}
-            </div>
+            <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
           </Card>
         )}
       {community && (
@@ -232,9 +235,9 @@ const FullAuction: React.FC<{
         </Row>
 
         {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-          AuctionNotStartedContent()
+          auctionNotStartedContent
         ) : auction.proposals.length === 0 ? (
-          AuctionEmptyContent()
+          auctionEmptyContent
         ) : (
           <>
             <ProposalCards
