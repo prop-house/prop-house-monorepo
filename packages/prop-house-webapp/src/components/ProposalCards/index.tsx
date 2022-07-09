@@ -2,12 +2,14 @@ import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppSelector } from '../../hooks';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
 import { useEthers } from '@usedapp/core';
 import extractAllVotes from '../../utils/extractAllVotes';
 import { VoteAllotment } from '../../utils/voteAllotment';
 import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
+import isWinner from '../../utils/isWinner';
+import getWinningIds from '../../utils/getWinningIds';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -22,17 +24,7 @@ const ProposalCards: React.FC<{
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
 
-  // empty array to story
-  const winningIds: number[] = [];
-  const auctionEnded = auctionStatus(auction) === AuctionStatus.AuctionEnded;
-
-  auctionEnded &&
-    proposals &&
-    proposals
-      .slice()
-      .sort((a, b) => (Number(a.score) < Number(b.score) ? 1 : -1))
-      .slice(0, auction.numWinners)
-      .map(p => winningIds.push(p.id));
+  const winningIds = getWinningIds(proposals, auction);
 
   return (
     <>
@@ -52,7 +44,7 @@ const ProposalCards: React.FC<{
                   canAllotVotes={canAllotVotes}
                   voteAllotments={voteAllotments}
                   handleVoteAllotment={handleVoteAllotment}
-                  winner={auctionEnded && winningIds.includes(proposal.id)}
+                  winner={winningIds && isWinner(winningIds, proposal.id)}
                 />
               </Col>
             );
