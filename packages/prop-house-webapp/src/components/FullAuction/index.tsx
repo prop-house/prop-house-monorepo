@@ -186,14 +186,9 @@ const FullAuction: React.FC<{
       {showModal && modalData && <Modal data={modalData} />}
       {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
-          <Card
-            bgColor={CardBgColor.White}
-            borderRadius={CardBorderRadius.twenty}
-          >
+          <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
             <div>
-              {delegatedVotes && delegatedVotes > 0
-                ? ConnectedCopy
-                : DisconnectedCopy(connect)}
+              {delegatedVotes && delegatedVotes > 0 ? ConnectedCopy() : DisconnectedCopy(connect)}
             </div>
           </Card>
         )}
@@ -237,9 +232,9 @@ const FullAuction: React.FC<{
         </Row>
 
         {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-          AuctionNotStartedContent
+          AuctionNotStartedContent()
         ) : auction.proposals.length === 0 ? (
-          AuctionEmptyContent
+          AuctionEmptyContent()
         ) : (
           <>
             <ProposalCards
