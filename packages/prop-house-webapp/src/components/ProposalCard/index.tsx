@@ -65,7 +65,10 @@ const ProposalCard: React.FC<{
           </div>
 
           {proposal.tldr.length > 0 && (
-            <div className={classes.truncatedTldr}>{proposal.tldr}</div>
+            <ReactMarkdown
+              className={classes.truncatedTldr}
+              children={proposal.tldr}
+            ></ReactMarkdown>
           )}
 
           <div className={classes.timestampAndlinkContainer}>
