@@ -5,13 +5,19 @@ export interface EditorSlice {
   proposal: ProposalFields;
 }
 
-export const emptyProposal = () => ({
-  title: '',
-  who: '',
-  what: '',
-  tldr: '',
-  links: '',
-});
+export const emptyProposal = () => {
+  const getPropData = localStorage.getItem('propData');
+
+  return getPropData
+    ? JSON.parse(getPropData)
+    : {
+        title: '',
+        who: '',
+        what: '',
+        tldr: '',
+        links: '',
+      };
+};
 
 const initialState: EditorSlice = {
   proposal: emptyProposal(),

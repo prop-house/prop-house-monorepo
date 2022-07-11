@@ -21,57 +21,61 @@ const ProposalEditor: React.FC<{
   const [showImageModal, setShowImageModal] = useState(false);
   const { t } = useTranslation();
 
-  const validateInput = (min: number, count: number) =>
-    0 < count && count < min;
+  const validateInput = (min: number, count: number) => 0 < count && count < min;
+
+  // save proposal data in local storage
+  useEffect(() => {
+    localStorage.setItem('propData', JSON.stringify(data));
+  }, [data]);
 
   const formData = [
     {
-      title: t("title"),
+      title: t('title'),
       focus: true,
-      type: "input",
+      type: 'input',
       fieldValue: data.title,
-      fieldName: "title",
-      placeholder: t("titlePlaceholder"),
-      value: "",
+      fieldName: 'title',
+      placeholder: t('titlePlaceholder'),
+      value: '',
       minCount: 5,
       maxCount: 80,
-      error: t("titleError"),
+      error: t('titleError'),
     },
     {
-      title: t("tldr2"),
-      type: "input",
+      title: t('tldr2'),
+      type: 'input',
       fieldValue: data.tldr,
-      fieldName: "tldr",
-      placeholder: t("tldrPlaceholder"),
-      value: "",
+      fieldName: 'tldr',
+      placeholder: t('tldrPlaceholder'),
+      value: '',
       minCount: 10,
       maxCount: 120,
-      error: t("tldrError"),
+      error: t('tldrError'),
     },
   ];
 
   const descriptionData = {
-    title: t("description"),
-    type: "textarea",
+    title: t('description'),
+    type: 'textarea',
     fieldValue: data.what,
-    fieldName: "what",
-    placeholder: t("descriptionPlaceholder"),
-    value: "",
+    fieldName: 'what',
+    placeholder: t('descriptionPlaceholder'),
+    value: '',
     minCount: 50,
-    error: t("descriptionError"),
+    error: t('descriptionError'),
   };
 
   const formats = [
-    "header",
-    "bold",
-    "underline",
-    "strike",
-    "blockquote",
-    "code-block",
-    "list",
-    "bullet",
-    "link",
-    "image",
+    'header',
+    'bold',
+    'underline',
+    'strike',
+    'blockquote',
+    'code-block',
+    'list',
+    'bullet',
+    'link',
+    'image',
   ];
 
   const imageHandler = () => {
