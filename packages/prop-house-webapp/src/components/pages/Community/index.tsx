@@ -1,24 +1,25 @@
-import { useLocation, useNavigate } from "react-router-dom";
-import { ethers } from "ethers";
-import { useAppDispatch, useAppSelector } from "../../../hooks";
-import ProfileHeader from "../../ProfileHeader";
-import { useEffect, useRef, useState } from "react";
-import { useEthers } from "@usedapp/core";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ethers } from 'ethers';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import ProfileHeader from '../../ProfileHeader';
+import { useEffect, useRef, useState } from 'react';
+import { useEthers } from '@usedapp/core';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   setActiveAuction,
   setActiveCommunity,
   setActiveProposals,
-} from "../../../state/slices/propHouse";
-import { getName } from "prop-house-communities";
-import FullAuction from "../../FullAuction";
-import dayjs from "dayjs";
-import CTA from "../../CTA";
-import { addressFormLink } from "../../../utils/addressFormLink";
-import { slugToName } from "../../../utils/communitySlugs";
-import LoadingIndicator from "../../LoadingIndicator";
-import NotFound from "../../NotFound";
-import { useTranslation } from "react-i18next";
+} from '../../../state/slices/propHouse';
+import { getName } from 'prop-house-communities';
+import FullAuction from '../../FullAuction';
+import dayjs from 'dayjs';
+import CTA from '../../CTA';
+import { addressFormLink } from '../../../utils/addressFormLink';
+import { slugToName } from '../../../utils/communitySlugs';
+import LoadingIndicator from '../../LoadingIndicator';
+import NotFound from '../../NotFound';
+import { useTranslation } from 'react-i18next';
+import { clearProposal } from '../../../state/slices/editor';
 
 const Community = () => {
   const location = useLocation();
@@ -68,6 +69,7 @@ const Community = () => {
     return () => {
       cleanedUp.current = true;
       dispatch(setActiveCommunity());
+      dispatch(clearProposal());
       dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
     };
