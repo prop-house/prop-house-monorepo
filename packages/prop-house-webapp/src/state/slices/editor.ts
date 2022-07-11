@@ -19,6 +19,18 @@ export const emptyProposal = () => {
       };
 };
 
+export const clearProposalData = () => {
+  localStorage.removeItem('propData');
+
+  return {
+    title: '',
+    who: '',
+    what: '',
+    tldr: '',
+    links: '',
+  };
+};
+
 const initialState: EditorSlice = {
   proposal: emptyProposal(),
 };
@@ -47,8 +59,8 @@ export const editorSlice = createSlice({
     updateProposalWhat: proposalSliceFactory('what'),
     updateProposaltldr: proposalSliceFactory('tldr'),
     updateProposalLinks: proposalSliceFactory('links'),
-    clearProposal: (state) => {
-      state.proposal = emptyProposal();
+    clearProposal: state => {
+      state.proposal = clearProposalData();
     },
   },
 });
