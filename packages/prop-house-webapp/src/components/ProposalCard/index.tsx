@@ -68,7 +68,12 @@ const ProposalCard: React.FC<{
             <ReactMarkdown
               className={classes.truncatedTldr}
               children={proposal.tldr}
-              disallowedElements={['img']}
+              disallowedElements={['img', '']}
+              components={{
+                h1: 'p',
+                h2: 'p',
+                h3: 'p',
+              }}
             ></ReactMarkdown>
           )}
 
