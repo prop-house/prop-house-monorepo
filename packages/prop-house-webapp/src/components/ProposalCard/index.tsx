@@ -1,18 +1,18 @@
-import classes from "./ProposalCard.module.css";
-import globalClasses from "../../css/globals.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
-import detailedTime from "../../utils/detailedTime";
-import clsx from "clsx";
-import { AuctionStatus } from "../../utils/auctionStatus";
-import { ProposalCardStatus } from "../../utils/cardStatus";
-import { VoteAllotment } from "../../utils/voteAllotment";
-import PropCardVotingContainer from "../PropCardVotingContainer";
-import diffTime from "../../utils/diffTime";
-import EthAddress from "../EthAddress";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-
+import classes from './ProposalCard.module.css';
+import globalClasses from '../../css/globals.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import detailedTime from '../../utils/detailedTime';
+import clsx from 'clsx';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment } from '../../utils/voteAllotment';
+import PropCardVotingContainer from '../PropCardVotingContainer';
+import diffTime from '../../utils/diffTime';
+import EthAddress from '../EthAddress';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -65,7 +65,16 @@ const ProposalCard: React.FC<{
           </div>
 
           {proposal.tldr.length > 0 && (
-            <div className={classes.truncatedTldr}>{proposal.tldr}</div>
+            <ReactMarkdown
+              className={classes.truncatedTldr}
+              children={proposal.tldr}
+              disallowedElements={['img', '']}
+              components={{
+                h1: 'p',
+                h2: 'p',
+                h3: 'p',
+              }}
+            ></ReactMarkdown>
           )}
 
           <div className={classes.timestampAndlinkContainer}>
