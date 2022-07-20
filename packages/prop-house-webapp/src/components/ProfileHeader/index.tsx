@@ -83,9 +83,11 @@ const ProfileHeader: React.FC<{
             </div>
           </Col>
 
-          <Col className={classes.communityDescriptionRow}>
-            <p>{community?.description}</p>
-          </Col>
+          {community?.description && (
+            <Col className={classes.communityDescriptionRow}>
+              <p>{community?.description}</p>
+            </Col>
+          )}
         </Col>
       </Col>
     </Row>
