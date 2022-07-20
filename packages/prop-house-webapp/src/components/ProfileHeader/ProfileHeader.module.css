@@ -39,21 +39,9 @@
   font-size: medium;
   color: var(--brand-gray);
 }
-.phLink {
-  display: flex;
-}
-.subInfoRow .funder {
-  color: black;
-  font-weight: 600;
-}
-.subInfoRow .spacer {
-  margin: 0 1rem;
-}
+
 .subInfoRow div:nth-child(2) {
   margin-left: 1rem;
-}
-.copyIcon {
-  cursor: pointer;
 }
 
 .propHouseDataRow {
@@ -62,28 +50,48 @@
 .propHouseDataRow .item:nth-child(1) {
   margin-left: 0;
 }
-.propHouseDataRow > * {
-  margin: 0 2rem;
+.propHouseDataRow .item {
+  margin-right: 2rem;
 }
 
+.item {
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
 .itemTitle {
   color: var(--brand-gray);
-  font-size: medium;
 }
-
 .itemData {
   font-weight: bold;
-  margin-top: 0.5rem;
-  font-size: x-large;
+  margin-right: 0.5rem;
+}
+
+.communityDescriptionRow p {
+  font-size: large;
+  color: var(--brand-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* number of lines to show */
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 @media (max-width: 992px) {
+  .profileHeaderRow {
+    margin-bottom: 0rem;
+  }
+
   .profilePicCol {
     text-align: center;
     margin-bottom: 1rem;
   }
   .communityInfoCol {
     margin: 0 1rem;
+  }
+  .propHouseDataRow .item {
+    margin-right: 0.75rem;
   }
   .subInfoRow {
     display: block;
