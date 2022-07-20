@@ -70,16 +70,16 @@ const ProfileHeader: React.FC<{
 
           <Col className={classes.propHouseDataRow}>
             <div className={classes.item}>
+              <div className={classes.itemData}>{community ? community.ethFunded : 0} Ξ</div>
+              <div className={classes.itemTitle}>{t('funded')}</div>
+            </div>
+            <div className={classes.item}>
               <div className={classes.itemData}>{community ? community.numProposals : 0}</div>
               <div className={classes.itemTitle}>{t('proposals2')}</div>
             </div>
             <div className={classes.item}>
               <div className={classes.itemData}>{community ? community.numAuctions : 0}</div>
               <div className={classes.itemTitle}>{t('rounds')}</div>
-            </div>
-            <div className={classes.item}>
-              <div className={classes.itemData}>{community ? community.ethFunded : 0} Ξ</div>
-              <div className={classes.itemTitle}>{t('funded')}</div>
             </div>
           </Col>
 
