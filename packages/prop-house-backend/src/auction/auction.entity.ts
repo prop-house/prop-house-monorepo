@@ -48,9 +48,6 @@ export class Auction {
   community: Community;
 
   @Column()
-  communityId: number;
-
-  @Column()
   createdDate: Date;
 
   @Column({ nullable: true })

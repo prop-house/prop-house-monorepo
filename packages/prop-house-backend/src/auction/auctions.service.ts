@@ -12,7 +12,9 @@ export class AuctionsService {
 
   findAll(): Promise<Auction[]> {
     return this.auctionsRepository.find({
-      loadRelationIds: {relations: ['proposals.auction']},
+      loadRelationIds: {
+        relations: ['proposals.auction', 'community']
+      },
       where: {
         visible: true,
       },
@@ -22,6 +24,9 @@ export class AuctionsService {
   findOne(id: number): Promise<Auction> {
     return this.auctionsRepository.findOne(id, {
       relations: ['proposals'],
+      loadRelationIds: {
+        relations: ['community']
+      },
       where: { visible: true },
     });
   }
