@@ -28,7 +28,7 @@ export class Community {
   @Column()
   profileImageUrl: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   // TODO: refactor to not use deprecated decorator
