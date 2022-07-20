@@ -1,3 +1,7 @@
+.profileHeaderRow {
+  margin-bottom: 2rem;
+}
+
 .profilePicCol img {
   height: 15rem;
   width: auto;
@@ -48,7 +52,6 @@
 }
 .propHouseDataRow .item {
   margin-right: 2rem;
-
 }
 
 .item {
