@@ -33,12 +33,11 @@ CREATE TABLE "public"."community" (
     "profileImageUrl" character varying NOT NULL,
     "createdDate" timestamp NOT NULL,
     "lastUpdatedDate" timestamp,
-    "communityId" integer NOT NULL,
     CONSTRAINT "PK_cae794115a383328e8923de4193" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-INSERT INTO "community" ("id", "visible", "contractAddress", "name", "profileImageUrl", "createdDate", "lastUpdatedDate", "communityId") VALUES
-(1,	'1',	'0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',	'Nouns',	'https://gateway.pinata.cloud/ipfs/QmRzHf4PHBDSHu4txCHXtFRnvLHrgYdVBTSkGSeTHJWR4a',	'2021-08-08 05:06:49',	NULL,	1);
+INSERT INTO "community" ("id", "visible", "contractAddress", "name", "profileImageUrl", "createdDate", "lastUpdatedDate") VALUES
+(1,	'1',	'0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',	'Nouns',	'https://gateway.pinata.cloud/ipfs/QmRzHf4PHBDSHu4txCHXtFRnvLHrgYdVBTSkGSeTHJWR4a',	'2021-08-08 05:06:49',	NULL);
 
 CREATE SEQUENCE file_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
@@ -110,7 +109,7 @@ CREATE TABLE "public"."vote" (
     "createdDate" timestamp NOT NULL,
     "proposalId" integer NOT NULL,
     "auctionId" integer NOT NULL,
-    "weight" numeric DEFAULT '1' NOT NULL,
+    "weight" integer NOT NULL,
     CONSTRAINT "PK_2d5932d46afe39c8176f9d4be72" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
