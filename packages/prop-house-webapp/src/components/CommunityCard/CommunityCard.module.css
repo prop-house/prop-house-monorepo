@@ -16,3 +16,7 @@
 .container {
   margin: 1rem 0;
 }
+.container img:hover {
+  cursor: pointer;
+  transform: scale(102%);
+}
