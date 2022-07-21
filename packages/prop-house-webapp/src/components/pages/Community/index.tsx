@@ -70,6 +70,7 @@ const Community = () => {
       dispatch(setActiveCommunity());
       dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
+      localStorage.removeItem('votes');
     };
   }, [slug, dispatch, isValidAddress]);
 
