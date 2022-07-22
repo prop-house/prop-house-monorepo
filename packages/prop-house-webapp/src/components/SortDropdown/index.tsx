@@ -3,13 +3,14 @@ import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { sortProposals } from '../../state/slices/propHouse';
-import { SortType } from '../../utils/sortingProposals';
+import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-const SortDropdown: React.FC<{ auction: StoredAuction }> = props => {
+const SortDropdown: React.FC<{
+  auction: StoredAuction;
+}> = props => {
   const { t } = useTranslation();
   const { auction } = props;
 
@@ -18,50 +19,23 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = props => {
   const allowSortByVotes = auctionVoting || auctionEnded;
 
   const [datesSorted, setDatesSorted] = useState(auctionEnded ? false : true);
-  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
   const [dateAscending, setDateAscending] = useState(auctionEnded ? false : true);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
   const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
 
   const dispatch = useDispatch();
-
-  const sortByDates = () => {
-    setDatesSorted(true);
-    setVotesSorted(false);
-
-    setDateAscending(prev => {
-      dispatch(
-        sortProposals({
-          sortType: SortType.CreatedAt,
-          ascending: dateAscending,
-        }),
-      );
-
-      return !prev;
-    });
-  };
-
-  const sortByVotes = () => {
-    setDatesSorted(false);
-    setVotesSorted(true);
-
-    setVotesAscending(prev => {
-      dispatch(
-        sortProposals({
-          sortType: SortType.Score,
-          ascending: votesAscending,
-        }),
-      );
-
-      return !prev;
-    });
-  };
 
   return (
     <>
       <div className={classes.sortContainer}>
         {allowSortByVotes && (
           <div
-            onClick={sortByVotes}
+            onClick={() => {
+              dispatchSortProposals(dispatch, SortType.Score, votesAscending);
+              setVotesAscending(!votesAscending);
+              setDatesSorted(false);
+              setVotesSorted(true);
+            }}
             className={clsx(classes.sortItem, votesSorted && classes.active)}
           >
             <div>{t('votes')}</div>
@@ -70,7 +44,12 @@ const SortDropdown: React.FC<{ auction: StoredAuction }> = props => {
         )}
 
         <div
-          onClick={sortByDates}
+          onClick={() => {
+            dispatchSortProposals(dispatch, SortType.CreatedAt, dateAscending);
+            setDateAscending(!dateAscending);
+            setDatesSorted(true);
+            setVotesSorted(false);
+          }}
           className={clsx(classes.sortItem, datesSorted && classes.active)}
         >
           <div>{t('created')}</div>
