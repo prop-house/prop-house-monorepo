@@ -222,15 +222,11 @@ const FullAuction: React.FC<{
           <div className={classes.dividerSection}>
             <div className={classes.proposalTitle}>{`${
               proposals
-                ? `${proposals.length} ${
-                    proposals.length === 1 ? t("proposal") : t("proposals")
-                  }`
-                : ""
+                ? `${proposals.length} ${proposals.length === 1 ? t('proposal') : t('proposals')}`
+                : ''
             }`}</div>
 
-            {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
-              <SortDropdown auction={auction} />
-            )}
+            {proposals && proposals.length > 1 && <SortDropdown auction={auction} />}
           </div>
         </Row>
 
