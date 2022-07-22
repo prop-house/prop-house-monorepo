@@ -1,41 +1,38 @@
-import classes from "./FullAuction.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import AuctionHeader from "../AuctionHeader";
-import ProposalCards from "../ProposalCards";
-import { Row } from "react-bootstrap";
-import { StoredAuction, Vote } from "@nouns/prop-house-wrapper/dist/builders";
-import { auctionStatus, AuctionStatus } from "../../utils/auctionStatus";
-import { useEthers } from "@usedapp/core";
-import { useEffect, useState, useRef } from "react";
-import useWeb3Modal from "../../hooks/useWeb3Modal";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../hooks";
-import { VoteAllotment, updateVoteAllotment } from "../../utils/voteAllotment";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import { refreshActiveProposals } from "../../utils/refreshActiveProposal";
-import Modal, { ModalData } from "../Modal";
-import { aggVoteWeightForProps } from "../../utils/aggVoteWeight";
-import {
-  setDelegatedVotes,
-  setActiveProposals,
-} from "../../state/slices/propHouse";
-import { dispatchSortProposals } from "../../utils/sortingProposals";
+import classes from './FullAuction.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import AuctionHeader from '../AuctionHeader';
+import ProposalCards from '../ProposalCards';
+import { Row } from 'react-bootstrap';
+import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
+import { useEthers } from '@usedapp/core';
+import { useEffect, useState, useRef } from 'react';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../hooks';
+import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import Modal, { ModalData } from '../Modal';
+import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
+import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
+import { dispatchSortProposals } from '../../utils/sortingProposals';
 import {
   AuctionEmptyContent,
   AuctionNotStartedContent,
   ConnectedCopy,
   DisconnectedCopy,
-} from "./content";
+} from './content';
 
-import { getNumVotes } from "prop-house-communities";
-import SortDropdown from "../SortDropdown";
-import { useTranslation } from "react-i18next";
+import { getNumVotes } from 'prop-house-communities';
+import { useTranslation } from 'react-i18next';
+import SortToggles from '../SortToggles';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
   isFirstOrLastAuction: () => [boolean, boolean];
   handleAuctionChange: (next: boolean) => void;
-}> = (props) => {
+}> = props => {
   const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
 
   const { account, library } = useEthers();
@@ -226,7 +223,7 @@ const FullAuction: React.FC<{
                 : ''
             }`}</div>
 
-            {proposals && proposals.length > 1 && <SortDropdown auction={auction} />}
+            {proposals && proposals.length > 1 && <SortToggles auction={auction} />}
           </div>
         </Row>
 
