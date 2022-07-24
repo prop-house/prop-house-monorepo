@@ -7,6 +7,11 @@
   cursor: default;
 }
 
+.hoverImg:hover {
+  transform: scale(102%);
+  cursor: pointer;
+}
+
 .loadingImg {
   background-color: rgb(230, 230, 230);
 }
