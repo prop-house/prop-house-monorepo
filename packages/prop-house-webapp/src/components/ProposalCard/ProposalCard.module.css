@@ -64,6 +64,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 5px;
 }
 
 .timestamp {
@@ -75,7 +76,7 @@
 
 .scoreCopy {
   font-weight: bold;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--brand-gray);
 }
 .truncatedTldr {
@@ -84,13 +85,15 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-
   word-break: break-word;
 }
 .avatarAndPropNumber {
   display: flex;
   align-items: center;
   gap: 5px;
+  width: 50%;
+  justify-content: end;
+  height: 24px;
 }
 
 .titleContainer {
@@ -98,4 +101,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 15px;
+}
+.address {
+  width: 50%;
 }
