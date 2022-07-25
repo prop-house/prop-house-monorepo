@@ -64,6 +64,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 5px;
 }
 
 .timestamp {
@@ -84,13 +85,14 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-
   word-break: break-word;
 }
 .avatarAndPropNumber {
   display: flex;
   align-items: center;
   gap: 5px;
+  width: 50%;
+  justify-content: end;
 }
 
 .titleContainer {
@@ -98,4 +100,11 @@
   align-items: center;
   justify-content: space-between;
   gap: 15px;
+}
+.address {
+  width: 50%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
 }

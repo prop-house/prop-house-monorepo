@@ -12,11 +12,3 @@
 .ethAddress a:visited {
   color: inherit;
 }
-
-.address {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  max-width: 95px;
-  display: block;
-  overflow: hidden;
-}
