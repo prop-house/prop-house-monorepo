@@ -1,9 +1,22 @@
-.langBtn {
-  margin: 0 0 0 1rem !important;
+@media (min-width: 993px) {
+  .langBtn {
+    margin: 0 0 0 1rem !important;
+    padding-top: 0.5rem;
+  }
 }
+
+@media (max-width: 992px) {
+  .langBtn {
+    padding: 0.5rem 0rem;
+  }
+  .langBtn button {
+    min-width: 80px !important;
+  }
+}
+
 .langBtn button {
   border-radius: 10px !important;
-  /* padding: 0.25rem 0.5rem !important; */
+
   padding: 0.575rem 0.75rem 0.525rem;
   white-space: normal;
   text-align: center;

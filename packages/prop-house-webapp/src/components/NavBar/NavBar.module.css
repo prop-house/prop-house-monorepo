@@ -3,9 +3,25 @@
   margin-bottom: 2rem;
 }
 
+@media (max-width: 993px) {
+  .navbar {
+    margin-bottom: 0.5rem;
+  }
+  .navbar-nav .dropdown-menu {
+    position: absolute !important;
+    background: yellow !important;
+  }
+}
+
 .navBarCollapse {
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 993px) {
+  .navBarCollapse {
+    margin-top: 15px;
+  }
 }
 
 .navbarBrand {
@@ -22,16 +38,28 @@
 .navbar-toggler {
   border-radius: 10px !important;
 }
-
-.link {
-  text-decoration: none;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--brand-black-black);
-  cursor: pointer;
+@media (max-width: 993px) {
+  .menuLink {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 5px;
+  }
 }
 
 .link:hover {
   text-decoration: none;
   color: var(--brand-black);
+}
+
+.buttonGroup {
+  display: flex;
+}
+@media (max-width: 992px) {
+  .buttonGroup {
+    gap: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
 }
