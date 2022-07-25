@@ -99,7 +99,7 @@
   "title": "Title",
   "titlePlaceholder": "Give your proposal a name",
   "tldrPlaceholder": "In the simplest language possible, explain your proposal in one sentence",
-  "descriptionPlaceholder": "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nLinks: share relevant links to the team and project",
+  "descriptionPlaceholder": "Project details: what are you building?\nRoadmap: when do you expect to complete it by?\nTeam: who is building this?\nMedia: Please share any media that will help paint the picture of what you are building!\nLinks: share relevant links to the team and project",
   "titleError": "Title must be 5 characters minimum",
   "tldrError": "TLDR must be between 10 & 120 characters",
   "descriptionError": "Description must be 50 characters minimum",
