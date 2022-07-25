@@ -3,28 +3,26 @@ pragma solidity ^0.8.13;
 
 import { UUPSUpgradeable } from '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
-
-import { IPropHouse } from './interfaces/IPropHouse.sol';
+import { IIntegrationManager } from './interfaces/IIntegrationManager.sol';
 import { IUpgradeManager } from './interfaces/IUpgradeManager.sol';
+import { IModule } from './interfaces/IModule.sol';
 
-contract PropHouse is IPropHouse, UUPSUpgradeable, OwnableUpgradeable {
-    IUpgradeManager private immutable UpgradeManager;
+abstract contract ModuleBase is IModule, UUPSUpgradeable, OwnableUpgradeable {
+    IUpgradeManager internal immutable UpgradeManager;
+    IIntegrationManager internal immutable IntegrationManager;
 
-    constructor(address _upgradeManager) payable initializer {
+    constructor(address _upgradeManager, address _integrationManager) payable initializer {
         UpgradeManager = IUpgradeManager(_upgradeManager);
+        IntegrationManager = IIntegrationManager(_integrationManager);
     }
 
-    /// @notice Initialize the prop house implementation
-    /// @param _creator The creator of the prop house
-    /// @param _data Initialization data
-    function initialize(address _creator, bytes calldata _data) external initializer {
+    /// @notice Initialize the module implementation
+    /// @param _creator The creator of the module instance
+    function initialize(address _creator) internal initializer {
         __Ownable_init();
 
-        // Transfer ownership to the house creator
+        // Transfer ownership to the DAO creator
         transferOwnership(_creator);
-
-        // TODO: Define V1 initialization data
-        _data;
     }
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation
