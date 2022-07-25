@@ -8,15 +8,16 @@ import { nameToSlug } from '../../utils/communitySlugs';
 const CommunityProfImg: React.FC<{
   community?: Community;
   inactiveTokenURI?: string;
-}> = (props) => {
-  const { community } = props;
+  hover?: boolean;
+}> = props => {
+  const { community, hover } = props;
 
   return community ? (
     <Link to={`/${nameToSlug(community.name)}`}>
       <img
         src={community.profileImageUrl}
         alt="community profile "
-        className={classes.img}
+        className={clsx(classes.img, hover && classes.hoverImg)}
       />
     </Link>
   ) : (
