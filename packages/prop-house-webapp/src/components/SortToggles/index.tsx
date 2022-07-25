@@ -53,7 +53,7 @@ const SortToggles: React.FC<{
           className={clsx(classes.sortItem, datesSorted && classes.active)}
         >
           <div>{t('created')}</div>
-          {dateAscending ? <IoArrowUp size={'1.5rem'} /> : <IoArrowDown size={'1.5rem'} />}
+          {dateAscending ? <IoArrowDown size={'1.5rem'} /> : <IoArrowUp size={'1.5rem'} />}
         </div>
       </div>
     </>
