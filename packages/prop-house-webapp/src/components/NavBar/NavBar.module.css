@@ -38,15 +38,6 @@
 .navbar-toggler {
   border-radius: 10px !important;
 }
-@media (max-width: 993px) {
-  .menuLink {
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    width: 100%;
-    text-align: center;
-    margin-bottom: 5px;
-  }
-}
 
 .link:hover {
   text-decoration: none;

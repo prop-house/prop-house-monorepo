@@ -5,7 +5,7 @@
 
 @media (max-width: 992px) {
   .langBtn {
-    margin: 0;
+    margin: 0 !important;
     padding: 0.5rem 0rem;
   }
   .langBtn button {
