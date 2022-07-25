@@ -1,12 +1,11 @@
-@media (min-width: 993px) {
-  .langBtn {
-    margin: 0 0 0 1rem !important;
-    padding-top: 0.5rem;
-  }
+.langBtn {
+  padding-top: 0.5rem;
+  margin: 0 0 0 1rem !important;
 }
 
 @media (max-width: 992px) {
   .langBtn {
+    margin: 0;
     padding: 0.5rem 0rem;
   }
   .langBtn button {
@@ -16,7 +15,6 @@
 
 .langBtn button {
   border-radius: 10px !important;
-
   padding: 0.575rem 0.75rem 0.525rem;
   white-space: normal;
   text-align: center;
