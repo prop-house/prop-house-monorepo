@@ -11,8 +11,20 @@
 .navbarBrand {
   color: var(--brand-black);
   font-weight: bold;
-  font-size: 22px;
+  font-size: 32px;
   text-decoration: none;
+}
+
+.navbarBrand span {
+  font-family: 'Londrina Solid';
+}
+
+.propText {
+  color: var(--brand-pink);
+}
+
+.houseText {
+  color: var(--brand-pink-semi-transparent);
 }
 
 .navbarBrand:hover {
