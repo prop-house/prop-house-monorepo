@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-// TODO: Perhaps module 'implementation' ids should just be called 'module ids'?
-
 /// @notice Interface for the Integration Manager
 interface IIntegrationManager {
     /// @notice Thrown when an operation is attempted on an unregistered integration
