@@ -5,7 +5,7 @@ import { IDeploymentManager } from '../interfaces/IDeploymentManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
 /// @title DeploymentManager
-/// @notice This contract allows module owners to opt-in to deployment implementation targets registered by the Prop House DAO
+/// @notice This contract allows the registrar to manage module implementation deployment targets
 contract DeploymentManager is IDeploymentManager {
     IRegistrarManager public immutable RegistrarManager;
 

@@ -5,7 +5,7 @@ import { IIntegrationManager } from '../interfaces/IIntegrationManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
 /// @title IntegrationManager
-/// @notice This contract allows module owners to opt-in to implementation upgrades registered by the Prop House DAO
+/// @notice This contract allows the registrar to manage module integrations, the building blocks of modules
 contract IntegrationManager is IIntegrationManager {
     IRegistrarManager public immutable RegistrarManager;
 

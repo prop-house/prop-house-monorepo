@@ -5,7 +5,7 @@ import { IUpgradeManager } from '../interfaces/IUpgradeManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
 /// @title UpgradeManager
-/// @notice This contract allows module owners to opt-in to implementation upgrades registered by the Prop House DAO
+/// @notice This contract allows the registrar to manage opt-in module implementation upgrade targets
 contract UpgradeManager is IUpgradeManager {
     IRegistrarManager public immutable RegistrarManager;
 
