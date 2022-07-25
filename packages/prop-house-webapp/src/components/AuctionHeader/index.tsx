@@ -10,11 +10,15 @@ import formatTime from '../../utils/formatTime';
 import {
   auctionStatus,
   AuctionStatus,
-  deadlineCopy,
+  DeadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useLocation } from 'react-router-dom';
 import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
+import Tooltip from '../Tooltip';
+import dayjs from 'dayjs';
+import { useAppSelector } from '../../hooks';
+import { useTranslation } from 'react-i18next';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -29,7 +33,7 @@ const AuctionHeader: React.FC<{
   handleVote?: () => void;
   isFirstOrLastAuction: () => [boolean, boolean];
   handleAuctionChange: (next: boolean) => void;
-}> = (props) => {
+}> = props => {
   const {
     auction,
     clickable,
@@ -46,6 +50,8 @@ const AuctionHeader: React.FC<{
   const location = useLocation();
   const onAuctionPage = location.pathname.includes('auction'); // disable clickable header when browsing auctions
   const status = auctionStatus(auction);
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const { t } = useTranslation();
 
   const {
     id,
@@ -54,6 +60,8 @@ const AuctionHeader: React.FC<{
     numWinners,
     proposalEndTime: proposalEndDate,
   } = auction;
+
+  const isVotingWindow = status === AuctionStatus.AuctionVoting;
 
   const content = (
     <Card
@@ -66,18 +74,14 @@ const AuctionHeader: React.FC<{
         <div className={classes.leftSectionContainer}>
           <div className={classes.arrowsContainer}>
             <HiArrowSmLeft
-              size={"2rem"}
+              size={'2rem'}
               onClick={() => handleAuctionChange(true)}
-              className={
-                isFirstOrLastAuction()[1] ? classes.disable : classes.able
-              }
+              className={isFirstOrLastAuction()[1] ? classes.disable : classes.able}
             />
             <HiArrowSmRight
-              size={"2rem"}
+              size={'2rem'}
               onClick={() => handleAuctionChange(false)}
-              className={
-                isFirstOrLastAuction()[0] ? classes.disable : classes.able
-              }
+              className={isFirstOrLastAuction()[0] ? classes.disable : classes.able}
             />
           </div>
           <div className={classes.titleSectionContainer}>
@@ -86,58 +90,57 @@ const AuctionHeader: React.FC<{
               <StatusPill status={auctionStatus(auction)} />
             </div>
             <div className={classes.leftSectionSubtitle}>
-              <span title={startDate.toLocaleString()}>
-                {formatTime(startDate)}
-              </span>
+              <span title={startDate.toLocaleString()}>{formatTime(startDate)}</span>
               {' - '}
-              <span title={proposalEndDate.toLocaleString()}>
-                {formatTime(proposalEndDate)}
-              </span>
+              <span title={proposalEndDate.toLocaleString()}>{formatTime(proposalEndDate)}</span>
             </div>
           </div>
         </div>
         <div className={classes.infoSection}>
-          {status === AuctionStatus.AuctionVoting &&
-            totalVotes !== undefined &&
-            totalVotes > 0 && (
-              <div className={classes.infoSubsection}>
-                <div className={classes.infoSubsectionTitle}>Votes left</div>
-                <div
-                  className={classes.infoSubsectionContent}
-                >{`${votesLeft} of ${totalVotes}`}</div>
-              </div>
-            )}
+          {isVotingWindow && totalVotes !== undefined && totalVotes > 0 && (
+            <div className={classes.infoSubsection}>
+              <div className={classes.infoSubsectionTitle}>Votes left</div>
+              <div className={classes.infoSubsectionContent}>{`${votesLeft} of ${totalVotes}`}</div>
+            </div>
+          )}
 
           <div className={classes.infoSubsection}>
-            <div className={classes.infoSubsectionTitle}>Funding</div>
+            <div className={classes.infoSubsectionTitle}>{t('funding')}</div>
             <div className={classes.infoSubsectionContent}>
               {`${fundingAmount.toFixed(2)} Ξ `}
               <span>× {numWinners}</span>
             </div>
           </div>
           <div className={classes.infoSubsection}>
-            <div className={classes.infoSubsectionTitle}>
-              {deadlineCopy(auction)}
-            </div>
-            <div className={classes.infoSubsectionContent}>
-              {diffTime(deadlineTime(auction))}
-            </div>
+            <Tooltip
+              content={
+                <>
+                  <div className={classes.infoSubsectionTitle}>{DeadlineCopy(auction)}</div>
+                  <div className={classes.infoSubsectionContent}>
+                    {diffTime(deadlineTime(auction))}
+                  </div>
+                </>
+              }
+              tooltipContent={`${dayjs(deadlineTime(auction)).format('MMMM D, YYYY h:mm A')}
+              
+               `}
+            />
           </div>
           {status === AuctionStatus.AuctionAcceptingProps ? (
             <div className={classes.infoSubsection}>
               <Button
-                text="Propose"
+                text={t('propose')}
                 bgColor={ButtonColor.Pink}
-                onClick={() => navigate('/create')}
+                onClick={() => navigate('/create', { state: { auction, community } })}
               />
             </div>
           ) : (
-            status === AuctionStatus.AuctionVoting &&
+            isVotingWindow &&
             totalVotes !== undefined &&
             totalVotes > 0 && (
               <div className={classes.infoSubsection}>
                 <Button
-                  text="Vote"
+                  text={t('vote')}
                   disabled={voteBtnEnabled ? false : true}
                   bgColor={ButtonColor.Yellow}
                   onClick={handleVote}
@@ -151,15 +154,17 @@ const AuctionHeader: React.FC<{
   );
 
   return (
-    <Row>
-      <Col xl={12}>
-        {!onAuctionPage && clickable ? (
-          <Link to={`auction/${id}`}>{content}</Link>
-        ) : (
-          content
-        )}
-      </Col>
-    </Row>
+    <>
+      {/* 
+      When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
+      */}
+      <div className={classes.hideBorderBox}></div>
+      <Row className={classes.votingRow}>
+        <Col xl={12}>
+          {!onAuctionPage && clickable ? <Link to={`auction/${id}`}>{content}</Link> : content}
+        </Col>
+      </Row>
+    </>
   );
 };
 

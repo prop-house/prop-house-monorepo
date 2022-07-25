@@ -1,17 +1,18 @@
-import classes from "./ProposalCard.module.css";
-import globalClasses from "../../css/globals.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import { Link } from "react-router-dom";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
-import diffTime from "../../utils/diffTime";
-import detailedTime from "../../utils/detailedTime";
-import EthAddress from "../EthAddress";
-import clsx from "clsx";
-import { AuctionStatus } from "../../utils/auctionStatus";
-import { ProposalCardStatus } from "../../utils/cardStatus";
-import { VoteAllotment } from "../../utils/voteAllotment";
-import PropCardVotingContainer from "../PropCardVotingContainer";
-import Tooltip from "../Tooltip";
+import classes from './ProposalCard.module.css';
+import globalClasses from '../../css/globals.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import detailedTime from '../../utils/detailedTime';
+import clsx from 'clsx';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment } from '../../utils/voteAllotment';
+import PropCardVotingContainer from '../PropCardVotingContainer';
+import diffTime from '../../utils/diffTime';
+import EthAddress from '../EthAddress';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -31,94 +32,90 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
+  const { t } = useTranslation();
+
+  let navigate = useNavigate();
 
   return (
     <>
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.twenty}
-        classNames={clsx(
-          cardStatus === ProposalCardStatus.Voting
-            ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
-            : cardStatus === ProposalCardStatus.Winner
-            ? globalClasses.pinkBorder
-            : '',
-          classes.proposalCard
-        )}
+      <div
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey) {
+            window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
+          } else {
+            navigate(`/proposal/${proposal.id}`);
+          }
+        }}
       >
-        <div className={classes.authorContainer}>
-          <span style={{ fontWeight: '600' }}>#{proposal.id}&nbsp;•</span>&nbsp;
-          <EthAddress address={proposal.address} />
-          &nbsp;
-          <span style={{ fontWeight: '600' }}>proposed</span>
-        </div>
-        {proposal.tldr.length > 0 ? (
-          <Tooltip
-            content={
-              <div className={clsx(classes.title, classes.tooltipTitle)}>
-                {proposal.title}
-              </div>
-            }
-            tooltipTitle="TLDR"
-            tooltipContent={proposal.tldr}
-          />
-        ) : (
-          <Link
-            to={`/proposal/${proposal.id}`}
-            className={clsx(classes.title, classes.noTooltip)}
-          >
-            {proposal.title}
-          </Link>
-        )}
-
-        <div className={classes.timestampAndlinkContainer}>
-          {auctionStatus === AuctionStatus.AuctionVoting ||
-          (auctionStatus === AuctionStatus.AuctionEnded &&
-            cardStatus !== ProposalCardStatus.Voting) ? (
-            <div className={classes.scoreCopy}>
-              Votes: {Math.trunc(proposal.score)}
-            </div>
-          ) : (
-            <div
-              className={classes.timestamp}
-              title={detailedTime(proposal.createdDate)}
-            >
-              {diffTime(proposal.createdDate)}
-            </div>
+        <Card
+          bgColor={CardBgColor.White}
+          borderRadius={CardBorderRadius.twenty}
+          classNames={clsx(
+            cardStatus === ProposalCardStatus.Voting
+              ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
+              : cardStatus === ProposalCardStatus.Winner
+              ? globalClasses.pinkBorder
+              : '',
+            classes.proposalCard
           )}
-
-          <div className={clsx(classes.readMore)}>
-            <Link to={{ pathname: `/proposal/${proposal.id}` }}>
-              <div
-                className={
-                  cardStatus === ProposalCardStatus.Voting
-                    ? globalClasses.fontYellow
-                    : globalClasses.fontPink
-                }
-              >
-                Expand →
-              </div>
-            </Link>
+        >
+          <div className={classes.titleContainer}>
+            <div className={classes.authorContainer}>{proposal.title}</div>
+            <div className={classes.timestamp}>#{proposal.id}</div>
           </div>
-        </div>
 
-        {cardStatus === ProposalCardStatus.Voting &&
-          votesFor !== undefined &&
-          voteAllotments &&
-          canAllotVotes &&
-          handleVoteAllotment && (
-            <PropCardVotingContainer
-              props={{
-                proposal,
-                cardStatus,
-                votesFor,
-                voteAllotments,
-                canAllotVotes,
-                handleVoteAllotment,
+          {proposal.tldr.length > 0 && (
+            <ReactMarkdown
+              className={classes.truncatedTldr}
+              children={proposal.tldr}
+              disallowedElements={['img', '']}
+              components={{
+                h1: 'p',
+                h2: 'p',
+                h3: 'p',
               }}
-            />
+            ></ReactMarkdown>
           )}
-      </Card>
+
+          <div className={classes.timestampAndlinkContainer}>
+            {auctionStatus === AuctionStatus.AuctionVoting ||
+            (auctionStatus === AuctionStatus.AuctionEnded &&
+              cardStatus !== ProposalCardStatus.Voting) ? (
+              <div className={classes.scoreCopy}>
+                {t("votes")}: {Math.trunc(proposal.score)}
+              </div>
+            ) : (
+              <EthAddress address={proposal.address} />
+            )}
+
+            <div className={classes.avatarAndPropNumber}>
+              <div
+                className={classes.scoreCopy}
+                title={detailedTime(proposal.createdDate)}
+              >
+                {diffTime(proposal.createdDate)}
+              </div>
+            </div>
+          </div>
+
+          {cardStatus === ProposalCardStatus.Voting &&
+            votesFor !== undefined &&
+            voteAllotments &&
+            canAllotVotes &&
+            handleVoteAllotment && (
+              <PropCardVotingContainer
+                props={{
+                  proposal,
+                  cardStatus,
+                  votesFor,
+                  voteAllotments,
+                  canAllotVotes,
+                  handleVoteAllotment,
+                }}
+              />
+            )}
+        </Card>
+      </div>
     </>
   );
 };

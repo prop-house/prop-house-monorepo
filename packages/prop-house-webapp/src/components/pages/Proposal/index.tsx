@@ -1,20 +1,22 @@
-import classes from "./Proposal.module.css";
-import { useParams } from "react-router";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "../../../hooks";
-import NotFound from "../../NotFound";
-import { useEffect, useRef, useState } from "react";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import { useEthers } from "@usedapp/core";
-import { useDispatch } from "react-redux";
+import classes from './Proposal.module.css';
+import { useParams } from 'react-router';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../hooks';
+import NotFound from '../../NotFound';
+import { useEffect, useRef, useState } from 'react';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useEthers } from '@usedapp/core';
+import { useDispatch } from 'react-redux';
 import {
   setActiveCommunity,
   setActiveProposal,
-} from "../../../state/slices/propHouse";
-import RenderedProposalFields from "../../RenderedProposalFields";
-import proposalFields from "../../../utils/proposalFields";
-import { IoArrowBackCircleOutline } from "react-icons/io5";
-import LoadingIndicator from "../../LoadingIndicator";
+} from '../../../state/slices/propHouse';
+import RenderedProposalFields from '../../RenderedProposalFields';
+import proposalFields from '../../../utils/proposalFields';
+import { IoArrowBackCircleOutline } from 'react-icons/io5';
+import LoadingIndicator from '../../LoadingIndicator';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { nameToSlug } from '../../../utils/communitySlugs';
 
 const Proposal = () => {
   const params = useParams();
@@ -49,7 +51,10 @@ const Proposal = () => {
 
     const fetch = async () => {
       try {
-        const proposal = await backendClient.current.getProposal(Number(id));
+        const proposal = (await backendClient.current.getProposal(
+          Number(id)
+        )) as StoredProposalWithVotes;
+        document.title = `${proposal.title}`;
         dispatch(setActiveProposal(proposal));
       } catch (e) {
         setFailedFetch(true);
@@ -57,6 +62,10 @@ const Proposal = () => {
     };
 
     fetch();
+
+    return () => {
+      document.title = 'Prop House';
+    };
   }, [id, dispatch, failedFetch]);
 
   /**
@@ -71,7 +80,7 @@ const Proposal = () => {
         proposal.auctionId
       );
       const community = await backendClient.current.getCommunityWithId(
-        auction.communityId
+        auction.community
       );
       dispatch(setActiveCommunity(community));
     };
@@ -87,16 +96,17 @@ const Proposal = () => {
             fields={proposalFields(proposal)}
             address={proposal.address}
             proposalId={proposal.id}
+            community={community}
             backButton={
               <div
                 className={classes.backToAuction}
                 onClick={() => {
-                  isEntryPoint
-                    ? navigate(`/${community?.contractAddress}`)
+                  isEntryPoint && community
+                    ? navigate(`/${nameToSlug(community.name)}`)
                     : navigate(-1);
                 }}
               >
-                <IoArrowBackCircleOutline size={"1.5rem"} />
+                <IoArrowBackCircleOutline size={'1.5rem'} />
                 <span>Back</span>
               </div>
             }

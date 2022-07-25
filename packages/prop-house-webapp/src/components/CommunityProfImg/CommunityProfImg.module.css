@@ -4,10 +4,12 @@
   border-radius: 16px;
   box-shadow: 0 4px 6px 2px rgba(0, 0, 0, 0.05) !important;
   transition: all 0.15s ease-in-out;
+  cursor: default;
 }
 
-.img:hover {
+.hoverImg:hover {
   transform: scale(102%);
+  cursor: pointer;
 }
 
 .loadingImg {

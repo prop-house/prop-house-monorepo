@@ -49,7 +49,7 @@ export class Auction extends Signable {
     public readonly votingEndTime: Date,
     public readonly amountEth: number,
     public readonly numWinners: number,
-    public readonly communityId: number
+    public readonly community: number
   ) {
     super();
   }
@@ -63,7 +63,7 @@ export class Auction extends Signable {
       votingEndTime: this.votingEndTime.toISOString(),
       amountEth: this.amountEth,
       numWinners: this.numWinners,
-      communityId: this.communityId,
+      community: this.community,
     };
   }
 }
@@ -174,7 +174,8 @@ export class Community extends Signable {
     public readonly profileImageUrl: string,
     public readonly numAuctions: number,
     public readonly numProposals: number,
-    public readonly ethFunded: number
+    public readonly ethFunded: number,
+    public readonly description: number,
   ) {
     super();
   }
@@ -188,6 +189,7 @@ export class Community extends Signable {
       numAuctions: this.numAuctions,
       numProposals: this.numProposals,
       ethFunded: this.ethFunded,
+      description: this.description,
     };
   }
 }

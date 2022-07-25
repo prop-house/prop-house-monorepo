@@ -1,11 +1,12 @@
-import classes from './InspirationCard.module.css';
-import Card from '../Card';
-import { CardBgColor, CardBorderRadius } from '../Card';
-import { Row, Col, Card as BSCard } from 'react-bootstrap';
-import inspo1img from '../../assets/create page/inspo1.png';
-import inspo2img from '../../assets/create page/inspo2.png';
-import inspo3img from '../../assets/create page/inspo3.png';
-import { Link } from 'react-router-dom';
+import classes from "./InspirationCard.module.css";
+import Card from "../Card";
+import { CardBgColor, CardBorderRadius } from "../Card";
+import { Row, Col, Card as BSCard } from "react-bootstrap";
+import inspo1img from "../../assets/create page/inspo1.png";
+import inspo2img from "../../assets/create page/inspo2.png";
+import inspo3img from "../../assets/create page/inspo3.png";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface ItemData {
   title: string;
@@ -16,46 +17,52 @@ interface ItemData {
 
 const itemCardData: ItemData[] = [
   {
-    title: 'What is Nouns?',
+    title: "whatIsNouns",
     imgSrc: inspo1img,
     external: true,
-    destination: 'https://nouns.wtf',
+    destination: "https://nouns.wtf",
   },
   {
-    title: 'Sample proposals',
+    title: "sampleProposals",
     imgSrc: inspo2img,
     external: true,
-    destination: 'https://nouns.wtf/vote',
+    destination: "https://nouns.wtf/vote",
   },
   {
-    title: 'FAQ',
+    title: "faq",
     external: false,
     imgSrc: inspo3img,
-    destination: '/faq/',
+    destination: "/faq/",
   },
 ];
 
-const itemCard = (item: ItemData) => (
-  <BSCard className={classes.itemCard}>
-    <BSCard.Img variant="top" src={item.imgSrc} />
-    <BSCard.Body>
-      <BSCard.Title>
-        {item.title}
-        <span className={classes.arrow}>→</span>
-      </BSCard.Title>
-    </BSCard.Body>
-  </BSCard>
-);
+const ItemCard = (item: ItemData) => {
+  const { t } = useTranslation();
+
+  return (
+    <BSCard className={classes.itemCard}>
+      <BSCard.Img variant="top" src={item.imgSrc} />
+      <BSCard.Body>
+        <BSCard.Title>
+          {t(item.title)}
+          <span className={classes.arrow}>→</span>
+        </BSCard.Title>
+      </BSCard.Body>
+    </BSCard>
+  );
+};
 
 const InspirationCard = () => {
+  const { t } = useTranslation();
+
   const itemCards = itemCardData.map((item) => (
-    <Col xl={4}>
+    <Col xl={4} key={item.title}>
       {item.external ? (
         <a href={item.destination} target="_blank" rel="noreferrer">
-          {itemCard(item)}
+          {ItemCard(item)}
         </a>
       ) : (
-        <Link to={item.destination}> {itemCard(item)}</Link>
+        <Link to={item.destination}> {ItemCard(item)}</Link>
       )}
     </Col>
   ));
@@ -67,11 +74,8 @@ const InspirationCard = () => {
     >
       <Row>
         <Col xl={12} className={classes.inspoHeader}>
-          <h2>Need inspiration?</h2>
-          <p>
-            Proposals which proliferate Nouns culture are encouraged. Learn more
-            below:
-          </p>
+          <h2>{t("needInspiration")}</h2>
+          <p>{t("learnMoreBelow")}</p>
         </Col>
         {itemCards}
       </Row>

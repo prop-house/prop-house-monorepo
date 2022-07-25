@@ -1,0 +1,48 @@
+.langBtn {
+  margin: 0 0 0 1rem !important;
+}
+.langBtn button {
+  border-radius: 10px !important;
+  /* padding: 0.25rem 0.5rem !important; */
+  padding: 0.575rem 0.75rem 0.525rem;
+  white-space: normal;
+  text-align: center;
+  font-size: 16px !important;
+  font-weight: bold !important;
+  line-height: 140% !important;
+  background-color: white;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.langBtn button .show > .btn-primary.dropdown-toggle {
+  background-color: white !important;
+  color: black !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.langBtn button .dropdown-item {
+  font-size: 12px !important;
+}
+
+.langBtn button:hover {
+  color: gray !important;
+  background-color: white !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.langBtn button:active,
+.langBtn button:focus {
+  color: gray !important;
+  box-shadow: 0 0 0 0rem var(--brand-gray-transparent) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.langBtn .show > button:active {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border-radius: 0px !important;
+}
+.langBtn button:focus-visible {
+  outline: none;
+}
+.dropdown-item:active {
+  color: gray !important;
+  background-color: var(--brand-gray-semi-transparent);
+}

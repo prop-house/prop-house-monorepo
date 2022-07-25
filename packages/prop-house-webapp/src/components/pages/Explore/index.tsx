@@ -1,11 +1,11 @@
-import classes from './Explore.module.css';
-import { useState, useEffect, useRef } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAppSelector } from '../../../hooks';
-import { useEthers } from '@usedapp/core';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import CommunityCard from '../../CommunityCard';
-import { Row, Col } from 'react-bootstrap';
+import classes from "./Explore.module.css";
+import { useState, useEffect, useRef } from "react";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
+import { useAppSelector } from "../../../hooks";
+import { useEthers } from "@usedapp/core";
+import { Community } from "@nouns/prop-house-wrapper/dist/builders";
+import CommunityCard from "../../CommunityCard";
+import { Row, Col } from "react-bootstrap";
 
 const Explore = () => {
   const [communities, setCommunities] = useState<Community[]>([]);

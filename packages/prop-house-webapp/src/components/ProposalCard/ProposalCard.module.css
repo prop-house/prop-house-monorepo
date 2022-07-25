@@ -3,14 +3,14 @@
   display: flex;
   flex-direction: column;
   transition: all 0.1s ease-in-out;
+  justify-content: space-between;
 }
 
 .proposalCard:hover {
-  transform: scale(1.02);
-}
-
-.proposalCardVoting {
-  min-height: 20rem;
+  border: 1px solid var(--brand-gray-semi-transparent);
+  cursor: pointer;
+  transform: scale(1.01);
+  transition: all 0.15s ease-in-out;
 }
 
 .propCopy {
@@ -19,11 +19,17 @@
 }
 
 .authorContainer {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
   display: flex;
+  height: 50px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 
 .authorContainer span {
@@ -54,25 +60,42 @@
   cursor: help;
 }
 .timestampAndlinkContainer {
-  margin-top: auto;
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
 }
 
 .timestamp {
-  font-size: 16px;
-  color: var(--brand-black-transparent);
-}
-
-.readMore div {
-  color: var(--brand-pink);
-  text-decoration: none;
-  cursor: pointer;
+  font-size: 15px;
+  color: var(--brand-gray);
+  font-weight: 600;
+  align-self: flex-start;
 }
 
 .scoreCopy {
   font-weight: bold;
   font-size: 15px;
   color: var(--brand-gray);
+}
+.truncatedTldr {
+  height: 4.5rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+
+  word-break: break-word;
+}
+.avatarAndPropNumber {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
 }

@@ -1,23 +1,24 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ethers } from 'ethers';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import ProfileHeader from '../../ProfileHeader';
-import { useEffect, useRef, useState } from 'react';
-import { useEthers } from '@usedapp/core';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useLocation, useNavigate } from "react-router-dom";
+import { ethers } from "ethers";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import ProfileHeader from "../../ProfileHeader";
+import { useEffect, useRef, useState } from "react";
+import { useEthers } from "@usedapp/core";
+import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
 import {
   setActiveAuction,
   setActiveCommunity,
-  setAuctions,
-} from '../../../state/slices/propHouse';
-import { getName } from 'prop-house-communities';
-import FullAuction from '../../FullAuction';
-import dayjs from 'dayjs';
-import CTA from '../../CTA';
-import { addressFormLink } from '../../../utils/addressFormLink';
-import { slugToName } from '../../../utils/communitySlugs';
-import LoadingIndicator from '../../LoadingIndicator';
-import NotFound from '../../NotFound';
+  setActiveProposals,
+} from "../../../state/slices/propHouse";
+import { getName } from "prop-house-communities";
+import FullAuction from "../../FullAuction";
+import dayjs from "dayjs";
+import CTA from "../../CTA";
+import { addressFormLink } from "../../../utils/addressFormLink";
+import { slugToName } from "../../../utils/communitySlugs";
+import LoadingIndicator from "../../LoadingIndicator";
+import NotFound from "../../NotFound";
+import { useTranslation } from "react-i18next";
 
 const Community = () => {
   const location = useLocation();
@@ -30,12 +31,14 @@ const Community = () => {
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
   const [failedFetch, setFailedFetch] = useState(false);
+  const cleanedUp = useRef(false);
   const community = useAppSelector((state) => state.propHouse.activeCommunity);
   const activeAuction = useAppSelector(
     (state) => state.propHouse.activeAuction
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -53,17 +56,20 @@ const Community = () => {
         community.auctions.sort((a, b) =>
           dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1
         );
+
+        if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
-        dispatch(setAuctions(community.auctions));
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         setFailedFetch(true);
-        console.log(e);
       }
     };
     fetchCommunity();
     return () => {
+      cleanedUp.current = true;
       dispatch(setActiveCommunity());
+      dispatch(setActiveAuction());
+      dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
 
@@ -124,7 +130,7 @@ const Community = () => {
       <ProfileHeader
         community={community}
         inactiveComm={{
-          name: inactiveCommName ? inactiveCommName : 'N/A',
+          name: inactiveCommName ? inactiveCommName : "N/A",
           contractAddress: slug,
         }}
       />
@@ -136,30 +142,28 @@ const Community = () => {
         />
       ) : community && !activeAuction ? (
         <CTA
-          title="Coming soon! "
+          title={t("comingSoon")}
           content={
             <>
-              <span>{community.name}</span> does not yet have open Funding
-              Rounds but will soon!
+              <span>{community.name}</span> {t("noActiveRound")}
             </>
           }
-          btnTitle="View houses"
-          btnAction={() => navigate('/explore')}
+          btnTitle={t("viewHouses")}
+          btnAction={() => navigate("/explore")}
         />
       ) : (
         <CTA
-          title="Supercharge your Nounish community"
+          title={t("supercharge")}
           content={
-            <>
-              <span>{community ? community.name : inactiveCommName}</span> does
-              not have an active Prop House yet. Deploy capital with your own
-              Prop House to build long-term value for your community.
-            </>
+            <span>
+              <span>{community ? community.name : inactiveCommName}</span>{" "}
+              {t("nonActivePH")}
+            </span>
           }
           btnAction={() => {
-            window.open(addressFormLink, '_blank');
+            window.open(addressFormLink, "_blank");
           }}
-          btnTitle="Contact us"
+          btnTitle={t("contactUs")}
         />
       )}
     </>

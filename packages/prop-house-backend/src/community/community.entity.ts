@@ -16,7 +16,7 @@ export class Community {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({default: true})
+  @Column({ default: true })
   visible: boolean;
 
   @Column()
@@ -27,6 +27,9 @@ export class Community {
 
   @Column()
   profileImageUrl: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   // TODO: refactor to not use deprecated decorator
   @RelationCount((community: Community) => community.auctions)
@@ -41,7 +44,7 @@ export class Community {
   @Column()
   createdDate: Date;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   lastUpdatedDate: Date;
 
   @BeforeInsert()

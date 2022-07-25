@@ -15,32 +15,27 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
+import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
+import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import {
-  setDelegatedVotes,
-  setActiveProposals,
-} from '../../state/slices/propHouse';
-import { dispatchSortProposals } from '../../utils/sortingProposals';
-import {
-  auctionEmptyContent,
-  auctionNotStartedContent,
-  connectedCopy,
-  disconnectedCopy,
+  AuctionEmptyContent,
+  AuctionNotStartedContent,
+  ConnectedCopy,
+  DisconnectedCopy,
 } from './content';
-import {
-  IoArrowDownCircleOutline,
-  IoArrowUpCircleOutline,
-} from 'react-icons/io5';
+
 import { getNumVotes } from 'prop-house-communities';
+import SortToggles from '../SortToggles';
+import { useTranslation } from 'react-i18next';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
   isFirstOrLastAuction: () => [boolean, boolean];
   handleAuctionChange: (next: boolean) => void;
-}> = (props) => {
+}> = props => {
   const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
 
   const { account, library } = useEthers();
-  const [ascending, setAscending] = useState(false);
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
@@ -54,6 +49,12 @@ const FullAuction: React.FC<{
   );
   const host = useAppSelector((state) => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
+
+  const auctionNotStartedContent = AuctionNotStartedContent();
+  const auctionEmptyContent = AuctionEmptyContent();
+  const disconnectedCopy = DisconnectedCopy(connect);
+  const connectedCopy = ConnectedCopy();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -62,15 +63,15 @@ const FullAuction: React.FC<{
   };
 
   // total votes allotted (these are pre-submitted votes)
-  const numAllotedVotes = voteAllotments.reduce(
+  const numAllottedVotes = voteAllotments.reduce(
     (counter, allotment) => counter + allotment.votes,
-    0
+    0,
   );
 
   // check vote allotment against vote user is allowed to use
   const canAllotVotes = () => {
     if (!delegatedVotes) return false;
-    return numAllotedVotes < delegatedVotes - userVotesWeight();
+    return numAllottedVotes < delegatedVotes - userVotesWeight();
   };
 
   useEffect(() => {
@@ -90,7 +91,7 @@ const FullAuction: React.FC<{
         );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
-        console.log('error fetching votes: ', e);
+        console.log("error fetching votes: ", e);
       }
     };
     fetchVotes();
@@ -101,10 +102,14 @@ const FullAuction: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
-      // initial sort
-      dispatchSortProposals(dispatch, auction, false);
+      const auctionEnded = auctionStatus(auction) === AuctionStatus.AuctionEnded;
+
+      dispatchSortProposals(dispatch, auctionEnded ? SortType.Score : SortType.CreatedAt, false); // initial sort
     };
     fetchAuctionProposals();
+    return () => {
+      dispatch(setActiveProposals([]));
+    };
   }, [auction.id, dispatch, account, auction]);
 
   // manage vote alloting
@@ -141,18 +146,18 @@ const FullAuction: React.FC<{
       .reduce(
         (agg, current) =>
           agg +
-          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${
+          `\n${current.votes} vote${current.votes > 1 ? "s" : ""} for prop ${
             current.proposalId
           }`,
-        ''
+        ""
       );
 
     setShowModal(true);
 
     try {
       setModalData({
-        title: 'Voting',
-        content: `Please sign the message to vote as follows:\n${propCopy}`,
+        title: t("voting"),
+        content: `${t("pleaseSign")}:\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
@@ -164,8 +169,8 @@ const FullAuction: React.FC<{
       await client.current.logVotes(votes);
 
       setModalData({
-        title: 'Success',
-        content: `You have successfully voted!\n${propCopy}`,
+        title: t("success"),
+        content: `${t("successfullyVoted")}\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
@@ -173,19 +178,11 @@ const FullAuction: React.FC<{
       setVoteAllotments([]);
     } catch (e) {
       setModalData({
-        title: 'Error',
-        content: `Failed to submit votes.\n\nError message: ${e}`,
+        title: t("error"),
+        content: `${t("failedSubmit")}\n\n${t("errorMessage")}: ${e}`,
         onDismiss: () => setShowModal(false),
       });
     }
-  };
-
-  // sort button tapped
-  const sortTapped = () => {
-    setAscending((prev) => {
-      dispatchSortProposals(dispatch, auction, !prev);
-      return !prev;
-    });
   };
 
   return (
@@ -193,15 +190,8 @@ const FullAuction: React.FC<{
       {showModal && modalData && <Modal data={modalData} />}
       {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
-          <Card
-            bgColor={CardBgColor.White}
-            borderRadius={CardBorderRadius.twenty}
-          >
-            <div>
-              {delegatedVotes && delegatedVotes > 0
-                ? connectedCopy
-                : disconnectedCopy(connect)}
-            </div>
+          <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
+            <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
           </Card>
         )}
       {community && (
@@ -211,9 +201,7 @@ const FullAuction: React.FC<{
           classNames={classes.auctionHeader}
           totalVotes={delegatedVotes}
           voteBtnEnabled={
-            delegatedVotes &&
-            delegatedVotes - userVotesWeight() > 0 &&
-            numAllotedVotes > 0
+            delegatedVotes && delegatedVotes - userVotesWeight() > 0 && numAllottedVotes > 0
               ? true
               : false
           }
@@ -233,22 +221,11 @@ const FullAuction: React.FC<{
           <div className={classes.dividerSection}>
             <div className={classes.proposalTitle}>{`${
               proposals
-                ? `${proposals.length} ${
-                    proposals.length === 1 ? "proposal" : "proposals"
-                  }`
-                : ""
+                ? `${proposals.length} ${proposals.length === 1 ? t('proposal') : t('proposals')}`
+                : ''
             }`}</div>
-            <span onClick={sortTapped}>
-              Sort &nbsp;
-              {ascending ? (
-                <IoArrowUpCircleOutline size={"1.5rem"} />
-              ) : (
-                <IoArrowDownCircleOutline
-                  size={"1.5rem"}
-                  className={classes.icons}
-                />
-              )}
-            </span>
+
+            {proposals && proposals.length > 1 && <SortToggles auction={auction} />}
           </div>
         </Row>
 
