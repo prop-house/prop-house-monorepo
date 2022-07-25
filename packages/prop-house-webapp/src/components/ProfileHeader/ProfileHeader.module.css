@@ -77,6 +77,15 @@
   line-clamp: 4;
   -webkit-box-orient: vertical;
 }
+.communityDescriptionRow a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.communityDescriptionRow a:hover {
+  text-decoration: underline !important;
+  transition: all 0.15s ease-in-out;
+}
 
 @media (max-width: 992px) {
   .profileHeaderRow {

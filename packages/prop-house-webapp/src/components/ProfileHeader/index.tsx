@@ -7,6 +7,8 @@ import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
 import { useTranslation } from 'react-i18next';
+import sanitizeHtml from 'sanitize-html';
+import Markdown from 'markdown-to-jsx';
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -23,6 +25,8 @@ const ProfileHeader: React.FC<{
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
   const { t } = useTranslation();
+
+  console.log('community?.description', community, community?.description);
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -85,7 +89,22 @@ const ProfileHeader: React.FC<{
 
           {community?.description && (
             <Col className={classes.communityDescriptionRow}>
-              <p>{community?.description}</p>
+              {/* allow for links in */}
+              <h5>html</h5>
+              <Markdown>
+                {sanitizeHtml(community?.description as any, {
+                  allowedAttributes: {
+                    a: ['href', 'target'],
+                  },
+                })}
+              </Markdown>
+              <br />
+              <h5>markdown</h5>
+              <Markdown>
+                A Nouns DAO funded house for [mandated rounds](https://twitter.com/nounsprophouse).
+                Builders can propose an idea corresponding [to the round's
+                mandate](https://discord.com/invite/SKPzM8GHts) to get funded.
+              </Markdown>
             </Col>
           )}
         </Col>
