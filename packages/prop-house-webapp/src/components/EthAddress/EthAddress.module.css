@@ -7,8 +7,20 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 14px;
 }
 
 .ethAddress a:visited {
   color: inherit;
+}
+
+.ethAddress a div {
+  min-width: 24px !important;
+}
+
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
 }

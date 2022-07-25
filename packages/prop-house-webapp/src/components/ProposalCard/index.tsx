@@ -86,7 +86,7 @@ const ProposalCard: React.FC<{
               </div>
             ) : (
               <div className={classes.address}>
-                <EthAddress address={proposal.address} />
+                <EthAddress address={proposal.address} truncate />
               </div>
             )}
 

@@ -76,7 +76,7 @@
 
 .scoreCopy {
   font-weight: bold;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--brand-gray);
 }
 .truncatedTldr {
@@ -93,6 +93,7 @@
   gap: 5px;
   width: 50%;
   justify-content: end;
+  height: 24px;
 }
 
 .titleContainer {
@@ -103,8 +104,4 @@
 }
 .address {
   width: 50%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  overflow: hidden;
 }
