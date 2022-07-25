@@ -156,7 +156,7 @@ const AuctionHeader: React.FC<{
   return (
     <>
       {/* 
-      When scrolling past the window height the sticky Card header actives, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
+      When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
       */}
       <div className={classes.hideBorderBox}></div>
       <Row className={classes.votingRow}>
