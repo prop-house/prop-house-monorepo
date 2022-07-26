@@ -13,33 +13,35 @@ const NavBar = () => {
     <Navbar bg="transparent" expand="lg" className={classes.navbar}>
       <Navbar.Brand>
         <Link to="/" className={classes.navbarBrand}>
-          {t("propHouse")}
+          {t('propHouse')}
         </Link>
       </Navbar.Brand>
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className={clsx("ms-auto", classes.navBarCollapse)}>
-          <Nav.Link as="div">
+        <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to="/learn" className={classes.link}>
-              {t("learn")}
+              {t('learn')}
             </Link>
           </Nav.Link>
-          <Nav.Link as="div">
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to={`/explore`} className={classes.link}>
-              {t("explore")}
+              {t('explore')}
             </Link>
           </Nav.Link>
-          <Nav.Link as="div">
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to="/faq" className={classes.link}>
-              {t("faq")}
+              {t('faq')}
             </Link>
           </Nav.Link>
 
-          <LocaleSwitcher />
+          <div className={classes.buttonGroup}>
+            <LocaleSwitcher />
 
-          <Nav.Link as="div">
-            <Web3ModalButton classNames={classes.link} />
-          </Nav.Link>
+            <Nav.Link as="div">
+              <Web3ModalButton classNames={classes.link} />
+            </Nav.Link>
+          </div>
         </Nav>
       </Navbar.Collapse>
     </Navbar>
