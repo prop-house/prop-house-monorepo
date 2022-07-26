@@ -92,7 +92,7 @@
   align-items: center;
   gap: 5px;
   width: 50%;
-  justify-content: end;
+  justify-content: flex-end;
   height: 24px;
 }
 
