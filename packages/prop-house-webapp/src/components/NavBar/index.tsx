@@ -19,17 +19,17 @@ const NavBar = () => {
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-          <Nav.Link as="div">
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to="/learn" className={classes.link}>
               {t('learn')}
             </Link>
           </Nav.Link>
-          <Nav.Link as="div">
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to={`/explore`} className={classes.link}>
               {t('explore')}
             </Link>
           </Nav.Link>
-          <Nav.Link as="div">
+          <Nav.Link as="div" className={classes.menuLink}>
             <Link to="/faq" className={classes.link}>
               {t('faq')}
             </Link>
