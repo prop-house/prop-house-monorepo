@@ -42,8 +42,7 @@ const FullAuction: React.FC<{
     return getVotes ? JSON.parse(getVotes) : [];
   });
 
-  const communityInStorage = localStorage.getItem('community');
-  const currentCommunity = communityInStorage ? JSON.parse(communityInStorage) : [];
+  const communityInStorage = JSON.parse(localStorage.getItem('community')!);
 
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
@@ -194,7 +193,7 @@ const FullAuction: React.FC<{
   };
 
   // check if we switch communities
-  currentCommunity.id !== community?.id && clearVotesAndSetCommunity();
+  communityInStorage.id !== community?.id && clearVotesAndSetCommunity();
 
   return (
     <>
