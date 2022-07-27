@@ -79,7 +79,9 @@ const ProfileHeader: React.FC<{
             </div>
             <div className={classes.item}>
               <div className={classes.itemData}>{community ? community.numAuctions : 0}</div>
-              <div className={classes.itemTitle}>{t('rounds')}</div>
+              <div className={classes.itemTitle}>
+                {community?.numAuctions === 1 ? t('round') : t('rounds')}
+              </div>
             </div>
           </Col>
 
