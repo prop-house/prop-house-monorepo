@@ -36,18 +36,20 @@ const FullAuction: React.FC<{
   const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
 
   const { account, library } = useEthers();
-  const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
+  const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>(() => {
+    const getVotes = localStorage.getItem('votes');
+
+    return getVotes ? JSON.parse(getVotes) : [];
+  });
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
 
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
-  const community = useAppSelector((state) => state.propHouse.activeCommunity);
-  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
-  const delegatedVotes = useAppSelector(
-    (state) => state.propHouse.delegatedVotes
-  );
-  const host = useAppSelector((state) => state.configuration.backendHost);
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+  const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
@@ -84,14 +86,10 @@ const FullAuction: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const votes = await getNumVotes(
-          account,
-          community.contractAddress,
-          library
-        );
+        const votes = await getNumVotes(account, community.contractAddress, library);
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
-        console.log("error fetching votes: ", e);
+        console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
@@ -112,65 +110,62 @@ const FullAuction: React.FC<{
     };
   }, [auction.id, dispatch, account, auction]);
 
+  // save vote allotment in local storage
+  useEffect(() => {
+    localStorage.setItem('votes', JSON.stringify(voteAllotments));
+  }, [voteAllotments]);
+
   // manage vote alloting
   const handleVoteAllotment = (proposalId: number, support: boolean) => {
-    setVoteAllotments((prev) => {
+    setVoteAllotments(prev => {
       // if no votes have been allotted yet, add new
       if (prev.length === 0) return [{ proposalId, votes: 1 }];
 
-      const preexistingVoteAllotment = prev.find(
-        (allotment) => allotment.proposalId === proposalId
-      );
+      const preexistingVoteAllotment = prev.find(allotment => allotment.proposalId === proposalId);
 
       // if not already alloted to specific proposal,  add new allotment
       if (!preexistingVoteAllotment) return [...prev, { proposalId, votes: 1 }];
 
       // if already allotted to a specific proposal, add one vote to allotment
-      const updated = prev.map((a) =>
-        a.proposalId === preexistingVoteAllotment.proposalId
-          ? updateVoteAllotment(a, support)
-          : a
+      const updated = prev.map(a =>
+        a.proposalId === preexistingVoteAllotment.proposalId ? updateVoteAllotment(a, support) : a,
       );
 
       return updated;
     });
   };
-
+  j;
   // handle voting
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
 
     const propCopy = voteAllotments
       .sort((a, b) => a.proposalId - b.proposalId)
-      .filter((a) => a.votes > 0)
+      .filter(a => a.votes > 0)
       .reduce(
         (agg, current) =>
           agg +
-          `\n${current.votes} vote${current.votes > 1 ? "s" : ""} for prop ${
-            current.proposalId
-          }`,
-        ""
+          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${current.proposalId}`,
+        '',
       );
 
     setShowModal(true);
 
     try {
       setModalData({
-        title: t("voting"),
-        content: `${t("pleaseSign")}:\n${propCopy}`,
+        title: t('voting'),
+        content: `${t('pleaseSign')}:\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
       const votes = voteAllotments
-        .map(
-          (a) => new Vote(1, a.proposalId, a.votes, community.contractAddress)
-        )
-        .filter((v) => v.weight > 0);
+        .map(a => new Vote(1, a.proposalId, a.votes, community.contractAddress))
+        .filter(v => v.weight > 0);
       await client.current.logVotes(votes);
 
       setModalData({
-        title: t("success"),
-        content: `${t("successfullyVoted")}\n${propCopy}`,
+        title: t('success'),
+        content: `${t('successfullyVoted')}\n${propCopy}`,
         onDismiss: () => setShowModal(false),
       });
 
@@ -178,8 +173,8 @@ const FullAuction: React.FC<{
       setVoteAllotments([]);
     } catch (e) {
       setModalData({
-        title: t("error"),
-        content: `${t("failedSubmit")}\n\n${t("errorMessage")}: ${e}`,
+        title: t('error'),
+        content: `${t('failedSubmit')}\n\n${t('errorMessage')}: ${e}`,
         onDismiss: () => setShowModal(false),
       });
     }
