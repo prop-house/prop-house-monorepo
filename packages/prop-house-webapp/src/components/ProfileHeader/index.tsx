@@ -17,6 +17,13 @@ interface InactiveCommunity {
 
 const isLongName = (name: string) => name.length > 9;
 
+interface OpenInNewTabProps {
+  children: React.ReactNode;
+}
+
+// overrides an <a> tag that doesn't have target="_blank" and adds it
+const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
+
 const ProfileHeader: React.FC<{
   community?: Community;
   inactiveComm?: InactiveCommunity;
@@ -88,7 +95,19 @@ const ProfileHeader: React.FC<{
           {community?.description && (
             <Col className={classes.communityDescriptionRow}>
               {/* support both markdown & html links in community's description.  */}
-              <Markdown>
+              <Markdown
+                options={{
+                  overrides: {
+                    a: {
+                      component: OpenInNewTab,
+                      props: {
+                        target: '_blank',
+                        rel: 'noreferrer',
+                      },
+                    },
+                  },
+                }}
+              >
                 {sanitizeHtml(community?.description as any, {
                   allowedAttributes: {
                     a: ['href', 'target'],
