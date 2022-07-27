@@ -7,6 +7,8 @@ import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
 import { useTranslation } from 'react-i18next';
+import sanitizeHtml from 'sanitize-html';
+import Markdown from 'markdown-to-jsx';
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -14,6 +16,13 @@ interface InactiveCommunity {
 }
 
 const isLongName = (name: string) => name.length > 9;
+
+interface OpenInNewTabProps {
+  children: React.ReactNode;
+}
+
+// overrides an <a> tag that doesn't have target="_blank" and adds it
+const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
 
 const ProfileHeader: React.FC<{
   community?: Community;
@@ -87,7 +96,26 @@ const ProfileHeader: React.FC<{
 
           {community?.description && (
             <Col className={classes.communityDescriptionRow}>
-              <p>{community?.description}</p>
+              {/* support both markdown & html links in community's description.  */}
+              <Markdown
+                options={{
+                  overrides: {
+                    a: {
+                      component: OpenInNewTab,
+                      props: {
+                        target: '_blank',
+                        rel: 'noreferrer',
+                      },
+                    },
+                  },
+                }}
+              >
+                {sanitizeHtml(community?.description as any, {
+                  allowedAttributes: {
+                    a: ['href', 'target'],
+                  },
+                })}
+              </Markdown>
             </Col>
           )}
         </Col>
