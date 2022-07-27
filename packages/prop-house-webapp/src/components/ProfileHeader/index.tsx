@@ -26,8 +26,6 @@ const ProfileHeader: React.FC<{
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
   const { t } = useTranslation();
 
-  console.log('community?.description', community, community?.description);
-
   return (
     <Row className={classes.profileHeaderRow}>
       <Col lg={4} className={classes.profilePicCol}>
@@ -89,21 +87,13 @@ const ProfileHeader: React.FC<{
 
           {community?.description && (
             <Col className={classes.communityDescriptionRow}>
-              {/* allow for links in */}
-              <h5>html</h5>
+              {/* support both markdown & html links in community's description.  */}
               <Markdown>
                 {sanitizeHtml(community?.description as any, {
                   allowedAttributes: {
                     a: ['href', 'target'],
                   },
                 })}
-              </Markdown>
-              <br />
-              <h5>markdown</h5>
-              <Markdown>
-                A Nouns DAO funded house for [mandated rounds](https://twitter.com/nounsprophouse).
-                Builders can propose an idea corresponding [to the round's
-                mandate](https://discord.com/invite/SKPzM8GHts) to get funded.
               </Markdown>
             </Col>
           )}
