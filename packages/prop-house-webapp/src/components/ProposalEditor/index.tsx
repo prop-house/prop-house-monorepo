@@ -183,6 +183,9 @@ const ProposalEditor: React.FC<{
                 </div>
 
                 <>
+                  {/* 
+                    When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
+                  */}
                   <div className="hideBorderBox"></div>
                   <div
                     ref={quillRef}

@@ -57,3 +57,10 @@ body {
 .tooltip.show {
   opacity: 1;
 }
+
+@media (max-width: 993px) {
+  /* language selector on mobile */
+  .navbar-nav .dropdown-menu {
+    position: absolute !important;
+  }
+}

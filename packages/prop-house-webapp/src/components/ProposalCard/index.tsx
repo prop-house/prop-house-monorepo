@@ -82,17 +82,16 @@ const ProposalCard: React.FC<{
             (auctionStatus === AuctionStatus.AuctionEnded &&
               cardStatus !== ProposalCardStatus.Voting) ? (
               <div className={classes.scoreCopy}>
-                {t("votes")}: {Math.trunc(proposal.score)}
+                {t('votes')}: {Math.trunc(proposal.score)}
               </div>
             ) : (
-              <EthAddress address={proposal.address} />
+              <div className={classes.address}>
+                <EthAddress address={proposal.address} truncate />
+              </div>
             )}
 
             <div className={classes.avatarAndPropNumber}>
-              <div
-                className={classes.scoreCopy}
-                title={detailedTime(proposal.createdDate)}
-              >
+              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
                 {diffTime(proposal.createdDate)}
               </div>
             </div>
