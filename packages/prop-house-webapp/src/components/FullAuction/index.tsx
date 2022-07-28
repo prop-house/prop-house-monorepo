@@ -42,8 +42,6 @@ const FullAuction: React.FC<{
     return getVotes ? JSON.parse(getVotes) : [];
   });
 
-  const communityInStorage = JSON.parse(localStorage.getItem('community')!);
-
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
 
@@ -184,6 +182,8 @@ const FullAuction: React.FC<{
     }
   };
 
+  const communityInStorage = JSON.parse(localStorage.getItem('community') || '{}');
+
   // if we go from one community to another we will clear the past community's vote allotment
   // and we'll set the new community as the current community to track it's vote allotment
   const clearVotesAndSetCommunity = () => {
@@ -193,7 +193,7 @@ const FullAuction: React.FC<{
   };
 
   // check if we switch communities
-  communityInStorage.id !== community?.id && clearVotesAndSetCommunity();
+  community && communityInStorage.id !== community.id && clearVotesAndSetCommunity();
 
   return (
     <>
