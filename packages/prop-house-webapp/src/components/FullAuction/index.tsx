@@ -113,7 +113,7 @@ const FullAuction: React.FC<{
 
   // save current community & vote allotment in local storage
   useEffect(() => {
-    localStorage.setItem('community', JSON.stringify(community));
+    community && localStorage.setItem('communityId', JSON.stringify(community.id));
     localStorage.setItem('votes', JSON.stringify(voteAllotments));
   }, [voteAllotments, community]);
 
@@ -182,18 +182,19 @@ const FullAuction: React.FC<{
     }
   };
 
-  const communityInStorage = JSON.parse(localStorage.getItem('community') || '{}');
+  const storageId = localStorage.getItem('communityId');
+  const storageIdParsed = storageId ? JSON.parse(storageId) : [];
 
   // if we go from one community to another we will clear the past community's vote allotment
   // and we'll set the new community as the current community to track it's vote allotment
   const clearVotesAndSetCommunity = () => {
     localStorage.removeItem('votes');
-    localStorage.removeItem('community');
-    localStorage.setItem('community', JSON.stringify(community));
+    localStorage.removeItem('communityId');
+    community && localStorage.setItem('communityId', JSON.stringify(community.id));
   };
 
   // check if we switch communities
-  community && communityInStorage.id !== community.id && clearVotesAndSetCommunity();
+  community && storageIdParsed !== community.id && clearVotesAndSetCommunity();
 
   return (
     <>
