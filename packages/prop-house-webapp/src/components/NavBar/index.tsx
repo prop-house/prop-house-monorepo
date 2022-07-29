@@ -1,10 +1,11 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import classes from "./NavBar.module.css";
-import Web3ModalButton from "../Web3ModalButton.tsx";
-import clsx from "clsx";
-import LocaleSwitcher from "../LocaleSwitcher";
-import { useTranslation } from "react-i18next";
+import { Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import classes from './NavBar.module.css';
+// import Web3ModalButton from '../Web3ModalButton.tsx';
+import clsx from 'clsx';
+import LocaleSwitcher from '../LocaleSwitcher';
+import { useTranslation } from 'react-i18next';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -39,7 +40,8 @@ const NavBar = () => {
             <LocaleSwitcher />
 
             <Nav.Link as="div">
-              <Web3ModalButton classNames={classes.link} />
+              {/* <Web3ModalButton classNames={classes.link} /> */}
+              <ConnectButton showBalance={false} />
             </Nav.Link>
           </div>
         </Nav>
