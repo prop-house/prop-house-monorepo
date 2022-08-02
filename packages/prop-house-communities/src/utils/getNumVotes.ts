@@ -23,7 +23,7 @@ export const getNumVotes = async (
   // check if community has alt approach to fetching votes
   const altCommunity = getAltCommunity(commmunityAddress);
   if (altCommunity) {
-    const votes = await altCommunity.numVotes(userAddress);
+    const votes = await altCommunity.numVotes(userAddress, provider, commmunityAddress);
     return altCommunity.multiplier ? votes * altCommunity.multiplier : votes;
   }
 
