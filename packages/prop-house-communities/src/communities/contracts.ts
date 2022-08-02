@@ -11,14 +11,10 @@ export const contracts: Contract[] = [
     address: '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03',
     numVotes: async (userAddress: string) => {
       const result = await client.query({
-        query: gql(
-          nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase())
-        ),
+        query: gql(nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase())),
       });
 
-      return result.data.delegates[0]
-        ? result.data.delegates[0].delegatedVotesRaw
-        : 0;
+      return result.data.delegates[0] ? result.data.delegates[0].delegatedVotesRaw : 0;
     },
     multiplier: 10,
   },

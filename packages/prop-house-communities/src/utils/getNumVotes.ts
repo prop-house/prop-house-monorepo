@@ -15,12 +15,10 @@ import { getAltCommunity } from './getAltCommunity';
 export const getNumVotes = async (
   userAddress: string,
   commmunityAddress: string,
-  provider: Provider
+  provider: Provider,
 ): Promise<number> => {
-  if (!ethers.utils.isAddress(userAddress))
-    throw new Error('User address is not valid');
-  if (!ethers.utils.isAddress(commmunityAddress))
-    throw new Error('Community address is not valid');
+  if (!ethers.utils.isAddress(userAddress)) throw new Error('User address is not valid');
+  if (!ethers.utils.isAddress(commmunityAddress)) throw new Error('Community address is not valid');
 
   // check if community has alt approach to fetching votes
   const altCommunity = getAltCommunity(commmunityAddress);
@@ -30,12 +28,6 @@ export const getNumVotes = async (
   }
 
   // else, use `balanceOf`
-  const contract = new ethers.Contract(
-    commmunityAddress,
-    BalanceOfABI,
-    provider
-  );
-  return ethers.BigNumber.from(
-    await contract.balanceOf(userAddress)
-  ).toNumber();
+  const contract = new ethers.Contract(commmunityAddress, BalanceOfABI, provider);
+  return ethers.BigNumber.from(await contract.balanceOf(userAddress)).toNumber();
 };
