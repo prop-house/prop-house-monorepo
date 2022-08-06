@@ -40,26 +40,26 @@ function App() {
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <Container>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                  <Create />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<Community />} />
-          </Routes>
-          <Footer />
-        </Container>
+        {/* <Container> */}
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                <Create />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/proposal/:id" element={<Proposal />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="*" element={<Community />} />
+        </Routes>
+        <Footer />
+        {/* </Container> */}
       </Suspense>
     </DAppProvider>
   );

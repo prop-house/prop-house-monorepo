@@ -1,37 +1,45 @@
 .sortContainer {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
+  /* align-self: flex-end; */
+  gap: 0.5rem;
 }
 
 .sortItem {
   display: flex;
   align-items: center;
   background: white;
-  padding: 4px 6px 4px 10px;
-  border-radius: 50px;
+  /* padding: 4px 6px 4px 10px;
+  border-radius: 50px; */
   justify-content: space-between;
   gap: 10px;
-  margin-left: 0.5rem;
-  border: 2px rgba(0, 0, 0, 0.1) solid;
+  /* margin-left: 0.5rem; */
+
+  /* border: 2px rgba(0, 0, 0, 0.1) solid; */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: box-shadow 0.3s;
   color: black;
   opacity: 0.5;
+  padding-bottom: 20px;
+  border-bottom: 2px solid transparent;
 }
 
 .sortItem:hover {
   opacity: 0.75;
-  border: 2px rgba(80, 186, 154, 1) solid;
+  /* border: 2px rgba(80, 186, 154, 1) solid; */
 }
 .sortItem svg {
-  background: rgba(80, 186, 154, 0.2);
+  /* background: --var(brand-purple); */
+  background: var(--brand-purple-transparent);
   border-radius: 50px;
-  color: rgba(80, 186, 154, 1);
+  /* color: rgba(80, 186, 154, 1); */
+  color: var(--brand-purple);
   padding: 4px;
 }
 .active {
   opacity: 1;
-  border: 2px rgba(80, 186, 154, 1) solid;
+  border-bottom: 2px solid var(--brand-purple);
+  /* border: 2px rgba(80, 186, 154, 1) solid; */
 }
