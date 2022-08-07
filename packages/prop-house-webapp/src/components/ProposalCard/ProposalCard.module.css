@@ -1,15 +1,15 @@
 .proposalCard {
-  min-height: 12.5rem;
+  /* min-height: 12.5rem; */
   display: flex;
   flex-direction: column;
   transition: all 0.1s ease-in-out;
-  justify-content: space-between;
+  /* justify-content: space-between; */
 }
 
 .proposalCard:hover {
-  border: 1px solid var(--brand-gray-semi-transparent);
+  border: 1px solid var(--brand-purple);
   cursor: pointer;
-  transform: scale(1.01);
+  /* transform: scale(1.01); */
   transition: all 0.15s ease-in-out;
 }
 
@@ -18,13 +18,17 @@
   color: var(--brand-black-transparent);
 }
 
+.divider {
+  margin: 12px 0px 8px 0px;
+}
+
 .authorContainer {
   font-size: 18px;
   font-weight: bold;
   color: var(--brand-black);
-  margin-bottom: 0.8rem;
+  /* margin-bottom: 0.8rem; */
   display: flex;
-  height: 50px;
+  /* height: 50px; */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -60,7 +64,7 @@
   cursor: help;
 }
 .timestampAndlinkContainer {
-  margin-top: 15px;
+  /* margin-top: 15px; */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -80,12 +84,16 @@
   color: var(--brand-gray);
 }
 .truncatedTldr {
-  height: 4.5rem;
+  /* height: 4.5rem; */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  color: #666666;
   word-break: break-word;
+}
+.truncatedTldr p {
+  margin-bottom: 0;
 }
 .avatarAndPropNumber {
   display: flex;
@@ -95,6 +103,9 @@
   justify-content: flex-end;
   height: 24px;
 }
+.textContainter {
+  gap: 8px;
+}
 
 .titleContainer {
   display: flex;
@@ -103,5 +114,14 @@
   gap: 15px;
 }
 .address {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #666666;
   width: 50%;
+}
+
+.bullet {
+  color: rgba(102, 102, 102, 0.6);
+  font-size: 14px;
 }

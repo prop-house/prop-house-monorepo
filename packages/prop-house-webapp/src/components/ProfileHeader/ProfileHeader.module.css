@@ -170,6 +170,12 @@
   padding-top: 2rem;
   display: flex;
   justify-content: space-between;
+  position: sticky !important;
+  position: fixed;
+
+  top: 0px !important;
+  align-self: flex-start;
+  height: auto;
   /* padding-bottom: 15px; */
 }
 .leftSectionContainer {

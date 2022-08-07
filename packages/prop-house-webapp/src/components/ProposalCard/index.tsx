@@ -22,7 +22,7 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
-}> = (props) => {
+}> = props => {
   const {
     proposal,
     auctionStatus,
@@ -39,7 +39,7 @@ const ProposalCard: React.FC<{
   return (
     <>
       <div
-        onClick={(e) => {
+        onClick={e => {
           if (e.metaKey || e.ctrlKey) {
             window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
           } else {
@@ -49,22 +49,22 @@ const ProposalCard: React.FC<{
       >
         <Card
           bgColor={CardBgColor.White}
-          borderRadius={CardBorderRadius.twenty}
+          borderRadius={CardBorderRadius.thirty}
           classNames={clsx(
             cardStatus === ProposalCardStatus.Voting
               ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
               : '',
-            classes.proposalCard
+            classes.proposalCard,
           )}
         >
-          <div className={classes.titleContainer}>
-            <div className={classes.authorContainer}>{proposal.title}</div>
-            <div className={classes.timestamp}>#{proposal.id}</div>
-          </div>
+          <div className={classes.textContainter}>
+            <div className={classes.titleContainer}>
+              <div className={classes.authorContainer}>{proposal.title}</div>
+              {/* <div className={classes.timestamp}>#{proposal.id}</div> */}
+            </div>
 
-          {proposal.tldr.length > 0 && (
             <ReactMarkdown
               className={classes.truncatedTldr}
               children={proposal.tldr}
@@ -75,7 +75,9 @@ const ProposalCard: React.FC<{
                 h3: 'p',
               }}
             ></ReactMarkdown>
-          )}
+          </div>
+
+          <hr className={classes.divider} />
 
           <div className={classes.timestampAndlinkContainer}>
             {auctionStatus === AuctionStatus.AuctionVoting ||
@@ -87,12 +89,17 @@ const ProposalCard: React.FC<{
             ) : (
               <div className={classes.address}>
                 <EthAddress address={proposal.address} truncate />
+                <span className={classes.bullet}>{' • '}</span>
+                <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+                  {diffTime(proposal.createdDate)}
+                </div>
               </div>
             )}
 
             <div className={classes.avatarAndPropNumber}>
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {diffTime(proposal.createdDate)}
+                {/* {diffTime(proposal.createdDate)} */}
+                {'content here'}
               </div>
             </div>
           </div>
