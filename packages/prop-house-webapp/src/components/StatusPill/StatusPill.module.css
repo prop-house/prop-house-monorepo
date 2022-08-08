@@ -10,7 +10,7 @@
 }
 
 .greyBg {
-  background-color: var(--brand-gray-transparent);
+  background-color: var(--brand-gray-semi-transparent);
   color: var(--brand-gray);
 }
 .greenBg {
@@ -18,7 +18,7 @@
   color: white;
 }
 .yellowBg {
-  background-color: #dbb738;
+  background-color: var(--brand-yellow);
   color: white;
 }
 .pinkBg {
