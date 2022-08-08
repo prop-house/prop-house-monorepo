@@ -12,5 +12,5 @@ export const aggVoteWeightForProps = (proposals: StoredProposalWithVotes[], addr
  */
 export const aggVoteWeightForProp = (votes: StoredVote[], proposalId: number) =>
   votes
-    .filter((v) => v.proposalId === proposalId)
-    .reduce((agg, current) => agg + current.weight, 0);
+    .filter(v => v.proposalId === proposalId)
+    .reduce((agg, current) => Number(agg) + Number(current.weight), 0);
