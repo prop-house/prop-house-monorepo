@@ -64,7 +64,7 @@ const FullAuction: React.FC<{
 
   // total votes allotted (these are pre-submitted votes)
   const numAllottedVotes = voteAllotments.reduce(
-    (counter, allotment) => counter + allotment.votes,
+    (counter, allotment) => Number(counter) + Number(allotment.votes),
     0,
   );
 

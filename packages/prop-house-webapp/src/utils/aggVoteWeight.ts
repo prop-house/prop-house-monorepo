@@ -5,7 +5,10 @@ import extractAllVotes from './extractAllVotes';
  * Calculates aggregate vote weight for votes extracted from a set of proposals
  */
 export const aggVoteWeightForProps = (proposals: StoredProposalWithVotes[], address: string) =>
-  extractAllVotes(proposals, address).reduce((agg, current) => agg + current.weight, 0);
+  extractAllVotes(proposals, address).reduce(
+    (agg, current) => Number(agg) + Number(current.weight),
+    0,
+  );
 
 /**
  * Calculates aggregate vote weight for a specific proposals from a set of votes
