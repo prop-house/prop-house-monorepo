@@ -6,10 +6,9 @@ import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
-import Community from './components/pages/Community';
+import House from './components/pages/House';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
-import { Container } from 'react-bootstrap';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './components/pages/FAQ';
@@ -40,26 +39,25 @@ function App() {
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <Container>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                  <Create />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<Community />} />
-          </Routes>
-          <Footer />
-        </Container>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                <Create />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/proposal/:id" element={<Proposal />} />
+          <Route path="/faq" element={<FAQ />} />
+
+          <Route path="*" element={<House />} />
+        </Routes>
+        <Footer />
       </Suspense>
     </DAppProvider>
   );

@@ -61,6 +61,14 @@ body {
   --brand-gray: #666666;
   --brand-gray-transparent: rgba(102, 102, 102, 0.6);
   --brand-gray-semi-transparent: rgba(102, 102, 102, 0.25);
+
+  /* Utils */
+  --bg-med: #fcfcfc;
+  --bg-dark: #f5f5f5;
+
+  --border-light: rgba(0, 0, 0, 0.04);
+  --border-med: rgba(0, 0, 0, 0.1);
+  --border-dark: rgba(102, 102, 102, 0.25);
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */
