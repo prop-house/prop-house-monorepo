@@ -32,7 +32,7 @@ export const disconnectedCopy = (onClick: () => void, houseName: string) => (
         Voting is open
       </h4>
       <p>
-        The voting period is now open. Members of the ${houseName} ecosystem can
+        The voting period is now open. Members of the {houseName} ecosystem can
         vote for proposals.
       </p>
     </div>
