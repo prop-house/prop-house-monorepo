@@ -91,7 +91,7 @@ export class VotesController {
     // Voting up
     if (createVoteDto.direction === VoteDirections.Up) {
       const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
-        (agg, current) => agg + current.weight,
+        (agg, current) => Number(agg) + Number(current.weight),
         0,
       );
 

@@ -18,8 +18,8 @@ const SortToggles: React.FC<{
   const auctionVoting = auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const allowSortByVotes = auctionVoting || auctionEnded;
 
-  const [datesSorted, setDatesSorted] = useState(auctionEnded ? false : true);
-  const [dateAscending, setDateAscending] = useState(auctionEnded ? false : true);
+  const [datesSorted, setDatesSorted] = useState(false);
+  const [dateAscending, setDateAscending] = useState(false);
   const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
   const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
 
