@@ -79,7 +79,7 @@ const Proposal = () => {
         proposal.auctionId
       );
       const community = await backendClient.current.getCommunityWithId(
-        auction.communityId
+        auction.community
       );
       dispatch(setActiveCommunity(community));
     };
