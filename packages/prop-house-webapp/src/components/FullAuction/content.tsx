@@ -1,6 +1,6 @@
-import classes from "./FullAuction.module.css";
-import Card, { CardBgColor, CardBorderRadius } from "../Card";
-import Button, { ButtonColor } from "../Button";
+import classes from './FullAuction.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import Button, { ButtonColor } from '../Button';
 
 export const emptyCard = (copy: string) => (
   <Card
@@ -12,17 +12,23 @@ export const emptyCard = (copy: string) => (
   </Card>
 );
 export const auctionNotStartedContent = emptyCard(
-  "Submission of proposals will be enabled once the funding round begins. Proposals will show up here."
+  'Submission of proposals will be enabled once the funding round begins. Proposals will show up here.'
 );
 export const auctionEmptyContent = emptyCard(
-  "Submitted proposals will show up here."
+  'Submitted proposals will show up here.'
 );
 
 // alert to get nouners to connect when auctions in voting stage
 export const disconnectedCopy = (onClick: () => void) => (
   <div className={classes.alertWrapper}>
-    <div style={{margin: "0rem 1rem 0rem 0rem" }}>
-      <h4 style={{ fontSize: "22px", fontWeight: "bold", margin: "0rem 0rem 0.25rem 0rem" }}>
+    <div style={{ margin: '0rem 1rem 0rem 0rem' }}>
+      <h4
+        style={{
+          fontSize: '22px',
+          fontWeight: 'bold',
+          margin: '0rem 0rem 0.25rem 0rem',
+        }}
+      >
         Voting is open
       </h4>
       <p>
@@ -30,11 +36,7 @@ export const disconnectedCopy = (onClick: () => void) => (
         for proposals.
       </p>
     </div>
-    <Button
-      text="Connect"
-      bgColor={ButtonColor.Pink}
-      onClick={onClick}
-    />
+    <Button text="Connect" bgColor={ButtonColor.Pink} onClick={onClick} />
   </div>
 );
 
