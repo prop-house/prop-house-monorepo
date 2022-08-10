@@ -28,8 +28,13 @@ const statuses = [
   },
 ];
 
-const HouseFilters = ({ roundCount }: HouseUtilityBarProps) => {
+const HouseFilters = ({ roundCount, setRoundStatus }: HouseUtilityBarProps) => {
   const [activeId, setActiveId] = useState<number>(0);
+
+  const handleClick = (id: number) => {
+    setActiveId(id);
+    setRoundStatus(id);
+  };
 
   return (
     <>
@@ -37,7 +42,7 @@ const HouseFilters = ({ roundCount }: HouseUtilityBarProps) => {
         <>
           <div
             key={index}
-            onClick={() => setActiveId(s.id)}
+            onClick={() => handleClick(s.id)}
             className={clsx(classes.filter, s.bgColor, activeId === s.id && classes.active)}
           >
             <div className={classes.filterText}>

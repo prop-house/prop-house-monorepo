@@ -25,6 +25,7 @@ import HouseCard from '../../HouseCard';
 import { cardStatus } from '../../../utils/cardStatus';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
 const House = () => {
   const location = useLocation();
@@ -44,6 +45,9 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
+  const [roundStatus, setRoundStatus] = useState<number>(-1);
+  const [rounds, setRounds] = useState<StoredAuction[]>();
+
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
 
   useEffect(() => {
@@ -61,8 +65,10 @@ const House = () => {
 
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
+        // AuctionStatus.AuctionAcceptingProps
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
+
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         setFailedFetch(true);
@@ -92,47 +98,6 @@ const House = () => {
     fetchName();
   }, [library, community, slug, inactiveCommName]);
 
-  // const handleAuctionChange = (next: boolean) => {
-  //   if (!activeAuction || !community || community.auctions.length === 0) return;
-
-  //   const auctions = community.auctions;
-  //   const index = community.auctions.findIndex(a => a.id === activeAuction.id);
-
-  //   const updatedIndex = next
-  //     ? auctions[index + 1]
-  //       ? index + 1
-  //       : index
-  //     : auctions[index - 1]
-  //     ? index - 1
-  //     : index;
-
-  //   dispatch(setActiveAuction(auctions[updatedIndex]));
-  // };
-
-  // const isFirstOrLastAuction = (): [boolean, boolean] => {
-  //   if (!activeAuction || !community || community.auctions.length === 0) return [false, false];
-  //   const index = community.auctions.findIndex(a => a.id === activeAuction.id);
-  //   return index === 0 && community.auctions.length === 1
-  //     ? [true, true]
-  //     : index === 0
-  //     ? [true, false]
-  //     : index === community.auctions.length - 1
-  //     ? [false, true]
-  //     : [false, false];
-  // };
-
-  if (!community && !failedFetch) return <LoadingIndicator />;
-  if (!isValidAddress && failedFetch) return <NotFound />;
-
-  // const mediaTypes = community?.auctions
-  //   .map(auction => auctionStatus(auction)) // get all media types
-  //   .filter((mediaType, index, array) => array.indexOf(mediaType) === index); // filter out duplicates
-
-  // community?.auctions.filter(a=>auctionStatus(c)===)
-
-  // community.filter(a=>)
-
-  // let numOfRoundStatuses = [];
   let proposingCount = 0;
   let votingCount = 0;
   let endedCount = 0;
@@ -155,6 +120,12 @@ const House = () => {
 
   let count = [totalCount, votingCount, proposingCount, endedCount];
 
+  useEffect(() => {
+    community && roundStatus > 0
+      ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
+      : setRounds(community?.auctions);
+  }, [community, roundStatus]);
+
   return (
     <>
       <Container>
@@ -165,23 +136,18 @@ const House = () => {
             contractAddress: slug,
           }}
         />
-        {count && <HouseUtilityBar roundCount={count} />}
+        {count && <HouseUtilityBar roundCount={count} setRoundStatus={setRoundStatus} />}
       </Container>
 
       <div className={classes.houseContainer}>
         <Container>
           <Row>
-            {community &&
-              community.auctions.map((round, index) => {
-                return (
-                  <Col key={index} xl={6}>
-                    <HouseCard
-                      round={round}
-                      // cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, round)}
-                    />
-                  </Col>
-                );
-              })}
+            {rounds &&
+              rounds.map((round, index) => (
+                <Col key={index} xl={6}>
+                  <HouseCard round={round} />
+                </Col>
+              ))}
           </Row>
         </Container>
       </div>

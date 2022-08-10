@@ -1,7 +1,7 @@
 import classes from './HouseCard.module.css';
 import globalClasses from '../../css/globals.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
@@ -23,7 +23,7 @@ const HouseCard: React.FC<{
   // voteAllotments?: VoteAllotment[];
   // canAllotVotes?: () => boolean;
   // handleVoteAllotment?: (proposalId: number, support: boolean) => void;
-  round: any;
+  round: StoredAuction;
 }> = props => {
   const {
     // proposal,
@@ -71,8 +71,9 @@ const HouseCard: React.FC<{
             </div>
 
             <div className={classes.truncatedTldr}>
-              Mandated round inviting builders to build alternative Nouns Clients. Builders can
-              propose any idea to corresponds to the specified mandate.
+              {round.title}
+              {/* Mandated round inviting builders to build alternative Nouns Clients. Builders can
+              propose any idea to corresponds to the specified mandate. */}
             </div>
           </div>
 
@@ -122,7 +123,7 @@ const HouseCard: React.FC<{
           {/* <div className={classes.timestampAndlinkContainer}>
             {auctionStatus === AuctionStatus.AuctionVoting ||
             (auctionStatus === AuctionStatus.AuctionEnded &&
-              cardStatus !== ProposalCardStatus.Voting) ? (
+              cardStatus !== ProposalCardStatus.Voting) ? (d
               <div className={classes.scoreCopy}>
                 {t('votes')}: {Math.trunc(proposal.score)}
               </div>

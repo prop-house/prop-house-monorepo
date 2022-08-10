@@ -5,14 +5,15 @@ import { useState } from 'react';
 
 export interface HouseUtilityBarProps {
   roundCount: (number | undefined)[];
+  setRoundStatus: any;
 }
 
-const HouseUtilityBar = ({ roundCount }: HouseUtilityBarProps) => {
+const HouseUtilityBar = ({ roundCount, setRoundStatus }: HouseUtilityBarProps) => {
   const [input, setInput] = useState<string>('');
   return (
     <div className={classes.houseUtilityBar}>
       <div className={classes.roundFilters}>
-        <HouseFilters roundCount={roundCount} />
+        <HouseFilters roundCount={roundCount} setRoundStatus={setRoundStatus} />
       </div>
 
       <div className={classes.searchBar}>
