@@ -19,7 +19,7 @@ export const auctionEmptyContent = emptyCard(
 );
 
 // alert to get nouners to connect when auctions in voting stage
-export const disconnectedCopy = (onClick: () => void) => (
+export const disconnectedCopy = (onClick: () => void, houseName: string) => (
   <div className={classes.alertWrapper}>
     <div style={{ margin: '0rem 1rem 0rem 0rem' }}>
       <h4
@@ -32,8 +32,8 @@ export const disconnectedCopy = (onClick: () => void) => (
         Voting is open
       </h4>
       <p>
-        The voting period is now open. Members of the Nouns ecosystem can vote
-        for proposals.
+        The voting period is now open. Members of the ${houseName} ecosystem can
+        vote for proposals.
       </p>
     </div>
     <Button text="Connect" bgColor={ButtonColor.Pink} onClick={onClick} />

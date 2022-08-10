@@ -191,7 +191,7 @@ const FullAuction: React.FC<{
             <div>
               {delegatedVotes && delegatedVotes > 0
                 ? connectedCopy
-                : disconnectedCopy(connect)}
+                : disconnectedCopy(connect, community ? community.name : '')}
             </div>
           </Card>
         )}
