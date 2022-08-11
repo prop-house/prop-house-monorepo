@@ -5,41 +5,17 @@ import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrappe
 import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-// import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
-import PropCardVotingContainer from '../PropCardVotingContainer';
-import diffTime from '../../utils/diffTime';
-import EthAddress from '../EthAddress';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
+// import { useNavigate } from 'react-router-dom';
 import StatusPill from '../StatusPill';
 
 const HouseCard: React.FC<{
-  // proposal: StoredProposalWithVotes;
-  // auctionStatus?: AuctionStatus;
-  // cardStatus?: ProposalCardStatus;
-  // votesFor?: number;
-  // voteAllotments?: VoteAllotment[];
-  // canAllotVotes?: () => boolean;
-  // handleVoteAllotment?: (proposalId: number, support: boolean) => void;
   round: StoredAuction;
 }> = props => {
-  const {
-    // proposal,
-    // auctionStatus,
-    // cardStatus,
-    round,
-    // votesFor,
-    // voteAllotments,
-    // canAllotVotes,
-    // handleVoteAllotment,
-  } = props;
+  const { round } = props;
   // const { t } = useTranslation();
 
-  let navigate = useNavigate();
+  // let navigate = useNavigate();
 
-  // console.log('round', round);
   return (
     <>
       <div
@@ -55,11 +31,6 @@ const HouseCard: React.FC<{
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.twenty}
           classNames={clsx(
-            // cardStatus === ProposalCardStatus.Voting
-            //   ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
-            //   : cardStatus === ProposalCardStatus.Winner
-            //   ? globalClasses.pinkBorder
-            //   : '',
             auctionStatus(round) === AuctionStatus.AuctionEnded && classes.roundEnded,
             classes.houseCard,
           )}
@@ -101,61 +72,6 @@ const HouseCard: React.FC<{
               <p className={classes.info}>9999</p>
             </div>
           </div>
-
-          {/* <div className={classes.titleContainer}>
-            <div className={classes.authorContainer}>{proposal.title}</div>
-            <div className={classes.timestamp}>#{proposal.id}</div>
-          </div> */}
-
-          {/* {proposal.tldr.length > 0 && (
-            <ReactMarkdown
-              className={classes.truncatedTldr}
-              children={proposal.tldr}
-              disallowedElements={['img', '']}
-              components={{
-                h1: 'p',
-                h2: 'p',
-                h3: 'p',
-              }}
-            ></ReactMarkdown>
-          )} */}
-
-          {/* <div className={classes.timestampAndlinkContainer}>
-            {auctionStatus === AuctionStatus.AuctionVoting ||
-            (auctionStatus === AuctionStatus.AuctionEnded &&
-              cardStatus !== ProposalCardStatus.Voting) ? (d
-              <div className={classes.scoreCopy}>
-                {t('votes')}: {Math.trunc(proposal.score)}
-              </div>
-            ) : (
-              <div className={classes.address}>
-                <EthAddress address={proposal.address} truncate />
-              </div>
-            )}
-
-            <div className={classes.avatarAndPropNumber}>
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {diffTime(proposal.createdDate)}
-              </div>
-            </div>
-          </div> */}
-
-          {/* {cardStatus === ProposalCardStatus.Voting &&
-            votesFor !== undefined &&
-            voteAllotments &&
-            canAllotVotes &&
-            handleVoteAllotment && (
-              <PropCardVotingContainer
-                props={{
-                  proposal,
-                  cardStatus,
-                  votesFor,
-                  voteAllotments,
-                  canAllotVotes,
-                  handleVoteAllotment,
-                }}
-              />
-            )} */}
         </Card>
       </div>
     </>

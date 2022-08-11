@@ -12,20 +12,16 @@ import {
   setActiveProposals,
 } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
-import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
-import CTA from '../../CTA';
-import { addressFormLink } from '../../../utils/addressFormLink';
 import { slugToName } from '../../../utils/communitySlugs';
-import LoadingIndicator from '../../LoadingIndicator';
-import NotFound from '../../NotFound';
 import { useTranslation } from 'react-i18next';
 import { Col, Container, Row } from 'react-bootstrap';
 import HouseCard from '../../HouseCard';
-import { cardStatus } from '../../../utils/cardStatus';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import NoRoundsCard from '../../MessageCard';
+import MessageCard from '../../MessageCard';
 
 const House = () => {
   const location = useLocation();
@@ -45,10 +41,9 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
-  const [roundStatus, setRoundStatus] = useState<number>(-1);
   const [rounds, setRounds] = useState<StoredAuction[]>();
-
-  const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+  const [roundStatus, setRoundStatus] = useState<number>(0);
+  const [input, setInput] = useState<string>('');
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -118,13 +113,20 @@ const House = () => {
 
   let totalCount = community && community.auctions.length;
 
-  let count = [totalCount, votingCount, proposingCount, endedCount];
+  let count = [totalCount, proposingCount, votingCount, endedCount];
 
   useEffect(() => {
-    community && roundStatus > 0
-      ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
-      : setRounds(community?.auctions);
-  }, [community, roundStatus]);
+    community &&
+      (input.length === 0
+        ? roundStatus && roundStatus > 0
+          ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
+          : setRounds(community?.auctions)
+        : setRounds(
+            community.auctions.filter(round =>
+              round.title.toLowerCase().includes(input.toLowerCase()),
+            ),
+          ));
+  }, [community, input, roundStatus]);
 
   return (
     <>
@@ -136,18 +138,32 @@ const House = () => {
             contractAddress: slug,
           }}
         />
-        {count && <HouseUtilityBar roundCount={count} setRoundStatus={setRoundStatus} />}
+
+        {count && (
+          <HouseUtilityBar
+            roundCount={count}
+            roundStatus={roundStatus}
+            setRoundStatus={setRoundStatus}
+            input={input}
+            setInput={setInput}
+          />
+        )}
       </Container>
 
       <div className={classes.houseContainer}>
         <Container>
           <Row>
-            {rounds &&
+            {rounds && rounds.length > 0 ? (
               rounds.map((round, index) => (
                 <Col key={index} xl={6}>
                   <HouseCard round={round} />
                 </Col>
-              ))}
+              ))
+            ) : (
+              <Col>
+                <MessageCard message="No rounds available" />
+              </Col>
+            )}
           </Row>
         </Container>
       </div>

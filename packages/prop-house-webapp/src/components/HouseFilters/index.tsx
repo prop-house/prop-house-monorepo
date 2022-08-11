@@ -1,6 +1,5 @@
 // import clsx from 'clsx';
 import clsx from 'clsx';
-import { useState } from 'react';
 import { HouseUtilityBarProps } from '../HouseUtilityBar';
 import classes from './HouseFilters.module.css';
 // import { AuctionStatus } from '../../utils/auctionStatus';
@@ -28,31 +27,37 @@ const statuses = [
   },
 ];
 
-const HouseFilters = ({ roundCount, setRoundStatus }: HouseUtilityBarProps) => {
-  const [activeId, setActiveId] = useState<number>(0);
-
+const HouseFilters = ({
+  roundCount,
+  roundStatus,
+  setRoundStatus,
+  setInput,
+}: HouseUtilityBarProps) => {
   const handleClick = (id: number) => {
-    setActiveId(id);
+    setInput('');
+
     setRoundStatus(id);
   };
 
   return (
     <>
-      {statuses.map((s, index) => (
-        <>
-          <div
-            key={index}
-            onClick={() => handleClick(s.id)}
-            className={clsx(classes.filter, s.bgColor, activeId === s.id && classes.active)}
-          >
-            <div className={classes.filterText}>
-              <span className={classes.filterName}>{s.title}</span>
-              <span className={classes.filterNumber}>{roundCount[index]}</span>
+      {statuses.map((s, index) => {
+        return (
+          <>
+            <div
+              key={index}
+              onClick={() => handleClick(s.id)}
+              className={clsx(classes.filter, s.bgColor, roundStatus === s.id && classes.active)}
+            >
+              <div className={classes.filterText}>
+                <span className={classes.filterName}>{s.title}</span>
+                <span className={classes.filterNumber}>{roundCount[index]}</span>
+              </div>
             </div>
-          </div>
-          {index === 0 && <div className={classes.divider}></div>}
-        </>
-      ))}
+            {index === 0 && <div className={classes.divider}></div>}
+          </>
+        );
+      })}
     </>
   );
 };

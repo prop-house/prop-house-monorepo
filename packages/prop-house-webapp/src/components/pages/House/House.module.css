@@ -1,4 +1,6 @@
 .houseContainer {
   background: var(--bg-dark);
   border-top: 1px solid var(--border-light);
+  min-height: 600px;
+  padding: 1rem;
 }
