@@ -1,6 +1,7 @@
 import HouseFilters from '../HouseFilters';
 import classes from './HouseUtilityBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
+import HouseDropdown from '../HouseDropdown';
 
 export interface HouseUtilityBarProps {
   roundCount: (number | undefined)[];
@@ -24,26 +25,38 @@ const HouseUtilityBar = ({
 
   return (
     <div className={classes.houseUtilityBar}>
-      <div className={classes.roundFilters}>
-        <HouseFilters
-          roundStatus={roundStatus}
-          roundCount={roundCount}
-          setRoundStatus={setRoundStatus}
-          setInput={setInput}
-        />
+      <div className={classes.utilitySection}>
+        <div className={classes.filters}>
+          <HouseFilters
+            roundStatus={roundStatus}
+            roundCount={roundCount}
+            setRoundStatus={setRoundStatus}
+            setInput={setInput}
+          />
+        </div>
+
+        <div className={classes.dropdown}>
+          <HouseDropdown
+            roundStatus={roundStatus}
+            roundCount={roundCount}
+            setRoundStatus={setRoundStatus}
+            setInput={setInput}
+          />
+        </div>
       </div>
 
-      <div className={classes.searchBar}>
-        <span className={classes.searchIcon}>
-          <SearchIcon />
-        </span>
-        <input
-          type="text"
-          value={input}
-          onChange={e => handleChange(e)}
-          //   onChange={e => setInput(e.target.value)}
-          placeholder="Search rounds"
-        />
+      <div className={classes.utilitySection}>
+        <div className={classes.searchBar}>
+          <span className={classes.searchIcon}>
+            <SearchIcon />
+          </span>
+          <input
+            type="text"
+            value={input}
+            onChange={e => handleChange(e)}
+            placeholder="Search rounds"
+          />
+        </div>
       </div>
     </div>
   );

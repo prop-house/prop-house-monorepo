@@ -6,7 +6,7 @@ import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 
@@ -31,7 +31,7 @@ const HouseHeader: React.FC<{
   const { community, inactiveComm } = props;
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   return (
     <div className={classes.profileHeaderRow}>

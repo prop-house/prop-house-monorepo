@@ -42,9 +42,9 @@ const HouseCard: React.FC<{
             </div>
 
             <div className={classes.truncatedTldr}>
-              {round.title}
-              {/* Mandated round inviting builders to build alternative Nouns Clients. Builders can
-              propose any idea to corresponds to the specified mandate. */}
+              {/* {round.title} */}
+              Mandated round inviting builders to build alternative Nouns Clients. Builders can
+              propose any idea to corresponds to the specified mandate.
             </div>
           </div>
 
@@ -65,9 +65,9 @@ const HouseCard: React.FC<{
               <p className={classes.info}>August 99</p>
             </div>
 
-            <div className={classes.divider}></div>
+            <div className={clsx(classes.divider, classes.propSection)}></div>
 
-            <div className={classes.section}>
+            <div className={clsx(classes.section, classes.propSection)}>
               <p className={classes.title}>Proposals</p>
               <p className={classes.info}>9999</p>
             </div>

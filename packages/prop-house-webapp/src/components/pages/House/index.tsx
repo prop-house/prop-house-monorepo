@@ -20,8 +20,7 @@ import HouseCard from '../../HouseCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import NoRoundsCard from '../../MessageCard';
-import MessageCard from '../../MessageCard';
+import NoSearchResults from '../../NoSearchResults';
 
 const House = () => {
   const location = useLocation();
@@ -161,7 +160,7 @@ const House = () => {
               ))
             ) : (
               <Col>
-                <MessageCard message="No rounds available" />
+                <NoSearchResults input={input} />
               </Col>
             )}
           </Row>

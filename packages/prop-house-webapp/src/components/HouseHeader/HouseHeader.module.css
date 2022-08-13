@@ -7,7 +7,7 @@
 .profilePicCol img {
   height: 15rem;
   width: auto;
-  border-radius: 30px !important;
+  border-radius: 10px;
 }
 .communityInfoCol {
   display: flex;
@@ -146,5 +146,47 @@
   }
   .longName .contractAddressPill {
     margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .profileHeaderRow {
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 50px;
+  }
+
+  .profilePicCol {
+    margin-bottom: 0rem;
+    margin-top: 40px;
+  }
+
+  .communityInfoCol {
+    margin: 0px 4px;
+  }
+
+  .profilePicCol img {
+    width: 88px;
+    height: 88px;
+  }
+  .propHouseDataRow {
+    padding-bottom: 0px;
+  }
+  .houseTitleInfo {
+    align-self: center;
+    border: none;
+  }
+
+  .communityDescriptionRow {
+    border-top: 1px solid var(--border-light);
+    padding-top: 24px;
+    border-radius: 1px;
+  }
+}
+
+@media (max-width: 375px) {
+  .titleRow {
+    width: 100%;
+    flex-direction: column;
   }
 }

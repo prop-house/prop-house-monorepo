@@ -262,7 +262,7 @@
   border-radius: 1px;
 }
 .section {
-  width: 33%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -301,4 +301,10 @@
 }
 .roundEnded .roundInfo {
   background: var(--bg-dark);
+}
+
+@media (max-width: 375px) {
+  .propSection {
+    display: none;
+  }
 }

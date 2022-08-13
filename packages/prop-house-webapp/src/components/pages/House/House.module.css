@@ -4,3 +4,10 @@
   min-height: 600px;
   padding: 1rem;
 }
+
+@media (max-width: 575px) {
+  .houseContainer {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}

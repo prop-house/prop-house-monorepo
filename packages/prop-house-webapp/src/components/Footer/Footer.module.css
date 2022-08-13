@@ -1,8 +1,13 @@
 .footerContainer {
-  margin: 6rem auto 1rem auto;
+  margin: 2rem auto 2rem auto;
   display: flex;
   justify-content: center;
   align-items: flex-end;
+}
+@media (max-width: 375px) {
+  .footerContainer {
+    margin: 2rem;
+  }
 }
 
 .footer {

@@ -1,8 +1,6 @@
-// import clsx from 'clsx';
 import clsx from 'clsx';
 import { HouseUtilityBarProps } from '../HouseUtilityBar';
 import classes from './HouseFilters.module.css';
-// import { AuctionStatus } from '../../utils/auctionStatus';
 
 const statuses = [
   {
