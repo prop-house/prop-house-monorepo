@@ -11,15 +11,28 @@ export interface SortProps {
 export enum SortType {
   Score,
   CreatedAt,
+  Random,
 }
 
 export const _sortProps = (proposals: StoredProposalWithVotes[], props: SortProps) => {
-  return proposals.sort((a, b) =>
-    props.sortType === SortType.CreatedAt
-      ? sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending)
-      : sortHelper(Number(a.score), Number(b.score), props.ascending),
-  );
+  switch (props.sortType) {
+    case SortType.Score:
+      return proposals.sort((a, b) =>
+        sortHelper(Number(a.score), Number(b.score), props.ascending),
+      );
+    case SortType.Random:
+      return proposals.sort(() => Math.random() - 0.5);
+    case SortType.CreatedAt:
+      return proposals.sort((a, b) =>
+        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+      );
+    default:
+      return proposals.sort((a, b) =>
+        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+      );
+  }
 };
+
 export const sortHelper = (a: any, b: any, ascending: boolean) => {
   return ascending ? (a < b ? -1 : 1) : a < b ? 1 : -1;
 };

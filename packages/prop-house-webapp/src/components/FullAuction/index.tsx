@@ -64,7 +64,7 @@ const FullAuction: React.FC<{
 
   // total votes allotted (these are pre-submitted votes)
   const numAllottedVotes = voteAllotments.reduce(
-    (counter, allotment) => counter + allotment.votes,
+    (counter, allotment) => Number(counter) + Number(allotment.votes),
     0,
   );
 
@@ -102,9 +102,13 @@ const FullAuction: React.FC<{
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(auction.id);
       dispatch(setActiveProposals(proposals));
-      const auctionEnded = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
-      dispatchSortProposals(dispatch, auctionEnded ? SortType.Score : SortType.CreatedAt, false); // initial sort
+      // default sorting method is random, unless the auction is over, in which case its by votes
+      dispatchSortProposals(
+        dispatch,
+        auctionStatus(auction) === AuctionStatus.AuctionEnded ? SortType.Score : SortType.Random,
+        false,
+      );
     };
     fetchAuctionProposals();
     return () => {
