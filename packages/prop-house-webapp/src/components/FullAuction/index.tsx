@@ -1,8 +1,8 @@
-import classes from './FullAuction.module.css';
+// import classes from './FullAuction.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import AuctionHeader from '../AuctionHeader';
+// import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
-import { Row } from 'react-bootstrap';
+
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
@@ -25,7 +25,7 @@ import {
 } from './content';
 
 import { getNumVotes } from 'prop-house-communities';
-import SortToggles from '../SortToggles';
+// import SortToggles from '../SortToggles';
 import { useTranslation } from 'react-i18next';
 
 const FullAuction: React.FC<{
@@ -33,7 +33,7 @@ const FullAuction: React.FC<{
   isFirstOrLastAuction: () => [boolean, boolean];
   handleAuctionChange: (next: boolean) => void;
 }> = props => {
-  const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
+  const { auction } = props;
 
   const { account, library } = useEthers();
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
@@ -131,6 +131,8 @@ const FullAuction: React.FC<{
   };
 
   // handle voting
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
 
