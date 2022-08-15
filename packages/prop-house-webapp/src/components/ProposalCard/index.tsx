@@ -41,9 +41,9 @@ const ProposalCard: React.FC<{
       <div
         onClick={e => {
           if (e.metaKey || e.ctrlKey) {
-            window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
+            window.open(`${proposal.id}`, `_blank`); // open in new tab
           } else {
-            navigate(`/proposal/${proposal.id}`);
+            navigate(`${proposal.id}`);
           }
         }}
       >

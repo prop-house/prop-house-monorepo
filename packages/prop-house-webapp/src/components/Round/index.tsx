@@ -1,9 +1,8 @@
 import { Container } from 'react-bootstrap';
 import { useLocation, useParams } from 'react-router-dom';
 import FullAuction from '../FullAuction';
-
 import { useEffect, useRef } from 'react';
-import { slugToName } from '../../utils/communitySlugs';
+import { nameToSlug, slugToName } from '../../utils/communitySlugs';
 import { setActiveAuction, setActiveCommunity } from '../../state/slices/propHouse';
 import { ethers } from 'ethers';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -13,7 +12,7 @@ const Round = () => {
   const { state } = useLocation();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
 
-  const { house: slug, id } = useParams();
+  const { house: slug, title } = useParams();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -28,41 +27,23 @@ const Round = () => {
     const fetchCommunity = async () => {
       try {
         // fetch by address or name
-
         const community2 = isValidAddress
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug!));
-        // console.log('community2', community2);
-        // community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
-        // AuctionStatus.AuctionAcceptingProps
-        // console.log(
-        //   'c',
-        //   community,
-        //   community.auctions.filter(r => r.id.toString() === id),
-        // );
+        // _????
         // if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
 
         dispatch(setActiveCommunity(community));
 
-        // community2 &&
-        //   console.log(
-        //     'with',
-        //     community2.auctions.filter(r => r.id.toString() === id),
-        //   );
-        // community2 &&
-        //   console.log('without', ...community2.auctions.filter(r => r.id.toString() === id));
-
-        // console.log('cafter', community);
-
-        // const currentRound = community.auctions.filter(r => r.id.toString() === id);
-        // console.log('currentRound', currentRound);
-        // console.log(
-        //   'cur2',
-        //   community.auctions.filter(r => r.id === 6),
-        // );
-
-        dispatch(setActiveAuction(...community2.auctions.filter(r => r.id.toString() === id)));
+        title &&
+          dispatch(
+            setActiveAuction(
+              ...community2.auctions.filter(
+                r => nameToSlug(r.title.toString()) === nameToSlug(title),
+              ),
+            ),
+          );
       } catch (e) {
         console.log(e);
       }
@@ -74,7 +55,7 @@ const Round = () => {
       dispatch(setActiveAuction());
       // dispatch(setActiveProposals([]));
     };
-  }, [slug, isValidAddress, id, community, dispatch]);
+  }, [slug, isValidAddress, title, community, dispatch]);
 
   activeAuction && console.log('activeAuction', activeAuction);
 
@@ -82,8 +63,6 @@ const Round = () => {
     <>
       <div>
         <Container>
-          {/* <h1>{state.round.id}</h1>
-        <h1>{state.round.title}</h1> */}
           {(state || activeAuction) && (
             <FullAuction auction={state ? state.round : activeAuction} />
           )}

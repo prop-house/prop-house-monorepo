@@ -1,12 +1,11 @@
 import classes from './HouseCard.module.css';
-
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-
 import clsx from 'clsx';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useNavigate } from 'react-router-dom';
 import StatusPill from '../StatusPill';
+import { nameToSlug } from '../../utils/communitySlugs';
 
 const HouseCard: React.FC<{
   round: StoredAuction;
@@ -21,9 +20,12 @@ const HouseCard: React.FC<{
       <div
         onClick={e => {
           if (e.metaKey || e.ctrlKey) {
-            window.open(`${round.id}`, `_blank`); // open in new tab
+            window.open(`${nameToSlug(round.title)}`, `_blank`); // open in new tab
           } else {
-            navigate(`${round.id}`, { replace: false, state: { round } });
+            navigate(`${nameToSlug(round.title)}`, {
+              replace: false,
+              state: { round },
+            });
           }
         }}
       >
@@ -42,7 +44,6 @@ const HouseCard: React.FC<{
             </div>
 
             <div className={classes.truncatedTldr}>
-              {/* {round.title} */}
               Mandated round inviting builders to build alternative Nouns Clients. Builders can
               propose any idea to corresponds to the specified mandate.
             </div>

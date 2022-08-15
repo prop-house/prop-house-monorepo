@@ -58,7 +58,8 @@ function App() {
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/:house" element={<House />} />
-          <Route path="/:house/:id" element={<Round />} />
+          <Route path="/:house/:title" element={<Round />} />
+          <Route path="/:house/:title/:id" element={<Proposal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
