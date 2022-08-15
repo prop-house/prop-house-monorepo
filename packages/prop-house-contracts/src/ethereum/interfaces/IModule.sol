@@ -6,11 +6,14 @@ interface IModule {
     /// @notice Thrown when an upgrade has not been registered for an implementation contract
     error InvalidUpgrade();
 
-    /// @notice A unique identifier
-    function id() external view returns (bytes32);
+    /// @notice Thrown when a strategy is not enabled in the module instance
+    error StrategyNotEnabled();
 
     /// @notice The string representation of the unique identifier
     function name() external view returns (string memory);
+
+    /// @notice A unique identifier
+    function id() external view returns (bytes32);
 
     /// @notice The module implementation contract version
     function version() external view returns (uint256);

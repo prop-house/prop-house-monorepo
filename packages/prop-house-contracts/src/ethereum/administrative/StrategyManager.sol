@@ -1,26 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import { IIntegrationManager } from '../interfaces/IIntegrationManager.sol';
+import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
-/// @title IntegrationManager
-/// @notice This contract allows the registrar to manage module integrations, the building blocks of modules
-contract IntegrationManager is IIntegrationManager {
+/// @title StrategyManager
+/// @notice This contract allows the registrar to manage module strategies, the building blocks of modules
+contract StrategyManager is IStrategyManager {
     IRegistrarManager public immutable RegistrarManager;
 
-    struct IntegrationSettings {
+    struct StrategySettings {
         /// @notice Min compatible module implementation version. Disabled if 0.
         uint120 minVersion;
         /// @notice Max compatible module implementation version. None if 0.
         uint120 maxVersion;
-        /// @notice Whether the integration is enabled.
+        /// @notice Whether the strategy is enabled.
         bool enabled;
     }
 
     /// @notice If a contract is a registered upgrade for an original implementation
-    /// @dev Module Implemention ID => Integration Address => Integration Settings
-    mapping(bytes32 => mapping(address => IntegrationSettings)) private integrations;
+    /// @dev Module Implemention ID => Strategy Address => Strategy Settings
+    mapping(bytes32 => mapping(address => StrategySettings)) private strategies;
 
     /// @notice Require that the sender is the registrar
     modifier onlyRegistrar() {
@@ -38,13 +38,13 @@ contract IntegrationManager is IIntegrationManager {
     /// @notice If an upgraded implementation has been registered for its original implementation
     /// @param _moduleImplId The module implementation ID
     /// @param _moduleImplVersion The module implementation version
-    /// @param _integration The address of the upgraded implementation
-    function isValidIntegration(
+    /// @param _strategy The address of the upgraded implementation
+    function isValidStrategy(
         bytes32 _moduleImplId,
         uint256 _moduleImplVersion,
-        address _integration
+        address _strategy
     ) external view returns (bool) {
-        IntegrationSettings memory settings = integrations[_moduleImplId][_integration];
+        StrategySettings memory settings = strategies[_moduleImplId][_strategy];
         if (!settings.enabled) {
             return false;
         }
@@ -57,88 +57,88 @@ contract IntegrationManager is IIntegrationManager {
         return true;
     }
 
-    /// @notice Registers an integration
+    /// @notice Registers an strategy
     /// @dev Only callable by the registrar
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation valid to upgrade to
+    /// @param _strategy The address of the implementation valid to upgrade to
     /// @param _minVersion Min compatible module implementation version. Disabled if 0.
     /// @param _maxVersion Max compatible module implementation version. None if 0.
-    function registerIntegration(
+    function registerStrategy(
         bytes32 _moduleImplId,
-        address _integration,
+        address _strategy,
         uint120 _minVersion,
         uint120 _maxVersion
     ) external onlyRegistrar {
-        _registerIntegration(_moduleImplId, _integration, _minVersion, _maxVersion);
+        _registerStrategy(_moduleImplId, _strategy, _minVersion, _maxVersion);
     }
 
-    /// @notice Registers an integration with no versioning restrictions
+    /// @notice Registers an strategy with no versioning restrictions
     /// @dev Only callable by the registrar
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation valid to upgrade to
-    function registerIntegration(bytes32 _moduleImplId, address _integration) external onlyRegistrar {
-        _registerIntegration(_moduleImplId, _integration, 0, 0);
+    /// @param _strategy The address of the implementation valid to upgrade to
+    function registerStrategy(bytes32 _moduleImplId, address _strategy) external onlyRegistrar {
+        _registerStrategy(_moduleImplId, _strategy, 0, 0);
     }
 
-    /// @notice Set the min module implementation version that's compatible with an integration
+    /// @notice Set the min module implementation version that's compatible with an strategy
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation valid to upgrade to
+    /// @param _strategy The address of the implementation valid to upgrade to
     /// @param _minVersion Min compatible module implementation version. Disabled if 0.
     function setMinVersion(
         bytes32 _moduleImplId,
-        address _integration,
+        address _strategy,
         uint120 _minVersion
     ) external onlyRegistrar {
-        if (!integrations[_moduleImplId][_integration].enabled) {
-            revert IntegrationNotRegistered();
+        if (!strategies[_moduleImplId][_strategy].enabled) {
+            revert StrategyNotRegistered();
         }
-        integrations[_moduleImplId][_integration].minVersion = _minVersion;
+        strategies[_moduleImplId][_strategy].minVersion = _minVersion;
 
-        emit MinCompatibleVersionSet(_moduleImplId, _integration, _minVersion);
+        emit MinCompatibleVersionSet(_moduleImplId, _strategy, _minVersion);
     }
 
-    /// @notice Set the max module implementation version that's compatible with an integration
+    /// @notice Set the max module implementation version that's compatible with an strategy
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation valid to upgrade to
+    /// @param _strategy The address of the implementation valid to upgrade to
     function setMaxVersion(
         bytes32 _moduleImplId,
-        address _integration,
+        address _strategy,
         uint120 _maxVersion
     ) external onlyRegistrar {
-        if (!integrations[_moduleImplId][_integration].enabled) {
-            revert IntegrationNotRegistered();
+        if (!strategies[_moduleImplId][_strategy].enabled) {
+            revert StrategyNotRegistered();
         }
-        integrations[_moduleImplId][_integration].maxVersion = _maxVersion;
+        strategies[_moduleImplId][_strategy].maxVersion = _maxVersion;
 
-        emit MaxCompatibleVersionSet(_moduleImplId, _integration, _maxVersion);
+        emit MaxCompatibleVersionSet(_moduleImplId, _strategy, _maxVersion);
     }
 
-    /// @notice Unregisters an integration
+    /// @notice Unregisters an strategy
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation to unregister
-    function unregisterIntegration(bytes32 _moduleImplId, address _integration) external onlyRegistrar {
-        delete integrations[_moduleImplId][_integration];
+    /// @param _strategy The address of the implementation to unregister
+    function unregisterStrategy(bytes32 _moduleImplId, address _strategy) external onlyRegistrar {
+        delete strategies[_moduleImplId][_strategy];
 
-        emit IntegrationUnregistered(_moduleImplId, _integration);
+        emit StrategyUnregistered(_moduleImplId, _strategy);
     }
 
-    /// @notice Registers an integration
+    /// @notice Registers an strategy
     /// @param _moduleImplId The module implementation ID
-    /// @param _integration The address of the implementation valid to upgrade to
+    /// @param _strategy The address of the implementation valid to upgrade to
     /// @param _minVersion Min compatible module implementation version. Disabled if 0.
     /// @param _maxVersion Max compatible module implementation version. None if 0.
-    function _registerIntegration(
+    function _registerStrategy(
         bytes32 _moduleImplId,
-        address _integration,
+        address _strategy,
         uint120 _minVersion,
         uint120 _maxVersion
     ) internal {
-        integrations[_moduleImplId][_integration] = IntegrationSettings({
+        strategies[_moduleImplId][_strategy] = StrategySettings({
             minVersion: _minVersion,
             maxVersion: _maxVersion,
             enabled: true
         });
 
-        emit IntegrationRegistered(_moduleImplId, _integration, _minVersion, _maxVersion);
+        emit StrategyRegistered(_moduleImplId, _strategy, _minVersion, _maxVersion);
     }
 }
