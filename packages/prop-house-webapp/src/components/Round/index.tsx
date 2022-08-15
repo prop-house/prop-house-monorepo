@@ -36,14 +36,13 @@ const Round = () => {
 
         dispatch(setActiveCommunity(community));
 
-        title &&
-          dispatch(
-            setActiveAuction(
-              ...community2.auctions.filter(
-                r => nameToSlug(r.title.toString()) === nameToSlug(title),
-              ),
+        dispatch(
+          setActiveAuction(
+            ...community2.auctions.filter(
+              r => nameToSlug(r.title.toString()) === nameToSlug(title!),
             ),
-          );
+          ),
+        );
       } catch (e) {
         console.log(e);
       }
@@ -55,9 +54,7 @@ const Round = () => {
       dispatch(setActiveAuction());
       // dispatch(setActiveProposals([]));
     };
-  }, [slug, isValidAddress, title, community, dispatch]);
-
-  activeAuction && console.log('activeAuction', activeAuction);
+  }, [community, dispatch, isValidAddress, slug, title]);
 
   return (
     <>
