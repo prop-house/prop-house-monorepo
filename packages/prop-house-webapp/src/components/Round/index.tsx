@@ -31,8 +31,7 @@ const Round = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug!));
 
-        // _????
-        // if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
+        if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
 
         dispatch(setActiveCommunity(community));
 
