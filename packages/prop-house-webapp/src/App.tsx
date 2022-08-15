@@ -16,6 +16,9 @@ import Explore from './components/pages/Explore';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 
+import NotFound from './components/NotFound';
+import Round from './components/Round';
+
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
@@ -54,8 +57,9 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/faq" element={<FAQ />} />
-
-          <Route path="*" element={<House />} />
+          <Route path="/:house" element={<House />} />
+          <Route path="/:house/:id" element={<Round />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Suspense>

@@ -1,5 +1,5 @@
 import classes from './House.module.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import HouseHeader from '../../HouseHeader';
@@ -14,7 +14,7 @@ import {
 import { getName } from 'prop-house-communities';
 import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { Col, Container, Row } from 'react-bootstrap';
 import HouseCard from '../../HouseCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
@@ -27,18 +27,14 @@ const House = () => {
   const slug = location.pathname.substring(1, location.pathname.length);
 
   const isValidAddress = slug && ethers.utils.isAddress(slug);
-
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
-  const [failedFetch, setFailedFetch] = useState(false);
   const cleanedUp = useRef(false);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const activeAuction = useAppSelector(state => state.propHouse.activeAuction);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [roundStatus, setRoundStatus] = useState<number>(0);
@@ -65,7 +61,7 @@ const House = () => {
 
         dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
-        setFailedFetch(true);
+        console.log(e);
       }
     };
     fetchCommunity();

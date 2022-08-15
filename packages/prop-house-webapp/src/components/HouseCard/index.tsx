@@ -1,11 +1,11 @@
 import classes from './HouseCard.module.css';
-import globalClasses from '../../css/globals.module.css';
+
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import detailedTime from '../../utils/detailedTime';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+
 import clsx from 'clsx';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import StatusPill from '../StatusPill';
 
 const HouseCard: React.FC<{
@@ -13,18 +13,18 @@ const HouseCard: React.FC<{
 }> = props => {
   const { round } = props;
   // const { t } = useTranslation();
-
-  // let navigate = useNavigate();
+  let navigate = useNavigate();
+  // const isEntryPoint = !location.state?.fromRoundPage;
 
   return (
     <>
       <div
         onClick={e => {
-          // if (e.metaKey || e.ctrlKey) {
-          //   window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
-          // } else {
-          //   navigate(`/proposal/${proposal.id}`);
-          // }
+          if (e.metaKey || e.ctrlKey) {
+            window.open(`${round.id}`, `_blank`); // open in new tab
+          } else {
+            navigate(`${round.id}`, { replace: false, state: { round } });
+          }
         }}
       >
         <Card

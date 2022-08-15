@@ -25,12 +25,7 @@ const statuses = [
   },
 ];
 
-const HouseDropdown = ({
-  // roundCount,
-  roundStatus,
-  setRoundStatus,
-  setInput,
-}: HouseUtilityBarProps) => {
+const HouseDropdown = ({ roundStatus, setRoundStatus, setInput }: HouseUtilityBarProps) => {
   const handleClick = (id: number) => {
     setInput('');
 

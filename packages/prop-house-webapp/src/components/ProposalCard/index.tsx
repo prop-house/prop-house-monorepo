@@ -22,7 +22,7 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
-}> = (props) => {
+}> = props => {
   const {
     proposal,
     auctionStatus,
@@ -39,7 +39,7 @@ const ProposalCard: React.FC<{
   return (
     <>
       <div
-        onClick={(e) => {
+        onClick={e => {
           if (e.metaKey || e.ctrlKey) {
             window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
           } else {
@@ -56,7 +56,7 @@ const ProposalCard: React.FC<{
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
               : '',
-            classes.proposalCard
+            classes.proposalCard,
           )}
         >
           <div className={classes.titleContainer}>
