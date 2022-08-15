@@ -1,4 +1,3 @@
-import { Row, Col } from 'react-bootstrap';
 import classes from './HouseHeader.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
