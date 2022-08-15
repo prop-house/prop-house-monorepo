@@ -131,7 +131,6 @@ const FullAuction: React.FC<{
   };
 
   // handle voting
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;

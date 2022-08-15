@@ -9,7 +9,7 @@ import Create from './components/pages/Create';
 import Community from './components/pages/Community';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
-import { Container } from 'react-bootstrap';
+// import { Container } from 'react-bootstrap';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './components/pages/FAQ';
