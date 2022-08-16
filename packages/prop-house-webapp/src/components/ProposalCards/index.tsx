@@ -38,7 +38,7 @@ const ProposalCards: React.FC<{
 
   return (
     <div className={classes.propCards}>
-      <Row>
+      <Row style={{ width: '100%' }}>
         <Col xl={8}>
           {proposals &&
             proposals.map((proposal, index) => {
