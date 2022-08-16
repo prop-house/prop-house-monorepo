@@ -79,7 +79,7 @@
 }
 
 .scoreCopy {
-  font-weight: bold;
+  font-weight: normal !important;
   font-size: 14px;
   color: var(--brand-gray);
 }
@@ -116,6 +116,7 @@
 .address {
   display: flex;
   align-items: center;
+  font-weight: bold;
   gap: 4px;
   color: #666666;
   width: 50%;

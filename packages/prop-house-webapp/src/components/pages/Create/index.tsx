@@ -1,5 +1,5 @@
 import classes from './Create.module.css';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../Button';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
@@ -93,65 +93,69 @@ const Create: React.FC<{}> = () => {
     onDismiss: () => navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
   };
 
+  console.log('activeAuction', activeAuction);
+
   return activeAuction ? (
     <>
-      {showModal && <Modal data={successfulSubmissionModalContent} />}
+      <Container>
+        {showModal && <Modal data={successfulSubmissionModalContent} />}
 
-      <Row>
-        <Col xl={12} className={classes.proposalHelperWrapper}>
-          <h1 className={classes.proposalHelper}>
-            {t('creatingProp')}{' '}
-            <span>
-              {` ${activeCommunity.name}: ${activeAuction.title}`}
-              {' ('}
-              <FundingAmount
-                amount={activeAuction.fundingAmount}
-                currencyType={activeAuction.currencyType}
-              />
-              {')'}
-            </span>
-          </h1>
-        </Col>
-      </Row>
+        <Row>
+          <Col xl={12} className={classes.proposalHelperWrapper}>
+            <h1 className={classes.proposalHelper}>
+              {t('creatingProp')}{' '}
+              <span>
+                {` ${activeCommunity.name}: ${activeAuction.title}`}
+                {' ('}
+                <FundingAmount
+                  amount={activeAuction.fundingAmount}
+                  currencyType={activeAuction.currencyType}
+                />
+                {')'}
+              </span>
+            </h1>
+          </Col>
+        </Row>
 
-      <Row>
-        <Col xl={12}>
-          {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
-        </Col>
-      </Row>
+        <Row>
+          <Col xl={12}>
+            {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
+          </Col>
+        </Row>
 
-      <Row>
-        <Col xl={12} className={classes.btnContainer}>
-          <Button
-            text={showPreview ? t('backToEditor') : t('preview')}
-            bgColor={ButtonColor.Pink}
-            onClick={() =>
-              setShowPreview(prev => {
-                return !prev;
-              })
-            }
-            disabled={!isValidPropData(proposalEditorData)}
-          />
+        <Row>
+          <Col xl={12} className={classes.btnContainer}>
+            <Button
+              text={showPreview ? t('backToEditor') : t('preview')}
+              bgColor={ButtonColor.Pink}
+              onClick={() =>
+                setShowPreview(prev => {
+                  return !prev;
+                })
+              }
+              disabled={!isValidPropData(proposalEditorData)}
+            />
 
-          {showPreview &&
-            (account ? (
-              <Button
-                classNames={classes.actionBtn}
-                text={t('signSubmit')}
-                bgColor={ButtonColor.Pink}
-                onClick={submitProposal}
-                disabled={!isValidPropData(proposalEditorData)}
-              />
-            ) : (
-              <Button
-                classNames={classes.actionBtn}
-                bgColor={ButtonColor.Pink}
-                text={t('connectWallet')}
-                onClick={connect}
-              />
-            ))}
-        </Col>
-      </Row>
+            {showPreview &&
+              (account ? (
+                <Button
+                  classNames={classes.actionBtn}
+                  text={t('signSubmit')}
+                  bgColor={ButtonColor.Pink}
+                  onClick={submitProposal}
+                  disabled={!isValidPropData(proposalEditorData)}
+                />
+              ) : (
+                <Button
+                  classNames={classes.actionBtn}
+                  bgColor={ButtonColor.Pink}
+                  text={t('connectWallet')}
+                  onClick={connect}
+                />
+              ))}
+          </Col>
+        </Row>
+      </Container>
     </>
   ) : (
     <>Loading...</>

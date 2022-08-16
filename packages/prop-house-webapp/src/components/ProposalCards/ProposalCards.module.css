@@ -5,17 +5,37 @@
 .sidebarContainerCard {
   background: #f5f5f5;
   border: 1px solid rgba(0, 0, 0, 0.04);
-  height: 230px;
-  min-height: 230px;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between !important;
 }
 
-.sidebarContainerCard p {
-  padding-bottom: 25px;
-}
 .sidebarContainerCard button {
   width: 100%;
   border-radius: 50px;
+  margin-top: 18px;
+}
+.votingBar {
+  width: full;
+  height: 15px;
+  background: var(--brand-purple);
+  border-radius: 50px;
+  margin: 12px 0px;
+}
+.sideCardTitle {
+  font-size: 18px;
+}
+.sideCardBody {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+.votingInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.totalVotes {
+  font-size: 14px;
+  color: var(--brand-gray);
 }

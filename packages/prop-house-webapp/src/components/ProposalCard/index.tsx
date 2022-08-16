@@ -80,26 +80,33 @@ const ProposalCard: React.FC<{
           <hr className={classes.divider} />
 
           <div className={classes.timestampAndlinkContainer}>
-            {auctionStatus === AuctionStatus.AuctionVoting ||
+            {/* {auctionStatus === AuctionStatus.AuctionVoting ||
             (auctionStatus === AuctionStatus.AuctionEnded &&
-              cardStatus !== ProposalCardStatus.Voting) ? (
-              <div className={classes.scoreCopy}>
-                {t('votes')}: {Math.trunc(proposal.score)}
+              cardStatus !== ProposalCardStatus.Voting) ? ( */}
+
+            {/* move to right */}
+            {/* <div className={classes.scoreCopy}>
+              {t('votes')}: {Math.trunc(proposal.score)}
+            </div> */}
+
+            {/* // ) : ( */}
+            <div className={classes.address}>
+              <EthAddress address={proposal.address} truncate />
+              <span className={classes.bullet}>{' • '}</span>
+              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+                {diffTime(proposal.createdDate)}
               </div>
-            ) : (
-              <div className={classes.address}>
-                <EthAddress address={proposal.address} truncate />
-                <span className={classes.bullet}>{' • '}</span>
-                <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                  {diffTime(proposal.createdDate)}
-                </div>
-              </div>
-            )}
+            </div>
+            {/* )} */}
 
             <div className={classes.avatarAndPropNumber}>
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
                 {/* {diffTime(proposal.createdDate)} */}
-                {'content here'}
+                {auctionStatus === AuctionStatus.AuctionVoting && (
+                  <div className={classes.scoreCopy}>
+                    {t('votes')}: {Math.trunc(proposal.score)}
+                  </div>
+                )}
               </div>
             </div>
           </div>

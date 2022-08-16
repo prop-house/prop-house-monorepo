@@ -32,20 +32,11 @@ const AuctionHeader: React.FC<{
   voteBtnEnabled?: boolean;
   votesLeft?: number;
   handleVote?: () => void;
-  isFirstOrLastAuction: () => [boolean, boolean];
-  handleAuctionChange: (next: boolean) => void;
+  isFirstOrLastAuction?: () => [boolean, boolean];
+  handleAuctionChange?: (next: boolean) => void;
 }> = props => {
-  const {
-    auction,
-    clickable,
-    classNames,
-    totalVotes,
-    votesLeft,
-    handleVote,
-    voteBtnEnabled,
-    isFirstOrLastAuction,
-    handleAuctionChange,
-  } = props;
+  const { auction, clickable, classNames, totalVotes, votesLeft, handleVote, voteBtnEnabled } =
+    props;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -77,13 +68,13 @@ const AuctionHeader: React.FC<{
           <div className={classes.arrowsContainer}>
             <HiArrowSmLeft
               size={'2rem'}
-              onClick={() => handleAuctionChange(true)}
-              className={isFirstOrLastAuction()[1] ? classes.disable : classes.able}
+              // onClick={() => handleAuctionChange(true)}
+              // className={isFirstOrLastAuction()[1] ? classes.disable : classes.able}
             />
             <HiArrowSmRight
               size={'2rem'}
-              onClick={() => handleAuctionChange(false)}
-              className={isFirstOrLastAuction()[0] ? classes.disable : classes.able}
+              // onClick={() => handleAuctionChange(false)}
+              // className={isFirstOrLastAuction()[0] ? classes.disable : classes.able}
             />
           </div>
           <div className={classes.titleSectionContainer}>
@@ -110,7 +101,7 @@ const AuctionHeader: React.FC<{
             <div className={classes.infoSubsectionTitle}>{t('funding')}</div>
             <div className={classes.infoSubsectionContent}>
               <FundingAmount amount={fundingAmount} currencyType={currencyType} />
-              <span>× {numWinners}</span>
+              <span>x {numWinners}</span>
             </div>
           </div>
           <div className={classes.infoSubsection}>

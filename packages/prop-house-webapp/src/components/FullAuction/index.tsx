@@ -1,5 +1,5 @@
 // import classes from './FullAuction.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
+// import Card, { CardBgColor, CardBorderRadius } from '../Card';
 // import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 
@@ -7,7 +7,7 @@ import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
+// import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
@@ -20,8 +20,8 @@ import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import {
   AuctionEmptyContent,
   AuctionNotStartedContent,
-  ConnectedCopy,
-  DisconnectedCopy,
+  // ConnectedCopy,
+  // DisconnectedCopy,
 } from './content';
 
 import { getNumVotes } from 'prop-house-communities';
@@ -40,7 +40,7 @@ const FullAuction: React.FC<{
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
 
-  const connect = useWeb3Modal();
+  // const connect = useWeb3Modal();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -51,8 +51,8 @@ const FullAuction: React.FC<{
 
   const auctionNotStartedContent = AuctionNotStartedContent();
   const auctionEmptyContent = AuctionEmptyContent();
-  const disconnectedCopy = DisconnectedCopy(connect);
-  const connectedCopy = ConnectedCopy();
+  // const disconnectedCopy = DisconnectedCopy(connect);
+  // const connectedCopy = ConnectedCopy();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -179,12 +179,13 @@ const FullAuction: React.FC<{
   return (
     <>
       {showModal && modalData && <Modal data={modalData} />}
-      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
+
+      {/* {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
         ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
           <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
             <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
           </Card>
-        )}
+        )} */}
 
       {/* {community && (
         <AuctionHeader
@@ -199,8 +200,8 @@ const FullAuction: React.FC<{
           }
           votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
           handleVote={handleVote}
-          isFirstOrLastAuction={isFirstOrLastAuction}
-          handleAuctionChange={handleAuctionChange}
+          // isFirstOrLastAuction={isFirstOrLastAuction}
+          // handleAuctionChange={handleAuctionChange}
         />
       )} */}
 
@@ -227,14 +228,19 @@ const FullAuction: React.FC<{
         auctionEmptyContent
       ) : (
         <>
-          <ProposalCards
-            auction={auction}
-            voteAllotments={voteAllotments}
-            canAllotVotes={canAllotVotes}
-            handleVoteAllotment={handleVoteAllotment}
-          />
+          {community && (
+            <ProposalCards
+              auction={auction}
+              community={community}
+              voteAllotments={voteAllotments}
+              canAllotVotes={canAllotVotes}
+              handleVote={handleVote}
+              handleVoteAllotment={handleVoteAllotment}
+            />
+          )}
         </>
       )}
+
       {/* </Card> */}
     </>
   );
