@@ -19,6 +19,9 @@ update:; forge update
 # Builds
 build  :; forge build
 
+# Build user contracts
+users :; npx ts-node blacksmith.ts create
+
 # chmod scripts
 scripts :; chmod +x ./scripts/*
 
@@ -26,7 +29,7 @@ scripts :; chmod +x ./scripts/*
 test :; forge clean && forge test --optimize --optimizer-runs 1000000 -v # --ffi # enable if you need the `ffi` cheat code on HEVM
 
 # Lints
-lint :; prettier --write "src/{,*/**/}*.sol"
+lint :; prettier --write "{src,test}/{,*/**/}*.sol" "{,*/**/}*.ts"
 
 # Generate Gas Snapshots
 snapshot :; forge clean && forge snapshot

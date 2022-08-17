@@ -141,3 +141,7 @@ dist
 # Foundry
 cache
 out
+blacksmith
+
+# Hardhat
+cache_hardhat

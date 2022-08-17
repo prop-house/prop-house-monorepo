@@ -1,1 +1,2 @@
-packages/prop-house-contracts/remappings.txt
+ds-test/=packages/prop-house-contracts/lib/forge-std/lib/ds-test/src/
+forge-std/=packages/prop-house-contracts/lib/forge-std/src/

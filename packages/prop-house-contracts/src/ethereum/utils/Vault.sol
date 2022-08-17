@@ -11,7 +11,7 @@ import { VaultStorage } from './storage/VaultStorage.sol';
 import { ETH_ADDRESS } from '../constants/Token.sol';
 import { IVault } from '../interfaces/IVault.sol';
 
-abstract contract Vault is IVault, VaultStorage, ERC721Holder, ERC1155Holder {
+contract Vault is IVault, VaultStorage, ERC721Holder, ERC1155Holder {
     using SafeERC20 for IERC20;
 
     bytes4 internal constant ETH_SELECTOR = bytes4(keccak256('ETH()'));
