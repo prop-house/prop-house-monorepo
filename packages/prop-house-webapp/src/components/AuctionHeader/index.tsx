@@ -56,7 +56,7 @@ const AuctionHeader: React.FC<{
   const {
     id,
     startTime: startDate,
-    amountEth: fundingAmount,
+    fundingAmount,
     currencyType,
     numWinners,
     proposalEndTime: proposalEndDate,
