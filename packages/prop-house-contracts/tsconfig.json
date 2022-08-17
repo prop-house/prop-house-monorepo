@@ -5,6 +5,7 @@
 		"outDir": "dist",
 		"declaration": true
   },
-  "include": ["blacksmith.ts"],
-  "exclude": ["node_modules"]
+  "include": ["scripts", "test"],
+  "exclude": ["node_modules"],
+  "files": ["blacksmith.ts", "hardhat.config.ts"]
 }

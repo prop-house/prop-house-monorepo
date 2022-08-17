@@ -1,8 +1,8 @@
 import { HardhatUserConfig, task } from 'hardhat/config';
 import { example } from './tasks/example';
+import '@shardlabs/starknet-hardhat-plugin';
 import '@nomiclabs/hardhat-waffle';
 import 'hardhat-preprocessor';
-import '@typechain/hardhat';
 import fs from 'fs';
 
 const getRemappings = () => {
@@ -43,6 +43,15 @@ const config: HardhatUserConfig = {
         return line;
       },
     }),
+  },
+  starknet: {
+    venv: 'active',
+    network: 'starknetLocal',
+  },
+  networks: {
+    starknetLocal: {
+      url: 'http://localhost:5050',
+    },
   },
 };
 

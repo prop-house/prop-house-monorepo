@@ -7,8 +7,7 @@
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
-    "@typechain/ethers-v5": "^10.1.0",
-    "@typechain/hardhat": "^6.1.2",
+    "@shardlabs/starknet-hardhat-plugin": "^0.6.3",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
     "chai": "^4.3.6",
@@ -23,6 +22,7 @@
     "sync": "make update",
     "test": "make test",
     "snapshot": "make snapshot",
-    "lint": "make lint"
+    "lint": "make lint",
+    "chain:l2": "starknet-devnet --lite-mode"
   }
 }
