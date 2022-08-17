@@ -35,6 +35,9 @@ export class Auction {
   amountEth: number;
 
   @Column()
+  currencyType: string;
+
+  @Column()
   numWinners: number;
 
   @OneToMany(() => Proposal, (proposal) => proposal.auction, {

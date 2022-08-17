@@ -57,6 +57,7 @@ const AuctionHeader: React.FC<{
     id,
     startTime: startDate,
     amountEth: fundingAmount,
+    currencyType,
     numWinners,
     proposalEndTime: proposalEndDate,
   } = auction;
@@ -107,7 +108,7 @@ const AuctionHeader: React.FC<{
           <div className={classes.infoSubsection}>
             <div className={classes.infoSubsectionTitle}>{t('funding')}</div>
             <div className={classes.infoSubsectionContent}>
-              {`${fundingAmount.toFixed(2)} Ξ `}
+              {`${fundingAmount} ${currencyType ? currencyType : 'Ξ'} `}
               <span>× {numWinners}</span>
             </div>
           </div>
