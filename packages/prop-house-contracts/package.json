@@ -28,7 +28,7 @@
     "chain:l2": "starknet-devnet --lite-mode",
     "chain": "concurrently 'yarn chain:l1' 'yarn chain:l2'",
     "compile:l1": "forge build",
-    "compile:l2": "hardhat starknet-compile src/starknet/SpaceAccount.cairo --account-contract && hardhat starknet-compile src/starknet/SpaceFactory.cairo && hardhat starknet-compile src/starknet/**/",
+    "compile:l2": "hardhat starknet-compile src/starknet/**",
     "compile": "concurrently 'yarn compile:l1' 'yarn compile:l2'",
     "test:l1": "forge clean && forge test --optimize --optimizer-runs 1000000 -v",
     "test:l2": "hardhat test test/starknet/**/*.ts",
