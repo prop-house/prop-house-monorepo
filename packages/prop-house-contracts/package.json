@@ -20,9 +20,7 @@
     "ts-node": "^10.9.1"
   },
   "scripts": {
-    "setup": "yarn users && yarn compile",
-    "users": "ts-node blacksmith.ts create",
-    "lint": "prettier --write '{src,test}/{,*/**/}*.sol' '{,*/**/}*.ts'",
+    "format": "prettier --write '{src,test}/{,*/**/}*.sol' '{,*/**/}*.ts'",
     "clean": "forge clean && hardhat clean",
     "chain:l1": "hardhat node",
     "chain:l2": "starknet-devnet --lite-mode",
@@ -30,8 +28,10 @@
     "compile:l1": "forge build",
     "compile:l2": "hardhat starknet-compile src/starknet/**",
     "compile": "concurrently 'yarn compile:l1' 'yarn compile:l2'",
-    "test:l1": "forge clean && forge test --optimize --optimizer-runs 1000000 -v",
-    "test:l2": "hardhat test test/starknet/**/*.ts",
+    "test:users": "ts-node blacksmith.ts create",
+    "test:setup": "yarn test:users && yarn compile:l2",
+    "test:l1": "forge test --match-path test/ethereum/*.t.sol --optimize --optimizer-runs 1000000 -v",
+    "test:l2": "hardhat test test/starknet/*.test.ts",
     "test": "yarn test:l1 && yarn test:l2"
   }
 }
