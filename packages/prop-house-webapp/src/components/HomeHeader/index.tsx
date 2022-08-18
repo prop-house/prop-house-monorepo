@@ -12,15 +12,15 @@ const HomeHeader = () => {
     <Row className={classes.wrapper}>
       <Col lg={7} className={classes.leftCol}>
         <div className={classes.poweredByNouns}>
-          {t("powered")}{" "}
+          {t('powered')}{' '}
           <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            {t("nounsdao")}
+            {t('nounsdao')}
           </a>
         </div>
 
-        <h1>{t("weekly")}</h1>
+        <h1 className={classes.weeklyFunding}>{t('weekly')}</h1>
 
-        <p>{t("bringToLife")}</p>
+        <p>{t('bringToLife')}</p>
         <div className={classes.btnsContainer}>
           <Col xs={6} md="auto">
             <Link to="/learn">

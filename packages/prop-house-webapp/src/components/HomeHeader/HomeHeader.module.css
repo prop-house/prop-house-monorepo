@@ -14,6 +14,12 @@
   text-decoration: none;
 }
 
+@media (max-width: 992px) {
+  .weeklyFunding {
+    font-size: 34px !important;
+  }
+}
+
 .leftCol h1 {
   font-size: 50px;
   font-weight: 600;

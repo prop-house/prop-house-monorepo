@@ -1,0 +1,11 @@
+{
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "preserveConstEnums": true,
+		"outDir": "dist",
+		"declaration": true
+  },
+  "include": ["scripts", "test"],
+  "exclude": ["node_modules"],
+  "files": ["blacksmith.ts", "hardhat.config.ts"]
+}
