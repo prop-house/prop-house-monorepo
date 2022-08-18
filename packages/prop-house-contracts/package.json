@@ -11,18 +11,27 @@
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
     "chai": "^4.3.6",
+    "concurrently": "^7.3.0",
     "hardhat": "^2.10.2",
     "hardhat-preprocessor": "^0.1.4",
     "prettier": "^2.7.0",
     "prettier-plugin-solidity": "^1.0.0-beta.21",
+    "starknet": "^3.18.2",
     "ts-node": "^10.9.1"
   },
   "scripts": {
-    "setup": "make clean && make build",
-    "sync": "make update",
-    "test": "make test",
-    "snapshot": "make snapshot",
-    "lint": "make lint",
-    "chain:l2": "starknet-devnet --lite-mode"
+    "setup": "yarn users && yarn compile",
+    "users": "ts-node blacksmith.ts create",
+    "lint": "prettier --write '{src,test}/{,*/**/}*.sol' '{,*/**/}*.ts'",
+    "clean": "forge clean && hardhat clean",
+    "chain:l1": "hardhat node",
+    "chain:l2": "starknet-devnet --lite-mode",
+    "chain": "concurrently 'yarn chain:l1' 'yarn chain:l2'",
+    "compile:l1": "forge build",
+    "compile:l2": "hardhat starknet-compile src/starknet/SpaceAccount.cairo --account-contract && hardhat starknet-compile src/starknet/SpaceFactory.cairo && hardhat starknet-compile src/starknet/**/",
+    "compile": "concurrently 'yarn compile:l1' 'yarn compile:l2'",
+    "test:l1": "forge clean && forge test --optimize --optimizer-runs 1000000 -v",
+    "test:l2": "hardhat test test/starknet/**/*.ts",
+    "test": "yarn test:l1 && yarn test:l2"
   }
 }
