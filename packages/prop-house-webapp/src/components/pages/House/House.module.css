@@ -5,9 +5,21 @@
   padding: 1rem;
 }
 
+.stickyContainer {
+  background: #fcfcfc;
+  top: 0;
+  position: sticky !important;
+  z-index: 9;
+  padding-top: 12px;
+  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
 @media (max-width: 575px) {
   .houseContainer {
     padding-right: 0 !important;
     padding-left: 0 !important;
+  }
+  .stickyContainer {
+    padding: 12px 0px 8px 0px;
   }
 }

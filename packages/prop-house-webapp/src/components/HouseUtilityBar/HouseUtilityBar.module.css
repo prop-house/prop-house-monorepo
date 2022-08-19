@@ -57,7 +57,7 @@
     display: none;
   }
   .houseUtilityBar {
-    margin-bottom: 12px;
+    /* margin-bottom: 12px; */
   }
   .houseUtilityBar {
     gap: 16px;
@@ -71,6 +71,4 @@
     min-width: 0px;
     width: 100%;
   }
-}
-@media (max-width: 375px) {
 }

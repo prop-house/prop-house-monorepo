@@ -133,17 +133,21 @@ const House = () => {
             contractAddress: slug,
           }}
         />
-
-        {count && (
-          <HouseUtilityBar
-            roundCount={count}
-            roundStatus={roundStatus}
-            setRoundStatus={setRoundStatus}
-            input={input}
-            setInput={setInput}
-          />
-        )}
       </Container>
+
+      {count && (
+        <div className={classes.stickyContainer}>
+          <Container>
+            <HouseUtilityBar
+              roundCount={count}
+              roundStatus={roundStatus}
+              setRoundStatus={setRoundStatus}
+              input={input}
+              setInput={setInput}
+            />
+          </Container>
+        </div>
+      )}
 
       <div className={classes.houseContainer}>
         <Container>
