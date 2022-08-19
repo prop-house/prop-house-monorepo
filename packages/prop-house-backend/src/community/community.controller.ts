@@ -8,6 +8,8 @@ import {
 import { CommunitiesService } from './community.service';
 import { CommunityOverview, ExtendedCommunity } from './community.types';
 import { buildExtendedCommunity } from './community.utils';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { getNumVotes } from 'prop-house-communities';
 
 @Controller()
 export class CommunitiesController {
@@ -47,5 +49,18 @@ export class CommunitiesController {
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
     return buildExtendedCommunity(foundCommunity);
+  }
+
+  @Get('communities/votesAtBlockTag/:communityAddress/:tag/:address')
+  async votesAtBlockTag(
+    @Param("communityAddress") communityAddress: string,
+    @Param("tag") tag: string,
+    @Param("address") address: string
+  ): Promise<BigNumberish> {
+    const foundCommunity = await this.communitiesService.findByAddress(communityAddress);
+    if (!foundCommunity)
+      throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
+    return this.communitiesService.votesAtBlockTag(foundCommunity, tag, address);
+
   }
 }
