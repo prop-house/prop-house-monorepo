@@ -199,7 +199,7 @@ const ProposalCards: React.FC<{
                   text={'Submit votes'}
                   bgColor={ButtonColor.Purple}
                   onClick={handleVote}
-                  disabled={submittedVotesCount === delegatedVotes}
+                  disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
 
                   // disabled={!canAllotVotes()}
                 />
