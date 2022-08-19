@@ -1,9 +1,10 @@
 import { Row, Col } from 'react-bootstrap';
-import classes from './PropCardVotingContainer.module.css';
+import classes from './PropCardVotingModule.module.css';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import { VoteAllotment, votesForProp } from '../../utils/voteAllotment';
 import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import Button, { ButtonColor } from '../Button';
+// import clsx from 'clsx';
 
 interface PropCardVotingContainerProps {
   proposal: StoredProposal;
@@ -14,7 +15,7 @@ interface PropCardVotingContainerProps {
   handleVoteAllotment: (proposalId: number, support: boolean) => void;
 }
 
-const PropCardVotingContainer: React.FC<{
+const PropCardVotingModule: React.FC<{
   props: PropCardVotingContainerProps;
 }> = props => {
   const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } = props.props;
@@ -29,18 +30,19 @@ const PropCardVotingContainer: React.FC<{
   return (
     <Row>
       <Col xs={12} className={classes.bottomContainer} onClick={(e: any) => e.stopPropagation()}>
-        <div className={classes.votesButtonContainer}>
+        <div className={classes.votesModuleContainer}>
           <Button
             text="↓"
-            bgColor={ButtonColor.Yellow}
+            bgColor={ButtonColor.Purple}
             classNames={classes.voteBtn}
+            // classNames={clsx(classes.voteBtn, classes.disabledVote)}
             onClick={e => handleClick(e, false)}
             disabled={allottedVotesForProp === 0}
           />
-          <div className={classes.votesAllottedDisplay}>{allottedVotesForProp}</div>
+          <div className={classes.votesAllottedDisplay}> {allottedVotesForProp} </div>
           <Button
             text="↑"
-            bgColor={ButtonColor.Yellow}
+            bgColor={ButtonColor.Purple}
             classNames={classes.voteBtn}
             onClick={e => handleClick(e, true)}
             disabled={!canAllotVotes()}
@@ -51,4 +53,4 @@ const PropCardVotingContainer: React.FC<{
   );
 };
 
-export default PropCardVotingContainer;
+export default PropCardVotingModule;

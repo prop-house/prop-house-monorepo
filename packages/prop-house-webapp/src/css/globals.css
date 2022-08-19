@@ -28,22 +28,47 @@ body {
 }
 
 :root {
+  /* Pink */
   --brand-pink: #e02ecf;
-  --brand-pink-semi-transparent: #e02ece9a;
-  --brand-pink-transparent: #e02ece3f;
+  --brand-pink-transparent: rgba(224, 46, 207, 0.6);
+  --brand-pink-semi-transparent: rgba(224, 46, 207, 0.25);
+  --brand-pink-hint: rgba(224, 46, 207, 0.08);
+
+  /* Purple */
   --brand-purple: #8a2be2;
-  --brand-purple-semi-transparent: #8a2be29a;
-  --brand-purple-transparent: #8a2be23f;
-  --brand-black: #14161b;
-  --brand-black-transparent: #00000060;
-  --brand-black-more-transparent: #00000020;
-  --brand-gray: #666666;
-  --brand-gray-semi-transparent: #6666664f;
-  --brand-gray-transparent: #6666662f;
+  --brand-purple-transparent: rgba(138, 43, 226, 0.6);
+  --brand-purple-semi-transparent: rgba(138, 43, 226, 0.25);
+  --brand-purple-hint: rgba(138, 43, 226, 0.08);
+
+  /* Yellow */
   --brand-yellow: #cba727;
-  --brand-yellow-transparent: #cba7274f;
+  --brand-yellow-transparent: rgba(203, 167, 39, 0.78);
+  --brand-yellow-semi-transparent: rgba(203, 167, 39, 0.3);
+  --brand-yellow-hint: rgba(203, 167, 39, 0.1);
+
+  /* Green */
   --brand-green: #50ba9a;
-  --brand-green-semi-transparent: #50ba9ac7;
+  --brand-green-transparent: rgba(80, 186, 154, 0.78);
+  --brand-green-semi-transparent: rgba(80, 186, 154, 0.3);
+  --brand-green-hint: rgba(80, 186, 154, 0.1);
+
+  /* Black */
+  --brand-black: #14161b;
+  --brand-black-transparent: rgba(20, 22, 27, 0.6);
+  --brand-black-semi-transparent: rgba(20, 22, 27, 0.25);
+
+  /* Gray */
+  --brand-gray: #666666;
+  --brand-gray-transparent: rgba(102, 102, 102, 0.6);
+  --brand-gray-semi-transparent: rgba(102, 102, 102, 0.25);
+
+  /* Utils */
+  --bg-med: #fcfcfc;
+  --bg-dark: #f5f5f5;
+
+  --border-light: rgba(0, 0, 0, 0.04);
+  --border-med: rgba(0, 0, 0, 0.1);
+  --border-dark: rgba(102, 102, 102, 0.25);
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */
@@ -63,4 +88,21 @@ body {
   .navbar-nav .dropdown-menu {
     position: absolute !important;
   }
+}
+
+/* voting progress bar */
+.bg-success {
+  background: var(--brand-purple) !important;
+  border-radius: 6px 2px 2px 6px;
+}
+.bg-warning {
+  background: var(--brand-purple-transparent) !important;
+
+  /* only round border when there are already submitted votes
+  as in we're ADDING more than one. so numAllotedVotes > 0 && .roundBorder */
+}
+/* .bg-warning */
+.roundAllotmentBar .bg-warning {
+  border-radius: 2px 6px 6px 2px !important;
+  margin-left: 2px;
 }

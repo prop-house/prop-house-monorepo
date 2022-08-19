@@ -16,13 +16,16 @@
   border-radius: 50px;
   margin-top: 18px;
 }
+
 .votingBar {
-  width: full;
-  height: 15px;
-  background: var(--brand-purple);
+  /* width: full; */
+  /* height: 15px; */
+  /* background: var(--brand-purple); */
   border-radius: 50px;
   margin: 12px 0px;
+  background: var(--brand-purple-hint);
 }
+
 .sideCardTitle {
   font-size: 18px;
 }

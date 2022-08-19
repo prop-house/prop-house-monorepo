@@ -125,7 +125,9 @@ const ProfileHeader: React.FC<{
             </div>
 
             <div className={classes.item}>
-              <div className={classes.itemTitle}>Proposals</div>
+              <div className={classes.itemTitle}>
+                {community?.numProposals === 1 ? 'Proposal' : 'Proposals'}
+              </div>
               <div className={classes.itemData}>{community ? community.numProposals : 0}</div>
             </div>
           </Col>

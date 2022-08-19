@@ -1,6 +1,6 @@
 import { CommunityWithAuctions, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './ProposalCards.module.css';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, ProgressBar } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
@@ -13,19 +13,34 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
   community: CommunityWithAuctions;
   voteAllotments: VoteAllotment[];
   canAllotVotes: () => boolean;
+  numAllottedVotes?: number;
+  submittedVotesCount?: number;
   handleVote?: () => void;
   handleVoteAllotment: (proposalId: number, support: boolean) => void;
+  votesLeft?: number;
 }> = props => {
-  const { auction, community, voteAllotments, canAllotVotes, handleVote, handleVoteAllotment } =
-    props;
+  const {
+    auction,
+    community,
+    voteAllotments,
+    canAllotVotes,
+    numAllottedVotes,
+    submittedVotesCount,
+    handleVote,
+    handleVoteAllotment,
+    votesLeft,
+  } = props;
 
   const { account } = useEthers();
+  const connect = useWeb3Modal();
+
   const navigate = useNavigate();
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -85,18 +100,71 @@ const ProposalCards: React.FC<{
                 </>
               )}
 
-              {isVotingWindow && (
+              {isVotingWindow && account && delegatedVotes && votesLeft && (
                 <>
                   <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
                     {`Cast your votes`}
-                    <span className={classes.totalVotes}>100 total</span>
+
+                    <span className={classes.totalVotes}>{`${
+                      votesLeft > 0
+                        ? // ? `${votesLeft && votesLeft} left`
+                          `${
+                            delegatedVotes - (submittedVotesCount ?? 0) - (numAllottedVotes ?? 0)
+                          } left`
+                        : 'no votes left'
+                    }`}</span>
                   </h1>
-                  <div className={classes.votingBar}></div>
+
+                  <ProgressBar
+                    className={clsx(
+                      classes.votingBar,
+                      submittedVotesCount &&
+                        submittedVotesCount > 0 &&
+                        delegatedVotes !== submittedVotesCount &&
+                        'roundAllotmentBar',
+                    )}
+                  >
+                    <ProgressBar
+                      variant="success"
+                      // now={submittedVotesCount}
+                      now={
+                        100 -
+                        Math.abs(((submittedVotesCount ?? 0) - delegatedVotes) / delegatedVotes) *
+                          100
+                      }
+                    />
+
+                    <ProgressBar
+                      variant="warning"
+                      now={Math.abs((votesLeft - delegatedVotes) / delegatedVotes) * 100}
+                      key={2}
+                    />
+                  </ProgressBar>
+
                   <p className={classes.sideCardBody}>
                     {<>Nouns get 10 votes per each Noun they hold or are delegated.</>}
                   </p>
                 </>
               )}
+
+              {isVotingWindow && account && !delegatedVotes && (
+                <>
+                  <h1 className={classes.sideCardTitle}>{`No Votes`}</h1>
+
+                  <p className={classes.sideCardBody}>
+                    {<>You do not have any votes for this house.</>}
+                  </p>
+                </>
+              )}
+
+              {isVotingWindow && !account && (
+                <>
+                  <h1 className={classes.sideCardTitle}>{`Connect your wallet`}</h1>
+
+                  <p className={classes.sideCardBody}>{<>Please connect your wallet to vote.</>}</p>
+                </>
+              )}
+
               {isRoundOver && (
                 <>
                   <h1 className={classes.sideCardTitle}>{`Round ended`}</h1>
@@ -122,8 +190,19 @@ const ProposalCards: React.FC<{
                 />
               )}
 
-              {isVotingWindow && (
-                <Button text={'Submit votes'} bgColor={ButtonColor.Purple} onClick={handleVote} />
+              {isVotingWindow && !account && (
+                <Button text={'Connect'} bgColor={ButtonColor.Purple} onClick={connect} />
+              )}
+
+              {isVotingWindow && account && delegatedVotes && (
+                <Button
+                  text={'Submit votes'}
+                  bgColor={ButtonColor.Purple}
+                  onClick={handleVote}
+                  disabled={submittedVotesCount === delegatedVotes}
+
+                  // disabled={!canAllotVotes()}
+                />
               )}
             </div>
           </Card>

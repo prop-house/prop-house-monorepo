@@ -222,11 +222,12 @@ const FullAuction: React.FC<{
           </div>
         </Row> */}
 
-      {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        auctionNotStartedContent
-      ) : auction.proposals.length === 0 ? (
-        auctionEmptyContent
-      ) : (
+      {
+        // auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+        //   auctionNotStartedContent
+        // ) : auction.proposals.length === 0 ? (
+        //   auctionEmptyContent
+        // ) : (
         <>
           {community && (
             <ProposalCards
@@ -234,12 +235,16 @@ const FullAuction: React.FC<{
               community={community}
               voteAllotments={voteAllotments}
               canAllotVotes={canAllotVotes}
+              numAllottedVotes={numAllottedVotes}
+              submittedVotesCount={userVotesWeight()}
               handleVote={handleVote}
               handleVoteAllotment={handleVoteAllotment}
+              votesLeft={delegatedVotes && delegatedVotes - numAllottedVotes}
             />
           )}
         </>
-      )}
+        // )
+      }
 
       {/* </Card> */}
     </>

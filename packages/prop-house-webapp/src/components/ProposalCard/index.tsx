@@ -7,12 +7,14 @@ import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import { VoteAllotment } from '../../utils/voteAllotment';
-import PropCardVotingContainer from '../PropCardVotingContainer';
+// import PropCardVotingContainer from '../PropCardVotingContainer';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
+// import Button, { ButtonColor } from '../Button';
+import PropCardVotingModule from '../PropCardVotingModule';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -32,7 +34,7 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
   } = props;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   let navigate = useNavigate();
 
@@ -93,7 +95,7 @@ const ProposalCard: React.FC<{
             <div className={classes.address}>
               <EthAddress address={proposal.address} truncate />
               <span className={classes.bullet}>{' • '}</span>
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+              <div className={classes.date} title={detailedTime(proposal.createdDate)}>
                 {diffTime(proposal.createdDate)}
               </div>
             </div>
@@ -101,17 +103,59 @@ const ProposalCard: React.FC<{
 
             <div className={classes.avatarAndPropNumber}>
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {/* {diffTime(proposal.createdDate)} */}
                 {auctionStatus === AuctionStatus.AuctionVoting && (
-                  <div className={classes.scoreCopy}>
-                    {t('votes')}: {Math.trunc(proposal.score)}
+                  <div>
+                    {/* <div className={classes.scoreCopy}> */}
+                    🗳 {proposal.score}
+                    {/* {Math.trunc(proposal.score)} */}
+                    {/* 🗳 {t('votes')}: {Math.trunc(proposal.score)} */}
                   </div>
                 )}
+
+                {cardStatus === ProposalCardStatus.Voting &&
+                  votesFor !== undefined &&
+                  voteAllotments &&
+                  canAllotVotes &&
+                  handleVoteAllotment && (
+                    <div className={classes.votingArrows}>
+                      <span className={classes.plusArrow}>+</span>
+
+                      <PropCardVotingModule
+                        props={{
+                          proposal,
+                          cardStatus,
+                          votesFor,
+                          voteAllotments,
+                          canAllotVotes,
+                          handleVoteAllotment,
+                        }}
+                      />
+
+                      {/* {
+                  cardStatus === ProposalCardStatus.Voting &&
+                    votesFor !== undefined &&
+                    voteAllotments &&
+                    canAllotVotes &&
+                    handleVoteAllotment && (
+                      <PropCardVotingContainer
+                        props={{
+                          proposal,
+                          cardStatus,
+                          votesFor,
+                          voteAllotments,
+                          canAllotVotes,
+                          handleVoteAllotment,
+                        }}
+                      />
+                    )
+                    } */}
+                    </div>
+                  )}
               </div>
             </div>
           </div>
 
-          {cardStatus === ProposalCardStatus.Voting &&
+          {/* {cardStatus === ProposalCardStatus.Voting &&
             votesFor !== undefined &&
             voteAllotments &&
             canAllotVotes &&
@@ -126,7 +170,7 @@ const ProposalCard: React.FC<{
                   handleVoteAllotment,
                 }}
               />
-            )}
+            )} */}
         </Card>
       </div>
     </>

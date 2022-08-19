@@ -93,8 +93,6 @@ const Create: React.FC<{}> = () => {
     onDismiss: () => navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
   };
 
-  console.log('activeAuction', activeAuction);
-
   return activeAuction ? (
     <>
       <Container>
