@@ -102,8 +102,7 @@ const Create: React.FC<{}> = () => {
           <h1 className={classes.proposalHelper}>
             {t('creatingProp')}{' '}
             <span>
-              {t('fundingRound')}
-              {` ${activeAuction.id}`}
+              {` ${activeCommunity.name}: ${activeAuction.title}`}
               {' ('}
               <FundingAmount
                 amount={activeAuction.fundingAmount}
