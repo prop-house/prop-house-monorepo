@@ -34,7 +34,7 @@ export class Auction {
   @Column()
   fundingAmount: number;
 
-  @Column()
+  @Column({ nullable: true })
   currencyType: string;
 
   @Column()
