@@ -49,8 +49,8 @@ const FullAuction: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
-  const auctionNotStartedContent = AuctionNotStartedContent();
-  const auctionEmptyContent = AuctionEmptyContent();
+  // const auctionNotStartedContent = AuctionNotStartedContent();
+  // const auctionEmptyContent = AuctionEmptyContent();
   // const disconnectedCopy = DisconnectedCopy(connect);
   // const connectedCopy = ConnectedCopy();
 
