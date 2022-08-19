@@ -12,8 +12,7 @@ const NoSearchResults = ({ input }: NoSearchResultsProps) => {
       </div>
 
       <div className={classes.textContainer}>
-        <div className={classes.message}>{`No round for '${input}'`}</div>
-        <div className={classes.tryAgain}>Try another search term</div>
+        <div className={classes.message}>No rounds available</div>
       </div>
     </div>
   );
