@@ -17,6 +17,7 @@ import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 import removeTags from '../../../utils/removeTags';
 import { useTranslation } from 'react-i18next';
+import FundingAmount from '../../FundingAmount';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -101,7 +102,14 @@ const Create: React.FC<{}> = () => {
           <h1 className={classes.proposalHelper}>
             {t('creatingProp')}{' '}
             <span>
-              {t('fundingRound')} {`${activeAuction.id} (${activeAuction.fundingAmount} ETH)`}{' '}
+              {t('fundingRound')}
+              {` ${activeAuction.id}`}
+              {' ('}
+              <FundingAmount
+                amount={activeAuction.fundingAmount}
+                currencyType={activeAuction.currencyType}
+              />
+              {')'}
             </span>
           </h1>
         </Col>
