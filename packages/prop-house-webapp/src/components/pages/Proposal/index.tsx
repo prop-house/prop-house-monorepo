@@ -85,7 +85,6 @@ const Proposal = () => {
     );
 
     const path = nameToSlug(round[0].title);
-
     return path;
   };
 
@@ -103,7 +102,11 @@ const Proposal = () => {
                 className={classes.backToAuction}
                 onClick={() => {
                   isEntryPoint && community
-                    ? navigate(`/${nameToSlug(community.name)}/${buildRoundPath(community)}`)
+                    ? navigate(
+                        `/${nameToSlug(community.name)}/${
+                          roundTitle ? buildRoundPath(community) : ''
+                        }`,
+                      )
                     : navigate(-1);
                 }}
               >

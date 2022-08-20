@@ -22,6 +22,7 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
+  fromHome?: boolean;
 }> = props => {
   const {
     proposal,
@@ -31,6 +32,7 @@ const ProposalCard: React.FC<{
     voteAllotments,
     canAllotVotes,
     handleVoteAllotment,
+    fromHome,
   } = props;
   const { t } = useTranslation();
 
@@ -41,9 +43,9 @@ const ProposalCard: React.FC<{
       <div
         onClick={e => {
           if (e.metaKey || e.ctrlKey) {
-            window.open(`${proposal.id}`, `_blank`); // open in new tab
+            window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
           } else {
-            navigate(`${proposal.id}`);
+            navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
           }
         }}
       >
