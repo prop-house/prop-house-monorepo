@@ -1,10 +1,6 @@
 import classes from './NoSearchResults.module.css';
 
-interface NoSearchResultsProps {
-  input: string;
-}
-
-const NoSearchResults = ({ input }: NoSearchResultsProps) => {
+const NoSearchResults = () => {
   return (
     <div className={classes.noResultsContainer}>
       <div className={classes.cardImage}>

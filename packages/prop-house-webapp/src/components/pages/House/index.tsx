@@ -14,7 +14,6 @@ import {
 import { getName } from 'prop-house-communities';
 import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
-// import { useTranslation } from 'react-i18next';
 import { Col, Container, Row } from 'react-bootstrap';
 import HouseCard from '../../HouseCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
@@ -34,7 +33,6 @@ const House = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  // const { t } = useTranslation();
 
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [roundStatus, setRoundStatus] = useState<number>(0);
@@ -55,7 +53,6 @@ const House = () => {
 
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
-        // AuctionStatus.AuctionAcceptingProps
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
 
@@ -160,7 +157,7 @@ const House = () => {
               ))
             ) : (
               <Col>
-                <NoSearchResults input={input} />
+                <NoSearchResults />
               </Col>
             )}
           </Row>
