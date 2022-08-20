@@ -9,7 +9,6 @@
 .proposalCard:hover {
   border: 1px solid var(--brand-gray-semi-transparent);
   cursor: pointer;
-  transform: scale(1.01);
   transition: all 0.15s ease-in-out;
 }
 
@@ -44,7 +43,6 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
-
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -102,6 +100,7 @@
   justify-content: space-between;
   gap: 15px;
 }
+
 .address {
   width: 50%;
 }
