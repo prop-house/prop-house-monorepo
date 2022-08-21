@@ -42,18 +42,16 @@ const FullAuction: React.FC<{
 
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
-  const community = useAppSelector((state) => state.propHouse.activeCommunity);
-  const proposals = useAppSelector((state) => state.propHouse.activeProposals);
-  const delegatedVotes = useAppSelector(
-    (state) => state.propHouse.delegatedVotes
-  );
-  const host = useAppSelector((state) => state.configuration.backendHost);
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+  const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
   const auctionNotStartedContent = AuctionNotStartedContent();
   const auctionEmptyContent = AuctionEmptyContent();
-  const disconnectedCopy = DisconnectedCopy(connect);
+  const disconnectedCopy = community && DisconnectedCopy(connect, community.name);
   const connectedCopy = ConnectedCopy();
 
   // aggregate vote weight of already stored votes

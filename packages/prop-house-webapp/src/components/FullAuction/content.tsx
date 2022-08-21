@@ -14,37 +14,34 @@ export const emptyCard = (copy: string) => (
 );
 export const AuctionNotStartedContent = () => {
   const { t } = useTranslation();
-  return emptyCard(t("proposalsHere"));
+  return emptyCard(t('proposalsHere'));
 };
 export const AuctionEmptyContent = () => {
   const { t } = useTranslation();
 
-  return emptyCard(t("submittedProps"));
+  return emptyCard(t('submittedProps'));
 };
 
 // alert to get nouners to connect when auctions in voting stage
-export const DisconnectedCopy = (onClick: () => void) => {
+export const DisconnectedCopy = (onClick: () => void, houseName: string) => {
   const { t } = useTranslation();
 
   return (
     <div className={classes.alertWrapper}>
-      <div style={{ margin: "0rem 1rem 0rem 0rem" }}>
+      <div style={{ margin: '0rem 1rem 0rem 0rem' }}>
         <h4
           style={{
-            fontSize: "22px",
-            fontWeight: "bold",
-            margin: "0rem 0rem 0.25rem 0rem",
+            fontSize: '22px',
+            fontWeight: 'bold',
+            margin: '0rem 0rem 0.25rem 0rem',
           }}
         >
-          {t("votingOpen")}
+          {t('votingOpen')}
         </h4>
-        <p>{t("votingPeriod")}</p>
+
+        <p>{`${t('votingPeriod1')} ${houseName} ${t('votingPeriod2')}`}</p>
       </div>
-      <Button
-        text={t("connect")}
-        bgColor={ButtonColor.Pink}
-        onClick={onClick}
-      />
+      <Button text={t('connect')} bgColor={ButtonColor.Pink} onClick={onClick} />
     </div>
   );
 };
