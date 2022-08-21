@@ -2,18 +2,24 @@ import classes from './HouseCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
-import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
+import {
+  auctionStatus,
+  AuctionStatus,
+  DeadlineCopy,
+  deadlineTime,
+} from '../../utils/auctionStatus';
 import { useNavigate } from 'react-router-dom';
 import StatusPill from '../StatusPill';
 import { nameToSlug } from '../../utils/communitySlugs';
+import diffTime from '../../utils/diffTime';
+import { useTranslation } from 'react-i18next';
 
 const HouseCard: React.FC<{
   round: StoredAuction;
 }> = props => {
   const { round } = props;
-  // const { t } = useTranslation();
+  const { t } = useTranslation();
   let navigate = useNavigate();
-  // const isEntryPoint = !location.state?.fromRoundPage;
 
   return (
     <>
@@ -51,26 +57,26 @@ const HouseCard: React.FC<{
 
           <div className={classes.roundInfo}>
             <div className={clsx(classes.section, classes.funding)}>
-              <p className={classes.title}>Funding</p>
+              <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
-                <span className="">999 ETH</span>
+                <span className="">{round.amountEth} ETH</span>
                 <span className={classes.xDivide}>{' x '}</span>
-                <span className="">99</span>
+                <span className="">{round.numWinners}</span>
               </p>
             </div>
 
             <div className={classes.divider}></div>
 
             <div className={classes.section}>
-              <p className={classes.title}>Voting ends</p>
-              <p className={classes.info}>August 99</p>
+              <p className={classes.title}>{DeadlineCopy(round)}</p>
+              <p className={classes.info}>{diffTime(deadlineTime(round))}</p>
             </div>
 
             <div className={clsx(classes.divider, classes.propSection)}></div>
 
             <div className={clsx(classes.section, classes.propSection)}>
-              <p className={classes.title}>Proposals</p>
-              <p className={classes.info}>9999</p>
+              <p className={classes.title}> {t('proposals')}</p>
+              <p className={classes.info}>{round.proposals.length}</p>
             </div>
           </div>
         </Card>
