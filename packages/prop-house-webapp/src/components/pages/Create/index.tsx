@@ -16,7 +16,8 @@ import { ProposalFields } from '../../../utils/proposalFields';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
 import Modal from '../../Modal';
 import removeTags from '../../../utils/removeTags';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
+import FundingAmount from '../../FundingAmount';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -36,24 +37,17 @@ const Create: React.FC<{}> = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const proposalEditorData = useAppSelector((state) => state.editor.proposal);
+  const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const connect = useWeb3Modal();
 
-  const backendHost = useAppSelector(
-    (state) => state.configuration.backendHost
-  );
+  const backendHost = useAppSelector(state => state.configuration.backendHost);
 
-  const backendClient = useRef(
-    new PropHouseWrapper(backendHost, provider?.getSigner())
-  );
+  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(
-      backendHost,
-      provider?.getSigner()
-    );
+    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
   }, [provider, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
@@ -70,8 +64,8 @@ const Create: React.FC<{}> = () => {
         proposalEditorData.what,
         proposalEditorData.tldr,
         proposalEditorData.links,
-        activeAuction.id
-      )
+        activeAuction.id,
+      ),
     );
     dispatch(appendProposal({ proposal }));
     dispatch(clearProposal());
@@ -79,7 +73,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const successfulSubmissionModalContent = {
-    title: t("congrats"),
+    title: t('congrats'),
     content: (
       <>
         <p>
@@ -90,16 +84,13 @@ const Create: React.FC<{}> = () => {
           })`}`}
         </p>
         <Button
-          text={t("viewHouse")}
+          text={t('viewHouse')}
           bgColor={ButtonColor.White}
-          onClick={() =>
-            navigate(`/${activeCommunity && activeCommunity.contractAddress}`)
-          }
+          onClick={() => navigate(`/${activeCommunity && activeCommunity.contractAddress}`)}
         />
       </>
     ),
-    onDismiss: () =>
-      navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
+    onDismiss: () => navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
   };
 
   return activeAuction ? (
@@ -109,10 +100,15 @@ const Create: React.FC<{}> = () => {
       <Row>
         <Col xl={12} className={classes.proposalHelperWrapper}>
           <h1 className={classes.proposalHelper}>
-            {t("creatingProp")}{" "}
+            {t('creatingProp')}{' '}
             <span>
-              {t("fundingRound")}{" "}
-              {`${activeAuction.id} (${activeAuction.amountEth} ETH)`}{" "}
+              {` ${activeCommunity.name}: ${activeAuction.title}`}
+              {' ('}
+              <FundingAmount
+                amount={activeAuction.fundingAmount}
+                currencyType={activeAuction.currencyType}
+              />
+              {')'}
             </span>
           </h1>
         </Col>
@@ -120,21 +116,17 @@ const Create: React.FC<{}> = () => {
 
       <Row>
         <Col xl={12}>
-          {showPreview ? (
-            <Preview />
-          ) : (
-            <ProposalEditor onDataChange={onDataChange} />
-          )}
+          {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
         </Col>
       </Row>
 
       <Row>
         <Col xl={12} className={classes.btnContainer}>
           <Button
-            text={showPreview ? t("backToEditor") : t("preview")}
+            text={showPreview ? t('backToEditor') : t('preview')}
             bgColor={ButtonColor.Pink}
             onClick={() =>
-              setShowPreview((prev) => {
+              setShowPreview(prev => {
                 return !prev;
               })
             }
@@ -145,7 +137,7 @@ const Create: React.FC<{}> = () => {
             (account ? (
               <Button
                 classNames={classes.actionBtn}
-                text={t("signSubmit")}
+                text={t('signSubmit')}
                 bgColor={ButtonColor.Pink}
                 onClick={submitProposal}
                 disabled={!isValidPropData(proposalEditorData)}
@@ -154,7 +146,7 @@ const Create: React.FC<{}> = () => {
               <Button
                 classNames={classes.actionBtn}
                 bgColor={ButtonColor.Pink}
-                text={t("connectWallet")}
+                text={t('connectWallet')}
                 onClick={connect}
               />
             ))}

@@ -32,7 +32,10 @@ export class Auction {
   votingEndTime: Date;
 
   @Column()
-  amountEth: number;
+  fundingAmount: number;
+
+  @Column({ nullable: true })
+  currencyType: string;
 
   @Column()
   numWinners: number;

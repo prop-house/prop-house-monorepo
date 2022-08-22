@@ -18,11 +18,7 @@ export abstract class Signable {
     };
   }
 
-  async presignedPayload(
-    signer: Signer | Wallet,
-    jsonPayload: string,
-    signature: string
-  ) {
+  async presignedPayload(signer: Signer | Wallet, jsonPayload: string, signature: string) {
     const address = await signer.getAddress();
     return {
       signedData: {
@@ -47,9 +43,10 @@ export class Auction extends Signable {
     public readonly startTime: Date,
     public readonly proposalEndTime: Date,
     public readonly votingEndTime: Date,
-    public readonly amountEth: number,
+    public readonly fundingAmount: number,
+    public readonly currencyType: string,
     public readonly numWinners: number,
-    public readonly community: number
+    public readonly community: number,
   ) {
     super();
   }
@@ -61,7 +58,8 @@ export class Auction extends Signable {
       startTime: this.startTime.toISOString(),
       proposalEndTime: this.proposalEndTime.toISOString(),
       votingEndTime: this.votingEndTime.toISOString(),
-      amountEth: this.amountEth,
+      fundingAmount: this.fundingAmount,
+      currencyType: this.currencyType,
       numWinners: this.numWinners,
       community: this.community,
     };
@@ -94,7 +92,7 @@ export class Proposal extends Signable {
     public readonly what: string,
     public readonly tldr: string,
     public readonly links: string,
-    public readonly auctionId: number
+    public readonly auctionId: number,
   ) {
     super();
   }
@@ -133,7 +131,7 @@ export class Vote extends Signable {
     public readonly direction: Direction,
     public readonly proposalId: number,
     public readonly weight: number,
-    public readonly communityAddress: string
+    public readonly communityAddress: string,
   ) {
     super();
   }

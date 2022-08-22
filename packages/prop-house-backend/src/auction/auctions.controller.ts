@@ -32,7 +32,7 @@ export class AuctionsController {
     auction.startTime = createAuctionDto.startTime
       ? ParseDate(createAuctionDto.startTime)
       : new Date();
-    auction.amountEth = createAuctionDto.amountEth;
+    auction.fundingAmount = createAuctionDto.fundingAmount;
     auction.proposalEndTime = ParseDate(createAuctionDto.proposalEndTime);
     auction.votingEndTime = ParseDate(createAuctionDto.votingEndTime);
     auction.title = createAuctionDto.title;
