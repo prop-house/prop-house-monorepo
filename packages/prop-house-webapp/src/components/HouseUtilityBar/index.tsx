@@ -2,6 +2,7 @@ import HouseFilters from '../HouseFilters';
 import classes from './HouseUtilityBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 import HouseDropdown from '../HouseDropdown';
+import clsx from 'clsx';
 
 export interface HouseUtilityBarProps {
   roundCount: (number | undefined)[];
@@ -35,7 +36,7 @@ const HouseUtilityBar = ({
           />
         </div>
 
-        <div className={classes.dropdown}>
+        <div className={clsx(classes.dropdown, 'houseDropdown')}>
           <HouseDropdown
             roundStatus={roundStatus}
             roundCount={roundCount}

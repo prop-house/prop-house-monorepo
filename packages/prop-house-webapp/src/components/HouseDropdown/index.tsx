@@ -25,7 +25,12 @@ const statuses = [
   },
 ];
 
-const HouseDropdown = ({ roundStatus, setRoundStatus, setInput }: HouseUtilityBarProps) => {
+const HouseDropdown = ({
+  roundStatus,
+  setRoundStatus,
+  roundCount,
+  setInput,
+}: HouseUtilityBarProps) => {
   const handleClick = (id: number) => {
     setInput('');
 
@@ -42,7 +47,8 @@ const HouseDropdown = ({ roundStatus, setRoundStatus, setInput }: HouseUtilityBa
         <Dropdown.Menu>
           {statuses.map((s, index) => (
             <Dropdown.Item key={index} onClick={() => handleClick(s.id)}>
-              {s.title}
+              <span>{s.title}</span>
+              <span className={classes.count}>{roundCount[index]}</span>
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>

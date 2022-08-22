@@ -59,7 +59,7 @@ const HouseCard: React.FC<{
             <div className={clsx(classes.section, classes.funding)}>
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
-                <span className="">{round.amountEth} ETH</span>
+                <span className="">{round.fundingAmount} ETH</span>
                 <span className={classes.xDivide}>{' x '}</span>
                 <span className="">{round.numWinners}</span>
               </p>

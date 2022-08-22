@@ -53,7 +53,8 @@
 .langBtn button:focus-visible {
   outline: none;
 }
-.dropdown-item:active {
+.lang .dropdown-item:active,
+.lang .dropdown-item:focus {
   color: gray !important;
-  background-color: var(--brand-gray-semi-transparent);
+  background-color: var(--brand-gray-semi-transparent) !important;
 }
