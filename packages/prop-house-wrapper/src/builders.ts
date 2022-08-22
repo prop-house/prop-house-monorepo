@@ -49,7 +49,8 @@ export class Auction extends Signable {
     public readonly votingEndTime: Date,
     public readonly amountEth: number,
     public readonly numWinners: number,
-    public readonly community: number
+    public readonly community: number,
+    public readonly balanceBlockTag: number | undefined,
   ) {
     super();
   }
@@ -64,6 +65,7 @@ export class Auction extends Signable {
       amountEth: this.amountEth,
       numWinners: this.numWinners,
       community: this.community,
+      balanceBlockTag: this.balanceBlockTag,
     };
   }
 }
