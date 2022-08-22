@@ -37,6 +37,9 @@ export class Auction {
   @Column({ nullable: true })
   currencyType: string;
 
+  @Column({ nullable: true })
+  description: string;
+
   @Column()
   numWinners: number;
 
