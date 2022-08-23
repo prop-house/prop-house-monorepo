@@ -1,0 +1,1 @@
+export { houseQuery } from './houseQuery';
