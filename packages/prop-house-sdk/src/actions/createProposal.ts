@@ -2,32 +2,32 @@ import snapshot from '@snapshot-labs/snapshot.js';
 import { Web3Provider } from '@ethersproject/providers';
 import { snapshotHub } from '../constants/snapshotHub';
 import { Proposal } from '@snapshot-labs/snapshot.js/dist/sign/types';
+import { ProposalUserInput, ProposalSpaceInput } from '../types/Proposal';
 
-export const createProposal = async (
-  provider: Web3Provider,
-  proposal: Proposal
-) => {
-  // two parts to proposals:
-  // user data
-  // space data
+export const createProposal = async (provider: Web3Provider, propUserInput: ProposalUserInput) => {
+  const propSpaceInput: ProposalSpaceInput = {
+    type: 'single-choice',
+    discussion: '', // link to related discussion (e.g. discourse)
+    choices: ['FOR'], // the choice(s) to select, should be just one (essentialy, voting FOR)
+    start: 1661215536, // voting period start
+    end: 1661388336, // voting period end
+    snapshot: 15392445, // snapshot block (should be === across all proposals within space)
+    plugins: JSON.stringify({}),
+  };
 
-  // fetch space info to fill in properties for proposal
-  ///////////////////////////////////////////////////
-  // start: 1, // voting period start
-  // end: 1, // voting period end
-  // snapshot: 1, // snapshot block (should be === across all proposals within space)
-  // plugins: '', // proposal period start & end  https://github.com/snapshot-labs/snapshot.js/blob/master/src/validations/timeperiod/examples.json
+  const proposal: Proposal = {
+    ...propUserInput,
+    ...propSpaceInput,
+  };
 
-  const hub = snapshotHub; // or https://testnet.snapshot.org for testnet
+  const hub = snapshotHub;
   const client = new snapshot.Client712(hub);
 
   try {
     const [account] = await provider.listAccounts();
     const receipt = await client.proposal(provider, account, proposal);
-    console.log('receipt from creation of prop: ', receipt);
     return receipt;
   } catch (e) {
-    console.log(e);
     throw Error(`Error creating proposal: ${e}`);
   }
 };
