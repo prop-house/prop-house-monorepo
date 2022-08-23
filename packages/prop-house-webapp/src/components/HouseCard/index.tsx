@@ -49,10 +49,7 @@ const HouseCard: React.FC<{
               <StatusPill status={auctionStatus(round)} />
             </div>
 
-            <div className={classes.truncatedTldr}>
-              Mandated round inviting builders to build alternative Nouns Clients. Builders can
-              propose any idea to corresponds to the specified mandate.
-            </div>
+            <div className={classes.truncatedTldr}>{round.description}</div>
           </div>
 
           <div className={classes.roundInfo}>

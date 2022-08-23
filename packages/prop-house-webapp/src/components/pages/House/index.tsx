@@ -114,9 +114,14 @@ const House = () => {
           ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
           : setRounds(community?.auctions)
         : setRounds(
-            community.auctions.filter(round =>
-              round.title.toLowerCase().includes(input.toLowerCase()),
-            ),
+            community.auctions.filter(round => {
+              const query = input.toLowerCase();
+
+              return (
+                round.title.toLowerCase().indexOf(query) >= 0 ||
+                round.description.toLowerCase().indexOf(query) >= 0
+              );
+            }),
           ));
   }, [community, input, roundStatus]);
 
