@@ -1,1 +1,2 @@
-export { ensSubgraph } from './ensSubgraph';
+export { ensSubgraph } from './ens';
+export { snapshotSubgraph } from './snapshot';
