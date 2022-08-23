@@ -41,7 +41,7 @@ const ProfileHeader: React.FC<{
 
   const {
     startTime: startDate,
-    amountEth: fundingAmount,
+    fundingAmount,
     numWinners,
     proposalEndTime: proposalEndDate,
   } = auction;
