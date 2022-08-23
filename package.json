@@ -8,8 +8,9 @@
   "private": "true",
   "scripts": {
     "build": "yarn workspace prop-house-communities build && yarn workspace @nouns/prop-house-wrapper build",
+    // sdk-specific scripts. remove prior to merge.
     "build-sdk": "yarn workspace @prop-house/sdk build && yarn workspace @prop-house/hooks build",
-    "start-client": "yarn workspace client start",
+    "start-client": "yarn workspace @prop-house/sdk-client start",
     "watch-sdk": "yarn workspace @prop-house/sdk tsc -w",
     "watch-hooks": "yarn workspace @prop-house/hooks tsc -w"
   },
