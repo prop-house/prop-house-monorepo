@@ -17,12 +17,11 @@ import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
-import {
-  AuctionEmptyContent,
-  AuctionNotStartedContent,
-  // ConnectedCopy,
-  // DisconnectedCopy,
-} from './content';
+import // AuctionEmptyContent,
+// AuctionNotStartedContent,
+// ConnectedCopy,
+// DisconnectedCopy,
+'./content';
 
 import { getNumVotes } from 'prop-house-communities';
 // import SortToggles from '../SortToggles';
