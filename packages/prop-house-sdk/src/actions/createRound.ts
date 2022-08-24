@@ -9,27 +9,18 @@ export const createRound = async (
   infuraProjectId: string,
   infuraSecret: string,
   ens: string,
-  metadata: RoundMetadata
+  metadata: RoundMetadata,
 ) => {
   let cid;
 
   try {
-    cid = await uploadToIpfs(
-      infuraProjectId,
-      infuraSecret,
-      JSON.stringify(metadata)
-    );
+    cid = await uploadToIpfs(infuraProjectId, infuraSecret, JSON.stringify(metadata));
   } catch (e) {
     throw e;
   }
 
   try {
-    return setEnsTextRecord(
-      providerOrSigner,
-      ens,
-      textRecordKeys.snapshot,
-      ipfsScheme(cid)
-    );
+    return setEnsTextRecord(providerOrSigner, ens, textRecordKeys.snapshot, ipfsScheme(cid));
   } catch (e) {
     throw e;
   }

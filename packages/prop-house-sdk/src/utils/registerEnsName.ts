@@ -13,7 +13,7 @@ export const registerEnsName = async (
   name: string,
   owner: string,
   duration: number,
-  salt: string
+  salt: string,
 ) => {
   const controller = ensContracts(providerOrSigner).ensRegistrarController;
 
@@ -22,15 +22,9 @@ export const registerEnsName = async (
 
   // Submit our registration request (must wait 60 seconds post commitment tx being mined)
   try {
-    return (await controller.register(
-      name,
-      owner,
-      BigNumber.from(duration),
-      salt,
-      {
-        value: Math.trunc(price),
-      }
-    )) as ContractTransaction;
+    return (await controller.register(name, owner, BigNumber.from(duration), salt, {
+      value: Math.trunc(price),
+    })) as ContractTransaction;
   } catch (e) {
     throw `Error registering ENS domain: ${e}`;
   }

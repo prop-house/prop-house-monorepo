@@ -146,9 +146,7 @@
   },
   {
     "constant": false,
-    "inputs": [
-      { "internalType": "bytes32", "name": "commitment", "type": "bytes32" }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "commitment", "type": "bytes32" }],
     "name": "commit",
     "outputs": [],
     "payable": false,
@@ -328,9 +326,7 @@
   },
   {
     "constant": true,
-    "inputs": [
-      { "internalType": "bytes4", "name": "interfaceID", "type": "bytes4" }
-    ],
+    "inputs": [{ "internalType": "bytes4", "name": "interfaceID", "type": "bytes4" }],
     "name": "supportsInterface",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "payable": false,
@@ -339,9 +335,7 @@
   },
   {
     "constant": false,
-    "inputs": [
-      { "internalType": "address", "name": "newOwner", "type": "address" }
-    ],
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
     "name": "transferOwnership",
     "outputs": [],
     "payable": false,

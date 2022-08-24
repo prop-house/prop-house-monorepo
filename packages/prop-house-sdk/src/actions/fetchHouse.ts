@@ -13,18 +13,12 @@ export const fetchHouse = async (ens: string, provider: Provider) => {
   }: ENSQueryHouseResponse = await request(ensSubgraph, houseQuery(ens));
 
   const ensHouseResult = {
-    subdomains: subdomains.map(
-      (roundSubdomain) => roundSubdomain.name.split(`.${ens}`)[0]
-    ),
+    subdomains: subdomains.map(roundSubdomain => roundSubdomain.name.split(`.${ens}`)[0]),
   };
 
   try {
     // fetch house ens prophouse text record value
-    const meta = await fetchContentForIpfsTextRecord(
-      ens,
-      provider,
-      textRecordKeys.propHouse
-    );
+    const meta = await fetchContentForIpfsTextRecord(ens, provider, textRecordKeys.propHouse);
     return { ...meta, rounds: ensHouseResult.subdomains } as House;
   } catch (e) {
     throw Error(`Error fetching house hook: ${e}\n`);

@@ -5,7 +5,7 @@ import { JsonRpcSigner } from '@ethersproject/providers';
 
 const CreateRoundEns: React.FC<{
   signer: JsonRpcSigner;
-}> = (props) => {
+}> = props => {
   const { signer } = props;
 
   const [account, setAccount] = useState('');
@@ -36,14 +36,14 @@ const CreateRoundEns: React.FC<{
         type="text"
         name="ens"
         placeholder="house ens (e.g. nouns.eth)"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <input
         className="mb-5 rounded py-5 px-2"
         type="text"
         name="subdomain"
         placeholder="subdomain"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <button
         className="bg-blue-500 py-5 px-2 text-white rounded"

@@ -6,7 +6,7 @@ import { Signer } from 'ethers';
 
 const CreateHouseENS: React.FC<{
   signer: Signer;
-}> = (props) => {
+}> = props => {
   const { signer } = props;
 
   const [account, setAccount] = useState('undefined salt');
@@ -34,12 +34,9 @@ const CreateHouseENS: React.FC<{
         className="mb-5 rounded py-5 px-2"
         type="text"
         placeholder={'ens domain'}
-        onChange={(e) => handler(e)}
+        onChange={e => handler(e)}
       />
-      <button
-        className="bg-blue-500 py-5 px-2 text-white rounded"
-        onClick={() => register()}
-      >
+      <button className="bg-blue-500 py-5 px-2 text-white rounded" onClick={() => register()}>
         REGISTER ENS
       </button>
     </Card>

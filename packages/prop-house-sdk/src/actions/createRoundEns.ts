@@ -6,7 +6,7 @@ export const createRoundEns = async (
   ens: string,
   subdomain: string,
   owner: string,
-  providerOrSigner: Provider | Signer
+  providerOrSigner: Provider | Signer,
 ) => {
   try {
     return await registerEnsSubdomain(providerOrSigner, ens, subdomain, owner);

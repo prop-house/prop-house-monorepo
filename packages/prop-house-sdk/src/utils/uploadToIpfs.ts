@@ -7,11 +7,9 @@ import { Buffer } from 'buffer';
 export const uploadToIpfs = async (
   infuraProjectId: string,
   infuraSecret: string,
-  content: string
+  content: string,
 ): Promise<string> => {
-  const auth =
-    'Basic ' +
-    Buffer.from(infuraProjectId + ':' + infuraSecret).toString('base64');
+  const auth = 'Basic ' + Buffer.from(infuraProjectId + ':' + infuraSecret).toString('base64');
 
   const client = create({
     host: 'ipfs.infura.io',

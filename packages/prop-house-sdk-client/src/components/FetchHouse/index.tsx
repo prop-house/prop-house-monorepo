@@ -7,7 +7,7 @@ const FetchHouse = () => {
   const [ens] = useState<string>('bluepartyhat.eth');
 
   const provider = new ethers.providers.JsonRpcProvider(
-    `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`
+    `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   );
 
   const { data: house, status, error } = useHouse(ens, provider);
@@ -25,7 +25,7 @@ const FetchHouse = () => {
       </p>
       <p>
         <span className="font-bold">Round names:</span>{' '}
-        {house.rounds.map((roundName) => `${roundName}, `)}
+        {house.rounds.map(roundName => `${roundName}, `)}
       </p>
     </>
   );

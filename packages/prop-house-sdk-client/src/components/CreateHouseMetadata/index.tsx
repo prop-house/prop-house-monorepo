@@ -3,9 +3,7 @@ import { createHouseMetadata } from '@prop-house/sdk';
 import { useState } from 'react';
 import { Signer } from 'ethers';
 
-const CreateHouseMetadata: React.FC<{ signer: Signer; ens: string }> = (
-  props
-) => {
+const CreateHouseMetadata: React.FC<{ signer: Signer; ens: string }> = props => {
   const { signer, ens } = props;
 
   const [metadata, setMetadata] = useState({
@@ -28,11 +26,9 @@ const CreateHouseMetadata: React.FC<{ signer: Signer; ens: string }> = (
       process.env.REACT_APP_INFURA_IPFS_PROJECT_ID
         ? process.env.REACT_APP_INFURA_IPFS_PROJECT_ID
         : '',
-      process.env.REACT_APP_INFURA_IPFS_SECRET
-        ? process.env.REACT_APP_INFURA_IPFS_SECRET
-        : '',
+      process.env.REACT_APP_INFURA_IPFS_SECRET ? process.env.REACT_APP_INFURA_IPFS_SECRET : '',
       ens,
-      metadata
+      metadata,
     );
   };
 
@@ -44,15 +40,12 @@ const CreateHouseMetadata: React.FC<{ signer: Signer; ens: string }> = (
           type="text"
           name={item}
           placeholder={item}
-          onChange={(e) => inputHandler(e)}
+          onChange={e => inputHandler(e)}
           key={index}
         />
       ))}
 
-      <button
-        className="bg-blue-500 py-5 px-2 text-white rounded"
-        onClick={() => uploadMetadata()}
-      >
+      <button className="bg-blue-500 py-5 px-2 text-white rounded" onClick={() => uploadMetadata()}>
         WRITE METADATA
       </button>
     </Card>

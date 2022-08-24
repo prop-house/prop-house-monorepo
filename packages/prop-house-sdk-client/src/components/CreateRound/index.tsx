@@ -6,7 +6,7 @@ import { RoundMetadata, TokenType } from '@prop-house/sdk/dist/types';
 
 const CreateRound: React.FC<{
   signer: JsonRpcSigner;
-}> = (props) => {
+}> = props => {
   const { signer } = props;
 
   const default_token_type = TokenType.ERC721;
@@ -43,11 +43,10 @@ const CreateRound: React.FC<{
 
   const selectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
-    setRoundData((prev) => {
+    setRoundData(prev => {
       return {
         ...prev,
-        votingTokenType:
-          value === 'erc721' ? TokenType.ERC721 : TokenType.ERC20,
+        votingTokenType: value === 'erc721' ? TokenType.ERC721 : TokenType.ERC20,
       };
     });
   };
@@ -58,11 +57,9 @@ const CreateRound: React.FC<{
       process.env.REACT_APP_INFURA_IPFS_PROJECT_ID
         ? process.env.REACT_APP_INFURA_IPFS_PROJECT_ID
         : '',
-      process.env.REACT_APP_INFURA_IPFS_SECRET
-        ? process.env.REACT_APP_INFURA_IPFS_SECRET
-        : '',
+      process.env.REACT_APP_INFURA_IPFS_SECRET ? process.env.REACT_APP_INFURA_IPFS_SECRET : '',
       roundEns,
-      roundData
+      roundData,
     );
   };
 
@@ -77,28 +74,28 @@ const CreateRound: React.FC<{
         type="text"
         name="house-ens"
         placeholder="round ens (e.g. round5.nouns.eth)"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <input
         className="mb-5 rounded py-5 px-2"
         type="text"
         name="name"
         placeholder="round name"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <input
         className="mb-5 rounded py-5 px-2"
         type="text"
         name="about"
         placeholder="description"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <input
         className="mb-5 rounded py-5 px-2"
         type="text"
         name="avatar"
         placeholder="avatar url"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
       <select onChange={selectChange} className="mb-5 rounded py-5 px-2">
         <option value="erc721">ERC721</option>
@@ -109,12 +106,9 @@ const CreateRound: React.FC<{
         type="text"
         name="votingTokenContractAddress"
         placeholder="voting contract address"
-        onChange={(e) => inputHandler(e)}
+        onChange={e => inputHandler(e)}
       />
-      <button
-        className="bg-blue-500 py-5 px-2 text-white rounded"
-        onClick={() => handleSubmit()}
-      >
+      <button className="bg-blue-500 py-5 px-2 text-white rounded" onClick={() => handleSubmit()}>
         CREATE ROUND
       </button>
 

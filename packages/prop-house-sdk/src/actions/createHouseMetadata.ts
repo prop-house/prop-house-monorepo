@@ -14,26 +14,17 @@ export const createHouseMetadata = async (
   infuraProjectId: string,
   infuraSecret: string,
   ens: string,
-  metadata: HouseMetadata
+  metadata: HouseMetadata,
 ) => {
   let cid;
   try {
-    cid = await uploadToIpfs(
-      infuraProjectId,
-      infuraSecret,
-      JSON.stringify(metadata)
-    );
+    cid = await uploadToIpfs(infuraProjectId, infuraSecret, JSON.stringify(metadata));
   } catch (e) {
     throw e;
   }
 
   try {
-    return setEnsTextRecord(
-      providerOrSigner,
-      ens,
-      textRecordKeys.propHouse,
-      ipfsScheme(cid)
-    );
+    return setEnsTextRecord(providerOrSigner, ens, textRecordKeys.propHouse, ipfsScheme(cid));
   } catch (e) {
     throw e;
   }

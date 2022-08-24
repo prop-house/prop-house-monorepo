@@ -7,28 +7,18 @@ import { registerEnsCommitment, registerEnsName } from '../utils';
 export const createHouseEns = async (
   ens: string,
   owner: string,
-  providerOrSigner: Provider | Signer
+  providerOrSigner: Provider | Signer,
 ) => {
   try {
     // make commitment
-    const { salt, tx } = await registerEnsCommitment(
-      providerOrSigner,
-      ens,
-      owner
-    );
+    const { salt, tx } = await registerEnsCommitment(providerOrSigner, ens, owner);
 
     // wait for tx to be mined
     await tx.wait();
 
     // wait 60secs before registering
     setTimeout(async () => {
-      const tx = await registerEnsName(
-        providerOrSigner,
-        ens,
-        owner,
-        2419210,
-        salt
-      );
+      const tx = await registerEnsName(providerOrSigner, ens, owner, 2419210, salt);
     }, 60000);
   } catch (e) {
     throw Error(`Error registering ENS: ${e}`);

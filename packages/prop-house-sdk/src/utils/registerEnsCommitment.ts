@@ -10,7 +10,7 @@ import { Provider } from '@ethersproject/providers';
 export const registerEnsCommitment = async (
   providerOrSigner: Provider | Signer,
   name: string,
-  owner: string
+  owner: string,
 ) => {
   const controller = ensContracts(providerOrSigner).ensRegistrarController;
 
@@ -19,7 +19,7 @@ export const registerEnsCommitment = async (
   const salt =
     '0x' +
     Array.from(random)
-      .map((b) => b.toString(16).padStart(2, '0'))
+      .map(b => b.toString(16).padStart(2, '0'))
       .join('');
 
   try {

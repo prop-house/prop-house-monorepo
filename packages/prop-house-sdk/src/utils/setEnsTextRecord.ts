@@ -6,7 +6,7 @@ export const setEnsTextRecord = async (
   providerOrSigner: Provider | Signer,
   ens: string,
   key: string,
-  value: string
+  value: string,
 ) => {
   const ensNameHash = ethers.utils.namehash(ens);
 
@@ -14,7 +14,7 @@ export const setEnsTextRecord = async (
     return (await ensContracts(providerOrSigner).ensPublicResolver.setText(
       ensNameHash,
       key,
-      value
+      value,
     )) as ContractTransaction;
   } catch (e) {
     throw Error(`Error writting ENS text record: ${e}`);

@@ -10,14 +10,14 @@ import { trustedIpfsGatewayPath } from './trustedIpfsGatewayPath';
 export const fetchContentForIpfsTextRecord = async (
   ens: string,
   provider: Provider,
-  textRecordKey: string
+  textRecordKey: string,
 ) => {
   const ensNameHash = ethers.utils.namehash(ens);
   try {
     // fetch text record value
     const ipfsPath = await ensContracts(provider).ensPublicResolver.text(
       ensNameHash,
-      textRecordKey
+      textRecordKey,
     );
 
     // split ipfs path for cid

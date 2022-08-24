@@ -6,19 +6,17 @@ export const registerEnsSubdomain = async (
   providerOrSigner: Provider | Signer,
   ensDomain: string,
   subdomain: string,
-  owner: string
+  owner: string,
 ) => {
   const registry = ensContracts(providerOrSigner).ensRegistry;
   const ensNameHash = ethers.utils.namehash(ensDomain);
-  const subdomainHash = ethers.utils.keccak256(
-    ethers.utils.toUtf8Bytes(subdomain)
-  );
+  const subdomainHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(subdomain));
 
   try {
     return (await registry.setSubnodeOwner(
       ensNameHash,
       subdomainHash,
-      owner
+      owner,
     )) as ContractTransaction;
   } catch (e) {
     throw `Error registering ENS subdomain: ${e}`;

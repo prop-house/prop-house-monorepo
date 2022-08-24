@@ -1,8 +1,6 @@
 [
   {
-    "inputs": [
-      { "internalType": "contract ENS", "name": "_old", "type": "address" }
-    ],
+    "inputs": [{ "internalType": "contract ENS", "name": "_old", "type": "address" }],
     "payable": false,
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -130,18 +128,14 @@
     "constant": true,
     "inputs": [],
     "name": "old",
-    "outputs": [
-      { "internalType": "contract ENS", "name": "", "type": "address" }
-    ],
+    "outputs": [{ "internalType": "contract ENS", "name": "", "type": "address" }],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
     "constant": true,
-    "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "node", "type": "bytes32" }],
     "name": "owner",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "payable": false,
@@ -150,9 +144,7 @@
   },
   {
     "constant": true,
-    "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "node", "type": "bytes32" }],
     "name": "recordExists",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "payable": false,
@@ -161,9 +153,7 @@
   },
   {
     "constant": true,
-    "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "node", "type": "bytes32" }],
     "name": "resolver",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "payable": false,
@@ -262,9 +252,7 @@
   },
   {
     "constant": true,
-    "inputs": [
-      { "internalType": "bytes32", "name": "node", "type": "bytes32" }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "node", "type": "bytes32" }],
     "name": "ttl",
     "outputs": [{ "internalType": "uint64", "name": "", "type": "uint64" }],
     "payable": false,
