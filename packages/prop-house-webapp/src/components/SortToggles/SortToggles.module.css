@@ -1,7 +1,5 @@
 .sortContainer {
   display: flex;
-  /* align-items: center; */
-  /* align-self: flex-end; */
   gap: 15px;
 }
 
@@ -9,13 +7,8 @@
   display: flex;
   align-items: center;
   background: white;
-  /* padding: 4px 6px 4px 10px;
-  border-radius: 50px; */
   justify-content: space-between;
   gap: 10px;
-  /* margin-left: 0.5rem; */
-
-  /* border: 2px rgba(0, 0, 0, 0.1) solid; */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -28,17 +21,12 @@
 
 .sortItem:hover {
   opacity: 0.75;
-  /* border: 2px rgba(80, 186, 154, 1) solid; */
 }
 .sortLabel {
   color: #666666;
 }
 .sortItem svg {
-  /* background: --var(brand-purple); */
   background: var(--brand-purple-transparent);
-  /* border-radius: 50px; */
-  /* color: rgba(80, 186, 154, 1); */
-  /* color: var(--brand-purple); */
   padding: 4px;
   background: rgba(138, 43, 226, 0.08);
   border-radius: 6px;
@@ -48,4 +36,12 @@
   opacity: 1;
   border-bottom: 2px solid var(--brand-purple);
   /* border: 2px rgba(80, 186, 154, 1) solid; */
+}
+
+.disabled {
+  pointer-events: none;
+}
+.disabled svg {
+  background: var(--border-light);
+  color: #666666;
 }
