@@ -22,7 +22,6 @@ export const fetchContentForIpfsTextRecord = async (
 
     // split ipfs path for cid
     const cid = ipfsPath.split('ipfs://')[1];
-
     return (await axios(trustedIpfsGatewayPath(cid))).data;
   } catch (e) {
     throw Error(`Error fetching content for ipfs text record: ${e}`);

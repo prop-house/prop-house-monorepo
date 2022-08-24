@@ -5,3 +5,6 @@ export { registerEnsName } from './registerEnsName';
 export { setEnsTextRecord } from './setEnsTextRecord';
 export { uploadToIpfs } from './uploadToIpfs';
 export { ipfsScheme } from './ipfsScheme';
+export { erc721Base } from './erc721Base';
+export { erc20Base } from './erc20Base';
+export { timeperiodValidation } from './timeperiodValidation';

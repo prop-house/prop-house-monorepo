@@ -2,7 +2,6 @@ import request from 'graphql-request';
 import { Provider } from '@ethersproject/providers';
 
 import { fetchContentForIpfsTextRecord } from '../utils/fetchContentForIpfsTextRecord';
-import { Round } from '../types/Round';
 import { roundQuery } from '../queries/roundQuery';
 import { snapshotSubgraph } from '../subgraphs/snapshot';
 import { ENSQueryRoundResponse } from '../types/ENSQueryRoundResponse';
