@@ -19,6 +19,7 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import { useTranslation } from 'react-i18next';
+import FundingAmount from '../FundingAmount';
 
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
@@ -56,7 +57,8 @@ const AuctionHeader: React.FC<{
   const {
     id,
     startTime: startDate,
-    amountEth: fundingAmount,
+    fundingAmount,
+    currencyType,
     numWinners,
     proposalEndTime: proposalEndDate,
   } = auction;
@@ -107,7 +109,7 @@ const AuctionHeader: React.FC<{
           <div className={classes.infoSubsection}>
             <div className={classes.infoSubsectionTitle}>{t('funding')}</div>
             <div className={classes.infoSubsectionContent}>
-              {`${fundingAmount.toFixed(2)} Ξ `}
+              <FundingAmount amount={fundingAmount} currencyType={currencyType} />
               <span>× {numWinners}</span>
             </div>
           </div>
