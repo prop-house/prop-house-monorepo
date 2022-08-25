@@ -16,6 +16,39 @@
   border-radius: 50px;
   margin-top: 18px;
 }
+.userPropCard {
+  background: radial-gradient(
+      121.6% 333.28% at -3.37% -8.88%,
+      #4bb1ea 0%,
+      #3e68ff 48.44%,
+      #8a2be2 100%
+    )
+    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  border: none;
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.14), 0px 4px 14px rgba(75, 177, 234, 0.13);
+}
+.userPropTitle {
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+.userPropInfo {
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.userPropItem {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  gap: 8px;
+  padding: 8px 12px;
+  width: 50%;
+}
 
 .votingBar {
   /* width: full; */
@@ -26,19 +59,97 @@
   background: var(--brand-purple-hint);
 }
 
-.sideCardTitle {
-  font-size: 18px;
+.sideCardHeader {
+  /* font-size: 18px; */
+  font-weight: 700;
+  display: flex;
+  gap: 16px;
+  align-items: center;
 }
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.greenIcon {
+  background: var(--brand-green-hint);
+  border: 1px solid var(--brand-green-semi-transparent);
+}
+.purpleIcon {
+  background: var(--brand-purple-hint);
+  border: 1px solid var(--brand-purple-semi-transparent);
+}
+
+.sideCardHeader svg {
+  width: 24px;
+  height: 24px;
+}
+.greenIcon svg {
+  color: var(--brand-green);
+}
+.purpleIcon svg {
+  color: var(--brand-purple);
+}
+.purpleText {
+  color: var(--brand-purple);
+}
+
+.textContainer {
+}
+.title {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+.subtitle {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+
+.divider {
+  margin: 18px 0px;
+}
+
 .sideCardBody {
   font-size: 14px;
   margin-bottom: 0;
 }
+.bulletList {
+  color: var(--brand-gray);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+}
+.bulletList b {
+  color: var(--brand-black);
+}
+
+.bulletItem {
+  display: flex;
+  gap: 18px;
+}
+.bulletItem p {
+  margin-bottom: 0;
+}
+.bullet {
+  color: var(--brand-gray-semi-transparent);
+  border-radius: 50px;
+  min-width: 18px !important;
+  height: 2px !important;
+  margin: 0;
+  margin-top: 10px;
+}
+
 .votingInfo {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: 14px;
 }
 .totalVotes {
-  font-size: 14px;
   color: var(--brand-gray);
 }
