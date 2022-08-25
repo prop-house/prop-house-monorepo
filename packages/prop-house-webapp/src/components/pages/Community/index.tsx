@@ -17,7 +17,7 @@ import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import { Container } from 'react-bootstrap';
 import classes from './Community.module.css';
 import RoundMessage from '../../RoundMessage';
