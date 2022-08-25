@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 // import Button, { ButtonColor } from '../Button';
 import PropCardVotingModule from '../PropCardVotingModule';
+import { MdHowToVote as VoteIcon } from 'react-icons/md';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -104,11 +105,8 @@ const ProposalCard: React.FC<{
             <div className={classes.avatarAndPropNumber}>
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
                 {auctionStatus === AuctionStatus.AuctionVoting && (
-                  <div>
-                    {/* <div className={classes.scoreCopy}> */}
-                    🗳 {proposal.score}
-                    {/* {Math.trunc(proposal.score)} */}
-                    {/* 🗳 {t('votes')}: {Math.trunc(proposal.score)} */}
+                  <div className={classes.scoreAndIcon}>
+                    <VoteIcon /> {proposal.score}
                   </div>
                 )}
 
