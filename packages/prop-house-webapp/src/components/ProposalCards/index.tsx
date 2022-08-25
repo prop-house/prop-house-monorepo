@@ -63,6 +63,8 @@ const ProposalCards: React.FC<{
   // proposals &&
   //   account &&
   //   console.log('findProposalByAddress', findProposalByAddress(account, proposals));
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const myProp =
     account && proposals && hasSubmittedProp() && findProposalByAddress(account, proposals);
 
@@ -99,7 +101,8 @@ const ProposalCards: React.FC<{
             borderRadius={CardBorderRadius.thirty}
             classNames={clsx(classes.sidebarContainerCard, classes.userPropCard)}
           >
-            <p className={classes.userPropTitle}>{myProp && myProp.title}</p>
+            
+          <p className={classes.userPropTitle}>{myProp && myProp.title}</p>
 
             <div className={classes.userPropInfo}>
               <div className={classes.userPropItem}>
