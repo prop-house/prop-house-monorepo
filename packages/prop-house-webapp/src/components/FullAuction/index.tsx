@@ -3,7 +3,11 @@
 // import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 
-import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuction,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
@@ -17,15 +21,13 @@ import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
-import // AuctionEmptyContent,
-// AuctionNotStartedContent,
-// ConnectedCopy,
-// DisconnectedCopy,
-'./content';
 
 import { getNumVotes } from 'prop-house-communities';
-// import SortToggles from '../SortToggles';
+
 import { useTranslation } from 'react-i18next';
+import RoundMessage from '../RoundMessage';
+import GenericModal from '../GenericModal';
+import { findProposalById } from '../../utils/findProposalById';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -38,6 +40,9 @@ const FullAuction: React.FC<{
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState<ModalData>();
+
+  const [showNewModal, setShowNewModal] = useState(false);
+  const [propsWithVotes, setPropsWithVotes] = useState<StoredProposalWithVotes[] | any>([]);
 
   // const connect = useWeb3Modal();
   const dispatch = useDispatch();
@@ -144,14 +149,26 @@ const FullAuction: React.FC<{
         '',
       );
 
-    setShowModal(true);
+    const votesForProps =
+      proposals &&
+      voteAllotments.sort((a, b) => a.proposalId - b.proposalId).filter(a => a.votes > 0);
+
+    let propsWithVotes: any[] = [];
+
+    proposals &&
+      votesForProps &&
+      votesForProps.map(p =>
+        propsWithVotes.push({
+          id: p.proposalId,
+          title: findProposalById(p.proposalId, proposals)?.title,
+          votes: p.votes,
+        }),
+      );
+
+    setShowNewModal(true);
 
     try {
-      setModalData({
-        title: t('voting'),
-        content: `${t('pleaseSign')}:\n${propCopy}`,
-        onDismiss: () => setShowModal(false),
-      });
+      setPropsWithVotes(propsWithVotes.sort((a, b) => b.votes - a.votes));
 
       const votes = voteAllotments
         .map(a => new Vote(1, a.proposalId, a.votes, community.contractAddress))
@@ -178,55 +195,24 @@ const FullAuction: React.FC<{
   return (
     <>
       {showModal && modalData && <Modal data={modalData} />}
-
-      {/* {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-        ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
-          <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
-            <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
-          </Card>
-        )} */}
-
-      {/* {community && (
-        <AuctionHeader
-          auction={auction}
-          clickable={false}
-          classNames={classes.auctionHeader}
-          totalVotes={delegatedVotes}
-          voteBtnEnabled={
-            delegatedVotes && delegatedVotes - userVotesWeight() > 0 && numAllottedVotes > 0
-              ? true
-              : false
+      {showNewModal && (
+        <GenericModal
+          showNewModal={showNewModal}
+          setShowNewModal={setShowNewModal}
+          propsWithVotes={propsWithVotes}
+          votesLeft={
+            delegatedVotes && delegatedVotes - (userVotesWeight() ?? 0) - (numAllottedVotes ?? 0)
           }
-          votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
-          handleVote={handleVote}
-          // isFirstOrLastAuction={isFirstOrLastAuction}
-          // handleAuctionChange={handleAuctionChange}
+          votingEndTime={auction.votingEndTime}
+          secondBtn
         />
-      )} */}
+      )}
 
-      {/* <Card
-        bgColor={CardBgColor.LightPurple}
-        borderRadius={CardBorderRadius.thirty}
-        classNames={classes.customCardHeader}
-      > */}
-      {/* <Row>
-          <div className={classes.dividerSection}>
-            <div className={classes.proposalTitle}>{`${
-              proposals
-                ? `${proposals.length} ${proposals.length === 1 ? t('proposal') : t('proposals')}`
-                : ''
-            }`}</div>
-
-            {proposals && proposals.length > 1 && <SortToggles auction={auction} />}
-          </div>
-        </Row> */}
-
-      {
-        // auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        //   auctionNotStartedContent
-        // ) : auction.proposals.length === 0 ? (
-        //   auctionEmptyContent
-        // ) : (
+      {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+        <RoundMessage message="Funding round starting soon" date={auction.startTime} />
+      ) : auction.proposals.length === 0 ? (
+        <RoundMessage message={t('submittedProps')} />
+      ) : (
         <>
           {community && (
             <ProposalCards
@@ -242,10 +228,7 @@ const FullAuction: React.FC<{
             />
           )}
         </>
-        // )
-      }
-
-      {/* </Card> */}
+      )}
     </>
   );
 };
