@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import ProfileHeader from '../../ProfileHeader';
@@ -13,13 +13,14 @@ import {
 import { getName } from 'prop-house-communities';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
-import CTA from '../../CTA';
-import { addressFormLink } from '../../../utils/addressFormLink';
+
 import { slugToName } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
 import { useTranslation } from 'react-i18next';
 import { Container } from 'react-bootstrap';
+import classes from './Community.module.css';
+import RoundMessage from '../../RoundMessage';
 
 const Community = () => {
   const location = useLocation();
@@ -28,7 +29,6 @@ const Community = () => {
   const isValidAddress = slug && ethers.utils.isAddress(slug);
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
   const [failedFetch, setFailedFetch] = useState(false);
@@ -37,7 +37,7 @@ const Community = () => {
   const activeAuction = useAppSelector(state => state.propHouse.activeAuction);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -120,51 +120,31 @@ const Community = () => {
   return (
     <>
       <Container>
-        {activeAuction && (
-          <ProfileHeader
-            auction={activeAuction}
-            community={community}
-            inactiveComm={{
-              name: inactiveCommName ? inactiveCommName : 'N/A',
-              contractAddress: slug,
-            }}
-          />
-        )}
+        {/* {activeAuction && ( */}
+        <ProfileHeader
+          auction={activeAuction}
+          community={community}
+          inactiveComm={{
+            name: inactiveCommName ? inactiveCommName : 'N/A',
+            contractAddress: slug,
+          }}
+        />
+        {/* )} */}
       </Container>
 
       <div style={{ background: '#f5f5f5' }}>
         <Container>
-          {community && activeAuction ? (
-            <FullAuction
-              auction={activeAuction}
-              isFirstOrLastAuction={isFirstOrLastAuction}
-              handleAuctionChange={handleAuctionChange}
-            />
-          ) : community && !activeAuction ? (
-            <CTA
-              title={t('comingSoon')}
-              content={
-                <>
-                  <span>{community.name}</span> {t('noActiveRound')}
-                </>
-              }
-              btnTitle={t('viewHouses')}
-              btnAction={() => navigate('/explore')}
-            />
-          ) : (
-            <CTA
-              title={t('supercharge')}
-              content={
-                <span>
-                  <span>{community ? community.name : inactiveCommName}</span> {t('nonActivePH')}
-                </span>
-              }
-              btnAction={() => {
-                window.open(addressFormLink, '_blank');
-              }}
-              btnTitle={t('contactUs')}
-            />
-          )}
+          <div className={classes.propCards}>
+            {community && activeAuction ? (
+              <FullAuction
+                auction={activeAuction}
+                isFirstOrLastAuction={isFirstOrLastAuction}
+                handleAuctionChange={handleAuctionChange}
+              />
+            ) : (
+              <RoundMessage message="No rounds available" />
+            )}
+          </div>
         </Container>
       </div>
     </>
