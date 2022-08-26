@@ -1,6 +1,3 @@
-// import classes from './FullAuction.module.css';
-// import Card, { CardBgColor, CardBorderRadius } from '../Card';
-// import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
 
 import {
@@ -11,23 +8,21 @@ import {
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
-// import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
-
 import { getNumVotes } from 'prop-house-communities';
-
 import { useTranslation } from 'react-i18next';
 import RoundMessage from '../RoundMessage';
-import GenericModal from '../GenericModal';
+import VotingModal from '../VotingModal';
 import { findProposalById } from '../../utils/findProposalById';
+import SuccessModal from '../SuccessModal';
+import ErrorModal from '../ErrorModal';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
@@ -38,13 +33,13 @@ const FullAuction: React.FC<{
 
   const { account, library } = useEthers();
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState<ModalData>();
 
-  const [showNewModal, setShowNewModal] = useState(false);
+  const [showVotingModal, setShowVotingModal] = useState(false);
   const [propsWithVotes, setPropsWithVotes] = useState<StoredProposalWithVotes[] | any>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState({ title: '', message: '' });
 
-  // const connect = useWeb3Modal();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -52,11 +47,6 @@ const FullAuction: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
-
-  // const auctionNotStartedContent = AuctionNotStartedContent();
-  // const auctionEmptyContent = AuctionEmptyContent();
-  // const disconnectedCopy = DisconnectedCopy(connect);
-  // const connectedCopy = ConnectedCopy();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -134,20 +124,8 @@ const FullAuction: React.FC<{
     });
   };
 
-  // handle voting
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
-
-    const propCopy = voteAllotments
-      .sort((a, b) => a.proposalId - b.proposalId)
-      .filter(a => a.votes > 0)
-      .reduce(
-        (agg, current) =>
-          agg +
-          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${current.proposalId}`,
-        '',
-      );
 
     const votesForProps =
       proposals &&
@@ -165,46 +143,74 @@ const FullAuction: React.FC<{
         }),
       );
 
-    setShowNewModal(true);
+    setShowVotingModal(true);
 
     try {
       setPropsWithVotes(propsWithVotes.sort((a, b) => b.votes - a.votes));
+    } catch (e) {
+      console.log('e up', e);
 
+      setErrorModalMessage({
+        title: 'Error',
+        message: 'Failed to process vote allotment. Please try again.',
+      });
+      setShowErrorModal(true);
+    }
+  };
+  const submitVote = async () => {
+    try {
       const votes = voteAllotments
-        .map(a => new Vote(1, a.proposalId, a.votes, community.contractAddress))
+        .map(a => new Vote(1, a.proposalId, a.votes, community!.contractAddress))
         .filter(v => v.weight > 0);
+
       await client.current.logVotes(votes);
 
-      setModalData({
-        title: t('success'),
-        content: `${t('successfullyVoted')}\n${propCopy}`,
-        onDismiss: () => setShowModal(false),
-      });
+      setShowSuccessModal(true);
 
       refreshActiveProposals(client.current, auction.id, dispatch);
       setVoteAllotments([]);
+      setShowVotingModal(false);
     } catch (e) {
-      setModalData({
-        title: t('error'),
-        content: `${t('failedSubmit')}\n\n${t('errorMessage')}: ${e}`,
-        onDismiss: () => setShowModal(false),
+      console.log('e', e);
+
+      setErrorModalMessage({
+        title: 'Error message',
+        message: 'Failed to submit votes. Please go back and try again.',
       });
+      setShowErrorModal(true);
     }
   };
 
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}
-      {showNewModal && (
-        <GenericModal
-          showNewModal={showNewModal}
-          setShowNewModal={setShowNewModal}
+      {showSuccessModal && (
+        <SuccessModal
+          showSuccessModal={showSuccessModal}
+          setShowSuccessModal={setShowSuccessModal}
+          numOfProps={propsWithVotes.length}
+        />
+      )}
+
+      {showVotingModal && (
+        <VotingModal
+          showNewModal={showVotingModal}
+          setShowNewModal={setShowVotingModal}
           propsWithVotes={propsWithVotes}
           votesLeft={
             delegatedVotes && delegatedVotes - (userVotesWeight() ?? 0) - (numAllottedVotes ?? 0)
           }
           votingEndTime={auction.votingEndTime}
+          submitVote={submitVote}
           secondBtn
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          showErrorModal={showErrorModal}
+          setShowErrorModal={setShowErrorModal}
+          title={errorModalMessage.title}
+          message={errorModalMessage.message}
         />
       )}
 
