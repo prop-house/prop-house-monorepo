@@ -3,8 +3,8 @@ import classes from './GenericModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import diffTime from '../../utils/diffTime';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import dayjs from 'dayjs';
 
 const GenericModal: React.FC<{
   showNewModal: boolean;
@@ -28,7 +28,8 @@ const GenericModal: React.FC<{
           Cast {propsWithVotes.reduce((total, prop) => (total = total + prop.votes), 0)} votes?
         </p>
         <p className={classes.modalSubtitle}>
-          You'll have {votesLeft} remaining to cast over the next {diffTime(votingEndTime)}
+          You'll have {votesLeft} remaining to cast over the next{' '}
+          {dayjs(votingEndTime).fromNow(true)}
         </p>
       </div>
 
