@@ -18,6 +18,8 @@ import { MdOutlineLightbulb as BulbIcon, MdHowToVote as VoteIcon } from 'react-i
 // import RoundMessage from '../RoundMessage';
 import dayjs from 'dayjs';
 import { findProposalByAddress } from '../../utils/findProposalByAddress';
+import isWinner from '../../utils/isWinner';
+import getWinningIds from '../../utils/getWinningIds';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -68,8 +70,9 @@ const ProposalCards: React.FC<{
   const myProp =
     account && proposals && hasSubmittedProp() && findProposalByAddress(account, proposals);
 
+  const winningIds = getWinningIds(proposals, auction);
+
   return (
-    // <div className={classes.propCards}>
     <Row style={{ width: '100%' }}>
       <Col xl={8}>
         {proposals &&
@@ -87,6 +90,7 @@ const ProposalCards: React.FC<{
                   canAllotVotes={canAllotVotes}
                   voteAllotments={voteAllotments}
                   handleVoteAllotment={handleVoteAllotment}
+                  winner={winningIds && isWinner(winningIds, proposal.id)}
                 />
               </Col>
             );
@@ -129,31 +133,7 @@ const ProposalCards: React.FC<{
           borderRadius={CardBorderRadius.thirty}
           classNames={classes.sidebarContainerCard}
         >
-          {/* 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // CONTENT
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          */}
+          {/* CONTENT */}
           <div className={classes.content}>
             {/* ACCEPTING PROPS */}
             {isProposingWindow && (
@@ -187,6 +167,12 @@ const ProposalCards: React.FC<{
                         Owners of the <b>{community.name}</b> token will vote on the best proposals.
                       </p>
                     </div>
+
+                    {/*
+                     *
+                     * to be added back in
+                     *
+                     */}
 
                     {/* <div className={classes.bulletItem}>
                       <hr className={classes.bullet} />
@@ -296,45 +282,30 @@ const ProposalCards: React.FC<{
             {/* ROUND ENDED */}
             {isRoundOver && (
               <>
-                <h1 className={classes.sideCardTitle}>{`Round ended`}</h1>
+                <div className={classes.sideCardHeader}>
+                  <div className={clsx(classes.icon, classes.blackIcon)}>
+                    <VoteIcon />
+                  </div>
+                  <div className={classes.textContainer}>
+                    <p className={classes.title}>Voting ended</p>
+                    {proposals && (
+                      <p className={clsx(classes.subtitle, classes.purpleText)}>
+                        {getVoteTotal()} votes cast for {proposals.length} props!
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-                <p className={classes.sideCardBody}>
-                  {
-                    <>
-                      This round ended, and winners have been voted on. The winning props are
-                      highlighted in green, check them out!
-                    </>
-                  }
+                <hr className={classes.divider} />
+
+                <p className={clsx(classes.sideCardBody, classes.winnersText)}>
+                  Winners are highlighted in <span className={classes.greenText}>green</span>.
                 </p>
               </>
             )}
           </div>
 
-          {/* 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // BUTTONS
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          // 
-          */}
+          {/* BUTTONS */}
           <div className={classes.btnContainer}>
             {/* ACCEPTING PROPS */}
             {isProposingWindow &&
@@ -370,7 +341,6 @@ const ProposalCards: React.FC<{
         </Card>
       </Col>
     </Row>
-    // </div>
   );
 };
 export default ProposalCards;

@@ -82,6 +82,9 @@
   background: var(--brand-purple-hint);
   border: 1px solid var(--brand-purple-semi-transparent);
 }
+.blackIcon {
+  border: 1px solid var(--border-med);
+}
 
 .sideCardHeader svg {
   width: 24px;
@@ -91,9 +94,6 @@
   color: var(--brand-green);
 }
 .purpleIcon svg {
-  color: var(--brand-purple);
-}
-.purpleText {
   color: var(--brand-purple);
 }
 
@@ -108,7 +108,17 @@
   font-size: 14px;
   color: var(--brand-gray);
 }
-
+.purpleText {
+  color: var(--brand-purple);
+}
+.winnersText {
+  font-weight: 700;
+  color: var(--brand-gray);
+  font-size: 14px;
+}
+.greenText {
+  color: var(--brand-green);
+}
 .divider {
   margin: 18px 0px;
 }

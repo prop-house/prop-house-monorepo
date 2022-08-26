@@ -146,3 +146,8 @@
   color: rgba(102, 102, 102, 0.6);
   font-size: 14px;
 }
+
+.winner {
+  border: 2px solid var(--brand-green) !important;
+  background: rgba(80, 186, 154, 0.02);
+}
