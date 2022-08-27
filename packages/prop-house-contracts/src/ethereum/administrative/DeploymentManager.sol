@@ -5,7 +5,7 @@ import { IDeploymentManager } from '../interfaces/IDeploymentManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
 
 /// @title DeploymentManager
-/// @notice This contract allows the registrar to manage module implementation deployment targets
+/// @notice This contract allows the registrar to manage house implementation deployment targets
 contract DeploymentManager is IDeploymentManager {
     IRegistrarManager public immutable RegistrarManager;
 

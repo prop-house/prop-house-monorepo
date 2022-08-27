@@ -20,13 +20,16 @@
     "ts-node": "^10.9.1"
   },
   "scripts": {
-    "format": "prettier --write '{src,test}/{,*/**/}*.sol' '{,*/**/}*.ts'",
+    "format:l1": "prettier --write '{src,test}/{,*/**/}*.sol'",
+    "format:l2": "cairo-format -i --one_item_per_line src/starknet/**/*.cairo && cairo-format -i --one_item_per_line src/starknet/*.cairo",
+    "format:ts": "prettier --write '{,*/**/}*.ts'",
+    "format": "concurrently 'yarn format:l1' 'yarn format:l2' 'yarn format:ts'",
     "clean": "forge clean && hardhat clean",
     "chain:l1": "hardhat node",
     "chain:l2": "starknet-devnet --lite-mode",
     "chain": "concurrently 'yarn chain:l1' 'yarn chain:l2'",
     "compile:l1": "forge build",
-    "compile:l2": "hardhat starknet-compile src/starknet/**",
+    "compile:l2": "hardhat starknet-compile src/starknet/HouseStrategyFactory.cairo && hardhat starknet-compile src/starknet/**/",
     "compile": "concurrently 'yarn compile:l1' 'yarn compile:l2'",
     "test:users": "ts-node blacksmith.ts create",
     "test:setup": "yarn test:users && yarn compile:l2",

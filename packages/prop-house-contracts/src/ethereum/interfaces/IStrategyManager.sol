@@ -7,36 +7,36 @@ interface IStrategyManager {
     error StrategyNotRegistered();
 
     /// @notice Emitted when an strategy is registered
-    /// @param moduleImplId The ID of the module implementation
+    /// @param houseImplId The ID of the house implementation
     /// @param strategy The address of the strategy
-    /// @param minVersion Min compatible module implementation version. Disabled if 0.
-    /// @param maxVersion Max compatible module implementation version. Disabled if 0.
-    event StrategyRegistered(bytes32 moduleImplId, address strategy, uint120 minVersion, uint120 maxVersion);
+    /// @param minVersion Min compatible house implementation version. Disabled if 0.
+    /// @param maxVersion Max compatible house implementation version. Disabled if 0.
+    event StrategyRegistered(bytes32 houseImplId, address strategy, uint120 minVersion, uint120 maxVersion);
 
     /// @notice Emitted when an strategy is unregistered
-    /// @param moduleImplId The ID of the module implementation
+    /// @param houseImplId The ID of the house implementation
     /// @param strategy The address of the unregistered strategy
-    event StrategyUnregistered(bytes32 moduleImplId, address strategy);
+    event StrategyUnregistered(bytes32 houseImplId, address strategy);
 
-    /// @notice Emitted when a min compatible module implementation version is set
-    /// @param moduleImplId The ID of the module implementation
+    /// @notice Emitted when a min compatible house implementation version is set
+    /// @param houseImplId The ID of the house implementation
     /// @param strategy The address of the strategy
-    /// @param minVersion Min compatible module implementation version. Disabled if 0.
-    event MinCompatibleVersionSet(bytes32 moduleImplId, address strategy, uint120 minVersion);
+    /// @param minVersion Min compatible house implementation version. Disabled if 0.
+    event MinCompatibleVersionSet(bytes32 houseImplId, address strategy, uint120 minVersion);
 
-    /// @notice Emitted when a max compatible module implementation version is set
-    /// @param moduleImplId The ID of the module implementation
+    /// @notice Emitted when a max compatible house implementation version is set
+    /// @param houseImplId The ID of the house implementation
     /// @param strategy The address of the strategy
-    /// @param maxVersion Max compatible module implementation version. Disabled if 0.
-    event MaxCompatibleVersionSet(bytes32 moduleImplId, address strategy, uint120 maxVersion);
+    /// @param maxVersion Max compatible house implementation version. Disabled if 0.
+    event MaxCompatibleVersionSet(bytes32 houseImplId, address strategy, uint120 maxVersion);
 
-    /// @notice Determine if an strategy is valid for a given module implementation
-    /// @param _moduleImplId The ID of the module implementation
-    /// @param _moduleImplVersion The module implementation version
+    /// @notice Determine if an strategy is valid for a given house implementation
+    /// @param _houseImplId The ID of the house implementation
+    /// @param _houseImplVersion The house implementation version
     /// @param _strategy The address of the strategy contract
     function isValidStrategy(
-        bytes32 _moduleImplId,
-        uint256 _moduleImplVersion,
+        bytes32 _houseImplId,
+        uint256 _houseImplVersion,
         address _strategy
     ) external returns (bool);
 }

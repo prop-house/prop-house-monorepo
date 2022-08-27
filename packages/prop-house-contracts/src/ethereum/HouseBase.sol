@@ -6,10 +6,10 @@ import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/O
 import { IStrategyManager } from './interfaces/IStrategyManager.sol';
 import { IUpgradeManager } from './interfaces/IUpgradeManager.sol';
 import { IStarknetCore } from './interfaces/IStarknetCore.sol';
-import { IModule } from './interfaces/IModule.sol';
+import { IHouse } from './interfaces/IHouse.sol';
 import { Multicall } from './utils/Multicall.sol';
 
-abstract contract ModuleBase is IModule, Multicall, UUPSUpgradeable, OwnableUpgradeable {
+abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgradeable {
     // prettier-ignore
     uint256 constant GOVERNANCE_RELAY_SELECTOR = 111111111111111111111111111111111111111111111111111111111111111111111111111;
 
@@ -30,8 +30,8 @@ abstract contract ModuleBase is IModule, Multicall, UUPSUpgradeable, OwnableUpgr
         _l2GovEntryPoint = l2GovEntryPoint_;
     }
 
-    /// @notice Initialize the module implementation
-    /// @param _creator The creator of the module instance
+    /// @notice Initialize the house
+    /// @param _creator The house creator
     function initialize(address _creator) internal initializer {
         __Ownable_init();
 

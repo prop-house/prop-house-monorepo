@@ -27,4 +27,45 @@ interface IVault {
         uint256 amount,
         address recipient
     );
+
+    // TODO: Standardize below function names
+
+    /// @notice Fetch an account's balance
+    /// @param account The account address
+    /// @param assetId The asset ID
+    function balanceOf(address account, bytes32 assetId) external view returns (uint256);
+
+    /// @notice Fetch one or more account balances
+    /// @param account The account address
+    /// @param assetIds The asset IDs
+    function batchBalanceOf(address account, bytes32[] calldata assetIds) external view returns (uint256[] memory);
+
+    /// @notice Fetch an account's ETH balance
+    /// @param account The account address
+    function ethBalance(address account) external view returns (uint256);
+
+    /// @notice Fetch an account's ERC20 balance
+    /// @param account The account address
+    /// @param token The token address
+    function erc20Balance(address account, address token) external view returns (uint256);
+
+    /// @notice Fetch an account's ERC721 balance
+    /// @param account The account address
+    /// @param token The token address
+    /// @param tokenId The token ID
+    function erc721Balance(
+        address account,
+        address token,
+        uint256 tokenId
+    ) external view returns (uint256);
+
+    /// @notice Fetch an account's ERC1155 balance
+    /// @param account The account address
+    /// @param token The token address
+    /// @param tokenId The token ID
+    function erc1155Balance(
+        address account,
+        address token,
+        uint256 tokenId
+    ) external view returns (uint256);
 }

@@ -225,17 +225,38 @@ contract Vault is IVault, VaultStorage, ERC721Holder, ERC1155Holder {
         withdrawERC1155To(token, tokenId, amount, msg.sender);
     }
 
+    /// @notice Fetch an account's balance
+    /// @param account The account address
+    /// @param assetId The asset ID
+    function balanceOf(address account, bytes32 assetId) public view returns (uint256) {
+        return _balances[account][assetId];
+    }
+
+    /// @notice Fetch one or more account balances
+    /// @param account The account address
+    /// @param assetIds The asset IDs
+    function batchBalanceOf(address account, bytes32[] calldata assetIds) external view returns (uint256[] memory) {
+        uint256[] memory balances = new uint256[](assetIds.length);
+        for (uint256 i = 0; i < assetIds.length; ) {
+            balances[i] = balanceOf(account, assetIds[i]);
+            unchecked {
+                ++i;
+            }
+        }
+        return balances;
+    }
+
     /// @notice Fetch an account's ETH balance
     /// @param account The account address
     function ethBalance(address account) public view returns (uint256) {
-        return _balanceOf(account, ETH_SELECTOR);
+        return balanceOf(account, ETH_SELECTOR);
     }
 
     /// @notice Fetch an account's ERC20 balance
     /// @param account The account address
     /// @param token The token address
     function erc20Balance(address account, address token) public view returns (uint256) {
-        return _balanceOf(account, _getAssetId(ERC20_SELECTOR, token));
+        return balanceOf(account, _getAssetId(ERC20_SELECTOR, token));
     }
 
     /// @notice Fetch an account's ERC721 balance
@@ -247,7 +268,7 @@ contract Vault is IVault, VaultStorage, ERC721Holder, ERC1155Holder {
         address token,
         uint256 tokenId
     ) public view returns (uint256) {
-        return _balanceOf(account, _getAssetId(ERC721_SELECTOR, token, tokenId));
+        return balanceOf(account, _getAssetId(ERC721_SELECTOR, token, tokenId));
     }
 
     /// @notice Fetch an account's ERC1155 balance
@@ -259,14 +280,7 @@ contract Vault is IVault, VaultStorage, ERC721Holder, ERC1155Holder {
         address token,
         uint256 tokenId
     ) public view returns (uint256) {
-        return _balanceOf(account, _getAssetId(ERC1155_SELECTOR, token, tokenId));
-    }
-
-    /// @notice Fetch an account's balance
-    /// @param account The account address
-    /// @param assetId The asset ID
-    function _balanceOf(address account, bytes32 assetId) internal view returns (uint256) {
-        return _balances[account][assetId];
+        return balanceOf(account, _getAssetId(ERC1155_SELECTOR, token, tokenId));
     }
 
     /// @notice Get the asset ID for asset type and token pairing
