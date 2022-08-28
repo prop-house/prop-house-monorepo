@@ -4,6 +4,7 @@ from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.uint256 import uint256_le
+from starkware.cairo.common.math import unsigned_div_rem
 
 from src.starknet.lib.proposal_info import ProposalInfo
 
@@ -17,7 +18,9 @@ namespace ProposalUtils:
     ) -> (winning_proposals_ptr : ProposalInfo*):
         alloc_locals
 
-        let (sorted_proposals_ptr) = sort_by_voting_power_desc(num_submissions, submissions_ptr)
+        let (sorted_proposals_ptr) = mergesort_by_voting_power_desc(
+            num_submissions, submissions_ptr
+        )
 
         # If the number of submissions are less than or equal to the number of winners then everybody wins
         let (submissions_do_not_exceed_winners) = is_le(num_submissions, num_winners)
@@ -32,63 +35,113 @@ namespace ProposalUtils:
         return (winning_proposals_ptr)
     end
 
-    # Sort an array of proposal info by descending voting power.
-    func sort_by_voting_power_desc{range_check_ptr}(
+    # Sort an array of proposal info by descending voting power using the mergesort algorithm.
+    func mergesort_by_voting_power_desc{range_check_ptr}(
         num_submissions : felt, submissions_ptr : ProposalInfo*
     ) -> (sorted_submissions_ptr : ProposalInfo*):
-        let (submissions_ptr_input : ProposalInfo*) = alloc()
-        let (sorted_submissions_ptr) = bubble_sort_by_voting_power_desc(
-            num_submissions, submissions_ptr, 0, 1, submissions_ptr_input, 0
+        alloc_locals
+
+        # Step 1. If len == 1 => return array
+        if num_submissions == 1:
+            return (submissions_ptr)
+        end
+
+        # Step 2. Split list at middle
+        let (left_arr_len, _) = unsigned_div_rem(num_submissions, 2)
+        let right_arr_len = num_submissions - left_arr_len
+
+        # Step 3. Create left and right
+        let left_arr = submissions_ptr
+        let right_arr = submissions_ptr + left_arr_len * ProposalInfo.SIZE
+
+        # Step 4. Recurse left and right
+        let (sorted_left_arr) = mergesort_by_voting_power_desc(left_arr_len, left_arr)
+        let (sorted_right_arr) = mergesort_by_voting_power_desc(right_arr_len, right_arr)
+        let (result_arr : ProposalInfo*) = alloc()
+
+        # Step 5. Merge left and right
+        let (sorted_submissions) = _merge(
+            left_arr_len, sorted_left_arr, right_arr_len, sorted_right_arr, result_arr, 0, 0, 0
         )
-        return (sorted_submissions_ptr)
+        return (sorted_submissions)
     end
 
-    # Use bubble sort to sort an array of proposal info by descending voting power.
-    func bubble_sort_by_voting_power_desc{range_check_ptr}(
-        num_submissions : felt,
-        submissions_ptr : ProposalInfo*,
-        idx1 : felt,
-        idx2 : felt,
-        sorted_submissions_ptr : ProposalInfo*,
-        sorted_this_iteration : felt,
-    ) -> (sorted_submissions_ptr : ProposalInfo*):
+    # Merge left and right proposal info arrays.
+    func _merge{range_check_ptr}(
+        left_arr_len : felt,
+        left_arr : ProposalInfo*,
+        right_arr_len : felt,
+        right_arr : ProposalInfo*,
+        sorted_arr : ProposalInfo*,
+        current_ix : felt,
+        left_arr_ix : felt,
+        right_arr_ix : felt,
+    ) -> (sorted_arr : ProposalInfo*):
         alloc_locals
-        local submissions_ptr : ProposalInfo* = submissions_ptr
-        local range_check_ptr = range_check_ptr
 
-        if idx2 == num_submissions:
-            assert [sorted_submissions_ptr + (idx2 - 1) * ProposalInfo.SIZE] = [submissions_ptr + idx1 * ProposalInfo.SIZE]
-            if sorted_this_iteration == 0:
-                return (sorted_submissions_ptr)
-            end
+        if (current_ix) == (left_arr_len + right_arr_len):
+            return (sorted_arr)
+        end
 
-            let (new_sorted_ptr : ProposalInfo*) = alloc()
-            let (recursive_sorted_ptr) = bubble_sort_by_voting_power_desc(
-                num_submissions, sorted_submissions_ptr, 0, 1, new_sorted_ptr, 0
+        if left_arr_len == left_arr_ix:
+            let right_v = right_arr[right_arr_ix].voting_power
+            assert sorted_arr[current_ix] = right_arr[right_arr_ix]
+            return _merge(
+                left_arr_len,
+                left_arr,
+                right_arr_len,
+                right_arr,
+                sorted_arr,
+                current_ix + 1,
+                left_arr_ix,
+                right_arr_ix + 1,
             )
-            return (recursive_sorted_ptr)
         end
-        let (is_ordered) = uint256_le(
-            [submissions_ptr + idx2 * ProposalInfo.SIZE].voting_power,
-            [submissions_ptr + idx1 * ProposalInfo.SIZE].voting_power,
-        )
-        if is_ordered == TRUE:
-            assert [sorted_submissions_ptr + (idx2 - 1) * ProposalInfo.SIZE] = [submissions_ptr + idx1 * ProposalInfo.SIZE]
-            let (recursive_sorted_ptr) = bubble_sort_by_voting_power_desc(
-                num_submissions,
-                submissions_ptr,
-                idx2,
-                idx2 + 1,
-                sorted_submissions_ptr,
-                sorted_this_iteration,
+
+        if right_arr_len == right_arr_ix:
+            let left_v = left_arr[left_arr_ix].voting_power
+            assert sorted_arr[current_ix] = left_arr[left_arr_ix]
+            return _merge(
+                left_arr_len,
+                left_arr,
+                right_arr_len,
+                right_arr,
+                sorted_arr,
+                current_ix + 1,
+                left_arr_ix + 1,
+                right_arr_ix,
             )
-            return (recursive_sorted_ptr)
         end
-        assert [sorted_submissions_ptr + (idx2 - 1) * ProposalInfo.SIZE] = [submissions_ptr + idx2 * ProposalInfo.SIZE]
-        let (recursive_sorted_ptr) = bubble_sort_by_voting_power_desc(
-            num_submissions, submissions_ptr, idx1, idx2 + 1, sorted_submissions_ptr, 1
-        )
-        return (recursive_sorted_ptr)
+
+        let left_val = left_arr[left_arr_ix].voting_power
+        let right_val = right_arr[right_arr_ix].voting_power
+        let (is_left) = uint256_le(right_val, left_val)
+
+        if is_left == TRUE:
+            assert sorted_arr[current_ix] = left_arr[left_arr_ix]
+            return _merge(
+                left_arr_len,
+                left_arr,
+                right_arr_len,
+                right_arr,
+                sorted_arr,
+                current_ix + 1,
+                left_arr_ix + 1,
+                right_arr_ix,
+            )
+        else:
+            assert sorted_arr[current_ix] = right_arr[right_arr_ix]
+            return _merge(
+                left_arr_len,
+                left_arr,
+                right_arr_len,
+                right_arr,
+                sorted_arr,
+                current_ix + 1,
+                left_arr_ix,
+                right_arr_ix + 1,
+            )
+        end
     end
 
     # Slice the provided proposal info array, returning the portion of it from `start` to `start + size`.
