@@ -9,8 +9,9 @@ const ErrorModal: React.FC<{
   setShowErrorModal: any;
   title: string;
   message: string;
+  image: string;
 }> = props => {
-  const { showErrorModal, setShowErrorModal, title, message } = props;
+  const { showErrorModal, setShowErrorModal, title, message, image } = props;
 
   function closeModal() {
     setShowErrorModal(false);
@@ -18,16 +19,18 @@ const ErrorModal: React.FC<{
 
   return (
     <Modal isOpen={showErrorModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
-      <div className={classes.errorContainer}>
+      <div className={classes.container}>
         <div className={classes.imgContainer}>
-          <img src="/doom.png" alt="doom-noun" />
+          <img src={`/${image}`} alt={image} />
         </div>
 
-        <div>
+        <div className={classes.titleContainer}>
           <p className={classes.modalTitle}>{title}</p>
           <p className={classes.modalSubtitle}>{message}</p>
         </div>
       </div>
+
+      <hr className={classes.divider} />
 
       <div className={classes.buttonContainer}>
         <Button
