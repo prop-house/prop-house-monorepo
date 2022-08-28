@@ -1,15 +1,13 @@
 .proposalCard {
-  /* min-height: 12.5rem; */
   display: flex;
   flex-direction: column;
   transition: all 0.1s ease-in-out;
-  /* justify-content: space-between; */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .proposalCard:hover {
-  border: 1px solid var(--brand-purple);
+  border: 1px solid var(--brand-gray);
   cursor: pointer;
-  /* transform: scale(1.01); */
   transition: all 0.15s ease-in-out;
 }
 
@@ -26,9 +24,7 @@
   font-size: 18px;
   font-weight: bold;
   color: var(--brand-black);
-  /* margin-bottom: 0.8rem; */
   display: flex;
-  /* height: 50px; */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -48,7 +44,6 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
-
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -148,6 +143,8 @@
 }
 
 .winner {
-  border: 2px solid var(--brand-green) !important;
-  background: rgba(80, 186, 154, 0.02);
+  border: 1px solid var(--brand-green-semi-transparent) !important;
+}
+.winner .authorContainer {
+  color: var(--brand-green);
 }
