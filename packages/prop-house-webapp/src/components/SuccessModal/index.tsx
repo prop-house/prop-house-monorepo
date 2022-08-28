@@ -17,16 +17,18 @@ const SuccessModal: React.FC<{
 
   return (
     <Modal isOpen={showSuccessModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
-      <div className={classes.imgContainer}>
-        <img src="/rednoggles.png" alt="noggles" />
+      <div className={classes.container}>
+        <div className={classes.imgContainer}>
+          <img src="/rednoggles.png" alt="noggles" />
+        </div>
+
+        <div className={classes.titleContainer}>
+          <p className={classes.modalTitle}>very nounish</p>
+          <p className={classes.modalSubtitle}>You've successfully voted for {numOfProps} props!</p>
+        </div>
       </div>
 
-      <div className={classes.titleContainer}>
-        <p className={classes.modalTitle}>very nounish</p>
-        <p className={classes.modalSubtitle}>
-          You've successfully voted for <b>{numOfProps}</b> props!
-        </p>
-      </div>
+      <hr className={classes.divider} />
 
       <div className={classes.buttonContainer}>
         <Button

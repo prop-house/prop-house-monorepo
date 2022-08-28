@@ -23,7 +23,7 @@
   /* 
     */
   min-width: 420px;
-  min-height: 305px;
+  min-height: 200px;
   left: calc(50% - 17.5rem);
   top: 50%;
   left: 50%;
@@ -33,12 +33,19 @@
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  max-width: 500px;
+  max-width: 420px;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  padding-bottom: 8px;
 }
 
 .imgContainer {
   text-align: center;
+  padding: 35px 0px 25px 0px;
 }
 .imgContainer img {
   margin-right: 20px;
@@ -59,11 +66,16 @@
   font-size: 16px;
 }
 
+.divider {
+  margin: 12px 0px 0px 0px;
+}
+
 .modal button {
   width: 100%;
   border-radius: 50px;
   margin-top: 18px;
 }
+
 .buttonContainer {
   display: flex;
   gap: 8px;
