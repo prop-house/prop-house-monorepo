@@ -38,7 +38,11 @@ const FullAuction: React.FC<{
   const [propsWithVotes, setPropsWithVotes] = useState<StoredProposalWithVotes[] | any>([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState({ title: '', message: '' });
+  const [errorModalMessage, setErrorModalMessage] = useState({
+    title: '',
+    message: '',
+    image: '',
+  });
 
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -151,8 +155,9 @@ const FullAuction: React.FC<{
       console.log('e up', e);
 
       setErrorModalMessage({
-        title: 'Error',
-        message: 'Failed to process vote allotment. Please try again.',
+        title: 'oops, sorry',
+        message: 'We failed to process your votes. Please try again.',
+        image: 'whale.png',
       });
       setShowErrorModal(true);
     }
@@ -174,8 +179,9 @@ const FullAuction: React.FC<{
       console.log('e', e);
 
       setErrorModalMessage({
-        title: 'Error message',
-        message: 'Failed to submit votes. Please go back and try again.',
+        title: 'Failed to submit votes',
+        message: 'Please go back and try again.',
+        image: 'banana.png',
       });
       setShowErrorModal(true);
     }
@@ -211,6 +217,7 @@ const FullAuction: React.FC<{
           setShowErrorModal={setShowErrorModal}
           title={errorModalMessage.title}
           message={errorModalMessage.message}
+          image={errorModalMessage.image}
         />
       )}
 
