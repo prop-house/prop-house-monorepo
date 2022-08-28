@@ -289,7 +289,7 @@ const ProposalCards: React.FC<{
                   <div className={classes.textContainer}>
                     <p className={classes.title}>Voting ended</p>
                     {proposals && (
-                      <p className={clsx(classes.subtitle, classes.purpleText)}>
+                      <p className={classes.subtitle}>
                         {getVoteTotal()} votes cast for {proposals.length} props!
                       </p>
                     )}
