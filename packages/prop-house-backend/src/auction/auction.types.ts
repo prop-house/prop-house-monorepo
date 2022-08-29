@@ -10,11 +10,11 @@ export class CreateAuctionDto {
 
   @IsString()
   votingEndTime: Date;
-  
+
   @IsString()
   title: string;
 
   @IsNumber()
   @IsPositive()
-  amountEth: number;
+  fundingAmount: number;
 }

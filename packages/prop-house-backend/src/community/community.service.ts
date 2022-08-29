@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Raw, Repository } from 'typeorm';
 import { Community } from './community.entity';
+import * as ethers from 'ethers';
+import {BigNumberish} from '@ethersproject/bignumber';
+import config from 'src/config/configuration';
+import { getNumVotes } from 'prop-house-communities';
 
 @Injectable()
 export class CommunitiesService {
@@ -48,5 +52,14 @@ export class CommunitiesService {
 
   async store(community: Community): Promise<Community> {
     return await this.communitiesRepository.save(community, { reload: true });
+  }
+
+  async votesAtBlockTag(
+    community: Community,
+    blockTag: string,
+    address: string
+  ): Promise<BigNumberish> {
+    const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
+    return getNumVotes(address, community.contractAddress, provider, blockTag)
   }
 }
