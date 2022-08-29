@@ -7,6 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
+import { AuctionsService } from 'src/auction/auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { isValidVoteDirection, VoteDirections } from 'src/utils/vote';
 import { Vote } from './vote.entity';
@@ -18,6 +19,7 @@ export class VotesController {
   constructor(
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
+    private readonly auctionService: AuctionsService,
   ) {}
 
   @Get()
@@ -39,6 +41,7 @@ export class VotesController {
     const foundProposal = await this.proposalService.findOne(
       createVoteDto.proposalId,
     );
+    const auction = await this.auctionService.findOne(foundProposal.auctionId);
 
     // Verify that proposal exist
     if (!foundProposal)
@@ -73,7 +76,10 @@ export class VotesController {
       );
 
     // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto, foundProposal.auction.balanceBlockTag);
+    const totalVotesAvail = await this.votesService.getNumVotes(
+      createVoteDto,
+      auction.balanceBlockTag,
+    );
 
     if (totalVotesAvail === 0)
       throw new HttpException(
