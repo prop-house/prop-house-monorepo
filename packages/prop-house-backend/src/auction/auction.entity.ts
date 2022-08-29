@@ -32,7 +32,13 @@ export class Auction {
   votingEndTime: Date;
 
   @Column()
-  amountEth: number;
+  fundingAmount: number;
+
+  @Column({ nullable: true })
+  currencyType: string;
+
+  @Column({ nullable: true })
+  description: string;
 
   @Column()
   numWinners: number;
@@ -52,6 +58,9 @@ export class Auction {
 
   @Column({ nullable: true })
   lastUpdatedDate: Date;
+
+  @Column({default: "latest"})
+  balanceBlockTag: string;
 
   @BeforeInsert()
   setCreatedDate() {

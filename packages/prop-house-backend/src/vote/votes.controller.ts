@@ -73,7 +73,7 @@ export class VotesController {
       );
 
     // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto);
+    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto, foundProposal.auction.balanceBlockTag);
 
     if (totalVotesAvail === 0)
       throw new HttpException(
