@@ -1,8 +1,5 @@
-from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.hash import hash2
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.uint256 import uint256_le
 from starkware.cairo.common.math import unsigned_div_rem
 
@@ -18,26 +15,15 @@ namespace ProposalUtils:
     ) -> (winning_proposals_ptr : ProposalInfo*):
         alloc_locals
 
-        let (sorted_proposals_ptr) = mergesort_by_voting_power_desc(
-            num_submissions, submissions_ptr
-        )
-
-        # If the number of submissions are less than or equal to the number of winners then everybody wins
-        let (submissions_do_not_exceed_winners) = is_le(num_submissions, num_winners)
-        if submissions_do_not_exceed_winners == TRUE:
-            return (sorted_proposals_ptr)
-        end
-
-        let (winning_proposals_ptr : ProposalInfo*) = alloc()
-        slice_array(
-            0, num_winners, sorted_proposals_ptr, num_submissions, winning_proposals_ptr, 0, 0
+        let (winning_proposals_ptr) = mergesort_by_voting_power_desc(
+            num_winners, num_submissions, submissions_ptr
         )
         return (winning_proposals_ptr)
     end
 
-    # Sort an array of proposal info by descending voting power using the mergesort algorithm.
+    # Sort an array of proposal info by descending voting power using a modified mergesort algorithm.
     func mergesort_by_voting_power_desc{range_check_ptr}(
-        num_submissions : felt, submissions_ptr : ProposalInfo*
+        num_winners, num_submissions : felt, submissions_ptr : ProposalInfo*
     ) -> (sorted_submissions_ptr : ProposalInfo*):
         alloc_locals
 
@@ -59,15 +45,24 @@ namespace ProposalUtils:
         let (sorted_right_arr) = mergesort_by_voting_power_desc(right_arr_len, right_arr)
         let (result_arr : ProposalInfo*) = alloc()
 
-        # Step 5. Merge left and right
-        let (sorted_submissions) = _merge(
-            left_arr_len, sorted_left_arr, right_arr_len, sorted_right_arr, result_arr, 0, 0, 0
+        # Step 5. Merge left and right, slice array
+        let (sorted_submissions) = _merge_and_slice(
+            num_winners,
+            left_arr_len,
+            sorted_left_arr,
+            right_arr_len,
+            sorted_right_arr,
+            result_arr,
+            0,
+            0,
+            0,
         )
         return (sorted_submissions)
     end
 
-    # Merge left and right proposal info arrays.
-    func _merge{range_check_ptr}(
+    # Merge left and right arrays, slicing the array to contain no more than `max_sorted_arr_len` proposals by descending voting power.
+    func _merge_and_slice{range_check_ptr}(
+        max_sorted_arr_len : felt,
         left_arr_len : felt,
         left_arr : ProposalInfo*,
         right_arr_len : felt,
@@ -83,10 +78,16 @@ namespace ProposalUtils:
             return (sorted_arr)
         end
 
+        # Exit early if the max length has been reached
+        if (current_ix) == (max_sorted_arr_len):
+            return (sorted_arr)
+        end
+
         if left_arr_len == left_arr_ix:
             let right_v = right_arr[right_arr_ix].voting_power
             assert sorted_arr[current_ix] = right_arr[right_arr_ix]
-            return _merge(
+            return _merge_and_slice(
+                max_sorted_arr_len,
                 left_arr_len,
                 left_arr,
                 right_arr_len,
@@ -101,7 +102,8 @@ namespace ProposalUtils:
         if right_arr_len == right_arr_ix:
             let left_v = left_arr[left_arr_ix].voting_power
             assert sorted_arr[current_ix] = left_arr[left_arr_ix]
-            return _merge(
+            return _merge_and_slice(
+                max_sorted_arr_len,
                 left_arr_len,
                 left_arr,
                 right_arr_len,
@@ -119,7 +121,8 @@ namespace ProposalUtils:
 
         if is_left == TRUE:
             assert sorted_arr[current_ix] = left_arr[left_arr_ix]
-            return _merge(
+            return _merge_and_slice(
+                max_sorted_arr_len,
                 left_arr_len,
                 left_arr,
                 right_arr_len,
@@ -131,7 +134,8 @@ namespace ProposalUtils:
             )
         else:
             assert sorted_arr[current_ix] = right_arr[right_arr_ix]
-            return _merge(
+            return _merge_and_slice(
+                max_sorted_arr_len,
                 left_arr_len,
                 left_arr,
                 right_arr_len,
@@ -142,24 +146,5 @@ namespace ProposalUtils:
                 right_arr_ix + 1,
             )
         end
-    end
-
-    # Slice the provided proposal info array, returning the portion of it from `start` to `start + size`.
-    func slice_array{range_check_ptr}(
-        start : felt,
-        size : felt,
-        arr : ProposalInfo*,
-        arr_len : felt,
-        acc : ProposalInfo*,
-        acc_len : felt,
-        current_index : felt,
-    ) -> (offset : felt):
-        if current_index == size:
-            return (start + current_index)
-        end
-
-        assert acc[current_index] = arr[start + current_index]
-
-        return slice_array(start, size, arr, arr_len, acc, acc_len + 1, current_index + 1)
     end
 end
