@@ -87,7 +87,8 @@ const FullAuction: React.FC<{
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library
+          library,
+          auction.balanceBlockTag?.toString(),
         );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
