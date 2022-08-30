@@ -8,12 +8,8 @@ import NameABI from '../abi/NameABI.json';
  * @param provider
  * @returns
  */
-export const getName = async (
-  commmunityAddress: string,
-  provider: Provider
-): Promise<string> => {
-  if (!ethers.utils.isAddress(commmunityAddress))
-    throw new Error('Community address is not valid');
+export const getName = async (commmunityAddress: string, provider: Provider): Promise<string> => {
+  if (!ethers.utils.isAddress(commmunityAddress)) throw new Error('Community address is not valid');
 
   const contract = new ethers.Contract(commmunityAddress, NameABI, provider);
 
