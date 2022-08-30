@@ -1,9 +1,9 @@
 import { strategies } from '../strategies';
 
 /**
- * Get strategy for community with address
+ * Get strategy for community with address from /strategies dir
  */
-export const getStrategy = (communityAddress: string) => {
+export const strategyForCommunity = (communityAddress: string) => {
   const strat = Object.entries(strategies).find(
     strat => strat[1].address.toLowerCase() === communityAddress.toLowerCase(),
   );

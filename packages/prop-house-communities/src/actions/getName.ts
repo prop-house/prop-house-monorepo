@@ -3,10 +3,7 @@ import { Provider } from '@ethersproject/providers';
 import NameABI from '../abi/NameABI.json';
 
 /**
- * Gets `name` from contract (assuming it complies w the ERC721 standard)
- * @param commmunityAddress
- * @param provider
- * @returns
+ * Gets `name` from contract (assuming it complies w the ERC721/ERC20 standard)
  */
 export const getName = async (commmunityAddress: string, provider: Provider): Promise<string> => {
   if (!ethers.utils.isAddress(commmunityAddress)) throw new Error('Community address is not valid');
@@ -16,7 +13,6 @@ export const getName = async (commmunityAddress: string, provider: Provider): Pr
   try {
     return await contract.name();
   } catch (e) {
-    console.log('error fetching name from address: ', e);
     throw e;
   }
 };
