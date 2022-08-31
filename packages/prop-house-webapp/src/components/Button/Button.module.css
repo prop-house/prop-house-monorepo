@@ -126,3 +126,24 @@
   background-color: var(--brand-green-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-green-semi-transparent) !important;
 }
+
+/* GRAY BG */
+
+.btnGrayBg {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: none;
+  color: var(--brand-gray);
+}
+
+.btnGrayBg:hover {
+  color: var(--brand-gray-semi-transparent);
+}
+
+.btnGrayBg:active,
+.btnGrayBg:focus {
+  color: var(--brand-gray);
+}
+
+.btnGrayBg:disabled {
+  color: var(--brand-gray-semi-transparent);
+}

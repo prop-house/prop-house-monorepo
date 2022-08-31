@@ -9,6 +9,7 @@ export enum ButtonColor {
   WhiteYellow,
   Green,
   Purple,
+  Gray,
 }
 const Button: React.FC<{
   text: string;
@@ -16,7 +17,7 @@ const Button: React.FC<{
   disabled?: boolean;
   onClick?: (e: any) => void;
   classNames?: string[] | string;
-}> = (props) => {
+}> = props => {
   const { text, bgColor, disabled, onClick, classNames } = props;
 
   const bgColorClass =
@@ -30,6 +31,8 @@ const Button: React.FC<{
       ? classes.btnYellowBg
       : bgColor === ButtonColor.Green
       ? classes.btnGreenBg
+      : bgColor === ButtonColor.Gray
+      ? classes.btnGrayBg
       : classes.btnWhiteYellowBg;
 
   return (
