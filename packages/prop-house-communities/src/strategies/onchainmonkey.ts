@@ -2,6 +2,7 @@ import { Strategy } from '../types/Strategy';
 import { ethers } from 'ethers';
 import { communityAddresses } from '../addresses';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
+import { parseBlockTag } from '../utils/parseBlockTag';
 
 /**
  * The sum of balanceOf from two communities: OnChain Monkey and Karma Monkey
@@ -26,8 +27,12 @@ export const onchainmonkey: Strategy = {
     );
 
     try {
-      const karmaVotes = await karmaContract.balanceOf(userAddress, { blockTag });
-      const ocmVotes = await ocmContract.balanceOf(userAddress, { blockTag });
+      const karmaVotes = await karmaContract.balanceOf(userAddress, {
+        blockTag: parseBlockTag(blockTag),
+      });
+      const ocmVotes = await ocmContract.balanceOf(userAddress, {
+        blockTag: parseBlockTag(blockTag),
+      });
 
       return ethers.BigNumber.from(karmaVotes).add(ethers.BigNumber.from(ocmVotes)).toNumber();
     } catch (e) {
