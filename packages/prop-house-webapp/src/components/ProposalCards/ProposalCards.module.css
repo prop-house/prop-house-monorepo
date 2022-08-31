@@ -1,3 +1,10 @@
+.propCardsRow {
+  width: 100%;
+}
+.propCardsCol {
+  padding: 0;
+}
+
 .propCards {
   display: flex;
   padding-top: 16px;
@@ -157,4 +164,44 @@
 }
 .totalVotes {
   color: var(--brand-gray);
+}
+
+@media (max-width: 767px) {
+  .propCardsRow {
+    display: flex;
+    flex-direction: column-reverse;
+    width: -webkit-fill-available;
+  }
+  .sideCards {
+    display: flex;
+    padding: 0;
+    gap: 8px;
+    margin-top: -16px;
+  }
+  .sidebarContainerCard {
+    flex: 1;
+    min-width: 250px !important;
+    height: max-content !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .carousel {
+    display: flex;
+    overflow-x: scroll;
+  }
+  ::-webkit-scrollbar {
+    width: 0; /* Remove scrollbar space */
+    background: transparent; /* Optional: just make scrollbar invisible */
+  }
+  .carousel {
+    padding: 0px 24px;
+  }
+  .breakOut {
+    width: 100vw;
+    max-width: none !important;
+    position: relative;
+    left: calc(-1 * (100vw - 100%) / 2);
+    height: max-content !important;
+  }
 }

@@ -1,5 +1,4 @@
 import ProposalCards from '../ProposalCards';
-
 import {
   StoredAuction,
   StoredProposalWithVotes,

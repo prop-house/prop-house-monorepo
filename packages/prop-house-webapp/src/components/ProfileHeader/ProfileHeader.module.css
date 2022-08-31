@@ -1,9 +1,3 @@
-.profileHeaderRow {
-  /* margin-bottom: 2rem; */
-
-  /* border-bottom: 2px solid red; */
-}
-
 .profilePicCol img {
   height: 15rem;
   width: auto;
@@ -64,7 +58,6 @@
 
 .item {
   display: flex;
-  /* align-items: center; */
   font-size: large;
   flex-direction: column;
 }
@@ -139,7 +132,6 @@
 }
 
 .backToAuction {
-  /* color: var(--brand-black-transparent); */
   color: rgba(20, 22, 27, 0.6);
   cursor: pointer;
   display: flex;
@@ -176,14 +168,17 @@
   top: 0px !important;
   align-self: flex-start;
   height: auto;
-  /* padding-bottom: 15px; */
 }
+@media (max-width: 576px) {
+  .infoBar {
+    flex-direction: column;
+  }
+}
+
 .leftSectionContainer {
-  /* border: 1px solid green; */
   align-self: flex-end;
 }
 .rightSectionContainer {
-  /* border: 1px solid blue; */
   display: flex;
   padding-bottom: 10px;
   gap: 50px;

@@ -133,7 +133,7 @@ const Community = () => {
       </Container>
 
       <div style={{ background: '#f5f5f5' }}>
-        <Container>
+        <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
             {community && activeAuction ? (
               <FullAuction

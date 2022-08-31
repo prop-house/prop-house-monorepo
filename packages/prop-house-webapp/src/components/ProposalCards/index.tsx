@@ -72,8 +72,8 @@ const ProposalCards: React.FC<{
   const winningIds = getWinningIds(proposals, auction);
 
   return (
-    <Row style={{ width: '100%' }}>
-      <Col xl={8}>
+    <Row className={classes.propCardsRow}>
+      <Col xl={8} className={classes.propCardsCol}>
         {proposals &&
           proposals.map((proposal, index) => {
             return (
@@ -96,7 +96,7 @@ const ProposalCards: React.FC<{
           })}
       </Col>
 
-      <Col xl={4}>
+      <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
         {account && hasSubmittedProp() && !auctionNotStarted && (
           <UserPropCard
             userProps={userProps}
