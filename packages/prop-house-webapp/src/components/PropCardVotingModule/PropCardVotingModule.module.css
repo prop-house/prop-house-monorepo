@@ -1,10 +1,7 @@
 .bottomContainer {
-  /* border-top: 1px var(--brand-gray-transparent) solid; */
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  /* margin-top: 1.5rem; */
-  /* padding-top: 1rem; */
   cursor: default;
   font-size: 14px;
 }
@@ -25,10 +22,10 @@
   justify-content: center;
   background-color: white;
   color: var(--brand-gray);
-  /* border: 1px var(--brand-gray-semi-transparent) solid; */
-  border-radius: 10px;
-  outline: 1px var(--brand-purple-hint) solid;
-  /* padding: 0px 6px; */
+  outline: 1px solid var(--brand-gray-semi-transparent);
+  border-radius: 6px;
+  height: 24px;
+  width: 24px;
 }
 
 .disabledVote {
@@ -37,21 +34,12 @@
 }
 
 .votesAllottedDisplay {
-  /* background-color: white;
-  color: var(--brand-gray);
-  border: 1px var(--brand-gray-semi-transparent) solid;
-  border-radius: 15px; */
-  /* width: 2.5rem;
-  height: 2.5rem;
-  width: 12px;
-  height: 12px; */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* margin: 0 0.3rem; */
-  /* padding: 0px 6px; */
   min-width: 20px;
   color: var(--brand-purple);
+  color: var(--brand-gray);
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
   -khtml-user-select: none; /* Konqueror HTML */
@@ -60,26 +48,34 @@
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
+.voteBtns {
+  display: flex;
+  gap: 2px;
+  padding-left: 6px;
+}
+
 .voteBtn {
   margin: 0 !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* width: 2.5rem;
-  height: 2.5rem;
-  width: 12px;
-  height: 12px; */
   width: 24px;
   height: 24px;
   font-family: system-ui;
   padding: 0px 6px 0px 6px;
-  border-radius: 10px;
-  /* border: 1px solid blue; */
+  border-radius: 6px !important;
+  height: 24px;
+  width: 24px;
 }
 .voteBtn:focus,
 .voteBtn:focus-visible,
 .voteBtn:active {
   box-shadow: none !important;
-  /* background-color: none !important; */
   outline: none !important;
+}
+.activelyAllotting {
+  outline: 1px solid var(--brand-purple-semi-transparent);
+}
+.activelyAllotting .votesAllottedDisplay {
+  color: var(--brand-purple) !important;
 }
