@@ -82,14 +82,19 @@ const FullAuction: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const votes = await getNumVotes(account, community.contractAddress, library);
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library,
+          auction.balanceBlockTag?.toString(),
+        );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community]);
+  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // fetch proposals
   useEffect(() => {

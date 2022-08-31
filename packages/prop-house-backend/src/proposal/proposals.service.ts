@@ -28,7 +28,7 @@ export class ProposalsService {
 
   findOne(id: number): Promise<Proposal> {
     return this.proposalsRepository.findOne(id, {
-      relations: ['votes'],
+      relations: ['votes', 'auction'],
       where: { visible: true },
     });
   }
