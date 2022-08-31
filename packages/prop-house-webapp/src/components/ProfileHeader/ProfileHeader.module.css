@@ -68,6 +68,10 @@
 .itemTitle {
   color: var(--brand-gray);
   font-size: 13px;
+  font-weight: 700;
+}
+.purpleText {
+  color: var(--brand-purple);
 }
 .itemData {
   font-weight: bold;

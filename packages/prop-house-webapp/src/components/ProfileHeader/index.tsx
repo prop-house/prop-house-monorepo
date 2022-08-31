@@ -108,7 +108,9 @@ const ProfileHeader: React.FC<{
               {auction ? (
                 <>
                   {/* to fix */}
-                  <div className={classes.itemTitle}>Deadline (to fix)</div>
+                  <div className={clsx(classes.itemTitle, classes.purpleText)}>
+                    Deadline (to fix)
+                  </div>
 
                   <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
                 </>
