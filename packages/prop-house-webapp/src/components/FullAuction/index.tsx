@@ -79,14 +79,19 @@ const FullAuction: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const votes = await getNumVotes(account, community.contractAddress, library);
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library,
+          auction.balanceBlockTag?.toString(),
+        );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community]);
+  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // fetch proposals
   useEffect(() => {
@@ -130,6 +135,7 @@ const FullAuction: React.FC<{
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
 
+
     const votesForProps =
       proposals &&
       voteAllotments.sort((a, b) => a.proposalId - b.proposalId).filter(a => a.votes > 0);
@@ -144,6 +150,7 @@ const FullAuction: React.FC<{
           title: findProposalById(p.proposalId, proposals)?.title,
           votes: p.votes,
         }),
+
       );
 
     setShowVotingModal(true);
@@ -151,8 +158,7 @@ const FullAuction: React.FC<{
     try {
       setPropsWithVotes(propsWithVotes.sort((a, b) => b.votes - a.votes));
     } catch (e) {
-      console.log('e up', e);
-
+      console.log('e', e);
       setErrorModalMessage({
         title: 'oops, sorry',
         message: 'We failed to process your votes. Please try again.',
@@ -181,6 +187,7 @@ const FullAuction: React.FC<{
         title: 'Failed to submit votes',
         message: 'Please go back and try again.',
         image: 'banana.png',
+
       });
       setShowErrorModal(true);
     }

@@ -59,6 +59,9 @@ export class Auction {
   @Column({ nullable: true })
   lastUpdatedDate: Date;
 
+  @Column({default: "latest"})
+  balanceBlockTag: string;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
