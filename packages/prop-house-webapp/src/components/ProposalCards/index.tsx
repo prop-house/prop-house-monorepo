@@ -15,11 +15,10 @@ import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { MdOutlineLightbulb as BulbIcon, MdHowToVote as VoteIcon } from 'react-icons/md';
-// import RoundMessage from '../RoundMessage';
 import dayjs from 'dayjs';
-import { findProposalByAddress } from '../../utils/findProposalByAddress';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
+import UserPropCard from '../UserPropCard';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -52,23 +51,23 @@ const ProposalCards: React.FC<{
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
 
-  // auction status
+  // auction statuses
+  const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
-  const hasSubmittedProp = () => account && proposals && proposals.some(p => p.address === account);
   const getVoteTotal = () =>
     proposals && proposals.reduce((total, prop) => (total = total + Number(prop.score)), 0);
-  // proposals && account && console.log('hasSubmittedProp', hasSubmittedProp());
 
-  // proposals &&
-  //   account &&
-  //   console.log('findProposalByAddress', findProposalByAddress(account, proposals));
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const myProp =
-    account && proposals && hasSubmittedProp() && findProposalByAddress(account, proposals);
+  const hasSubmittedProp = () => account && proposals && proposals.some(p => p.address === account);
+  const userProps =
+    account &&
+    proposals &&
+    hasSubmittedProp() &&
+    proposals
+      .filter(p => p.address === account)
+      .sort((a: { score: any }, b: { score: any }) => (Number(a.score) < Number(b.score) ? 1 : -1));
 
   const winningIds = getWinningIds(proposals, auction);
 
@@ -98,35 +97,16 @@ const ProposalCards: React.FC<{
       </Col>
 
       <Col xl={4}>
-        {/* VOTING, CONNECTED, YOUR PROP */}
-        {/* {isVotingWindow && account && hasSubmittedProp() && (
-          <Card
-            bgColor={CardBgColor.White}
-            borderRadius={CardBorderRadius.thirty}
-            classNames={clsx(classes.sidebarContainerCard, classes.userPropCard)}
-          >
-            
-          <p className={classes.userPropTitle}>{myProp && myProp.title}</p>
-
-            <div className={classes.userPropInfo}>
-              <div className={classes.userPropItem}>
-                <div>
-                  <VoteIcon />
-                </div>
-                <div>
-                  x<sup>th</sup> place
-                </div>
-              </div>
-
-              <div className={classes.userPropItem}>
-                <div>
-                  <VoteIcon />
-                </div>
-                <div>{myProp && `${myProp.score} votes`}</div>
-              </div>
-            </div>
-          </Card>
-        )} */}
+        {account && hasSubmittedProp() && !auctionNotStarted && (
+          <UserPropCard
+            userProps={userProps}
+            proposals={proposals}
+            numOfWinners={auction.numWinners}
+            status={auctionStatus(auction)}
+            winningIds={winningIds && winningIds}
+            totalVotes={getVoteTotal()}
+          />
+        )}
 
         <Card
           bgColor={CardBgColor.White}
@@ -168,12 +148,7 @@ const ProposalCards: React.FC<{
                       </p>
                     </div>
 
-                    {/*
-                     *
-                     * to be added back in
-                     *
-                     */}
-
+                    {/* tbd */}
                     {/* <div className={classes.bulletItem}>
                       <hr className={classes.bullet} />
                       <p>
@@ -207,8 +182,8 @@ const ProposalCards: React.FC<{
                   <div className={classes.textContainer}>
                     <p className={classes.title}>Voting in progress</p>
                     <p className={classes.subtitle}>
-                      <span className={classes.purpleText}>{getVoteTotal()}</span> votes cast so
-                      far!
+                      <span className={classes.purpleText}>{getVoteTotal()}</span>{' '}
+                      {getVoteTotal() === 1 ? 'vote' : 'votes'} cast so far!
                     </p>
                   </div>
                 </div>
@@ -259,7 +234,6 @@ const ProposalCards: React.FC<{
                 >
                   <ProgressBar
                     variant="success"
-                    // now={submittedVotesCount}
                     now={
                       100 -
                       Math.abs(((submittedVotesCount ?? 0) - delegatedVotes) / delegatedVotes) * 100
@@ -290,7 +264,8 @@ const ProposalCards: React.FC<{
                     <p className={classes.title}>Voting ended</p>
                     {proposals && (
                       <p className={classes.subtitle}>
-                        {getVoteTotal()} votes cast for {proposals.length} props!
+                        {getVoteTotal()} {getVoteTotal() === 1 ? 'vote' : 'votes'} cast for{' '}
+                        {proposals.length} props!
                       </p>
                     )}
                   </div>
@@ -333,8 +308,6 @@ const ProposalCards: React.FC<{
                 bgColor={ButtonColor.Purple}
                 onClick={handleVote}
                 disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
-
-                // disabled={!canAllotVotes()}
               />
             ) : null}
           </div>
