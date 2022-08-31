@@ -301,14 +301,14 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-            {isVotingWindow && account && delegatedVotes ? (
+            {isVotingWindow && account && delegatedVotes && (
               <Button
                 text={'Submit votes'}
                 bgColor={ButtonColor.Purple}
                 onClick={handleVote}
                 disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
               />
-            ) : null}
+            )}
           </div>
         </Card>
       </Col>
