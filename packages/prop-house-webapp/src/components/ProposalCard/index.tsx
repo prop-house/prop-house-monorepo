@@ -93,12 +93,12 @@ const ProposalCard: React.FC<{
 
             <div className={classes.avatarAndPropNumber}>
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {auctionStatus === AuctionStatus.AuctionVoting && (
+                {(auctionStatus === AuctionStatus.AuctionVoting ||
+                  auctionStatus === AuctionStatus.AuctionEnded) && (
                   <div className={classes.scoreAndIcon}>
                     <VoteIcon /> {proposal.score}
                   </div>
                 )}
-
                 {cardStatus === ProposalCardStatus.Voting &&
                   votesFor !== undefined &&
                   voteAllotments &&
