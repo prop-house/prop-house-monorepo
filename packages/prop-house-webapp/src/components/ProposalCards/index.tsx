@@ -208,15 +208,14 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING WINDOW WITH VOTES: PROGRESS BAR */}
-            {isVotingWindow && account && delegatedVotes && votesLeft ? (
+            {isVotingWindow && account && delegatedVotes && (
               <>
                 <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
                   <span>Cast your votes</span>
 
                   <span className={classes.totalVotes}>{`${
-                    votesLeft > 0
-                      ? // ? `${votesLeft && votesLeft} left`
-                        `${
+                    votesLeft && votesLeft > 0
+                      ? `${
                           delegatedVotes - (submittedVotesCount ?? 0) - (numAllottedVotes ?? 0)
                         } left`
                       : 'no votes left'
@@ -242,7 +241,7 @@ const ProposalCards: React.FC<{
 
                   <ProgressBar
                     variant="warning"
-                    now={Math.abs((votesLeft - delegatedVotes) / delegatedVotes) * 100}
+                    now={Math.abs(((votesLeft ?? 0) - delegatedVotes) / delegatedVotes) * 100}
                     key={2}
                   />
                 </ProgressBar>
@@ -251,7 +250,7 @@ const ProposalCards: React.FC<{
                   {<>Nouns get 10 votes per each Noun they hold or are delegated.</>}
                 </p>
               </>
-            ) : null}
+            )}
 
             {/* ROUND ENDED */}
             {isRoundOver && (
