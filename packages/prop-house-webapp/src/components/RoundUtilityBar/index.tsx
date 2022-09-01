@@ -1,0 +1,140 @@
+import classes from './RoundUtilityBar.module.css';
+import RoundDropdown from '../RoundDropdown';
+import clsx from 'clsx';
+import { auctionStatus, AuctionStatus, deadlineTime } from '../../utils/auctionStatus';
+import diffTime from '../../utils/diffTime';
+import SortToggles from '../SortToggles';
+import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Col } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+
+export interface RoundUtilityBarProps {
+  community: Community;
+  auction: StoredAuction;
+}
+
+const RoundUtilityBar = ({ community, auction }: RoundUtilityBarProps) => {
+  const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
+  const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
+  // const auctionNotStarted = auction && auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
+  const allowSortByVotes = auctionVoting || auctionEnded;
+
+  const [datesSorted, setDatesSorted] = useState(false);
+  const [dateAscending, setDateAscending] = useState(false);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
+  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
+
+  const [sortSelection, setSortSelection] = useState<number>(auctionEnded ? 2 : 0);
+  const { t } = useTranslation();
+
+  return (
+    <div className={classes.roundUtilityBar}>
+      <div className={classes.utilitySection}>
+        <div className={classes.sortToggles}>
+          <SortToggles
+            auction={auction}
+            datesSorted={datesSorted}
+            setDatesSorted={setDatesSorted}
+            dateAscending={dateAscending}
+            setDateAscending={setDateAscending}
+            votesSorted={votesSorted}
+            setVotesSorted={setVotesSorted}
+            votesAscending={votesAscending}
+            setVotesAscending={setVotesAscending}
+          />
+        </div>
+
+        <div className={clsx(classes.dropdown, 'houseDropdown')}>
+          <RoundDropdown
+            sortSelection={sortSelection}
+            setSortSelection={setSortSelection}
+            allowSortByVotes={allowSortByVotes}
+          />
+        </div>
+      </div>
+
+      <div className={classes.utilitySection}>
+        <Col className={classes.propHouseDataRow}>
+          <div className={classes.item}>
+            {auction ? (
+              <>
+                {/* to fix */}
+                <div className={clsx(classes.itemTitle, classes.purpleText)}>Deadline (to fix)</div>
+
+                <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+              </>
+            ) : (
+              <>
+                <div className={classes.itemTitle}>Deadline</div>
+                <div className={classes.itemData}>-</div>
+              </>
+            )}
+          </div>
+
+          <div className={classes.item}>
+            <div className={classes.itemTitle}>{t('funding')}</div>
+
+            <div className={classes.itemData}>
+              {auction ? `${auction.fundingAmount.toFixed(2)} Ξ x ${auction.numWinners}` : '-'}
+            </div>
+          </div>
+
+          <div className={clsx(classes.item, classes.proposalCountItem)}>
+            <div className={classes.itemTitle}>
+              {community?.numProposals === 1 ? 'Proposal' : 'Proposals'}
+            </div>
+            <div className={classes.itemData}>
+              {community && auction ? community.numProposals : '-'}
+            </div>
+          </div>
+        </Col>
+      </div>
+    </div>
+
+    // <div className={classes.infoBar}>
+    //   <div className={classes.leftSectionContainer}>
+    //     <SortToggles auction={auction} />
+    //   </div>
+
+    //   <div className={classes.rightSectionContainer}>
+    //     <Col className={classes.propHouseDataRow}>
+    //       <div className={classes.item}>
+    //         {auction ? (
+    //           <>
+    //             {/* to fix */}
+    //             <div className={clsx(classes.itemTitle, classes.purpleText)}>Deadline (to fix)</div>
+
+    //             <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+    //           </>
+    //         ) : (
+    //           <>
+    //             <div className={classes.itemTitle}>Deadline</div>
+    //             <div className={classes.itemData}>-</div>
+    //           </>
+    //         )}
+    //       </div>
+
+    //       <div className={classes.item}>
+    //         <div className={classes.itemTitle}>{t('funding')}</div>
+
+    //         <div className={classes.itemData}>
+    //           {auction ? `${auction.fundingAmount.toFixed(2)} Ξ x ${auction.numWinners}` : '-'}
+    //         </div>
+    //       </div>
+
+    //       <div className={classes.item}>
+    //         <div className={classes.itemTitle}>
+    //           {community?.numProposals === 1 ? 'Proposal' : 'Proposals'}
+    //         </div>
+    //         <div className={classes.itemData}>
+    //           {community && auction ? community.numProposals : '-'}
+    //         </div>
+    //       </div>
+    //     </Col>
+    //   </div>
+    // </div>
+  );
+};
+
+export default RoundUtilityBar;
