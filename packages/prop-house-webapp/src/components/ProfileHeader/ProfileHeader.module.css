@@ -36,49 +36,6 @@
   letter-spacing: 0.2px;
 }
 
-.subInfoRow {
-  display: flex;
-  font-size: medium;
-  color: var(--brand-gray);
-}
-
-.subInfoRow div:nth-child(2) {
-  margin-left: 1rem;
-}
-
-.propHouseDataRow {
-  display: flex;
-}
-.propHouseDataRow .item:nth-child(1) {
-  margin-left: 0;
-}
-.propHouseDataRow .item {
-  margin-right: 2rem;
-}
-
-.item {
-  display: flex;
-  font-size: large;
-  flex-direction: column;
-}
-.item:not(:last-child) {
-  border-right: 1px solid var(--brand-gray-transparent);
-  padding-right: 25px;
-}
-.itemTitle {
-  color: var(--brand-gray);
-  font-size: 13px;
-  font-weight: 700;
-}
-.purpleText {
-  color: var(--brand-purple);
-}
-.itemData {
-  font-weight: bold;
-  font-size: 18px;
-  margin-right: 0.5rem;
-}
-
 .communityDescriptionRow p {
   font-size: large;
   color: var(--brand-gray);
@@ -103,7 +60,6 @@
   .profileHeaderRow {
     margin-bottom: 0rem;
   }
-
   .profilePicCol {
     text-align: center;
     margin-bottom: 1rem;
@@ -114,15 +70,6 @@
   }
   .communityInfoCol {
     margin: 0 1rem;
-  }
-  .propHouseDataRow .item {
-    margin-right: 0.75rem;
-  }
-  .subInfoRow {
-    display: block;
-  }
-  .spacer {
-    display: none;
   }
   .phLink {
     margin-top: 1rem;
@@ -162,28 +109,17 @@
   }
 }
 
-.infoBar {
-  padding-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  position: sticky !important;
-  position: fixed;
-
-  top: 0px !important;
-  align-self: flex-start;
-  height: auto;
-}
-@media (max-width: 576px) {
-  .infoBar {
-    flex-direction: column;
+@media (max-width: 575px) {
+  .stickyContainer {
+    padding: 12px 0px 8px 0px;
   }
 }
 
-.leftSectionContainer {
-  align-self: flex-end;
-}
-.rightSectionContainer {
-  display: flex;
-  padding-bottom: 10px;
-  gap: 50px;
+.stickyContainer {
+  background: white;
+  top: 0;
+  position: sticky !important;
+  z-index: 9;
+  padding-top: 12px;
+  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.05) !important;
 }

@@ -21,10 +21,12 @@ import NotFound from '../../NotFound';
 import { Container } from 'react-bootstrap';
 import classes from './Community.module.css';
 import RoundMessage from '../../RoundMessage';
+import RoundUtilityBar from '../../RoundUtilityBar';
 
 const Community = () => {
   const location = useLocation();
-  const slug = location.pathname.substring(1, location.pathname.length);
+  // const slug = location.pathname.substring(1, location.pathname.length);
+  const slug = location.pathname.substring(1).split('/')[0];
 
   const isValidAddress = slug && ethers.utils.isAddress(slug);
 
@@ -52,6 +54,7 @@ const Community = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
 
+        console.log('c', community);
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
@@ -114,8 +117,14 @@ const Community = () => {
       : [false, false];
   };
 
+  console.log('isValidAddress', isValidAddress);
+  console.log('failedFetch', failedFetch);
+
   if (!community && !failedFetch) return <LoadingIndicator />;
   if (!isValidAddress && failedFetch) return <NotFound />;
+
+  console.log('11community', community);
+  console.log('11activeAuction', activeAuction);
 
   return (
     <>
@@ -131,6 +140,14 @@ const Community = () => {
         />
         {/* )} */}
       </Container>
+      {/* utility bar */}
+      {community && activeAuction && (
+        <div className={classes.stickyContainer}>
+          <Container>
+            <RoundUtilityBar community={community} auction={activeAuction} />
+          </Container>
+        </div>
+      )}
 
       <div style={{ background: '#f5f5f5' }}>
         <Container className={classes.cardsContainer}>

@@ -83,7 +83,7 @@ const FullAuction: React.FC<{
           account,
           community.contractAddress,
           library,
-          auction.balanceBlockTag?.toString(),
+          // auction.balanceBlockTag?.toString(),
         );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
@@ -189,7 +189,7 @@ const FullAuction: React.FC<{
       setShowErrorModal(true);
     }
   };
-
+  console.log('community2', community);
   return (
     <>
       {/* <<<<<<< HEAD

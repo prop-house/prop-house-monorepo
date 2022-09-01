@@ -42,16 +42,6 @@
   letter-spacing: 0.2px;
 }
 
-.subInfoRow {
-  display: flex;
-  font-size: medium;
-  color: var(--brand-gray);
-}
-
-.subInfoRow div:nth-child(2) {
-  margin-left: 1rem;
-}
-
 .propHouseDataRow {
   display: flex;
   padding-bottom: 16px;
@@ -132,12 +122,7 @@
   .propHouseDataRow .item {
     margin-right: 0.75rem;
   }
-  .subInfoRow {
-    display: block;
-  }
-  .spacer {
-    display: none;
-  }
+
   .phLink {
     margin-top: 1rem;
   }
@@ -155,28 +140,22 @@
     gap: 24px;
     margin-bottom: 50px;
   }
-
   .profilePicCol {
     margin-bottom: 0rem;
     margin-top: 40px;
   }
-
   .communityInfoCol {
     margin: 0px 4px;
   }
-
   .profilePicCol img {
     width: 88px;
     height: 88px;
   }
-  .propHouseDataRow {
-    padding-bottom: 0px;
-  }
+
   .houseTitleInfo {
     align-self: center;
     border: none;
   }
-
   .communityDescriptionRow {
     border-top: 1px solid var(--border-light);
     padding-top: 24px;

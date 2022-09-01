@@ -101,6 +101,7 @@ const ProposalCard: React.FC<{
                     <VoteIcon /> {proposal.score}
                   </div>
                 )}
+
                 {cardStatus === ProposalCardStatus.Voting &&
                   votesFor !== undefined &&
                   voteAllotments &&

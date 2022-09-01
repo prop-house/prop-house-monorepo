@@ -31,9 +31,12 @@ const Round = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug!));
 
+        console.log('c2', community2);
+
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
 
-        dispatch(setActiveCommunity(community));
+        // dispatch(setActiveCommunity(community));
+        dispatch(setActiveCommunity(community2));
 
         dispatch(
           setActiveAuction(
@@ -46,7 +49,9 @@ const Round = () => {
         console.log(e);
       }
     };
+
     fetchCommunity();
+
     return () => {
       cleanedUp.current = true;
       dispatch(setActiveCommunity());
@@ -54,6 +59,10 @@ const Round = () => {
       // dispatch(setActiveProposals([]));
     };
   }, [community, dispatch, isValidAddress, slug, title]);
+
+  console.log('state', state);
+  console.log('community', community);
+  console.log('activeAuction', activeAuction);
 
   return (
     <>
