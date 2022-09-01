@@ -7,12 +7,13 @@ import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import { VoteAllotment } from '../../utils/voteAllotment';
-import PropCardVotingContainer from '../PropCardVotingContainer';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
+import PropCardVotingModule from '../PropCardVotingModule';
+import { MdHowToVote as VoteIcon } from 'react-icons/md';
+// import { useTranslation } from 'react-i18next';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -23,6 +24,7 @@ const ProposalCard: React.FC<{
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
   fromHome?: boolean;
+  winner?: boolean;
 }> = props => {
   const {
     proposal,
@@ -33,8 +35,9 @@ const ProposalCard: React.FC<{
     canAllotVotes,
     handleVoteAllotment,
     fromHome,
+    winner,
   } = props;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   let navigate = useNavigate();
 
@@ -51,7 +54,7 @@ const ProposalCard: React.FC<{
       >
         <Card
           bgColor={CardBgColor.White}
-          borderRadius={CardBorderRadius.twenty}
+          borderRadius={CardBorderRadius.thirty}
           classNames={clsx(
             cardStatus === ProposalCardStatus.Voting
               ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
@@ -59,14 +62,14 @@ const ProposalCard: React.FC<{
               ? globalClasses.pinkBorder
               : '',
             classes.proposalCard,
+            winner && classes.winner,
           )}
         >
-          <div className={classes.titleContainer}>
-            <div className={classes.authorContainer}>{proposal.title}</div>
-            <div className={classes.timestamp}>#{proposal.id}</div>
-          </div>
+          <div className={classes.textContainter}>
+            <div className={classes.titleContainer}>
+              <div className={classes.authorContainer}>{proposal.title}</div>
+            </div>
 
-          {proposal.tldr.length > 0 && (
             <ReactMarkdown
               className={classes.truncatedTldr}
               children={proposal.tldr}
@@ -77,44 +80,50 @@ const ProposalCard: React.FC<{
                 h3: 'p',
               }}
             ></ReactMarkdown>
-          )}
+          </div>
+
+          <hr className={classes.divider} />
 
           <div className={classes.timestampAndlinkContainer}>
-            {auctionStatus === AuctionStatus.AuctionVoting ||
-            (auctionStatus === AuctionStatus.AuctionEnded &&
-              cardStatus !== ProposalCardStatus.Voting) ? (
-              <div className={classes.scoreCopy}>
-                {t('votes')}: {Math.trunc(proposal.score)}
-              </div>
-            ) : (
-              <div className={classes.address}>
-                <EthAddress address={proposal.address} truncate />
-              </div>
-            )}
-
-            <div className={classes.avatarAndPropNumber}>
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+            <div className={classes.address}>
+              <EthAddress address={proposal.address} truncate />
+              <span className={classes.bullet}>{' • '}</span>
+              <div className={classes.date} title={detailedTime(proposal.createdDate)}>
                 {diffTime(proposal.createdDate)}
               </div>
             </div>
-          </div>
 
-          {cardStatus === ProposalCardStatus.Voting &&
-            votesFor !== undefined &&
-            voteAllotments &&
-            canAllotVotes &&
-            handleVoteAllotment && (
-              <PropCardVotingContainer
-                props={{
-                  proposal,
-                  cardStatus,
-                  votesFor,
-                  voteAllotments,
-                  canAllotVotes,
-                  handleVoteAllotment,
-                }}
-              />
-            )}
+            <div className={classes.avatarAndPropNumber}>
+              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+                {(auctionStatus === AuctionStatus.AuctionVoting ||
+                  auctionStatus === AuctionStatus.AuctionEnded) && (
+                  <div className={classes.scoreAndIcon}>
+                    <VoteIcon /> {proposal.score}
+                  </div>
+                )}
+                {cardStatus === ProposalCardStatus.Voting &&
+                  votesFor !== undefined &&
+                  voteAllotments &&
+                  canAllotVotes &&
+                  handleVoteAllotment && (
+                    <div className={classes.votingArrows}>
+                      <span className={classes.plusArrow}>+</span>
+
+                      <PropCardVotingModule
+                        props={{
+                          proposal,
+                          cardStatus,
+                          votesFor,
+                          voteAllotments,
+                          canAllotVotes,
+                          handleVoteAllotment,
+                        }}
+                      />
+                    </div>
+                  )}
+              </div>
+            </div>
+          </div>
         </Card>
       </div>
     </>

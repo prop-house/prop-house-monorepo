@@ -1,9 +1,10 @@
-import { Row, Col } from "react-bootstrap";
-import classes from "./PropCardVotingContainer.module.css";
-import { ProposalCardStatus } from "../../utils/cardStatus";
-import { VoteAllotment, votesForProp } from "../../utils/voteAllotment";
-import { StoredProposal } from "@nouns/prop-house-wrapper/dist/builders";
-import Button, { ButtonColor } from "../Button";
+import { Row, Col } from 'react-bootstrap';
+import classes from './PropCardVotingModule.module.css';
+import { ProposalCardStatus } from '../../utils/cardStatus';
+import { VoteAllotment, votesForProp } from '../../utils/voteAllotment';
+import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import Button, { ButtonColor } from '../Button';
+import clsx from 'clsx';
 
 interface PropCardVotingContainerProps {
   proposal: StoredProposal;
@@ -14,7 +15,7 @@ interface PropCardVotingContainerProps {
   handleVoteAllotment: (proposalId: number, support: boolean) => void;
 }
 
-const PropCardVotingContainer: React.FC<{
+const PropCardVotingModule: React.FC<{
   props: PropCardVotingContainerProps;
 }> = props => {
   const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } = props.props;
@@ -23,24 +24,33 @@ const PropCardVotingContainer: React.FC<{
 
   const handleClick = (e: any, direction: boolean) => {
     e.stopPropagation();
+
     handleVoteAllotment(proposal.id, direction);
   };
 
   return (
     <Row>
       <Col xs={12} className={classes.bottomContainer} onClick={(e: any) => e.stopPropagation()}>
-        <div className={classes.votesButtonContainer}>
+        <div
+          className={clsx(
+            classes.votesModuleContainer,
+            allottedVotesForProp > 0 && classes.activelyAllotting,
+          )}
+        >
+          <div className={classes.votesAllottedDisplay}> {allottedVotesForProp} </div>
+        </div>
+
+        <div className={classes.voteBtns}>
           <Button
             text="↓"
-            bgColor={ButtonColor.Yellow}
+            bgColor={allottedVotesForProp > 0 ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClick(e, false)}
             disabled={allottedVotesForProp === 0}
           />
-          <div className={classes.votesAllottedDisplay}>{allottedVotesForProp}</div>
           <Button
             text="↑"
-            bgColor={ButtonColor.Yellow}
+            bgColor={allottedVotesForProp > 0 ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClick(e, true)}
             disabled={!canAllotVotes()}
@@ -51,4 +61,4 @@ const PropCardVotingContainer: React.FC<{
   );
 };
 
-export default PropCardVotingContainer;
+export default PropCardVotingModule;

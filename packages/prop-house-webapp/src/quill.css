@@ -79,8 +79,11 @@ pre {
   width: 100%;
   height: 100%;
   z-index: 10;
-  background: rgba(0, 0, 0, 0.6) !important;
-  backdrop-filter: blur(10px);
+  /* background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(10px); */
+  background: rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 blockquote {

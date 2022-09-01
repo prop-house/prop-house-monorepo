@@ -79,6 +79,7 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal, community]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const buildRoundPath = (community: CommunityWithAuctions) => {
     const round = community.auctions.filter(
       r => nameToSlug(r.title.toString()) === nameToSlug(roundTitle!),
@@ -90,6 +91,7 @@ const Proposal = () => {
 
   return (
     <>
+      {/* <<<<<<< HEAD
       {proposal ? (
         <Container>
           <RenderedProposalFields
@@ -121,6 +123,37 @@ const Proposal = () => {
       ) : (
         <LoadingIndicator />
       )}
+======= */}
+      <Container>
+        {proposal ? (
+          <>
+            <RenderedProposalFields
+              fields={proposalFields(proposal)}
+              address={proposal.address}
+              proposalId={proposal.id}
+              community={community}
+              backButton={
+                <div
+                  className={classes.backToAuction}
+                  onClick={() => {
+                    isEntryPoint && community
+                      ? navigate(`/${nameToSlug(community.name)}`)
+                      : navigate(-1);
+                  }}
+                >
+                  <IoArrowBackCircleOutline size={'1.5rem'} />
+                  <span>Back</span>
+                </div>
+              }
+            />
+          </>
+        ) : failedFetch ? (
+          <NotFound />
+        ) : (
+          <LoadingIndicator />
+        )}
+      </Container>
+      {/* >>>>>>> prop-169-new-round-ui */}
     </>
   );
 };

@@ -1,0 +1,14 @@
+.propCards {
+  display: flex;
+  padding-top: 16px;
+}
+
+@media (max-width: 767px) {
+  .cardsContainer {
+    max-width: none;
+    padding: 32px 40px;
+  }
+  .propCards {
+    padding-top: 0px;
+  }
+}

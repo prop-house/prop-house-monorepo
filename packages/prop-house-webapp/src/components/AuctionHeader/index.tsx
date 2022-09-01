@@ -19,7 +19,7 @@ import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import { useTranslation } from 'react-i18next';
 import FundingAmount from '../FundingAmount';
-
+import { HiArrowSmLeft, HiArrowSmRight } from 'react-icons/hi';
 /**
  * @param clickable sets the entire card to be a button to click through to the round's page
  */
@@ -64,6 +64,21 @@ const AuctionHeader: React.FC<{
     >
       <div className={classes.row}>
         <div className={classes.leftSectionContainer}>
+          {/* <<<<<<< HEAD */}
+          <div className={classes.arrowsContainer}>
+            <HiArrowSmLeft
+              size={'2rem'}
+              // onClick={() => handleAuctionChange(true)}
+              // className={isFirstOrLastAuction()[1] ? classes.disable : classes.able}
+            />
+            <HiArrowSmRight
+              size={'2rem'}
+              // onClick={() => handleAuctionChange(false)}
+              // className={isFirstOrLastAuction()[0] ? classes.disable : classes.able}
+            />
+          </div>
+          {/* >>>>>>> prop-169-new-round-ui */}
+
           <div className={classes.titleSectionContainer}>
             <div className={classes.leftSectionTitle}>
               {auction.title}
@@ -88,7 +103,7 @@ const AuctionHeader: React.FC<{
             <div className={classes.infoSubsectionTitle}>{t('funding')}</div>
             <div className={classes.infoSubsectionContent}>
               <FundingAmount amount={fundingAmount} currencyType={currencyType} />
-              <span>× {numWinners}</span>
+              <span>x {numWinners}</span>
             </div>
           </div>
           <div className={classes.infoSubsection}>
@@ -138,7 +153,7 @@ const AuctionHeader: React.FC<{
       {/* 
       When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
       */}
-      <div className={classes.hideBorderBox}></div>
+      {/* <div className={classes.hideBorderBox}></div> */}
       <Row className={classes.votingRow}>
         <Col xl={12}>
           {!onAuctionPage && clickable ? <Link to={`auction/${id}`}>{content}</Link> : content}

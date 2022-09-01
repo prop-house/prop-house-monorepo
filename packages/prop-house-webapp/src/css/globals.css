@@ -90,6 +90,7 @@ body {
   }
 }
 
+<<<<<<< HEAD
 /* dropdown-basic */
 .houseDropdown .dropdown button {
   display: flex;
@@ -144,4 +145,21 @@ body {
   box-shadow: none !important;
   background: var(--bg-med);
   border: 1px solid rgba(102, 102, 102, 0.6);
+
+/* voting progress bar */
+.bg-success {
+  background: var(--brand-purple) !important;
+  border-radius: 6px 2px 2px 6px;
+}
+.bg-warning {
+  background: var(--brand-purple-transparent) !important;
+
+  /* only round border when there are already submitted votes
+  as in we're ADDING more than one. so numAllotedVotes > 0 && .roundBorder */
+}
+/* .bg-warning */
+.roundAllotmentBar .bg-warning {
+  border-radius: 2px 6px 6px 2px !important;
+  margin-left: 2px;
+
 }

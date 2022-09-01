@@ -1,14 +1,19 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './ProfileHeader.module.css';
-import trimEthAddress from '../../utils/trimEthAddress';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import { useState } from 'react';
-import CommunityProfImg from '../CommunityProfImg';
+import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
-import Tooltip from '../Tooltip';
 import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
+import { IoArrowBackCircleOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
+import formatTime from '../../utils/formatTime';
+import SortToggles from '../SortToggles';
+import {
+  // AuctionStatus,
+  deadlineTime,
+} from '../../utils/auctionStatus';
+import diffTime from '../../utils/diffTime';
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -27,19 +32,30 @@ const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props
 const ProfileHeader: React.FC<{
   community?: Community;
   inactiveComm?: InactiveCommunity;
+  auction?: StoredAuction;
 }> = props => {
-  const { community, inactiveComm } = props;
+  const { community, inactiveComm, auction } = props;
+  const navigate = useNavigate();
 
-  const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
   const { t } = useTranslation();
 
   return (
     <Row className={classes.profileHeaderRow}>
-      <Col lg={4} className={classes.profilePicCol}>
-        <CommunityProfImg community={community} />
-      </Col>
       <Col>
-        <Col className={classes.communityInfoCol}>
+        <div
+          className={classes.backToAuction}
+          onClick={() => {
+            navigate(`/`);
+          }}
+        >
+          <IoArrowBackCircleOutline size={'1.5rem'} />
+          <span>{community && community.name}</span>
+        </div>
+
+        <Col lg={5} className={classes.communityInfoCol}>
+          <div className={classes.date}>
+            {auction && `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
+          </div>
           <Col
             className={clsx(
               classes.titleRow,
@@ -47,50 +63,9 @@ const ProfileHeader: React.FC<{
                 (isLongName(inactiveComm ? inactiveComm.name : '') && classes.longName),
             )}
           >
-            <div className={classes.title}>{community ? community.name : inactiveComm?.name}</div>
-            <Tooltip
-              content={
-                <div
-                  className={classes.contractAddressPill}
-                  onMouseEnter={() => setAddressTooltipCopy('Click to copy')}
-                  onClick={() => {
-                    setAddressTooltipCopy('Copied!');
-                    navigator.clipboard.writeText(
-                      community
-                        ? community.contractAddress
-                        : inactiveComm
-                        ? inactiveComm.contractAddress
-                        : '0x0000000000000000000000000000000000000000',
-                    );
-                  }}
-                >
-                  {trimEthAddress(
-                    community
-                      ? community.contractAddress
-                      : inactiveComm
-                      ? inactiveComm.contractAddress
-                      : '0x0000000000000000000000000000000000000000',
-                  )}
-                </div>
-              }
-              tooltipContent={addressTooltipCopy}
-            />
-          </Col>
-
-          <Col className={classes.propHouseDataRow}>
-            <div className={classes.item}>
-              <div className={classes.itemData}>{community ? community.ethFunded : 0} Ξ</div>
-              <div className={classes.itemTitle}>{t('funded')}</div>
-            </div>
-            <div className={classes.item}>
-              <div className={classes.itemData}>{community ? community.numProposals : 0}</div>
-              <div className={classes.itemTitle}>{t('proposals2')}</div>
-            </div>
-            <div className={classes.item}>
-              <div className={classes.itemData}>{community ? community.numAuctions : 0}</div>
-              <div className={classes.itemTitle}>
-                {community?.numAuctions === 1 ? t('round') : t('rounds')}
-              </div>
+            <div className={classes.title}>
+              {community ? community.name : inactiveComm?.name}
+              {auction && `: ${auction.title}`}
             </div>
           </Col>
 
@@ -120,6 +95,52 @@ const ProfileHeader: React.FC<{
           )}
         </Col>
       </Col>
+
+      {/* utility bar */}
+      <div className={classes.infoBar}>
+        <div className={classes.leftSectionContainer}>
+          <SortToggles auction={auction} />
+        </div>
+
+        <div className={classes.rightSectionContainer}>
+          <Col className={classes.propHouseDataRow}>
+            <div className={classes.item}>
+              {auction ? (
+                <>
+                  {/* to fix */}
+                  <div className={clsx(classes.itemTitle, classes.purpleText)}>
+                    Deadline (to fix)
+                  </div>
+
+                  <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+                </>
+              ) : (
+                <>
+                  <div className={classes.itemTitle}>Deadline</div>
+                  <div className={classes.itemData}>-</div>
+                </>
+              )}
+            </div>
+
+            <div className={classes.item}>
+              <div className={classes.itemTitle}>{t('funding')}</div>
+
+              <div className={classes.itemData}>
+                {auction ? `${auction.fundingAmount.toFixed(2)} Ξ x ${auction.numWinners}` : '-'}
+              </div>
+            </div>
+
+            <div className={classes.item}>
+              <div className={classes.itemTitle}>
+                {community?.numProposals === 1 ? 'Proposal' : 'Proposals'}
+              </div>
+              <div className={classes.itemData}>
+                {community && auction ? community.numProposals : '-'}
+              </div>
+            </div>
+          </Col>
+        </div>
+      </div>
     </Row>
   );
 };
