@@ -1,8 +1,8 @@
 ## Description
 
-The prop house community package handles the fetching of votes allotted to individual addresses within communities.
+The prop house community package manages the voting strategies for communities.
 
-The default method queries `balanceOf` from the community's ERC721 contract. Some communities have alternative methods for alloting votes which requires custom logic (e.g. delegation).
+The default strategy relies on querying `balanceOf` from the community's ERC721/20 contract. Some communities need custom strategies that accomodate to their particular needs (e.g. delegation, sum of balances across multiple contracts, etc). Custom strategies can be found in the `strategies/` dir.
 
 ## Development
 
@@ -23,5 +23,5 @@ yarn build
 ```ts
 import { getNumVotes } from 'prop-house-communities';
 
-const votes = await getNumVotes(address, communityAddress, provider);
+const votes = await getNumVotes(address, communityAddress, provider, blockTag);
 ```
