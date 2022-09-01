@@ -1,8 +1,7 @@
 import { ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
-import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { strategyForCommunity } from '../utils/strategyForCommunity';
-import { parseBlockTag } from '../utils/parseBlockTag';
+import { balanceOf } from '../strategies/balanceOf';
 
 /**
  * Gets number of votes for an address given a communityAddress:
@@ -25,9 +24,5 @@ export const getNumVotes = async (
     return strategy.multiplier ? votes * strategy.multiplier : votes;
   }
 
-  // else, use `balanceOf`
-  const contract = new ethers.Contract(commmunityAddress, BalanceOfABI, provider);
-  return ethers.BigNumber.from(
-    await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
-  ).toNumber();
+  return balanceOf(commmunityAddress).numVotes(userAddress, provider, commmunityAddress, blockTag);
 };
