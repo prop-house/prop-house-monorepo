@@ -77,6 +77,7 @@ const Round = () => {
       dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, dispatch, isValidAddress, roundFromSlug]);
 
   // fetch inactive commmunity

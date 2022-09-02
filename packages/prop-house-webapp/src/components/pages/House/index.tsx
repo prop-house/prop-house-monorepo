@@ -6,11 +6,7 @@ import HouseHeader from '../../HouseHeader';
 import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import {
-  setActiveAuction,
-  setActiveCommunity,
-  setActiveProposals,
-} from '../../../state/slices/propHouse';
+import { setActiveCommunity, setActiveProposals } from '../../../state/slices/propHouse';
 import { getName } from 'prop-house-communities';
 import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
@@ -55,8 +51,6 @@ const House = () => {
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
-
-        dispatch(setActiveAuction(community.auctions[0]));
       } catch (e) {
         console.log(e);
       }
@@ -65,7 +59,6 @@ const House = () => {
     return () => {
       cleanedUp.current = true;
       dispatch(setActiveCommunity());
-      dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
