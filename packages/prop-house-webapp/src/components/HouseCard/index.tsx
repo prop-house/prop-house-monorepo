@@ -26,7 +26,7 @@ const HouseCard: React.FC<{
       <div
         onClick={e => {
           if (e.metaKey || e.ctrlKey) {
-            window.open(`${nameToSlug(round.title)}`, `_blank`); // open in new tab
+            window.open(`${window.location.href}/${nameToSlug(round.title)}`, `_blank`); // open in new tab
           } else {
             navigate(`${nameToSlug(round.title)}`, {
               replace: false,
