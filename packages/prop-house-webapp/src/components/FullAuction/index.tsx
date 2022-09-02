@@ -189,7 +189,7 @@ const FullAuction: React.FC<{
       setShowErrorModal(true);
     }
   };
-  console.log('community2', community);
+
   return (
     <>
       {/* <<<<<<< HEAD
