@@ -40,12 +40,7 @@ const ProfileHeader: React.FC<{
         <div
           className={classes.backToAuction}
           onClick={() => {
-            isEntryPoint && community
-              ? navigate(
-                  `/${nameToSlug(community.name)}`,
-                  // `/${nameToSlug(community.name)}/${roundTitle ? buildRoundPath(community) : ''}`,
-                )
-              : navigate(-1);
+            isEntryPoint && community ? navigate(`/${nameToSlug(community.name)}`) : navigate(-1);
           }}
         >
           <IoArrowBackCircleOutline size={'1.5rem'} />
