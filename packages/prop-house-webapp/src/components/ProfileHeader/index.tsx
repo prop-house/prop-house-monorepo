@@ -5,8 +5,9 @@ import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
+import { nameToSlug } from '../../utils/communitySlugs';
 
 interface InactiveCommunity {
   contractAddress: string;
@@ -29,6 +30,9 @@ const ProfileHeader: React.FC<{
 }> = props => {
   const { community, inactiveComm, auction } = props;
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isEntryPoint = !location.state;
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -36,7 +40,12 @@ const ProfileHeader: React.FC<{
         <div
           className={classes.backToAuction}
           onClick={() => {
-            navigate(`/`);
+            isEntryPoint && community
+              ? navigate(
+                  `/${nameToSlug(community.name)}`,
+                  // `/${nameToSlug(community.name)}/${roundTitle ? buildRoundPath(community) : ''}`,
+                )
+              : navigate(-1);
           }}
         >
           <IoArrowBackCircleOutline size={'1.5rem'} />

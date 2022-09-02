@@ -91,39 +91,6 @@ const Proposal = () => {
 
   return (
     <>
-      {/* <<<<<<< HEAD
-      {proposal ? (
-        <Container>
-          <RenderedProposalFields
-            fields={proposalFields(proposal)}
-            address={proposal.address}
-            proposalId={proposal.id}
-            community={community}
-            backButton={
-              <div
-                className={classes.backToAuction}
-                onClick={() => {
-                  isEntryPoint && community
-                    ? navigate(
-                        `/${nameToSlug(community.name)}/${
-                          roundTitle ? buildRoundPath(community) : ''
-                        }`,
-                      )
-                    : navigate(-1);
-                }}
-              >
-                <IoArrowBackCircleOutline size={'1.5rem'} />
-                <span>Back</span>
-              </div>
-            }
-          />
-        </Container>
-      ) : failedFetch ? (
-        <NotFound />
-      ) : (
-        <LoadingIndicator />
-      )}
-======= */}
       <Container>
         {proposal ? (
           <>
@@ -137,7 +104,11 @@ const Proposal = () => {
                   className={classes.backToAuction}
                   onClick={() => {
                     isEntryPoint && community
-                      ? navigate(`/${nameToSlug(community.name)}`)
+                      ? navigate(
+                          `/${nameToSlug(community.name)}/${
+                            roundTitle ? buildRoundPath(community) : ''
+                          }`,
+                        )
                       : navigate(-1);
                   }}
                 >
@@ -153,7 +124,6 @@ const Proposal = () => {
           <LoadingIndicator />
         )}
       </Container>
-      {/* >>>>>>> prop-169-new-round-ui */}
     </>
   );
 };

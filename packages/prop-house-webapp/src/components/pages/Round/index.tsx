@@ -52,8 +52,6 @@ const Round = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
 
-        console.log('nop', community);
-
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
         const currentRound = location.state
