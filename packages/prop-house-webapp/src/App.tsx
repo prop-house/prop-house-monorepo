@@ -16,7 +16,7 @@ import Explore from './components/pages/Explore';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
-import Community from './components/pages/Community';
+import Round from './components/pages/Round';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -57,7 +57,7 @@ function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/:house" element={<House />} />
-          <Route path="/:house/:title" element={<Community />} />
+          <Route path="/:house/:title" element={<Round />} />
           <Route path="/:house/:title/:id" element={<Proposal />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

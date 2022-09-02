@@ -19,16 +19,15 @@ import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
 // import { useTranslation } from 'react-i18next';
 import { Container } from 'react-bootstrap';
-import classes from './Community.module.css';
+import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
 
-const Community = () => {
+const Round = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1).split('/')[0];
-
+  const roundFromSlug = location.pathname.substring(1).split('/')[1];
   const isValidAddress = slug && ethers.utils.isAddress(slug);
-
   const dispatch = useAppDispatch();
   const { library } = useEthers();
   const [inactiveCommName, setInactiveCommName] = useState<string>();
@@ -53,11 +52,20 @@ const Community = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
 
+        console.log('nop', community);
+
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
+
+        const currentRound = location.state
+          ? community.auctions.filter(round => round.id === location.state.round.id)
+          : community.auctions.filter(
+              round => round.title.toLowerCase() === slugToName(roundFromSlug),
+            );
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
-        dispatch(setActiveAuction(community.auctions[0]));
+
+        dispatch(setActiveAuction(...currentRound));
       } catch (e) {
         setFailedFetch(true);
       }
@@ -69,7 +77,7 @@ const Community = () => {
       dispatch(setActiveAuction());
       dispatch(setActiveProposals([]));
     };
-  }, [slug, dispatch, isValidAddress]);
+  }, [slug, dispatch, isValidAddress, roundFromSlug]);
 
   // fetch inactive commmunity
   useEffect(() => {
@@ -160,4 +168,4 @@ const Community = () => {
   );
 };
 
-export default Community;
+export default Round;
