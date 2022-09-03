@@ -6,7 +6,7 @@
 }
 
 .proposalCard:hover {
-  border: 1px solid var(--brand-gray);
+  border: 1px solid var(--brand-gray-semi-transparent);
   cursor: pointer;
   transition: all 0.15s ease-in-out;
 }
