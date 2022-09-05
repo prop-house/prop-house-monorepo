@@ -15,6 +15,8 @@ import HouseCard from '../../HouseCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import LoadingIndicator from '../../LoadingIndicator';
+import RoundMessage from '../../RoundMessage';
 import NoSearchResults from '../../NoSearchResults';
 
 const House = () => {
@@ -102,6 +104,7 @@ const House = () => {
 
   useEffect(() => {
     community &&
+      community.auctions.length > 0 &&
       (input.length === 0
         ? roundStatus && roundStatus > 0
           ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
@@ -112,7 +115,7 @@ const House = () => {
 
               return (
                 round.title.toLowerCase().indexOf(query) >= 0 ||
-                round.description.toLowerCase().indexOf(query) >= 0
+                round.description?.toLowerCase().indexOf(query) >= 0
               );
             }),
           ));
@@ -147,16 +150,24 @@ const House = () => {
       <div className={classes.houseContainer}>
         <Container>
           <Row>
-            {rounds && rounds.length > 0 ? (
-              rounds.map((round, index) => (
-                <Col key={index} xl={6}>
-                  <HouseCard round={round} />
+            {community ? (
+              community.auctions.length > 0 ? (
+                rounds && rounds.length > 0 ? (
+                  rounds.map((round, index) => (
+                    <Col key={index} xl={6}>
+                      <HouseCard round={round} />
+                    </Col>
+                  ))
+                ) : (
+                  <NoSearchResults />
+                )
+              ) : (
+                <Col>
+                  <RoundMessage message="No rounds available" />
                 </Col>
-              ))
+              )
             ) : (
-              <Col>
-                <NoSearchResults />
-              </Col>
+              <LoadingIndicator />
             )}
           </Row>
         </Container>
