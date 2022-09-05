@@ -98,7 +98,7 @@ const ProposalCard: React.FC<{
                 {(auctionStatus === AuctionStatus.AuctionVoting ||
                   auctionStatus === AuctionStatus.AuctionEnded) && (
                   <div className={classes.scoreAndIcon}>
-                    <VoteIcon /> {proposal.score}
+                    <VoteIcon /> {Number(proposal.score).toFixed()}
                   </div>
                 )}
 

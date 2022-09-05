@@ -266,7 +266,8 @@ const ProposalCards: React.FC<{
                     <p className={classes.title}>Voting ended</p>
                     {proposals && (
                       <p className={classes.subtitle}>
-                        {getVoteTotal()} {getVoteTotal() === 1 ? 'vote' : 'votes'} cast for{' '}
+                        {getVoteTotal()?.toFixed()}{' '}
+                        {Number(getVoteTotal()?.toFixed()) === 1 ? 'vote' : 'votes'} cast for{' '}
                         {proposals.length} props!
                       </p>
                     )}
