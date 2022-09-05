@@ -192,28 +192,6 @@ const FullAuction: React.FC<{
 
   return (
     <>
-      {/* <<<<<<< HEAD
-      {showModal && modalData && <Modal data={modalData} />}
-      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-        ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
-          <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
-            <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
-          </Card>
-        )}
-      {community && (
-        <AuctionHeader
-          auction={auction}
-          clickable={false}
-          classNames={classes.auctionHeader}
-          totalVotes={delegatedVotes}
-          voteBtnEnabled={
-            delegatedVotes && delegatedVotes - userVotesWeight() > 0 && numAllottedVotes > 0
-              ? true
-              : false
-          }
-          votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
-          handleVote={handleVote}
-======= */}
       {showSuccessModal && (
         <SuccessModal
           showSuccessModal={showSuccessModal}
