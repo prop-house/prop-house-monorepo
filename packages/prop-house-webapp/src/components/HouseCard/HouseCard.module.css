@@ -52,7 +52,6 @@
   font-weight: bold;
   color: var(--brand-black);
   margin-bottom: 0.8rem;
-
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -180,7 +179,6 @@
   cursor: help;
 }
 .timestampAndlinkContainer {
-  /* margin-top: 15px; */
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -200,7 +198,6 @@
   color: var(--brand-gray);
 }
 .truncatedTldr {
-  /* height: 4.5rem; */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -220,7 +217,7 @@
   justify-content: flex-end;
   height: 24px;
 }
-.textContainter {
+.textContainer {
   gap: 12px;
   display: flex;
   flex-direction: column;
@@ -242,7 +239,6 @@
 }
 
 .roundInfo {
-  /* border: 1px solid red; */
   display: flex;
   justify-content: space-between;
   background: linear-gradient(180deg, #fcfcfc 0%, #ffffff 100%);
@@ -261,6 +257,7 @@
   border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 1px;
 }
+
 .section {
   width: 100%;
   display: flex;
@@ -269,9 +266,6 @@
   padding: 0px;
 }
 
-.funding {
-  /* gap: 3px; */
-}
 .title {
   font-weight: 700;
   font-size: 14px;
@@ -290,9 +284,6 @@
 
 .xDivide {
   color: var(--brand-gray-transparent);
-  /* font-size: 14px;
-  vertical-align: text-bottom;
-  font-weight: 400; */
 }
 
 .roundEnded {
@@ -303,6 +294,20 @@
   background: var(--bg-dark);
 }
 
+@media (max-width: 500px) {
+  .textContainer {
+    padding: 1rem !important;
+  }
+  .title {
+    font-size: 14px;
+  }
+  .info {
+    font-size: 14px;
+  }
+  .roundInfo {
+    padding: 1rem;
+  }
+}
 @media (max-width: 375px) {
   .propSection {
     display: none;
