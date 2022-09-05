@@ -13,6 +13,8 @@ import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builder
 import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import dayjs from 'dayjs';
+import Tooltip from '../Tooltip';
 
 export interface RoundUtilityBarProps {
   community: Community;
@@ -64,12 +66,20 @@ const RoundUtilityBar = ({ community, auction }: RoundUtilityBarProps) => {
           <div className={classes.item}>
             {auction ? (
               <>
-                {/* to fix */}
-                <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                  {DeadlineCopy(auction)}
-                </div>
+                <Tooltip
+                  content={
+                    <>
+                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
+                        {DeadlineCopy(auction)}
+                      </div>
 
-                <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+                      <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+                    </>
+                  }
+                  tooltipContent={`${dayjs(deadlineTime(auction))
+                    .tz()
+                    .format('MMMM D, YYYY h:mm A z')}`}
+                />
               </>
             ) : (
               <>
