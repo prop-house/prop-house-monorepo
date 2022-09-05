@@ -52,7 +52,7 @@ const SortToggles: React.FC<{
             className={clsx(
               classes.sortItem,
               votesSorted && classes.active,
-              (!auction || auctionNotStarted) && classes.disabled,
+              (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
             )}
           >
             <div className={classes.sortLabel}>{t('votes')}</div>
@@ -70,7 +70,7 @@ const SortToggles: React.FC<{
           className={clsx(
             classes.sortItem,
             datesSorted && classes.active,
-            (!auction || auctionNotStarted) && classes.disabled,
+            (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
           )}
         >
           <div className={classes.sortLabel}>{t('created')}</div>
