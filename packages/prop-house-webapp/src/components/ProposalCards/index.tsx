@@ -159,7 +159,8 @@ const ProposalCards: React.FC<{
                     <div className={classes.bulletItem}>
                       <hr className={classes.bullet} />
                       <p>
-                        The top <b>{auction.numWinners}</b> proposals will get funded{' '}
+                        The top <b>{auction.numWinners}</b>{' '}
+                        {auction.numWinners === 1 ? 'proposal' : 'proposals'} will get funded{' '}
                         <b>
                           {auction.fundingAmount} {auction.currencyType}{' '}
                         </b>
