@@ -27,18 +27,17 @@ const Round = () => {
     const fetchCommunity = async () => {
       try {
         // fetch by address or name
-        const community2 = isValidAddress
+        const community = isValidAddress
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug!));
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
 
-        // dispatch(setActiveCommunity(community));
-        dispatch(setActiveCommunity(community2));
+        dispatch(setActiveCommunity(community));
 
         dispatch(
           setActiveAuction(
-            ...community2.auctions.filter(
+            ...community.auctions.filter(
               r => nameToSlug(r.title.toString()) === nameToSlug(title!),
             ),
           ),
@@ -54,7 +53,6 @@ const Round = () => {
       cleanedUp.current = true;
       dispatch(setActiveCommunity());
       dispatch(setActiveAuction());
-      // dispatch(setActiveProposals([]));
     };
   }, [community, dispatch, isValidAddress, slug, title]);
 
