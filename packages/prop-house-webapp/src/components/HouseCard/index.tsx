@@ -74,7 +74,7 @@ const HouseCard: React.FC<{
             <div className={clsx(classes.divider, classes.propSection)}></div>
 
             <div className={clsx(classes.section, classes.propSection)}>
-              <p className={classes.title}> {t('proposals')}</p>
+              <p className={classes.title}> {t('proposals2')}</p>
               <p className={classes.info}>{round.proposals.length}</p>
             </div>
           </div>
