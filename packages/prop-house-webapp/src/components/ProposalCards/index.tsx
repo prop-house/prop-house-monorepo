@@ -209,7 +209,7 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING WINDOW WITH VOTES: PROGRESS BAR */}
-            {isVotingWindow && account && delegatedVotes && (
+            {isVotingWindow && account && delegatedVotes ? (
               <>
                 <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
                   <span>Cast your votes</span>
@@ -251,6 +251,8 @@ const ProposalCards: React.FC<{
                   {<>Nouns get 10 votes per each Noun they hold or are delegated.</>}
                 </p>
               </>
+            ) : (
+              <></>
             )}
 
             {/* ROUND ENDED */}
@@ -302,13 +304,16 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-            {isVotingWindow && account && delegatedVotes && (
+            {isVotingWindow && account && delegatedVotes ? (
               <Button
                 text={'Submit votes'}
                 bgColor={ButtonColor.Purple}
                 onClick={handleVote}
                 disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
               />
+            ) : (
+              //  VOTING PERIOD, CONNECTED, HAS NO VOTES
+              <></>
             )}
           </div>
         </Card>
