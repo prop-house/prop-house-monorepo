@@ -36,11 +36,6 @@ const SortToggles: React.FC<{
   const auctionNotStarted = auction && auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const allowSortByVotes = auctionVoting || auctionEnded;
 
-  // const [datesSorted, setDatesSorted] = useState(false);
-  // const [dateAscending, setDateAscending] = useState(false);
-  // const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
-  // const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
-
   const dispatch = useDispatch();
 
   return (
