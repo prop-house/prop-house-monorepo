@@ -5,7 +5,8 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register -r dotenv/config 'test/**/*.ts'  --watch --watch-files test/**/*.ts"
   },
   "dependencies": {
     "@apollo/client": "^3.6.2",
@@ -14,6 +15,11 @@
     "graphql": "^16.5.0"
   },
   "devDependencies": {
-    "@tsconfig/node16": "^1.0.2"
+    "@tsconfig/node16": "^1.0.2",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.9.1"
   }
 }
