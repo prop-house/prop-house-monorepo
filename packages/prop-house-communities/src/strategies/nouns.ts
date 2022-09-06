@@ -2,6 +2,7 @@ import { BaseStrategy } from '../types/Strategy';
 import { gql } from '@apollo/client';
 import { client } from '../utils/client';
 import { nounsDelegatedVotesToAddressQuery } from '../queries/nounsQuery';
+import { nounsSubgraphApiUri } from '../constants/nounsSubgraphApiUri';
 
 /**
  * Total delegated votes for address
@@ -13,7 +14,7 @@ export const nouns = (): BaseStrategy => {
     multiplier: number,
     blockTag: string,
   ) => {
-    const result = await client.query({
+    const result = await client(nounsSubgraphApiUri).query({
       query: gql(nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase(), blockTag)),
     });
     const parsedResult = result.data.delegates[0] ? result.data.delegates[0].delegatedVotesRaw : 0;
