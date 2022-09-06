@@ -14,7 +14,7 @@ describe('erc1155 votes', () => {
     expect(apiKey).to.be.not.empty;
   });
 
-  it('package should have strategy for balanceOf', () => {
+  it('package should have strategy for erc1155 fn', () => {
     expect(erc1155).to.not.be.undefined;
   });
 
