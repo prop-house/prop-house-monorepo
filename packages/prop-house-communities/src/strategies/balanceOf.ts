@@ -1,6 +1,6 @@
 import { BaseStrategy } from '../types/Strategy';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
-import { Contract, BigNumber } from 'ethers';
+import { Contract, BigNumber, utils } from 'ethers';
 import { parseBlockTag } from '../utils/parseBlockTag';
 import { Provider } from '@ethersproject/providers';
 
@@ -16,13 +16,20 @@ export const balanceOf = (): BaseStrategy => {
     provider?: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOfABI, provider);
+    const bal = BigNumber.from(
+      await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
+    );
+
     try {
-      const bal = BigNumber.from(
-        await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
-      ).toNumber();
-      return bal * multiplier;
+      // attempt to parse BigNumber to number (eg 721)
+      return bal.toNumber();
     } catch (e) {
-      throw new Error('Error using balanceOf strategy');
+      try {
+        // attempt to parse via formatting decimals places (eg erc20)
+        return Number(utils.formatEther(bal));
+      } catch (e) {
+        throw new Error(`Error using balanceOf strategy: ${e}`);
+      }
     }
   };
 };
