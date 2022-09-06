@@ -28,7 +28,7 @@ describe('onchainmonkey votes', () => {
 
     const contract = new Contract(onChainMonkeyAddress, BalanceOfABI, provider);
     const balanceOf = await contract.balanceOf(holderAddress);
-    const numBalanceOf = Number(utils.formatEther(balanceOf));
+    const numBalanceOf = balanceOf.toNumber();
 
     expect(numBalanceOf).to.be.gt(0);
   });
@@ -40,7 +40,7 @@ describe('onchainmonkey votes', () => {
 
     const contract = new Contract(karmaAddress, BalanceOfABI, provider);
     const balanceOf = await contract.balanceOf(holderAddress);
-    const numBalanceOf = Number(utils.formatEther(balanceOf));
+    const numBalanceOf = balanceOf.toNumber();
 
     expect(numBalanceOf).to.be.gt(0);
   });
