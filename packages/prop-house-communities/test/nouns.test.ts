@@ -10,7 +10,7 @@ describe('Nouns delegation', () => {
   const nounsTokenAddress = '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03';
   const nounderSafeAddress = '0x2573C60a6D127755aA2DC85e342F7da2378a0Cc5';
 
-  before('infura api key should be available in .env file', () => {
+  before('jsonRpcProvider api key should be available in .env file', () => {
     apiKey = process.env.INFURA_PROJECT_ID;
     expect(apiKey).to.be.not.empty;
   });
