@@ -1,27 +1,27 @@
-import { Strategy } from '../types/Strategy';
-import { ethers } from 'ethers';
-import { communityAddresses } from '../addresses';
+import { Contract, BigNumber } from 'ethers';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { parseBlockTag } from '../utils/parseBlockTag';
+import { Provider } from '@ethersproject/providers';
+import { BaseStrategy } from '../types/Strategy';
 
 /**
  * The sum of balanceOf from two communities: OnChain Monkey and Karma Monkey
  */
-export const onchainmonkey: Strategy = {
-  address: communityAddresses.onchainMonkey,
-  numVotes: async (
+export const onchainMonkey = (): BaseStrategy => {
+  return async (
     userAddress: string,
-    provider,
-    commmunityAddress,
-    blockTag: string = 'latest',
+    communityAddress: string,
+    multiplier: number,
+    blockTag: string,
+    provider?: Provider,
   ) => {
-    const karmaContract = new ethers.Contract(
-      communityAddresses.karmaMonkey,
+    const karmaContract = new Contract(
+      '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b', // karma monkey contract address
       BalanceOfABI,
       provider,
     );
-    const ocmContract = new ethers.Contract(
-      communityAddresses.onchainMonkey,
+    const ocmContract = new Contract(
+      '0x960b7a6bcd451c9968473f7bbfd9be826efd549a', // onchain monkey contract address
       BalanceOfABI,
       provider,
     );
@@ -34,10 +34,9 @@ export const onchainmonkey: Strategy = {
         blockTag: parseBlockTag(blockTag),
       });
 
-      return ethers.BigNumber.from(karmaVotes).add(ethers.BigNumber.from(ocmVotes)).toNumber();
+      return BigNumber.from(karmaVotes).add(BigNumber.from(ocmVotes)).toNumber();
     } catch (e) {
-      console.log(`error counting votes community: ${commmunityAddress}: ${e}`);
       return 0;
     }
-  },
+  };
 };

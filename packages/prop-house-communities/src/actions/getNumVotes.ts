@@ -19,10 +19,10 @@ export const getNumVotes = async (
 
   // check if community has custom strategy for counting votes
   const strategy = strategyForCommunity(commmunityAddress);
+
   if (strategy) {
-    const votes = await strategy.numVotes(userAddress, provider, commmunityAddress, blockTag);
-    return strategy.multiplier ? votes * strategy.multiplier : votes;
+    return await strategy(userAddress, commmunityAddress, 1, blockTag, provider);
   }
 
-  return balanceOf(commmunityAddress).numVotes(userAddress, provider, commmunityAddress, blockTag);
+  return await balanceOf()(userAddress, commmunityAddress, 1, blockTag, provider);
 };

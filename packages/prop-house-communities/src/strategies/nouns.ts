@@ -1,25 +1,22 @@
-import { Strategy } from '../types/Strategy';
+import { BaseStrategy } from '../types/Strategy';
 import { gql } from '@apollo/client';
 import { client } from '../utils/client';
 import { nounsDelegatedVotesToAddressQuery } from '../queries/nounsQuery';
-import { communityAddresses } from '../addresses';
 
 /**
  * Total delegated votes for address
  */
-export const nouns: Strategy = {
-  address: communityAddresses.nouns,
-  numVotes: async (
+export const nouns = (): BaseStrategy => {
+  return async (
     userAddress: string,
-    provider,
-    commmunityAddress,
-    blockTag: string = 'latest',
+    communityAddress: string,
+    multiplier: number,
+    blockTag: string,
   ) => {
     const result = await client.query({
       query: gql(nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase(), blockTag)),
     });
-
-    return result.data.delegates[0] ? result.data.delegates[0].delegatedVotesRaw : 0;
-  },
-  multiplier: 10,
+    const parsedResult = result.data.delegates[0] ? result.data.delegates[0].delegatedVotesRaw : 0;
+    return parsedResult * 10;
+  };
 };
