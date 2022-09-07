@@ -41,7 +41,8 @@ from src.starknet.lib.felt_utils import FeltUtils
 # Constants
 #
 
-# Max Winners: 256
+const MAX_WINNERS = 256
+
 const MAX_LOG_N_WINNERS = 8
 
 #
@@ -160,6 +161,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
         assert_not_zero(vote_period_duration)
         assert_not_zero(voting_power_multiplier)
         assert_not_zero(winner_count)
+        assert_le(winner_count, MAX_WINNERS)
         assert_not_zero(authenticators_len)
 
         # This strategy only supports a single voting strategy and executor
