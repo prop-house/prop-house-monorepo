@@ -29,8 +29,8 @@ const NavBar = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
             <Nav.Link as="div" className={classes.menuLink}>
-              <Link to={`/explore`} className={classes.link}>
-                {t('explore')}
+              <Link to="/faq" className={classes.link}>
+                {t('faq')}
               </Link>
               <span className={classes.divider}></span>
             </Nav.Link>
