@@ -1,17 +1,20 @@
 import HomeHeader from '../../HomeHeader';
-import CommunityCarousel from '../../CommunityCarousel';
-import PropCarousel from '../../PropCarousel';
-import ContactUsCTA from '../../ContactUsCTA';
 import { Container } from 'react-bootstrap';
+import CommunityCardGrid from '../../CommunityCardGrid';
+import { useState } from 'react';
 
 const Home = () => {
+  const [input, setInput] = useState('');
+
+  const handleChange = (e: any) => {
+    setInput(e.target.value);
+  };
+
   return (
     <>
       <Container>
-        <HomeHeader />
-        <CommunityCarousel />
-        <PropCarousel />
-        <ContactUsCTA />
+        <HomeHeader input={input} handleChange={handleChange} />
+        <CommunityCardGrid input={input} />
       </Container>
     </>
   );
