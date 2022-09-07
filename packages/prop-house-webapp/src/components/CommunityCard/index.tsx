@@ -14,9 +14,15 @@ const CommunityCard: React.FC<{
       <CommunityProfImg community={community} hover />
       <div className={classes.infoContainer}>
         <div className={classes.title}>{community.name}</div>
-        <div className={classes.proposals}>
-          <span>{community.numProposals}</span>{' '}
-          {community.numProposals === 1 ? t('prop') : t('props')}
+        <div className={classes.cardInfo}>
+          <div className={classes.infoText}>
+            <span>{community.numAuctions}</span>{' '}
+            {community.numAuctions === 1 ? t('round') : t('rounds')}
+          </div>
+          <div className={classes.infoText}>
+            <span>{community.numProposals}</span>{' '}
+            {community.numProposals === 1 ? t('prop') : t('props')}
+          </div>
         </div>
       </div>
     </div>
