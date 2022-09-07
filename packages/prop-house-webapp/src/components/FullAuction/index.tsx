@@ -25,8 +25,8 @@ import ErrorModal from '../ErrorModal';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
-  isFirstOrLastAuction: () => [boolean, boolean];
-  handleAuctionChange: (next: boolean) => void;
+  isFirstOrLastAuction?: () => [boolean, boolean];
+  handleAuctionChange?: (next: boolean) => void;
 }> = props => {
   const { auction } = props;
 
@@ -83,7 +83,7 @@ const FullAuction: React.FC<{
           account,
           community.contractAddress,
           library,
-          auction.balanceBlockTag?.toString(),
+          // auction.balanceBlockTag?.toString(),
         );
         dispatch(setDelegatedVotes(votes));
       } catch (e) {
@@ -135,7 +135,6 @@ const FullAuction: React.FC<{
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
 
-
     const votesForProps =
       proposals &&
       voteAllotments.sort((a, b) => a.proposalId - b.proposalId).filter(a => a.votes > 0);
@@ -150,7 +149,6 @@ const FullAuction: React.FC<{
           title: findProposalById(p.proposalId, proposals)?.title,
           votes: p.votes,
         }),
-
       );
 
     setShowVotingModal(true);
@@ -187,7 +185,6 @@ const FullAuction: React.FC<{
         title: 'Failed to submit votes',
         message: 'Please go back and try again.',
         image: 'banana.png',
-
       });
       setShowErrorModal(true);
     }

@@ -1,7 +1,6 @@
 import classes from './SortToggles.module.css';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
@@ -10,19 +9,32 @@ import { useTranslation } from 'react-i18next';
 
 const SortToggles: React.FC<{
   auction?: StoredAuction;
+  datesSorted: boolean;
+  setDatesSorted: any;
+  dateAscending: boolean;
+  setDateAscending: any;
+  votesSorted: boolean;
+  setVotesSorted: any;
+  votesAscending: boolean;
+  setVotesAscending: any;
 }> = props => {
   const { t } = useTranslation();
-  const { auction } = props;
+  const {
+    auction,
+    datesSorted,
+    setDatesSorted,
+    dateAscending,
+    setDateAscending,
+    votesSorted,
+    setVotesSorted,
+    votesAscending,
+    setVotesAscending,
+  } = props;
 
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const auctionNotStarted = auction && auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const allowSortByVotes = auctionVoting || auctionEnded;
-
-  const [datesSorted, setDatesSorted] = useState(false);
-  const [dateAscending, setDateAscending] = useState(false);
-  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
-  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
 
   const dispatch = useDispatch();
 
@@ -40,7 +52,7 @@ const SortToggles: React.FC<{
             className={clsx(
               classes.sortItem,
               votesSorted && classes.active,
-              (!auction || auctionNotStarted) && classes.disabled,
+              (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
             )}
           >
             <div className={classes.sortLabel}>{t('votes')}</div>
@@ -58,7 +70,7 @@ const SortToggles: React.FC<{
           className={clsx(
             classes.sortItem,
             datesSorted && classes.active,
-            (!auction || auctionNotStarted) && classes.disabled,
+            (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
           )}
         >
           <div className={classes.sortLabel}>{t('created')}</div>

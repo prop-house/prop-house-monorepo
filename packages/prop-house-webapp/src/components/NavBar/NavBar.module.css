@@ -68,3 +68,41 @@
     justify-content: space-between;
   }
 }
+
+.divider {
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 1px;
+}
+@media (min-width: 993px) {
+  .link {
+    margin-right: 0.75rem;
+  }
+
+  .menuLink {
+    padding-left: 0rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .menuLink:nth-child(2) {
+    padding-right: 0rem !important;
+  }
+}
+.poweredByNouns {
+  color: var(--brand-black-transparent);
+  font-weight: medium;
+  font-size: 14px;
+}
+
+.poweredByNouns a {
+  color: var(--brand-pink);
+  text-decoration: none;
+}
+
+.bulbImg {
+  height: 50px;
+  width: 50px;
+}
+.logoGroup {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

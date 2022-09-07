@@ -14,8 +14,7 @@
   cursor: pointer;
   transition: box-shadow 0.3s;
   color: black;
-  opacity: 0.5;
-  padding-bottom: 20px;
+  padding: 5px 0px 14px 0px;
   border-bottom: 2px solid transparent;
 }
 
@@ -23,19 +22,24 @@
   opacity: 0.75;
 }
 .sortLabel {
-  color: #666666;
+  color: var(--brand-gray);
 }
 .sortItem svg {
-  background: var(--brand-purple-transparent);
   padding: 4px;
   background: rgba(138, 43, 226, 0.08);
   border-radius: 6px;
-  color: #8a2be2;
+  background: var(--border-light) !important;
+  color: var(--brand-gray);
 }
 .active {
-  opacity: 1;
   border-bottom: 2px solid var(--brand-purple);
-  /* border: 2px rgba(80, 186, 154, 1) solid; */
+}
+.active .sortLabel {
+  color: var(--brand-purple) !important;
+}
+.active svg {
+  color: var(--brand-purple) !important;
+  background: var(--brand-purple-hint) !important;
 }
 
 .disabled {

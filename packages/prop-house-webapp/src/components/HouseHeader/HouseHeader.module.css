@@ -1,0 +1,171 @@
+.profileHeaderRow {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 38px;
+}
+
+.profilePicCol img {
+  height: 15rem;
+  width: auto;
+  border-radius: 10px;
+}
+.communityInfoCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  /* justify-content: space-between; */
+}
+/* .communityInfoCol > * {
+  margin: 0.75rem 0;
+} */
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.titleRow .title {
+  font-size: xx-large;
+  font-weight: 700;
+}
+.titleRow .contractAddressPill {
+  /* background-color: rgba(128, 128, 128, 0.1); */
+  border: 1px solid var(--border-light);
+  color: 1px solid var(--brand-black);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 19px;
+  padding: 9px 10px 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 1rem;
+  letter-spacing: 0.2px;
+}
+
+.propHouseDataRow {
+  display: flex;
+  padding-bottom: 16px;
+}
+.propHouseDataRow .item:nth-child(1) {
+  margin-left: 0;
+}
+.propHouseDataRow .item {
+  margin-right: 2rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  font-size: large;
+}
+.itemTitle {
+  color: var(--brand-gray);
+  font-weight: 700;
+}
+.itemData {
+  font-weight: bold;
+  margin-right: 0.25rem;
+}
+
+.communityDescriptionRow p {
+  font-size: large;
+  color: var(--brand-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+.communityDescriptionRow a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.communityDescriptionRow a:hover {
+  text-decoration: underline !important;
+  transition: all 0.15s ease-in-out;
+}
+
+.houseTitleInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-light);
+  border-radius: 1px;
+  max-width: fit-content;
+}
+
+.bullet {
+  color: rgba(102, 102, 102, 0.6);
+  font-size: 12px;
+  padding: 0px 8px;
+  align-self: center;
+}
+
+@media (max-width: 992px) {
+  .profileHeaderRow {
+    margin-bottom: 0rem;
+  }
+
+  .profilePicCol {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .communityDescriptionRow p {
+    -webkit-line-clamp: 10;
+    line-clamp: 10;
+  }
+  .communityInfoCol {
+    margin: 0 1rem;
+  }
+  .propHouseDataRow .item {
+    margin-right: 0.75rem;
+  }
+
+  .phLink {
+    margin-top: 1rem;
+  }
+  .longName {
+    flex-direction: column;
+  }
+  .longName .contractAddressPill {
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .profileHeaderRow {
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 50px;
+  }
+  .profilePicCol {
+    margin-bottom: 0rem;
+    margin-top: 40px;
+  }
+  .communityInfoCol {
+    margin: 0px 4px;
+  }
+  .profilePicCol img {
+    width: 88px !important;
+    height: 88px !important;
+  }
+
+  .houseTitleInfo {
+    align-self: center;
+    border: none;
+  }
+  .communityDescriptionRow {
+    border-top: 1px solid var(--border-light);
+    padding-top: 24px;
+    border-radius: 1px;
+  }
+}
+
+@media (max-width: 375px) {
+  .titleRow {
+    width: 100%;
+    flex-direction: column;
+  }
+}

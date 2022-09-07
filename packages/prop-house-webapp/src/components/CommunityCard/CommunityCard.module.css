@@ -1,16 +1,23 @@
 .infoContainer {
   margin-top: 1rem;
-  margin-left: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .title {
   font-weight: 700;
 }
-
-.proposals {
+.cardInfo {
+  display: flex;
+  justify-content: space-between;
+}
+.infoText {
   font-weight: 500;
   font-size: 14px;
   color: var(--brand-black-transparent);
+}
+.infoText span {
+  font-weight: 700;
 }
 
 .container {

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import classes from './StatusPill.module.css';
 import { AuctionStatus } from '../../utils/auctionStatus';
 
-const StatusPill: React.FC<{ status: AuctionStatus }> = (props) => {
+const StatusPill: React.FC<{ status: AuctionStatus }> = props => {
   const { status } = props;
 
   let copy = '';
@@ -11,19 +11,19 @@ const StatusPill: React.FC<{ status: AuctionStatus }> = (props) => {
   switch (status) {
     case AuctionStatus.AuctionNotStarted:
       copy = 'Not started';
-      bgClass = classes.greyBg;
+      bgClass = classes.grayBg;
       break;
     case AuctionStatus.AuctionAcceptingProps:
-      copy = 'Open';
+      copy = 'Proposing';
       bgClass = classes.greenBg;
       break;
     case AuctionStatus.AuctionVoting:
       copy = 'Voting';
-      bgClass = classes.yellowBg;
+      bgClass = classes.purpleBg;
       break;
     case AuctionStatus.AuctionEnded:
       copy = 'Ended';
-      bgClass = classes.greyBg;
+      bgClass = classes.grayBg;
       break;
   }
 

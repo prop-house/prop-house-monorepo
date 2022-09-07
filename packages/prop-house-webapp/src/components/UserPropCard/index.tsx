@@ -167,9 +167,9 @@ const UserPropCard: React.FC<{
         <div
           onClick={e => {
             if (e.metaKey || e.ctrlKey) {
-              window.open(`/proposal/${userProps[cardIndex].id}`, `_blank`); // open in new tab
+              window.open(`${window.location.href}/${userProps[cardIndex].id}`, `_blank`); // open in new tab
             } else {
-              navigate(`/proposal/${userProps[cardIndex].id}`);
+              navigate(`${userProps[cardIndex].id}`);
             }
           }}
           className={classes.viewProposal}

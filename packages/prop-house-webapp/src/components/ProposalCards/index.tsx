@@ -159,7 +159,8 @@ const ProposalCards: React.FC<{
                     <div className={classes.bulletItem}>
                       <hr className={classes.bullet} />
                       <p>
-                        The top <b>{auction.numWinners}</b> proposals will get funded{' '}
+                        The top <b>{auction.numWinners}</b>{' '}
+                        {auction.numWinners === 1 ? 'proposal' : 'proposals'} will get funded{' '}
                         <b>
                           {auction.fundingAmount} {auction.currencyType}{' '}
                         </b>
@@ -208,7 +209,7 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING WINDOW WITH VOTES: PROGRESS BAR */}
-            {isVotingWindow && account && delegatedVotes && (
+            {isVotingWindow && account && delegatedVotes ? (
               <>
                 <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
                   <span>Cast your votes</span>
@@ -250,6 +251,8 @@ const ProposalCards: React.FC<{
                   {<>Nouns get 10 votes per each Noun they hold or are delegated.</>}
                 </p>
               </>
+            ) : (
+              <></>
             )}
 
             {/* ROUND ENDED */}
@@ -263,7 +266,8 @@ const ProposalCards: React.FC<{
                     <p className={classes.title}>Voting ended</p>
                     {proposals && (
                       <p className={classes.subtitle}>
-                        {getVoteTotal()} {getVoteTotal() === 1 ? 'vote' : 'votes'} cast for{' '}
+                        {getVoteTotal()?.toFixed()}{' '}
+                        {Number(getVoteTotal()?.toFixed()) === 1 ? 'vote' : 'votes'} cast for{' '}
                         {proposals.length} props!
                       </p>
                     )}
@@ -301,13 +305,16 @@ const ProposalCards: React.FC<{
             )}
 
             {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-            {isVotingWindow && account && delegatedVotes && (
+            {isVotingWindow && account && delegatedVotes ? (
               <Button
                 text={'Submit votes'}
                 bgColor={ButtonColor.Purple}
                 onClick={handleVote}
                 disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
               />
+            ) : (
+              //  VOTING PERIOD, CONNECTED, HAS NO VOTES
+              <></>
             )}
           </div>
         </Card>

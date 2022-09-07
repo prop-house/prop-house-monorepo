@@ -1,42 +1,39 @@
-import { Col, Row, Image } from "react-bootstrap";
-import Button, { ButtonColor } from "../Button";
-import classes from "./HomeHeader.module.css";
-import { Link } from "react-router-dom";
-import grempBulb from "../../assets/gremp-lightbulb.png";
-import { useTranslation } from "react-i18next";
+import { Col, Row } from 'react-bootstrap';
+import classes from './HomeHeader.module.css';
+// import { useTranslation } from 'react-i18next';
+import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 
-const HomeHeader = () => {
-  const { t } = useTranslation();
+interface HomeHeaderProps {
+  input: string;
+  handleChange: any;
+}
+
+const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
+  // const { t } = useTranslation();
 
   return (
     <Row className={classes.wrapper}>
-      <Col lg={7} className={classes.leftCol}>
-        <div className={classes.poweredByNouns}>
-          {t('powered')}{' '}
-          <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            {t('nounsdao')}
-          </a>
-        </div>
+      <Col lg={12} className={classes.leftCol}>
+        <h1 className={classes.weeklyFunding}>
+          Get funded to{' '}
+          <span>
+            <span className={classes.build}>build</span>
+          </span>
+          <br /> with your favorite communities
+        </h1>
 
-        <h1 className={classes.weeklyFunding}>{t('weekly')}</h1>
+        <div className={classes.searchBar}>
+          <span className={classes.searchIcon}>
+            <SearchIcon />
+          </span>
 
-        <p>{t('bringToLife')}</p>
-        <div className={classes.btnsContainer}>
-          <Col xs={6} md="auto">
-            <Link to="/learn">
-              <Button text={t(`learnMore`)} bgColor={ButtonColor.Pink} />
-            </Link>
-          </Col>
-          <Col xs={6} md="auto">
-            <Link to={`/explore`}>
-              <Button text={t(`viewHouses`)} bgColor={ButtonColor.White} />
-            </Link>
-          </Col>
+          <input
+            type="text"
+            value={input}
+            onChange={e => handleChange(e)}
+            placeholder="Search community houses"
+          />
         </div>
-      </Col>
-      <Col lg={{ span: 4, offset: 1 }} className={classes.rightCol}>
-        <Image src={grempBulb} fluid />
-        <p>{t("artByGremplin")}</p>
       </Col>
     </Row>
   );

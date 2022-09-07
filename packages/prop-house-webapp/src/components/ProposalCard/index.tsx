@@ -23,6 +23,7 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
+  fromHome?: boolean;
   winner?: boolean;
 }> = props => {
   const {
@@ -33,6 +34,7 @@ const ProposalCard: React.FC<{
     voteAllotments,
     canAllotVotes,
     handleVoteAllotment,
+    fromHome,
     winner,
   } = props;
   // const { t } = useTranslation();
@@ -44,9 +46,9 @@ const ProposalCard: React.FC<{
       <div
         onClick={e => {
           if (e.metaKey || e.ctrlKey) {
-            window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
+            window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
           } else {
-            navigate(`/proposal/${proposal.id}`);
+            navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
           }
         }}
       >
@@ -96,9 +98,10 @@ const ProposalCard: React.FC<{
                 {(auctionStatus === AuctionStatus.AuctionVoting ||
                   auctionStatus === AuctionStatus.AuctionEnded) && (
                   <div className={classes.scoreAndIcon}>
-                    <VoteIcon /> {proposal.score}
+                    <VoteIcon /> {Number(proposal.score).toFixed()}
                   </div>
                 )}
+
                 {cardStatus === ProposalCardStatus.Voting &&
                   votesFor !== undefined &&
                   voteAllotments &&

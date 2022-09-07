@@ -12,7 +12,10 @@ import RenderedProposalFields from '../../RenderedProposalFields';
 import proposalFields from '../../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../LoadingIndicator';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  CommunityWithAuctions,
+  StoredProposalWithVotes,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { nameToSlug } from '../../../utils/communitySlugs';
 import { Container } from 'react-bootstrap';
 
@@ -31,6 +34,7 @@ const Proposal = () => {
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const { library: provider } = useEthers();
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const { title: roundTitle } = useParams();
 
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
@@ -75,6 +79,16 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal, community]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const buildRoundPath = (community: CommunityWithAuctions) => {
+    const round = community.auctions.filter(
+      r => nameToSlug(r.title.toString()) === nameToSlug(roundTitle!),
+    );
+
+    const path = nameToSlug(round[0].title);
+    return path;
+  };
+
   return (
     <>
       <Container>
@@ -90,7 +104,11 @@ const Proposal = () => {
                   className={classes.backToAuction}
                   onClick={() => {
                     isEntryPoint && community
-                      ? navigate(`/${nameToSlug(community.name)}`)
+                      ? navigate(
+                          `/${nameToSlug(community.name)}/${
+                            roundTitle ? buildRoundPath(community) : ''
+                          }`,
+                        )
                       : navigate(-1);
                   }}
                 >

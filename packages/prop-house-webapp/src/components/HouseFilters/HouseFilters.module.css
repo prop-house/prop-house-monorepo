@@ -1,0 +1,104 @@
+.pillContainer {
+  display: inline-block;
+  /* margin: 0rem 0.75rem; */
+  padding: 2.5px 0.65rem;
+  border-radius: 10px;
+  position: relative;
+  /* top: -3px; */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 
+ */
+
+.divider {
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0);
+  border-radius: 1px;
+  height: 50%;
+  margin: auto;
+  margin-bottom: 18px;
+}
+
+.filter {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: 2px solid transparent;
+  padding-bottom: 12px;
+}
+.filter:hover {
+  cursor: pointer;
+}
+.filterText {
+  display: flex;
+  align-items: items-center;
+  gap: 6px;
+}
+.filterName {
+  /* color: var(--brand-pink); */
+  font-weight: 600;
+  color: var(--brand-gray);
+}
+
+.filterNumber {
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 0px 4px;
+  align-self: center;
+  background: var(--border-light);
+  color: var(--brand-gray);
+  min-width: 20px;
+  text-align: center;
+}
+
+.filter:hover {
+  border-bottom: 2px solid var(--brand-gray-transparent);
+}
+
+.pink.active {
+  border-bottom: 2px solid var(--brand-pink);
+}
+.pink.active .filterName {
+  color: var(--brand-pink);
+}
+.pink.active .filterNumber {
+  color: var(--brand-pink);
+  background-color: var(--brand-pink-hint);
+}
+
+.purple.active {
+  border-bottom: 2px solid var(--brand-purple);
+}
+.purple.active .filterName {
+  color: var(--brand-purple);
+}
+.purple.active .filterNumber {
+  color: var(--brand-purple);
+  background-color: var(--brand-purple-hint);
+}
+
+.green.active {
+  border-bottom: 2px solid var(--brand-green);
+}
+.green.active .filterName {
+  color: var(--brand-green);
+}
+.green.active .filterNumber {
+  color: var(--brand-green);
+  background-color: var(--brand-green-hint);
+}
+
+.black.active {
+  border-bottom: 2px solid var(--brand-black);
+}
+.black.active .filterName {
+  color: var(--brand-black);
+}
+.black.active .filterNumber {
+  color: var(--brand-black);
+  background-color: var(--bg-dark);
+}

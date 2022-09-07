@@ -1,0 +1,12 @@
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 55px;
+}
+
+@media (max-width: 993px) {
+  .cardGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-column-gap: 25px;
+  }
+}
