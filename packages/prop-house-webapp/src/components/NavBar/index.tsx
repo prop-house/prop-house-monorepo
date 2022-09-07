@@ -12,28 +12,33 @@ const NavBar = () => {
   return (
     <Container>
       <Navbar bg="transparent" expand="lg" className={classes.navbar}>
-        <Navbar.Brand>
-          <Link to="/" className={classes.navbarBrand}>
-            {t('propHouse')}
-          </Link>
-        </Navbar.Brand>
+        <Link to="/" className={classes.logoGroup}>
+          <img className={classes.bulbImg} src="bulb.png" alt="bulb" />
+          <Navbar.Brand>
+            <div className={classes.navbarBrand}>{t('propHouse')}</div>
+            <div className={classes.poweredByNouns}>
+              {t('powered')}{' '}
+              <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
+                {t('nounsdao')}
+              </a>
+            </div>
+          </Navbar.Brand>
+        </Link>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
             <Nav.Link as="div" className={classes.menuLink}>
-              <Link to="/learn" className={classes.link}>
-                {t('learn')}
-              </Link>
-            </Nav.Link>
-            <Nav.Link as="div" className={classes.menuLink}>
               <Link to={`/explore`} className={classes.link}>
                 {t('explore')}
               </Link>
+              <span className={classes.divider}></span>
             </Nav.Link>
             <Nav.Link as="div" className={classes.menuLink}>
-              <Link to="/faq" className={classes.link}>
-                {t('faq')}
+              <Link to="/learn" className={classes.link}>
+                {t('learn')}
               </Link>
+              <span className={classes.divider}></span>
             </Nav.Link>
 
             <div className={classes.buttonGroup}>
