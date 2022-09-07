@@ -14,6 +14,18 @@ end
 func l1_bridge() -> (res : felt):
 end
 
+@storage_var
+func l1_house(strategy_address : felt) -> (house_address : felt):
+end
+
+@view
+func get_l1_house{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+    strategy_address : felt
+) -> (res : felt):
+    let (res) = l1_house.read(strategy_address)
+    return (res)
+end
+
 @view
 func get_l1_bridge{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}() -> (
     res : felt
@@ -53,7 +65,8 @@ func create_house_strategy{
     voting_strategies : felt*,
     authenticators_len : felt,
     authenticators : felt*,
-    executor : felt,
+    executors_len : felt,
+    executors : felt*,
 ):
     alloc_locals
     only_l1_handler(from_address_=from_address)
@@ -83,9 +96,14 @@ func create_house_strategy{
         authenticators_len,
     )
 
-    assert calldata[5 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len] = executor
+    assert calldata[5 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len] = executors_len
+    memcpy(
+        calldata + 6 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len,
+        executors,
+        executors_len,
+    )
 
-    let calldata_len = 5 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len
+    let calldata_len = 6 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len + executors_len
     let (current_salt) = salt.read()
 
     let (strategy_address) = deploy(
@@ -95,6 +113,7 @@ func create_house_strategy{
         constructor_calldata=calldata,
         deploy_from_zero=0,
     )
+    l1_house.write(strategy_address, house_address)
     salt.write(value=current_salt + 1)
 
     house_strategy_initialized.emit(house_address, strategy_address, house_strategy_class_hash)

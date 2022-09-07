@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: GPL-3.0
 
 %lang starknet
 
@@ -6,6 +6,7 @@
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin, BitwiseBuiltin
 from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq
+from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import (
@@ -31,15 +32,24 @@ from src.starknet.lib.round_state import RoundState
 
 # Libraries
 from src.starknet.lib.array_2d import Array2D, Immutable2DArray
+from src.starknet.lib.merkle_tree import MerkleTree
 from src.starknet.lib.proposal_utils import ProposalUtils
+from src.starknet.lib.math_utils import MathUtils
 from src.starknet.lib.felt_utils import FeltUtils
+
+#
+# Constants
+#
+
+# Max Winners: 256
+const MAX_LOG_N_WINNERS = 8
 
 #
 # Storage
 #
 
 @storage_var
-func round_state_store() -> (count : felt):
+func round_state_store() -> (state : felt):
 end
 
 @storage_var
@@ -129,7 +139,8 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     voting_strategies : felt*,
     authenticators_len : felt,
     authenticators : felt*,
-    executor : felt, # TODO: Support more than one executor at the root level
+    executors_len : felt,
+    executors : felt*,
 ):
     alloc_locals
 
@@ -141,8 +152,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
         winner_count,
     ) = decode_param_array(house_strategy_params_len, house_strategy_params)
 
-    # TODO: Cancel if this fails or set to a state where funds can be returned via a REFUND (ERROR state?)
-    # Sanity checks
+    # Sanity checks. Message cancellation is required on error.
     let (current_timestamp) = get_block_timestamp()
     with_attr error_message("Invalid constructor parameters"):
         assert_le(current_timestamp, proposal_period_start_timestamp)
@@ -151,10 +161,10 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
         assert_not_zero(voting_power_multiplier)
         assert_not_zero(winner_count)
         assert_not_zero(authenticators_len)
-        assert_not_zero(executor)
 
-        # This strategy only supports a single voting strategy
+        # This strategy only supports a single voting strategy and executor
         assert voting_strategies_len = 1
+        assert executors_len = 1
     end
 
     let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration
@@ -166,7 +176,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     vote_period_end_timestamp_store.write(vote_period_end_timestamp)
     voting_power_multiplier_store.write(voting_power_multiplier)
     winner_count_store.write(winner_count)
-    executor_store.write(executor)
+    executor_store.write(executors[0])
 
     # Reconstruct the voting params 2D array (1 sub array per strategy) from the flattened version.
     # Currently there is no way to pass struct types with pointers in calldata, so we must do it this way.
@@ -318,7 +328,7 @@ func cast_proposal_votes{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
 end
 
 # Submits a proposal to the funding round
-# TODO: Worth creating an L1 handler for this in the event that the spam protection fails?
+# TODO: Create an L1 handler as a mechanism to bypass the spam protection filter
 @external
 func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
     proposer_address : Address,
@@ -368,7 +378,6 @@ func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr :
 end
 
 # Finalizes the round, counts the proposal votes, and send the corresponding result to the L1 executor contract
-# TODO: Batch finalization due to trabsaction step limit limitation?
 @external
 func finalize_round{
     syscall_ptr : felt*,
@@ -376,7 +385,7 @@ func finalize_round{
     range_check_ptr,
     ecdsa_ptr : SignatureBuiltin*,
     bitwise_ptr : BitwiseBuiltin*,
-}(proposal_id : felt, execution_params_len : felt, execution_params : felt*):
+}():
     alloc_locals
 
     # Verify that the funding round is active
@@ -399,13 +408,33 @@ func finalize_round{
         return ()
     end
 
-    let (submissions : ProposalInfo*) = alloc()
-    populate_proposal_info_arr(next_unused_proposal_nonce, 1, 0, submissions)
+    let (active_submissions : ProposalInfo*) = alloc()
+    let (active_submissions_len) = populate_proposal_info_arr(next_unused_proposal_nonce, 1, 0, active_submissions)
 
-    let num_submissions = next_unused_proposal_nonce - 1
-    let (winners) = ProposalUtils.select_winners(num_winners, num_submissions, submissions)
+    let (winners) = ProposalUtils.select_winners(num_winners, active_submissions_len, active_submissions)
+    let (winners_len) = MathUtils.min(num_winners, active_submissions_len)
+
+    let (keccak_ptr : felt*) = alloc()
+    let keccak_ptr_start = keccak_ptr
+
+    let (leaves : Uint256*) = alloc()
+    ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(winners_len, winners, leaves, 0)
+
+    # TODO: Add support for height calculation on the fly
+    let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
+        winners_len, leaves, 0, MAX_LOG_N_WINNERS,
+    )
+    finalize_keccak(keccak_ptr_start, keccak_ptr)
+
+    let (strategy_address) = get_caller_address()
+
+    let (execution_params : felt*) = alloc()
+    assert execution_params[0] = merkle_root.low
+    assert execution_params[1] = merkle_root.high
 
     let (executor_address) = executor_store.read()
+    let execution_params_len = 2
+
     IExecutionStrategy.execute(
         contract_address=executor_address,
         execution_params_len=execution_params_len,
@@ -435,7 +464,7 @@ func cancel_round{
     # Verify that the funding round is active
     assert_round_active()
 
-    # TODO: Need to send message to L1 to unlock funds?
+    # TODO: Send message to L1 to unlock funds.
 
     # Flag the round as having been cancelled
     round_state_store.write(RoundState.CANCELLED)
@@ -657,9 +686,9 @@ func populate_proposal_info_arr{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*
     current_proposal_id : felt,
     current_index : felt,
     acc: ProposalInfo*,
-) -> (proposal_info : ProposalInfo*):
+) -> (proposal_info_len : felt):
     if current_proposal_id == next_unused_proposal_nonce:
-        return (acc)
+        return (current_index + 1)
     end
 
     let (has_been_cancelled) = cancelled_proposals_store.read(current_proposal_id)

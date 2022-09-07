@@ -1,11 +1,48 @@
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.uint256 import uint256_le
 from starkware.cairo.common.math import unsigned_div_rem
+from starkware.cairo.common.uint256 import Uint256, uint256_le
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
+from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 
 from src.starknet.lib.proposal_info import ProposalInfo
 
+from src.starknet.lib.felt_utils import FeltUtils
+
 namespace ProposalUtils:
+    # Generate an array of uint256 leaves from the provided ProposalInfo array for the purposes
+    # of building a merkle tree. Format: keccak256(proposal_id, uint256(uint160(proposer_address)))
+    # Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
+    func generate_leaves{range_check_ptr, bitwise_ptr : BitwiseBuiltin*, keccak_ptr : felt*}(
+        proposal_info_arr_len : felt,
+        proposal_info_arr : ProposalInfo*,
+        acc : Uint256*,
+        current_index : felt,
+    ) -> (leaves_ptr : Uint256*):
+        alloc_locals
+
+        if current_index == proposal_info_arr_len:
+            return (acc)
+        end
+
+        let (hash_input_arr : Uint256*) = alloc()
+        let (proposal_id_uint256) = FeltUtils.felt_to_uint256(
+            proposal_info_arr[current_index].proposal_id
+        )
+        let (proposer_address_uint256) = FeltUtils.felt_to_uint256(
+            proposal_info_arr[current_index].proposer_address.value
+        )
+
+        assert hash_input_arr[0] = proposal_id_uint256
+        assert hash_input_arr[1] = proposer_address_uint256
+
+        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr)
+
+        assert acc[current_index] = hash
+
+        return generate_leaves(proposal_info_arr_len, proposal_info_arr, acc, current_index + 1)
+    end
+
     # Given an array of proposal information ordered by ascending proposal ID, return the winning proposals.
     # Winners: `num_winners` proposal(s), ordered by descending voting power.
     # Tie-Breaker: In the event of a tie, the proposal(s) which were received first will win.
