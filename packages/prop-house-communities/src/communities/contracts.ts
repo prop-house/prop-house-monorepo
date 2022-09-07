@@ -5,6 +5,7 @@ import { Contract } from './types';
 import { ethers } from 'ethers';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { Provider } from '@ethersproject/providers';
+import { parseBlockTag } from '../utils/parseBlockTag';
 
 /**
  * Strategy for OnchainMonkey and KarmaMonkey communities. Uses sum of `balanceOf` from each community.
@@ -13,7 +14,7 @@ const onChainMonkeyStrategy = async (
   userAddress: string,
   provider: Provider,
   commmunityAddress: string,
-  blockTag: string = "latest"
+  blockTag: string = 'latest',
 ) => {
   const karmaMonkeyAddress = '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b';
   const ocmMonkeyAddress = '0x960b7a6bcd451c9968473f7bbfd9be826efd549a';
@@ -22,8 +23,12 @@ const onChainMonkeyStrategy = async (
   const ocmContract = new ethers.Contract(ocmMonkeyAddress, BalanceOfABI, provider);
 
   try {
-    const karmaVotes = await karmaContract.balanceOf(userAddress, {blockTag});
-    const ocmVotes = await ocmContract.balanceOf(userAddress, {blockTag});
+    const karmaVotes = await karmaContract.balanceOf(userAddress, {
+      blockTag: parseBlockTag(blockTag),
+    });
+    const ocmVotes = await ocmContract.balanceOf(userAddress, {
+      blockTag: parseBlockTag(blockTag),
+    });
     return ethers.BigNumber.from(karmaVotes).add(ethers.BigNumber.from(ocmVotes)).toNumber();
   } catch (e) {
     console.log(`error counting votes community: ${commmunityAddress}: ${e}`);
@@ -37,7 +42,12 @@ const onChainMonkeyStrategy = async (
 export const contracts: Contract[] = [
   {
     address: '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03',
-    numVotes: async (userAddress: string, provider, commmunityAddress, blockTag: string = "latest") => {
+    numVotes: async (
+      userAddress: string,
+      provider,
+      commmunityAddress,
+      blockTag: string = 'latest',
+    ) => {
       const result = await client.query({
         query: gql(nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase(), blockTag)),
       });
@@ -48,13 +58,23 @@ export const contracts: Contract[] = [
   },
   {
     address: '0x960b7a6bcd451c9968473f7bbfd9be826efd549a',
-    numVotes: async (userAddress: string, provider, commmunityAddress, blockTag: string = "latest") => {
+    numVotes: async (
+      userAddress: string,
+      provider,
+      commmunityAddress,
+      blockTag: string = 'latest',
+    ) => {
       return await onChainMonkeyStrategy(userAddress, provider, commmunityAddress, blockTag);
     },
   },
   {
     address: '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b',
-    numVotes: async (userAddress: string, provider, commmunityAddress, blockTag: string = "latest") => {
+    numVotes: async (
+      userAddress: string,
+      provider,
+      commmunityAddress,
+      blockTag: string = 'latest',
+    ) => {
       return await onChainMonkeyStrategy(userAddress, provider, commmunityAddress, blockTag);
     },
   },
