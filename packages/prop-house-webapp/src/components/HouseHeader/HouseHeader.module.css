@@ -148,8 +148,8 @@
     margin: 0px 4px;
   }
   .profilePicCol img {
-    width: 88px;
-    height: 88px;
+    width: 88px !important;
+    height: 88px !important;
   }
 
   .houseTitleInfo {
