@@ -37,29 +37,33 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
+  const isHome = location.pathname === '/';
+
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route
-            path="/create"
-            element={
-              <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                <Create />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/proposal/:id" element={<Proposal />} />
-          <Route path="/:house" element={<House />} />
-          <Route path="/:house/:title" element={<Round />} />
-          <Route path="/:house/:title/:id" element={<Proposal />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <Footer />
+        <div className={isHome ? 'bgGray' : 'bgWhite'}>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                  <Create />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/proposal/:id" element={<Proposal />} />
+            <Route path="/:house" element={<House />} />
+            <Route path="/:house/:title" element={<Round />} />
+            <Route path="/:house/:title/:id" element={<Proposal />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <Footer />
+        </div>
       </Suspense>
     </DAppProvider>
   );
