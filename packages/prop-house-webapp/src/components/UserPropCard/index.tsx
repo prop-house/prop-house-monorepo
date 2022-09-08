@@ -152,8 +152,8 @@ const UserPropCard: React.FC<{
               <div className={classes.bulletItem}>
                 <hr className={classes.bullet} />
                 <p>
-                  Funds will be sent from the Prop House multi-sig to the addresses that submitted
-                  the proposal.
+                  Funds will be sent from the corresponding community treasury to the addresses that
+                  submitted the proposal.
                 </p>
               </div>
               <div className={classes.bulletItem}>
