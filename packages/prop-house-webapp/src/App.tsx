@@ -12,7 +12,6 @@ import Footer from './components/Footer';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './components/pages/FAQ';
-import Explore from './components/pages/Explore';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
@@ -53,7 +52,6 @@ function App() {
             }
           />
           <Route path="/learn" element={<Learn />} />
-          <Route path="/explore" element={<Explore />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/proposal/:id" element={<Proposal />} />
           <Route path="/:house" element={<House />} />
