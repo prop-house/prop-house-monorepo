@@ -5,23 +5,23 @@ import HouseDropdown from '../HouseDropdown';
 import clsx from 'clsx';
 
 export interface HouseUtilityBarProps {
-  roundCount: (number | undefined)[];
-  roundStatus: number;
-  setRoundStatus: any;
+  roundCountByStatus: (number | undefined)[];
+  currentRoundStatus: number;
+  setCurrentRoundStatus: any;
   input?: any;
   setInput?: any;
 }
 
 const HouseUtilityBar = ({
-  roundCount,
-  roundStatus,
-  setRoundStatus,
+  roundCountByStatus,
+  currentRoundStatus,
+  setCurrentRoundStatus,
   input,
   setInput,
 }: HouseUtilityBarProps) => {
   const handleChange = (e: any) => {
     setInput(e.target.value);
-    setRoundStatus(0);
+    setCurrentRoundStatus(0);
   };
 
   return (
@@ -29,18 +29,18 @@ const HouseUtilityBar = ({
       <div className={classes.utilitySection}>
         <div className={classes.filters}>
           <HouseFilters
-            roundStatus={roundStatus}
-            roundCount={roundCount}
-            setRoundStatus={setRoundStatus}
+            currentRoundStatus={currentRoundStatus}
+            roundCountByStatus={roundCountByStatus}
+            setCurrentRoundStatus={setCurrentRoundStatus}
             setInput={setInput}
           />
         </div>
 
         <div className={clsx(classes.dropdown, 'houseDropdown')}>
           <HouseDropdown
-            roundStatus={roundStatus}
-            roundCount={roundCount}
-            setRoundStatus={setRoundStatus}
+            currentRoundStatus={currentRoundStatus}
+            roundCountByStatus={roundCountByStatus}
+            setCurrentRoundStatus={setCurrentRoundStatus}
             setInput={setInput}
           />
         </div>

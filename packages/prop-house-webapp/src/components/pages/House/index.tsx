@@ -33,7 +33,7 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   const [rounds, setRounds] = useState<StoredAuction[]>();
-  const [roundStatus, setRoundStatus] = useState<number>(0);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(0);
   const [input, setInput] = useState<string>('');
 
   useEffect(() => {
@@ -80,34 +80,41 @@ const House = () => {
     fetchName();
   }, [library, community, slug, inactiveCommName]);
 
-  let proposingCount = 0;
-  let votingCount = 0;
-  let endedCount = 0;
+  let numOfProposingRounds = 0;
+  let numOfVotingRounds = 0;
+  let numOfEndedRounds = 0;
 
   community &&
     community.auctions.map(a => {
       let status = auctionStatus(a);
 
       if (status === AuctionStatus.AuctionAcceptingProps) {
-        return proposingCount++;
+        return numOfProposingRounds++;
       } else if (status === AuctionStatus.AuctionVoting) {
-        return votingCount++;
+        return numOfVotingRounds++;
       } else if (status === AuctionStatus.AuctionEnded) {
-        return endedCount++;
+        return numOfEndedRounds++;
       }
       return status;
     });
 
-  let totalCount = community && community.auctions.length;
+  let totalNumOfRounds = community && community.auctions.length;
 
-  let count = [totalCount, proposingCount, votingCount, endedCount];
+  let roundCountByStatus = [
+    totalNumOfRounds,
+    numOfProposingRounds,
+    numOfVotingRounds,
+    numOfEndedRounds,
+  ];
 
   useEffect(() => {
     community &&
       community.auctions.length > 0 &&
       (input.length === 0
-        ? roundStatus && roundStatus > 0
-          ? setRounds(community.auctions.filter(round => auctionStatus(round) === roundStatus))
+        ? currentRoundStatus && currentRoundStatus > 0
+          ? setRounds(
+              community.auctions.filter(round => auctionStatus(round) === currentRoundStatus),
+            )
           : setRounds(community?.auctions)
         : setRounds(
             community.auctions.filter(round => {
@@ -119,7 +126,7 @@ const House = () => {
               );
             }),
           ));
-  }, [community, input, roundStatus]);
+  }, [community, input, currentRoundStatus]);
 
   return (
     <>
@@ -133,13 +140,13 @@ const House = () => {
         />
       </Container>
 
-      {count && (
+      {roundCountByStatus && (
         <div className={classes.stickyContainer}>
           <Container>
             <HouseUtilityBar
-              roundCount={count}
-              roundStatus={roundStatus}
-              setRoundStatus={setRoundStatus}
+              roundCountByStatus={roundCountByStatus}
+              currentRoundStatus={currentRoundStatus}
+              setCurrentRoundStatus={setCurrentRoundStatus}
               input={input}
               setInput={setInput}
             />

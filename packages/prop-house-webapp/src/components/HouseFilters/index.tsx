@@ -26,15 +26,15 @@ const statuses = [
 ];
 
 const HouseFilters = ({
-  roundCount,
-  roundStatus,
-  setRoundStatus,
+  roundCountByStatus,
+  currentRoundStatus,
+  setCurrentRoundStatus,
   setInput,
 }: HouseUtilityBarProps) => {
   const handleClick = (id: number) => {
     setInput('');
 
-    setRoundStatus(id);
+    setCurrentRoundStatus(id);
   };
 
   return (
@@ -45,11 +45,15 @@ const HouseFilters = ({
             <div
               key={index}
               onClick={() => handleClick(s.id)}
-              className={clsx(classes.filter, s.bgColor, roundStatus === s.id && classes.active)}
+              className={clsx(
+                classes.filter,
+                s.bgColor,
+                currentRoundStatus === s.id && classes.active,
+              )}
             >
               <div className={classes.filterText}>
                 <span className={classes.filterName}>{s.title}</span>
-                <span className={classes.filterNumber}>{roundCount[index]}</span>
+                <span className={classes.filterNumber}>{roundCountByStatus[index]}</span>
               </div>
             </div>
             {index === 0 && <div className={classes.divider}></div>}

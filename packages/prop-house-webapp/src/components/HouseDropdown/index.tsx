@@ -26,29 +26,29 @@ const statuses = [
 ];
 
 const HouseDropdown = ({
-  roundStatus,
-  setRoundStatus,
-  roundCount,
+  currentRoundStatus,
+  setCurrentRoundStatus,
+  roundCountByStatus,
   setInput,
 }: HouseUtilityBarProps) => {
   const handleClick = (id: number) => {
     setInput('');
 
-    setRoundStatus(id);
+    setCurrentRoundStatus(id);
   };
 
   return (
     <>
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic">
-          {statuses[roundStatus].title}
+          {statuses[currentRoundStatus].title}
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
           {statuses.map((s, index) => (
             <Dropdown.Item key={index} onClick={() => handleClick(s.id)}>
               <span>{s.title}</span>
-              <span className={classes.count}>{roundCount[index]}</span>
+              <span className={classes.count}>{roundCountByStatus[index]}</span>
             </Dropdown.Item>
           ))}
         </Dropdown.Menu>
