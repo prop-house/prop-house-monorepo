@@ -9,6 +9,14 @@ interface IHouse {
     /// @notice Thrown when a strategy is not enabled in the house instance
     error StrategyNotEnabled();
 
+    /// @notice Emitted when a house strategy is enabled
+    /// @param strategy The address of the enabled strategy
+    event StrategyEnabled(address strategy);
+
+    /// @notice Emitted when a house strategy is disabled
+    /// @param strategy The address of the disabled strategy
+    event StrategyDisabled(address strategy);
+
     /// @notice The string representation of the unique identifier
     function name() external view returns (string memory);
 
@@ -22,4 +30,10 @@ interface IHouse {
     /// @param creator The creator of the house
     /// @param data Initialization data
     function initialize(address creator, bytes calldata data) external payable;
+
+    /// @notice Enable a house strategy
+    function enableStrategy(address strategy) external;
+
+    /// @notice Disable a house strategy
+    function disableStrategy(address strategy) external;
 }
