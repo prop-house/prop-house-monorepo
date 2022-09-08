@@ -2,16 +2,6 @@
   margin-top: 2rem;
 }
 
-@media (max-width: 992px) {
-  .wrapper {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  .weeklyFunding {
-    font-size: 24px !important;
-  }
-}
-
 .leftCol h1 {
   font-size: 50px;
   font-weight: 600;
@@ -60,10 +50,19 @@
     display: none;
   }
 }
-
+.fundedText {
+  display: flex;
+}
 .build {
-  background: #eedc00;
-  padding: 0px 4px;
+  display: flex;
+  justify-content: center;
+}
+.build span {
+  z-index: 1;
+  position: absolute;
+}
+.build img {
+  width: 140px !important;
 }
 
 .searchBar {
@@ -115,5 +114,17 @@
 @media (max-width: 993px) {
   .searchBar {
     margin-top: 14px !important;
+  }
+}
+@media (max-width: 992px) {
+  .wrapper {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .title h1 {
+    font-size: 24px !important;
+  }
+  .build img {
+    width: 70px !important;
   }
 }

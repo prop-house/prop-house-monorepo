@@ -14,13 +14,17 @@ const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
   return (
     <Row className={classes.wrapper}>
       <Col lg={12} className={classes.leftCol}>
-        <h1 className={classes.weeklyFunding}>
-          Get funded to{' '}
-          <span>
-            <span className={classes.build}>build</span>
-          </span>
-          <br /> with your favorite communities
-        </h1>
+        <div className={classes.title}>
+          <h1 className={classes.fundedText}>
+            <span> Get funded to</span>
+            <div className={classes.build}>
+              <span>build</span>
+              <img src="/line.svg" alt="line" />
+            </div>
+          </h1>
+
+          <h1>with your favorite communities</h1>
+        </div>
 
         <div className={classes.searchBar}>
           <span className={classes.searchIcon}>
