@@ -12,11 +12,11 @@ import getNumberWithOrdinal from '../../utils/getNumberWithOrdinal';
 
 const UserPropCard: React.FC<{
   userProps: any;
-  winningIds?: number[] | undefined;
-  totalVotes?: number;
   status: AuctionStatus;
   proposals: StoredProposalWithVotes[] | undefined;
   numOfWinners: number;
+  winningIds: number[] | undefined;
+  totalVotes: number;
 }> = props => {
   const { userProps, winningIds, totalVotes, proposals, status, numOfWinners } = props;
   const [cardIndex, setCardIndex] = useState(0);
