@@ -156,10 +156,6 @@ const UserPropCard: React.FC<{
                   submitted the proposal.
                 </p>
               </div>
-              <div className={classes.bulletItem}>
-                <hr className={classes.bullet} />
-                <p>We strive to send funds within 48 hours of the round closing..</p>
-              </div>
             </div>
           </p>
         </>
