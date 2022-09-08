@@ -13,7 +13,7 @@ const NavBar = () => {
     <Container>
       <Navbar bg="transparent" expand="lg" className={classes.navbar}>
         <Link to="/" className={classes.logoGroup}>
-          <img className={classes.bulbImg} src="bulb.png" alt="bulb" />
+          <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>
             <div className={classes.navbarBrand}>{t('propHouse')}</div>
             <div className={classes.poweredByNouns}>
