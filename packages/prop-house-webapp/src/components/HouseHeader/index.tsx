@@ -9,11 +9,6 @@ import Tooltip from '../Tooltip';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 
-interface InactiveCommunity {
-  contractAddress: string;
-  name: string;
-}
-
 const isLongName = (name: string) => name.length > 9;
 
 interface OpenInNewTabProps {
@@ -25,9 +20,8 @@ const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props
 
 const HouseHeader: React.FC<{
   community?: Community;
-  inactiveComm?: InactiveCommunity;
 }> = props => {
-  const { community, inactiveComm } = props;
+  const { community } = props;
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
   // const { t } = useTranslation();
@@ -43,11 +37,10 @@ const HouseHeader: React.FC<{
           <div
             className={clsx(
               classes.titleRow,
-              isLongName(community ? community.name : '') ||
-                (isLongName(inactiveComm ? inactiveComm.name : '') && classes.longName),
+              isLongName(community ? community.name : '') && classes.longName,
             )}
           >
-            <div className={classes.title}>{community ? community.name : inactiveComm?.name}</div>
+            <div className={classes.title}>{community ? community.name : ''}</div>
             <Tooltip
               content={
                 <div
@@ -58,8 +51,6 @@ const HouseHeader: React.FC<{
                     navigator.clipboard.writeText(
                       community
                         ? community.contractAddress
-                        : inactiveComm
-                        ? inactiveComm.contractAddress
                         : '0x0000000000000000000000000000000000000000',
                     );
                   }}
@@ -67,8 +58,6 @@ const HouseHeader: React.FC<{
                   {trimEthAddress(
                     community
                       ? community.contractAddress
-                      : inactiveComm
-                      ? inactiveComm.contractAddress
                       : '0x0000000000000000000000000000000000000000',
                   )}
                 </div>

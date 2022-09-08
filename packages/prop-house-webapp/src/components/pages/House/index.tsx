@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { setActiveCommunity, setActiveProposals } from '../../../state/slices/propHouse';
-import { getName } from 'prop-house-communities';
 import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -18,6 +17,7 @@ import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import LoadingIndicator from '../../LoadingIndicator';
 import RoundMessage from '../../RoundMessage';
 import NoSearchResults from '../../NoSearchResults';
+import NotFound from '../../NotFound';
 
 const House = () => {
   const location = useLocation();
@@ -26,7 +26,6 @@ const House = () => {
   const isValidAddress = slug && ethers.utils.isAddress(slug);
   const dispatch = useAppDispatch();
   const { library } = useEthers();
-  const [inactiveCommName, setInactiveCommName] = useState<string>();
   const cleanedUp = useRef(false);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -35,6 +34,7 @@ const House = () => {
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(0);
   const [input, setInput] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -44,16 +44,19 @@ const House = () => {
   useEffect(() => {
     const fetchCommunity = async () => {
       try {
+        setIsLoading(true);
         // fetch by address or name
         const community = isValidAddress
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
 
+        setIsLoading(false);
         community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
       } catch (e) {
+        setIsLoading(false);
         console.log(e);
       }
     };
@@ -64,21 +67,6 @@ const House = () => {
       dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
-
-  // fetch inactive commmunity
-  useEffect(() => {
-    if (!library || community || !slug) return;
-
-    const fetchName = async () => {
-      try {
-        setInactiveCommName(await getName(slug, library));
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    fetchName();
-  }, [library, community, slug, inactiveCommName]);
 
   let numOfProposingRounds = 0;
   let numOfVotingRounds = 0;
@@ -130,55 +118,57 @@ const House = () => {
 
   return (
     <>
-      <Container>
-        <HouseHeader
-          community={community}
-          inactiveComm={{
-            name: inactiveCommName ? inactiveCommName : 'N/A',
-            contractAddress: slug,
-          }}
-        />
-      </Container>
-
-      {roundCountByStatus && (
-        <div className={classes.stickyContainer}>
+      {isLoading ? (
+        <LoadingIndicator />
+      ) : !community ? (
+        <NotFound />
+      ) : (
+        <>
           <Container>
-            <HouseUtilityBar
-              roundCountByStatus={roundCountByStatus}
-              currentRoundStatus={currentRoundStatus}
-              setCurrentRoundStatus={setCurrentRoundStatus}
-              input={input}
-              setInput={setInput}
-            />
+            <HouseHeader community={community} />
           </Container>
-        </div>
-      )}
 
-      <div className={classes.houseContainer}>
-        <Container>
-          <Row>
-            {community ? (
-              community.auctions.length > 0 ? (
-                rounds && rounds.length > 0 ? (
-                  rounds.map((round, index) => (
-                    <Col key={index} xl={6}>
-                      <HouseCard round={round} />
+          {roundCountByStatus && (
+            <div className={classes.stickyContainer}>
+              <Container>
+                <HouseUtilityBar
+                  roundCountByStatus={roundCountByStatus}
+                  currentRoundStatus={currentRoundStatus}
+                  setCurrentRoundStatus={setCurrentRoundStatus}
+                  input={input}
+                  setInput={setInput}
+                />
+              </Container>
+            </div>
+          )}
+
+          <div className={classes.houseContainer}>
+            <Container>
+              <Row>
+                {community ? (
+                  community.auctions.length > 0 ? (
+                    rounds && rounds.length > 0 ? (
+                      rounds.map((round, index) => (
+                        <Col key={index} xl={6}>
+                          <HouseCard round={round} />
+                        </Col>
+                      ))
+                    ) : (
+                      <NoSearchResults />
+                    )
+                  ) : (
+                    <Col>
+                      <RoundMessage message="No rounds available" />
                     </Col>
-                  ))
+                  )
                 ) : (
-                  <NoSearchResults />
-                )
-              ) : (
-                <Col>
-                  <RoundMessage message="No rounds available" />
-                </Col>
-              )
-            ) : (
-              <LoadingIndicator />
-            )}
-          </Row>
-        </Container>
-      </div>
+                  <LoadingIndicator />
+                )}
+              </Row>
+            </Container>
+          </div>
+        </>
+      )}
     </>
   );
 };
