@@ -40,48 +40,6 @@
   margin: 12px 0px;
 }
 
-.viewProposal {
-  color: var(--brand-gray);
-  margin-bottom: 0;
-  font-weight: 700;
-  cursor: pointer;
-  width: min-content;
-}
-
-/* Bullets */
-.sideCardBody {
-  font-size: 14px;
-  margin-bottom: 0;
-}
-.sideCardBody b {
-  color: var(--brand-purple);
-}
-.bulletList {
-  color: var(--brand-gray);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 8px;
-}
-.bulletList b {
-  color: var(--brand-black);
-}
-.bulletItem {
-  display: flex;
-  gap: 18px;
-}
-.bulletItem p {
-  margin-bottom: 0;
-}
-.bullet {
-  color: var(--brand-gray-semi-transparent);
-  border-radius: 50px;
-  min-width: 18px !important;
-  height: 2px !important;
-  margin: 0;
-  margin-top: 10px;
-}
-
 .votesModuleContainer {
   display: flex;
   align-items: center;
@@ -119,11 +77,5 @@
   .userPropCard {
     width: 50% !important;
     min-width: 250px !important;
-    /* height: max-content !important; */
   }
-  /* .sidebarContainerCard {
-    /* width: 50% !important;
-    min-width: 250px !important;
-    height: max-content !important; */
-  /* } */
 }
