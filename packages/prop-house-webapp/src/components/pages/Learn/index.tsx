@@ -26,11 +26,11 @@ const Learn = () => {
               <h2>{t('plugInto')}</h2>
               <p>{t('treasury')}</p>
               <Button
-                text={t('exploreHouses')}
+                text={'Read FAQ'}
                 bgColor={ButtonColor.Pink}
                 classNames={classes.firstBtn}
                 onClick={() => {
-                  navigate(`/explore`);
+                  navigate(`/faq`);
                 }}
               />
             </Col>
