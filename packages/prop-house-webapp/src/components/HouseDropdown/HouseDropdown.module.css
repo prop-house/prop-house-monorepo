@@ -9,9 +9,6 @@
   font-weight: 600;
 }
 
-/* 
- */
-
 .divider {
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(0, 0, 0, 0);
@@ -34,11 +31,10 @@
 }
 .filterText {
   display: flex;
-  align-items: items-center;
+  align-items: center;
   gap: 6px;
 }
 .filterName {
-  /* color: var(--brand-pink); */
   font-weight: 600;
   color: var(--brand-gray);
 }

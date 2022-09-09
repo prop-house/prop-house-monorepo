@@ -13,11 +13,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  /* justify-content: space-between; */
 }
-/* .communityInfoCol > * {
-  margin: 0.75rem 0;
-} */
+
 .titleRow {
   display: flex;
   flex-direction: row;
@@ -29,7 +26,6 @@
   font-weight: 700;
 }
 .titleRow .contractAddressPill {
-  /* background-color: rgba(128, 128, 128, 0.1); */
   border: 1px solid var(--border-light);
   color: 1px solid var(--brand-black);
   font-weight: 700;
@@ -134,7 +130,7 @@
   }
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
   .profileHeaderRow {
     flex-direction: column;
     gap: 24px;

@@ -41,7 +41,12 @@
   color: var(--brand-black-semi-transparent);
 }
 
-@media (min-width: 767px) {
+@media (max-width: 993px) {
+  .filters {
+    font-size: 14px;
+  }
+}
+@media (min-width: 768px) {
   .searchBar {
     padding-bottom: 12px;
   }
@@ -52,7 +57,7 @@
     display: none;
   }
 }
-@media (max-width: 575px) {
+@media (max-width: 767px) {
   .filters {
     display: none;
   }
