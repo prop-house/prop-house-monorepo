@@ -7,12 +7,6 @@
   top: 0;
 }
 
-/* .sortToggles {
-  display: flex;
-  gap: 12px;
-  height: 45px;
-} */
-
 @media (min-width: 767px) {
   .searchBar {
     padding-bottom: 12px;
@@ -44,8 +38,6 @@
   }
 }
 
-/* new */
-
 .propHouseDataRow {
   display: flex;
   padding-bottom: 12px;
@@ -63,7 +55,7 @@
   flex-direction: column;
 }
 .item:not(:last-child) {
-  border-right: 1px solid var(--brand-gray-transparent);
+  border-right: 1px solid var(--border-light);
   padding-right: 25px;
 }
 
