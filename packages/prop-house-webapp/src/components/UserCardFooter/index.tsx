@@ -1,9 +1,9 @@
-import classes from './CardFooter.module.css';
+import classes from './UserCardFooter.module.css';
 import isWinner from '../../utils/isWinner';
 import { useNavigate } from 'react-router-dom';
 import { AuctionStatus } from '../../utils/auctionStatus';
 
-const CardFooter: React.FC<{
+const UserCardFooter: React.FC<{
   status: AuctionStatus;
   amountOfPropsWon: number;
   userProps: any;
@@ -52,4 +52,4 @@ const CardFooter: React.FC<{
     </>
   );
 };
-export default CardFooter;
+export default UserCardFooter;
