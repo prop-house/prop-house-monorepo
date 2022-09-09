@@ -7,8 +7,7 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import isWinner from '../../utils/isWinner';
 import { useState } from 'react';
 import { AuctionStatus } from '../../utils/auctionStatus';
-import { findProposalById } from '../../utils/findProposalById';
-import getNumberWithOrdinal from '../../utils/getNumberWithOrdinal';
+import PropStats from '../PropStats';
 
 const UserPropCard: React.FC<{
   userProps: any;
@@ -22,13 +21,6 @@ const UserPropCard: React.FC<{
   const [cardIndex, setCardIndex] = useState(0);
 
   let navigate = useNavigate();
-
-  const lowestScoreWinner =
-    winningIds && proposals && findProposalById(winningIds[winningIds.length - 1], proposals);
-  const getMinimumVotesNeededToWin = (votes: number) =>
-    lowestScoreWinner && lowestScoreWinner.score - votes + 1;
-  const allPropsHaveZeroVotes = proposals && proposals.filter(p => p.score > 0).length === 0;
-  const fewerPropsThanNumberofWinners = proposals && proposals.length < numOfWinners;
 
   let amountOfPropsWon = 0;
   winningIds &&
@@ -78,66 +70,18 @@ const UserPropCard: React.FC<{
           </div>
         </div>
       </div>
-
       <hr className={classes.divider} />
 
       {status !== AuctionStatus.AuctionAcceptingProps && (
-        <>
-          <div className={classes.userPropInfo}>
-            <div className={classes.userPropItem}>
-              <div className={classes.userPropNounImg}>
-                <img src="/heads/calculator.png" alt="calculator" />
-              </div>
-              <div className={classes.userPropText}>
-                <div>Total Votes</div>
-                <div className={classes.userPropTextValue}>{totalVotes}</div>
-              </div>
-            </div>
-
-            {(status === AuctionStatus.AuctionVoting ||
-              (status === AuctionStatus.AuctionEnded &&
-                winningIds &&
-                isWinner(winningIds, userProps[cardIndex].id))) && (
-              <div className={classes.userPropItem}>
-                <div className={classes.userPropNounImg}>
-                  <img src="/heads/crown.png" alt="crown" />
-                </div>
-
-                <div className={classes.userPropText}>
-                  <div>Position</div>
-                  <div className={classes.userPropTextValue}>
-                    {proposals &&
-                      getNumberWithOrdinal(
-                        proposals.findIndex(p => p.id === userProps[cardIndex].id) + 1,
-                      )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {(status === AuctionStatus.AuctionVoting ||
-              (status === AuctionStatus.AuctionEnded &&
-                winningIds &&
-                !isWinner(winningIds, userProps[cardIndex].id))) && (
-              <div className={classes.userPropItem}>
-                <div className={classes.userPropNounImg}>
-                  <img src="/heads/wallet.png" alt="wallet" />
-                </div>
-                <div className={classes.userPropText}>
-                  <div>Votes Needed</div>
-                  <div className={classes.userPropTextValue}>
-                    {fewerPropsThanNumberofWinners
-                      ? 0
-                      : allPropsHaveZeroVotes
-                      ? '-'
-                      : getMinimumVotesNeededToWin(Number(userProps[cardIndex].score))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-          <hr className={classes.divider} />
-        </>
+        <PropStats
+          status={status}
+          userProps={userProps}
+          totalVotes={totalVotes}
+          winningIds={winningIds}
+          cardIndex={cardIndex}
+          proposals={proposals}
+          numOfWinners={numOfWinners}
+        />
       )}
 
       {status === AuctionStatus.AuctionEnded &&
