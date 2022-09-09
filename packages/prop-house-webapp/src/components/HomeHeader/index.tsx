@@ -1,6 +1,7 @@
 import { Col, Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
+import HomeTitle from '../HomeTitle';
 
 interface HomeHeaderProps {
   input: string;
@@ -11,18 +12,9 @@ const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
   return (
     <Row className={classes.wrapper}>
       <Col lg={12} className={classes.leftCol}>
-        <div className={classes.title}>
-          <h1 className={classes.fundedText}>
-            <span> Get funded to</span>
-            <div className={classes.build}>
-              <span>build</span>
-              <img src="/line.svg" alt="line" />
-            </div>
-          </h1>
+        <HomeTitle />
 
-          <h1>with your favorite communities</h1>
-        </div>
-
+        {/* SEARCH */}
         <div className={classes.searchBar}>
           <span className={classes.searchIcon}>
             <SearchIcon />

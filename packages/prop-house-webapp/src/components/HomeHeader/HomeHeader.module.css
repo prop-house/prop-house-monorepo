@@ -50,20 +50,6 @@
     display: none;
   }
 }
-.fundedText {
-  display: flex;
-}
-.build {
-  display: flex;
-  justify-content: center;
-}
-.build span {
-  z-index: 1;
-  position: absolute;
-}
-.build img {
-  width: 140px !important;
-}
 
 .searchBar {
   display: flex;
@@ -120,11 +106,5 @@
   .wrapper {
     margin-top: 1rem;
     margin-bottom: 1rem;
-  }
-  .title h1 {
-    font-size: 24px !important;
-  }
-  .build img {
-    width: 70px !important;
   }
 }
