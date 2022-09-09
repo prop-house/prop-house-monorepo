@@ -16,7 +16,7 @@ const UserPropCard: React.FC<{
   proposals: StoredProposalWithVotes[] | undefined;
   numOfWinners: number;
   winningIds: number[] | undefined;
-  totalVotes: number;
+  totalVotes: number | undefined;
 }> = props => {
   const { userProps, winningIds, totalVotes, proposals, status, numOfWinners } = props;
   const [cardIndex, setCardIndex] = useState(0);
