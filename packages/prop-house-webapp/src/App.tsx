@@ -16,6 +16,7 @@ import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
+import changeBgColorByPage from './utils/changeBgColorByPage';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -37,12 +38,10 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
-  const isHome = location.pathname === '/';
-
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <div className={isHome ? 'bgGray' : 'bgWhite'}>
+        <div className={changeBgColorByPage(location.pathname)}>
           <NavBar />
           <Routes>
             <Route path="/" element={<Home />} />

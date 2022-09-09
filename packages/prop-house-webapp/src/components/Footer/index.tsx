@@ -2,21 +2,14 @@ import classes from './Footer.module.css';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
+import changeBgColorByPage from '../../utils/changeBgColorByPage';
 
 const Footer = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
-  const isProposalPath = new RegExp('.*/.*/.*/.+');
-
-  const bgShouldBeWhite =
-    location.pathname === '/create' ||
-    location.pathname === '/faq' ||
-    location.pathname === '/learn' ||
-    isProposalPath.test(location.pathname);
-
   return (
-    <div className={clsx(classes.footerContainer, bgShouldBeWhite ? 'bgWhite' : 'bgGray')}>
+    <div className={clsx(classes.footerContainer, changeBgColorByPage(location.pathname, true))}>
       <div className={classes.footer}>
         {t('questions')}{' '}
         <a
