@@ -1,5 +1,4 @@
 import classes from './ProposalCard.module.css';
-import globalClasses from '../../css/globals.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import detailedTime from '../../utils/detailedTime';
@@ -55,15 +54,7 @@ const ProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(
-            cardStatus === ProposalCardStatus.Voting
-              ? clsx(globalClasses.yellowBorder, classes.proposalCardVoting)
-              : cardStatus === ProposalCardStatus.Winner
-              ? globalClasses.pinkBorder
-              : '',
-            classes.proposalCard,
-            winner && classes.winner,
-          )}
+          classNames={clsx(classes.proposalCard, winner && classes.winner)}
         >
           <div className={classes.textContainter}>
             <div className={classes.titleContainer}>
