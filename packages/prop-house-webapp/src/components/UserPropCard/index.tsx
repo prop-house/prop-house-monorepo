@@ -1,13 +1,13 @@
 import classes from './UserPropCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import clsx from 'clsx';
-import Button, { ButtonColor } from '../Button';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import isWinner from '../../utils/isWinner';
 import { useState } from 'react';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import PropStats from '../PropStats';
-import CardFooter from '../CardFooter';
+import CardFooter from '../UserCardFooter';
+import UserCardHeader from '../UserCardHeader';
 
 const UserPropCard: React.FC<{
   userProps: any;
@@ -34,41 +34,14 @@ const UserPropCard: React.FC<{
       borderRadius={CardBorderRadius.thirty}
       classNames={clsx(classes.sidebarContainerCard, classes.userPropCard)}
     >
-      <div className={classes.sideCardHeader}>
-        <div className={classes.textContainer}>
-          <p className={classes.subtitle}>
-            {status === AuctionStatus.AuctionEnded
-              ? amountOfPropsWon > 0 && winningIds && isWinner(winningIds, userProps[cardIndex].id)
-                ? `Your ${amountOfPropsWon > 1 ? 'proposal' : 'proposals'} won!`
-                : `Your ${userProps.length === 1 ? 'proposal' : 'proposals'}`
-              : `Your ${userProps.length === 1 ? 'proposal' : 'proposals'}`}
-          </p>
-
-          <div className={classes.titleAndVoteBtns}>
-            <p className={classes.title}>{userProps[cardIndex].title}</p>
-            {userProps.length > 1 && (
-              <div className={classes.votesModuleContainer}>
-                <Button
-                  text="←"
-                  bgColor={ButtonColor.Gray}
-                  onClick={() => setCardIndex(cardIndex - 1)}
-                  classNames={classes.voteBtn}
-                  disabled={cardIndex === 0}
-                />
-
-                <Button
-                  text="→"
-                  bgColor={ButtonColor.Gray}
-                  onClick={() => setCardIndex(cardIndex + 1)}
-                  classNames={classes.voteBtn}
-                  disabled={cardIndex === userProps.length - 1}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <hr className={classes.divider} />
+      <UserCardHeader
+        status={status}
+        amountOfPropsWon={amountOfPropsWon}
+        userProps={userProps}
+        cardIndex={cardIndex}
+        setCardIndex={setCardIndex}
+        winningIds={winningIds && winningIds}
+      />
 
       {status !== AuctionStatus.AuctionAcceptingProps && (
         <PropStats
