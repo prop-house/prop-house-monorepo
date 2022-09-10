@@ -14,7 +14,7 @@ code {
 }
 
 .lang .btn-primary.dropdown-toggle {
-  background: none !important;
+  background: transparent !important;
   color: var(--brand-gray) !important;
   border: none !important;
 }

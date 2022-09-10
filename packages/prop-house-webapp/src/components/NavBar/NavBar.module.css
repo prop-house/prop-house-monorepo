@@ -1,6 +1,6 @@
 .navbar {
   padding-top: 2rem;
-  margin-bottom: 2rem;
+  padding-bottom: 2rem;
 }
 
 @media (max-width: 993px) {
