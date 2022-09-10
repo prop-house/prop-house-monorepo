@@ -17,7 +17,15 @@
   width: 140px !important;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 767px) {
+  .title h1 {
+    font-size: 45px !important;
+  }
+  .build img {
+    width: 120px !important;
+  }
+}
+@media (max-width: 500px) {
   .title h1 {
     font-size: 24px !important;
   }
