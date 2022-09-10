@@ -25,7 +25,21 @@
   color: var(--brand-black-transparent);
   font-weight: 700;
 }
-.infoText span {
+.infoWithSymbol {
+  display: flex;
+  align-items: center;
+  max-height: 16px;
+  gap: 4px;
+}
+.symbolContainer {
+  display: flex;
+}
+.symbolContainer img {
+  height: 12px;
+  align-self: center;
+}
+
+.infoAmount {
   color: var(--brand-black);
 }
 

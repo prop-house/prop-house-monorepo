@@ -14,18 +14,31 @@ const CommunityCard: React.FC<{
       <div className={classes.title}>{community.name}</div>
       <CommunityProfImg community={community} />
       <div className={classes.infoContainer}>
-        <div className={classes.infoText}>
-          <span>{community.ethFunded}</span> funded
-        </div>
-        <hr className={classes.divider} />
-        <div className={classes.cardInfo}>
-          <div className={classes.infoText}>
-            <span>{community.numAuctions}</span>{' '}
-            {community.numAuctions === 1 ? t('round') : t('rounds')}
+        <div className={classes.infoWithSymbol}>
+          <div className={classes.symbolContainer}>
+            <img src="/eth.png" alt="eth" />
           </div>
           <div className={classes.infoText}>
-            <span>{community.numProposals}</span>{' '}
-            {community.numProposals === 1 ? t('prop') : t('props')}
+            <span className={classes.infoAmount}>{community.ethFunded}</span>{' '}
+            <span className={classes.infoCopy}>funded</span>
+          </div>
+        </div>
+
+        <hr className={classes.divider} />
+
+        <div className={classes.cardInfo}>
+          <div className={classes.infoText}>
+            <span className={classes.infoAmount}>{community.numAuctions}</span>{' '}
+            <span className={classes.infoCopy}>
+              {community.numAuctions === 1 ? t('round') : t('rounds')}
+            </span>
+          </div>
+
+          <div className={classes.infoText}>
+            <span className={classes.infoAmount}>{community.numProposals}</span>{' '}
+            <span className={classes.infoCopy}>
+              {community.numProposals === 1 ? t('prop') : t('props')}
+            </span>
           </div>
         </div>
       </div>
