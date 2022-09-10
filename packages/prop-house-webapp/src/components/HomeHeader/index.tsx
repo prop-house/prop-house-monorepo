@@ -2,6 +2,7 @@ import { Col, Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 import HomeTitle from '../HomeTitle';
+import HomeStats from '../HomeStats';
 
 interface HomeHeaderProps {
   input: string;
@@ -13,6 +14,8 @@ const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
     <Row className={classes.wrapper}>
       <Col lg={12} className={classes.leftCol}>
         <HomeTitle />
+
+        <HomeStats />
 
         {/* SEARCH */}
         <div className={classes.searchBar}>
