@@ -1,10 +1,10 @@
-import { Col, Row } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
-import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 import HomeTitle from '../HomeTitle';
 import HomeStats from '../HomeStats';
+import HomeSearchBar from '../HomeSeachBar';
 
-interface HomeHeaderProps {
+export interface HomeHeaderProps {
   input: string;
   handleChange: any;
 }
@@ -12,25 +12,9 @@ interface HomeHeaderProps {
 const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
   return (
     <Row className={classes.wrapper}>
-      <Col lg={12} className={classes.leftCol}>
-        <HomeTitle />
-
-        <HomeStats />
-
-        {/* SEARCH */}
-        <div className={classes.searchBar}>
-          <span className={classes.searchIcon}>
-            <SearchIcon />
-          </span>
-
-          <input
-            type="text"
-            value={input}
-            onChange={e => handleChange(e)}
-            placeholder="Search community houses"
-          />
-        </div>
-      </Col>
+      <HomeTitle />
+      <HomeStats />
+      <HomeSearchBar input={input} handleChange={handleChange} />
     </Row>
   );
 };
