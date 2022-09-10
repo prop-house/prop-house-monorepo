@@ -11,9 +11,13 @@ const CommunityCard: React.FC<{
 
   return (
     <div className={classes.container}>
-      <CommunityProfImg community={community} hover />
+      <div className={classes.title}>{community.name}</div>
+      <CommunityProfImg community={community} />
       <div className={classes.infoContainer}>
-        <div className={classes.title}>{community.name}</div>
+        <div className={classes.infoText}>
+          <span>{community.ethFunded}</span> funded
+        </div>
+        <hr className={classes.divider} />
         <div className={classes.cardInfo}>
           <div className={classes.infoText}>
             <span>{community.numAuctions}</span>{' '}
