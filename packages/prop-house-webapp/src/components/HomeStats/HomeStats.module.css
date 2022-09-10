@@ -1,9 +1,9 @@
 .statsContainer {
   display: flex;
   justify-content: space-between;
-  width: 50%;
+  width: 35%;
   margin: auto;
-  padding-top: 48px;
+  padding: 46px 0px;
 }
 .stat {
   text-align: center;
@@ -14,18 +14,29 @@
   font-weight: 700;
   margin: 0 !important;
   font-size: 44px !important;
-  background: linear-gradient(87.64deg, #8a2be2 -201.06%, #571494 284.63%);
+  line-height: normal;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  line-height: normal;
   text-fill-color: transparent;
 }
+.stat:first-of-type .amount {
+  background: linear-gradient(92.55deg, #8a2be2 0%, #571494 419.13%);
+  background-clip: text;
+}
+.stat:nth-of-type(2) .amount {
+  background: linear-gradient(87.64deg, #8a2be2 -201.06%, #571494 284.63%);
+  background-clip: text;
+}
+
+.stat:nth-of-type(3) .amount {
+  background: linear-gradient(72.06deg, #8a2be2 -429.74%, #571494 78.37%);
+  background-clip: text;
+}
+
 .subtitle {
   font-weight: 500;
   font-size: 14px !important;
   color: var(--brand-black);
-
   margin: 0 !important;
 }
 
