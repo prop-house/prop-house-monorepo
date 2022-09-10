@@ -1,8 +1,13 @@
 .title {
   text-align: center;
 }
+.title h1 {
+  font-size: 50px;
+}
+
 .fundedText {
   display: flex;
+  margin-bottom: 0px;
   justify-content: center;
 }
 .build {
