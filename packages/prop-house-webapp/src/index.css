@@ -9,10 +9,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+/* i18n switcher */
 .dropdown-toggle::after {
   vertical-align: inherit !important;
 }
-
 .lang .btn-primary.dropdown-toggle {
   background: transparent !important;
   color: var(--brand-gray) !important;
@@ -33,7 +33,6 @@ code {
     border-color: rgba(0, 0, 0, 0.1) !important;
   }
 }
-
 .lang .dropdown-menu {
   background: #ffffff !important;
   border: 1px solid rgba(0, 0, 0, 0.2) !important;
@@ -60,4 +59,9 @@ code {
 }
 .lang .dropdown-item.disabled {
   color: var(--brand-black) !important;
+}
+
+/* tooltip */
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: white !important;
 }
