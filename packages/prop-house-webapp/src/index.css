@@ -26,7 +26,7 @@ code {
   border-radius: 0px !important;
   color: black;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .lang .btn-primary.dropdown-toggle {
     color: black !important;
     border: 1px solid transparent !important;

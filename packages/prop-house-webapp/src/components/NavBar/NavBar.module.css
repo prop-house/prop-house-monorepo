@@ -3,12 +3,6 @@
   padding-bottom: 2rem;
 }
 
-@media (max-width: 993px) {
-  .navbar {
-    margin-bottom: 0.5rem;
-  }
-}
-
 .navBarCollapse {
   display: flex;
   align-items: center;
@@ -35,7 +29,7 @@
   border-radius: 10px !important;
 }
 
-@media (max-width: 993px) {
+@media (max-width: 991px) {
   .menuLink {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
@@ -57,7 +51,7 @@
 .buttonGroup {
   display: flex;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .buttonGroup {
     gap: 10px;
     display: flex;
@@ -65,15 +59,14 @@
   }
 }
 
-.divider {
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: 1px;
-}
-@media (min-width: 993px) {
+@media (min-width: 992px) {
+  .divider {
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 1px;
+  }
   .link {
     margin-right: 0.75rem;
   }
-
   .menuLink {
     padding-left: 0rem !important;
     padding-right: 0.75rem !important;
