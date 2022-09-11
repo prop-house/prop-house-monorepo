@@ -1,8 +1,12 @@
-import { HomeHeaderProps } from '../HomeHeader';
 import classes from './HomeSearchBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 
-const HomeSearchBar = ({ input, handleChange }: HomeHeaderProps) => {
+interface HomeSearchBarProps {
+  input: string;
+  handleChange: any;
+}
+
+const HomeSearchBar = ({ input, handleChange }: HomeSearchBarProps) => {
   return (
     <div className={classes.searchBar}>
       <span className={classes.searchIcon}>

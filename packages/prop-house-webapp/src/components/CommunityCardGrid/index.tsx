@@ -1,39 +1,25 @@
 import CommunityCard from '../CommunityCard';
 import classes from './CommunityCardGrid.module.css';
-import { useEffect, useState, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import { useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
+
 import RoundMessage from '../RoundMessage';
 import LoadingIndicator from '../LoadingIndicator';
 
 interface CommunityCardGridProps {
   input: string;
+  communities: Community[];
+  isLoading: boolean;
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-const CommunityCardGrid = ({ input }: CommunityCardGridProps) => {
-  const [communities, setCommunities] = useState<Community[]>([]);
+const CommunityCardGrid = ({
+  input,
+  communities,
+  isLoading,
+  setIsLoading,
+}: CommunityCardGridProps) => {
   const [filteredHouses, setFilteredHouses] = useState<Community[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { library } = useEthers();
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
-
-  // fetch communities
-  useEffect(() => {
-    const getCommunities = async () => {
-      setIsLoading(true);
-      const communities = await client.current.getCommunities();
-      setCommunities(communities);
-      communities && setIsLoading(false);
-    };
-    getCommunities();
-  }, []);
 
   useEffect(() => {
     communities &&
