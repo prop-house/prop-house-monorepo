@@ -33,3 +33,31 @@ code {
     border-color: rgba(0, 0, 0, 0.1) !important;
   }
 }
+
+.lang .dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  box-shadow: 0px 4px 12px rgb(0 0 0 / 6%) !important;
+  border-radius: 12px !important;
+}
+.lang .dropdown-item {
+  display: flex;
+  align-items: center;
+}
+.lang .dropdown-item img {
+  width: 10px;
+  display: none;
+}
+.lang .dropdown-item.disabled img {
+  display: flex;
+}
+.lang .dropdown-item {
+  color: var(--brand-gray) !important;
+  justify-content: space-between;
+}
+.lang .dropdown-menu button {
+  padding: 4px 12px;
+}
+.lang .dropdown-item.disabled {
+  color: var(--brand-black) !important;
+}

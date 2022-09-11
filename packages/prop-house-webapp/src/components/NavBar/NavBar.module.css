@@ -7,10 +7,6 @@
   .navbar {
     margin-bottom: 0.5rem;
   }
-  .navbar-nav .dropdown-menu {
-    position: absolute !important;
-    background: yellow !important;
-  }
 }
 
 .navBarCollapse {
