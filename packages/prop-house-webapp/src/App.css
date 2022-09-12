@@ -77,8 +77,14 @@
 
 html,
 body {
-  background-color: #f5f5f5;
   letter-spacing: -0.2px;
+  background-color: #ffffff;
+}
+.bgGray {
+  background-color: #f5f5f5;
+}
+.bgWhite {
+  background-color: #ffffff;
 }
 
 h1,

@@ -1,9 +1,8 @@
 .footerContainer {
-  padding: 6rem 0 1rem 0;
+  padding: 6rem 0 3rem 0;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  background: rgb(245, 245, 245);
 }
 @media (max-width: 375px) {
   .footerContainer {
@@ -12,7 +11,7 @@
 }
 @media (max-width: 575px) {
   .footerContainer {
-    padding: 0px 20px;
+    padding: 4rem 20px 3rem 20px;
   }
 }
 
