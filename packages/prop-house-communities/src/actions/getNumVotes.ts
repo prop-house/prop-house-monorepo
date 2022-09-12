@@ -21,8 +21,8 @@ export const getNumVotes = async (
   const strategy = strategyForCommunity(communityAddress);
 
   if (strategy) {
-    return await strategy(userAddress, communityAddress, 1, blockTag, provider);
+    return await strategy(userAddress, communityAddress, blockTag, provider);
   }
 
-  return await balanceOf()(userAddress, communityAddress, 1, blockTag, provider);
+  return await balanceOf()(userAddress, communityAddress, blockTag, provider);
 };

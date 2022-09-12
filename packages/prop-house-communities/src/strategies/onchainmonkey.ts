@@ -11,7 +11,6 @@ export const onchainMonkey = (): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
-    multiplier: number,
     blockTag: string,
     provider: Provider,
   ) => {

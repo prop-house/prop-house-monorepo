@@ -6,7 +6,7 @@ import { nouns } from '../strategies/nouns';
  */
 export const communities = {
   // nouns
-  '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(),
+  '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(10),
   // onchainmonkey
   '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': onchainMonkey(),
   // the noun square team rewards

@@ -7,11 +7,10 @@ import { Provider } from '@ethersproject/providers';
 /**
  * Calculates `balanceOf` for contract
  */
-export const balanceOf = (): Strategy => {
+export const balanceOf = (multiplier: number = 1): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
-    multiplier: number = 1,
     blockTag: string,
     provider: Provider,
   ) => {
@@ -22,7 +21,7 @@ export const balanceOf = (): Strategy => {
 
     try {
       // attempt to parse BigNumber to number (eg 721)
-      return bal.toNumber();
+      return bal.toNumber() * multiplier;
     } catch (e) {
       try {
         // attempt to parse via formatting decimals places (eg erc20)

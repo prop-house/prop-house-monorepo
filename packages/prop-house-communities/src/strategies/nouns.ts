@@ -7,17 +7,12 @@ import { nounsSubgraphApiUri } from '../constants/nounsSubgraphApiUri';
 /**
  * Total delegated votes for address
  */
-export const nouns = (): Strategy => {
-  return async (
-    userAddress: string,
-    communityAddress: string,
-    multiplier: number,
-    blockTag: string,
-  ) => {
+export const nouns = (multiplier: number = 1): Strategy => {
+  return async (userAddress: string, communityAddress: string, blockTag: string) => {
     const result = await client(nounsSubgraphApiUri).query({
       query: gql(nounsDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase(), blockTag)),
     });
     const parsedResult = result.data.delegates[0] ? result.data.delegates[0].delegatedVotesRaw : 0;
-    return parsedResult * 10;
+    return parsedResult * multiplier;
   };
 };

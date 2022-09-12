@@ -7,11 +7,10 @@ import { Contract, BigNumber } from 'ethers';
 /**
  * Calculates `balanceOf` for specific token id within 1155 contract
  */
-export const erc1155 = (tokenId: number, multiplier: number): Strategy => {
+export const erc1155 = (tokenId: number, multiplier: number = 1): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
-    multiplier: number = 1,
     blockTag: string,
     provider: Provider,
   ) => {
