@@ -5,5 +5,5 @@ export type BaseStrategy = (
   communityAddress: string,
   multiplier: number,
   blockTag: string,
-  provider?: Provider,
+  provider: Provider,
 ) => Promise<number>;
