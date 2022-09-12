@@ -97,7 +97,6 @@ const Round = () => {
   return (
     <>
       <Container>
-        {/* {activeAuction && ( */}
         <ProfileHeader
           auction={activeAuction}
           community={community}
@@ -106,7 +105,6 @@ const Round = () => {
             contractAddress: slug,
           }}
         />
-        {/* )} */}
       </Container>
 
       {community && activeAuction && (
