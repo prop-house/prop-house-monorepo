@@ -25,8 +25,6 @@ import ErrorModal from '../ErrorModal';
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
-  isFirstOrLastAuction?: () => [boolean, boolean];
-  handleAuctionChange?: (next: boolean) => void;
 }> = props => {
   const { auction } = props;
 

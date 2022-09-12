@@ -91,35 +91,6 @@ const Round = () => {
     fetchName();
   }, [library, community, slug, inactiveCommName]);
 
-  const handleAuctionChange = (next: boolean) => {
-    if (!activeAuction || !community || community.auctions.length === 0) return;
-
-    const auctions = community.auctions;
-    const index = community.auctions.findIndex(a => a.id === activeAuction.id);
-
-    const updatedIndex = next
-      ? auctions[index + 1]
-        ? index + 1
-        : index
-      : auctions[index - 1]
-      ? index - 1
-      : index;
-
-    dispatch(setActiveAuction(auctions[updatedIndex]));
-  };
-
-  const isFirstOrLastAuction = (): [boolean, boolean] => {
-    if (!activeAuction || !community || community.auctions.length === 0) return [false, false];
-    const index = community.auctions.findIndex(a => a.id === activeAuction.id);
-    return index === 0 && community.auctions.length === 1
-      ? [true, true]
-      : index === 0
-      ? [true, false]
-      : index === community.auctions.length - 1
-      ? [false, true]
-      : [false, false];
-  };
-
   if (!community && !failedFetch) return <LoadingIndicator />;
   if (!isValidAddress && failedFetch) return <NotFound />;
 
@@ -150,11 +121,7 @@ const Round = () => {
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
             {community && activeAuction ? (
-              <FullAuction
-                auction={activeAuction}
-                isFirstOrLastAuction={isFirstOrLastAuction}
-                handleAuctionChange={handleAuctionChange}
-              />
+              <FullAuction auction={activeAuction} />
             ) : (
               <RoundMessage message="No rounds available" />
             )}
