@@ -16,7 +16,7 @@ import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
-import bgColorForPage from './utils/bgColorForFooter';
+import bgColorForPage from './utils/bgColorForPage';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
