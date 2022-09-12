@@ -18,7 +18,7 @@ describe('balanceOf ERC20 votes', () => {
     expect(balanceOfErc721).to.not.be.undefined;
   });
 
-  it('erc20 test: genesis address should have a positive balance of DAI', async () => {
+  it('genesis address (0x00) should have a positive balance of DAI', async () => {
     apiKey = process.env.INFURA_PROJECT_ID;
     if (!apiKey) return;
     const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
