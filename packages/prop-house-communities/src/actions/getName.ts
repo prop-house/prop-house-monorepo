@@ -5,10 +5,10 @@ import NameABI from '../abi/NameABI.json';
 /**
  * Gets `name` from contract (assuming it complies w the ERC721/ERC20 standard)
  */
-export const getName = async (commmunityAddress: string, provider: Provider): Promise<string> => {
-  if (!ethers.utils.isAddress(commmunityAddress)) throw new Error('Community address is not valid');
+export const getName = async (commnunityAddress: string, provider: Provider): Promise<string> => {
+  if (!ethers.utils.isAddress(commnunityAddress)) throw new Error('Community address is not valid');
 
-  const contract = new ethers.Contract(commmunityAddress, NameABI, provider);
+  const contract = new ethers.Contract(commnunityAddress, NameABI, provider);
 
   try {
     return await contract.name();
