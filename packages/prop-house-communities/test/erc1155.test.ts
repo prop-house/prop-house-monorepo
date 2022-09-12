@@ -1,8 +1,7 @@
 import { expect } from 'chai';
-import { Contract, providers, utils } from 'ethers';
+import { providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
-import BalanceOfABI1155 from '../src/abi/BalanceOf1155ABI.json';
-import { balanceOf, erc1155 } from '../src/strategies';
+import { erc1155 } from '../src/strategies';
 import { getNumVotes } from '../src/actions';
 
 describe('erc1155 votes', () => {

@@ -1,12 +1,9 @@
 import { ethers } from 'ethers';
 import { Provider } from '@ethersproject/providers';
 import { strategyForCommunity } from '../utils/strategyForCommunity';
-import { balanceOf } from '../strategies/balanceOf';
 
 /**
  * Gets number of votes for an address given a communityAddress:
- * Checks if commnunity has custom approach to calculating votes,
- * if not, defaults to `balanceOf` call.
  */
 export const getNumVotes = async (
   userAddress: string,
@@ -20,9 +17,7 @@ export const getNumVotes = async (
   // check if community has custom strategy for counting votes
   const strategy = strategyForCommunity(communityAddress);
 
-  if (strategy) {
-    return await strategy(userAddress, communityAddress, blockTag, provider);
-  }
+  if (!strategy) throw new Error(`No strategy found for community address ${communityAddress}`);
 
-  return await balanceOf()(userAddress, communityAddress, blockTag, provider);
+  return await strategy(userAddress, communityAddress, blockTag, provider);
 };

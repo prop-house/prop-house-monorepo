@@ -5,9 +5,9 @@ import { parseBlockTag } from '../utils/parseBlockTag';
 import { Provider } from '@ethersproject/providers';
 
 /**
- * Calculates `balanceOf` for contract
+ * Calculates `balanceOf` for ERC-721 contract
  */
-export const balanceOf = (multiplier: number = 1): Strategy => {
+export const balanceOfErc721 = (multiplier: number = 1): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
@@ -19,16 +19,9 @@ export const balanceOf = (multiplier: number = 1): Strategy => {
       await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
     );
 
-    try {
-      // attempt to parse BigNumber to number (eg 721)
-      return bal.toNumber() * multiplier;
-    } catch (e) {
-      try {
-        // attempt to parse via formatting decimals places (eg erc20)
-        return Number(utils.formatEther(bal));
-      } catch (e) {
-        throw new Error(`Error using balanceOf strategy: ${e}`);
-      }
-    }
+    const parsedBal = bal.toNumber();
+    if (!parsedBal) throw new Error('Error fetching `blanceOf` for ERC721');
+
+    return parsedBal * multiplier;
   };
 };

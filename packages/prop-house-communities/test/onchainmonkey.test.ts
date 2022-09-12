@@ -1,8 +1,7 @@
 import { expect } from 'chai';
-import { BigNumber, Contract, providers, utils } from 'ethers';
+import { BigNumber, Contract, providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
 import BalanceOfABI from '../src/abi/BalanceOfABI.json';
-import { onchainMonkey } from '../src/strategies';
 import { strategyForCommunity } from '../src/utils/strategyForCommunity';
 import { getNumVotes } from '../src/actions';
 
