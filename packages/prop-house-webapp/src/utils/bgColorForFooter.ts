@@ -5,6 +5,8 @@ const bgColorForFooter = (path: string) => {
 
   if (pages.includes(path) || isProposalPath) return 'bgWhite';
   if (isHousePath) return 'bgGray';
+
+  return 'bgWhite';
 };
 
 export default bgColorForFooter;
