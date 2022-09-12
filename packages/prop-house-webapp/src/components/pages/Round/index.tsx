@@ -17,7 +17,6 @@ import dayjs from 'dayjs';
 import { slugToName } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
-// import { useTranslation } from 'react-i18next';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
@@ -37,7 +36,6 @@ const Round = () => {
   const activeAuction = useAppSelector(state => state.propHouse.activeAuction);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  // const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());

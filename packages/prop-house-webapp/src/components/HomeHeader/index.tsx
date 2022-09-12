@@ -1,6 +1,5 @@
 import { Col, Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
-// import { useTranslation } from 'react-i18next';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 
 interface HomeHeaderProps {
@@ -9,8 +8,6 @@ interface HomeHeaderProps {
 }
 
 const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
-  // const { t } = useTranslation();
-
   return (
     <Row className={classes.wrapper}>
       <Col lg={12} className={classes.leftCol}>

@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
-// import { useTranslation } from 'react-i18next';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -36,7 +35,6 @@ const ProposalCard: React.FC<{
     fromHome,
     winner,
   } = props;
-  // const { t } = useTranslation();
 
   let navigate = useNavigate();
 
