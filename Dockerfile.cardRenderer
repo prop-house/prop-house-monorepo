@@ -5,9 +5,11 @@ WORKDIR /app
 ADD package.json .
 ADD yarn.lock .
 
+ADD . .
+
 RUN yarn
 
-ADD . .
+RUN yarn build
 
 WORKDIR /app/packages/prop-house-communities
 
@@ -20,5 +22,7 @@ WORKDIR /app/packages/prop-house-card-renderer
 RUN yarn
 
 RUN yarn build
+
+RUN mkdir /tmp/phcache
 
 CMD [ "node", "build/index.js" ]
