@@ -1,4 +1,4 @@
-import { BaseStrategy } from '../types/Strategy';
+import { Strategy } from '../types/Strategy';
 import { gql } from '@apollo/client';
 import { client } from '../utils/client';
 import { nounsDelegatedVotesToAddressQuery } from '../queries/nounsQuery';
@@ -7,7 +7,7 @@ import { nounsSubgraphApiUri } from '../constants/nounsSubgraphApiUri';
 /**
  * Total delegated votes for address
  */
-export const nouns = (): BaseStrategy => {
+export const nouns = (): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,

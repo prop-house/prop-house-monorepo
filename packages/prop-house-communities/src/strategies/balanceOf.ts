@@ -1,4 +1,4 @@
-import { BaseStrategy } from '../types/Strategy';
+import { Strategy } from '../types/Strategy';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { Contract, BigNumber, utils } from 'ethers';
 import { parseBlockTag } from '../utils/parseBlockTag';
@@ -7,7 +7,7 @@ import { Provider } from '@ethersproject/providers';
 /**
  * Calculates `balanceOf` for contract
  */
-export const balanceOf = (): BaseStrategy => {
+export const balanceOf = (): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,

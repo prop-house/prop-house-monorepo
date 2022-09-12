@@ -1,6 +1,6 @@
 import { Provider } from '@ethersproject/providers';
 
-export type BaseStrategy = (
+export type Strategy = (
   userAddress: string,
   communityAddress: string,
   multiplier: number,
