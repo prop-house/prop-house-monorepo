@@ -94,7 +94,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemTitle}>{t('funding')}</div>
 
             <div className={classes.itemData}>
-              {auction ? `${auction.fundingAmount.toFixed(2)} Ξ x ${auction.numWinners}` : '-'}
+              {auction ? `${auction.fundingAmount.toFixed(2)} Ξ × ${auction.numWinners}` : '-'}
             </div>
           </div>
 

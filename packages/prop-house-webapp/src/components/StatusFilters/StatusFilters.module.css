@@ -8,12 +8,12 @@
 }
 
 .divider {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--border-med);
   border: 1px solid rgba(0, 0, 0, 0);
   border-radius: 1px;
-  height: 50%;
+  height: 38%;
   margin: auto;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .filter {
@@ -41,7 +41,7 @@
   font-weight: 700;
   font-size: 14px;
   border-radius: 6px;
-  padding: 0px 4px;
+  padding: 0px 2px;
   align-self: center;
   background: var(--border-light);
   color: var(--brand-gray);

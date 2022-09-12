@@ -71,12 +71,19 @@ body {
   --brand-gray-semi-transparent: rgba(102, 102, 102, 0.25);
 
   /* Utils */
+  --bg-light: #fff;
   --bg-med: #fcfcfc;
   --bg-dark: #f5f5f5;
 
   --border-light: rgba(0, 0, 0, 0.04);
   --border-med: rgba(0, 0, 0, 0.1);
   --border-dark: rgba(102, 102, 102, 0.25);
+
+  --shadow-none: 0px 0px 0px rgba(0, 0, 0, 0);
+  --shadow-low: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  --shadow-high: 0px 2px 8px rgba(0, 0, 0, 0.08);
+
+  --card-transition: .15s cubic-bezier(0,.41,.6,1.02);
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */

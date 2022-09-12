@@ -1,10 +1,9 @@
 .card {
   border: 1px solid var(--border-light);
   padding: 1rem 1.25rem;
-  margin: 1rem 0;
+  margin: .75rem 0;
   transition: box-shadow 0.3s;
   box-shadow: none;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 a {
@@ -21,7 +20,7 @@ a {
 }
 
 .whiteBg {
-  background-color: white;
+  background-color: var(--bg-light);
 }
 
 .borderRadius18 {

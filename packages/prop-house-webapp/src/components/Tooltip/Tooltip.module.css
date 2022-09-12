@@ -3,12 +3,11 @@
 }
 
 .tooltip [class$='inner'] {
-  border-radius: 10px;
   padding: 0.5rem;
   text-align: left;
 
-  background: #ffffff;
-  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), 0px 4px 12px rgba(0, 0, 0, 0.03);
+  background: var(--bg-light);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
   border-radius: 8px;
   color: black;
   font-weight: 700;
@@ -17,7 +16,7 @@
 }
 
 .tooltipTitle {
-  color: white;
+  color: var(--bg-light);
   font-weight: 500;
   display: block;
   text-align: left;
