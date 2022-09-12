@@ -2,14 +2,14 @@ import classes from './Footer.module.css';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
-import changeBgColorByPage from '../../utils/changeBgColorByPage';
+import bgColorForFooter from '../../utils/bgColorForFooter';
 
 const Footer = () => {
   const { t } = useTranslation();
   const location = useLocation();
 
   return (
-    <div className={clsx(classes.footerContainer, changeBgColorByPage(location.pathname, true))}>
+    <div className={clsx(classes.footerContainer, bgColorForFooter(location.pathname))}>
       <div className={classes.footer}>
         {t('questions')}{' '}
         <a
