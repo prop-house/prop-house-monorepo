@@ -8,6 +8,7 @@ interface SolidityContract {
 }
 
 const whitelistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'Vault'];
+const test = 'test/ethereum';
 
 const runBlacksmith = () => {
   const cmd = process.argv[2];
@@ -15,7 +16,7 @@ const runBlacksmith = () => {
     case 'create': {
       console.log('running :: forge build');
       exec(
-        'rm -rf test/blacksmith && mv test _test && forge build --contracts src',
+        `rm -rf ${test}/blacksmith && mv ${test} _test && forge build --contracts src`,
         (err, stdout, _stderr) => {
           if (stdout) {
             console.log(err || 'success');
@@ -26,7 +27,7 @@ const runBlacksmith = () => {
             console.log('\x1b[31m%s\x1b[0m', 'build   :: failed badly');
             createBlacksmiths();
           }
-          exec('mv _test test');
+          exec(`mv _test ${test}`);
         },
       );
       break;
@@ -36,7 +37,7 @@ const runBlacksmith = () => {
       break;
     case 'build':
       console.log('running :: forge build :: only src');
-      exec('mv test _test && forge build --contracts src --force', (err, stdout, stderr) => {
+      exec(`mv ${test} _test && forge build --contracts src --force`, (err, stdout, _stderr) => {
         if (stdout) {
           const nochange = stdout.split('\n')[1]?.indexOf('No files changed') === 0;
           const success = stdout.split('\n')[1]?.indexOf('Compiler run successful') === 0;
@@ -50,7 +51,7 @@ const runBlacksmith = () => {
           console.log(err);
           console.log('\x1b[31m%s\x1b[0m', 'build   :: failed badly');
         }
-        exec('mv _test test');
+        exec(`mv _test ${test}`);
       });
       break;
 
@@ -203,7 +204,7 @@ const createCode = ({ name, source, abi }: SolidityContract & { abi: JsonFragmen
   const code = `// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.13;
 import "./Blacksmith.sol";
-import "../../src/${source.slice(4)}";
+import "../../../src/${source.slice(4)}";
 contract ${name}BS {
     Bsvm constant bsvm = Bsvm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
     address addr;
@@ -257,7 +258,6 @@ const getFiles = () => {
   let contractPaths: { name: string; source: string }[] = [];
   files.forEach(file => {
     const contracts = Object.keys(file.artifacts);
-    console.log(contracts);
     contracts
       .filter(c => whitelistedContracts.includes(c))
       .forEach(contract => {

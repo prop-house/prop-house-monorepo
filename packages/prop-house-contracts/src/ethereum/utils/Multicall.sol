@@ -17,7 +17,9 @@ abstract contract Multicall {
             bytes memory result;
             (success, result) = address(this).delegatecall(_data[i]);
             if (!success) {
-                if (result.length == 0) revert();
+                if (result.length == 0) {
+                    revert();
+                }
                 // If there is return data and the call wasn't successful, the call reverted with a reason or a custom error.
                 _revertedWithReason(result);
             }
