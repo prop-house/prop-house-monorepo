@@ -13,7 +13,7 @@ export const erc1155 = (tokenId: number, multiplier: number): Strategy => {
     communityAddress: string,
     multiplier: number = 1,
     blockTag: string,
-    provider?: Provider,
+    provider: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOf1155ABI, provider);
     try {

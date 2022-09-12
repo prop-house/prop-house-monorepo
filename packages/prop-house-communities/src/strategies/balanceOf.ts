@@ -13,7 +13,7 @@ export const balanceOf = (): Strategy => {
     communityAddress: string,
     multiplier: number = 1,
     blockTag: string,
-    provider?: Provider,
+    provider: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOfABI, provider);
     const bal = BigNumber.from(

@@ -13,7 +13,7 @@ export const onchainMonkey = (): Strategy => {
     communityAddress: string,
     multiplier: number,
     blockTag: string,
-    provider?: Provider,
+    provider: Provider,
   ) => {
     const karmaContract = new Contract(
       '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b', // karma monkey contract address
