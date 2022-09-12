@@ -1,0 +1,20 @@
+{
+  "name": "prop-house-card-renderer",
+  "version": "1.0.0",
+  "main": "build/index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.1",
+    "puppeteer": "^17.1.3",
+    "typescript": "^4.8.3",
+    "@nouns/prop-house-wrapper": "1.0.0"
+  },
+  "scripts": {
+    "start:dev": "ts-node src/index.ts",
+    "start": "node build/index.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1"
+  }
+}
