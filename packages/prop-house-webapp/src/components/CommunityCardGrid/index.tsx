@@ -60,7 +60,7 @@ const CommunityCardGrid = ({ input }: CommunityCardGridProps) => {
         filteredHouses && filteredHouses.length > 0 ? (
           <div className={classes.cardGrid}>{cards}</div>
         ) : (
-          <RoundMessage message="No houses available" />
+          <RoundMessage message="No houses found" />
         )
       ) : (
         <LoadingIndicator />
