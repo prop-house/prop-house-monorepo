@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { Fragment } from 'react';
 import { HouseUtilityBarProps } from '../HouseUtilityBar';
 import classes from './HouseFilters.module.css';
 
@@ -41,9 +42,8 @@ const HouseFilters = ({
     <>
       {statuses.map((s, index) => {
         return (
-          <>
+          <Fragment key={index}>
             <div
-              key={index}
               onClick={() => handleClick(s.id)}
               className={clsx(
                 classes.filter,
@@ -57,7 +57,7 @@ const HouseFilters = ({
               </div>
             </div>
             {index === 0 && <div className={classes.divider}></div>}
-          </>
+          </Fragment>
         );
       })}
     </>
