@@ -1,4 +1,8 @@
-import { CommunityWithAuctions, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  CommunityWithAuctions,
+  StoredAuction,
+  StoredProposalWithVotes,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './ProposalCards.module.css';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
@@ -20,6 +24,8 @@ import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import VotingModule from '../VotingModule';
 import RoundOverModule from '../RoundOverModule';
+
+import { useEffect, useState } from 'react';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -51,6 +57,7 @@ const ProposalCards: React.FC<{
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
   const winningIds = getWinningIds(proposals, auction);
+  const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
 
   // auction statuses
   const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
@@ -61,14 +68,19 @@ const ProposalCards: React.FC<{
   const getVoteTotal = () =>
     proposals && proposals.reduce((total, prop) => (total = total + Number(prop.score)), 0);
 
-  const hasSubmittedProp = () => account && proposals && proposals.some(p => p.address === account);
-  const userProps =
-    account &&
-    proposals &&
-    hasSubmittedProp() &&
-    proposals
-      .filter(p => p.address === account)
-      .sort((a: { score: any }, b: { score: any }) => (Number(a.score) < Number(b.score) ? 1 : -1));
+  useEffect(() => {
+    if (!account || !proposals) return;
+
+    if (proposals.some(p => p.address === account)) {
+      return setUserProposals(
+        proposals
+          .filter(p => p.address === account)
+          .sort((a: { score: any }, b: { score: any }) =>
+            Number(a.score) < Number(b.score) ? 1 : -1,
+          ),
+      );
+    }
+  }, [account, proposals]);
 
   return (
     <Row className={classes.propCardsRow}>
@@ -96,9 +108,9 @@ const ProposalCards: React.FC<{
       </Col>
 
       <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-        {account && hasSubmittedProp() && !auctionNotStarted && (
+        {!auctionNotStarted && account && userProposals && userProposals.length > 0 && (
           <UserPropCard
-            userProps={userProps}
+            userProps={userProposals}
             proposals={proposals}
             numOfWinners={auction.numWinners}
             status={auctionStatus(auction)}

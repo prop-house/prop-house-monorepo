@@ -10,7 +10,7 @@ import CardFooter from '../UserCardFooter';
 import UserCardHeader from '../UserCardHeader';
 
 const UserPropCard: React.FC<{
-  userProps: any;
+  userProps: StoredProposalWithVotes[];
   status: AuctionStatus;
   proposals: StoredProposalWithVotes[] | undefined;
   numOfWinners: number;
