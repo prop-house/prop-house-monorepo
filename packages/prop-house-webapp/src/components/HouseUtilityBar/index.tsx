@@ -2,21 +2,15 @@ import classes from './HouseUtilityBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 import StatusFilters from '../StatusFilters';
 
-export interface HouseUtilityBarProps {
+const HouseUtilityBar: React.FC<{
   roundCountByStatus: number[];
   currentRoundStatus: number;
   setCurrentRoundStatus: any;
   setInput: (value: string) => void;
   input?: string;
-}
+}> = props => {
+  const { roundCountByStatus, currentRoundStatus, setCurrentRoundStatus, setInput, input } = props;
 
-const HouseUtilityBar = ({
-  roundCountByStatus,
-  currentRoundStatus,
-  setCurrentRoundStatus,
-  input,
-  setInput,
-}: HouseUtilityBarProps) => {
   const handleChange = (e: any) => {
     setInput(e.target.value);
     setCurrentRoundStatus(0);
