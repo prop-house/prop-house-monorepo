@@ -144,20 +144,18 @@ const House = () => {
             <Container>
               <Row>
                 {community ? (
-                  community.auctions.length > 0 ? (
-                    rounds && rounds.length > 0 ? (
-                      rounds.map((round, index) => (
-                        <Col key={index} xl={6}>
-                          <HouseCard round={round} />
-                        </Col>
-                      ))
-                    ) : (
-                      <NoSearchResults />
-                    )
-                  ) : (
+                  rounds && rounds.length > 0 ? (
+                    rounds.map((round, index) => (
+                      <Col key={index} xl={6}>
+                        <HouseCard round={round} />
+                      </Col>
+                    ))
+                  ) : input === '' ? (
                     <Col>
                       <RoundMessage message="No rounds available" />
                     </Col>
+                  ) : (
+                    <NoSearchResults />
                   )
                 ) : (
                   <LoadingIndicator />
