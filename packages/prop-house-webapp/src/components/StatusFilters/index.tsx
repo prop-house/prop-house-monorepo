@@ -4,7 +4,7 @@ import { Dropdown } from 'react-bootstrap';
 import { HouseUtilityBarProps } from '../HouseUtilityBar';
 import classes from './StatusFilters.module.css';
 
-interface Status {
+export interface Status {
   id: number;
   title: string;
   bgColor: string;
@@ -80,12 +80,12 @@ const StatusFilters = ({
 
           <Dropdown.Menu>
             {statuses.map((s, index) => (
-              <>
+              <Fragment key={index}>
                 <Dropdown.Item key={index} onClick={() => handleClick(s.id)}>
                   <span>{s.title}</span>
                   <span className={classes.count}>{roundCountByStatus[index]}</span>
                 </Dropdown.Item>
-              </>
+              </Fragment>
             ))}
           </Dropdown.Menu>
         </Dropdown>
