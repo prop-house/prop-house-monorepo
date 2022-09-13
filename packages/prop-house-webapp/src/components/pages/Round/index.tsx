@@ -10,7 +10,6 @@ import {
   setActiveCommunity,
   setActiveProposals,
 } from '../../../state/slices/propHouse';
-import { getName } from 'prop-house-communities';
 import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
 
@@ -29,7 +28,6 @@ const Round = () => {
   const isValidAddress = slug && ethers.utils.isAddress(slug);
   const dispatch = useAppDispatch();
   const { library } = useEthers();
-  const [inactiveCommName, setInactiveCommName] = useState<string>();
   const [failedFetch, setFailedFetch] = useState(false);
   const cleanedUp = useRef(false);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -76,35 +74,13 @@ const Round = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug, dispatch, isValidAddress, roundFromSlug]);
 
-  // fetch inactive commmunity
-  useEffect(() => {
-    if (!library || community || !slug) return;
-
-    const fetchName = async () => {
-      try {
-        setInactiveCommName(await getName(slug, library));
-      } catch (e) {
-        console.log(e);
-      }
-    };
-
-    fetchName();
-  }, [library, community, slug, inactiveCommName]);
-
   if (!community && !failedFetch) return <LoadingIndicator />;
   if (!isValidAddress && failedFetch) return <NotFound />;
 
   return (
     <>
       <Container>
-        <ProfileHeader
-          auction={activeAuction}
-          community={community}
-          inactiveComm={{
-            name: inactiveCommName ? inactiveCommName : 'N/A',
-            contractAddress: slug,
-          }}
-        />
+        <ProfileHeader auction={activeAuction} community={community} />
       </Container>
 
       {activeAuction && (
@@ -118,7 +94,7 @@ const Round = () => {
       <div style={{ background: '#f5f5f5' }}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {community && activeAuction ? (
+            {activeAuction ? (
               <FullAuction auction={activeAuction} />
             ) : (
               <RoundMessage message="No rounds available" />

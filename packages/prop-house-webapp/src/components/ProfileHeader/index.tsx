@@ -9,11 +9,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 
-interface InactiveCommunity {
-  contractAddress: string;
-  name: string;
-}
-
 const isLongName = (name: string) => name.length > 9;
 
 interface OpenInNewTabProps {
@@ -25,10 +20,9 @@ const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props
 
 const ProfileHeader: React.FC<{
   community?: Community;
-  inactiveComm?: InactiveCommunity;
   auction?: StoredAuction;
 }> = props => {
-  const { community, inactiveComm, auction } = props;
+  const { community, auction } = props;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -54,12 +48,11 @@ const ProfileHeader: React.FC<{
           <Col
             className={clsx(
               classes.titleRow,
-              isLongName(community ? community.name : '') ||
-                (isLongName(inactiveComm ? inactiveComm.name : '') && classes.longName),
+              isLongName(community ? community.name : '') && classes.longName,
             )}
           >
             <div className={classes.title}>
-              {community ? community.name : inactiveComm?.name}
+              {community ? community.name : ''}
               {auction && `: ${auction.title}`}
             </div>
           </Col>
