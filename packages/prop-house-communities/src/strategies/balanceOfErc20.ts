@@ -19,9 +19,7 @@ export const balanceOfErc20 = (decimals: number, multiplier: number = 1): Strate
     const bal = BigNumber.from(
       await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
     );
-    if (!bal) throw new Error('Error fetching `blanceOf` for ERC20');
-
-    const parsedBal = parseFloat(formatUnits(bal, decimals));
-    return parsedBal * multiplier;
+    const balMultiplied = bal.mul(multiplier);
+    return parseFloat(formatUnits(balMultiplied, decimals));
   };
 };

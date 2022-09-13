@@ -18,10 +18,6 @@ export const balanceOfErc721 = (multiplier: number = 1): Strategy => {
     const bal = BigNumber.from(
       await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
     );
-
-    const parsedBal = bal.toNumber();
-    if (!parsedBal) throw new Error('Error fetching `blanceOf` for ERC721');
-
-    return parsedBal * multiplier;
+    return bal.mul(multiplier).toNumber();
   };
 };
