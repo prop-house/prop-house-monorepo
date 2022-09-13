@@ -10,9 +10,7 @@ import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
 import { useEthers } from '@usedapp/core';
-import extractAllVotes from '../../utils/extractAllVotes';
 import { VoteAllotment } from '../../utils/voteAllotment';
-import { aggVoteWeightForProp } from '../../utils/aggVoteWeight';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
@@ -31,7 +29,7 @@ const ProposalCards: React.FC<{
   auction: StoredAuction;
   community: CommunityWithAuctions;
   voteAllotments: VoteAllotment[];
-  canAllotVotes: () => boolean;
+  canAllotVotes: boolean;
   numAllottedVotes?: number;
   submittedVotesCount?: number;
   handleVote?: () => void;
@@ -93,10 +91,6 @@ const ProposalCards: React.FC<{
                   proposal={proposal}
                   auctionStatus={auctionStatus(auction)}
                   cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, auction)}
-                  votesFor={aggVoteWeightForProp(
-                    extractAllVotes(proposals ? proposals : [], account ? account : ''),
-                    proposal.id,
-                  )}
                   canAllotVotes={canAllotVotes}
                   voteAllotments={voteAllotments}
                   handleVoteAllotment={handleVoteAllotment}

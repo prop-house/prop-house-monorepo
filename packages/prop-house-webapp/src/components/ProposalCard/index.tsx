@@ -16,12 +16,11 @@ import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
-  auctionStatus?: AuctionStatus;
-  cardStatus?: ProposalCardStatus;
-  votesFor?: number;
-  voteAllotments?: VoteAllotment[];
-  canAllotVotes?: () => boolean;
-  handleVoteAllotment?: (proposalId: number, support: boolean) => void;
+  auctionStatus: AuctionStatus;
+  cardStatus: ProposalCardStatus;
+  voteAllotments: VoteAllotment[];
+  canAllotVotes: boolean;
+  handleVoteAllotment: (proposalId: number, support: boolean) => void;
   fromHome?: boolean;
   winner?: boolean;
 }> = props => {
@@ -29,7 +28,6 @@ const ProposalCard: React.FC<{
     proposal,
     auctionStatus,
     cardStatus,
-    votesFor,
     voteAllotments,
     canAllotVotes,
     handleVoteAllotment,
@@ -92,26 +90,18 @@ const ProposalCard: React.FC<{
                   </div>
                 )}
 
-                {cardStatus === ProposalCardStatus.Voting &&
-                  votesFor !== undefined &&
-                  voteAllotments &&
-                  canAllotVotes &&
-                  handleVoteAllotment && (
-                    <div className={classes.votingArrows}>
-                      <span className={classes.plusArrow}>+</span>
-
-                      <PropCardVotingModule
-                        props={{
-                          proposal,
-                          cardStatus,
-                          votesFor,
-                          voteAllotments,
-                          canAllotVotes,
-                          handleVoteAllotment,
-                        }}
-                      />
-                    </div>
-                  )}
+                {cardStatus === ProposalCardStatus.Voting && (
+                  <div className={classes.votingArrows}>
+                    <span className={classes.plusArrow}>+</span>
+                    <PropCardVotingModule
+                      proposal={proposal}
+                      cardStatus={cardStatus}
+                      voteAllotments={voteAllotments}
+                      canAllotVotes={canAllotVotes}
+                      handleVoteAllotment={handleVoteAllotment}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

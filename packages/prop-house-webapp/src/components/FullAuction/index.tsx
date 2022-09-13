@@ -233,7 +233,7 @@ const FullAuction: React.FC<{
               auction={auction}
               community={community}
               voteAllotments={voteAllotments}
-              canAllotVotes={canAllotVotes}
+              canAllotVotes={canAllotVotes()}
               numAllottedVotes={numAllottedVotes}
               submittedVotesCount={userVotesWeight()}
               handleVote={handleVote}

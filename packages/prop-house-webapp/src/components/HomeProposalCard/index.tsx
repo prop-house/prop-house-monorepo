@@ -20,7 +20,6 @@ const HomeProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus?: AuctionStatus;
   cardStatus?: ProposalCardStatus;
-  votesFor?: number;
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;

@@ -6,19 +6,14 @@ import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 
-interface PropCardVotingContainerProps {
+const PropCardVotingModule: React.FC<{
   proposal: StoredProposal;
   cardStatus: ProposalCardStatus;
-  votesFor: number;
   voteAllotments: VoteAllotment[];
-  canAllotVotes: () => boolean;
+  canAllotVotes: boolean;
   handleVoteAllotment: (proposalId: number, support: boolean) => void;
-}
-
-const PropCardVotingModule: React.FC<{
-  props: PropCardVotingContainerProps;
 }> = props => {
-  const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } = props.props;
+  const { proposal, voteAllotments, canAllotVotes, handleVoteAllotment } = props;
 
   const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
 
@@ -53,7 +48,7 @@ const PropCardVotingModule: React.FC<{
             bgColor={allottedVotesForProp > 0 ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClick(e, true)}
-            disabled={!canAllotVotes()}
+            disabled={!canAllotVotes}
           />
         </div>
       </Col>
