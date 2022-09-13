@@ -15,13 +15,6 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import CommunityProfImg from '../CommunityProfImg';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-// import { setActiveCommunity } from '../../state/slices/propHouse';
-// import { useEffect, useRef } from 'react';
-// import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-// import { useAppSelector } from '../../hooks';
-// import { useEthers } from '@usedapp/core';
-// import { useDispatch } from 'react-redux';
-// import { useTranslation } from 'react-i18next';
 
 const HomeProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -34,39 +27,9 @@ const HomeProposalCard: React.FC<{
   fromHome?: boolean;
   communityName?: CommunityWithAuctions | undefined;
 }> = props => {
-  const {
-    proposal,
-    cardStatus,
-    fromHome,
-    // communityName
-  } = props;
-  // const { t } = useTranslation();
+  const { proposal, cardStatus, fromHome } = props;
 
   let navigate = useNavigate();
-  // const dispatch = useDispatch();
-  // const community = useAppSelector(state => state.propHouse.activeCommunity);
-
-  // const backendHost = useAppSelector(state => state.configuration.backendHost);
-  // const { library: provider } = useEthers();
-  // const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
-
-  // useEffect(() => {
-  //   backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  // }, [provider, backendHost]);
-
-  // useEffect(() => {
-  //   if (community || !proposal || !proposal.auctionId) return;
-
-  //   const fetchCommunity = async () => {
-  //     const auction = await backendClient.current.getAuction(proposal.auctionId);
-  //     const community = await backendClient.current.getCommunityWithId(auction.community);
-  //     dispatch(setActiveCommunity(community));
-  //   };
-
-  //   fetchCommunity();
-  // }, [dispatch, proposal, community]);
-
-  // community && console.log('community', proposal.id, community.name);
 
   return (
     <>
@@ -111,15 +74,12 @@ const HomeProposalCard: React.FC<{
           <hr className={classes.divider} />
 
           <div className={classes.communityInfo}>
-            <CommunityProfImg
-            // community={community}
-            />
+            <CommunityProfImg />
             <div className={classes.proposalText}>
               <p className={classes.proposalEns}>
                 <EthAddress address={proposal.address} truncate />
               </p>
               <p className={classes.proposalCommunityName}>in `community.name`</p>
-              {/* <p className={classes.proposalCommunityName}>in {community && community.name}</p> */}
             </div>
           </div>
 
