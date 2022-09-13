@@ -107,10 +107,10 @@ const Round = () => {
         />
       </Container>
 
-      {community && activeAuction && (
+      {activeAuction && (
         <div className={classes.stickyContainer}>
           <Container>
-            <RoundUtilityBar community={community} auction={activeAuction} />
+            <RoundUtilityBar auction={activeAuction} />
           </Container>
         </div>
       )}

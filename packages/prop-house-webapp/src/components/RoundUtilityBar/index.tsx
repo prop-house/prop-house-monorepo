@@ -9,7 +9,7 @@ import {
 } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import SortToggles from '../SortToggles';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
@@ -17,11 +17,10 @@ import dayjs from 'dayjs';
 import Tooltip from '../Tooltip';
 
 export interface RoundUtilityBarProps {
-  community: Community;
   auction: StoredAuction;
 }
 
-const RoundUtilityBar = ({ community, auction }: RoundUtilityBarProps) => {
+const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
 
@@ -99,11 +98,9 @@ const RoundUtilityBar = ({ community, auction }: RoundUtilityBarProps) => {
 
           <div className={clsx(classes.item, classes.proposalCountItem)}>
             <div className={classes.itemTitle}>
-              {community?.numProposals === 1 ? 'Proposal' : 'Proposals'}
+              {auction.proposals.length === 1 ? 'Proposal' : 'Proposals'}
             </div>
-            <div className={classes.itemData}>
-              {community && auction ? community.numProposals : '-'}
-            </div>
+            <div className={classes.itemData}>{auction.proposals.length}</div>
           </div>
         </Col>
       </div>
