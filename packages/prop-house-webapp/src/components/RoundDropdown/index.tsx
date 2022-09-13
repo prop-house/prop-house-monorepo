@@ -2,8 +2,9 @@ import { Dropdown } from 'react-bootstrap';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import classes from './RoundDropdown.module.css';
 import { useDispatch } from 'react-redux';
+import { Status } from '../StatusFilters';
 
-const options = [
+const options: Status[] = [
   {
     id: 0,
     title: 'Sort By',
