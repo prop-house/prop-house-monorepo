@@ -14,11 +14,11 @@ import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
-import { MdOutlineLightbulb as BulbIcon, MdHowToVote as VoteIcon } from 'react-icons/md';
-import dayjs from 'dayjs';
+import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
+import AcceptingPropsModule from '../AcceptingPropsModule';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -115,59 +115,7 @@ const ProposalCards: React.FC<{
           <div className={classes.content}>
             {/* ACCEPTING PROPS */}
             {isProposingWindow && (
-              <>
-                <div className={classes.sideCardHeader}>
-                  <div className={clsx(classes.icon, classes.greenIcon)}>
-                    <BulbIcon />
-                  </div>
-                  <div className={classes.textContainer}>
-                    <p className={classes.title}>{`Accepting proposals`}</p>
-                    <p className={classes.subtitle}>
-                      Until {dayjs(auction.proposalEndTime).format('MMMM D')}
-                    </p>
-                  </div>
-                </div>
-
-                <hr className={classes.divider} />
-
-                <p className={classes.sideCardBody}>
-                  <b>How proposals work:</b>
-
-                  <div className={classes.bulletList}>
-                    <div className={classes.bulletItem}>
-                      <hr className={classes.bullet} />
-                      <p>Anyone can submit a proposal to get funded.</p>
-                    </div>
-
-                    <div className={classes.bulletItem}>
-                      <hr className={classes.bullet} />
-                      <p>
-                        Owners of the <b>{community.name}</b> token will vote on the best proposals.
-                      </p>
-                    </div>
-
-                    {/* tbd */}
-                    {/* <div className={classes.bulletItem}>
-                      <hr className={classes.bullet} />
-                      <p>
-                        Each <b>{community.name}</b> token has 10 votes.
-                      </p>
-                    </div> */}
-
-                    <div className={classes.bulletItem}>
-                      <hr className={classes.bullet} />
-                      <p>
-                        The top <b>{auction.numWinners}</b>{' '}
-                        {auction.numWinners === 1 ? 'proposal' : 'proposals'} will get funded{' '}
-                        <b>
-                          {auction.fundingAmount} {auction.currencyType}{' '}
-                        </b>
-                        each.
-                      </p>
-                    </div>
-                  </div>
-                </p>
-              </>
+              <AcceptingPropsModule auction={auction} communityName={community.name} />
             )}
 
             {/* VOTING WINDOW */}
