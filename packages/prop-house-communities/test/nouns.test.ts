@@ -25,7 +25,7 @@ describe('Nouns delegation', () => {
     const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
 
     const contract = new Contract(nounsTokenAddress, BalanceOfABI, provider);
-    const balanceOf = await contract.balanceOf(nounderSafeAddress);
+    const balanceOf = await contract.balanceOf(nounderSafeAddress, { blockTag: 15529004 });
     const numBalanceOf = BigNumber.from(balanceOf).toNumber();
 
     expect(numBalanceOf).to.be.gt(0);
@@ -42,7 +42,12 @@ describe('Nouns delegation', () => {
     const numBalanceOf = BigNumber.from(balanceOf).toNumber();
 
     // delegatedVotes
-    const delegatedVotes = await getNumVotes(nounderSafeAddress, nounsTokenAddress, provider);
+    const delegatedVotes = await getNumVotes(
+      nounderSafeAddress,
+      nounsTokenAddress,
+      provider,
+      '15529004',
+    );
 
     // remove multiplier
     const normalizedDelegatedVotes = delegatedVotes / 10;
