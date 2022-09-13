@@ -1,15 +1,13 @@
-import HouseFilters from '../HouseFilters';
 import classes from './HouseUtilityBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
-import HouseDropdown from '../HouseDropdown';
-import clsx from 'clsx';
+import StatusFilters from '../StatusFilters';
 
 export interface HouseUtilityBarProps {
-  roundCountByStatus: (number | undefined)[];
+  roundCountByStatus: number[];
   currentRoundStatus: number;
   setCurrentRoundStatus: any;
-  input?: any;
-  setInput?: any;
+  setInput: (value: string) => void;
+  input?: string;
 }
 
 const HouseUtilityBar = ({
@@ -27,23 +25,12 @@ const HouseUtilityBar = ({
   return (
     <div className={classes.houseUtilityBar}>
       <div className={classes.utilitySection}>
-        <div className={classes.filters}>
-          <HouseFilters
-            currentRoundStatus={currentRoundStatus}
-            roundCountByStatus={roundCountByStatus}
-            setCurrentRoundStatus={setCurrentRoundStatus}
-            setInput={setInput}
-          />
-        </div>
-
-        <div className={clsx(classes.dropdown, 'houseDropdown')}>
-          <HouseDropdown
-            currentRoundStatus={currentRoundStatus}
-            roundCountByStatus={roundCountByStatus}
-            setCurrentRoundStatus={setCurrentRoundStatus}
-            setInput={setInput}
-          />
-        </div>
+        <StatusFilters
+          currentRoundStatus={currentRoundStatus}
+          roundCountByStatus={roundCountByStatus}
+          setCurrentRoundStatus={setCurrentRoundStatus}
+          setInput={setInput}
+        />
       </div>
 
       <div className={classes.utilitySection}>

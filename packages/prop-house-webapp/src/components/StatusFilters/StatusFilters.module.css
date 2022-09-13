@@ -1,16 +1,11 @@
 .pillContainer {
   display: inline-block;
-  /* margin: 0rem 0.75rem; */
   padding: 2.5px 0.65rem;
   border-radius: 10px;
   position: relative;
-  /* top: -3px; */
   font-size: 14px;
   font-weight: 600;
 }
-
-/* 
- */
 
 .divider {
   background: rgba(0, 0, 0, 0.1);
@@ -34,11 +29,10 @@
 }
 .filterText {
   display: flex;
-  align-items: items-center;
+  align-items: center;
   gap: 6px;
 }
 .filterName {
-  /* color: var(--brand-pink); */
   font-weight: 600;
   color: var(--brand-gray);
 }
@@ -101,4 +95,36 @@
 .black.active .filterNumber {
   color: var(--brand-black);
   background-color: var(--bg-dark);
+}
+
+.count {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  color: var(--brand-gray);
+  padding: 0px 4px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  height: 45px;
+}
+
+@media (max-width: 993px) {
+  .filters {
+    font-size: 14px;
+  }
+}
+@media (max-width: 767px) {
+  .filters {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .dropdown {
+    display: none;
+  }
 }

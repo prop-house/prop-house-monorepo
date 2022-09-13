@@ -86,7 +86,7 @@ const House = () => {
       return status;
     });
 
-  let totalNumOfRounds = community && community.auctions.length;
+  let totalNumOfRounds = community ? community.auctions.length : 0;
 
   let roundCountByStatus = [
     totalNumOfRounds,
@@ -128,19 +128,17 @@ const House = () => {
             <HouseHeader community={community} />
           </Container>
 
-          {roundCountByStatus && (
-            <div className={classes.stickyContainer}>
-              <Container>
-                <HouseUtilityBar
-                  roundCountByStatus={roundCountByStatus}
-                  currentRoundStatus={currentRoundStatus}
-                  setCurrentRoundStatus={setCurrentRoundStatus}
-                  input={input}
-                  setInput={setInput}
-                />
-              </Container>
-            </div>
-          )}
+          <div className={classes.stickyContainer}>
+            <Container>
+              <HouseUtilityBar
+                roundCountByStatus={roundCountByStatus}
+                currentRoundStatus={currentRoundStatus}
+                setCurrentRoundStatus={setCurrentRoundStatus}
+                input={input}
+                setInput={setInput}
+              />
+            </Container>
+          </div>
 
           <div className={classes.houseContainer}>
             <Container>
