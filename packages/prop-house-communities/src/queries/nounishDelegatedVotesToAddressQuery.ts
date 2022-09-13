@@ -1,6 +1,6 @@
 import { parseBlockTag } from '../utils/parseBlockTag';
 
-export const nounsDelegatedVotesToAddressQuery = (
+export const nounishDelegatedVotesToAddressQuery = (
   address: string,
   blockTag: number | string | 'latest' | undefined,
 ) => {
