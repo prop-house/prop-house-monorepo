@@ -17,10 +17,7 @@ const NavBar = () => {
           <Navbar.Brand>
             <div className={classes.navbarBrand}>{t('propHouse')}</div>
             <div className={classes.poweredByNouns}>
-              {t('powered')}{' '}
-              <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-                {t('nounsdao')}
-              </a>
+              {t('powered')} {t('nounsdao')}
             </div>
           </Navbar.Brand>
         </Link>
