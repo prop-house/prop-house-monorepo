@@ -24,7 +24,9 @@ const SuccessModal: React.FC<{
 
         <div className={classes.titleContainer}>
           <p className={classes.modalTitle}>very nounish</p>
-          <p className={classes.modalSubtitle}>You've successfully voted for {numOfProps} props!</p>
+          <p className={classes.modalSubtitle}>
+            You've successfully voted for {numOfProps} {numOfProps === 1 ? 'prop' : 'props'}!
+          </p>
         </div>
       </div>
 
