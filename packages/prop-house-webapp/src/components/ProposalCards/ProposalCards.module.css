@@ -29,7 +29,6 @@
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
 }
 .userPropTitle {
-  /* color: white; */
   font-weight: 700;
   font-size: 18px;
 }
@@ -83,10 +82,7 @@
   background: var(--brand-green-hint);
   border: 1px solid var(--brand-green-semi-transparent);
 }
-.purpleIcon {
-  background: var(--brand-purple-hint);
-  border: 1px solid var(--brand-purple-semi-transparent);
-}
+
 .blackIcon {
   border: 1px solid var(--border-med);
 }
@@ -98,9 +94,6 @@
 .greenIcon svg {
   color: var(--brand-green);
 }
-.purpleIcon svg {
-  color: var(--brand-purple);
-}
 
 .title {
   font-size: 18px;
@@ -111,9 +104,7 @@
   font-size: 14px;
   color: var(--brand-gray);
 }
-.purpleText {
-  color: var(--brand-purple);
-}
+
 .winnersText {
   font-weight: 700;
   color: var(--brand-gray);

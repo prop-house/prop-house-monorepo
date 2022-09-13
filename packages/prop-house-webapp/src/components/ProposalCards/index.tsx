@@ -14,11 +14,12 @@ import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
+import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import AcceptingPropsModule from '../AcceptingPropsModule';
+import VotingModule from '../VotingModule';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -120,38 +121,11 @@ const ProposalCards: React.FC<{
 
             {/* VOTING WINDOW */}
             {isVotingWindow && (
-              <>
-                {/* VOTING, CONNECTED & NOT CONNECTED */}
-                <div className={classes.sideCardHeader}>
-                  <div className={clsx(classes.icon, classes.purpleIcon)}>
-                    <VoteIcon />
-                  </div>
-                  <div className={classes.textContainer}>
-                    <p className={classes.title}>Voting in progress</p>
-                    <p className={classes.subtitle}>
-                      <span className={classes.purpleText}>{getVoteTotal()}</span>{' '}
-                      {getVoteTotal() === 1 ? 'vote' : 'votes'} cast so far!
-                    </p>
-                  </div>
-                </div>
-
-                <hr className={classes.divider} />
-
-                {/* VOTING, NOT CONNECTED */}
-                {!account && (
-                  <p className={classes.sideCardBody}>
-                    Owners of the <b>{community.name}</b> token are voting on their favorite
-                    proposals.
-                  </p>
-                )}
-
-                {/* VOTING, CONNECTED, NO VOTES */}
-                {account && !delegatedVotes && (
-                  <p className={classes.subtitle}>
-                    <b>You don't have any {community.name} required to vote in this house.</b>
-                  </p>
-                )}
-              </>
+              <VotingModule
+                delegatedVotes={delegatedVotes}
+                communityName={community.name}
+                totalVotes={getVoteTotal()}
+              />
             )}
 
             {/* VOTING WINDOW WITH VOTES: PROGRESS BAR */}
