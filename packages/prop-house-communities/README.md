@@ -1,8 +1,6 @@
 ## Description
 
-The prop house community package manages the voting strategies for communities.
-
-The default strategy relies on querying `balanceOf` from the community's ERC721/20 contract. Some communities need custom strategies that accomodate to their particular needs (e.g. delegation, sum of balances across multiple contracts, etc). Custom strategies can be found in the `strategies/` dir.
+The `prop-house-community` package manages the voting strategies for Prop House communities.
 
 ## Development
 
@@ -24,4 +22,40 @@ yarn build
 import { getNumVotes } from 'prop-house-communities';
 
 const votes = await getNumVotes(address, communityAddress, provider, blockTag);
+```
+
+## Strategies
+
+Strategies can be found in the `strategies/` directory. A strategy is a function that returns a function of `Strategy` type. Put another way, custom strategies are functions that return the implementation of the base `Strategy` type. 
+
+```.ts
+export type Strategy = (
+  userAddress: string,
+  communityAddress: string,
+  blockTag: string,
+  provider: Provider,
+) => Promise<number>;
+```
+
+### Considerations: 
+- Strategies may add additional parameters particular to the community (optional)
+- Strategies may use the ethers.js `Provider` to make calls on-chain
+- Strategies must return a `Promise<number>` denoting the number of votes the `userAddress` has for `communityAddress` at snapshot block `blockTag`.
+
+### Example
+
+The `balanceOfErc20` strategy requires two additional parameters (`decimals` and `multiplier`). It uses said parameters to implement and return a function of `Strategy` type. 
+```.ts
+export const balanceOfErc20 = (decimals: number, multiplier: number = 1): Strategy => {
+  return async (
+    userAddress: string,
+    communityAddress: string,
+    blockTag: string,
+    provider: Provider,
+  ) => {
+    const contract = new Contract(communityAddress, BalanceOfABI, provider);
+    const balance = await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) });
+    return new BigNumber(formatUnits(balance, decimals).toString()).times(multiplier).toNumber();
+  };
+};
 ```
