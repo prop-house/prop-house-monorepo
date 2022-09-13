@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { HouseUtilityBarProps } from '../HouseUtilityBar';
 import classes from './StatusFilters.module.css';
 
 export interface Status {
@@ -33,12 +32,14 @@ const statuses: Status[] = [
   },
 ];
 
-const StatusFilters = ({
-  currentRoundStatus,
-  setCurrentRoundStatus,
-  roundCountByStatus,
-  setInput,
-}: HouseUtilityBarProps) => {
+const StatusFilters: React.FC<{
+  roundCountByStatus: number[];
+  currentRoundStatus: number;
+  setCurrentRoundStatus: any;
+  setInput: (value: string) => void;
+}> = props => {
+  const { roundCountByStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
+
   const handleClick = (id: number) => {
     setInput('');
 
