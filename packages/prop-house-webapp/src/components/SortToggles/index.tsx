@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 const SortToggles: React.FC<{
-  auction?: StoredAuction;
+  auction: StoredAuction;
   datesSorted: boolean;
   setDatesSorted: any;
   dateAscending: boolean;
