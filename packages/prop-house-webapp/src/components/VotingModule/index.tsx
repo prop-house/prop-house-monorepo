@@ -1,5 +1,6 @@
 import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
+import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 
 import classes from './VotingModule.module.css';
@@ -8,14 +9,23 @@ export interface VotingModuleProps {
   communityName: string;
   totalVotes: number | undefined;
   delegatedVotes: number | undefined;
+  votesLeft: number | undefined;
+  submittedVotesCount: number | undefined;
+  numAllottedVotes: number | undefined;
 }
 const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
-  const { communityName, totalVotes, delegatedVotes } = props;
+  const {
+    communityName,
+    totalVotes,
+    delegatedVotes,
+    votesLeft,
+    submittedVotesCount,
+    numAllottedVotes,
+  } = props;
   const { account } = useEthers();
 
   return (
     <>
-      {/* CONNECTED & NOT CONNECTED */}
       <div className={classes.sideCardHeader}>
         <div className={clsx(classes.icon, classes.purpleIcon)}>
           <VoteIcon />
@@ -31,17 +41,51 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
 
       <hr className={classes.divider} />
 
-      {/* NOT CONNECTED */}
-      {!account && (
+      {account ? (
+        delegatedVotes ? (
+          <>
+            <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
+              <span>Cast your votes</span>
+
+              <span className={classes.totalVotes}>{`${
+                votesLeft && votesLeft > 0
+                  ? `${delegatedVotes - (submittedVotesCount ?? 0) - (numAllottedVotes ?? 0)} left`
+                  : 'no votes left'
+              }`}</span>
+            </h1>
+
+            <ProgressBar
+              className={clsx(
+                classes.votingBar,
+                submittedVotesCount &&
+                  submittedVotesCount > 0 &&
+                  delegatedVotes !== submittedVotesCount &&
+                  'roundAllotmentBar',
+              )}
+            >
+              <ProgressBar
+                variant="success"
+                now={
+                  100 -
+                  Math.abs(((submittedVotesCount ?? 0) - delegatedVotes) / delegatedVotes) * 100
+                }
+              />
+
+              <ProgressBar
+                variant="warning"
+                now={Math.abs(((votesLeft ?? 0) - delegatedVotes) / delegatedVotes) * 100}
+                key={2}
+              />
+            </ProgressBar>
+          </>
+        ) : (
+          <p className={classes.subtitle}>
+            <b>You don't have any {communityName} required to vote in this house.</b>
+          </p>
+        )
+      ) : (
         <p className={classes.sideCardBody}>
           Owners of the <b>{communityName}</b> token are voting on their favorite proposals.
-        </p>
-      )}
-
-      {/* CONNECTED, NO VOTES */}
-      {account && !delegatedVotes && (
-        <p className={classes.subtitle}>
-          <b>You don't have any {communityName} required to vote in this house.</b>
         </p>
       )}
     </>

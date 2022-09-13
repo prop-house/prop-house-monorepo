@@ -4,7 +4,6 @@
 .propCardsCol {
   padding: 0;
 }
-
 .propCards {
   display: flex;
   padding-top: 16px;
@@ -13,107 +12,14 @@
   background: #f5f5f5;
   border: 1px solid var(--border-med);
   height: auto;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between !important;
 }
-
 .sidebarContainerCard button {
   width: 100%;
   border-radius: 50px;
   margin-top: 18px;
-}
-.userPropCard {
-  border: 1px solid var(--border-med);
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
-}
-.userPropTitle {
-  font-weight: 700;
-  font-size: 18px;
-}
-.userPropInfo {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-}
-.userPropItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.userPropNounImg {
-  display: flex;
-  align-items: center;
-}
-.userPropText {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-weight: 700;
-  color: var(--brand-black);
-  font-size: 14px;
-}
-.userPropTextValue {
-  color: var(--brand-gray);
-}
-.votingBar {
-  border-radius: 50px;
-  margin: 12px 0px;
-  background: var(--brand-purple-hint);
-}
-
-.sideCardHeader {
-  font-weight: 700;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-.icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 99px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sideCardHeader svg {
-  width: 24px;
-  height: 24px;
-}
-
-.title {
-  font-size: 18px;
-  margin-bottom: 0;
-}
-.subtitle {
-  margin-bottom: 0;
-  font-size: 14px;
-  color: var(--brand-gray);
-}
-
-.greenText {
-  color: var(--brand-green);
-}
-.divider {
-  margin: 18px 0px;
-}
-
-.sideCardBody {
-  font-size: 14px;
-  margin-bottom: 0;
-}
-
-.votingInfo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-}
-.totalVotes {
-  color: var(--brand-gray);
 }
 
 @media (max-width: 767px) {
@@ -133,9 +39,6 @@
     min-width: 250px !important;
     height: max-content !important;
   }
-}
-
-@media (max-width: 767px) {
   .carousel {
     display: flex;
     overflow-x: scroll;

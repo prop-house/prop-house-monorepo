@@ -1,6 +1,6 @@
 import { CommunityWithAuctions, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './ProposalCards.module.css';
-import { Row, Col, ProgressBar } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
@@ -125,50 +125,10 @@ const ProposalCards: React.FC<{
                 delegatedVotes={delegatedVotes}
                 communityName={community.name}
                 totalVotes={getVoteTotal()}
+                votesLeft={votesLeft}
+                submittedVotesCount={submittedVotesCount}
+                numAllottedVotes={numAllottedVotes}
               />
-            )}
-
-            {/* VOTING WINDOW WITH VOTES: PROGRESS BAR */}
-            {isVotingWindow && account && delegatedVotes ? (
-              <>
-                <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
-                  <span>Cast your votes</span>
-
-                  <span className={classes.totalVotes}>{`${
-                    votesLeft && votesLeft > 0
-                      ? `${
-                          delegatedVotes - (submittedVotesCount ?? 0) - (numAllottedVotes ?? 0)
-                        } left`
-                      : 'no votes left'
-                  }`}</span>
-                </h1>
-
-                <ProgressBar
-                  className={clsx(
-                    classes.votingBar,
-                    submittedVotesCount &&
-                      submittedVotesCount > 0 &&
-                      delegatedVotes !== submittedVotesCount &&
-                      'roundAllotmentBar',
-                  )}
-                >
-                  <ProgressBar
-                    variant="success"
-                    now={
-                      100 -
-                      Math.abs(((submittedVotesCount ?? 0) - delegatedVotes) / delegatedVotes) * 100
-                    }
-                  />
-
-                  <ProgressBar
-                    variant="warning"
-                    now={Math.abs(((votesLeft ?? 0) - delegatedVotes) / delegatedVotes) * 100}
-                    key={2}
-                  />
-                </ProgressBar>
-              </>
-            ) : (
-              <></>
             )}
 
             {/* ROUND ENDED */}
@@ -185,14 +145,12 @@ const ProposalCards: React.FC<{
             {/* ACCEPTING PROPS */}
             {isProposingWindow &&
               (account ? (
-                // WALLET CONNECTED
                 <Button
                   text={'Create your proposal'}
                   bgColor={ButtonColor.Green}
                   onClick={() => navigate('/create', { state: { auction, community } })}
                 />
               ) : (
-                // WALLET NOT CONNECTED
                 <Button text={'Connect to submit'} bgColor={ButtonColor.Pink} onClick={connect} />
               ))}
 
