@@ -244,10 +244,6 @@ const ProposalCards: React.FC<{
                     key={2}
                   />
                 </ProgressBar>
-
-                <p className={classes.sideCardBody}>
-                  {<>Nouns get 10 votes per each Noun they hold or are delegated.</>}
-                </p>
               </>
             ) : (
               <></>
