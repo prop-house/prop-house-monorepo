@@ -17,9 +17,9 @@ import useWeb3Modal from '../../hooks/useWeb3Modal';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import VotingModule from '../VotingModule';
+import RoundOverModule from '../RoundOverModule';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -173,29 +173,10 @@ const ProposalCards: React.FC<{
 
             {/* ROUND ENDED */}
             {isRoundOver && (
-              <>
-                <div className={classes.sideCardHeader}>
-                  <div className={clsx(classes.icon, classes.blackIcon)}>
-                    <VoteIcon />
-                  </div>
-                  <div className={classes.textContainer}>
-                    <p className={classes.title}>Voting ended</p>
-                    {proposals && (
-                      <p className={classes.subtitle}>
-                        {getVoteTotal()?.toFixed()}{' '}
-                        {Number(getVoteTotal()?.toFixed()) === 1 ? 'vote' : 'votes'} cast for{' '}
-                        {proposals.length} props!
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <hr className={classes.divider} />
-
-                <p className={clsx(classes.sideCardBody, classes.winnersText)}>
-                  Winners are highlighted in <span className={classes.greenText}>green</span>.
-                </p>
-              </>
+              <RoundOverModule
+                numOfProposals={proposals && proposals.length}
+                totalVotes={getVoteTotal()}
+              />
             )}
           </div>
 

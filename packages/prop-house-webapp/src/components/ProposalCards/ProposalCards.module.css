@@ -79,10 +79,6 @@
   justify-content: center;
 }
 
-.blackIcon {
-  border: 1px solid var(--border-med);
-}
-
 .sideCardHeader svg {
   width: 24px;
   height: 24px;
@@ -98,11 +94,6 @@
   color: var(--brand-gray);
 }
 
-.winnersText {
-  font-weight: 700;
-  color: var(--brand-gray);
-  font-size: 14px;
-}
 .greenText {
   color: var(--brand-green);
 }
