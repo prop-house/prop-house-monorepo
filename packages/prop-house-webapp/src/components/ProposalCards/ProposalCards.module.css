@@ -78,10 +78,6 @@
   align-items: center;
   justify-content: center;
 }
-.greenIcon {
-  background: var(--brand-green-hint);
-  border: 1px solid var(--brand-green-semi-transparent);
-}
 
 .blackIcon {
   border: 1px solid var(--border-med);
@@ -90,9 +86,6 @@
 .sideCardHeader svg {
   width: 24px;
   height: 24px;
-}
-.greenIcon svg {
-  color: var(--brand-green);
 }
 
 .title {
@@ -120,32 +113,6 @@
 .sideCardBody {
   font-size: 14px;
   margin-bottom: 0;
-}
-.bulletList {
-  color: var(--brand-gray);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 8px;
-}
-.bulletList b {
-  color: var(--brand-black);
-}
-
-.bulletItem {
-  display: flex;
-  gap: 18px;
-}
-.bulletItem p {
-  margin-bottom: 0;
-}
-.bullet {
-  color: var(--brand-gray-semi-transparent);
-  border-radius: 50px;
-  min-width: 18px !important;
-  height: 2px !important;
-  margin: 0;
-  margin-top: 10px;
 }
 
 .votingInfo {
