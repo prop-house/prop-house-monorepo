@@ -1,4 +1,5 @@
 import { balanceOfErc721, erc1155, onchainMonkey } from '../strategies';
+import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
@@ -24,7 +25,7 @@ export const communities = new CaseInsensitiveMap(
     // uma
     '0x2381b67c6f1cb732fdf8b3b29d3260ec6f7420bc': balanceOfErc721(),
     // lil nouns
-    '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B': balanceOfErc721(),
+    '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B': lilNouns(),
     // mfers
     '0x79FCDEF22feeD20eDDacbB2587640e45491b757f': balanceOfErc721(),
   }),
