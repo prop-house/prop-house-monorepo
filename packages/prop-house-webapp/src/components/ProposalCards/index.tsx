@@ -45,11 +45,11 @@ const ProposalCards: React.FC<{
 
   const { account } = useEthers();
   const connect = useWeb3Modal();
-
   const navigate = useNavigate();
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+  const winningIds = getWinningIds(proposals, auction);
 
   // auction statuses
   const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
@@ -68,8 +68,6 @@ const ProposalCards: React.FC<{
     proposals
       .filter(p => p.address === account)
       .sort((a: { score: any }, b: { score: any }) => (Number(a.score) < Number(b.score) ? 1 : -1));
-
-  const winningIds = getWinningIds(proposals, auction);
 
   return (
     <Row className={classes.propCardsRow}>
