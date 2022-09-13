@@ -15,6 +15,7 @@ import diffTime from '../../utils/diffTime';
 import { useTranslation } from 'react-i18next';
 import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
 const HouseCard: React.FC<{
   round: StoredAuction;
@@ -27,7 +28,7 @@ const HouseCard: React.FC<{
     <>
       <div
         onClick={e => {
-          if (e.metaKey || e.ctrlKey) {
+          if (cmdPlusClicked(e)) {
             window.open(`${window.location.href}/${nameToSlug(round.title)}`, `_blank`); // open in new tab
           } else {
             navigate(`${nameToSlug(round.title)}`, {

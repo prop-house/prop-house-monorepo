@@ -14,6 +14,7 @@ import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import CommunityProfImg from '../CommunityProfImg';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 // import { setActiveCommunity } from '../../state/slices/propHouse';
 // import { useEffect, useRef } from 'react';
 // import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -71,7 +72,7 @@ const HomeProposalCard: React.FC<{
     <>
       <div
         onClick={e => {
-          if (e.metaKey || e.ctrlKey) {
+          if (cmdPlusClicked(e)) {
             window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
           } else {
             navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);

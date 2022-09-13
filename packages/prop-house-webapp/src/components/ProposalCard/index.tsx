@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -42,7 +43,7 @@ const ProposalCard: React.FC<{
     <>
       <div
         onClick={e => {
-          if (e.metaKey || e.ctrlKey) {
+          if (cmdPlusClicked(e)) {
             window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
           } else {
             navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);

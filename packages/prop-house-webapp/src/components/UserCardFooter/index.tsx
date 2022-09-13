@@ -2,6 +2,7 @@ import classes from './UserCardFooter.module.css';
 import isWinner from '../../utils/isWinner';
 import { useNavigate } from 'react-router-dom';
 import { AuctionStatus } from '../../utils/auctionStatus';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
 const UserCardFooter: React.FC<{
   status: AuctionStatus;
@@ -38,7 +39,7 @@ const UserCardFooter: React.FC<{
       ) : (
         <div
           onClick={e => {
-            if (e.metaKey || e.ctrlKey) {
+            if (cmdPlusClicked(e)) {
               window.open(`${window.location.href}/${userProps[cardIndex].id}`, `_blank`); // open in new tab
             } else {
               navigate(`${userProps[cardIndex].id}`);
