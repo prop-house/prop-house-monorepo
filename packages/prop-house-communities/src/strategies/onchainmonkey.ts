@@ -1,4 +1,5 @@
-import { Contract, BigNumber } from 'ethers';
+import { Contract } from 'ethers';
+import BigNumber from 'bignumber.js';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { parseBlockTag } from '../utils/parseBlockTag';
 import { Provider } from '@ethersproject/providers';
@@ -25,17 +26,13 @@ export const onchainMonkey = (): Strategy => {
       provider,
     );
 
-    try {
-      const karmaVotes = await karmaContract.balanceOf(userAddress, {
-        blockTag: parseBlockTag(blockTag),
-      });
-      const ocmVotes = await ocmContract.balanceOf(userAddress, {
-        blockTag: parseBlockTag(blockTag),
-      });
+    const karmaVotes = await karmaContract.balanceOf(userAddress, {
+      blockTag: parseBlockTag(blockTag),
+    });
+    const ocmVotes = await ocmContract.balanceOf(userAddress, {
+      blockTag: parseBlockTag(blockTag),
+    });
 
-      return BigNumber.from(karmaVotes).add(BigNumber.from(ocmVotes)).toNumber();
-    } catch (e) {
-      return 0;
-    }
+    return new BigNumber(karmaVotes.toString()).plus(new BigNumber(ocmVotes.toString())).toNumber();
   };
 };

@@ -1,6 +1,7 @@
 import { Strategy } from '../types/Strategy';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
-import { Contract, BigNumber, utils } from 'ethers';
+import { Contract } from 'ethers';
+import BigNumber from 'bignumber.js';
 import { parseBlockTag } from '../utils/parseBlockTag';
 import { Provider } from '@ethersproject/providers';
 
@@ -15,9 +16,7 @@ export const balanceOfErc721 = (multiplier: number = 1): Strategy => {
     provider: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOfABI, provider);
-    const bal = BigNumber.from(
-      await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) }),
-    );
-    return bal.mul(multiplier).toNumber();
+    const balance = await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) });
+    return new BigNumber(balance.toString()).times(multiplier).toNumber();
   };
 };
