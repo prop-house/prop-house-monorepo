@@ -9,7 +9,7 @@ interface Options {
   bgColor: string;
 }
 
-enum OptionType {
+export enum OptionType {
   SortBy,
   CreatedDate,
   MostVotes,
