@@ -35,15 +35,6 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
     /// @notice Determine if a house strategy is enabled
     mapping(address => bool) public isStrategyEnabled;
 
-    /// @dev Ensures the provided `strategy` is enabled on the house
-    /// @param strategy The version to set
-    modifier assertStrategyEnabled(address strategy) {
-        if (!isStrategyEnabled[strategy]) {
-            revert StrategyNotEnabled();
-        }
-        _;
-    }
-
     constructor(
         string memory name_,
         uint256 version_,
@@ -81,7 +72,8 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
     }
 
     /// @notice Disable a house strategy
-    function disableStrategy(address strategy) external assertStrategyEnabled(strategy) {
+    function disableStrategy(address strategy) external {
+        _requireStrategyEnabled(strategy);
         isStrategyEnabled[strategy] = false;
 
         emit StrategyEnabled(strategy);
@@ -93,6 +85,13 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
     function _authorizeUpgrade(address _newImpl) internal override onlyOwner {
         if (!_upgradeManager.isValidUpgrade(_getImplementation(), _newImpl)) {
             revert InvalidUpgrade();
+        }
+    }
+
+    /// @notice Revert is the strategy is not enabled on the house
+    function _requireStrategyEnabled(address strategy) internal view {
+        if (!isStrategyEnabled[strategy]) {
+            revert StrategyNotEnabled();
         }
     }
 }

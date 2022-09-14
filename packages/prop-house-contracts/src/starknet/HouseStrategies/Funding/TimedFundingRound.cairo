@@ -668,7 +668,7 @@ end
 func decode_param_array{range_check_ptr}(strategy_params_len : felt, strategy_params : felt*) -> (
     proposal_period_start_timestamp : felt,
     proposal_period_duration : felt,
-    voting_duration : felt,
+    vote_period_duration : felt,
     voting_power_multiplier : felt,
     winner_count : felt,
 ):
