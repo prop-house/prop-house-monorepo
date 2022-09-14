@@ -83,43 +83,20 @@ const House = () => {
     };
   }, [slug, dispatch, isValidAddress]);
 
-  let numOfProposingRounds = 0;
-  let numOfVotingRounds = 0;
-  let numOfEndedRounds = 0;
-
-  community &&
-    community.auctions.map(a => {
-      let status = auctionStatus(a);
-
-      if (status === AuctionStatus.AuctionAcceptingProps) {
-        return numOfProposingRounds++;
-      } else if (status === AuctionStatus.AuctionVoting) {
-        return numOfVotingRounds++;
-      } else if (status === AuctionStatus.AuctionEnded) {
-        return numOfEndedRounds++;
-      }
-      return status;
-    });
-
-  let totalNumOfRounds = community ? community.auctions.length : 0;
-
-  let roundCountByStatus = [
-    totalNumOfRounds,
-    numOfProposingRounds,
-    numOfVotingRounds,
-    numOfEndedRounds,
-  ];
-
   useEffect(() => {
     community &&
-      community.auctions.length > 0 &&
+      // check if searching via input
       (input.length === 0
-        ? currentRoundStatus && currentRoundStatus > 0
-          ? setRounds(
+        ? // if a filter has been clicked that isn't "All rounds" (default)
+          currentRoundStatus > 0
+          ? // filter by that round
+            setRounds(
               community.auctions.filter(round => auctionStatus(round) === currentRoundStatus),
             )
-          : setRounds(community?.auctions)
-        : setRounds(
+          : // revert to all rounds
+            setRounds(community.auctions)
+        : // filter by search input that matches round title or description
+          setRounds(
             community.auctions.filter(round => {
               const query = input.toLowerCase();
 
