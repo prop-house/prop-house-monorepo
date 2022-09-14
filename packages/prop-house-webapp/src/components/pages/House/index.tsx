@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { setActiveCommunity, setActiveProposals } from '../../../state/slices/propHouse';
-import dayjs from 'dayjs';
+
 import { slugToName } from '../../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
 import HouseCard from '../../HouseCard';
@@ -18,6 +18,7 @@ import LoadingIndicator from '../../LoadingIndicator';
 import RoundMessage from '../../RoundMessage';
 import NoSearchResults from '../../NoSearchResults';
 import NotFound from '../../NotFound';
+import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
 
 const House = () => {
   const location = useLocation();
@@ -51,7 +52,6 @@ const House = () => {
           : await client.current.getCommunityWithName(slugToName(slug));
 
         setIsLoading(false);
-        community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
@@ -145,7 +145,7 @@ const House = () => {
               <Row>
                 {community ? (
                   rounds && rounds.length > 0 ? (
-                    rounds.map((round, index) => (
+                    sortRoundByStatus(rounds).map((round, index) => (
                       <Col key={index} xl={6}>
                         <HouseCard round={round} />
                       </Col>
