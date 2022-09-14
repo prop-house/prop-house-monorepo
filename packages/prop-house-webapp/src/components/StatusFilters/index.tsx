@@ -1,49 +1,58 @@
 import clsx from 'clsx';
 import { Fragment } from 'react';
 import { Dropdown } from 'react-bootstrap';
+
 import classes from './StatusFilters.module.css';
 
+// We aren't using AuctionStatus enum becuase AuctionStatus[0] is 'not started' and we don't filter by 'not started', rather RoundStatus[0] is the default 'all rounds'
+export enum RoundStatus {
+  AllRounds,
+  Proposing,
+  Voting,
+  Ended,
+}
+
 export interface Status {
-  id: number;
+  status: number;
   title: string;
   bgColor: string;
 }
 
 const statuses: Status[] = [
   {
-    id: 0,
+    status: RoundStatus.AllRounds,
     title: 'All rounds',
     bgColor: classes.pink,
   },
   {
-    id: 1,
+    status: RoundStatus.Proposing,
     title: 'Proposing',
     bgColor: classes.green,
   },
   {
-    id: 2,
+    status: RoundStatus.Voting,
     title: 'Voting',
     bgColor: classes.purple,
   },
   {
-    id: 3,
+    status: RoundStatus.Ended,
     title: 'Ended',
     bgColor: classes.black,
   },
 ];
 
 const StatusFilters: React.FC<{
-  roundCountByStatus: number[];
+  numberOfRoundsPerStatus: number[];
   currentRoundStatus: number;
   setCurrentRoundStatus: any;
   setInput: (value: string) => void;
 }> = props => {
-  const { roundCountByStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
+  const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
 
-  const handleClick = (id: number) => {
+  const handleClick = (status: number) => {
     setInput('');
 
-    setCurrentRoundStatus(id);
+    setCurrentRoundStatus(status);
   };
 
   return (
@@ -54,16 +63,16 @@ const StatusFilters: React.FC<{
           return (
             <Fragment key={index}>
               <div
-                onClick={() => handleClick(s.id)}
+                onClick={() => handleClick(s.status)}
                 className={clsx(
                   classes.filter,
                   s.bgColor,
-                  currentRoundStatus === s.id && classes.active,
+                  currentRoundStatus === s.status && classes.active,
                 )}
               >
                 <div className={classes.filterText}>
                   <span className={classes.filterName}>{s.title}</span>
-                  <span className={classes.filterNumber}>{roundCountByStatus[index]}</span>
+                  <span className={classes.filterNumber}>{numberOfRoundsPerStatus[index]}</span>
                 </div>
               </div>
               {index === 0 && <div className={classes.divider}></div>}
@@ -82,9 +91,9 @@ const StatusFilters: React.FC<{
           <Dropdown.Menu>
             {statuses.map((s, index) => (
               <Fragment key={index}>
-                <Dropdown.Item key={index} onClick={() => handleClick(s.id)}>
+                <Dropdown.Item key={index} onClick={() => handleClick(s.status)}>
                   <span>{s.title}</span>
-                  <span className={classes.count}>{roundCountByStatus[index]}</span>
+                  <span className={classes.count}>{numberOfRoundsPerStatus[index]}</span>
                 </Dropdown.Item>
               </Fragment>
             ))}
