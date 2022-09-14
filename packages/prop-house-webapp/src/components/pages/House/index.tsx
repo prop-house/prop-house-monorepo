@@ -19,6 +19,7 @@ import RoundMessage from '../../RoundMessage';
 import NoSearchResults from '../../NoSearchResults';
 import NotFound from '../../NotFound';
 import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
+import { RoundStatus } from '../../StatusFilters';
 
 const House = () => {
   const location = useLocation();
@@ -33,7 +34,7 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   const [rounds, setRounds] = useState<StoredAuction[]>();
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(0);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
