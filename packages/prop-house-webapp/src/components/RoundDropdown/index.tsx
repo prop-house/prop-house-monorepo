@@ -2,21 +2,32 @@ import { Dropdown } from 'react-bootstrap';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import classes from './RoundDropdown.module.css';
 import { useDispatch } from 'react-redux';
-import { Status } from '../StatusFilters';
 
-const options: Status[] = [
+interface Options {
+  id: number;
+  title: string;
+  bgColor: string;
+}
+
+enum OptionType {
+  SortBy,
+  CreatedDate,
+  MostVotes,
+}
+
+const options: Options[] = [
   {
-    id: 0,
+    id: OptionType.SortBy,
     title: 'Sort By',
     bgColor: classes.pink,
   },
   {
-    id: 1,
+    id: OptionType.CreatedDate,
     title: 'Created Date',
     bgColor: classes.green,
   },
   {
-    id: 2,
+    id: OptionType.MostVotes,
     title: 'Most Votes',
     bgColor: classes.purple,
   },
@@ -38,9 +49,9 @@ const RoundDropdown = ({
   const handleClick = (id: number) => {
     setSortSelection(id);
 
-    if (id === 1) {
+    if (id === OptionType.CreatedDate) {
       dispatchSortProposals(dispatch, SortType.CreatedAt, false);
-    } else if (id === 2) {
+    } else if (id === OptionType.MostVotes) {
       dispatchSortProposals(dispatch, SortType.Score, false);
     }
     return;
