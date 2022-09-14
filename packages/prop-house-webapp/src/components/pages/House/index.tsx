@@ -37,6 +37,8 @@ const House = () => {
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
+
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
@@ -50,6 +52,19 @@ const House = () => {
         const community = isValidAddress
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
+
+        // Number of rounds under a certain status type in a House
+        setNumberOfRoundsPerStatus([
+          // total number of rounds
+          community.auctions.length,
+          // number of rounds accepting props
+          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps)
+            .length,
+          // number of rounds in voting state
+          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
+          // number of rounds in that are over
+          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
+        ]);
 
         setIsLoading(false);
 
@@ -131,7 +146,7 @@ const House = () => {
           <div className={classes.stickyContainer}>
             <Container>
               <HouseUtilityBar
-                roundCountByStatus={roundCountByStatus}
+                numberOfRoundsPerStatus={numberOfRoundsPerStatus}
                 currentRoundStatus={currentRoundStatus}
                 setCurrentRoundStatus={setCurrentRoundStatus}
                 input={input}
