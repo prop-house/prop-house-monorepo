@@ -3,31 +3,31 @@ import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import classes from './RoundDropdown.module.css';
 import { useDispatch } from 'react-redux';
 
-interface Options {
-  id: number;
+interface SortOptionProps {
+  id: SortMethod;
   title: string;
   bgColor: string;
 }
 
-export enum OptionType {
+export enum SortMethod {
   SortBy,
   CreatedDate,
   MostVotes,
 }
 
-const options: Options[] = [
+const sortOptions: SortOptionProps[] = [
   {
-    id: OptionType.SortBy,
+    id: SortMethod.SortBy,
     title: 'Sort By',
     bgColor: classes.pink,
   },
   {
-    id: OptionType.CreatedDate,
+    id: SortMethod.CreatedDate,
     title: 'Created Date',
     bgColor: classes.green,
   },
   {
-    id: OptionType.MostVotes,
+    id: SortMethod.MostVotes,
     title: 'Most Votes',
     bgColor: classes.purple,
   },
@@ -49,25 +49,25 @@ const RoundDropdown = ({
   const handleClick = (id: number) => {
     setSortSelection(id);
 
-    if (id === OptionType.CreatedDate) {
+    if (id === SortMethod.CreatedDate) {
       dispatchSortProposals(dispatch, SortType.CreatedAt, false);
-    } else if (id === OptionType.MostVotes) {
+    } else if (id === SortMethod.MostVotes) {
       dispatchSortProposals(dispatch, SortType.Score, false);
     }
     return;
   };
 
-  const sortOptions = allowSortByVotes ? options : options.filter(o => o.id !== 2);
+  const filteredSortOptions = allowSortByVotes ? sortOptions : sortOptions.filter(o => o.id !== 2);
 
   return (
     <>
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic">
-          {sortOptions[sortSelection].title}
+          {filteredSortOptions[sortSelection].title}
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          {sortOptions.map((o, index) => {
+          {filteredSortOptions.map((o, index) => {
             return (
               o.id !== 0 && (
                 <Dropdown.Item key={index} onClick={() => handleClick(o.id)}>
