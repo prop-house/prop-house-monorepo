@@ -1,41 +1,22 @@
-import { Col, Row } from 'react-bootstrap';
+import { Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
-import { RiSearchLine as SearchIcon } from 'react-icons/ri';
+import HomeTitle from '../HomeTitle';
+import HomeStats from '../HomeStats';
+import HomeSearchBar from '../HomeSeachBar';
+import { StatsProps } from '../pages/Home';
 
 interface HomeHeaderProps {
   input: string;
   handleChange: any;
+  stats: StatsProps;
 }
 
-const HomeHeader = ({ input, handleChange }: HomeHeaderProps) => {
+const HomeHeader = ({ input, handleChange, stats }: HomeHeaderProps) => {
   return (
     <Row className={classes.wrapper}>
-      <Col lg={12} className={classes.leftCol}>
-        <div className={classes.title}>
-          <h1 className={classes.fundedText}>
-            <span> Get funded to</span>
-            <div className={classes.build}>
-              <span>build</span>
-              <img src="/line.svg" alt="line" />
-            </div>
-          </h1>
-
-          <h1>with your favorite communities</h1>
-        </div>
-
-        <div className={classes.searchBar}>
-          <span className={classes.searchIcon}>
-            <SearchIcon />
-          </span>
-
-          <input
-            type="text"
-            value={input}
-            onChange={e => handleChange(e)}
-            placeholder="Search community houses"
-          />
-        </div>
-      </Col>
+      <HomeTitle />
+      <HomeStats stats={stats} />
+      <HomeSearchBar input={input} handleChange={handleChange} />
     </Row>
   );
 };

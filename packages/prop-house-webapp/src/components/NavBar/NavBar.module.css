@@ -1,16 +1,6 @@
 .navbar {
   padding-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 993px) {
-  .navbar {
-    margin-bottom: 0.5rem;
-  }
-  .navbar-nav .dropdown-menu {
-    position: absolute !important;
-    background: yellow !important;
-  }
+  padding-bottom: 2rem;
 }
 
 .navBarCollapse {
@@ -39,9 +29,9 @@
   border-radius: 10px !important;
 }
 
-@media (max-width: 993px) {
+@media (max-width: 991px) {
   .menuLink {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-med);
     border-radius: 10px;
     width: 100%;
     text-align: center;
@@ -61,7 +51,7 @@
 .buttonGroup {
   display: flex;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .buttonGroup {
     gap: 10px;
     display: flex;
@@ -69,15 +59,14 @@
   }
 }
 
-.divider {
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  border-radius: 1px;
-}
-@media (min-width: 993px) {
+@media (min-width: 992px) {
+  .divider {
+    border: 1px solid var(--border-light);
+    border-radius: 1px;
+  }
   .link {
     margin-right: 0.75rem;
   }
-
   .menuLink {
     padding-left: 0rem !important;
     padding-right: 0.75rem !important;
@@ -90,6 +79,7 @@
   color: var(--brand-black-transparent);
   font-weight: medium;
   font-size: 14px;
+  margin-top: -.3rem;
 }
 
 .poweredByNouns a {

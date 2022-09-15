@@ -86,6 +86,9 @@ body {
 .bgWhite {
   background-color: #ffffff;
 }
+.bgNoggles {
+  background-image: url('../src/assets/noggle-pattern.png');
+}
 
 h1,
 h2,

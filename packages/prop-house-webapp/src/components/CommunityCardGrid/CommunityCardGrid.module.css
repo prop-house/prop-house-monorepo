@@ -1,12 +1,22 @@
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-column-gap: 55px;
+  grid-column-gap: 12px;
+  margin-top: 44px;
 }
 
-@media (max-width: 993px) {
+@media (max-width: 767px) {
+  .cardGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 575px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
-    grid-column-gap: 25px;
+  }
+}
+@media (max-width: 375px) {
+  .cardGrid {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

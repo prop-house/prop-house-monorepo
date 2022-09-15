@@ -1,5 +1,5 @@
 const bgColorForPage = (path: string) => {
-  if (path === '/') return 'bgGray';
+  if (path === '/') return 'bgGray bgNoggles';
 
   return 'bgWhite';
 };

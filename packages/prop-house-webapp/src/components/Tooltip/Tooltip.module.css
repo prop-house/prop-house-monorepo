@@ -3,20 +3,20 @@
 }
 
 .tooltip [class$='inner'] {
-  background-color: var(--brand-gray);
-  border: 1px solid var(--brand-gray-semi-transparent);
-  color: white;
-  border-radius: 10px;
   padding: 0.5rem;
   text-align: left;
-  max-width: 15rem;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-  font-size: 14px;
-  font-weight: medium;
+
+  background: var(--bg-light);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
+  border-radius: 8px;
+  color: black;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 21px;
 }
 
 .tooltipTitle {
-  color: white;
+  color: var(--bg-light);
   font-weight: 500;
   display: block;
   text-align: left;

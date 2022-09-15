@@ -62,7 +62,7 @@ const HouseCard: React.FC<{
                 <span className="">
                   {round.fundingAmount} {round.currencyType}
                 </span>
-                <span className={classes.xDivide}>{' x '}</span>
+                <span className={classes.xDivide}>{' × '}</span>
                 <span className="">{round.numWinners}</span>
               </p>
             </div>
