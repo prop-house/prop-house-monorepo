@@ -18,6 +18,7 @@
 
 .divider {
   margin: 8px 0px 8px 0px;
+  background-color: var(--border-dark);
 }
 
 .infoText {
@@ -36,6 +37,8 @@
 }
 .symbolContainer img {
   height: 12px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-high);
   align-self: center;
 }
 
@@ -44,24 +47,32 @@
 }
 
 .container {
+  background-color: var(--bg-dark);
   margin: 1rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 12px 12px 16px;
   gap: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  box-shadow: 0px 4px 12px rgb(0 0 0 / 3%);
+  border: 1px solid var(--border-light);
   border-radius: 24px;
   background: #f5f5f5;
+  filter: drop-shadow(var(--shadow-none));
+  will-change: background-color, filter;
+  transition: background-color var(--card-transition), filter var(--card-transition);
 }
 
 .container:hover {
-  background: #ffffff;
+  background-color: var(--bg-light);
+  filter: drop-shadow(var(--shadow-low));
+  border: 1px solid var(--border-med);
   cursor: pointer;
 }
 .container:hover img {
   cursor: pointer;
+}
+.container:active {
+  filter: drop-shadow(var(--shadow-none));
 }
 @media (max-width: 993px) {
   .container {

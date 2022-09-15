@@ -31,7 +31,7 @@
 
 @media (max-width: 991px) {
   .menuLink {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-med);
     border-radius: 10px;
     width: 100%;
     text-align: center;
@@ -61,7 +61,7 @@
 
 @media (min-width: 992px) {
   .divider {
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-light);
     border-radius: 1px;
   }
   .link {
@@ -79,6 +79,7 @@
   color: var(--brand-black-transparent);
   font-weight: medium;
   font-size: 14px;
+  margin-top: -.3rem;
 }
 
 .poweredByNouns a {
