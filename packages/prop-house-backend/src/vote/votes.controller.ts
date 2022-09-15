@@ -108,28 +108,5 @@ export class VotesController {
       await this.votesService.createNewVote(createVoteDto, foundProposal);
       await this.proposalService.rollupVoteCount(foundProposal.id);
     }
-
-    // Voting down
-    if (createVoteDto.direction === VoteDirections.Down) {
-      // Verify that proposal has votes
-      if (
-        signerVotesForAuction.filter(
-          (vote) => vote.proposalId === foundProposal.id,
-        ).length === 0
-      )
-        throw new HttpException(
-          `Signer has no votes to downvote on proposal #${foundProposal.id}`,
-          HttpStatus.BAD_REQUEST,
-        );
-
-      // Delete *last* vote submitted on proposal
-      await Vote.delete(
-        signerVotesForAuction
-          .reverse()
-          .find((vote) => vote.proposalId === foundProposal.id),
-      );
-
-      await this.proposalService.rollupVoteCount(foundProposal.id);
-    }
   }
 }
