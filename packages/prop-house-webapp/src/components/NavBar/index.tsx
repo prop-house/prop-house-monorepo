@@ -40,8 +40,9 @@ const NavBar = () => {
 
             <div className={classes.buttonGroup}>
               <LocaleSwitcher />
+              <span className={classes.divider}></span>
 
-              <Nav.Link as="div">
+              <Nav.Link as="div" className={classes.navConnectButton}>
                 <Web3ModalButton classNames={classes.link} />
               </Nav.Link>
             </div>

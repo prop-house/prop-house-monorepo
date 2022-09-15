@@ -26,10 +26,11 @@ code {
   border-radius: 0px !important;
   color: black;
 }
-@media (max-width: 992px) {
+
+@media (max-width: 991px) {
   .lang .btn-primary.dropdown-toggle {
-    color: black !important;
-    border: 1px solid transparent !important;
-    border-color: rgba(0, 0, 0, 0.1) !important;
+    width: 100%;
+    padding: 9px 10px 8px 0px !important;
+    text-align: left;
   }
 }

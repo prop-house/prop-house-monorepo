@@ -21,6 +21,26 @@
     margin-left: 0 !important;
   }
 }
+.disconnect {
+  display: flex;
+  width: 100%;
+}
+.disconnectButton {
+  cursor: pointer !important;
+}
+
+@media (max-width: 992px) {
+  .disconnect {
+    flex-direction: column;
+  }
+  .disconnectButton {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+  }
+}
+
 .connectBtn {
   min-width: 85px !important;
   margin-left: 0 !important;

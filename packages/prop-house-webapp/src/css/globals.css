@@ -97,6 +97,11 @@ body {
     position: absolute !important;
   }
 }
+@media (max-width: 991px) {
+  .navbar-nav .nav-link {
+    padding: 0;
+  }
+}
 
 /* dropdown-basic */
 .houseDropdown .dropdown button {
