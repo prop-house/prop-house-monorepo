@@ -21,9 +21,6 @@ export class Proposal extends SignedEntity {
   @Column({ default: true })
   visible: boolean;
 
-  @Column({ default: false })
-  isWinner: boolean;
-
   @Column()
   title: string;
 
