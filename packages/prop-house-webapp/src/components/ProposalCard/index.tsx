@@ -22,7 +22,7 @@ const ProposalCard: React.FC<{
   voteAllotments?: VoteAllotment[];
   canAllotVotes?: () => boolean;
   handleVoteAllotment?: (proposalId: number, support: boolean) => void;
-}> = (props) => {
+}> = props => {
   const {
     proposal,
     auctionStatus,
@@ -39,7 +39,7 @@ const ProposalCard: React.FC<{
   return (
     <>
       <div
-        onClick={(e) => {
+        onClick={e => {
           if (e.metaKey || e.ctrlKey) {
             window.open(`/proposal/${proposal.id}`, `_blank`); // open in new tab
           } else {
@@ -56,7 +56,7 @@ const ProposalCard: React.FC<{
               : cardStatus === ProposalCardStatus.Winner
               ? globalClasses.pinkBorder
               : '',
-            classes.proposalCard
+            classes.proposalCard,
           )}
         >
           <div className={classes.titleContainer}>
@@ -81,8 +81,8 @@ const ProposalCard: React.FC<{
             {auctionStatus === AuctionStatus.AuctionVoting ||
             (auctionStatus === AuctionStatus.AuctionEnded &&
               cardStatus !== ProposalCardStatus.Voting) ? (
-              <div className={classes.scoreCopy}>
-                {t('votes')}: {Math.trunc(proposal.score)}
+              <div className={classes.voteCountCopy}>
+                {t('votes')}: {Math.trunc(proposal.voteCount)}
               </div>
             ) : (
               <div className={classes.address}>
@@ -91,7 +91,7 @@ const ProposalCard: React.FC<{
             )}
 
             <div className={classes.avatarAndPropNumber}>
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+              <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
                 {diffTime(proposal.createdDate)}
               </div>
             </div>

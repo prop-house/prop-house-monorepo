@@ -74,7 +74,7 @@
   align-self: flex-start;
 }
 
-.scoreCopy {
+.voteCountCopy {
   font-weight: bold;
   font-size: 14px;
   color: var(--brand-gray);

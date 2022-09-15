@@ -37,10 +37,10 @@ export class ProposalsService {
     await this.proposalsRepository.delete(id);
   }
 
-  async rollupScore(id: number) {
+  async rollupVoteCount(id: number) {
     const foundProposal = await this.findOne(id);
     if (!foundProposal) return;
-    foundProposal.updateScore();
+    foundProposal.updateVoteCount();
     this.proposalsRepository.save(foundProposal);
   }
 
@@ -48,8 +48,8 @@ export class ProposalsService {
     return await this.proposalsRepository.save(proposal);
   }
 
-  async scoreById(id: number): Promise<number> {
+  async voteCountById(id: number): Promise<number> {
     const foundProposal = await this.proposalsRepository.findOneOrFail(id);
-    return foundProposal.score;
+    return foundProposal.voteCount;
   }
 }

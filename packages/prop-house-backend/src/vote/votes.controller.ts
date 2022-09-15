@@ -73,7 +73,10 @@ export class VotesController {
       );
 
     // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto, foundProposal.auction.balanceBlockTag);
+    const totalVotesAvail = await this.votesService.getNumVotes(
+      createVoteDto,
+      foundProposal.auction.balanceBlockTag,
+    );
 
     if (totalVotesAvail === 0)
       throw new HttpException(
@@ -103,7 +106,7 @@ export class VotesController {
         );
 
       await this.votesService.createNewVote(createVoteDto, foundProposal);
-      await this.proposalService.rollupScore(foundProposal.id);
+      await this.proposalService.rollupVoteCount(foundProposal.id);
     }
 
     // Voting down
@@ -126,7 +129,7 @@ export class VotesController {
           .find((vote) => vote.proposalId === foundProposal.id),
       );
 
-      await this.proposalService.rollupScore(foundProposal.id);
+      await this.proposalService.rollupVoteCount(foundProposal.id);
     }
   }
 }
