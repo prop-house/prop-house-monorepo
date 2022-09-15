@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { Proposal } from 'src/proposal/proposal.entity';
-import { CreateProposalDto } from './proposal.types';
+import { CreateProposalDto, GetProposalsDto } from './proposal.types';
 import { ProposalsService } from './proposals.service';
 
 @Controller('proposals')
@@ -21,8 +22,8 @@ export class ProposalsController {
   ) {}
 
   @Get()
-  getProposals(): Promise<Proposal[]> {
-    return this.proposalsService.findAll();
+  getProposals(@Query() dto: GetProposalsDto): Promise<Proposal[]> {
+    return this.proposalsService.findAll(dto.limit, dto.skip, dto.order);
   }
 
   @Get(':id')

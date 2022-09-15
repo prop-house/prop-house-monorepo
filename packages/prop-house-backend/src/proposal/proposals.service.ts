@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proposal } from './proposal.entity';
+import { Order } from './proposal.types';
 
 @Injectable()
 export class ProposalsService {
@@ -10,8 +11,13 @@ export class ProposalsService {
     private proposalsRepository: Repository<Proposal>,
   ) {}
 
-  findAll(): Promise<Proposal[]> {
+  findAll(limit?: number, skip?: number, order?: Order): Promise<Proposal[]> {
     return this.proposalsRepository.find({
+      skip,
+      take: limit,
+      order: {
+        createdDate: order,
+      },
       loadRelationIds: {
         relations: ['votes'],
       },

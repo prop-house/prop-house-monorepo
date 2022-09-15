@@ -27,7 +27,7 @@ const PropCarousel = () => {
   useEffect(() => {
     setIsLoading(true);
     const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAllProposals();
+      const proposals = await client.current.getProposals();
       setProposals(proposals);
       setIsLoading(false);
     };
