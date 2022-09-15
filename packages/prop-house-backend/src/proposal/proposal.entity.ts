@@ -28,16 +28,10 @@ export class Proposal extends SignedEntity {
   title: string;
 
   @Column({ type: 'text' })
-  who: string;
-
-  @Column({ type: 'text' })
   what: string;
 
   @Column({ type: 'text' })
   tldr: string;
-
-  @Column({ type: 'text' })
-  links: string;
 
   @ManyToOne(() => Auction, (auction) => auction.proposals)
   @JoinColumn()

@@ -92,10 +92,8 @@ export class StoredAuction extends Auction {
 export class Proposal extends Signable {
   constructor(
     public readonly title: string,
-    public readonly who: string,
     public readonly what: string,
     public readonly tldr: string,
-    public readonly links: string,
     public readonly auctionId: number,
   ) {
     super();
@@ -104,10 +102,8 @@ export class Proposal extends Signable {
   toPayload() {
     return {
       title: this.title,
-      who: this.who,
       what: this.what,
       tldr: this.tldr,
-      links: this.links,
       parentAuctionId: this.auctionId,
     };
   }
