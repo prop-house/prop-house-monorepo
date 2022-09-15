@@ -1,6 +1,6 @@
 import CommunityCard from '../CommunityCard';
 import classes from './CommunityCardGrid.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
 import RoundMessage from '../RoundMessage';
@@ -10,15 +10,9 @@ interface CommunityCardGridProps {
   input: string;
   communities: Community[];
   isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
-const CommunityCardGrid = ({
-  input,
-  communities,
-  isLoading,
-  setIsLoading,
-}: CommunityCardGridProps) => {
+const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridProps) => {
   const [filteredHouses, setFilteredHouses] = useState<Community[]>([]);
 
   useEffect(() => {

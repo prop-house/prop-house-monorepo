@@ -67,12 +67,7 @@ const Home = () => {
       <HomeHeader input={input} handleChange={handleChange} stats={stats} />
 
       <Container>
-        <CommunityCardGrid
-          input={input}
-          communities={communities}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        />
+        <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
       </Container>
     </>
   );
