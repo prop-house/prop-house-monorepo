@@ -1,5 +1,5 @@
 import classes from './RoundUtilityBar.module.css';
-import RoundDropdown, { OptionType } from '../RoundDropdown';
+import RoundDropdown, { SortMethod } from '../RoundDropdown';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -32,7 +32,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
 
   const [sortSelection, setSortSelection] = useState<number>(
-    auctionEnded ? OptionType.MostVotes : OptionType.SortBy,
+    auctionEnded ? SortMethod.MostVotes : SortMethod.SortBy,
   );
   const { t } = useTranslation();
 
