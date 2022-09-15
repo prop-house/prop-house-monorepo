@@ -76,6 +76,7 @@
 .date {
   font-weight: normal !important;
   font-size: 14px;
+  width: max-content;
 }
 .scoreCopy {
   font-size: 16px;
@@ -148,4 +149,18 @@
 }
 .winner .authorContainer {
   color: var(--brand-green);
+}
+
+@media (max-width: 575px) {
+  .hideDate {
+    display: none;
+  }
+
+  .address {
+    width: 100%;
+  }
+}
+
+.hideVoteModule {
+  display: none;
 }

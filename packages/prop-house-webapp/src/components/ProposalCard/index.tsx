@@ -13,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { useEthers } from '@usedapp/core';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -35,7 +36,12 @@ const ProposalCard: React.FC<{
     winner,
   } = props;
 
+  const { account } = useEthers();
   let navigate = useNavigate();
+
+  const roundIsVotingOrOver = () =>
+    auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
+  const connectedDuringVoting = () => auctionStatus === AuctionStatus.AuctionVoting && account;
 
   return (
     <>
@@ -75,16 +81,26 @@ const ProposalCard: React.FC<{
           <div className={classes.timestampAndlinkContainer}>
             <div className={classes.address}>
               <EthAddress address={proposal.address} truncate />
-              <span className={classes.bullet}>{' • '}</span>
-              <div className={classes.date} title={detailedTime(proposal.createdDate)}>
+
+              <span className={clsx(classes.bullet, connectedDuringVoting() && classes.hideDate)}>
+                {' • '}
+              </span>
+              <div
+                className={clsx(classes.date, connectedDuringVoting() && classes.hideDate)}
+                title={detailedTime(proposal.createdDate)}
+              >
                 {diffTime(proposal.createdDate)}
               </div>
             </div>
 
-            <div className={classes.avatarAndPropNumber}>
+            <div
+              className={clsx(
+                classes.avatarAndPropNumber,
+                !roundIsVotingOrOver() && classes.hideVoteModule,
+              )}
+            >
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {(auctionStatus === AuctionStatus.AuctionVoting ||
-                  auctionStatus === AuctionStatus.AuctionEnded) && (
+                {roundIsVotingOrOver() && (
                   <div className={classes.scoreAndIcon}>
                     <VoteIcon /> {Number(proposal.score).toFixed()}
                   </div>
