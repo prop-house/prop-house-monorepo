@@ -34,26 +34,20 @@ const PropCarousel = () => {
     fetchAuctionProposals();
   }, [dispatch]);
 
-  const propCards =
-    proposals &&
-    proposals
-      .sort((a, b) => (a.createdDate > b.createdDate ? -1 : 1))
-      .slice(0, 20)
-      .map((_, index) => {
-        return (
-          <div className={classes.propCardContainer} key={index}>
-            <ProposalCard proposal={proposals[index]} />
-          </div>
-        );
-      });
-
+  const propCards = proposals?.map((_, index) => {
+    return (
+      <div className={classes.propCardContainer} key={index}>
+        <ProposalCard proposal={proposals[index]} />
+      </div>
+    );
+  });
   return isLoading ? (
     <LoadingIndicator />
   ) : (
     <CarouselSection
       contextTitle={t('browseProps')}
       mainTitle={t('recentProps')}
-      cards={propCards ? propCards : []}
+      cards={propCards || []}
     />
   );
 };
