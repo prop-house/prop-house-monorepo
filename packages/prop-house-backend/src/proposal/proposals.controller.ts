@@ -23,7 +23,7 @@ export class ProposalsController {
 
   @Get()
   getProposals(@Query() dto: GetProposalsDto): Promise<Proposal[]> {
-    return this.proposalsService.findAll(dto.limit, dto.skip, dto.order);
+    return this.proposalsService.findAll(dto);
   }
 
   @Get(':id')
