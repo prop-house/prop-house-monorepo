@@ -13,7 +13,7 @@ export enum RoundStatus {
 }
 
 export interface Status {
-  status: number;
+  status: RoundStatus;
   title: string;
   bgColor: string;
 }
