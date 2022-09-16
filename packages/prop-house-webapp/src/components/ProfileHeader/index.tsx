@@ -73,7 +73,7 @@ const ProfileHeader: React.FC<{
                   },
                 }}
               >
-                {sanitizeHtml(community?.description as any, {
+                {sanitizeHtml(auction?.description as any, {
                   allowedAttributes: {
                     a: ['href', 'target'],
                   },
