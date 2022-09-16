@@ -57,6 +57,9 @@
 }
 
 @media (max-width: 992px) {
+  .titleRow {
+    align-items: flex-start;
+  }
   .profileHeaderRow {
     margin-bottom: 0rem;
   }
@@ -68,9 +71,7 @@
     -webkit-line-clamp: 10;
     line-clamp: 10;
   }
-  .communityInfoCol {
-    margin: 0 1rem;
-  }
+
   .phLink {
     margin-top: 1rem;
   }

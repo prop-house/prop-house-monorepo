@@ -41,7 +41,7 @@ const ProfileHeader: React.FC<{
           <span>{community && community.name}</span>
         </div>
 
-        <Col lg={5} className={classes.communityInfoCol}>
+        <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
             {auction && `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
           </div>
