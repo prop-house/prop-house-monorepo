@@ -16,7 +16,6 @@ import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
-import { useTranslation } from 'react-i18next';
 import RoundMessage from '../RoundMessage';
 import VotingModal from '../VotingModal';
 import { findProposalById } from '../../utils/findProposalById';
@@ -47,7 +46,6 @@ const FullAuction: React.FC<{
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const { t } = useTranslation();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -224,8 +222,6 @@ const FullAuction: React.FC<{
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
         <RoundMessage message="Funding round starting soon" date={auction.startTime} />
-      ) : auction.proposals.length === 0 ? (
-        <RoundMessage message={t('submittedProps')} />
       ) : (
         <>
           {community && (

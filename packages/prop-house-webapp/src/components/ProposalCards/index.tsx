@@ -22,8 +22,9 @@ import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import VotingModule from '../VotingModule';
 import RoundOverModule from '../RoundOverModule';
-
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import RoundMessage from '../RoundMessage';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -51,6 +52,7 @@ const ProposalCards: React.FC<{
   const { account } = useEthers();
   const connect = useWeb3Modal();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
@@ -84,21 +86,25 @@ const ProposalCards: React.FC<{
     <Row className={classes.propCardsRow}>
       <Col xl={8} className={classes.propCardsCol}>
         {proposals &&
-          proposals.map((proposal, index) => {
-            return (
-              <Col key={index}>
-                <ProposalCard
-                  proposal={proposal}
-                  auctionStatus={auctionStatus(auction)}
-                  cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, auction)}
-                  canAllotVotes={canAllotVotes}
-                  voteAllotments={voteAllotments}
-                  handleVoteAllotment={handleVoteAllotment}
-                  winner={winningIds && isWinner(winningIds, proposal.id)}
-                />
-              </Col>
-            );
-          })}
+          (auction.proposals.length === 0 ? (
+            <RoundMessage message={t('submittedProps')} />
+          ) : (
+            proposals.map((proposal, index) => {
+              return (
+                <Col key={index}>
+                  <ProposalCard
+                    proposal={proposal}
+                    auctionStatus={auctionStatus(auction)}
+                    cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, auction)}
+                    canAllotVotes={canAllotVotes}
+                    voteAllotments={voteAllotments}
+                    handleVoteAllotment={handleVoteAllotment}
+                    winner={winningIds && isWinner(winningIds, proposal.id)}
+                  />
+                </Col>
+              );
+            })
+          ))}
       </Col>
 
       <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>

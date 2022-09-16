@@ -22,7 +22,7 @@
   margin-top: 18px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 993px) {
   .propCardsRow {
     display: flex;
     flex-direction: column-reverse;
