@@ -31,7 +31,7 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
       <hr className={classes.divider} />
 
       <p className={classes.sideCardBody}>
-        <b>How proposals work:</b>
+        <b>How proposing works:</b>
 
         <div className={classes.bulletList}>
           <div className={classes.bulletItem}>
