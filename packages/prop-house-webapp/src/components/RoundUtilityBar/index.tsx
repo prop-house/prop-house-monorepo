@@ -39,26 +39,30 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   return (
     <div className={classes.roundUtilityBar}>
       <div className={classes.utilitySection}>
-        <div className={classes.sortToggles}>
-          <SortToggles
-            auction={auction}
-            datesSorted={datesSorted}
-            setDatesSorted={setDatesSorted}
-            dateAscending={dateAscending}
-            setDateAscending={setDateAscending}
-            votesSorted={votesSorted}
-            setVotesSorted={setVotesSorted}
-            votesAscending={votesAscending}
-            setVotesAscending={setVotesAscending}
-          />
-        </div>
+        {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
+          <div className={classes.sortToggles}>
+            <SortToggles
+              auction={auction}
+              datesSorted={datesSorted}
+              setDatesSorted={setDatesSorted}
+              dateAscending={dateAscending}
+              setDateAscending={setDateAscending}
+              votesSorted={votesSorted}
+              setVotesSorted={setVotesSorted}
+              votesAscending={votesAscending}
+              setVotesAscending={setVotesAscending}
+            />
+          </div>
+        )}
 
         <div className={clsx(classes.dropdown, 'houseDropdown')}>
-          <RoundDropdown
-            sortSelection={sortSelection}
-            setSortSelection={setSortSelection}
-            allowSortByVotes={allowSortByVotes}
-          />
+          {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
+            <RoundDropdown
+              sortSelection={sortSelection}
+              setSortSelection={setSortSelection}
+              allowSortByVotes={allowSortByVotes}
+            />
+          )}
         </div>
       </div>
 
