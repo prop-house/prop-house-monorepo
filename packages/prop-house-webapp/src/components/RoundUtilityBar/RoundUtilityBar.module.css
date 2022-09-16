@@ -14,16 +14,14 @@
   .searchBar input {
     min-width: 312px;
   }
+}
+@media (min-width: 768px) {
   .dropdown {
     display: none;
   }
 }
 
 @media (max-width: 767px) {
-  .sortToggles {
-    display: none;
-  }
-
   .roundUtilityBar {
     gap: 16px;
     justify-content: space-between;
@@ -36,8 +34,12 @@
     min-width: 0px;
     width: 100%;
   }
+  .sortToggles {
+    display: none;
+  }
 }
-
+/* @media (max-width: 766px) {
+} */
 .propHouseDataRow {
   display: flex;
   padding-bottom: 12px;
