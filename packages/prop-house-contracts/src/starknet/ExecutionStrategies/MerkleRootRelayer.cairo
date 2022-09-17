@@ -42,12 +42,13 @@ func execute{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
         assert_not_zero(l1_house_address)
     end
 
-    let merkle_root_low = execution_params[0]
-    let merkle_root_high = execution_params[1]
+    let round_id = execution_params[0]
+    let merkle_root_low = execution_params[1]
+    let merkle_root_high = execution_params[2]
 
     # Create the payload
     let (message_payload : felt*) = alloc()
-    assert message_payload[0] = ExecutionType.MERKLE_ROOT
+    assert message_payload[0] = round_id
     assert message_payload[1] = merkle_root_low
     assert message_payload[2] = merkle_root_high
 

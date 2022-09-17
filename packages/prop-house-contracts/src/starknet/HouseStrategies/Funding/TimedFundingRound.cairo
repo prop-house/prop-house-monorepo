@@ -50,6 +50,10 @@ const MAX_LOG_N_WINNERS = 8
 #
 
 @storage_var
+func round_id_store() -> (id : felt):
+end
+
+@storage_var
 func round_state_store() -> (state : felt):
 end
 
@@ -146,6 +150,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     alloc_locals
 
     let (
+        round_id,
         proposal_period_start_timestamp,
         proposal_period_duration,
         vote_period_duration,
@@ -157,6 +162,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     let (current_timestamp) = get_block_timestamp()
     with_attr error_message("Invalid constructor parameters"):
         assert_le(current_timestamp, proposal_period_start_timestamp)
+        assert_not_zero(round_id)
         assert_not_zero(proposal_period_duration)
         assert_not_zero(vote_period_duration)
         assert_not_zero(voting_power_multiplier)
@@ -173,6 +179,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration
 
     # Initialize the storage variables
+    round_id_store.write(round_id)
     proposal_period_start_timestamp_store.write(proposal_period_start_timestamp)
     proposal_period_end_timestamp_store.write(proposal_period_end_timestamp)
     vote_period_end_timestamp_store.write(vote_period_end_timestamp)
@@ -422,20 +429,20 @@ func finalize_round{
     let (leaves : Uint256*) = alloc()
     ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(winners_len, winners, leaves, 0)
 
-    # TODO: Add support for height calculation on the fly
     let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
         winners_len, leaves, 0, MAX_LOG_N_WINNERS,
     )
     finalize_keccak(keccak_ptr_start, keccak_ptr)
 
-    let (strategy_address) = get_caller_address()
+    let (round_id)= round_id_store.read()
 
     let (execution_params : felt*) = alloc()
-    assert execution_params[0] = merkle_root.low
-    assert execution_params[1] = merkle_root.high
+    assert execution_params[0] = round_id
+    assert execution_params[1] = merkle_root.low
+    assert execution_params[2] = merkle_root.high
 
     let (executor_address) = executor_store.read()
-    let execution_params_len = 2
+    let execution_params_len = 3
 
     IExecutionStrategy.execute(
         contract_address=executor_address,
@@ -666,19 +673,21 @@ end
 
 # Decodes the array of house strategy params
 func decode_param_array{range_check_ptr}(strategy_params_len : felt, strategy_params : felt*) -> (
+    round_id : felt,
     proposal_period_start_timestamp : felt,
     proposal_period_duration : felt,
     vote_period_duration : felt,
     voting_power_multiplier : felt,
     winner_count : felt,
 ):
-    assert_nn_le(5, strategy_params_len)
+    assert_nn_le(6, strategy_params_len)
     return (
         strategy_params[0],
         strategy_params[1],
         strategy_params[2],
         strategy_params[3],
         strategy_params[4],
+        strategy_params[5],
     )
 end
 
