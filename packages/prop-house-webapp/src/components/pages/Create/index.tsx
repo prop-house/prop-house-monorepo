@@ -18,6 +18,7 @@ import Modal from '../../Modal';
 import removeTags from '../../../utils/removeTags';
 import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
+import { nameToSlug } from '../../../utils/communitySlugs';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -71,7 +72,6 @@ const Create: React.FC<{}> = () => {
     dispatch(clearProposal());
     setShowModal(true);
   };
-
   const successfulSubmissionModalContent = {
     title: t('congrats'),
     content: (
@@ -79,18 +79,29 @@ const Create: React.FC<{}> = () => {
         <p>
           {`
           ${t(`successfulSubmission`)} \n
-           ${activeCommunity && activeCommunity.name} ${`(${
+          ${activeCommunity && activeCommunity.name} ${`(${
             activeAuction && activeAuction.title
           })`}`}
         </p>
         <Button
-          text={t('viewHouse')}
+          text={t('viewRound')}
           bgColor={ButtonColor.White}
-          onClick={() => navigate(`/${activeCommunity && activeCommunity.contractAddress}`)}
+          onClick={() =>
+            navigate(
+              `/${activeCommunity && nameToSlug(activeCommunity.name)}/${nameToSlug(
+                activeAuction.title,
+              )}`,
+            )
+          }
         />
       </>
     ),
-    onDismiss: () => navigate(`/${activeCommunity && activeCommunity.contractAddress}`),
+    onDismiss: () =>
+      navigate(
+        `/${activeCommunity && nameToSlug(activeCommunity.name)}/${nameToSlug(
+          activeAuction.title,
+        )}`,
+      ),
   };
 
   return activeAuction ? (
