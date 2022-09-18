@@ -75,7 +75,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {DeadlineCopy(auction)}
+                        {DeadlineCopy(auction)} <sup className="infoSymbol">ⓘ</sup>
                       </div>
 
                       <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>

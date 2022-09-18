@@ -176,3 +176,6 @@ body {
   border-radius: 2px 6px 6px 2px !important;
   margin-left: 2px;
 }
+.infoSymbol {
+  font-size: 10px;
+}
