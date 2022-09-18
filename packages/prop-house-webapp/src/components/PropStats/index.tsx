@@ -20,7 +20,8 @@ const PropStats: React.FC<{
 
   const currentlyWinningProps =
     proposals &&
-    [...proposals]
+    proposals
+      .slice()
       .sort((a, b) => (Number(a.score) < Number(b.score) ? 1 : -1))
       .slice(0, numOfWinners);
 
@@ -64,7 +65,8 @@ const PropStats: React.FC<{
                 <div className={classes.userPropTextValue}>
                   {proposals &&
                     getNumberWithOrdinal(
-                      [...proposals]
+                      proposals
+                        .slice()
                         .sort((a, b) => (Number(a.score) < Number(b.score) ? 1 : -1))
                         .findIndex(p => p.id === userProps[cardIndex].id) + 1,
                     )}
