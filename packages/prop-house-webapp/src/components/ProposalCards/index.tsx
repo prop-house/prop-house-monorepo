@@ -115,7 +115,6 @@ const ProposalCards: React.FC<{
             numOfWinners={auction.numWinners}
             status={auctionStatus(auction)}
             winningIds={winningIds && winningIds}
-            totalVotes={getVoteTotal()}
           />
         )}
 
