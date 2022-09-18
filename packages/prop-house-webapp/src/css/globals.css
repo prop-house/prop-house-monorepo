@@ -83,7 +83,7 @@ body {
   --shadow-low: 0px 4px 12px rgba(0, 0, 0, 0.03);
   --shadow-high: 0px 2px 8px rgba(0, 0, 0, 0.08);
 
-  --card-transition: .15s cubic-bezier(0,.41,.6,1.02);
+  --card-transition: 0.15s cubic-bezier(0, 0.41, 0.6, 1.02);
 }
 
 /* breaks div out of the bootstrap .container to become full width with the viewport */

@@ -75,7 +75,7 @@ const HouseCard: React.FC<{
                   <>
                     <p className={classes.title}>
                       {DeadlineCopy(round)}
-                      <sup className="infoSymbol">ⓘ</sup>
+                      {'  '} <sup className="infoSymbol">ⓘ</sup>
                     </p>
                     <p className={classes.info}>
                       {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
