@@ -47,7 +47,7 @@ export class Auction extends Signable {
     public readonly currencyType: string,
     public readonly numWinners: number,
     public readonly community: number,
-    public readonly balanceBlockTag: number | undefined,
+    public readonly balanceBlockTag: number,
     public readonly description: string,
   ) {
     super();

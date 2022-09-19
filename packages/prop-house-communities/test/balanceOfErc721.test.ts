@@ -30,7 +30,7 @@ describe('balanceOf ERC721 votes', () => {
     const lilNounsBalance = await balanceOfErc721()(
       nounsDaoTreasury,
       lilNounsToken,
-      '15485382',
+      15485382,
       provider,
     );
 

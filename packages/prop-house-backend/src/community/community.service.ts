@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Raw, Repository } from 'typeorm';
 import { Community } from './community.entity';
 import * as ethers from 'ethers';
-import {BigNumberish} from '@ethersproject/bignumber';
+import { BigNumberish } from '@ethersproject/bignumber';
 import config from 'src/config/configuration';
 import { getNumVotes } from 'prop-house-communities';
 
@@ -56,10 +56,10 @@ export class CommunitiesService {
 
   async votesAtBlockTag(
     community: Community,
-    blockTag: string,
-    address: string
+    blockTag: number,
+    address: string,
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return getNumVotes(address, community.contractAddress, provider, blockTag)
+    return getNumVotes(address, community.contractAddress, provider, blockTag);
   }
 }
