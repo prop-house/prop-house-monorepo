@@ -78,18 +78,20 @@ export class CommunitiesService {
   }
 
   private auctionCountAndFundingSubquery(qb: SelectQueryBuilder<Community>) {
-    return qb.select('a.id', 'id')
-    .addSelect('a.communityId')
-    .addSelect('COUNT(a.id)', 'numAuctions')
-    .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
-    .from('auction', 'a')
-    .groupBy('a.id');
+    return qb
+      .select('a.id', 'id')
+      .addSelect('a.communityId')
+      .addSelect('COUNT(a.id)', 'numAuctions')
+      .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
+      .from('auction', 'a')
+      .groupBy('a.id');
   }
 
   private proposalCountSubquery(qb: SelectQueryBuilder<Community>) {
-    return qb.select('p.auctionId', 'auctionId')
-    .addSelect('COUNT(p.id)', 'numProposals')
-    .from('proposal', 'p')
-    .groupBy('p.auctionId');
+    return qb
+      .select('p.auctionId', 'auctionId')
+      .addSelect('COUNT(p.id)', 'numProposals')
+      .from('proposal', 'p')
+      .groupBy('p.auctionId');
   }
 }
