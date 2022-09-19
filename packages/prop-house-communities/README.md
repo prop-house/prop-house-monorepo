@@ -29,13 +29,28 @@ const votes = await getNumVotes(address, communityAddress, provider, blockTag);
 Strategies can be found in the `strategies/` directory. A strategy is a function that returns a function of `Strategy` type. Put another way, custom strategies are functions that return the implementation of the base `Strategy` type. 
 
 ```.ts
+// base Strategy type
 export type Strategy = (
   userAddress: string,
   communityAddress: string,
   blockTag: string,
   provider: Provider,
 ) => Promise<number>;
+
+// example strategy
+export const myCustomStrategy = (optionalParams: string): Strategy => {
+  return async (
+    userAddress: string
+    communityAddress: string,
+    blockTag: string,
+    provider: Provider,
+  ) => {
+    // my custom implementation 
+    return numVotesForAddress
+    };
+};
 ```
+
 
 ### Considerations: 
 - Strategies may add additional parameters particular to the community (optional)
