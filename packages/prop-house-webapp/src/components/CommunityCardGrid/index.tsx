@@ -16,20 +16,19 @@ const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridP
   const [filteredHouses, setFilteredHouses] = useState<Community[]>([]);
 
   useEffect(() => {
-    communities &&
-      communities.length > 0 &&
-      (input.length === 0
-        ? setFilteredHouses(communities)
-        : setFilteredHouses(
-            communities.filter(c => {
-              const query = input.toLowerCase();
+    if (!communities || communities.length === 0) return;
+    if (input.length === 0) setFilteredHouses(communities);
 
-              return (
-                c.name.toLowerCase().indexOf(query) >= 0 ||
-                c.description?.toString().toLowerCase().indexOf(query) >= 0
-              );
-            }),
-          ));
+    setFilteredHouses(
+      communities.filter(c => {
+        const query = input.toLowerCase();
+
+        return (
+          c.name.toLowerCase().indexOf(query) >= 0 ||
+          c.description?.toString().toLowerCase().indexOf(query) >= 0
+        );
+      }),
+    );
   }, [communities, input]);
 
   const cards = filteredHouses.map((c, i) => <CommunityCard community={c} key={i} />);
