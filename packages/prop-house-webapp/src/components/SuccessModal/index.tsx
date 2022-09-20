@@ -11,12 +11,12 @@ const SuccessModal: React.FC<{
 }> = props => {
   const { showSuccessModal, setShowSuccessModal, numOfProps } = props;
 
-  function closeModal() {
-    setShowSuccessModal(false);
-  }
-
   return (
-    <Modal isOpen={showSuccessModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
+    <Modal
+      isOpen={showSuccessModal}
+      onRequestClose={setShowSuccessModal(false)}
+      className={clsx(classes.modal)}
+    >
       <div className={classes.container}>
         <div className={classes.imgContainer}>
           <img src="/rednoggles.png" alt="noggles" />
