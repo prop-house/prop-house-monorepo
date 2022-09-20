@@ -1,5 +1,5 @@
 import { Row, Col } from 'react-bootstrap';
-import classes from './ProfileHeader.module.css';
+import classes from './RoundHeader.module.css';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
@@ -18,7 +18,7 @@ interface OpenInNewTabProps {
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
 
-const ProfileHeader: React.FC<{
+const RoundHeader: React.FC<{
   community?: Community;
   auction?: StoredAuction;
 }> = props => {
@@ -87,4 +87,4 @@ const ProfileHeader: React.FC<{
   );
 };
 
-export default ProfileHeader;
+export default RoundHeader;

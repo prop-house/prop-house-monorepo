@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import ProfileHeader from '../../ProfileHeader';
+import RoundHeader from '../../RoundHeader';
 import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -80,7 +80,7 @@ const Round = () => {
   return (
     <>
       <Container>
-        <ProfileHeader auction={activeAuction} community={community} />
+        <RoundHeader auction={activeAuction} community={community} />
       </Container>
 
       {activeAuction && (
