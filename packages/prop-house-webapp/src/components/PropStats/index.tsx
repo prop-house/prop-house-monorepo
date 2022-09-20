@@ -26,18 +26,14 @@ const PropStats: React.FC<{
       .slice(0, numOfWinners);
 
   const votesNeededToWin = (prop: any) => {
-    if (fewerPropsThanNumberofWinners || (proposals && currentlyWinningProps!.includes(prop))) {
+    if (fewerPropsThanNumberofWinners || (proposals && currentlyWinningProps!.includes(prop)))
       return 0;
-    } else if (allPropsHaveZeroVotes) {
-      return '-';
-    } else {
-      return (
-        currentlyWinningProps &&
-        Number(currentlyWinningProps[currentlyWinningProps.length - 1].score) -
-          Number(prop.score) +
-          1
-      );
-    }
+    if (allPropsHaveZeroVotes) return '-';
+
+    return (
+      currentlyWinningProps &&
+      Number(currentlyWinningProps[currentlyWinningProps.length - 1].score) - Number(prop.score) + 1
+    );
   };
 
   return (
