@@ -3,10 +3,10 @@ import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 
 interface HomeSearchBarProps {
   input: string;
-  handleChange: any;
+  handleSeachInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const HomeSearchBar = ({ input, handleChange }: HomeSearchBarProps) => {
+const HomeSearchBar = ({ input, handleSeachInputChange }: HomeSearchBarProps) => {
   return (
     <div className={classes.searchBar}>
       <span className={classes.searchIcon}>
@@ -16,7 +16,7 @@ const HomeSearchBar = ({ input, handleChange }: HomeSearchBarProps) => {
       <input
         type="text"
         value={input}
-        onChange={e => handleChange(e)}
+        onChange={e => handleSeachInputChange(e)}
         placeholder="Search community houses"
       />
     </div>

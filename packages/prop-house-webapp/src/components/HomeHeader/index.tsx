@@ -7,16 +7,16 @@ import { StatsProps } from '../pages/Home';
 
 interface HomeHeaderProps {
   input: string;
-  handleChange: any;
+  handleSeachInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   stats: StatsProps;
 }
 
-const HomeHeader = ({ input, handleChange, stats }: HomeHeaderProps) => {
+const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) => {
   return (
     <Row className={classes.wrapper}>
       <HomeTitle />
       <HomeStats stats={stats} />
-      <HomeSearchBar input={input} handleChange={handleChange} />
+      <HomeSearchBar input={input} handleSeachInputChange={handleSeachInputChange} />
     </Row>
   );
 };

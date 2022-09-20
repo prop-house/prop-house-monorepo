@@ -23,7 +23,7 @@ const Home = () => {
     props: 0,
   });
 
-  const handleChange = (e: any) => {
+  const handleSeachInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
@@ -64,7 +64,7 @@ const Home = () => {
 
   return (
     <>
-      <HomeHeader input={input} handleChange={handleChange} stats={stats} />
+      <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
 
       <Container>
         <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
