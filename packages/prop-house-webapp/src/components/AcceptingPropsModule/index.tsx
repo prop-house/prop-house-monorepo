@@ -46,14 +46,6 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
             </p>
           </div>
 
-          {/* tbd */}
-          {/* <div className={classes.bulletItem}>
-            <hr className={classes.bullet} />
-            <p>
-              Each <b>{communityName}</b> token has 10 votes.
-            </p>
-          </div> */}
-
           <div className={classes.bulletItem}>
             <hr className={classes.bullet} />
             <p>
