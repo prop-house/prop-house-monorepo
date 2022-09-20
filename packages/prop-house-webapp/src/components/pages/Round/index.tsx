@@ -10,9 +10,7 @@ import {
   setActiveCommunity,
   setActiveProposals,
 } from '../../../state/slices/propHouse';
-import FullAuction from '../../FullAuction';
 import dayjs from 'dayjs';
-
 import { slugToName } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
 import NotFound from '../../NotFound';
@@ -20,6 +18,7 @@ import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
+import FullRound from '../../FullRound';
 
 const Round = () => {
   const location = useLocation();
@@ -97,7 +96,7 @@ const Round = () => {
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
             {activeAuction ? (
-              <FullAuction auction={activeAuction} />
+              <FullRound auction={activeAuction} />
             ) : (
               <RoundMessage message="No rounds available" />
             )}

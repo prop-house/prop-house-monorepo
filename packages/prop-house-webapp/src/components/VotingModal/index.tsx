@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import dayjs from 'dayjs';
-import { PropForDisplay } from '../FullAuction';
+import { PropForDisplay } from '../FullRound';
 
 const VotingModal: React.FC<{
   showNewModal: boolean;
