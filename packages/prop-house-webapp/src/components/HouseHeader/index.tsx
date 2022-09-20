@@ -75,11 +75,6 @@ const HouseHeader: React.FC<{
 
             <div className={classes.itemData}>{community ? community.numProposals : 0}</div>
             <div className={classes.itemTitle}>{'Proposals'}</div>
-
-            {/* hiding until ethFunded updates to currencyType */}
-            {/* <span className={classes.bullet}>{' • '}</span> 
-            <div className={classes.itemData}>{community ? community.ethFunded : 0} Ξ</div>
-            <div className={classes.itemTitle}>{'Funded'}</div> */}
           </div>
         </div>
 
