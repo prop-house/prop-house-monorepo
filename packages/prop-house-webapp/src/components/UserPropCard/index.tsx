@@ -23,7 +23,6 @@ const UserPropCard: React.FC<{
   winningIds &&
     userProps.map((prop: StoredProposalWithVotes) => {
       if (isWinner(winningIds, prop.id)) amountOfPropsWon++;
-
       return amountOfPropsWon;
     });
 
@@ -42,7 +41,7 @@ const UserPropCard: React.FC<{
         winningIds={winningIds && winningIds}
       />
 
-      {status !== AuctionStatus.AuctionAcceptingProps && (
+      {status !== AuctionStatus.AuctionAcceptingProps && proposals && (
         <PropStats
           status={status}
           userProps={userProps}

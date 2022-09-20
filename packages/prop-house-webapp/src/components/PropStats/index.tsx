@@ -5,9 +5,9 @@ import getNumberWithOrdinal from '../../utils/getNumberWithOrdinal';
 
 const PropStats: React.FC<{
   status: AuctionStatus;
-  userProps: any;
+  userProps: StoredProposalWithVotes[];
   cardIndex: number;
-  proposals: StoredProposalWithVotes[] | undefined;
+  proposals: StoredProposalWithVotes[];
   numOfWinners: number;
 }> = props => {
   const { userProps, proposals, status, numOfWinners, cardIndex } = props;
