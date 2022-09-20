@@ -25,6 +25,7 @@ import RoundOverModule from '../RoundOverModule';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import RoundMessage from '../RoundMessage';
+import { isSameAddress } from '../../utils/isSameAddress';
 
 const ProposalCards: React.FC<{
   auction: StoredAuction;
@@ -71,10 +72,10 @@ const ProposalCards: React.FC<{
   useEffect(() => {
     if (!account || !proposals) return;
 
-    if (proposals.some(p => p.address === account)) {
+    if (proposals.some(p => isSameAddress(p.address, account))) {
       return setUserProposals(
         proposals
-          .filter(p => p.address === account)
+          .filter(p => isSameAddress(p.address, account))
           .sort((a: { score: any }, b: { score: any }) =>
             Number(a.score) < Number(b.score) ? 1 : -1,
           ),
