@@ -14,6 +14,7 @@ import PropCardVotingModule from '../PropCardVotingModule';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useEthers } from '@usedapp/core';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -48,10 +49,10 @@ const ProposalCard: React.FC<{
       <div
         onClick={e => {
           if (cmdPlusClicked(e)) {
-            window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
-          } else {
-            navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            openInNewTab(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            return;
           }
+          navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
         }}
       >
         <Card

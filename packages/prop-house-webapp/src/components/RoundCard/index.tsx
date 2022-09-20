@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -29,13 +30,13 @@ const RoundCard: React.FC<{
       <div
         onClick={e => {
           if (cmdPlusClicked(e)) {
-            window.open(`${window.location.href}/${nameToSlug(round.title)}`, `_blank`); // open in new tab
-          } else {
-            navigate(`${nameToSlug(round.title)}`, {
-              replace: false,
-              state: { round },
-            });
+            openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
+            return;
           }
+          navigate(`${nameToSlug(round.title)}`, {
+            replace: false,
+            state: { round },
+          });
         }}
       >
         <Card

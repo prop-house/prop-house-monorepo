@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import CommunityProfImg from '../CommunityProfImg';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const HomeProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -35,10 +36,11 @@ const HomeProposalCard: React.FC<{
       <div
         onClick={e => {
           if (cmdPlusClicked(e)) {
-            window.open(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`, `_blank`); // open in new tab
-          } else {
-            navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            openInNewTab(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            return;
           }
+
+          navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
         }}
       >
         <Card
