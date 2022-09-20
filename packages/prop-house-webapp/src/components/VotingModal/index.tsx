@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import classes from './VotingModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import dayjs from 'dayjs';
+import { PropForDisplay } from '../FullAuction';
 
 const VotingModal: React.FC<{
   showNewModal: boolean;
-  setShowNewModal: any;
+  setShowNewModal: Dispatch<SetStateAction<boolean>>;
   secondBtn?: boolean;
-  propsWithVotes: any[];
+  propsWithVotes: PropForDisplay[];
   votesLeft: number | undefined;
-  votingEndTime: any;
-  submitVote: any;
+  votingEndTime: Date;
+  submitVote: () => Promise<void>;
 }> = props => {
   const {
     showNewModal,
@@ -33,7 +33,7 @@ const VotingModal: React.FC<{
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          Cast {propsWithVotes.reduce((total, prop) => (total = total + prop.votes), 0)} votes?
+          Cast {propsWithVotes.reduce((total, prop) => (total = total + prop.numVotes), 0)} votes?
         </p>
         <p className={classes.modalSubtitle}>
           You'll have {votesLeft} remaining to cast over the next{' '}
@@ -44,9 +44,9 @@ const VotingModal: React.FC<{
       <hr className={classes.divider} />
 
       <div className={classes.props}>
-        {propsWithVotes.map((prop: StoredProposalWithVotes) => (
+        {propsWithVotes.map((prop: PropForDisplay) => (
           <div key={prop.id} className={classes.propCopy}>
-            <p className={classes.voteCount}>{prop.votes}</p>
+            <p className={classes.voteCount}>{prop.numVotes}</p>
             <hr className={classes.line} />
             <p className={classes.propTitle}>{prop.title}</p>
           </div>

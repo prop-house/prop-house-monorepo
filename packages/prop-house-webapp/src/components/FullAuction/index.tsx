@@ -1,9 +1,5 @@
 import ProposalCards from '../ProposalCards';
-import {
-  StoredAuction,
-  StoredProposalWithVotes,
-  Vote,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
@@ -22,6 +18,12 @@ import { findProposalById } from '../../utils/findProposalById';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
 
+export interface PropForDisplay {
+  id: number;
+  title: string;
+  numVotes: number;
+}
+
 const FullAuction: React.FC<{
   auction: StoredAuction;
 }> = props => {
@@ -31,7 +33,7 @@ const FullAuction: React.FC<{
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
 
   const [showVotingModal, setShowVotingModal] = useState(false);
-  const [propsWithVotes, setPropsWithVotes] = useState<StoredProposalWithVotes[] | any>([]);
+  const [propsWithVotes, setPropsWithVotes] = useState<PropForDisplay[]>([]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState({
@@ -135,22 +137,22 @@ const FullAuction: React.FC<{
       proposals &&
       voteAllotments.sort((a, b) => a.proposalId - b.proposalId).filter(a => a.votes > 0);
 
-    let propsWithVotes: any[] = [];
-
+    const propsWithVotes: PropForDisplay[] = [];
     proposals &&
       votesForProps &&
-      votesForProps.map(p =>
-        propsWithVotes.push({
+      votesForProps.map(p => {
+        const title = findProposalById(p.proposalId, proposals)?.title;
+        return propsWithVotes.push({
           id: p.proposalId,
-          title: findProposalById(p.proposalId, proposals)?.title,
-          votes: p.votes,
-        }),
-      );
+          title: title ? title : 'Error parsing title',
+          numVotes: p.votes,
+        });
+      });
 
     setShowVotingModal(true);
 
     try {
-      setPropsWithVotes(propsWithVotes.sort((a, b) => b.votes - a.votes));
+      setPropsWithVotes(propsWithVotes.sort((a, b) => b.numVotes - a.numVotes));
     } catch (e) {
       console.log('e', e);
       setErrorModalMessage({
