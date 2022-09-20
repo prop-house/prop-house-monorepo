@@ -6,35 +6,23 @@ import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 const SortToggles: React.FC<{
   auction: StoredAuction;
-  datesSorted: boolean;
-  setDatesSorted: any;
-  dateAscending: boolean;
-  setDateAscending: any;
-  votesSorted: boolean;
-  setVotesSorted: any;
-  votesAscending: boolean;
-  setVotesAscending: any;
 }> = props => {
   const { t } = useTranslation();
-  const {
-    auction,
-    datesSorted,
-    setDatesSorted,
-    dateAscending,
-    setDateAscending,
-    votesSorted,
-    setVotesSorted,
-    votesAscending,
-    setVotesAscending,
-  } = props;
+  const { auction } = props;
 
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const auctionNotStarted = auction && auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const allowSortByVotes = auctionVoting || auctionEnded;
+
+  const [datesSorted, setDatesSorted] = useState(false);
+  const [dateAscending, setDateAscending] = useState(false);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
+  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
 
   const dispatch = useDispatch();
 

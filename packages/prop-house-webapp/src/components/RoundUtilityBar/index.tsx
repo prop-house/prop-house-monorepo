@@ -27,11 +27,6 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
   const allowSortByVotes = auctionVoting || auctionEnded;
 
-  const [datesSorted, setDatesSorted] = useState(false);
-  const [dateAscending, setDateAscending] = useState(false);
-  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
-  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
-
   const [sortSelection, setSortSelection] = useState<number>(
     auctionEnded ? SortMethod.MostVotes : SortMethod.SortBy,
   );
@@ -42,17 +37,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
       <div className={classes.utilitySection}>
         {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
           <div className={classes.sortToggles}>
-            <SortToggles
-              auction={auction}
-              datesSorted={datesSorted}
-              setDatesSorted={setDatesSorted}
-              dateAscending={dateAscending}
-              setDateAscending={setDateAscending}
-              votesSorted={votesSorted}
-              setVotesSorted={setVotesSorted}
-              votesAscending={votesAscending}
-              setVotesAscending={setVotesAscending}
-            />
+            <SortToggles auction={auction} />
           </div>
         )}
 
