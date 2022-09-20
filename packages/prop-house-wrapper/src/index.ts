@@ -45,9 +45,16 @@ export class PropHouseWrapper {
     }
   }
 
-  async getAllProposals() {
+  async getProposals(limit = 20, skip = 0, order: 'ASC' | 'DESC' = 'DESC') {
     try {
-      return (await axios.get(`${this.host}/proposals`)).data;
+      const { data } = await axios.get(`${this.host}/proposals`, {
+        params: {
+          limit,
+          skip,
+          order,
+        },
+      });
+      return data;
     } catch (e: any) {
       throw e.response.data.message;
     }
