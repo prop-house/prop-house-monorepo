@@ -80,7 +80,9 @@ const Round = () => {
   return (
     <>
       <Container>
-        <RoundHeader auction={activeAuction} community={community} />
+        {community && activeAuction && (
+          <RoundHeader auction={activeAuction} community={community} />
+        )}
       </Container>
 
       {activeAuction && (

@@ -19,8 +19,8 @@ interface OpenInNewTabProps {
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
 
 const RoundHeader: React.FC<{
-  community?: Community;
-  auction?: StoredAuction;
+  community: Community;
+  auction: StoredAuction;
 }> = props => {
   const { community, auction } = props;
   const navigate = useNavigate();
