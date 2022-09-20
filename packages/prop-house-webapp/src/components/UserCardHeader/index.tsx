@@ -1,15 +1,16 @@
 import classes from './UserCardHeader.module.css';
 import isWinner from '../../utils/isWinner';
 import { AuctionStatus } from '../../utils/auctionStatus';
-
 import Button, { ButtonColor } from '../Button';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { Dispatch, SetStateAction } from 'react';
 
 const UserCardHeader: React.FC<{
   status: AuctionStatus;
   amountOfPropsWon: number;
-  userProps: any;
+  userProps: StoredProposalWithVotes[];
   cardIndex: number;
-  setCardIndex: any;
+  setCardIndex: Dispatch<SetStateAction<number>>;
   winningIds?: number[];
 }> = props => {
   const { status, amountOfPropsWon, userProps, winningIds, cardIndex, setCardIndex } = props;
