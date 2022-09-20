@@ -9,6 +9,7 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import LoadingIndicator from '../LoadingIndicator';
 import { useTranslation } from 'react-i18next';
 import HomeProposalCard from '../HomeProposalCard';
+import ProposalCard from '../ProposalCard';
 
 const PropCarousel = () => {
   const { library } = useEthers();
@@ -34,14 +35,19 @@ const PropCarousel = () => {
     fetchAuctionProposals();
   }, [dispatch]);
 
-  const propCards = proposals?.map((_, index) => {
-    return (
-      <div className={classes.propCardContainer} key={index}>
-        <ProposalCard proposal={proposals[index]} />
-      </div>
-    );
-  });
-  
+  const propCards =
+    proposals &&
+    proposals
+      .sort((a, b) => (a.createdDate > b.createdDate ? -1 : 1))
+      .slice(0, 20)
+      .map((_, index) => {
+        return (
+          <div className={classes.propCardContainer} key={index}>
+            <HomeProposalCard fromHome proposal={proposals[index]} />
+          </div>
+        );
+      });
+
   return isLoading ? (
     <LoadingIndicator />
   ) : (

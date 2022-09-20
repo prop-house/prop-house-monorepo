@@ -40,7 +40,7 @@ const Home = () => {
     const getCommunitiesAndProposals = async () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
-      const proposals = await client.current.getAllProposals();
+      const proposals = await client.current.getProposals();
       setCommunities(communities);
 
       communities &&
