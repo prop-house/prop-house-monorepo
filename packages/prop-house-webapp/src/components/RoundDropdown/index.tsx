@@ -2,6 +2,7 @@ import { Dropdown } from 'react-bootstrap';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import classes from './RoundDropdown.module.css';
 import { useDispatch } from 'react-redux';
+import { Dispatch, SetStateAction } from 'react';
 
 interface SortOptionProps {
   id: SortMethod;
@@ -35,7 +36,7 @@ const sortOptions: SortOptionProps[] = [
 
 interface RoundDropDownProps {
   sortSelection: number;
-  setSortSelection: any;
+  setSortSelection: Dispatch<SetStateAction<SortMethod>>;
   allowSortByVotes: boolean;
 }
 
