@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 
 const UserCardFooter: React.FC<{
   status: AuctionStatus;
   amountOfPropsWon: number;
-  userProps: any;
+  userProps: StoredProposalWithVotes[];
   winningIds?: number[];
   cardIndex: number;
 }> = props => {
