@@ -10,7 +10,7 @@ import { setActiveCommunity, setActiveProposals } from '../../../state/slices/pr
 
 import { slugToName } from '../../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
-import HouseCard from '../../HouseCard';
+import RoundCard from '../../RoundCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
@@ -140,7 +140,7 @@ const House = () => {
                   rounds && rounds.length > 0 ? (
                     sortRoundByStatus(rounds).map((round, index) => (
                       <Col key={index} xl={6}>
-                        <HouseCard round={round} />
+                        <RoundCard round={round} />
                       </Col>
                     ))
                   ) : input === '' ? (

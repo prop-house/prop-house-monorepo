@@ -1,4 +1,4 @@
-.houseCard {
+.roundCard {
   /* min-height: 12.5rem; */
   display: flex;
   flex-direction: column;
@@ -11,13 +11,13 @@
   filter: drop-shadow(var(--shadow-low));
 }
 
-.houseCard:hover {
+.roundCard:hover {
   border: 1px solid var(--border-med);
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   filter: drop-shadow(var(--shadow-high));
 }
-.houseCard:active {
+.roundCard:active {
   border: 1px solid var(--border-med);
   filter: drop-shadow(var(--shadow-none));
 }

@@ -1,4 +1,4 @@
-import classes from './HouseCard.module.css';
+import classes from './RoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
@@ -17,7 +17,7 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
-const HouseCard: React.FC<{
+const RoundCard: React.FC<{
   round: StoredAuction;
 }> = props => {
   const { round } = props;
@@ -43,7 +43,7 @@ const HouseCard: React.FC<{
           borderRadius={CardBorderRadius.twenty}
           classNames={clsx(
             auctionStatus(round) === AuctionStatus.AuctionEnded && classes.roundEnded,
-            classes.houseCard,
+            classes.roundCard,
           )}
         >
           <div className={classes.textContainer}>
@@ -101,4 +101,4 @@ const HouseCard: React.FC<{
   );
 };
 
-export default HouseCard;
+export default RoundCard;
