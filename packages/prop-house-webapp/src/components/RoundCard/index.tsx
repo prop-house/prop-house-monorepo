@@ -73,10 +73,7 @@ const RoundCard: React.FC<{
               <Tooltip
                 content={
                   <>
-                    <p className={classes.title}>
-                      {DeadlineCopy(round)}
-                      {'  '} <sup className="infoSymbol">ⓘ</sup>
-                    </p>
+                    <p className={classes.title}>{DeadlineCopy(round)}</p>
                     <p className={classes.info}>
                       {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>

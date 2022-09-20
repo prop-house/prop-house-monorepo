@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import Tooltip from '../Tooltip';
+import { MdInfoOutline } from 'react-icons/md';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuction;
@@ -75,7 +76,10 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {DeadlineCopy(auction)} <sup className="infoSymbol">ⓘ</sup>
+                        {DeadlineCopy(auction)}{' '}
+                        <sup className="infoSymbol">
+                          <MdInfoOutline />
+                        </sup>
                       </div>
 
                       <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>

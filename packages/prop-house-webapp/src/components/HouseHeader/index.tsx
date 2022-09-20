@@ -60,7 +60,6 @@ const HouseHeader: React.FC<{
                       ? community.contractAddress
                       : '0x0000000000000000000000000000000000000000',
                   )}{' '}
-                  <sup className="infoSymbol">ⓘ</sup>
                 </div>
               }
               tooltipContent={addressTooltipCopy}
