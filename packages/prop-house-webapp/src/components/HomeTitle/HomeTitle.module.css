@@ -1,0 +1,40 @@
+.title {
+  text-align: center;
+}
+.title h1 {
+  font-size: 50px;
+}
+
+.fundedText {
+  display: flex;
+  margin-bottom: 0px;
+  justify-content: center;
+}
+.build {
+  display: flex;
+  justify-content: center;
+}
+.build span {
+  z-index: 1;
+  position: absolute;
+}
+.build img {
+  width: 140px !important;
+}
+
+@media (max-width: 767px) {
+  .title h1 {
+    font-size: 45px !important;
+  }
+  .build img {
+    width: 120px !important;
+  }
+}
+@media (max-width: 500px) {
+  .title h1 {
+    font-size: 24px !important;
+  }
+  .build img {
+    width: 70px !important;
+  }
+}

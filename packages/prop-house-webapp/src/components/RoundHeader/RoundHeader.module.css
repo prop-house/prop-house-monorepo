@@ -1,0 +1,126 @@
+.profilePicCol img {
+  height: 15rem;
+  width: auto;
+  border-radius: 30px !important;
+}
+.communityInfoCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.communityInfoCol > * {
+  margin: 0.75rem 0;
+}
+.date {
+  margin: 0;
+  color: var(--brand-pink) !important;
+  font-weight: bold;
+}
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+}
+.titleRow .title {
+  font-size: xx-large;
+  font-weight: 700;
+}
+.titleRow .contractAddressPill {
+  background-color: rgba(128, 128, 128, 0.1);
+  font-weight: 400;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 1rem;
+  letter-spacing: 0.2px;
+}
+
+.communityDescriptionRow p {
+  font-size: large;
+  color: var(--brand-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+.communityDescriptionRow a {
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.communityDescriptionRow a:hover {
+  text-decoration: underline !important;
+  transition: all 0.15s ease-in-out;
+}
+
+@media (max-width: 992px) {
+  .titleRow {
+    align-items: flex-start;
+  }
+  .profileHeaderRow {
+    margin-bottom: 0rem;
+  }
+  .profilePicCol {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  .communityDescriptionRow p {
+    -webkit-line-clamp: 10;
+    line-clamp: 10;
+  }
+
+  .phLink {
+    margin-top: 1rem;
+  }
+  .longName {
+    flex-direction: column;
+  }
+  .longName .contractAddressPill {
+    margin-left: 0 !important;
+  }
+}
+
+.backToAuction {
+  color: rgba(20, 22, 27, 0.6);
+  cursor: pointer;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  padding-bottom: 20px;
+}
+
+.backToAuction:hover {
+  color: var(--brand-black);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+@media (max-width: 576px) {
+  .backToAuction {
+    padding-bottom: 25px;
+  }
+}
+
+@media (max-width: 575px) {
+  .stickyContainer {
+    padding: 12px 0px 8px 0px;
+  }
+}
+
+.stickyContainer {
+  background: white;
+  top: 0;
+  position: sticky !important;
+  z-index: 1;
+  padding-top: 12px;
+  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.05) !important;
+}

@@ -1,9 +1,8 @@
 .langBtn {
-  padding-top: 0.5rem;
-  margin: 0 0 0 1rem !important;
+  padding-top: 0.4rem;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .langBtn {
     margin: 0 !important;
     padding: 0.5rem 0rem;
@@ -17,13 +16,13 @@
   border-radius: 10px !important;
   padding: 0.575rem 0.75rem 0.525rem;
   white-space: normal;
-  text-align: center;
-  font-size: 16px !important;
-  font-weight: bold !important;
   line-height: 140% !important;
   background-color: white;
   color: black;
   border-color: rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+  font-size: 16px !important;
+  line-height: 23px;
 }
 
 .langBtn button .show > .btn-primary.dropdown-toggle {
@@ -53,7 +52,8 @@
 .langBtn button:focus-visible {
   outline: none;
 }
-.dropdown-item:active {
+.lang .dropdown-item:active,
+.lang .dropdown-item:focus {
   color: gray !important;
-  background-color: var(--brand-gray-semi-transparent);
+  background-color: var(--brand-gray-semi-transparent) !important;
 }

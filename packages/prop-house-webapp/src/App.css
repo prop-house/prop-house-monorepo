@@ -1,37 +1,33 @@
 @font-face {
-	font-family: 'PT Root UI';
-	src:
-		url('./assets/fonts/PT-Root-UI_Bold.woff2') format('woff2'),
-		url('./assets/fonts/PT-Root-UI_Bold.woff') format('woff');
-	font-weight: bold;
-	font-style: normal;
+  font-family: 'PT Root UI';
+  src: url('./assets/fonts/PT-Root-UI_Bold.woff2') format('woff2'),
+    url('./assets/fonts/PT-Root-UI_Bold.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'PT Root UI';
-	src:
-		url('./assets/fonts/PT-Root-UI_Medium.woff2') format('woff2'),
-		url('./assets/fonts/PT-Root-UI_Medium.woff') format('woff');
-	font-weight: medium;
-	font-style: normal;
+  font-family: 'PT Root UI';
+  src: url('./assets/fonts/PT-Root-UI_Medium.woff2') format('woff2'),
+    url('./assets/fonts/PT-Root-UI_Medium.woff') format('woff');
+  font-weight: medium;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'PT Root UI';
-	src:
-		url('./assets/fonts/PT-Root-UI_Regular.woff2') format('woff2'),
-		url('./assets/fonts/PT-Root-UI_Regular.woff') format('woff');
-	font-weight: normal;
-	font-style: normal;
+  font-family: 'PT Root UI';
+  src: url('./assets/fonts/PT-Root-UI_Regular.woff2') format('woff2'),
+    url('./assets/fonts/PT-Root-UI_Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-	font-family: 'PT Root UI';
-	src:
-		url('./assets/fonts/PT-Root-UI_Light.woff2') format('woff2'),
-		url('./assets/fonts/PT-Root-UI_Light.woff') format('woff');
-	font-weight: 300;
-	font-style: normal;
+  font-family: 'PT Root UI';
+  src: url('./assets/fonts/PT-Root-UI_Light.woff2') format('woff2'),
+    url('./assets/fonts/PT-Root-UI_Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
@@ -79,11 +75,25 @@
   }
 }
 
-html, body {
-  background-color: #fcfcfc;
+html,
+body {
   letter-spacing: -0.2px;
+  background-color: #ffffff;
+}
+.bgGray {
+  background-color: #f5f5f5;
+}
+.bgWhite {
+  background-color: #ffffff;
+}
+.bgNoggles {
+  background-image: url('../src/assets/noggle-pattern.png');
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   font-weight: bold;
 }

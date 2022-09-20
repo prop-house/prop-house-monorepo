@@ -1,0 +1,157 @@
+.imageLinkInfo {
+  padding-bottom: 20px;
+}
+
+.modal {
+  font-family: 'PT Root UI', sans-serif;
+  font-weight: bold;
+  position: fixed;
+  top: 30vh;
+  left: 10%;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+
+  /* 
+   */
+  background: #ffffff;
+
+  border: var(--border-light);
+  box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.08), 0px 6px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 18px;
+  /* 
+    */
+
+  left: calc(50% - 17.5rem);
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  max-width: 420px;
+  min-height: 200px;
+}
+
+.titleContainer p {
+  margin-bottom: 0;
+}
+.modalTitle {
+  font-weight: 700;
+  font-size: 22px;
+}
+.modalSubtitle {
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.props {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  padding: 0px 15px;
+}
+.propCopy {
+  /* padding: 1rem; */
+  /* max-height: 50vh; */
+  overflow-y: auto;
+  color: var(--brand-gray);
+  /* white-space: pre-line; */
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.voteCount {
+  color: var(--brand-purple);
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0;
+  min-width: 16px;
+}
+
+.line {
+  color: var(--brand-gray-semi-transparent);
+  border-radius: 50px;
+  min-width: 18px !important;
+  height: 2px !important;
+  margin: 0;
+  /* margin-top: 10px; */
+}
+.propTitle {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 0;
+  color: var(--brand-black);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.modal button {
+  width: 100%;
+  border-radius: 50px;
+  margin-top: 18px;
+}
+.buttonContainer {
+  display: flex;
+  gap: 8px;
+}
+
+/* .modal button:hover {
+  color: black;
+  background-color: rgba(255, 255, 255, 1);
+} */
+
+.modal:focus-within {
+  outline: none !important;
+}
+.modal h3 {
+  font-size: xx-large;
+  font-weight: bold;
+}
+.modal .closeButton {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  border: 0 none;
+  background-color: transparent;
+  width: 40px;
+  height: 40px;
+  padding-top: 2px;
+}
+
+.modal .closeButton img {
+  height: 1rem;
+  width: 1rem;
+  opacity: 0.5;
+  transition: all 0.125s ease-in-out;
+  margin-top: -4px;
+}
+
+.modal .closeButton img:hover {
+  opacity: 1;
+}
+
+.modal button img {
+  margin-top: -2px;
+  width: 1.5rem;
+  height: auto;
+}
+
+@media (max-width: 992px) {
+  .modal {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 100%;
+  }
+}
+
+@media (max-width: 450px) {
+  .modal {
+    width: 90%;
+    min-width: 300px;
+  }
+}
