@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import classes from './SuccessModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
@@ -6,7 +6,7 @@ import Button, { ButtonColor } from '../Button';
 
 const SuccessModal: React.FC<{
   showSuccessModal: boolean;
-  setShowSuccessModal: any;
+  setShowSuccessModal: Dispatch<SetStateAction<boolean>>;
   numOfProps: number;
 }> = props => {
   const { showSuccessModal, setShowSuccessModal, numOfProps } = props;
@@ -14,7 +14,7 @@ const SuccessModal: React.FC<{
   return (
     <Modal
       isOpen={showSuccessModal}
-      onRequestClose={setShowSuccessModal(false)}
+      onRequestClose={() => setShowSuccessModal(false)}
       className={clsx(classes.modal)}
     >
       <div className={classes.container}>
