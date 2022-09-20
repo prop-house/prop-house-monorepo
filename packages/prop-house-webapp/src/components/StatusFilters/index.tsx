@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Fragment } from 'react';
+import { Dispatch, Fragment, SetStateAction } from 'react';
 import { Dropdown } from 'react-bootstrap';
 
 import classes from './StatusFilters.module.css';
@@ -44,14 +44,13 @@ const statuses: Status[] = [
 const StatusFilters: React.FC<{
   numberOfRoundsPerStatus: number[];
   currentRoundStatus: number;
-  setCurrentRoundStatus: any;
+  setCurrentRoundStatus: Dispatch<SetStateAction<RoundStatus>>;
   setInput: (value: string) => void;
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
 
   const handleClick = (status: number) => {
     setInput('');
-
     setCurrentRoundStatus(status);
   };
 
