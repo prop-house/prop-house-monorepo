@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import classes from './ErrorModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
@@ -6,7 +6,7 @@ import Button, { ButtonColor } from '../Button';
 
 const ErrorModal: React.FC<{
   showErrorModal: boolean;
-  setShowErrorModal: any;
+  setShowErrorModal: Dispatch<SetStateAction<boolean>>;
   title: string;
   message: string;
   image: string;
