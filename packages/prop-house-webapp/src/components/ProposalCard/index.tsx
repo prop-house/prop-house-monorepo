@@ -11,10 +11,10 @@ import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useEthers } from '@usedapp/core';
 import { openInNewTab } from '../../utils/openInNewTab';
+import VotesDisplay from '../VotesDisplay';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -101,12 +101,7 @@ const ProposalCard: React.FC<{
               )}
             >
               <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {roundIsVotingOrOver() && (
-                  <div className={classes.scoreAndIcon}>
-                    <VoteIcon /> {Number(proposal.score).toFixed()}
-                  </div>
-                )}
-
+                {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
                 {cardStatus === ProposalCardStatus.Voting && (
                   <div className={classes.votingArrows}>
                     <span className={classes.plusArrow}>+</span>
