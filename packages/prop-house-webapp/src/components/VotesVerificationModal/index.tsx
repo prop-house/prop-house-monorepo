@@ -41,7 +41,7 @@ const VotesVerificationModal: React.FC<{
                 <div className={classes.voteRowTitle}>
                   {`${vote.weight}  ${vote.weight === 1 ? 'vote' : 'votes'} ${'by'}`}
                   <EthAddress
-                    address={proposal.address}
+                    address={vote.address}
                     hideDavatar={true}
                     className={classes.vRowFontSize}
                   />
