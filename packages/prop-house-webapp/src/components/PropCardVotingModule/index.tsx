@@ -1,4 +1,4 @@
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import classes from './PropCardVotingModule.module.css';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
@@ -26,6 +26,8 @@ const PropCardVotingModule: React.FC<{
 
   const [voteCount, setVoteCount] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
+  const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
+  const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
 
   const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
 
@@ -49,7 +51,14 @@ const PropCardVotingModule: React.FC<{
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (inputVotes > votingPower - submittedVotes) return;
+    if (inputVotes > votingPower - submittedVotes) {
+      setAttemptedInputVotes(inputVotes);
+      setDisplayWarningTooltip(true);
+      setTimeout(() => {
+        setDisplayWarningTooltip(false);
+      }, 1500);
+      return;
+    }
 
     // reset prev allotment (reduce to 0)
     dispatch(
@@ -78,13 +87,25 @@ const PropCardVotingModule: React.FC<{
     <Row>
       <Col xs={12} className={classes.bottomContainer} onClick={(e: any) => e.stopPropagation()}>
         <div className={clsx(isAllotting() && classes.activelyAllotting)}>
-          <input
-            type="text"
-            value={voteCount}
-            className={classes.votesAllottedInput}
-            onChange={e => handleInputChange(e)}
-            onFocus={() => setInputIsInFocus(true)}
-          />
+          <OverlayTrigger
+            show={displayWarningTooltip}
+            placement="top"
+            overlay={
+              <Tooltip className={classes.tooltip}>
+                <span
+                  className={classes.tooltipTitle}
+                >{`You don't have ${attemptedInputVotes} votes available`}</span>
+              </Tooltip>
+            }
+          >
+            <input
+              type="text"
+              value={displayWarningTooltip ? attemptedInputVotes : voteCount}
+              className={classes.votesAllottedInput}
+              onChange={e => handleInputChange(e)}
+              onFocus={() => setInputIsInFocus(true)}
+            />
+          </OverlayTrigger>
         </div>
 
         <div className={classes.voteBtns}>
