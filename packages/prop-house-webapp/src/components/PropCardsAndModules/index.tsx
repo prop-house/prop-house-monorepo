@@ -10,7 +10,6 @@ import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardStatus } from '../../utils/cardStatus';
 import { useEthers } from '@usedapp/core';
-import { VoteAllotment } from '../../utils/voteAllotment';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
@@ -23,32 +22,17 @@ import AcceptingPropsModule from '../AcceptingPropsModule';
 import VotingModule from '../VotingModule';
 import RoundOverModule from '../RoundOverModule';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import RoundMessage from '../RoundMessage';
 import { isSameAddress } from '../../utils/isSameAddress';
+import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 
 const PropCardsAndModules: React.FC<{
   auction: StoredAuction;
   community: CommunityWithAuctions;
-  voteAllotments: VoteAllotment[];
-  canAllotVotes: boolean;
-  numAllottedVotes?: number;
-  submittedVotesCount?: number;
-  handleVote?: () => void;
-  handleVoteAllotment: (proposalId: number, support: boolean) => void;
-  votesLeft?: number;
+  setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const {
-    auction,
-    community,
-    voteAllotments,
-    canAllotVotes,
-    numAllottedVotes,
-    submittedVotesCount,
-    handleVote,
-    handleVoteAllotment,
-    votesLeft,
-  } = props;
+  const { auction, community, setShowVotingModal } = props;
 
   const { account } = useEthers();
   const connect = useWeb3Modal();
@@ -56,7 +40,10 @@ const PropCardsAndModules: React.FC<{
   const { t } = useTranslation();
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
 
@@ -72,6 +59,7 @@ const PropCardsAndModules: React.FC<{
   useEffect(() => {
     if (!account || !proposals) return;
 
+    // set user props
     if (proposals.some(p => isSameAddress(p.address, account))) {
       return setUserProposals(
         proposals
@@ -96,10 +84,7 @@ const PropCardsAndModules: React.FC<{
                   <ProposalCard
                     proposal={proposal}
                     auctionStatus={auctionStatus(auction)}
-                    cardStatus={cardStatus(delegatedVotes ? delegatedVotes > 0 : false, auction)}
-                    canAllotVotes={canAllotVotes}
-                    voteAllotments={voteAllotments}
-                    handleVoteAllotment={handleVoteAllotment}
+                    cardStatus={cardStatus(votingPower > 0, auction)}
                     winner={winningIds && isWinner(winningIds, proposal.id)}
                   />
                 </Col>
@@ -133,14 +118,7 @@ const PropCardsAndModules: React.FC<{
 
             {/* VOTING WINDOW */}
             {isVotingWindow && (
-              <VotingModule
-                delegatedVotes={delegatedVotes}
-                communityName={community.name}
-                totalVotes={getVoteTotal()}
-                votesLeft={votesLeft}
-                submittedVotesCount={submittedVotesCount}
-                numAllottedVotes={numAllottedVotes}
-              />
+              <VotingModule communityName={community.name} totalVotes={getVoteTotal()} />
             )}
 
             {/* ROUND ENDED */}
@@ -172,12 +150,14 @@ const PropCardsAndModules: React.FC<{
             )}
 
             {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-            {isVotingWindow && account && delegatedVotes ? (
+            {isVotingWindow && account && votingPower ? (
               <Button
                 text={'Submit votes'}
                 bgColor={ButtonColor.Purple}
-                onClick={handleVote}
-                disabled={numAllottedVotes === 0 || submittedVotesCount === delegatedVotes}
+                onClick={() => setShowVotingModal(true)}
+                disabled={
+                  voteWeightForAllottedVotes(voteAllotments) === 0 || submittedVotes === votingPower
+                }
               />
             ) : (
               //  VOTING PERIOD, CONNECTED, HAS NO VOTES

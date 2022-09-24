@@ -1,29 +1,26 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import classes from './VotingModal.module.css';
+import classes from './VoteConfirmationModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import dayjs from 'dayjs';
-import { PropForDisplay } from '../FullRound';
+import { useAppSelector } from '../../hooks';
+import { votesRemaining } from '../../utils/votesRemaining';
+import { VoteAllotment } from '../../types/VoteAllotment';
 
-const VotingModal: React.FC<{
+const VoteConfirmationModal: React.FC<{
   showNewModal: boolean;
   setShowNewModal: Dispatch<SetStateAction<boolean>>;
   secondBtn?: boolean;
-  propsWithVotes: PropForDisplay[];
-  votesLeft: number | undefined;
   votingEndTime: Date;
   submitVote: () => Promise<void>;
 }> = props => {
-  const {
-    showNewModal,
-    setShowNewModal,
-    propsWithVotes,
-    votesLeft,
-    votingEndTime,
-    submitVote,
-    secondBtn,
-  } = props;
+  const { showNewModal, setShowNewModal, votingEndTime, submitVote, secondBtn } = props;
+
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
+  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const votesLeft = votesRemaining(votingPower, submittedVotes, voteAllotments);
 
   function closeModal() {
     setShowNewModal(false);
@@ -33,7 +30,7 @@ const VotingModal: React.FC<{
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          Cast {propsWithVotes.reduce((total, prop) => (total = total + prop.numVotes), 0)} votes?
+          Cast {voteAllotments.reduce((total, prop) => (total = total + prop.votes), 0)} votes?
         </p>
         <p className={classes.modalSubtitle}>
           You'll have {votesLeft} remaining to cast over the next{' '}
@@ -44,11 +41,11 @@ const VotingModal: React.FC<{
       <hr className={classes.divider} />
 
       <div className={classes.props}>
-        {propsWithVotes.map((prop: PropForDisplay) => (
-          <div key={prop.id} className={classes.propCopy}>
-            <p className={classes.voteCount}>{prop.numVotes}</p>
+        {voteAllotments.map((prop: VoteAllotment) => (
+          <div key={prop.proposalId} className={classes.propCopy}>
+            <p className={classes.voteCount}>{prop.votes}</p>
             <hr className={classes.line} />
-            <p className={classes.propTitle}>{prop.title}</p>
+            <p className={classes.propTitle}>{prop.proposalTitle}</p>
           </div>
         ))}
       </div>
@@ -72,4 +69,4 @@ const VotingModal: React.FC<{
   );
 };
 
-export default VotingModal;
+export default VoteConfirmationModal;

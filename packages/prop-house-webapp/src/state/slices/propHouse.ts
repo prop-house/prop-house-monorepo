@@ -10,7 +10,6 @@ export interface PropHouseSlice {
   activeRound?: StoredAuction;
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
-  delegatedVotes?: number;
   activeCommunity?: CommunityWithAuctions;
 }
 
@@ -35,9 +34,6 @@ export const propHouseSlice = createSlice({
     appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
-    setDelegatedVotes: (state, action: PayloadAction<number | undefined>) => {
-      state.delegatedVotes = action.payload;
-    },
     sortProposals: (state, action: PayloadAction<SortProps>) => {
       if (!state.activeProposals) return;
       state.activeProposals = _sortProps(state.activeProposals, action.payload);
@@ -54,7 +50,6 @@ export const {
   setActiveProposal,
   setActiveProposals,
   appendProposal,
-  setDelegatedVotes,
   sortProposals,
   setActiveCommunity,
 } = propHouseSlice.actions;
