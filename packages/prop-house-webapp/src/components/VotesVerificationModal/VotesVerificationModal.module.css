@@ -68,7 +68,7 @@
 }
 .votesRow {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   padding: 0.8rem 0;
   border-bottom: 1px var(--bg-dark) solid;
 }
@@ -84,11 +84,8 @@
   font-size: 16px;
   margin-left: 4px;
 }
-.votesRow .voteMetaBtnContainer {
-  display: flex;
-  justify-content: space-between;
-}
-.voteMetaBtnContainer .voteMetaBtn {
+
+.verifyVoteBtn {
   font-size: 14px;
   font-weight: bold;
   background-color: var(--bg-light);
@@ -98,16 +95,8 @@
   border-radius: 10px;
   width: 32%;
 }
-.voteMetaBtnContainer .voteMetaBtn:hover {
+.verifyVoteBtn:hover {
   opacity: 0.75;
-}
-
-.paragraphContainer p {
-  padding-top: 1rem;
-  padding-bottom: 0;
-  font-size: 14px;
-  color: var(--brand-gray);
-  margin-bottom: 0;
 }
 
 .buttonContainer {
