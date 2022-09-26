@@ -1,5 +1,5 @@
 .footerContainer {
-  margin: 6rem auto 1rem auto;
+  padding: 6rem 0 3rem 0;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -14,4 +14,16 @@
 .footer a {
   color: var(--brand-pink) !important;
   text-decoration: underline;
+}
+
+@media (max-width: 575px) {
+  .footerContainer {
+    padding: 4rem 20px 3rem 20px;
+  }
+}
+
+@media (max-width: 375px) {
+  .footer {
+    font-size: 14px !important;
+  }
 }

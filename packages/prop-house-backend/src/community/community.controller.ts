@@ -21,12 +21,15 @@ export class CommunitiesController {
 
   @Get('communities')
   async getCommunities(): Promise<CommunityOverview[]> {
-    return (await this.communitiesService.findAll())
-      .map(buildExtendedCommunity)
-      .map((ec: ExtendedCommunity) => {
-        delete ec.auctions;
-        return ec;
-      });
+    const communities = await this.communitiesService.findAllExtended();
+
+    // Convert some property values to numbers for backwards compatibility
+    return communities.map(c => {
+      c.numAuctions = Number(c.numAuctions) || 0;
+      c.ethFunded = Number(c.ethFunded) || 0;
+      c.numProposals = Number(c.numProposals) || 0;
+      return c;
+    });
   }
 
   @Get('communities/id/:id')

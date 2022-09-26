@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Raw, Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Community } from './community.entity';
 import * as ethers from 'ethers';
 import { BigNumberish } from '@ethersproject/bignumber';
 import config from 'src/config/configuration';
 import { getNumVotes } from 'prop-house-communities';
+import { ExtendedCommunity } from './community.types';
 
 @Injectable()
 export class CommunitiesService {
@@ -20,6 +21,23 @@ export class CommunitiesService {
         visible: true,
       },
     });
+  }
+
+  findAllExtended(): Promise<ExtendedCommunity[]> {
+    return this.communitiesRepository
+      .createQueryBuilder('c')
+      .select('c.*')
+      .addSelect('SUM(a."numAuctions")', 'numAuctions')
+      .addSelect('SUM(a."ethFunded")', 'ethFunded')
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(
+        this.auctionCountAndFundingSubquery,
+        'a',
+        'a."communityId" = c.id',
+      )
+      .leftJoin(this.proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('c.id')
+      .getRawMany();
   }
 
   findOne(id: number): Promise<Community> {
@@ -61,5 +79,23 @@ export class CommunitiesService {
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
     return getNumVotes(address, community.contractAddress, provider, blockTag);
+  }
+
+  private auctionCountAndFundingSubquery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('a.id', 'id')
+      .addSelect('a.communityId')
+      .addSelect('COUNT(a.id)', 'numAuctions')
+      .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
+      .from('auction', 'a')
+      .groupBy('a.id');
+  }
+
+  private proposalCountSubquery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('p.auctionId', 'auctionId')
+      .addSelect('COUNT(p.id)', 'numProposals')
+      .from('proposal', 'p')
+      .groupBy('p.auctionId');
   }
 }

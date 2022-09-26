@@ -1,6 +1,19 @@
-import { IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsEnum,
+  IsIn,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 import { SignedEntity } from 'src/entities/signed';
-import { SignedDataDto } from 'src/types/signedDataDto';
+
+export enum Order {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
 
 export class CreateProposalDto extends SignedEntity {
   @IsString()
@@ -14,4 +27,23 @@ export class CreateProposalDto extends SignedEntity {
 
   @IsNumber()
   parentAuctionId: number;
+}
+
+export class GetProposalsDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => Number(value))
+  limit?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Transform(({ value }) => Number(value))
+  skip?: number;
+
+  @IsOptional()
+  @Transform(({ value }) => value?.toUpperCase())
+  @IsEnum(Order)
+  order?: Order;
 }

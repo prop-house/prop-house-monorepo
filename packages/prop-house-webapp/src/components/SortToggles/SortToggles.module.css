@@ -1,37 +1,51 @@
 .sortContainer {
   display: flex;
-  align-items: center;
+  gap: 15px;
 }
 
 .sortItem {
   display: flex;
   align-items: center;
   background: white;
-  padding: 4px 6px 4px 10px;
-  border-radius: 50px;
   justify-content: space-between;
   gap: 10px;
-  margin-left: 0.5rem;
-  border: 2px rgba(0, 0, 0, 0.1) solid;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: box-shadow 0.3s;
   color: black;
-  opacity: 0.5;
+  padding: 5px 0px 14px 0px;
+  border-bottom: 2px solid transparent;
 }
 
 .sortItem:hover {
   opacity: 0.75;
-  border: 2px rgba(80, 186, 154, 1) solid;
+}
+.sortLabel {
+  color: var(--brand-gray);
 }
 .sortItem svg {
-  background: rgba(80, 186, 154, 0.2);
-  border-radius: 50px;
-  color: rgba(80, 186, 154, 1);
   padding: 4px;
+  background: rgba(138, 43, 226, 0.08);
+  border-radius: 6px;
+  background: var(--border-light) !important;
+  color: var(--brand-gray);
 }
 .active {
-  opacity: 1;
-  border: 2px rgba(80, 186, 154, 1) solid;
+  border-bottom: 2px solid var(--brand-purple);
+}
+.active .sortLabel {
+  color: var(--brand-purple) !important;
+}
+.active svg {
+  color: var(--brand-purple) !important;
+  background: var(--brand-purple-hint) !important;
+}
+
+.disabled {
+  pointer-events: none;
+}
+.disabled svg {
+  background: var(--border-light);
+  color: #666666;
 }

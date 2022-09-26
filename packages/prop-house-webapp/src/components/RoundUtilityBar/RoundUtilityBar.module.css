@@ -1,0 +1,141 @@
+.roundUtilityBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 45px;
+  position: sticky;
+  top: 0;
+}
+
+@media (min-width: 767px) {
+  .searchBar {
+    padding-bottom: 12px;
+  }
+  .searchBar input {
+    min-width: 312px;
+  }
+}
+@media (min-width: 768px) {
+  .dropdown {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .roundUtilityBar {
+    gap: 16px;
+    justify-content: space-between;
+  }
+  .utilitySection {
+    width: 50%;
+  }
+
+  .searchBar input {
+    min-width: 0px;
+    width: 100%;
+  }
+  .sortToggles {
+    display: none;
+  }
+}
+/* @media (max-width: 766px) {
+} */
+.propHouseDataRow {
+  display: flex;
+  padding-bottom: 12px;
+}
+.propHouseDataRow .item:nth-child(1) {
+  margin-left: 0;
+}
+.propHouseDataRow .item {
+  margin-right: 2rem;
+}
+
+.item {
+  display: flex;
+  font-size: large;
+  flex-direction: column;
+}
+.item:not(:last-child) {
+  border-right: 1px solid var(--border-light);
+  padding-right: 25px;
+}
+
+.itemTitle {
+  color: var(--brand-gray);
+  font-size: 13px;
+  font-weight: 700;
+}
+.purpleText {
+  color: var(--brand-purple);
+}
+.itemData {
+  font-weight: bold;
+  font-size: 18px;
+  margin-right: 0.5rem;
+}
+
+.infoBar {
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  position: sticky !important;
+  position: fixed;
+  border: 1px solid red;
+  top: 0px !important;
+  align-self: flex-start;
+  height: auto;
+}
+@media (max-width: 576px) {
+  .infoBar {
+    flex-direction: column;
+  }
+}
+
+.leftSectionContainer {
+  align-self: flex-end;
+}
+.rightSectionContainer {
+  display: flex;
+  padding-bottom: 10px;
+  gap: 50px;
+}
+
+@media (max-width: 992px) {
+  .propHouseDataRow .item {
+    margin-right: 0.75rem;
+  }
+  .propHouseDataRow {
+    padding-bottom: 0px;
+    padding-bottom: 12px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .proposalCountItem {
+    display: none;
+  }
+  .item:first-child {
+    padding-right: 6px !important;
+  }
+  .item:nth-child(2) {
+    border-right: none !important;
+    padding-right: 0px;
+    margin-right: 0px;
+  }
+  .propHouseDataRow {
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 500px) {
+  .roundUtilityBar {
+    flex-direction: column-reverse;
+    height: auto;
+  }
+  .utilitySection {
+    width: 100%;
+  }
+  .propHouseDataRow {
+    justify-content: inherit;
+  }
+}

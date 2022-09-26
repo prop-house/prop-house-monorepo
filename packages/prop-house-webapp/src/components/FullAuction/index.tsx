@@ -1,58 +1,53 @@
-import classes from './FullAuction.module.css';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import AuctionHeader from '../AuctionHeader';
 import ProposalCards from '../ProposalCards';
-import { Row } from 'react-bootstrap';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { VoteAllotment, updateVoteAllotment } from '../../utils/voteAllotment';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import Modal, { ModalData } from '../Modal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setDelegatedVotes, setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
-import {
-  AuctionEmptyContent,
-  AuctionNotStartedContent,
-  ConnectedCopy,
-  DisconnectedCopy,
-} from './content';
-
 import { getNumVotes } from 'prop-house-communities';
-import SortToggles from '../SortToggles';
-import { useTranslation } from 'react-i18next';
+import RoundMessage from '../RoundMessage';
+import VotingModal from '../VotingModal';
+import { findProposalById } from '../../utils/findProposalById';
+import SuccessModal from '../SuccessModal';
+import ErrorModal from '../ErrorModal';
+
+export interface PropForDisplay {
+  id: number;
+  title: string;
+  numVotes: number;
+}
 
 const FullAuction: React.FC<{
   auction: StoredAuction;
-  isFirstOrLastAuction: () => [boolean, boolean];
-  handleAuctionChange: (next: boolean) => void;
 }> = props => {
-  const { auction, isFirstOrLastAuction, handleAuctionChange } = props;
+  const { auction } = props;
 
   const { account, library } = useEthers();
   const [voteAllotments, setVoteAllotments] = useState<VoteAllotment[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [modalData, setModalData] = useState<ModalData>();
 
-  const connect = useWeb3Modal();
+  const [showVotingModal, setShowVotingModal] = useState(false);
+  const [propsWithVotes, setPropsWithVotes] = useState<PropForDisplay[]>([]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorModalMessage, setErrorModalMessage] = useState({
+    title: '',
+    message: '',
+    image: '',
+  });
+
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const delegatedVotes = useAppSelector(state => state.propHouse.delegatedVotes);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-  const { t } = useTranslation();
-
-  const auctionNotStartedContent = AuctionNotStartedContent();
-  const auctionEmptyContent = AuctionEmptyContent();
-  const disconnectedCopy = DisconnectedCopy(connect);
-  const connectedCopy = ConnectedCopy();
 
   // aggregate vote weight of already stored votes
   const userVotesWeight = () => {
@@ -137,110 +132,117 @@ const FullAuction: React.FC<{
     });
   };
 
-  // handle voting
   const handleVote = async () => {
     if (!delegatedVotes || !community) return;
 
-    const propCopy = voteAllotments
-      .sort((a, b) => a.proposalId - b.proposalId)
-      .filter(a => a.votes > 0)
-      .reduce(
-        (agg, current) =>
-          agg +
-          `\n${current.votes} vote${current.votes > 1 ? 's' : ''} for prop ${current.proposalId}`,
-        '',
-      );
+    const votesForProps =
+      proposals &&
+      voteAllotments.sort((a, b) => a.proposalId - b.proposalId).filter(a => a.votes > 0);
 
-    setShowModal(true);
+    const propsWithVotes: PropForDisplay[] = [];
+    proposals &&
+      votesForProps &&
+      votesForProps.map(p => {
+        const title = findProposalById(p.proposalId, proposals)?.title;
+        return propsWithVotes.push({
+          id: p.proposalId,
+          title: title ? title : 'Error parsing title',
+          numVotes: p.votes,
+        });
+      });
+
+    setShowVotingModal(true);
 
     try {
-      setModalData({
-        title: t('voting'),
-        content: `${t('pleaseSign')}:\n${propCopy}`,
-        onDismiss: () => setShowModal(false),
+      setPropsWithVotes(propsWithVotes.sort((a, b) => b.numVotes - a.numVotes));
+    } catch (e) {
+      console.log('e', e);
+      setErrorModalMessage({
+        title: 'oops, sorry',
+        message: 'We failed to process your votes. Please try again.',
+        image: 'whale.png',
       });
-
+      setShowErrorModal(true);
+    }
+  };
+  const submitVote = async () => {
+    try {
       const votes = voteAllotments
-        .map(a => new Vote(1, a.proposalId, a.votes, community.contractAddress))
+        .map(a => new Vote(1, a.proposalId, a.votes, community!.contractAddress))
         .filter(v => v.weight > 0);
+
       await client.current.logVotes(votes);
 
-      setModalData({
-        title: t('success'),
-        content: `${t('successfullyVoted')}\n${propCopy}`,
-        onDismiss: () => setShowModal(false),
-      });
+      setShowSuccessModal(true);
 
       refreshActiveProposals(client.current, auction.id, dispatch);
       setVoteAllotments([]);
+      setShowVotingModal(false);
     } catch (e) {
-      setModalData({
-        title: t('error'),
-        content: `${t('failedSubmit')}\n\n${t('errorMessage')}: ${e}`,
-        onDismiss: () => setShowModal(false),
+      console.log('e', e);
+
+      setErrorModalMessage({
+        title: 'Failed to submit votes',
+        message: 'Please go back and try again.',
+        image: 'banana.png',
       });
+      setShowErrorModal(true);
     }
   };
 
   return (
     <>
-      {showModal && modalData && <Modal data={modalData} />}
-      {auctionStatus(auction) === AuctionStatus.AuctionVoting &&
-        ((delegatedVotes && delegatedVotes > 0) || account === undefined) && (
-          <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
-            <div>{delegatedVotes && delegatedVotes > 0 ? connectedCopy : disconnectedCopy}</div>
-          </Card>
-        )}
-      {community && (
-        <AuctionHeader
-          auction={auction}
-          clickable={false}
-          classNames={classes.auctionHeader}
-          totalVotes={delegatedVotes}
-          voteBtnEnabled={
-            delegatedVotes && delegatedVotes - userVotesWeight() > 0 && numAllottedVotes > 0
-              ? true
-              : false
-          }
-          votesLeft={delegatedVotes && delegatedVotes - userVotesWeight()}
-          handleVote={handleVote}
-          isFirstOrLastAuction={isFirstOrLastAuction}
-          handleAuctionChange={handleAuctionChange}
+      {showSuccessModal && (
+        <SuccessModal
+          showSuccessModal={showSuccessModal}
+          setShowSuccessModal={setShowSuccessModal}
+          numOfProps={propsWithVotes.length}
         />
       )}
 
-      <Card
-        bgColor={CardBgColor.LightPurple}
-        borderRadius={CardBorderRadius.thirty}
-        classNames={classes.customCardHeader}
-      >
-        <Row>
-          <div className={classes.dividerSection}>
-            <div className={classes.proposalTitle}>{`${
-              proposals
-                ? `${proposals.length} ${proposals.length === 1 ? t('proposal') : t('proposals')}`
-                : ''
-            }`}</div>
+      {showVotingModal && (
+        <VotingModal
+          showNewModal={showVotingModal}
+          setShowNewModal={setShowVotingModal}
+          propsWithVotes={propsWithVotes}
+          votesLeft={
+            delegatedVotes && delegatedVotes - (userVotesWeight() ?? 0) - (numAllottedVotes ?? 0)
+          }
+          votingEndTime={auction.votingEndTime}
+          submitVote={submitVote}
+          secondBtn
+        />
+      )}
 
-            {proposals && proposals.length > 1 && <SortToggles auction={auction} />}
-          </div>
-        </Row>
+      {showErrorModal && (
+        <ErrorModal
+          showErrorModal={showErrorModal}
+          setShowErrorModal={setShowErrorModal}
+          title={errorModalMessage.title}
+          message={errorModalMessage.message}
+          image={errorModalMessage.image}
+        />
+      )}
 
-        {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-          auctionNotStartedContent
-        ) : auction.proposals.length === 0 ? (
-          auctionEmptyContent
-        ) : (
-          <>
+      {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+        <RoundMessage message="Funding round starting soon" date={auction.startTime} />
+      ) : (
+        <>
+          {community && (
             <ProposalCards
               auction={auction}
+              community={community}
               voteAllotments={voteAllotments}
-              canAllotVotes={canAllotVotes}
+              canAllotVotes={canAllotVotes()}
+              numAllottedVotes={numAllottedVotes}
+              submittedVotesCount={userVotesWeight()}
+              handleVote={handleVote}
               handleVoteAllotment={handleVoteAllotment}
+              votesLeft={delegatedVotes && delegatedVotes - numAllottedVotes}
             />
-          </>
-        )}
-      </Card>
+          )}
+        </>
+      )}
     </>
   );
 };

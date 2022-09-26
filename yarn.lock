@@ -1480,10 +1480,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
-"@davatar/react@^1.10.4":
-  version "1.10.4"
-  resolved "https://registry.yarnpkg.com/@davatar/react/-/react-1.10.4.tgz#624e0b28de19444a8cbf0edc5622a0c4031835cd"
-  integrity sha512-q6Ce+bbV2FGzaIj+eXIxaxfupGUr04i+xPAWGSVzPpTVHp4tYQyvvc4w9eX4IMupDNC3N6doYGk2ax7r745xWA==
+"@davatar/react@^1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@davatar/react/-/react-1.11.0.tgz#956f339e426636028344ca0b1c8ae303832fbbca"
+  integrity sha512-qsFZN09nw7HkwtNpdf+P15Dr4NZW/G0eU3p6G/qBTS7KN4fD3AB4eoObBtQ8fzzJagviEP3OmfqGBmvfAVM0yg==
   dependencies:
     "@ethersproject/abstract-signer" "^5"
     "@ethersproject/contracts" "^5"
@@ -6708,6 +6708,11 @@ cosmiconfig@^7.0.0:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.10.0"
+
+countup.js@^2.2.0:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/countup.js/-/countup.js-2.3.2.tgz#9a91d95780be1c908d1e6feb548625f353f57988"
+  integrity sha512-dQ7F/CmKGjaO6cDfhtEXwsKVlXIpJ89dFs8PvkaZH9jBVJ2Z8GU4iwG/qP7MgY8qwr+1skbwR6qecWWQLUzB8Q==
 
 create-ecdh@^4.0.0:
   version "4.0.4"
@@ -14785,6 +14790,13 @@ react-bootstrap@^2.0.2:
     react-transition-group "^4.4.1"
     uncontrollable "^7.2.1"
     warning "^4.0.3"
+
+react-countup@^6.3.1:
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/react-countup/-/react-countup-6.3.1.tgz#ae4e8d33a7ed86c2cfc27e20b1fe76704f61d9fb"
+  integrity sha512-+Bf1caAZHtmVQ5Jmhe2MZuN1cw1CEP5OdeMph9CBwM5K8DEDGmg00AzcN6fO9XolUhqUfiR0pOEiSyngSrHwig==
+  dependencies:
+    countup.js "^2.2.0"
 
 react-dev-utils@^11.0.3:
   version "11.0.4"

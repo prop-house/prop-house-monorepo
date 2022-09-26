@@ -1,0 +1,81 @@
+.bottomContainer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  cursor: default;
+  font-size: 14px;
+}
+.votesCopyContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.yourVotesCopy {
+  font-weight: bold;
+  font-size: small;
+  color: var(--brand-black);
+}
+
+.votesModuleContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  color: var(--brand-gray);
+  outline: 1px solid var(--brand-gray-semi-transparent);
+  border-radius: 6px;
+  height: 24px;
+  width: 24px;
+}
+
+.disabledVote {
+  background: var(--brand-purple-hint);
+  color: var(--brand-purple-semi-transparent);
+}
+
+.votesAllottedDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  color: var(--brand-purple);
+  color: var(--brand-gray);
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+
+.voteBtns {
+  display: flex;
+  gap: 2px;
+  padding-left: 6px;
+}
+
+.voteBtn {
+  margin: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-family: system-ui;
+  padding: 0px 6px 0px 6px;
+  border-radius: 6px !important;
+  height: 24px;
+  width: 24px;
+}
+.voteBtn:focus,
+.voteBtn:focus-visible,
+.voteBtn:active {
+  box-shadow: none !important;
+  outline: none !important;
+}
+.activelyAllotting {
+  outline: 1px solid var(--brand-purple-semi-transparent);
+}
+.activelyAllotting .votesAllottedDisplay {
+  color: var(--brand-purple) !important;
+}
