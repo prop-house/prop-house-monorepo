@@ -1,4 +1,3 @@
-import ProposalCards from '../ProposalCards';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
@@ -17,6 +16,7 @@ import VotingModal from '../VotingModal';
 import { findProposalById } from '../../utils/findProposalById';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
+import PropCardsAndModules from '../PropCardsAndModules';
 
 export interface PropForDisplay {
   id: number;
@@ -24,7 +24,7 @@ export interface PropForDisplay {
   numVotes: number;
 }
 
-const FullAuction: React.FC<{
+const FullRound: React.FC<{
   auction: StoredAuction;
 }> = props => {
   const { auction } = props;
@@ -227,7 +227,7 @@ const FullAuction: React.FC<{
       ) : (
         <>
           {community && (
-            <ProposalCards
+            <PropCardsAndModules
               auction={auction}
               community={community}
               voteAllotments={voteAllotments}
@@ -245,4 +245,4 @@ const FullAuction: React.FC<{
   );
 };
 
-export default FullAuction;
+export default FullRound;

@@ -3,7 +3,7 @@ import {
   StoredAuction,
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
-import classes from './ProposalCards.module.css';
+import classes from './PropCardsAndModules.module.css';
 import { Row, Col } from 'react-bootstrap';
 import ProposalCard from '../ProposalCard';
 import { useAppSelector } from '../../hooks';
@@ -27,7 +27,7 @@ import { useEffect, useState } from 'react';
 import RoundMessage from '../RoundMessage';
 import { isSameAddress } from '../../utils/isSameAddress';
 
-const ProposalCards: React.FC<{
+const PropCardsAndModules: React.FC<{
   auction: StoredAuction;
   community: CommunityWithAuctions;
   voteAllotments: VoteAllotment[];
@@ -189,4 +189,4 @@ const ProposalCards: React.FC<{
     </Row>
   );
 };
-export default ProposalCards;
+export default PropCardsAndModules;
