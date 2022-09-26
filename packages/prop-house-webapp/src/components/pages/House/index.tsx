@@ -67,6 +67,9 @@ const House = () => {
           community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
         ]);
 
+        // sort rounds
+        setRounds(community.auctions.sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1)));
+
         setIsLoading(false);
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp

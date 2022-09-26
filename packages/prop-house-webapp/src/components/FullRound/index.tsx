@@ -167,7 +167,7 @@ const FullRound: React.FC<{
             <Row className={classes.propCardsRow}>
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
-                  (auction.proposals.length === 0 ? (
+                  (proposals.length === 0 ? (
                     <RoundMessage message={t('submittedProps')} />
                   ) : (
                     proposals.map((proposal, index) => {

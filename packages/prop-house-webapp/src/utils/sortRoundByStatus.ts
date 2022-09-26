@@ -1,8 +1,10 @@
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus } from './auctionStatus';
 
-// Sort rounds, or groups of rounds, by their status.
-// Custom order: Proposing, Voting, Not Started, Ended
+/**
+ * Sort rounds, or groups of rounds, by their status.
+ * Custom order: Proposing, Voting, Not Started, Ended
+ */
 export const sortRoundByStatus = (rounds: StoredAuction[]) => [
   ...rounds.filter(round => auctionStatus(round) === 1),
   ...rounds.filter(round => auctionStatus(round) === 2),
