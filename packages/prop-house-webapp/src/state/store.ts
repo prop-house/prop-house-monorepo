@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import propHouseReducer from './slices/propHouse';
 import configurationReducer from './slices/configuration';
+import votingReducer from './slices/voting';
 import editorReducer from './slices/editor';
 
 const store = configureStore({
@@ -9,6 +10,7 @@ const store = configureStore({
     propHouse: propHouseReducer,
     configuration: configurationReducer,
     editor: editorReducer,
+    voting: votingReducer,
   },
 });
 

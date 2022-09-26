@@ -30,7 +30,11 @@ export class CommunitiesService {
       .addSelect('SUM(a."numAuctions")', 'numAuctions')
       .addSelect('SUM(a."ethFunded")', 'ethFunded')
       .addSelect('SUM(p."numProposals")', 'numProposals')
-      .leftJoin(this.auctionCountAndFundingSubquery, 'a', 'a."communityId" = c.id')
+      .leftJoin(
+        this.auctionCountAndFundingSubquery,
+        'a',
+        'a."communityId" = c.id',
+      )
       .leftJoin(this.proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('c.id')
       .getRawMany();
@@ -70,7 +74,7 @@ export class CommunitiesService {
 
   async votesAtBlockTag(
     community: Community,
-    blockTag: string,
+    blockTag: number,
     address: string,
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);

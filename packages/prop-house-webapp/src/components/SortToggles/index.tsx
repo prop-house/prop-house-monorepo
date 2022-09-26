@@ -32,7 +32,7 @@ const SortToggles: React.FC<{
         {allowSortByVotes && (
           <div
             onClick={() => {
-              dispatchSortProposals(dispatch, SortType.Score, votesAscending);
+              dispatchSortProposals(dispatch, SortType.VoteCount, votesAscending);
               setVotesAscending(!votesAscending);
               setDatesSorted(false);
               setVotesSorted(true);

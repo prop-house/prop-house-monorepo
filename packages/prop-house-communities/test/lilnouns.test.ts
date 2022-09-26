@@ -46,7 +46,7 @@ describe('Lil Nouns delegation', () => {
       lilNounsHolder,
       lilNounsTokenAddress,
       provider,
-      '15529004',
+      15529004,
     );
 
     expect(numBalanceOf).to.be.lt(delegatedVotes);

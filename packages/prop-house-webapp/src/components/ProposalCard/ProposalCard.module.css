@@ -80,22 +80,13 @@
   align-self: flex-start;
 }
 
-.date {
-  font-weight: normal !important;
-  font-size: 14px;
-  width: max-content;
-}
-.scoreCopy {
+.voteCountCopy {
   font-size: 16px;
   font-weight: bold !important;
   color: var(--brand-gray);
   display: flex;
 }
-.scoreAndIcon {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+
 .votingArrows {
   display: flex;
   align-items: center;

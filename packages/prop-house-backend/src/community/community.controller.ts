@@ -16,8 +16,8 @@ import { AuctionsService } from 'src/auction/auctions.service';
 export class CommunitiesController {
   constructor(
     private readonly communitiesService: CommunitiesService,
-    private readonly auctionsService: AuctionsService
-    ) { }
+    private readonly auctionsService: AuctionsService,
+  ) {}
 
   @Get('communities')
   async getCommunities(): Promise<CommunityOverview[]> {
@@ -60,28 +60,40 @@ export class CommunitiesController {
 
   @Get('communities/votesAtBlockTag/:communityAddress/:tag/:address')
   async votesAtBlockTag(
-    @Param("communityAddress") communityAddress: string,
-    @Param("tag") tag: string,
-    @Param("address") address: string
+    @Param('communityAddress') communityAddress: string,
+    @Param('tag') tag: number,
+    @Param('address') address: string,
   ): Promise<BigNumberish> {
-    const foundCommunity = await this.communitiesService.findByAddress(communityAddress);
+    const foundCommunity = await this.communitiesService.findByAddress(
+      communityAddress,
+    );
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
-    return this.communitiesService.votesAtBlockTag(foundCommunity, tag, address);
+    return this.communitiesService.votesAtBlockTag(
+      foundCommunity,
+      tag,
+      address,
+    );
   }
 
   @Get('communities/votesForAuction/:communityAddress/:auctionId/:address')
   async votesForAuction(
-    @Param("communityAddress") communityAddress: string,
-    @Param("auctionId") id: number,
-    @Param("address") address: string
+    @Param('communityAddress') communityAddress: string,
+    @Param('auctionId') id: number,
+    @Param('address') address: string,
   ): Promise<BigNumberish> {
-    const foundCommunity = await this.communitiesService.findByAddress(communityAddress);
+    const foundCommunity = await this.communitiesService.findByAddress(
+      communityAddress,
+    );
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
-    const foundAuction = await this.auctionsService.findOne(id)
+    const foundAuction = await this.auctionsService.findOne(id);
     if (!foundAuction)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
-    return this.communitiesService.votesAtBlockTag(foundCommunity, foundAuction.balanceBlockTag, address);
+    return this.communitiesService.votesAtBlockTag(
+      foundCommunity,
+      foundAuction.balanceBlockTag,
+      address,
+    );
   }
 }

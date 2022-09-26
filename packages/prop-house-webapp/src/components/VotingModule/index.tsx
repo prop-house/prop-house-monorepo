@@ -1,28 +1,33 @@
-import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
+import { useEthers } from '@usedapp/core';
+import { useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
+import { useAppSelector } from '../../hooks';
+import { votesRemaining } from '../../utils/votesRemaining';
+import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 
 import classes from './VotingModule.module.css';
 
 export interface VotingModuleProps {
   communityName: string;
   totalVotes: number | undefined;
-  delegatedVotes: number | undefined;
-  votesLeft: number | undefined;
-  submittedVotesCount: number | undefined;
-  numAllottedVotes: number | undefined;
 }
 const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
-  const {
-    communityName,
-    totalVotes,
-    delegatedVotes,
-    votesLeft,
-    submittedVotesCount,
-    numAllottedVotes,
-  } = props;
+  const { communityName, totalVotes } = props;
   const { account } = useEthers();
+
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
+  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+
+  const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
+  const [numAllotedVotes, setNumAllotedVotes] = useState(0);
+
+  useEffect(() => {
+    setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
+    setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
+  }, [submittedVotes, voteAllotments, votingPower]);
 
   return (
     <>
@@ -42,14 +47,14 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
       <hr className={classes.divider} />
 
       {account ? (
-        delegatedVotes ? (
+        votingPower > 0 ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
               <span>Cast your votes</span>
 
               <span className={classes.totalVotes}>{`${
-                votesLeft && votesLeft > 0
-                  ? `${delegatedVotes - (submittedVotesCount ?? 0) - (numAllottedVotes ?? 0)} left`
+                votesLeftToAllot > 0
+                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
                   : 'no votes left'
               }`}</span>
             </h1>
@@ -57,25 +62,12 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
             <ProgressBar
               className={clsx(
                 classes.votingBar,
-                submittedVotesCount &&
-                  submittedVotesCount > 0 &&
-                  delegatedVotes !== submittedVotesCount &&
-                  'roundAllotmentBar',
+                submittedVotes > 0 && votingPower !== submittedVotes && 'roundAllotmentBar',
               )}
             >
-              <ProgressBar
-                variant="success"
-                now={
-                  100 -
-                  Math.abs(((submittedVotesCount ?? 0) - delegatedVotes) / delegatedVotes) * 100
-                }
-              />
+              <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
 
-              <ProgressBar
-                variant="warning"
-                now={Math.abs(((votesLeft ?? 0) - delegatedVotes) / delegatedVotes) * 100}
-                key={2}
-              />
+              <ProgressBar variant="warning" now={(numAllotedVotes / votingPower) * 100} key={2} />
             </ProgressBar>
           </>
         ) : (

@@ -62,7 +62,7 @@ export class AuctionsController {
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
     for (let index = 0; index < foundProposals.length; index++) {
-      await this.proposalService.rollupScore(foundProposals[index].id);
+      await this.proposalService.rollupVoteCount(foundProposals[index].id);
     }
     return foundProposals;
   }

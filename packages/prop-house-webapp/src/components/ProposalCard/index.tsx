@@ -5,37 +5,24 @@ import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useEthers } from '@usedapp/core';
 import { openInNewTab } from '../../utils/openInNewTab';
+import VotesDisplay from '../VotesDisplay';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  voteAllotments: VoteAllotment[];
-  canAllotVotes: boolean;
-  handleVoteAllotment: (proposalId: number, support: boolean) => void;
   fromHome?: boolean;
   winner?: boolean;
 }> = props => {
-  const {
-    proposal,
-    auctionStatus,
-    cardStatus,
-    voteAllotments,
-    canAllotVotes,
-    handleVoteAllotment,
-    fromHome,
-    winner,
-  } = props;
+  const { proposal, auctionStatus, cardStatus, fromHome, winner } = props;
 
   const { account } = useEthers();
   let navigate = useNavigate();
@@ -100,23 +87,12 @@ const ProposalCard: React.FC<{
                 !roundIsVotingOrOver() && classes.hideVoteModule,
               )}
             >
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {roundIsVotingOrOver() && (
-                  <div className={classes.scoreAndIcon}>
-                    <VoteIcon /> {Number(proposal.score).toFixed()}
-                  </div>
-                )}
-
+              <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
+                {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
                 {cardStatus === ProposalCardStatus.Voting && (
                   <div className={classes.votingArrows}>
                     <span className={classes.plusArrow}>+</span>
-                    <PropCardVotingModule
-                      proposal={proposal}
-                      cardStatus={cardStatus}
-                      voteAllotments={voteAllotments}
-                      canAllotVotes={canAllotVotes}
-                      handleVoteAllotment={handleVoteAllotment}
-                    />
+                    <PropCardVotingModule proposal={proposal} cardStatus={cardStatus} />
                   </div>
                 )}
               </div>
