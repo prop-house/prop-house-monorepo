@@ -1,13 +1,3 @@
-.propCardsRow {
-  width: 100%;
-}
-.propCardsCol {
-  padding: 0;
-}
-.propCards {
-  display: flex;
-  padding-top: 16px;
-}
 .sidebarContainerCard {
   background: var(--bg-dark);
   border: 1px solid var(--border-light);
@@ -23,11 +13,6 @@
 }
 
 @media (max-width: 993px) {
-  .propCardsRow {
-    display: flex;
-    flex-direction: column-reverse;
-    width: -webkit-fill-available;
-  }
   .sideCards {
     display: flex;
     padding: 0;
