@@ -12,6 +12,7 @@ import { isValidVoteDirection, VoteDirections } from 'src/utils/vote';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
+import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 
 @Controller('votes')
 export class VotesController {
@@ -35,7 +36,9 @@ export class VotesController {
   }
 
   @Post()
-  async create(@Body() createVoteDto: CreateVoteDto) {
+  async create(
+    @Body(SignedPayloadValidationPipe) createVoteDto: CreateVoteDto,
+  ) {
     const foundProposal = await this.proposalService.findOne(
       createVoteDto.proposalId,
     );
