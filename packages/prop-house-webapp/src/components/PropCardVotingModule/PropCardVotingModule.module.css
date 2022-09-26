@@ -16,36 +16,9 @@
   color: var(--brand-black);
 }
 
-.votesModuleContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  color: var(--brand-gray);
-  outline: 1px solid var(--brand-gray-semi-transparent);
-  border-radius: 6px;
-  height: 24px;
-  width: 24px;
-}
-
 .disabledVote {
   background: var(--brand-purple-hint);
   color: var(--brand-purple-semi-transparent);
-}
-
-.votesAllottedDisplay {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  color: var(--brand-purple);
-  color: var(--brand-gray);
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
 }
 
 .voteBtns {
@@ -74,8 +47,48 @@
   outline: none !important;
 }
 .activelyAllotting {
+  border-radius: 6px;
   outline: 1px solid var(--brand-purple-semi-transparent);
 }
 .activelyAllotting .votesAllottedDisplay {
   color: var(--brand-purple) !important;
+}
+
+.votesAllottedInput {
+  font-weight: bold;
+  border-width: 0px;
+  text-align: center;
+  background-color: white;
+  color: var(--brand-gray);
+  outline: 1px solid var(--brand-gray-semi-transparent);
+  border-radius: 6px;
+  height: 24px;
+  width: 36px;
+}
+.activelyAllotting .votesAllottedInput {
+  color: var(--brand-purple) !important;
+}
+
+.content {
+  cursor: help;
+}
+
+.tooltip [class$='inner'] {
+  padding: 0.5rem;
+  text-align: center;
+
+  background: var(--bg-light);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
+  border-radius: 8px;
+  color: black;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 21px;
+}
+
+.tooltipTitle {
+  color: var(--brand-gray);
+  font-size: 14px;
+  display: block;
+  text-align: center;
 }

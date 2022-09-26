@@ -6,10 +6,10 @@ import Button, { ButtonColor } from '../Button';
 
 const SuccessModal: React.FC<{
   showSuccessModal: boolean;
+  numPropsVotedFor: number;
   setShowSuccessModal: Dispatch<SetStateAction<boolean>>;
-  numOfProps: number;
 }> = props => {
-  const { showSuccessModal, setShowSuccessModal, numOfProps } = props;
+  const { showSuccessModal, setShowSuccessModal, numPropsVotedFor } = props;
 
   return (
     <Modal
@@ -25,7 +25,8 @@ const SuccessModal: React.FC<{
         <div className={classes.titleContainer}>
           <p className={classes.modalTitle}>very nounish</p>
           <p className={classes.modalSubtitle}>
-            You've successfully voted for {numOfProps} {numOfProps === 1 ? 'prop' : 'props'}!
+            You've successfully voted for {numPropsVotedFor}{' '}
+            {numPropsVotedFor === 1 ? 'prop' : 'props'}!
           </p>
         </div>
       </div>

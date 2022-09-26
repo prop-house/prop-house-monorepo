@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
-  setActiveAuction,
+  setActiveRound,
   setActiveCommunity,
   setActiveProposals,
 } from '../../../state/slices/propHouse';
@@ -30,7 +30,7 @@ const Round = () => {
   const [failedFetch, setFailedFetch] = useState(false);
   const cleanedUp = useRef(false);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const activeAuction = useAppSelector(state => state.propHouse.activeAuction);
+  const activeAuction = useAppSelector(state => state.propHouse.activeRound);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -58,7 +58,7 @@ const Round = () => {
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
         dispatch(setActiveCommunity(community));
 
-        dispatch(setActiveAuction(...currentRound));
+        dispatch(setActiveRound(...currentRound));
       } catch (e) {
         setFailedFetch(true);
       }
@@ -67,7 +67,7 @@ const Round = () => {
     return () => {
       cleanedUp.current = true;
       dispatch(setActiveCommunity());
-      dispatch(setActiveAuction());
+      dispatch(setActiveRound());
       dispatch(setActiveProposals([]));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
