@@ -1,3 +1,9 @@
+.sideCards {
+  position: sticky;
+  top: 4rem;
+  align-self: flex-start;
+}
+
 .sidebarContainerCard {
   background: var(--bg-dark);
   border: 1px solid var(--border-light);
@@ -18,6 +24,10 @@
     padding: 0;
     gap: 8px;
     margin-top: -16px;
+
+    position: relative;
+    top: inherit;
+    align-self: inherit;
   }
   .sidebarContainerCard {
     flex: 1;
