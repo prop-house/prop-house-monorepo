@@ -31,6 +31,7 @@ const PropCardVotingModule: React.FC<{
 
   const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
 
+  // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
     e.stopPropagation();
     setVoteCount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
@@ -44,6 +45,7 @@ const PropCardVotingModule: React.FC<{
     );
   };
 
+  // handle votes by text input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
