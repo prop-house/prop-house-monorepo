@@ -27,7 +27,7 @@ describe('balanceOf ERC20 votes', () => {
     const balanceOf = await contract.balanceOf(genesisAddress, { blockTag: 15485382 });
     const numBalanceOf = Number(utils.formatEther(balanceOf));
 
-    const votes = await balanceOfErc20(18)(genesisAddress, daiErc20Address, '15485382', provider);
+    const votes = await balanceOfErc20(18)(genesisAddress, daiErc20Address, 15485382, provider);
 
     expect(numBalanceOf.toFixed(0)).to.be.eq(votes.toFixed(0));
   });

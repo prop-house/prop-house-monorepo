@@ -43,9 +43,17 @@ export class VotesService {
     });
   }
 
-  async getNumVotes(dto: CreateVoteDto, balanceBlockTag: string = "latest"): Promise<number> {
+  async getNumVotes(
+    dto: CreateVoteDto,
+    balanceblockTag: number,
+  ): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return await getNumVotes(dto.address, dto.communityAddress, provider, balanceBlockTag);
+    return await getNumVotes(
+      dto.address,
+      dto.communityAddress,
+      provider,
+      balanceblockTag,
+    );
   }
 
   async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {

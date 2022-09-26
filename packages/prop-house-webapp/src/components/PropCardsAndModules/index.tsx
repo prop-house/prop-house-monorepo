@@ -54,7 +54,7 @@ const PropCardsAndModules: React.FC<{
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
   const getVoteTotal = () =>
-    proposals && proposals.reduce((total, prop) => (total = total + Number(prop.score)), 0);
+    proposals && proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
 
   useEffect(() => {
     if (!account || !proposals) return;
@@ -64,8 +64,8 @@ const PropCardsAndModules: React.FC<{
       return setUserProposals(
         proposals
           .filter(p => isSameAddress(p.address, account))
-          .sort((a: { score: any }, b: { score: any }) =>
-            Number(a.score) < Number(b.score) ? 1 : -1,
+          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
+            Number(a.voteCount) < Number(b.voteCount) ? 1 : -1,
           ),
       );
     }

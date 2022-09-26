@@ -58,7 +58,7 @@ const FullRound: React.FC<{
           account,
           community.contractAddress,
           library,
-          auction.balanceBlockTag?.toString(),
+          auction.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
       } catch (e) {
@@ -77,7 +77,9 @@ const FullRound: React.FC<{
       // default sorting method is random, unless the auction is over, in which case its by votes
       dispatchSortProposals(
         dispatch,
-        auctionStatus(auction) === AuctionStatus.AuctionEnded ? SortType.Score : SortType.Random,
+        auctionStatus(auction) === AuctionStatus.AuctionEnded
+          ? SortType.VoteCount
+          : SortType.Random,
         false,
       );
     };

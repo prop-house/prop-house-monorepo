@@ -87,7 +87,7 @@ const ProposalCard: React.FC<{
                 !roundIsVotingOrOver() && classes.hideVoteModule,
               )}
             >
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
+              <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
                 {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
                 {cardStatus === ProposalCardStatus.Voting && (
                   <div className={classes.votingArrows}>

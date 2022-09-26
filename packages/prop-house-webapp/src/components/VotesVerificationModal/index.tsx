@@ -28,8 +28,8 @@ const VotesVerificationModal: React.FC<{
         <div className={classes.container}>
           <div className={classes.headerContainer}>
             <div className={classes.propTitle}>{proposal.title}</div>
-            <div className={classes.votesSubtitle}>{`${proposal.score} ${
-              Number(proposal.score) === 1 ? 'vote' : 'votes'
+            <div className={classes.votesSubtitle}>{`${proposal.voteCount} ${
+              Number(proposal.voteCount) === 1 ? 'vote' : 'votes'
             } have been cast`}</div>
           </div>
 

@@ -20,16 +20,10 @@ export class CreateProposalDto extends SignedEntity {
   title: string;
 
   @IsString()
-  who: string;
-
-  @IsString()
   what: string;
 
   @IsString()
   tldr: string;
-
-  @IsString()
-  links: string;
 
   @IsNumber()
   parentAuctionId: number;

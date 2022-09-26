@@ -22,7 +22,7 @@ describe('erc1155 votes', () => {
     apiKey = process.env.INFURA_PROJECT_ID;
     if (!apiKey) return;
     const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
-    const votes = await getNumVotes(holderAddress, nounsSquareTeamAddress, provider, '15435382');
+    const votes = await getNumVotes(holderAddress, nounsSquareTeamAddress, provider, 15435382);
     expect(votes).to.be.eq(1);
   });
 });

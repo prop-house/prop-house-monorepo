@@ -53,7 +53,7 @@ const RoundDropdown = ({
     if (id === SortMethod.CreatedDate) {
       dispatchSortProposals(dispatch, SortType.CreatedAt, false);
     } else if (id === SortMethod.MostVotes) {
-      dispatchSortProposals(dispatch, SortType.Score, false);
+      dispatchSortProposals(dispatch, SortType.VoteCount, false);
     }
     return;
   };
