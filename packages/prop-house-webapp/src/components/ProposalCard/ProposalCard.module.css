@@ -86,11 +86,7 @@
   color: var(--brand-gray);
   display: flex;
 }
-.scoreAndIcon {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+
 .votingArrows {
   display: flex;
   align-items: center;
