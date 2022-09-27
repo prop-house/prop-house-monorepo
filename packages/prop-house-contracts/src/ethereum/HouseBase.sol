@@ -76,7 +76,7 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
         _requireStrategyEnabled(strategy);
         isStrategyEnabled[strategy] = false;
 
-        emit StrategyEnabled(strategy);
+        emit StrategyDisabled(strategy);
     }
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation

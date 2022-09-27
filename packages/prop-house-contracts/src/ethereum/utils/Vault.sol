@@ -9,27 +9,27 @@ import { ERC721Holder } from '@openzeppelin/contracts/token/ERC721/utils/ERC721H
 import { ERC1155Holder } from '@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol';
 import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
-import { ETH_ADDRESS } from '../constants/Token.sol';
 import { IVault } from '../interfaces/IVault.sol';
+import { ETH_ADDRESS } from '../Constants.sol';
 
 contract Vault is IVault, ERC721Holder, ERC1155Holder {
     using SafeERC20 for IERC20;
 
     /// @notice Available asset balances
-    /// @dev Account => Asset ID => Balance
+    /// @dev Depositor => Asset ID => Balance
     mapping(address => mapping(bytes32 => uint256)) internal _balances;
 
-    /// @notice Deposit ETH
+    /// @notice Deposits ETH
     function depositETH() external payable {
         _creditInternalBalance(msg.sender, IAssetData.ETH.selector, msg.value);
         emit Deposit(msg.sender, IAssetData.ETH.selector, ETH_ADDRESS, msg.value);
     }
 
-    /// @notice Deposit ERC20 tokens
+    /// @notice Deposits ERC20 tokens
     /// @param token The token address
     /// @param amount The token amount
     function depositERC20(address token, uint256 amount) public {
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC20Token.selector, token);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC20Token.selector, token);
         _creditInternalBalance(msg.sender, assetId, amount);
 
         // Pull the ERC20 tokens
@@ -38,7 +38,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         emit Deposit(msg.sender, IAssetData.ERC20Token.selector, token, amount);
     }
 
-    /// @notice Batch deposit ERC20 tokens
+    /// @notice Batch deposits ERC20 tokens
     /// @param tokens The token addresses
     /// @param amounts The token amounts
     function batchDepositERC20(address[] calldata tokens, uint256[] calldata amounts) external {
@@ -50,11 +50,11 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         }
     }
 
-    /// @notice Deposit an ERC721 token
+    /// @notice Deposits an ERC721 token
     /// @param token The token address
     /// @param tokenId The token ID
     function depositERC721(address token, uint256 tokenId) public {
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC721Token.selector, token, tokenId);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC721Token.selector, token, tokenId);
         _creditInternalBalance(msg.sender, assetId, 1);
 
         // Pull the ERC721 token
@@ -63,7 +63,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         emit DepositWithTokenId(msg.sender, IAssetData.ERC721Token.selector, token, tokenId, 1);
     }
 
-    /// @notice Batch deposit ERC721 tokens
+    /// @notice Batch deposits ERC721 tokens
     /// @param tokens The token addresses
     /// @param tokenIds The token IDs
     function batchDepositERC721(address[] calldata tokens, uint256[] calldata tokenIds) external {
@@ -75,7 +75,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         }
     }
 
-    /// @notice Deposit ERC1155 tokens
+    /// @notice Deposits ERC1155 tokens
     /// @param token The token address
     /// @param tokenId The token ID
     /// @param amount The token amount
@@ -84,7 +84,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         uint256 tokenId,
         uint256 amount
     ) public {
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC1155Token.selector, token, tokenId);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC1155Token.selector, token, tokenId);
         _creditInternalBalance(msg.sender, assetId, amount);
 
         // Pull the ERC1155 tokens
@@ -93,7 +93,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         emit DepositWithTokenId(msg.sender, IAssetData.ERC1155Token.selector, token, tokenId, amount);
     }
 
-    /// @notice Betch deposit ERC1155 tokens
+    /// @notice Batch deposits ERC1155 tokens
     /// @param tokens The token addresses
     /// @param tokenIds The token IDs
     /// @param amounts The token amounts
@@ -110,7 +110,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         }
     }
 
-    /// @notice Withdraw ETH to a recipient address
+    /// @notice Withdraws ETH to a recipient address
     /// @param amount The amount of ETH to withdraw
     /// @param recipient The withdrawal recipient
     function withdrawETHTo(uint256 amount, address recipient) public {
@@ -120,21 +120,18 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         _debitInternalBalance(msg.sender, IAssetData.ETH.selector, amount);
 
         // Process the ETH withdrawal
-        (bool success, ) = recipient.call{ value: amount, gas: 30_000 }(new bytes(0));
-        if (!success) {
-            revert WithdrawalFailed();
-        }
+        _transferETHTo(amount, recipient);
 
         emit Withdrawal(msg.sender, IAssetData.ETH.selector, ETH_ADDRESS, amount, recipient);
     }
 
-    /// @notice Withdraw ETH to the caller
+    /// @notice Withdraws ETH to the caller
     /// @param amount The amount of ETH to withdraw
     function withdrawETH(uint256 amount) external {
         withdrawETHTo(amount, msg.sender);
     }
 
-    /// @notice Withdraw ERC20 tokens to a recipient address
+    /// @notice Withdraws ERC20 tokens to a recipient address
     /// @param token The token to withdraw
     /// @param amount The amount to withdraw
     /// @param recipient The withdrawal recipient
@@ -146,23 +143,23 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         if (amount > erc20Balance(msg.sender, token)) {
             revert InsufficientBalance();
         }
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC20Token.selector, token);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC20Token.selector, token);
         _debitInternalBalance(msg.sender, assetId, amount);
 
         // Process the ERC20 withdrawal
-        IERC20(token).safeTransfer(recipient, amount);
+        _transferERC20To(token, amount, recipient);
 
         emit Withdrawal(msg.sender, IAssetData.ERC20Token.selector, token, amount, recipient);
     }
 
-    /// @notice Withdraw ERC20 tokens to the caller
+    /// @notice Withdraws ERC20 tokens to the caller
     /// @param token The token to withdraw
     /// @param amount The amount to withdraw
     function withdrawERC20(address token, uint256 amount) external {
         withdrawERC20To(token, amount, msg.sender);
     }
 
-    /// @notice Withdraw an ERC721 token to a recipient address
+    /// @notice Withdraws an ERC721 token to a recipient address
     /// @param token The token to withdraw
     /// @param tokenId The ID of the token to withdraw
     /// @param recipient The withdrawal recipient
@@ -174,23 +171,23 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         if (erc721Balance(msg.sender, token, tokenId) == 0) {
             revert InsufficientBalance();
         }
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC721Token.selector, token, tokenId);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC721Token.selector, token, tokenId);
         _debitInternalBalance(msg.sender, assetId, 1);
 
         // Process the ERC721 withdrawal
-        IERC721(token).safeTransferFrom(address(this), recipient, tokenId);
+        _transferERC721To(token, tokenId, recipient);
 
         emit WithdrawalWithTokenId(msg.sender, IAssetData.ERC721Token.selector, token, tokenId, 1, recipient);
     }
 
-    /// @notice Withdraw an ERC721 token to the caller
+    /// @notice Withdraws an ERC721 token to the caller
     /// @param token The token to withdraw
     /// @param tokenId The ID of the token to withdraw
     function withdrawERC721(address token, uint256 tokenId) external {
         withdrawERC721To(token, tokenId, msg.sender);
     }
 
-    /// @notice Withdraw ERC1155 tokens to a recipient address
+    /// @notice Withdraws ERC1155 tokens to a recipient address
     /// @param token The token to withdraw
     /// @param tokenId The ID of the token to withdraw
     /// @param amount The amount to withdraw
@@ -204,16 +201,16 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         if (amount > erc1155Balance(msg.sender, token, tokenId)) {
             revert InsufficientBalance();
         }
-        bytes32 assetId = AssetDataUtils.getAssetId(IAssetData.ERC1155Token.selector, token, tokenId);
+        bytes32 assetId = AssetDataUtils.getAssetID(IAssetData.ERC1155Token.selector, token, tokenId);
         _debitInternalBalance(msg.sender, assetId, amount);
 
         // Process the ERC1155 withdrawal
-        IERC1155(token).safeTransferFrom(address(this), recipient, tokenId, amount, new bytes(0));
+        _transferERC1155To(token, tokenId, amount, recipient);
 
         emit WithdrawalWithTokenId(msg.sender, IAssetData.ERC1155Token.selector, token, tokenId, amount, recipient);
     }
 
-    /// @notice Withdraw ERC1155 tokens to the caller
+    /// @notice Withdraws ERC1155 tokens to the caller
     /// @param token The token to withdraw
     /// @param tokenId The ID of the token to withdraw
     /// @param amount The amount to withdraw
@@ -225,27 +222,27 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         withdrawERC1155To(token, tokenId, amount, msg.sender);
     }
 
-    /// @notice Fetch an account's balance
+    /// @notice Fetches an account's balance
     /// @param account The account address
     /// @param assetId The asset ID
     function balanceOf(address account, bytes32 assetId) public view returns (uint256) {
         return _balances[account][assetId];
     }
 
-    /// @notice Fetch an account's ETH balance
+    /// @notice Fetches an account's ETH balance
     /// @param account The account address
     function ethBalance(address account) public view returns (uint256) {
         return balanceOf(account, IAssetData.ETH.selector);
     }
 
-    /// @notice Fetch an account's ERC20 balance
+    /// @notice Fetches an account's ERC20 balance
     /// @param account The account address
     /// @param token The token address
     function erc20Balance(address account, address token) public view returns (uint256) {
-        return balanceOf(account, AssetDataUtils.getAssetId(IAssetData.ERC20Token.selector, token));
+        return balanceOf(account, AssetDataUtils.getAssetID(IAssetData.ERC20Token.selector, token));
     }
 
-    /// @notice Fetch an account's ERC721 balance
+    /// @notice Fetches an account's ERC721 balance
     /// @param account The account address
     /// @param token The token address
     /// @param tokenId The token ID
@@ -254,10 +251,10 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         address token,
         uint256 tokenId
     ) public view returns (uint256) {
-        return balanceOf(account, AssetDataUtils.getAssetId(IAssetData.ERC721Token.selector, token, tokenId));
+        return balanceOf(account, AssetDataUtils.getAssetID(IAssetData.ERC721Token.selector, token, tokenId));
     }
 
-    /// @notice Fetch an account's ERC1155 balance
+    /// @notice Fetches an account's ERC1155 balance
     /// @param account The account address
     /// @param token The token address
     /// @param tokenId The token ID
@@ -266,10 +263,84 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         address token,
         uint256 tokenId
     ) public view returns (uint256) {
-        return balanceOf(account, AssetDataUtils.getAssetId(IAssetData.ERC1155Token.selector, token, tokenId));
+        return balanceOf(account, AssetDataUtils.getAssetID(IAssetData.ERC1155Token.selector, token, tokenId));
     }
 
-    /// @notice Credit an account's internal asset ID balance
+    /// @notice Transfers ETH to a recipient address
+    /// @param amount The amount of ETH to transfer
+    /// @param recipient The transfer recipient
+    function _transferETHTo(uint256 amount, address recipient) internal {
+        (bool success, ) = recipient.call{ value: amount, gas: 30_000 }(new bytes(0));
+        if (!success) {
+            revert TransferFailed();
+        }
+    }
+
+    /// @notice Transfers ERC20 tokens to a recipient address
+    /// @param token The token to transfer
+    /// @param amount The amount to transfer
+    /// @param recipient The transfer recipient
+    function _transferERC20To(
+        address token,
+        uint256 amount,
+        address recipient
+    ) internal {
+        IERC20(token).safeTransfer(recipient, amount);
+    }
+
+    /// @notice Transfers an ERC721 token to a recipient address
+    /// @param token The token to transfer
+    /// @param tokenId The ID of the token to transfer
+    /// @param recipient The transfer recipient
+    function _transferERC721To(
+        address token,
+        uint256 tokenId,
+        address recipient
+    ) internal {
+        IERC721(token).safeTransferFrom(address(this), recipient, tokenId);
+    }
+
+    /// @notice Transfers ERC1155 tokens to a recipient address
+    /// @param token The token to transfer
+    /// @param tokenId The ID of the token to transfer
+    /// @param amount The amount to transfer
+    /// @param recipient The transfer recipient
+    function _transferERC1155To(
+        address token,
+        uint256 tokenId,
+        uint256 amount,
+        address recipient
+    ) internal {
+        IERC1155(token).safeTransferFrom(address(this), recipient, tokenId, amount, new bytes(0));
+    }
+
+    /// @notice Withdraws an asset to the passed `recipient`
+    /// @param assetData The data describing an asset
+    /// @param amount The withdrawal amount
+    /// @param recipient The withdrawal recipient
+    function _withdrawTo(
+        bytes memory assetData,
+        uint256 amount,
+        address recipient
+    ) internal {
+        bytes4 assetType = AssetDataUtils.extractAssetType(assetData);
+        if (assetType == IAssetData.ETH.selector) {
+            _transferETHTo(amount, recipient);
+        } else if (assetType == IAssetData.ERC20Token.selector) {
+            (address token, ) = AssetDataUtils.decodeERC20AssetData(assetType, assetData);
+            _transferERC20To(token, amount, recipient);
+        } else if (assetType == IAssetData.ERC721Token.selector) {
+            (address token, uint256 tokenId, ) = AssetDataUtils.decodeERC721AssetData(assetType, assetData);
+            _transferERC721To(token, tokenId, recipient);
+        } else if (assetType == IAssetData.ERC1155Token.selector) {
+            (address token, uint256 tokenId, ) = AssetDataUtils.decodeERC1155AssetData(assetType, assetData);
+            _transferERC1155To(token, tokenId, amount, recipient);
+        } else {
+            revert AssetDataUtils.InvalidAssetType();
+        }
+    }
+
+    /// @notice Credits an account's internal asset ID balance
     /// @param account The account address
     /// @param assetId The asset ID
     /// @param amount The increase amount
@@ -281,7 +352,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         _balances[account][assetId] += amount;
     }
 
-    /// @notice Debit an account's internal asset ID balance
+    /// @notice Debits an account's internal asset ID balance
     /// @param account The account address
     /// @param assetId The asset ID
     /// @param amount The decrease amount

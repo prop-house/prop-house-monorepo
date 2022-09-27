@@ -6,8 +6,8 @@ interface IVault {
     /// @notice Thrown when the caller has an insufficient asset balance for the action
     error InsufficientBalance();
 
-    /// @notice Thrown on withdrawal failure
-    error WithdrawalFailed();
+    /// @notice Thrown on transfer failure
+    error TransferFailed();
 
     /// @notice Emitted when a deposit is processed
     event Deposit(address indexed account, bytes4 assetType, address asset, uint256 amount);

@@ -59,14 +59,10 @@ func create_house_strategy{
     house_strategy_class_hash : felt,
     house_strategy_params_len : felt,
     house_strategy_params : felt*,
-    voting_strategy_params_flat_len : felt,
-    voting_strategy_params_flat : felt*,
-    voting_strategies_len : felt,
-    voting_strategies : felt*,
-    authenticators_len : felt,
-    authenticators : felt*,
-    executors_len : felt,
-    executors : felt*,
+    voting_strategy_hashes_len : felt,
+    voting_strategy_hashes : felt*,
+    execution_strategies_len : felt,
+    execution_strategies : felt*,
 ):
     alloc_locals
     only_l1_handler(from_address_=from_address)
@@ -75,35 +71,19 @@ func create_house_strategy{
     assert calldata[0] = house_strategy_params_len
     memcpy(calldata + 1, house_strategy_params, house_strategy_params_len)
 
-    assert calldata[2 + house_strategy_params_len] = voting_strategy_params_flat_len
+    assert calldata[2 + house_strategy_params_len] = voting_strategy_hashes_len
     memcpy(
-        calldata + 3 + house_strategy_params_len,
-        voting_strategy_params_flat,
-        voting_strategy_params_flat_len,
+        calldata + 3 + house_strategy_params_len, voting_strategy_hashes, voting_strategy_hashes_len
     )
 
-    assert calldata[3 + house_strategy_params_len + voting_strategy_params_flat_len] = voting_strategies_len
+    assert calldata[3 + house_strategy_params_len + voting_strategy_hashes_len] = execution_strategies_len
     memcpy(
-        calldata + 4 + house_strategy_params_len + voting_strategy_params_flat_len,
-        voting_strategies,
-        voting_strategies_len,
+        calldata + 4 + house_strategy_params_len + voting_strategy_hashes_len,
+        execution_strategies,
+        execution_strategies_len,
     )
 
-    assert calldata[4 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len] = authenticators_len
-    memcpy(
-        calldata + 5 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len,
-        authenticators,
-        authenticators_len,
-    )
-
-    assert calldata[5 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len] = executors_len
-    memcpy(
-        calldata + 6 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len,
-        executors,
-        executors_len,
-    )
-
-    let calldata_len = 6 + house_strategy_params_len + voting_strategies_len + voting_strategy_params_flat_len + authenticators_len + executors_len
+    let calldata_len = 4 + house_strategy_params_len + voting_strategy_hashes_len + execution_strategies_len
     let (current_salt) = salt.read()
 
     let (strategy_address) = deploy(
