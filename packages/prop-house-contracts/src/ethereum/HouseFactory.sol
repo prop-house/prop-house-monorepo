@@ -9,6 +9,9 @@ import { HouseProxy } from './HouseProxy.sol';
 contract HouseFactory is IHouseFactory {
     IDeploymentManager private immutable DeploymentManager;
 
+    /// @notice Returns true if the address is a valid house
+    mapping(address => bool) public isHouse;
+
     constructor(address _deploymentManager) {
         DeploymentManager = IDeploymentManager(_deploymentManager);
     }

@@ -2,11 +2,11 @@
 pragma solidity ^0.8.13;
 
 import { Test } from 'forge-std/Test.sol';
-import { Blacksmith } from '../blacksmith/Blacksmith.sol';
-import { Vault, VaultBS } from '../blacksmith/Vault.bs.sol';
-import { MockERC20, MockERC20BS } from '../blacksmith/MockERC20.bs.sol';
-import { MockERC721, MockERC721BS } from '../blacksmith/MockERC721.bs.sol';
-import { MockERC1155, MockERC1155BS } from '../blacksmith/MockERC1155.bs.sol';
+import { Blacksmith } from './blacksmith/Blacksmith.sol';
+import { Vault, VaultBS } from './blacksmith/Vault.bs.sol';
+import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
+import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
+import { MockERC1155, MockERC1155BS } from './blacksmith/MockERC1155.bs.sol';
 
 contract TestUtil is Test {
     struct User {

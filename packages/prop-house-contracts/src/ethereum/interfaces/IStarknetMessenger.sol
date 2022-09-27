@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-interface IStarknetCore {
+import { IStarknetCore } from './IStarknetCore.sol';
+
+interface IStarknetMessenger {
+    /// @notice Thrown when the caller of a guarded function is not a valid house
+    error OnlyHouse();
+
+    /// @notice Returns the Starknet core contract instance
+    function starknet() external view returns (IStarknetCore);
+
     /// @notice Send a message to an L2 contract and return the hash of the message
     /// @param toAddress The callee address
     /// @param selector The function selector
@@ -16,7 +24,7 @@ interface IStarknetCore {
     /// @param toAddress The callee address
     /// @param selector The function selector
     /// @param payload The message payload
-    /// @param nonce The message nonce
+    /// @param nonce The message cancellation nonce
     function startL1ToL2MessageCancellation(
         uint256 toAddress,
         uint256 selector,
@@ -28,16 +36,11 @@ interface IStarknetCore {
     /// after the call to startL1ToL2MessageCancellation()
     /// @param selector The function selector
     /// @param payload The message payload
-    /// @param nonce The message nonce
+    /// @param nonce The message cancellation nonce
     function cancelL1ToL2Message(
         uint256 toAddress,
         uint256 selector,
         uint256[] calldata payload,
         uint256 nonce
     ) external;
-
-    /// @notice Consume a message that was sent from an L2 contract and return the hash of the message
-    /// @param fromAddress The caller address
-    /// @param payload The message payload
-    function consumeMessageFromL2(uint256 fromAddress, uint256[] calldata payload) external returns (bytes32);
 }

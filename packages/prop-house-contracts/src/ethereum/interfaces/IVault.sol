@@ -6,8 +6,8 @@ interface IVault {
     /// @notice Thrown when the caller has an insufficient asset balance for the action
     error InsufficientBalance();
 
-    /// @notice Thrown on withdrawal failure
-    error WithdrawalFailed();
+    /// @notice Thrown on transfer failure
+    error TransferFailed();
 
     /// @notice Emitted when a deposit is processed
     event Deposit(address indexed account, bytes4 assetType, address asset, uint256 amount);
@@ -28,17 +28,10 @@ interface IVault {
         address recipient
     );
 
-    // TODO: Standardize below function names
-
     /// @notice Fetch an account's balance
     /// @param account The account address
     /// @param assetId The asset ID
     function balanceOf(address account, bytes32 assetId) external view returns (uint256);
-
-    /// @notice Fetch one or more account balances
-    /// @param account The account address
-    /// @param assetIds The asset IDs
-    function batchBalanceOf(address account, bytes32[] calldata assetIds) external view returns (uint256[] memory);
 
     /// @notice Fetch an account's ETH balance
     /// @param account The account address

@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: GPL-3.0
 
 %lang starknet
 
@@ -6,6 +6,8 @@
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin, BitwiseBuiltin
 from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq
+from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
+from starkware.cairo.common.registers import get_label_location
 from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import (
@@ -22,6 +24,7 @@ from openzeppelin.security.safemath.library import SafeUint256
 # Interfaces
 from src.starknet.Interfaces.IVotingStrategy import IVotingStrategy
 from src.starknet.Interfaces.IExecutionStrategy import IExecutionStrategy
+from src.starknet.Interfaces.IVotingStrategyRegistry import IVotingStrategyRegistry
 
 # Types
 from src.starknet.lib.general_address import Address
@@ -31,15 +34,34 @@ from src.starknet.lib.round_state import RoundState
 
 # Libraries
 from src.starknet.lib.array_2d import Array2D, Immutable2DArray
+from src.starknet.lib.merkle_tree import MerkleTree
 from src.starknet.lib.proposal_utils import ProposalUtils
-from src.starknet.lib.felt_utils import FeltUtils
+from src.starknet.lib.math_utils import MathUtils
+
+#
+# Constants
+#
+
+const MAX_WINNERS = 256
+
+const MAX_LOG_N_WINNERS = 8
+
+const VOTING_STRATEGY_REGISTRY = 0x0031bb43c3d12c51a5f4b56595297ce960902cf5be91660f4ec6d6b676e2aa5a
+
+const ETH_TX_AUTH_STRATEGY = 0x0042e5c568c94d100b3ebd4131e85bee11c8d678a2ea34b63c855b154e717b03
+
+const ETH_SIG_AUTH_STRATEGY = 0x7de0e01d32c750081ca7f267532cc38e2ca3ab490359a077c322c3e9f4cb6bd2
 
 #
 # Storage
 #
 
 @storage_var
-func round_state_store() -> (count : felt):
+func round_id_store() -> (id : felt):
+end
+
+@storage_var
+func round_state_store() -> (state : felt):
 end
 
 @storage_var
@@ -52,10 +74,6 @@ end
 
 @storage_var
 func vote_period_end_timestamp_store() -> (timestamp : felt):
-end
-
-@storage_var
-func voting_power_multiplier_store() -> (multiplier : felt):
 end
 
 @storage_var
@@ -83,19 +101,11 @@ func cancelled_proposals_store(proposal_id : felt) -> (cancelled : felt):
 end
 
 @storage_var
-func authenticators_store(authenticator_address : felt) -> (is_valid : felt):
+func voting_strategy_hashes_store(index : felt) -> (strategy_hash : felt):
 end
 
 @storage_var
-func voting_strategy_store() -> (strategy_address : felt):
-end
-
-@storage_var
-func voting_strategy_params_store(param_index : felt) -> (voting_strategy_param : felt):
-end
-
-@storage_var
-func executor_store() -> (executor_address : felt):
+func execution_strategy_store() -> (execution_strategy_address : felt):
 end
 
 #
@@ -123,61 +133,49 @@ end
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     house_strategy_params_len : felt,
     house_strategy_params : felt*,
-    voting_strategy_params_flat_len : felt,
-    voting_strategy_params_flat : felt*,
-    voting_strategies_len : felt,
-    voting_strategies : felt*,
-    authenticators_len : felt,
-    authenticators : felt*,
-    executor : felt, # TODO: Support more than one executor at the root level
+    voting_strategy_hashes_len : felt,
+    voting_strategy_hashes : felt*,
+    execution_strategies_len : felt,
+    execution_strategies : felt*,
 ):
     alloc_locals
 
     let (
+        round_id,
         proposal_period_start_timestamp,
         proposal_period_duration,
         vote_period_duration,
-        voting_power_multiplier,
         winner_count,
     ) = decode_param_array(house_strategy_params_len, house_strategy_params)
 
-    # TODO: Cancel if this fails or set to a state where funds can be returned via a REFUND (ERROR state?)
-    # Sanity checks
+    # Sanity checks. Message cancellation is required on error.
     let (current_timestamp) = get_block_timestamp()
     with_attr error_message("Invalid constructor parameters"):
         assert_le(current_timestamp, proposal_period_start_timestamp)
+        assert_not_zero(round_id)
         assert_not_zero(proposal_period_duration)
         assert_not_zero(vote_period_duration)
-        assert_not_zero(voting_power_multiplier)
         assert_not_zero(winner_count)
-        assert_not_zero(authenticators_len)
-        assert_not_zero(executor)
+        assert_le(winner_count, MAX_WINNERS)
 
-        # This strategy only supports a single voting strategy
-        assert voting_strategies_len = 1
+        # This strategy only supports a single execution strategy
+        assert execution_strategies_len = 1
     end
 
     let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration
     let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration
 
     # Initialize the storage variables
+    round_id_store.write(round_id)
     proposal_period_start_timestamp_store.write(proposal_period_start_timestamp)
     proposal_period_end_timestamp_store.write(proposal_period_end_timestamp)
     vote_period_end_timestamp_store.write(vote_period_end_timestamp)
-    voting_power_multiplier_store.write(voting_power_multiplier)
     winner_count_store.write(winner_count)
-    executor_store.write(executor)
+    execution_strategy_store.write(execution_strategies[0])
 
-    # Reconstruct the voting params 2D array (1 sub array per strategy) from the flattened version.
-    # Currently there is no way to pass struct types with pointers in calldata, so we must do it this way.
-    let (voting_strategy_params_all : Immutable2DArray) = Array2D.construct_array2d(
-        voting_strategy_params_flat_len, voting_strategy_params_flat
+    unchecked_add_voting_strategy_hashes(
+        voting_strategy_hashes_len, voting_strategy_hashes, 0
     )
-
-    add_voting_strategy(
-        voting_strategies[0], voting_strategy_params_all, 0
-    )
-    unchecked_add_authenticators(authenticators_len, authenticators)
 
     # The first proposal in a round will have a proposal ID of 1.
     next_proposal_nonce_store.write(1)
@@ -200,8 +198,8 @@ func cast_votes{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_pt
 ) -> ():
     alloc_locals
 
-    # Verify that the caller is the authenticator contract
-    assert_valid_authenticator()
+    # Verify that the caller is the auth strategy contract
+    assert_valid_auth_strategy()
 
     # Verify that the funding round is active
     assert_round_active()
@@ -318,7 +316,7 @@ func cast_proposal_votes{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
 end
 
 # Submits a proposal to the funding round
-# TODO: Worth creating an L1 handler for this in the event that the spam protection fails?
+# TODO: Create an L1 handler as a mechanism to bypass the spam protection filter
 @external
 func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
     proposer_address : Address,
@@ -328,8 +326,8 @@ func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr :
 ) -> ():
     alloc_locals
 
-    # Verify that the caller is the authenticator contract
-    assert_valid_authenticator()
+    # Verify that the caller is the auth strategy contract
+    assert_valid_auth_strategy()
 
     # Verify that the funding round is active
     assert_round_active()
@@ -367,8 +365,7 @@ func propose{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr :
     return ()
 end
 
-# Finalizes the round, counts the proposal votes, and send the corresponding result to the L1 executor contract
-# TODO: Batch finalization due to trabsaction step limit limitation?
+# Finalizes the round, counts the proposal votes, and send the corresponding result to the L1 execution strategy contract
 @external
 func finalize_round{
     syscall_ptr : felt*,
@@ -376,7 +373,7 @@ func finalize_round{
     range_check_ptr,
     ecdsa_ptr : SignatureBuiltin*,
     bitwise_ptr : BitwiseBuiltin*,
-}(proposal_id : felt, execution_params_len : felt, execution_params : felt*):
+}():
     alloc_locals
 
     # Verify that the funding round is active
@@ -399,15 +396,37 @@ func finalize_round{
         return ()
     end
 
-    let (submissions : ProposalInfo*) = alloc()
-    populate_proposal_info_arr(next_unused_proposal_nonce, 1, 0, submissions)
+    let (active_submissions : ProposalInfo*) = alloc()
+    let (active_submissions_len) = populate_proposal_info_arr(next_unused_proposal_nonce, 1, 0, active_submissions)
 
-    let num_submissions = next_unused_proposal_nonce - 1
-    let (winners) = ProposalUtils.select_winners(num_winners, num_submissions, submissions)
+    let (winners) = ProposalUtils.select_winners(num_winners, active_submissions_len, active_submissions)
+    let (winners_len) = MathUtils.min(num_winners, active_submissions_len)
 
-    let (executor_address) = executor_store.read()
+    let (keccak_ptr : felt*) = alloc()
+    let keccak_ptr_start = keccak_ptr
+
+    let (leaves : Uint256*) = alloc()
+    ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(winners_len, winners, leaves, 0)
+
+    # TODO: Pass in winning assets to this function and validate them against a hash of the awards
+    # That way, we only need to store the hash of the awards.
+    let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
+        winners_len, leaves, 0, MAX_LOG_N_WINNERS,
+    )
+    finalize_keccak(keccak_ptr_start, keccak_ptr)
+
+    let (round_id)= round_id_store.read()
+
+    let (execution_params : felt*) = alloc()
+    assert execution_params[0] = round_id
+    assert execution_params[1] = merkle_root.low
+    assert execution_params[2] = merkle_root.high
+
+    let (execution_strategy_address) = execution_strategy_store.read()
+    let execution_params_len = 3
+
     IExecutionStrategy.execute(
-        contract_address=executor_address,
+        contract_address=execution_strategy_address,
         execution_params_len=execution_params_len,
         execution_params=execution_params,
     )
@@ -429,13 +448,13 @@ func cancel_round{
 }():
     alloc_locals
 
-    # Verify that the caller is the authenticator contract
-    assert_valid_authenticator() # TODO: Add initiator_cancel block in `authenticate` if statement.
+    # Verify that the caller is the auth strategy contract
+    assert_valid_auth_strategy() # TODO: Add initiator_cancel block in `authenticate` if statement.
 
     # Verify that the funding round is active
     assert_round_active()
 
-    # TODO: Need to send message to L1 to unlock funds?
+    # TODO: Send message to L1 to unlock funds.
 
     # Flag the round as having been cancelled
     round_state_store.write(RoundState.CANCELLED)
@@ -450,8 +469,8 @@ func cancel_proposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_che
 ):
     alloc_locals
 
-    # Verify that the caller is the authenticator contract
-    assert_valid_authenticator() # TODO: Add cancel block in `authenticate` if statement.
+    # Verify that the caller is the auth strategy contract
+    assert_valid_auth_strategy() # TODO: Add cancel block in `authenticate` if statement.
 
     # Verify that the funding round is active
     assert_round_active()
@@ -495,66 +514,52 @@ end
 #  Internal Functions
 #
 
-# Inserts the voting strategy to storage
-func add_voting_strategy{
+# Inserts voting strategy hashes to storage
+func unchecked_add_voting_strategy_hashes{
     syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}(voting_strategy : felt, params_all : Immutable2DArray, index : felt):
-    alloc_locals
-
-    voting_strategy_store.write(voting_strategy)
-
-    # Extract voting params for the voting strategy
-    let (params_len, params) = Array2D.get_sub_array(params_all, 0)
-
-    # We store the length of the voting strategy params array at index zero
-    voting_strategy_params_store.write(0, params_len)
-
-    # The following elements are the actual params
-    unchecked_add_voting_strategy_params(params_len, params, 1)
-    return ()
-end
-
-# Inserts voting strategy params to storage
-func unchecked_add_voting_strategy_params{
-    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}(params_len : felt, params : felt*, index : felt):
-    if params_len == 0:
+}(voting_strategy_hashes_len : felt, voting_strategy_hashes : felt*, index : felt):
+    if voting_strategy_hashes_len == 0:
         # List is empty
         return ()
     else:
         # Store voting parameter
-        voting_strategy_params_store.write(index, params[0])
+        voting_strategy_hashes_store.write(index, voting_strategy_hashes[0])
 
-        unchecked_add_voting_strategy_params(params_len - 1, &params[1], index + 1)
+        unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len - 1, &voting_strategy_hashes[1], index + 1)
         return ()
     end
 end
 
-# Inserts authenticators to storage
-func unchecked_add_authenticators{
-    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
-}(to_add_len : felt, to_add : felt*):
-    if to_add_len == 0:
-        return ()
-    else:
-        authenticators_store.write(to_add[0], 1)
+func get_auth_strategy(index : felt) -> (strategy_addr: felt):
+    let (data_address) = get_label_location(strategies)
+    return ([data_address + index])
 
-        unchecked_add_authenticators(to_add_len - 1, &to_add[1])
-        return ()
-    end
+    strategies:
+    dw ETH_TX_AUTH_STRATEGY
+    dw ETH_SIG_AUTH_STRATEGY
 end
 
-# Throws if the caller address is not a member of the set of whitelisted authenticators (stored in the `authenticators` mapping)
-func assert_valid_authenticator{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    ):
+func is_valid_auth_strategy(caller_address : felt, curr_index : felt, num_strategies : felt) -> (is_valid : felt):
+    if num_strategies == curr_index:
+        return (FALSE)
+    end
+
+    let (strategy_addr) = get_auth_strategy(curr_index)
+    if caller_address == strategy_addr:
+        return (TRUE)
+    end
+    return is_valid_auth_strategy(caller_address, curr_index + 1, num_strategies)
+end
+
+# Throws if the caller address is not a member of the set of whitelisted auth strategies
+func assert_valid_auth_strategy{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}():
+    alloc_locals
+
     let (caller_address) = get_caller_address()
-    let (is_valid) = authenticators_store.read(caller_address)
-
-    # Ensure it has been initialized
-    with_attr error_message("Invalid authenticator"):
+    let (is_valid) = is_valid_auth_strategy(caller_address, 0, 2)
+    with_attr error_message("Invalid auth strategy"):
         assert_not_zero(is_valid)
     end
-
     return ()
 end
 
@@ -571,7 +576,7 @@ func assert_round_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
     return ()
 end
 
-# Computes the voting power of a user. That is, the raw voting power multiplied by the voting multiplier
+# Computes the voting power of a user.
 func get_user_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     current_timestamp : felt,
     voter_address : Address,
@@ -580,19 +585,14 @@ func get_user_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ran
 ) -> (user_voting_power : Uint256):
     alloc_locals
 
-    let (voting_strategy) = voting_strategy_store.read()
-
-    # Initialize empty array to store voting params
-    let (voting_strategy_params : felt*) = alloc()
-
-    # Check that voting strategy params exist by the length which is stored in the first element of the array
-    let (voting_strategy_params_len) = voting_strategy_params_store.read(0)
-
-    let (voting_strategy_params_len, voting_strategy_params) = get_voting_strategy_params(
-        voting_strategy_params_len, voting_strategy_params, 1
+    # TODO: Support multiple voting strategies
+    let (voting_strategy_hash) = voting_strategy_hashes_store.read(0)
+    let (voting_strategy, voting_strategy_params_len, voting_strategy_params) = IVotingStrategyRegistry.get_voting_strategy(
+        contract_address=VOTING_STRATEGY_REGISTRY,
+        strategy_hash=voting_strategy_hash,
     )
 
-    let (raw_voting_power) = IVotingStrategy.get_voting_power(
+    let (user_voting_power) = IVotingStrategy.get_voting_power(
         contract_address=voting_strategy,
         timestamp=current_timestamp,
         voter_address=voter_address,
@@ -601,44 +601,15 @@ func get_user_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ran
         user_params_len=user_voting_strategy_params_len,
         user_params=user_voting_strategy_params,
     )
-    let (voting_power_multiplier) = voting_power_multiplier_store.read()
-    let (voting_power_multiplier_uint256) = FeltUtils.felt_to_uint256(voting_power_multiplier)
-    let (user_voting_power) = SafeUint256.mul(raw_voting_power, voting_power_multiplier_uint256)
-
     return (user_voting_power)
-end
-
-# Reconstructs the voting param array
-func get_voting_strategy_params{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    voting_strategy_params_len : felt,
-    voting_strategy_params : felt*,
-    index : felt,
-) -> (voting_strategy_params_len : felt, voting_strategy_params : felt*):
-    # The are no parameters so we just return an empty array
-    if voting_strategy_params_len == 0:
-        return (0, voting_strategy_params)
-    end
-
-    let (voting_strategy_param) = voting_strategy_params_store.read(index)
-    assert voting_strategy_params[index - 1] = voting_strategy_param
-
-    # All parameters have been added to the array so we can return it
-    if index == voting_strategy_params_len:
-        return (voting_strategy_params_len, voting_strategy_params)
-    end
-
-    let (voting_strategy_params_len, voting_strategy_params) = get_voting_strategy_params(
-        voting_strategy_params_len, voting_strategy_params, index + 1
-    )
-    return (voting_strategy_params_len, voting_strategy_params)
 end
 
 # Decodes the array of house strategy params
 func decode_param_array{range_check_ptr}(strategy_params_len : felt, strategy_params : felt*) -> (
+    round_id : felt,
     proposal_period_start_timestamp : felt,
     proposal_period_duration : felt,
-    voting_duration : felt,
-    voting_power_multiplier : felt,
+    vote_period_duration : felt,
     winner_count : felt,
 ):
     assert_nn_le(5, strategy_params_len)
@@ -657,9 +628,9 @@ func populate_proposal_info_arr{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*
     current_proposal_id : felt,
     current_index : felt,
     acc: ProposalInfo*,
-) -> (proposal_info : ProposalInfo*):
+) -> (proposal_info_len : felt):
     if current_proposal_id == next_unused_proposal_nonce:
-        return (acc)
+        return (current_index + 1)
     end
 
     let (has_been_cancelled) = cancelled_proposals_store.read(current_proposal_id)
