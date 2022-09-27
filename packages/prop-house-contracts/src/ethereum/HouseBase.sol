@@ -12,7 +12,7 @@ import { Multicall } from './utils/Multicall.sol';
 abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgradeable {
     // prettier-ignore
     // print(get_selector_from_name("create_house_strategy"))
-    uint256 constant CREATE_STRATEGY_SELECTOR = 1377245372070234677925161100833704139216701383545709288970194406661484724761;
+    uint256 constant CREATE_STRATEGY_SELECTOR = 0x30b7e460d06ee4b7bb5f97430a8881944e86a98a4d7916a524d07c761ac4219;
 
     /// @notice A unique identifier
     bytes32 public immutable id;

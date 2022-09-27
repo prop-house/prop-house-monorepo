@@ -52,7 +52,7 @@ end
 
 # Receives a voting strategy registration and stores it in the registry.
 @l1_handler
-func handle_register_voting_strategy{
+func register_voting_strategy{
     syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt
 }(
     from_address : felt,
