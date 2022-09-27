@@ -16,7 +16,7 @@ import fs from 'fs';
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined
+    private readonly signer: Signer | Wallet | undefined = undefined,
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {
@@ -39,6 +39,15 @@ export class PropHouseWrapper {
   async getAuctions(): Promise<StoredAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
+      return rawAuctions.map(StoredAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getAuctionsForCommunity(id: number): Promise<StoredAuction[]> {
+    try {
+      const rawAuctions = (await axios.get(`${this.host}/auctions/community/${id}`)).data;
       return rawAuctions.map(StoredAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;
@@ -70,8 +79,7 @@ export class PropHouseWrapper {
 
   async getAuctionProposals(auctionId: number) {
     try {
-      return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`))
-        .data;
+      return (await axios.get(`${this.host}/auctions/${auctionId}/proposals`)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -92,8 +100,8 @@ export class PropHouseWrapper {
 
     try {
       // create payload of all votes
-      const filtered = votes.filter((v) => v.weight > 0);
-      const payload = { ...filtered.map((v) => v.toPayload()) };
+      const filtered = votes.filter(v => v.weight > 0);
+      const payload = { ...filtered.map(v => v.toPayload()) };
       const jsonPayload = JSON.stringify(payload);
 
       // sign pay load and use for all votes
@@ -102,14 +110,8 @@ export class PropHouseWrapper {
       let responses = [];
 
       for (const vote of votes) {
-        const signedPayload = await vote.presignedPayload(
-          this.signer,
-          jsonPayload,
-          signature
-        );
-        responses.push(
-          (await axios.post(`${this.host}/votes`, signedPayload)).data
-        );
+        const signedPayload = await vote.presignedPayload(this.signer, jsonPayload, signature);
+        responses.push((await axios.post(`${this.host}/votes`, signedPayload)).data);
       }
       return responses;
     } catch (e: any) {

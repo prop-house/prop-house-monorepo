@@ -11,6 +11,7 @@ import { buildExtendedCommunity } from './community.utils';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { getNumVotes } from 'prop-house-communities';
 import { AuctionsService } from 'src/auction/auctions.service';
+import { Community } from './community.entity';
 
 @Controller()
 export class CommunitiesController {
@@ -24,7 +25,7 @@ export class CommunitiesController {
     const communities = await this.communitiesService.findAllExtended();
 
     // Convert some property values to numbers for backwards compatibility
-    return communities.map(c => {
+    return communities.map((c) => {
       c.numAuctions = Number(c.numAuctions) || 0;
       c.ethFunded = Number(c.ethFunded) || 0;
       c.numProposals = Number(c.numProposals) || 0;
@@ -41,11 +42,11 @@ export class CommunitiesController {
   }
 
   @Get('communities/name/:name')
-  async findOneByName(@Param('name') name: string): Promise<ExtendedCommunity> {
+  async findOneByName(@Param('name') name: string): Promise<Community> {
     const foundCommunity = await this.communitiesService.findByName(name);
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
-    return buildExtendedCommunity(foundCommunity);
+    return foundCommunity;
   }
 
   @Get(':address')

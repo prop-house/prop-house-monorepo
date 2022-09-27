@@ -54,19 +54,6 @@ const House = () => {
           ? await client.current.getCommunity(slug)
           : await client.current.getCommunityWithName(slugToName(slug));
 
-        // Number of rounds under a certain status type in a House
-        setNumberOfRoundsPerStatus([
-          // total number of rounds
-          community.auctions.length,
-          // number of rounds accepting props
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps)
-            .length,
-          // number of rounds in voting state
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
-          // number of rounds in that are over
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
-        ]);
-
         setIsLoading(false);
 
         if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
@@ -83,6 +70,26 @@ const House = () => {
       dispatch(setActiveProposals([]));
     };
   }, [slug, dispatch, isValidAddress]);
+
+  useEffect(() => {
+    if (!community) return;
+
+    const fetchRounds = async () => {
+      const rounds = await client.current.getAuctionsForCommunity(community.id);
+      // Number of rounds under a certain status type in a House
+      setNumberOfRoundsPerStatus([
+        // total number of rounds
+        rounds.length,
+        // number of rounds accepting props
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps).length,
+        // number of rounds in voting state
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
+        // number of rounds in that are over
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
+      ]);
+    };
+    fetchRounds();
+  }, [community]);
 
   useEffect(() => {
     community &&
@@ -136,7 +143,7 @@ const House = () => {
           <div className={classes.houseContainer}>
             <Container>
               <Row>
-                {community ? (
+                {community && rounds ? (
                   rounds && rounds.length > 0 ? (
                     sortRoundByStatus(rounds).map((round, index) => (
                       <Col key={index} xl={6}>
