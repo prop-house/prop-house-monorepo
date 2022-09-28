@@ -37,7 +37,7 @@ const Home = () => {
 
   // fetch communities & proposals
   useEffect(() => {
-    const getCommunitiesAndProposals = async () => {
+    const getCommunities = async () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
 
@@ -53,7 +53,7 @@ const Home = () => {
 
       setIsLoading(false);
     };
-    getCommunitiesAndProposals();
+    getCommunities();
   }, []);
 
   return (
