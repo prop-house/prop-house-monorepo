@@ -32,7 +32,6 @@ export class Community {
   @Column({ nullable: true })
   description: string;
 
-  // TODO: refactor to not use deprecated decorator
   @RelationId((community: Community) => community.auctions)
   numAuctions: number;
 
