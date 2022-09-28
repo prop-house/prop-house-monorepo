@@ -189,12 +189,14 @@ end
 
 # Casts votes on one or more proposals
 @external
-func cast_votes{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
+func vote{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
     voter_address : Address,
     proposal_votes_len : felt,
     proposal_votes : ProposalVote*,
-    user_voting_strategy_params_len : felt,
-    user_voting_strategy_params : felt*,
+    used_voting_strategy_hash_indexes_len : felt,
+    used_voting_strategy_hash_indexes : felt*,
+    user_voting_strategy_params_flat_len : felt,
+    user_voting_strategy_params_flat : felt*,
 ) -> ():
     alloc_locals
 
@@ -221,11 +223,18 @@ func cast_votes{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_pt
         assert_le(vote_period_start_timestamp, current_timestamp)
     end
 
-    let (user_voting_power) = get_user_voting_power(
+    # Reconstruct the voting params 2D array (1 sub array per strategy) from the flattened version.
+    let (user_voting_strategy_params_all : Immutable2DArray) = Array2D.construct_array2d(
+        user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
+    )
+
+    let (user_voting_power) = get_cumulative_voting_power(
         snapshot_timestamp,
         voter_address,
-        user_voting_strategy_params_len,
-        user_voting_strategy_params,
+        used_voting_strategy_hash_indexes_len,
+        used_voting_strategy_hash_indexes,
+        user_voting_strategy_params_all,
+        0,
     )
     let (no_voting_power) = uint256_eq(Uint256(0, 0), user_voting_power)
 
@@ -530,6 +539,7 @@ func unchecked_add_voting_strategy_hashes{
     end
 end
 
+# Fetches the auth strategy at the provided index
 func get_auth_strategy(index : felt) -> (strategy_addr: felt):
     let (data_address) = get_label_location(strategies)
     return ([data_address + index])
@@ -539,16 +549,17 @@ func get_auth_strategy(index : felt) -> (strategy_addr: felt):
     dw ETH_SIG_AUTH_STRATEGY
 end
 
-func is_valid_auth_strategy(caller_address : felt, curr_index : felt, num_strategies : felt) -> (is_valid : felt):
+# Determines whether the provided address is a valid auth strategy
+func is_valid_auth_strategy(addr : felt, curr_index : felt, num_strategies : felt) -> (is_valid : felt):
     if num_strategies == curr_index:
         return (FALSE)
     end
 
     let (strategy_addr) = get_auth_strategy(curr_index)
-    if caller_address == strategy_addr:
+    if addr == strategy_addr:
         return (TRUE)
     end
-    return is_valid_auth_strategy(caller_address, curr_index + 1, num_strategies)
+    return is_valid_auth_strategy(addr, curr_index + 1, num_strategies)
 end
 
 # Throws if the caller address is not a member of the set of whitelisted auth strategies
@@ -576,24 +587,101 @@ func assert_round_active{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range
     return ()
 end
 
-# Computes the voting power of a user.
-func get_user_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
+# Asserts that the array does not contain any duplicates.
+# O(N^2) as it loops over each element N times.
+func assert_no_duplicates{}(array_len : felt, array : felt*):
+    if array_len == 0:
+        return ()
+    else:
+        let to_find = array[0]
+
+        # For each element in the array, try to find
+        # this element in the rest of the array
+        let (found) = find(to_find, array_len - 1, &array[1])
+
+        # If the element was found, we have found a duplicate.
+        # Raise an error!
+        with_attr error_message("Duplicate entry found"):
+            assert found = FALSE
+        end
+
+        assert_no_duplicates(array_len - 1, &array[1])
+        return ()
+    end
+end
+
+# Tries to find `to_find` in `array`. Returns `TRUE` if it finds it, else returns `FALSE`.
+func find{}(to_find : felt, array_len : felt, array : felt*) -> (found : felt):
+    if array_len == 0:
+        return (FALSE)
+    else:
+        if to_find == array[0]:
+            return (TRUE)
+        else:
+            return find(to_find, array_len - 1, array + 1)
+        end
+    end
+end
+
+# Computes the cumulated voting power of a user by iterating over the voting strategies of `used_voting_strategy_hash_indexes`.
+func get_cumulative_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
     current_timestamp : felt,
     voter_address : Address,
-    user_voting_strategy_params_len : felt,
-    user_voting_strategy_params : felt*,
-) -> (user_voting_power : Uint256):
+    used_voting_strategy_hash_indexes_len : felt,
+    used_voting_strategy_hash_indexes : felt*,
+    user_voting_strategy_params_all : Immutable2DArray,
+    index : felt,
+) -> (voting_power : Uint256):
+    # Make sure there are no duplicates to avoid an attack where people double count a voting strategy
+    assert_no_duplicates(used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes)
+
+    return unchecked_get_cumulative_voting_power(
+        current_timestamp,
+        voter_address,
+        used_voting_strategy_hash_indexes_len,
+        used_voting_strategy_hash_indexes,
+        user_voting_strategy_params_all,
+        index,
+    )
+end
+
+# Actual computation of voting power. Duplicates are checked in `get_cumulative_voting_power`.
+func unchecked_get_cumulative_voting_power{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr
+}(
+    current_timestamp : felt,
+    voter_address : Address,
+    used_voting_strategy_hash_indexes_len : felt,
+    used_voting_strategy_hash_indexes : felt*,
+    user_voting_strategy_params_all : Immutable2DArray,
+    index : felt,
+) -> (voting_power : Uint256):
     alloc_locals
 
-    # TODO: Support multiple voting strategies
-    let (voting_strategy_hash) = voting_strategy_hashes_store.read(0)
-    let (voting_strategy, voting_strategy_params_len, voting_strategy_params) = IVotingStrategyRegistry.get_voting_strategy(
+    if used_voting_strategy_hash_indexes_len == 0:
+        # Reached the end, stop iteration
+        return (Uint256(0, 0))
+    end
+
+    let strategy_hash_index = used_voting_strategy_hash_indexes[0]
+
+    let (voting_strategy_hash) = voting_strategy_hashes_store.read(strategy_hash_index)
+    let (voting_strategy_address, voting_strategy_params_len, voting_strategy_params) = IVotingStrategyRegistry.get_voting_strategy(
         contract_address=VOTING_STRATEGY_REGISTRY,
         strategy_hash=voting_strategy_hash,
     )
 
+    with_attr error_message("Invalid voting strategy"):
+        assert_not_zero(voting_strategy_address)
+    end
+
+    # Extract voting params array for the voting strategy specified by the index
+    let (user_voting_strategy_params_len, user_voting_strategy_params) = Array2D.get_sub_array(
+        user_voting_strategy_params_all, index
+    )
+
     let (user_voting_power) = IVotingStrategy.get_voting_power(
-        contract_address=voting_strategy,
+        contract_address=voting_strategy_address,
         timestamp=current_timestamp,
         voter_address=voter_address,
         params_len=voting_strategy_params_len,
@@ -601,7 +689,18 @@ func get_user_voting_power{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, ran
         user_params_len=user_voting_strategy_params_len,
         user_params=user_voting_strategy_params,
     )
-    return (user_voting_power)
+
+    let (additional_voting_power) = get_cumulative_voting_power(
+        current_timestamp,
+        voter_address,
+        used_voting_strategy_hash_indexes_len - 1,
+        &used_voting_strategy_hash_indexes[1],
+        user_voting_strategy_params_all,
+        index + 1,
+    )
+
+    let (voting_power) = SafeUint256.add(user_voting_power, additional_voting_power)
+    return (voting_power)
 end
 
 # Decodes the array of house strategy params
