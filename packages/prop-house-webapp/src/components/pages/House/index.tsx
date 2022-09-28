@@ -53,6 +53,7 @@ const House = () => {
     fetchCommunity();
   }, [slug, dispatch]);
 
+  // fetch rounds
   useEffect(() => {
     if (!community) return;
 

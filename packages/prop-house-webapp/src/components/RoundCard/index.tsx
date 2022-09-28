@@ -17,6 +17,8 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
+import { useAppDispatch } from '../../hooks';
+import { setActiveRound } from '../../state/slices/propHouse';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -24,19 +26,18 @@ const RoundCard: React.FC<{
   const { round } = props;
   const { t } = useTranslation();
   let navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <>
       <div
         onClick={e => {
+          dispatch(setActiveRound(round));
           if (cmdPlusClicked(e)) {
             openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
             return;
           }
-          navigate(`${nameToSlug(round.title)}`, {
-            replace: false,
-            state: { round },
-          });
+          navigate(`${nameToSlug(round.title)}`);
         }}
       >
         <Card

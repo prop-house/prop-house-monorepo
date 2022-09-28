@@ -48,26 +48,6 @@ const FullRound: React.FC<{
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch voting power for user
-  useEffect(() => {
-    if (!account || !library || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const votes = await getNumVotes(
-          account,
-          community.contractAddress,
-          library,
-          auction.balanceBlockTag,
-        );
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, library, dispatch, community, auction.balanceBlockTag]);
-
   // fetch proposals
   useEffect(() => {
     const fetchAuctionProposals = async () => {
@@ -88,6 +68,26 @@ const FullRound: React.FC<{
       dispatch(setActiveProposals([]));
     };
   }, [auction.id, dispatch, account, auction]);
+
+  // fetch voting power for user
+  useEffect(() => {
+    if (!account || !library || !community) return;
+
+    const fetchVotes = async () => {
+      try {
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library,
+          auction.balanceBlockTag,
+        );
+        dispatch(setVotingPower(votes));
+      } catch (e) {
+        console.log('error fetching votes: ', e);
+      }
+    };
+    fetchVotes();
+  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
