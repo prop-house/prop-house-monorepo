@@ -1,4 +1,8 @@
-import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuction,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
@@ -23,8 +27,9 @@ import {
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
+  proposals: StoredProposalWithVotes[];
 }> = props => {
-  const { auction } = props;
+  const { auction, proposals } = props;
   const { account, library } = useEthers();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -39,7 +44,6 @@ const RoundContent: React.FC<{
 
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));

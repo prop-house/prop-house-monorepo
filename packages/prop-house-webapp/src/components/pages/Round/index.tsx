@@ -4,13 +4,19 @@ import RoundHeader from '../../RoundHeader';
 import { useEffect, useRef } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity, setActiveRound } from '../../../state/slices/propHouse';
+import {
+  setActiveCommunity,
+  setActiveProposals,
+  setActiveRound,
+} from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
 import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
+import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
+import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 
 const Round = () => {
   const location = useLocation();
@@ -20,8 +26,9 @@ const Round = () => {
   const dispatch = useAppDispatch();
   const { library } = useEthers();
 
-  const round = useAppSelector(state => state.propHouse.activeRound);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -44,6 +51,27 @@ const Round = () => {
     if (!round) fetchCommunityAndRound();
   }, [communityName, dispatch, roundName, round]);
 
+  // fetch proposals
+  useEffect(() => {
+    if (!round) return;
+
+    const fetchAuctionProposals = async () => {
+      const proposals = await client.current.getAuctionProposals(round.id);
+      dispatch(setActiveProposals(proposals));
+
+      // default sorting method is random, unless the auction is over, in which case its by votes
+      dispatchSortProposals(
+        dispatch,
+        auctionStatus(round) === AuctionStatus.AuctionEnded ? SortType.VoteCount : SortType.Random,
+        false,
+      );
+    };
+    fetchAuctionProposals();
+    return () => {
+      dispatch(setActiveProposals([]));
+    };
+  }, [dispatch, round]);
+
   return (
     <>
       <Container>
@@ -61,8 +89,8 @@ const Round = () => {
       <div style={{ background: '#f5f5f5' }}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {round ? (
-              <RoundContent auction={round} />
+            {round && proposals ? (
+              <RoundContent auction={round} proposals={proposals} />
             ) : (
               <RoundMessage message="No rounds available" />
             )}
