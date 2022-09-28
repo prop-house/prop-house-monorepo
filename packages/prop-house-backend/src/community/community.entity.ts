@@ -35,9 +35,7 @@ export class Community {
   @RelationCount((community: Community) => community.auctions)
   numAuctions: number;
 
-  @OneToMany(() => Auction, (auction) => auction.community, {
-    eager: true,
-  })
+  @OneToMany(() => Auction, (auction) => auction.community)
   @JoinColumn()
   auctions: Auction[];
 

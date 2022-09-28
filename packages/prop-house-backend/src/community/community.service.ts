@@ -41,26 +41,20 @@ export class CommunitiesService {
   }
 
   findOne(id: number): Promise<Community> {
-    return this.communitiesRepository.findOne(id, {
-      relations: ['auctions'],
-      where: { visible: true },
-    });
+    return this.communitiesRepository.findOne(id, {});
   }
 
   findByAddress(address: string): Promise<Community> {
     return this.communitiesRepository.findOne({
       where: {
         contractAddress: address,
-        visible: true,
       },
-      relations: ['auctions'],
     });
   }
 
   findByName(name: string): Promise<Community> {
     return this.communitiesRepository.findOne({
       where: `"name" ILIKE '${name}'`, // case insensitive comparison
-      relations: ['auctions'],
     });
   }
 
