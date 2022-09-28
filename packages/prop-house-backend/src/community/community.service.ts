@@ -24,20 +24,9 @@ export class CommunitiesService {
   }
 
   findAllExtended(): Promise<ExtendedCommunity[]> {
-    return this.communitiesRepository
-      .createQueryBuilder('c')
-      .select('c.*')
-      .addSelect('SUM(a."numAuctions")', 'numAuctions')
-      .addSelect('SUM(a."ethFunded")', 'ethFunded')
-      .addSelect('SUM(p."numProposals")', 'numProposals')
-      .leftJoin(
-        this.auctionCountAndFundingSubquery,
-        'a',
-        'a."communityId" = c.id',
-      )
-      .leftJoin(this.proposalCountSubquery, 'p', 'p."auctionId" = a.id')
-      .groupBy('c.id')
-      .getRawMany();
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    ).getRawMany();
   }
 
   findOne(id: number): Promise<Community> {
@@ -53,9 +42,11 @@ export class CommunitiesService {
   }
 
   findByName(name: string): Promise<Community> {
-    return this.communitiesRepository.findOne({
-      where: `"name" ILIKE '${name}'`, // case insensitive comparison
-    });
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    )
+      .where('c.name ILIKE :name', { name })
+      .getRawOne();
   }
 
   async remove(id: number): Promise<void> {
@@ -73,6 +64,21 @@ export class CommunitiesService {
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
     return getNumVotes(address, community.contractAddress, provider, blockTag);
+  }
+
+  private extendedAuctionQuery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('c.*')
+      .addSelect('SUM(a."numAuctions")', 'numAuctions')
+      .addSelect('SUM(a."ethFunded")', 'ethFunded')
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(
+        this.auctionCountAndFundingSubquery,
+        'a',
+        'a."communityId" = c.id',
+      )
+      .leftJoin(this.proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('c.id');
   }
 
   private auctionCountAndFundingSubquery(qb: SelectQueryBuilder<Community>) {
