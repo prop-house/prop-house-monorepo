@@ -49,7 +49,7 @@ const StatusFilters: React.FC<{
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
 
-  const handleClick = (status: number) => {
+  const handleClick = (status: RoundStatus) => {
     setInput('');
     setCurrentRoundStatus(status);
   };

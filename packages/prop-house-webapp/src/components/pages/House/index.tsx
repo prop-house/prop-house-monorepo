@@ -31,6 +31,7 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   const [rounds, setRounds] = useState<StoredAuction[]>([]);
+  const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuction[]>([]);
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -74,29 +75,26 @@ const House = () => {
   }, [community]);
 
   useEffect(() => {
-    community &&
+    rounds &&
       // check if searching via input
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus > 0
+          currentRoundStatus !== RoundStatus.AllRounds
           ? // filter by that round
-            setRounds(
-              community.auctions.filter(round => auctionStatus(round) === currentRoundStatus),
-            )
+            setRoundsOnDisplay(rounds.filter(round => auctionStatus(round) === currentRoundStatus))
           : // revert to all rounds
-            setRounds(community.auctions)
+            setRoundsOnDisplay(rounds)
         : // filter by search input that matches round title or description
-          setRounds(
-            community.auctions.filter(round => {
+          setRoundsOnDisplay(
+            rounds.filter(round => {
               const query = input.toLowerCase();
-
               return (
                 round.title.toLowerCase().indexOf(query) >= 0 ||
                 round.description?.toLowerCase().indexOf(query) >= 0
               );
             }),
           ));
-  }, [community, input, currentRoundStatus]);
+  }, [input, currentRoundStatus, rounds]);
 
   return (
     <>
@@ -125,9 +123,9 @@ const House = () => {
           <div className={classes.houseContainer}>
             <Container>
               <Row>
-                {community && rounds ? (
-                  rounds.length > 0 ? (
-                    sortRoundByStatus(rounds).map((round, index) => (
+                {roundsOnDisplay ? (
+                  roundsOnDisplay.length > 0 ? (
+                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
                       <Col key={index} xl={6}>
                         <RoundCard round={round} />
                       </Col>
