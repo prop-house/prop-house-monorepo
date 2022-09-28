@@ -21,7 +21,7 @@ import {
   setVotingPower,
 } from '../../state/slices/voting';
 
-const FullRound: React.FC<{
+const RoundContent: React.FC<{
   auction: StoredAuction;
 }> = props => {
   const { auction } = props;
@@ -165,4 +165,4 @@ const FullRound: React.FC<{
   );
 };
 
-export default FullRound;
+export default RoundContent;

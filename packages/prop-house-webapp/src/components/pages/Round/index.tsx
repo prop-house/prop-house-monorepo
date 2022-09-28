@@ -9,7 +9,7 @@ import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
-import FullRound from '../../FullRound';
+import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
 
 const Round = () => {
@@ -61,7 +61,11 @@ const Round = () => {
       <div style={{ background: '#f5f5f5' }}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {round ? <FullRound auction={round} /> : <RoundMessage message="No rounds available" />}
+            {round ? (
+              <RoundContent auction={round} />
+            ) : (
+              <RoundMessage message="No rounds available" />
+            )}
           </div>
         </Container>
       </div>
