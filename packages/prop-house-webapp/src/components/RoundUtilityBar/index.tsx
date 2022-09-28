@@ -16,6 +16,7 @@ import { useState } from 'react';
 import dayjs from 'dayjs';
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
+import TruncateThousands from '../TruncateThousands';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuction;
@@ -87,7 +88,8 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemTitle}>{t('funding')}</div>
 
             <div className={classes.itemData}>
-              {auction ? `${auction.fundingAmount.toFixed(2)} Ξ × ${auction.numWinners}` : '-'}
+              <TruncateThousands amount={auction.fundingAmount} />
+              {` ${auction.currencyType} × ${auction.numWinners}`}
             </div>
           </div>
 

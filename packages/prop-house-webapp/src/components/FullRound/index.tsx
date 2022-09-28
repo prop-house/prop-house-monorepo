@@ -1,3 +1,4 @@
+import classes from './FullRound.module.css';
 import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
@@ -14,12 +15,18 @@ import RoundMessage from '../RoundMessage';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
-import PropCardsAndModules from '../PropCardsAndModules';
 import {
   clearVoteAllotments,
   setNumSubmittedVotes,
   setVotingPower,
 } from '../../state/slices/voting';
+import { Row, Col } from 'react-bootstrap';
+import ProposalCard from '../ProposalCard';
+import { cardStatus } from '../../utils/cardStatus';
+import getWinningIds from '../../utils/getWinningIds';
+import isWinner from '../../utils/isWinner';
+import { useTranslation } from 'react-i18next';
+import RoundModules from '../RoundModules';
 
 const FullRound: React.FC<{
   auction: StoredAuction;
@@ -37,12 +44,16 @@ const FullRound: React.FC<{
     image: '',
   });
 
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+
+  const winningIds = getWinningIds(proposals, auction);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -153,11 +164,32 @@ const FullRound: React.FC<{
       ) : (
         <>
           {community && (
-            <PropCardsAndModules
-              auction={auction}
-              community={community}
-              setShowVotingModal={setShowVoteConfirmationModal}
-            />
+            <Row className={classes.propCardsRow}>
+              <Col xl={8} className={classes.propCardsCol}>
+                {proposals &&
+                  (proposals.length === 0 ? (
+                    <RoundMessage message={t('submittedProps')} />
+                  ) : (
+                    proposals.map((proposal, index) => {
+                      return (
+                        <Col key={index}>
+                          <ProposalCard
+                            proposal={proposal}
+                            auctionStatus={auctionStatus(auction)}
+                            cardStatus={cardStatus(votingPower > 0, auction)}
+                            winner={winningIds && isWinner(winningIds, proposal.id)}
+                          />
+                        </Col>
+                      );
+                    })
+                  ))}
+              </Col>
+              <RoundModules
+                auction={auction}
+                community={community}
+                setShowVotingModal={setShowVoteConfirmationModal}
+              />
+            </Row>
           )}
         </>
       )}

@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
 
 const PropCardVotingModule: React.FC<{
@@ -31,6 +31,12 @@ const PropCardVotingModule: React.FC<{
 
   const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
 
+  useEffect(() => {
+    // clear input on successful vote
+    setVoteCount(0);
+  }, [submittedVotes]);
+
+  // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
     e.stopPropagation();
     setVoteCount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
@@ -44,6 +50,7 @@ const PropCardVotingModule: React.FC<{
     );
   };
 
+  // handle votes by text input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));

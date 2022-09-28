@@ -1,66 +1,10 @@
-.auctionHeader {
-  margin-bottom: 0 !important;
-  border-bottom-left-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.05) !important;
+.propCardsRow {
+  width: 100%;
 }
-
-.customCardHeader {
-  margin-top: 0 !important;
-  border-top: 0 !important;
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
-}
-
-.dividerSection {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  color: rgba(0, 0, 0, 0.3);
-  margin: 0.2rem 0;
-}
-
-.proposalTitle {
-  color: rgba(0, 0, 0, 0.3);
-  font-size: 16px;
-  font-weight: medium;
-}
-
-.dividerSection span {
-  margin-left: 0.5rem;
-}
-
-.dividerSection span:hover {
-  cursor: pointer;
-}
-
-.alertWrapper {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.alertWrapper p,
-.alertWrapper button {
-  margin: 0;
-}
-
-.connectedCopy {
-  color: var(--brand-gray);
-  font-weight: 500;
-}
-
-.noPropCard {
-  font-size: 14px;
-  color: var(--brand-black-transparent);
-  text-align: center;
-}
-
-@media (max-width: 992px) {
-  .alertWrapper button {
-    margin-top: 1rem;
+@media (max-width: 993px) {
+  .propCardsRow {
+    display: flex;
+    flex-direction: column-reverse;
+    width: -webkit-fill-available;
   }
 }

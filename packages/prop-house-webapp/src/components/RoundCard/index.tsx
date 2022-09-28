@@ -17,6 +17,7 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
+import TruncateThousands from '../TruncateThousands';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -61,7 +62,8 @@ const RoundCard: React.FC<{
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
                 <span className="">
-                  {round.fundingAmount} {round.currencyType}
+                  <TruncateThousands amount={round.fundingAmount} />
+                  {` ${round.currencyType}`}
                 </span>
                 <span className={classes.xDivide}>{' × '}</span>
                 <span className="">{round.numWinners}</span>
