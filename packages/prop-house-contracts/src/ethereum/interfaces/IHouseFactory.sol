@@ -6,8 +6,6 @@ interface IHouseFactory {
     /// @notice Thrown when an implementation contract has not been registered as a deployment target
     error InvalidDeploymentTarget();
 
-    // TODO: Also emit house type...
-
     /// @notice Emitted when a house is created
     event HouseCreated(address indexed implementation, address indexed house);
 

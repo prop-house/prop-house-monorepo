@@ -10,8 +10,6 @@ from src.starknet.lib.eth_tx import EthTx
 from src.starknet.lib.session_key import SessionKey
 from src.starknet.lib.stark_eip191 import StarkEIP191
 
-# TODO: Move these to constants file?
-
 # print(get_selector_from_name("propose"))
 const PROPOSAL_SELECTOR = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f4ad8d220b81
 # print(get_selector_from_name("vote"))
