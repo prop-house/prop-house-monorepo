@@ -90,7 +90,7 @@ const RoundCard: React.FC<{
 
             <div className={clsx(classes.section, classes.propSection)}>
               <p className={classes.title}> {t('proposals2')}</p>
-              <p className={classes.info}>{round.proposals.length}</p>
+              <p className={classes.info}>{round.numProposals}</p>
             </div>
           </div>
         </Card>

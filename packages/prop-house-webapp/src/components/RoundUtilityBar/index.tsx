@@ -16,6 +16,7 @@ import { useState } from 'react';
 import dayjs from 'dayjs';
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
+import { useAppSelector } from '../../hooks';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuction;
@@ -24,6 +25,7 @@ export interface RoundUtilityBarProps {
 const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const allowSortByVotes = auctionVoting || auctionEnded;
 
@@ -93,9 +95,9 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
           <div className={clsx(classes.item, classes.proposalCountItem)}>
             <div className={classes.itemTitle}>
-              {auction.proposals.length === 1 ? 'Proposal' : 'Proposals'}
+              {proposals && proposals.length === 1 ? 'Proposal' : 'Proposals'}
             </div>
-            <div className={classes.itemData}>{auction.proposals.length}</div>
+            <div className={classes.itemData}>{proposals && proposals.length}</div>
           </div>
         </Col>
       </div>

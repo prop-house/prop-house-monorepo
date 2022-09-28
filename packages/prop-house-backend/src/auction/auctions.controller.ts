@@ -49,10 +49,11 @@ export class AuctionsController {
 
   @Get('/community/:id')
   async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
-    const foundAuction = await this.auctionsService.findAllForCommunity(id);
-    if (!foundAuction)
+    const auctions = await this.auctionsService.findAllForCommunity(id);
+    if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
-    return foundAuction;
+    auctions.map((a) => (a.numProposals = Number(a.numProposals) || 0));
+    return auctions;
   }
 
   @Get(':id/proposals')

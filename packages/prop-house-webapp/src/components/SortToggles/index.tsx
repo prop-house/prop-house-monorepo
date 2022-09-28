@@ -7,12 +7,15 @@ import { IoArrowDown, IoArrowUp } from 'react-icons/io5';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import { useAppSelector } from '../../hooks';
 
 const SortToggles: React.FC<{
   auction: StoredAuction;
 }> = props => {
   const { t } = useTranslation();
   const { auction } = props;
+
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
@@ -40,7 +43,8 @@ const SortToggles: React.FC<{
             className={clsx(
               classes.sortItem,
               votesSorted && classes.active,
-              (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
+              (!auction || auctionNotStarted || (proposals && proposals.length <= 1)) &&
+                classes.disabled,
             )}
           >
             <div className={classes.sortLabel}>{t('votes')}</div>
@@ -58,7 +62,8 @@ const SortToggles: React.FC<{
           className={clsx(
             classes.sortItem,
             datesSorted && classes.active,
-            (!auction || auctionNotStarted || auction.proposals.length <= 1) && classes.disabled,
+            (!auction || auctionNotStarted || (proposals && proposals.length <= 1)) &&
+              classes.disabled,
           )}
         >
           <div className={classes.sortLabel}>{t('created')}</div>
