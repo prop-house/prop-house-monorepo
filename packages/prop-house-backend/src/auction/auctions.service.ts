@@ -33,6 +33,16 @@ export class AuctionsService {
       .getRawMany();
   }
 
+  findWithNameForCommunity(name: string, id: number): Promise<Auction> {
+    const parsedName = name.replaceAll('-', ' '); // parse slug to name
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .where('a.title ILIKE :parsedName', { parsedName }) // case insensitive
+      .andWhere('a.community.id = :id', { id })
+      .getRawOne();
+  }
+
   findOne(id: number): Promise<Auction> {
     return this.auctionsRepository.findOne(id, {
       relations: ['proposals'],

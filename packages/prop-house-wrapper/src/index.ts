@@ -54,6 +54,20 @@ export class PropHouseWrapper {
     }
   }
 
+  async getAuctionWithNameForCommunity(
+    auctionName: string,
+    communityId: number,
+  ): Promise<StoredAuction> {
+    try {
+      const rawAuction = (
+        await axios.get(`${this.host}/auctions/${auctionName}/community/${communityId}`)
+      ).data;
+      return StoredAuction.FromResponse(rawAuction);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async getProposals(limit = 20, skip = 0, order: 'ASC' | 'DESC' = 'DESC') {
     try {
       const { data } = await axios.get(`${this.host}/proposals`, {

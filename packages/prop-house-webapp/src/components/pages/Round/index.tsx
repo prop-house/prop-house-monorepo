@@ -4,12 +4,13 @@ import RoundHeader from '../../RoundHeader';
 import { useEffect, useRef } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveRound } from '../../../state/slices/propHouse';
+import { setActiveCommunity, setActiveRound } from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
 import FullRound from '../../FullRound';
+import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
 
 const Round = () => {
   const location = useLocation();
@@ -28,13 +29,19 @@ const Round = () => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // if no round is found in store (ie round page is entry point), fetch round
+  // if no round is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
-    const fetchRound = async () => {
-      const round = await client.current.getAuction(1);
+    const fetchCommunityAndRound = async () => {
+      const community = await client.current.getCommunityWithName(slugToName(communityName));
+      const round = await client.current.getAuctionWithNameForCommunity(
+        nameToSlug(roundName),
+        community.id,
+      );
+      dispatch(setActiveCommunity(community));
       dispatch(setActiveRound(round));
     };
-    if (!round) fetchRound();
+
+    if (!round) fetchCommunityAndRound();
   }, [communityName, dispatch, roundName, round]);
 
   return (
