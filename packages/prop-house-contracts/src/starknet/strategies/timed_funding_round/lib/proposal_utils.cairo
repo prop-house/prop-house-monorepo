@@ -10,36 +10,46 @@ from src.starknet.strategies.timed_funding_round.lib.proposal_info import Propos
 
 namespace ProposalUtils:
     # Generate an array of uint256 leaves from the provided ProposalInfo array for the purposes
-    # of building a merkle tree. Format: keccak256(proposal_id, uint256(uint160(proposer_address)))
+    # of building a merkle tree. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
     # Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
     func generate_leaves{range_check_ptr, bitwise_ptr : BitwiseBuiltin*, keccak_ptr : felt*}(
         proposal_info_arr_len : felt,
         proposal_info_arr : ProposalInfo*,
+        awards_flat_len: felt,
+        awards_flat : Uint256*,
+        curr_award_index : felt,
         acc : Uint256*,
-        current_index : felt,
+        curr_proposal_index : felt,
     ) -> (leaves_ptr : Uint256*):
         alloc_locals
 
-        if current_index == proposal_info_arr_len:
+        if curr_proposal_index == proposal_info_arr_len:
             return (acc)
         end
 
         let (hash_input_arr : Uint256*) = alloc()
         let (proposal_id_uint256) = FeltUtils.felt_to_uint256(
-            proposal_info_arr[current_index].proposal_id
+            proposal_info_arr[curr_proposal_index].proposal_id
         )
         let (proposer_address_uint256) = FeltUtils.felt_to_uint256(
-            proposal_info_arr[current_index].proposer_address.value
+            proposal_info_arr[curr_proposal_index].proposer_address.value
         )
 
         assert hash_input_arr[0] = proposal_id_uint256
         assert hash_input_arr[1] = proposer_address_uint256
+        assert hash_input_arr[2] = awards_flat[curr_award_index]
+        assert hash_input_arr[3] = awards_flat[curr_award_index + 1]
 
         let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr)
 
-        assert acc[current_index] = hash
+        assert acc[curr_proposal_index] = hash
 
-        return generate_leaves(proposal_info_arr_len, proposal_info_arr, acc, current_index + 1)
+        # If awards length is 4, then there is only one award in the array. Do not iterate. Format: [offset, length, asset_id, amount]
+        if awards_flat_len == 4:
+            return generate_leaves(proposal_info_arr_len, proposal_info_arr, awards_flat_len, awards_flat, curr_award_index, acc, curr_proposal_index + 1)
+        end
+
+        return generate_leaves(proposal_info_arr_len, proposal_info_arr, awards_flat_len, awards_flat, curr_award_index + 2, acc, curr_proposal_index + 1)
     end
 
     # Given an array of proposal information ordered by ascending proposal ID, return the winning proposals.

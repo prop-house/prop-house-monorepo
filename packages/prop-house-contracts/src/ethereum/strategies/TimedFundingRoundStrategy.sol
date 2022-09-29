@@ -6,6 +6,7 @@ import { Uint256Utils } from '../utils/Uint256Utils.sol';
 import { IStrategy } from './interfaces/IStrategy.sol';
 
 contract TimedFundingRoundStrategy is IStrategy {
+    using { Uint256Utils.split } for uint256;
     using { Uint256Utils.toUint256 } for address;
 
     /// @notice Thrown when the proposal period start timestamp is not far enough in the future
@@ -60,11 +61,12 @@ contract TimedFundingRoundStrategy is IStrategy {
         (
             ,
             uint256 roundId,
+            bytes32 awardHash,
             bytes memory config,
             IFundingHouse.Award[] memory awards,
             uint256[] memory votingStrategies,
             uint256[] memory executionStrategies
-        ) = abi.decode(data, (address, uint256, bytes, IFundingHouse.Award[], uint256[], uint256[]));
+        ) = abi.decode(data, (address, uint256, bytes32, bytes, IFundingHouse.Award[], uint256[], uint256[]));
 
         TimedFundingRound memory round = abi.decode(config, (TimedFundingRound));
 
@@ -99,12 +101,13 @@ contract TimedFundingRoundStrategy is IStrategy {
         payload[1] = HOUSE_STRATEGY_CLASS_HASH;
 
         // Strategy Params
-        payload[2] = 5; // Strategy Params Length
+        payload[2] = 7; // Strategy Params Length
         payload[3] = roundId;
-        payload[4] = round.proposalPeriodStartTimestamp;
-        payload[5] = round.proposalPeriodDuration;
-        payload[6] = round.votePeriodDuration;
-        payload[7] = round.winnerCount;
+        (payload[4], payload[5]) = uint256(awardHash).split();
+        payload[6] = round.proposalPeriodStartTimestamp;
+        payload[7] = round.proposalPeriodDuration;
+        payload[8] = round.votePeriodDuration;
+        payload[9] = round.winnerCount;
 
         unchecked {
             // Voting Strategies

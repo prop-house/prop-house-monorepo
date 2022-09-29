@@ -6,6 +6,7 @@
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin, BitwiseBuiltin
 from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq
+from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
 from starkware.cairo.common.registers import get_label_location
 from starkware.cairo.common.bool import TRUE, FALSE
@@ -62,6 +63,10 @@ end
 
 @storage_var
 func round_state_store() -> (state : felt):
+end
+
+@storage_var
+func award_hash_store() -> (award_hash : Uint256):
 end
 
 @storage_var
@@ -142,6 +147,8 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 
     let (
         round_id,
+        award_hash_low,
+        award_hash_high,
         proposal_period_start_timestamp,
         proposal_period_duration,
         vote_period_duration,
@@ -153,6 +160,8 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     with_attr error_message("Invalid constructor parameters"):
         assert_le(current_timestamp, proposal_period_start_timestamp)
         assert_not_zero(round_id)
+        assert_not_zero(award_hash_low)
+        assert_not_zero(award_hash_high)
         assert_not_zero(proposal_period_duration)
         assert_not_zero(vote_period_duration)
         assert_not_zero(winner_count)
@@ -167,6 +176,7 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
 
     # Initialize the storage variables
     round_id_store.write(round_id)
+    award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high))
     proposal_period_start_timestamp_store.write(proposal_period_start_timestamp)
     proposal_period_end_timestamp_store.write(proposal_period_end_timestamp)
     vote_period_end_timestamp_store.write(vote_period_end_timestamp)
@@ -382,7 +392,7 @@ func finalize_round{
     range_check_ptr,
     ecdsa_ptr : SignatureBuiltin*,
     bitwise_ptr : BitwiseBuiltin*,
-}():
+}(awards_flat_len : felt, awards_flat : Uint256*):
     alloc_locals
 
     # Verify that the funding round is active
@@ -414,17 +424,33 @@ func finalize_round{
     let (keccak_ptr : felt*) = alloc()
     let keccak_ptr_start = keccak_ptr
 
-    let (leaves : Uint256*) = alloc()
-    ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(winners_len, winners, leaves, 0)
+    let (award_hash) = award_hash_store.read()
+    let (recovered_award_hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(awards_flat_len, awards_flat)
+    let (award_hashes_match) = uint256_eq(award_hash, recovered_award_hash)
+    with_attr error_message("Invalid award array"):
+        assert_not_zero(award_hashes_match)
+    end
 
-    # TODO: Pass in winning assets to this function and validate them against a hash of the awards
-    # That way, we only need to store the hash of the awards.
+    # First two indexes of the flattened awards array contain the offset and array length
+    let offset = 2
+
+    let (leaves : Uint256*) = alloc()
+    ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(
+        winners_len,
+        winners,
+        awards_flat_len,
+        awards_flat,
+        offset,
+        leaves,
+        0,
+    )
+
     let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
         winners_len, leaves, 0, MAX_LOG_N_WINNERS,
     )
     finalize_keccak(keccak_ptr_start, keccak_ptr)
 
-    let (round_id)= round_id_store.read()
+    let (round_id) = round_id_store.read()
 
     let (execution_params : felt*) = alloc()
     assert execution_params[0] = round_id
@@ -706,18 +732,22 @@ end
 # Decodes the array of house strategy params
 func decode_param_array{range_check_ptr}(strategy_params_len : felt, strategy_params : felt*) -> (
     round_id : felt,
+    award_hash_low : felt,
+    award_hash_high : felt,
     proposal_period_start_timestamp : felt,
     proposal_period_duration : felt,
     vote_period_duration : felt,
     winner_count : felt,
 ):
-    assert_nn_le(5, strategy_params_len)
+    assert_nn_le(7, strategy_params_len)
     return (
         strategy_params[0],
         strategy_params[1],
         strategy_params[2],
         strategy_params[3],
         strategy_params[4],
+        strategy_params[5],
+        strategy_params[6],
     )
 end
 
