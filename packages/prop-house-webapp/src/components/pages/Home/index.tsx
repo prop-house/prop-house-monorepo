@@ -6,6 +6,7 @@ import { Community, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/di
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../../hooks';
+import NavBar from '../../NavBar';
 
 export interface StatsProps {
   funded: number;
@@ -64,7 +65,10 @@ const Home = () => {
 
   return (
     <>
-      <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
+      <div className="gradientBg">
+        <NavBar />
+        <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
+      </div>
 
       <Container>
         <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
