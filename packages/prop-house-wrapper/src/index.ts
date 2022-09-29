@@ -47,7 +47,7 @@ export class PropHouseWrapper {
 
   async getAuctionsForCommunity(id: number): Promise<StoredAuction[]> {
     try {
-      const rawAuctions = (await axios.get(`${this.host}/auctions/community/${id}`)).data;
+      const rawAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
       return rawAuctions.map(StoredAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;

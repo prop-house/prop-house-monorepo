@@ -47,7 +47,7 @@ export class AuctionsController {
     return foundAuction;
   }
 
-  @Get('/community/:id')
+  @Get('/forCommunity/:id')
   async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
     const auctions = await this.auctionsService.findAllForCommunity(id);
     if (!auctions)
