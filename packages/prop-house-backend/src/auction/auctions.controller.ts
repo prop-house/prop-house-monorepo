@@ -47,6 +47,29 @@ export class AuctionsController {
     return foundAuction;
   }
 
+  @Get('/forCommunity/:id')
+  async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
+    const auctions = await this.auctionsService.findAllForCommunity(id);
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    auctions.map((a) => (a.numProposals = Number(a.numProposals) || 0));
+    return auctions;
+  }
+
+  @Get('/:name/community/:id')
+  async findWithNameForCommunity(
+    @Param('id') id: number,
+    @Param('name') name: string,
+  ): Promise<Auction> {
+    const auction = await this.auctionsService.findWithNameForCommunity(
+      name,
+      id,
+    );
+    if (!auction)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auction;
+  }
+
   @Get(':id/proposals')
   async find(@Param('id') id: number): Promise<Proposal[]> {
     const foundProposals = await this.proposalService.findAllWithAuctionId(id);

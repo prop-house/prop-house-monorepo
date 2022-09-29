@@ -74,7 +74,7 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
-  public readonly proposals: StoredProposal[];
+  public readonly numProposals: number;
   //@ts-ignore
   public readonly createdDate: Date;
 

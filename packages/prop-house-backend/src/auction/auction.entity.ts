@@ -9,6 +9,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   ManyToOne,
+  RelationId,
 } from 'typeorm';
 
 @Entity()
@@ -43,11 +44,12 @@ export class Auction {
   @Column()
   numWinners: number;
 
-  @OneToMany(() => Proposal, (proposal) => proposal.auction, {
-    eager: true,
-  })
+  @OneToMany(() => Proposal, (proposal) => proposal.auction)
   @JoinColumn()
   proposals: Proposal[];
+
+  @RelationId((auction: Auction) => auction.proposals)
+  numProposals: number;
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()

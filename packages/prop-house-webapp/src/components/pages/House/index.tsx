@@ -1,12 +1,11 @@
 import classes from './House.module.css';
 import { useLocation } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import HouseHeader from '../../HouseHeader';
 import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity, setActiveProposals } from '../../../state/slices/propHouse';
+import { setActiveCommunity } from '../../../state/slices/propHouse';
 
 import { slugToName } from '../../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -25,15 +24,14 @@ const House = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1, location.pathname.length);
 
-  const isValidAddress = slug && ethers.utils.isAddress(slug);
-  const dispatch = useAppDispatch();
   const { library } = useEthers();
-  const cleanedUp = useRef(false);
+  const dispatch = useAppDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  const [rounds, setRounds] = useState<StoredAuction[]>();
+  const [rounds, setRounds] = useState<StoredAuction[]>([]);
+  const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuction[]>([]);
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.Active);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,81 +45,69 @@ const House = () => {
   // fetch community
   useEffect(() => {
     const fetchCommunity = async () => {
-      try {
-        setIsLoading(true);
-        // fetch by address or name
-        const community = isValidAddress
-          ? await client.current.getCommunity(slug)
-          : await client.current.getCommunityWithName(slugToName(slug));
-
-        // Number of rounds under a certain status type in a House
-        setNumberOfRoundsPerStatus([
-          // number of active rounds (proposing & voting)
-          community.auctions.filter(
-            r =>
-              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-              auctionStatus(r) === AuctionStatus.AuctionVoting,
-          ).length,
-
-          // total number of rounds
-          community.auctions.length,
-        ]);
-
-        // if there are no active rounds, default filter by all rounds
-        community.auctions.filter(
-          r =>
-            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-            auctionStatus(r) === AuctionStatus.AuctionVoting,
-        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
-
-        // sort rounds
-        setRounds(community.auctions.sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1)));
-
-        setIsLoading(false);
-
-        if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
-        dispatch(setActiveCommunity(community));
-      } catch (e) {
-        setIsLoading(false);
-        console.log(e);
-      }
+      setIsLoading(true);
+      const community = await client.current.getCommunityWithName(slugToName(slug));
+      dispatch(setActiveCommunity(community));
+      setIsLoading(false);
     };
     fetchCommunity();
-    return () => {
-      cleanedUp.current = true;
-      dispatch(setActiveCommunity());
-      dispatch(setActiveProposals([]));
+  }, [slug, dispatch]);
+
+  // fetch rounds
+  useEffect(() => {
+    if (!community) return;
+
+    const fetchRounds = async () => {
+      const rounds = await client.current.getAuctionsForCommunity(community.id);
+      setRounds(rounds);
+      // Number of rounds under a certain status type in a House
+      setNumberOfRoundsPerStatus([
+        // total number of rounds
+        rounds.length,
+        // number of rounds accepting props
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps).length,
+        // number of rounds in voting state
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
+        // number of rounds in that are over
+        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
+      ]);
+      // if there are no active rounds, default filter by all rounds
+      rounds.filter(
+        r =>
+          auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+          auctionStatus(r) === AuctionStatus.AuctionVoting,
+      ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
     };
-  }, [slug, dispatch, isValidAddress]);
+    fetchRounds();
+  }, [community]);
 
   useEffect(() => {
-    community &&
+    rounds &&
       // check if searching via input
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
           currentRoundStatus > 0
           ? // filter by all rounds
-            setRounds(community.auctions)
+            setRoundsOnDisplay(rounds)
           : // filter by active rounds (proposing & voting)
-            setRounds(
-              community.auctions.filter(
+            setRoundsOnDisplay(
+              rounds.filter(
                 r =>
                   auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
                   auctionStatus(r) === AuctionStatus.AuctionVoting,
               ),
             )
         : // filter by search input that matches round title or description
-          setRounds(
-            community.auctions.filter(round => {
+          setRoundsOnDisplay(
+            rounds.filter(round => {
               const query = input.toLowerCase();
-
               return (
                 round.title.toLowerCase().indexOf(query) >= 0 ||
                 round.description?.toLowerCase().indexOf(query) >= 0
               );
             }),
           ));
-  }, [community, input, currentRoundStatus]);
+  }, [input, currentRoundStatus, rounds]);
 
   return (
     <>
@@ -150,9 +136,9 @@ const House = () => {
           <div className={classes.houseContainer}>
             <Container>
               <Row>
-                {community ? (
-                  rounds && rounds.length > 0 ? (
-                    sortRoundByStatus(rounds).map((round, index) => (
+                {roundsOnDisplay ? (
+                  roundsOnDisplay.length > 0 ? (
+                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
                       <Col key={index} xl={6}>
                         <RoundCard round={round} />
                       </Col>

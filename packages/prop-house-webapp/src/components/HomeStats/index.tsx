@@ -10,21 +10,21 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
   return (
     <div className={classes.statsContainer}>
       <div className={classes.stat}>
-        <CountUp start={0} end={stats.funded}>
+        <CountUp start={0} end={stats.accEthFunded}>
           {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
         </CountUp>
         <p className={classes.subtitle}>ETH funded</p>
       </div>
 
       <div className={classes.stat}>
-        <CountUp start={0} end={stats.votes}>
+        <CountUp start={0} end={stats.accRounds}>
           {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
         </CountUp>
-        <p className={classes.subtitle}>Total votes</p>
+        <p className={classes.subtitle}>Funding Rounds</p>
       </div>
 
       <div className={classes.stat}>
-        <CountUp start={0} end={stats.props}>
+        <CountUp start={0} end={stats.accProps}>
           {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
         </CountUp>
         <p className={classes.subtitle}>Submitted props</p>

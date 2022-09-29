@@ -1,5 +1,9 @@
-import classes from './FullRound.module.css';
-import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuction,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
+import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
@@ -28,10 +32,11 @@ import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 
-const FullRound: React.FC<{
+const RoundContent: React.FC<{
   auction: StoredAuction;
+  proposals: StoredProposalWithVotes[];
 }> = props => {
-  const { auction } = props;
+  const { auction, proposals } = props;
   const { account, library } = useEthers();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -47,7 +52,6 @@ const FullRound: React.FC<{
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -58,26 +62,6 @@ const FullRound: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
-
-  // fetch voting power for user
-  useEffect(() => {
-    if (!account || !library || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const votes = await getNumVotes(
-          account,
-          community.contractAddress,
-          library,
-          auction.balanceBlockTag,
-        );
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // fetch proposals
   useEffect(() => {
@@ -99,6 +83,26 @@ const FullRound: React.FC<{
       dispatch(setActiveProposals([]));
     };
   }, [auction.id, dispatch, account, auction]);
+
+  // fetch voting power for user
+  useEffect(() => {
+    if (!account || !library || !community) return;
+
+    const fetchVotes = async () => {
+      try {
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library,
+          auction.balanceBlockTag,
+        );
+        dispatch(setVotingPower(votes));
+      } catch (e) {
+        console.log('error fetching votes: ', e);
+      }
+    };
+    fetchVotes();
+  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
@@ -197,4 +201,4 @@ const FullRound: React.FC<{
   );
 };
 
-export default FullRound;
+export default RoundContent;
