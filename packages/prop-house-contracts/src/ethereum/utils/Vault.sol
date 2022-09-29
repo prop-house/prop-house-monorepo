@@ -21,8 +21,7 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
 
     /// @notice Deposits ETH
     function depositETH() external payable {
-        _creditInternalBalance(msg.sender, IAssetData.ETH.selector, msg.value);
-        emit Deposit(msg.sender, IAssetData.ETH.selector, ETH_ADDRESS, msg.value);
+        _depositETH(msg.sender);
     }
 
     /// @notice Deposits ERC20 tokens
@@ -264,6 +263,13 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         uint256 tokenId
     ) public view returns (uint256) {
         return balanceOf(account, AssetDataUtils.getAssetID(IAssetData.ERC1155Token.selector, token, tokenId));
+    }
+
+    /// @notice Deposits ETH
+    /// @param account The account address
+    function _depositETH(address account) internal {
+        _creditInternalBalance(account, IAssetData.ETH.selector, msg.value);
+        emit Deposit(account, IAssetData.ETH.selector, ETH_ADDRESS, msg.value);
     }
 
     /// @notice Transfers ETH to a recipient address

@@ -64,6 +64,10 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         );
         _addManyRoundInitiatorsToWhitelist(initiators);
         _addManyVotingStrategiesToWhitelist(votingStrategies);
+
+        if (msg.value != 0) {
+            _depositETH(creator);
+        }
     }
 
     /// @notice Add a voting strategy to the whitelist
