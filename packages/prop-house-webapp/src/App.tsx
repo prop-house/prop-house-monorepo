@@ -42,7 +42,8 @@ function App() {
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
         <div className={bgColorForPage(location.pathname)}>
-          <NavBar />
+          {location.pathname !== '/' && <NavBar />}
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
