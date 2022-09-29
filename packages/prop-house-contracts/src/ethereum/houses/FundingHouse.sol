@@ -128,7 +128,8 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         _round.initiator = _initiator;
         _round.awardHash = awardHash;
 
-        _messenger.sendMessageToL2(_strategyFactory, CREATE_STRATEGY_SELECTOR, _getL2Payload(_roundId, round));
+        // prettier-ignore
+        _messenger.sendMessageToL2(_strategyFactory, CREATE_STRATEGY_SELECTOR, _getL2Payload(_roundId, round, awardHash));
 
         emit RoundInitiated(
             _roundId,
@@ -151,10 +152,12 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         RoundInitConfig calldata round,
         uint256 nonce
     ) external {
+        Round storage _round = rounds[roundId];
+
         _messenger.startL1ToL2MessageCancellation(
             _strategyFactory,
             CREATE_STRATEGY_SELECTOR,
-            _getL2Payload(roundId, round),
+            _getL2Payload(roundId, round, _round.awardHash),
             nonce
         );
         emit RoundInitiationCancellationRequested(roundId);
@@ -175,7 +178,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         _messenger.cancelL1ToL2Message(
             _strategyFactory,
             CREATE_STRATEGY_SELECTOR,
-            _getL2Payload(roundId, round),
+            _getL2Payload(roundId, round, _round.awardHash),
             nonce
         );
 
@@ -343,13 +346,19 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @notice Get the payload used to initiate the round on L2
     /// @param roundId The round ID
     /// @param round The details required to initiate the funding round
-    function _getL2Payload(uint256 roundId, RoundInitConfig memory round) internal returns (uint256[] memory payload) {
+    /// @param awardHash A hash of the locked asset ids and amounts
+    function _getL2Payload(
+        uint256 roundId,
+        RoundInitConfig memory round,
+        bytes32 awardHash
+    ) internal returns (uint256[] memory payload) {
         uint256[] memory executionStrategies = new uint256[](1);
         executionStrategies[0] = merkleRootRelayer;
 
         bytes memory config = abi.encode(
             msg.sender,
             roundId,
+            awardHash,
             round.config,
             round.awards,
             round.votingStrategies,
