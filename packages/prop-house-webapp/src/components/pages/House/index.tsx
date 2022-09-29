@@ -32,7 +32,7 @@ const House = () => {
 
   const [rounds, setRounds] = useState<StoredAuction[]>([]);
   const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuction[]>([]);
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.Active);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,6 +71,12 @@ const House = () => {
         // number of rounds in that are over
         rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
       ]);
+      // if there are no active rounds, default filter by all rounds
+      rounds.filter(
+        r =>
+          auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+          auctionStatus(r) === AuctionStatus.AuctionVoting,
+      ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
     };
     fetchRounds();
   }, [community]);
@@ -80,11 +86,17 @@ const House = () => {
       // check if searching via input
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus !== RoundStatus.AllRounds
-          ? // filter by that round
-            setRoundsOnDisplay(rounds.filter(round => auctionStatus(round) === currentRoundStatus))
-          : // revert to all rounds
+          currentRoundStatus > 0
+          ? // filter by all rounds
             setRoundsOnDisplay(rounds)
+          : // filter by active rounds (proposing & voting)
+            setRoundsOnDisplay(
+              rounds.filter(
+                r =>
+                  auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+                  auctionStatus(r) === AuctionStatus.AuctionVoting,
+              ),
+            )
         : // filter by search input that matches round title or description
           setRoundsOnDisplay(
             rounds.filter(round => {

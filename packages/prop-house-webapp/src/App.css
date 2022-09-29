@@ -86,8 +86,35 @@ body {
 .bgWhite {
   background-color: #ffffff;
 }
-.bgNoggles {
-  background-image: url('../src/assets/noggle-pattern.png');
+
+.gradientBg {
+  background: url('../src/assets/small-pink-pattern@2x.png'),
+    linear-gradient(180deg, rgba(245, 245, 245, 0) 82.54%, #f5f5f5 100%),
+    radial-gradient(
+      19.94% 82.15% at 100% 0%,
+      rgba(203, 167, 39, 0.2) 0%,
+      rgba(203, 167, 39, 0) 100%
+    ),
+    radial-gradient(
+      73.64% 129.99% at -5.75% 0%,
+      rgba(80, 186, 154, 0.265) 0%,
+      rgba(80, 186, 154, 0) 65.01%
+    ),
+    radial-gradient(
+      73.21% 132.35% at 20.6% -17.55%,
+      rgba(138, 43, 226, 0.2) 0%,
+      rgba(138, 43, 226, 0) 100%
+    ),
+    radial-gradient(
+      84.88% 125.84% at 100% 0%,
+      rgba(224, 46, 207, 0.091) 0%,
+      rgba(224, 46, 207, 0) 100%
+    ),
+    radial-gradient(
+      84.28% 100% at 50% 0%,
+      rgba(138, 43, 226, 0.12) 0%,
+      rgba(224, 46, 207, 0.016) 100%
+    );
 }
 
 h1,
