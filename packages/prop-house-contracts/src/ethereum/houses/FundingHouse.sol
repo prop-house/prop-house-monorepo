@@ -157,6 +157,9 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         uint256 nonce
     ) external {
         Round storage _round = rounds[roundId];
+        if (_round.initiator != msg.sender) {
+            revert OnlyRoundInitiatorCanCancel();
+        }
 
         _messenger.startL1ToL2MessageCancellation(
             _strategyFactory,
@@ -178,6 +181,9 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         uint256 nonce
     ) external {
         Round storage _round = rounds[roundId];
+        if (_round.initiator != msg.sender) {
+            revert OnlyRoundInitiatorCanCancel();
+        }
 
         _messenger.cancelL1ToL2Message(
             _strategyFactory,

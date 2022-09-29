@@ -58,6 +58,8 @@ interface IFundingHouse is IHouse, IVault {
 
     error OnlyRoundInitiatorCanReclaim();
 
+    error OnlyRoundInitiatorCanCancel();
+
     error InvalidMerkleProof();
 
     event RoundInitiatorAddedToWhitelist(address initiator);
