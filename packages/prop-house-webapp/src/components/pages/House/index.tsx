@@ -34,7 +34,7 @@ const House = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   const [rounds, setRounds] = useState<StoredAuction[]>();
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.Active);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -56,16 +56,23 @@ const House = () => {
 
         // Number of rounds under a certain status type in a House
         setNumberOfRoundsPerStatus([
+          // number of active rounds (proposing & voting)
+          community.auctions.filter(
+            r =>
+              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+              auctionStatus(r) === AuctionStatus.AuctionVoting,
+          ).length,
+
           // total number of rounds
           community.auctions.length,
-          // number of rounds accepting props
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps)
-            .length,
-          // number of rounds in voting state
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
-          // number of rounds in that are over
-          community.auctions.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
         ]);
+
+        // if there are no active rounds, default filter by all rounds
+        community.auctions.filter(
+          r =>
+            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+            auctionStatus(r) === AuctionStatus.AuctionVoting,
+        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
 
         // sort rounds
         setRounds(community.auctions.sort((a, b) => (a.createdDate < b.createdDate ? 1 : -1)));
@@ -93,12 +100,16 @@ const House = () => {
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
           currentRoundStatus > 0
-          ? // filter by that round
-            setRounds(
-              community.auctions.filter(round => auctionStatus(round) === currentRoundStatus),
-            )
-          : // revert to all rounds
+          ? // filter by all rounds
             setRounds(community.auctions)
+          : // filter by active rounds (proposing & voting)
+            setRounds(
+              community.auctions.filter(
+                r =>
+                  auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+                  auctionStatus(r) === AuctionStatus.AuctionVoting,
+              ),
+            )
         : // filter by search input that matches round title or description
           setRounds(
             community.auctions.filter(round => {

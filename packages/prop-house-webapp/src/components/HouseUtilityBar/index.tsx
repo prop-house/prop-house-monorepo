@@ -14,7 +14,7 @@ const HouseUtilityBar: React.FC<{
     props;
 
   const handleSearchInputChange = (e: any) => {
-    if (currentRoundStatus !== RoundStatus.AllRounds) setCurrentRoundStatus(RoundStatus.AllRounds);
+    if (currentRoundStatus !== RoundStatus.Active) setCurrentRoundStatus(RoundStatus.Active);
     setInput(e.target.value);
   };
 
