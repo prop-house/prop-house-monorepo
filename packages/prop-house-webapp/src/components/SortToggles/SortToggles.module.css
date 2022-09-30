@@ -44,6 +44,8 @@
 
 .disabled {
   pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 .disabled svg {
   background: var(--border-light);
