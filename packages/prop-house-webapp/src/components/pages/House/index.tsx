@@ -60,17 +60,18 @@ const House = () => {
     const fetchRounds = async () => {
       const rounds = await client.current.getAuctionsForCommunity(community.id);
       setRounds(rounds);
+
       // Number of rounds under a certain status type in a House
       setNumberOfRoundsPerStatus([
-        // total number of rounds
+        // number of active rounds (proposing & voting)
+        rounds.filter(
+          r =>
+            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+            auctionStatus(r) === AuctionStatus.AuctionVoting,
+        ).length,
         rounds.length,
-        // number of rounds accepting props
-        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionAcceptingProps).length,
-        // number of rounds in voting state
-        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionVoting).length,
-        // number of rounds in that are over
-        rounds.filter(r => auctionStatus(r) === AuctionStatus.AuctionEnded).length,
       ]);
+
       // if there are no active rounds, default filter by all rounds
       rounds.filter(
         r =>
@@ -86,7 +87,7 @@ const House = () => {
       // check if searching via input
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus > 0
+          currentRoundStatus != RoundStatus.Active
           ? // filter by all rounds
             setRoundsOnDisplay(rounds)
           : // filter by active rounds (proposing & voting)
