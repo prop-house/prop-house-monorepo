@@ -22,15 +22,12 @@ const EthAddress: React.FC<{
   const ens = useReverseENSLookUp(address);
 
   return (
-    <div
-      onClick={(e: any) => e.stopPropagation()}
-      className={clsx(props.className, classes.ethAddress)}
-    >
+    <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
         {!hideDavatar && (
           <Davatar size={24} address={address} provider={provider} generatedAvatarType="blockies" />
         )}
-        <span className={clsx(classes.address, truncate && classes.truncate)}>
+        <span className={clsx(classes.address, truncate && classes.truncate, props.className)}>
           {ens ? ens : trimEthAddress(address)}
         </span>
       </a>
