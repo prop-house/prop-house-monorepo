@@ -24,7 +24,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     uint256 constant REGISTER_VOTING_STRATEGY_SELECTOR = 0x8a9207beb9733d5e7212568d21aae1d276a3c89cb2f7f84acbd99f90410b73;
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
-    uint256 constant AWARD_RECLAMATION_AFTER = 4 weeks;
+    uint256 constant AWARD_RECLAMATION_AFTER = 8 weeks;
 
     /// @notice The house name
     string public constant name = 'FUNDING_HOUSE';
