@@ -1,4 +1,4 @@
-import { Row } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
 import HomeTitle from '../HomeTitle';
 import HomeStats from '../HomeStats';
@@ -16,7 +16,9 @@ const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) =
     <Row className={classes.wrapper}>
       <HomeTitle />
       <HomeStats stats={stats} />
-      <HomeSearchBar input={input} handleSeachInputChange={handleSeachInputChange} />
+      <Container className={classes.searchBarContainer}>
+        <HomeSearchBar input={input} handleSeachInputChange={handleSeachInputChange} />
+      </Container>
     </Row>
   );
 };

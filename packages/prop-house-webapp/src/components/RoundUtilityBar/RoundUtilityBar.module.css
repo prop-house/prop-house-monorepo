@@ -86,7 +86,6 @@
   justify-content: space-between;
   position: sticky !important;
   position: fixed;
-  border: 1px solid red;
   top: 0px !important;
   align-self: flex-start;
   height: auto;

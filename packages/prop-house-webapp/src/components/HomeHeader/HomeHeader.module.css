@@ -2,12 +2,42 @@
   padding-top: 2rem;
   display: flex;
   flex-direction: column;
-  width: 100%;
+
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.searchBarContainer {
+  height: 20px;
+}
+
+@media (min-width: 991px) {
+  .searchBarContainer {
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .searchBarContainer {
+    max-width: 960px !important;
+  }
 }
 
 @media (max-width: 992px) {
-  .wrapper {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+  .homeCardsContainer {
+    padding: 0px !important;
+  }
+}
+
+@media (max-width: 990px) {
+  .searchBarContainer {
+    max-width: 960px !important;
+    padding: 0 40px !important;
+  }
+}
+
+@media (max-width: 575px) {
+  .searchBarContainer {
+    padding: 0 20px !important;
   }
 }

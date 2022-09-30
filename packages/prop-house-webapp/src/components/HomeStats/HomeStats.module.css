@@ -1,7 +1,7 @@
 .statsContainer {
   display: flex;
   justify-content: space-between;
-  width: 35%;
+  width: 450px;
   margin: auto;
   padding: 46px 0px;
 }
@@ -40,17 +40,7 @@
   margin: 0 !important;
 }
 
-@media (max-width: 993px) {
-  .statsContainer {
-    width: 70%;
-    padding-top: 20px;
-  }
-}
-
 @media (max-width: 575px) {
-  .statsContainer {
-    width: 90%;
-  }
   .subtitle {
     line-height: 1;
   }
