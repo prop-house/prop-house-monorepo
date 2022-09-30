@@ -31,7 +31,7 @@ contract TimedFundingRoundStrategy is IStrategy {
     error InvalidVotingStrategyLength();
 
     /// @notice The minimum time required between round initiation and the start of the proposal period
-    uint256 public constant MIN_TIME_UNTIL_PROPOSAL_PERIOD = 4 hours;
+    uint256 public constant MIN_TIME_UNTIL_PROPOSAL_PERIOD = 2 hours;
 
     /// @notice The minimum proposal submission period duration
     uint256 public constant MIN_PROPOSAL_PERIOD_DURATION = 4 hours;

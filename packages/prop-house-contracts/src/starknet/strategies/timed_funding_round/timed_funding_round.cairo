@@ -156,12 +156,13 @@ func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_p
     ) = decode_param_array(house_strategy_params_len, house_strategy_params)
 
     # Sanity checks. Message cancellation is required on error.
-    let (current_timestamp) = get_block_timestamp()
+    # Note that it is possible for the proposal period to be active upon creation,
+    # however it is unlikely due to the scheduling checks on L1.
     with_attr error_message("Invalid constructor parameters"):
-        assert_le(current_timestamp, proposal_period_start_timestamp)
         assert_not_zero(round_id)
         assert_not_zero(award_hash_low)
         assert_not_zero(award_hash_high)
+        assert_not_zero(proposal_period_start_timestamp)
         assert_not_zero(proposal_period_duration)
         assert_not_zero(vote_period_duration)
         assert_not_zero(winner_count)
