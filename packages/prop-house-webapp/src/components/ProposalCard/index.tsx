@@ -14,18 +14,22 @@ import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useEthers } from '@usedapp/core';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
+import { useAppSelector } from '../../hooks';
+import { nameToSlug } from '../../utils/communitySlugs';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  fromHome?: boolean;
   winner?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, fromHome, winner } = props;
+  const { proposal, auctionStatus, cardStatus, winner } = props;
 
   const { account } = useEthers();
   let navigate = useNavigate();
+
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const round = useAppSelector(state => state.propHouse.activeRound);
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
@@ -35,11 +39,13 @@ const ProposalCard: React.FC<{
     <>
       <div
         onClick={e => {
+          if (!community || !round) return;
+
           if (cmdPlusClicked(e)) {
-            openInNewTab(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            openInNewTab(`${nameToSlug(round.title)}/${proposal.id}`);
             return;
           }
-          navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+          navigate(`${proposal.id}`);
         }}
       >
         <Card

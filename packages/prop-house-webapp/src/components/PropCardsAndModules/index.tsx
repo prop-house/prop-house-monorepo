@@ -1,5 +1,5 @@
 import {
-  CommunityWithAuctions,
+  Community,
   StoredAuction,
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
@@ -29,7 +29,7 @@ import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVot
 
 const PropCardsAndModules: React.FC<{
   auction: StoredAuction;
-  community: CommunityWithAuctions;
+  community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
   const { auction, community, setShowVotingModal } = props;

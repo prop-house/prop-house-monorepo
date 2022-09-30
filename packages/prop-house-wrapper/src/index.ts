@@ -8,6 +8,7 @@ import {
   StoredFile,
   StoredVote,
   Vote,
+  Community,
   CommunityWithAuctions,
 } from './builders';
 import FormData from 'form-data';
@@ -220,7 +221,7 @@ export class PropHouseWrapper {
     }
   }
 
-  async getCommunityWithId(id: number): Promise<CommunityWithAuctions> {
+  async getCommunityWithId(id: number): Promise<Community> {
     try {
       return (await axios.get(`${this.host}/communities/id/${id}`)).data;
     } catch (e: any) {
