@@ -3,6 +3,7 @@ import { MdHowToVote } from 'react-icons/md';
 import { useState } from 'react';
 import VotesVerificationModal from '../VotesVerificationModal';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import TruncateThousands from '../TruncateThousands';
 
 const VotesDisplay: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
   const { proposal } = props;
@@ -21,7 +22,7 @@ const VotesDisplay: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
       )}
       <div onClick={e => handleClick(e)}>
         <div className={classes.scoreAndIcon}>
-          <MdHowToVote /> {proposal.voteCount}
+          <MdHowToVote /> <TruncateThousands amount={proposal.voteCount} />
         </div>
       </div>
     </>

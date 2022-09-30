@@ -1,4 +1,9 @@
-import { StoredAuction, Vote } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuction,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
+import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
@@ -14,17 +19,24 @@ import RoundMessage from '../RoundMessage';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
-import PropCardsAndModules from '../PropCardsAndModules';
 import {
   clearVoteAllotments,
   setNumSubmittedVotes,
   setVotingPower,
 } from '../../state/slices/voting';
+import { Row, Col } from 'react-bootstrap';
+import ProposalCard from '../ProposalCard';
+import { cardStatus } from '../../utils/cardStatus';
+import getWinningIds from '../../utils/getWinningIds';
+import isWinner from '../../utils/isWinner';
+import { useTranslation } from 'react-i18next';
+import RoundModules from '../RoundModules';
 
-const FullRound: React.FC<{
+const RoundContent: React.FC<{
   auction: StoredAuction;
+  proposals: StoredProposalWithVotes[];
 }> = props => {
-  const { auction } = props;
+  const { auction, proposals } = props;
   const { account, library } = useEthers();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -37,36 +49,19 @@ const FullRound: React.FC<{
     image: '',
   });
 
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
+  const winningIds = getWinningIds(proposals, auction);
+
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
-
-  // fetch voting power for user
-  useEffect(() => {
-    if (!account || !library || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const votes = await getNumVotes(
-          account,
-          community.contractAddress,
-          library,
-          auction.balanceBlockTag,
-        );
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // fetch proposals
   useEffect(() => {
@@ -88,6 +83,26 @@ const FullRound: React.FC<{
       dispatch(setActiveProposals([]));
     };
   }, [auction.id, dispatch, account, auction]);
+
+  // fetch voting power for user
+  useEffect(() => {
+    if (!account || !library || !community) return;
+
+    const fetchVotes = async () => {
+      try {
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          library,
+          auction.balanceBlockTag,
+        );
+        dispatch(setVotingPower(votes));
+      } catch (e) {
+        console.log('error fetching votes: ', e);
+      }
+    };
+    fetchVotes();
+  }, [account, library, dispatch, community, auction.balanceBlockTag]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
@@ -153,11 +168,32 @@ const FullRound: React.FC<{
       ) : (
         <>
           {community && (
-            <PropCardsAndModules
-              auction={auction}
-              community={community}
-              setShowVotingModal={setShowVoteConfirmationModal}
-            />
+            <Row className={classes.propCardsRow}>
+              <Col xl={8} className={classes.propCardsCol}>
+                {proposals &&
+                  (proposals.length === 0 ? (
+                    <RoundMessage message={t('submittedProps')} />
+                  ) : (
+                    proposals.map((proposal, index) => {
+                      return (
+                        <Col key={index}>
+                          <ProposalCard
+                            proposal={proposal}
+                            auctionStatus={auctionStatus(auction)}
+                            cardStatus={cardStatus(votingPower > 0, auction)}
+                            winner={winningIds && isWinner(winningIds, proposal.id)}
+                          />
+                        </Col>
+                      );
+                    })
+                  ))}
+              </Col>
+              <RoundModules
+                auction={auction}
+                community={community}
+                setShowVotingModal={setShowVoteConfirmationModal}
+              />
+            </Row>
           )}
         </>
       )}
@@ -165,4 +201,4 @@ const FullRound: React.FC<{
   );
 };
 
-export default FullRound;
+export default RoundContent;

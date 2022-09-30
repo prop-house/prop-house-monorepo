@@ -2,15 +2,16 @@ import HomeHeader from '../../HomeHeader';
 import { Container } from 'react-bootstrap';
 import CommunityCardGrid from '../../CommunityCardGrid';
 import { useEffect, useState, useRef } from 'react';
-import { Community, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../../hooks';
+import NavBar from '../../NavBar';
 
 export interface StatsProps {
-  funded: number;
-  votes: number;
-  props: number;
+  accEthFunded: number;
+  accRounds: number;
+  accProps: number;
 }
 
 const Home = () => {
@@ -18,9 +19,9 @@ const Home = () => {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [stats, setStats] = useState<StatsProps>({
-    funded: 0,
-    votes: 0,
-    props: 0,
+    accEthFunded: 0,
+    accRounds: 0,
+    accProps: 0,
   });
 
   const handleSeachInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,34 +38,31 @@ const Home = () => {
 
   // fetch communities & proposals
   useEffect(() => {
-    const getCommunitiesAndProposals = async () => {
+    const getCommunities = async () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
-      const proposals = await client.current.getProposals();
+
       setCommunities(communities);
+      const accEthFunded = communities.reduce((prev, current) => prev + current.ethFunded, 0);
+      const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
+      const accProps = communities.reduce((prev, current) => prev + current.numProposals, 0);
+      setStats({
+        accEthFunded,
+        accRounds,
+        accProps,
+      });
 
-      communities &&
-        proposals &&
-        setStats({
-          funded: communities
-            .map((community: Community) => community.ethFunded)
-            .flat()
-            .reduce((a: number, b: number) => a + b, 0),
-          votes: proposals
-            .map((proposal: StoredProposalWithVotes) => proposal.votes)
-            .flat()
-            .reduce((a: number, b: number) => a + b, 0),
-          props: proposals.length,
-        });
-
-      communities && proposals && setIsLoading(false);
+      setIsLoading(false);
     };
-    getCommunitiesAndProposals();
+    getCommunities();
   }, []);
 
   return (
     <>
-      <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
+      <div className="gradientBg">
+        <NavBar />
+        <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
+      </div>
 
       <Container>
         <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />

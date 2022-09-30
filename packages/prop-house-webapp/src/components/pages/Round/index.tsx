@@ -1,36 +1,34 @@
 import { useLocation } from 'react-router-dom';
-import { ethers } from 'ethers';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import RoundHeader from '../../RoundHeader';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
-  setActiveRound,
   setActiveCommunity,
   setActiveProposals,
+  setActiveRound,
 } from '../../../state/slices/propHouse';
-import dayjs from 'dayjs';
-import { slugToName } from '../../../utils/communitySlugs';
-import LoadingIndicator from '../../LoadingIndicator';
-import NotFound from '../../NotFound';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundMessage from '../../RoundMessage';
 import RoundUtilityBar from '../../RoundUtilityBar';
-import FullRound from '../../FullRound';
+import RoundContent from '../../RoundContent';
+import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
+import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
+import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 
 const Round = () => {
   const location = useLocation();
-  const slug = location.pathname.substring(1).split('/')[0];
-  const roundFromSlug = location.pathname.substring(1).split('/')[1];
-  const isValidAddress = slug && ethers.utils.isAddress(slug);
+  const communityName = location.pathname.substring(1).split('/')[0];
+  const roundName = location.pathname.substring(1).split('/')[1];
+
   const dispatch = useAppDispatch();
   const { library } = useEthers();
-  const [failedFetch, setFailedFetch] = useState(false);
-  const cleanedUp = useRef(false);
+
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const activeAuction = useAppSelector(state => state.propHouse.activeRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -38,56 +36,52 @@ const Round = () => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch community
+  // if no round is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
-    const fetchCommunity = async () => {
-      try {
-        // fetch by address or name
-        const community = isValidAddress
-          ? await client.current.getCommunity(slug)
-          : await client.current.getCommunityWithName(slugToName(slug));
-
-        community.auctions.sort((a, b) => (dayjs(a.createdDate) < dayjs(b.createdDate) ? 1 : -1));
-
-        const currentRound = location.state
-          ? community.auctions.filter(round => round.id === location.state.round.id)
-          : community.auctions.filter(
-              round => round.title.toLowerCase() === slugToName(roundFromSlug),
-            );
-
-        if (cleanedUp.current) return; // assures late async call doesn't set state on unmounted comp
-        dispatch(setActiveCommunity(community));
-
-        dispatch(setActiveRound(...currentRound));
-      } catch (e) {
-        setFailedFetch(true);
-      }
+    const fetchCommunityAndRound = async () => {
+      const community = await client.current.getCommunityWithName(slugToName(communityName));
+      const round = await client.current.getAuctionWithNameForCommunity(
+        nameToSlug(roundName),
+        community.id,
+      );
+      dispatch(setActiveCommunity(community));
+      dispatch(setActiveRound(round));
     };
-    fetchCommunity();
+
+    if (!round) fetchCommunityAndRound();
+  }, [communityName, dispatch, roundName, round]);
+
+  // fetch proposals
+  useEffect(() => {
+    if (!round) return;
+
+    const fetchAuctionProposals = async () => {
+      const proposals = await client.current.getAuctionProposals(round.id);
+      dispatch(setActiveProposals(proposals));
+
+      // default sorting method is random, unless the auction is over, in which case its by votes
+      dispatchSortProposals(
+        dispatch,
+        auctionStatus(round) === AuctionStatus.AuctionEnded ? SortType.VoteCount : SortType.Random,
+        false,
+      );
+    };
+    fetchAuctionProposals();
     return () => {
-      cleanedUp.current = true;
-      dispatch(setActiveCommunity());
-      dispatch(setActiveRound());
       dispatch(setActiveProposals([]));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug, dispatch, isValidAddress, roundFromSlug]);
-
-  if (!community && !failedFetch) return <LoadingIndicator />;
-  if (!isValidAddress && failedFetch) return <NotFound />;
+  }, [dispatch, round]);
 
   return (
     <>
       <Container>
-        {community && activeAuction && (
-          <RoundHeader auction={activeAuction} community={community} />
-        )}
+        {community && round && <RoundHeader auction={round} community={community} />}
       </Container>
 
-      {activeAuction && (
+      {round && (
         <div className={classes.stickyContainer}>
           <Container>
-            <RoundUtilityBar auction={activeAuction} />
+            <RoundUtilityBar auction={round} />
           </Container>
         </div>
       )}
@@ -95,8 +89,8 @@ const Round = () => {
       <div style={{ background: '#f5f5f5' }}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {activeAuction ? (
-              <FullRound auction={activeAuction} />
+            {round && proposals ? (
+              <RoundContent auction={round} proposals={proposals} />
             ) : (
               <RoundMessage message="No rounds available" />
             )}

@@ -1,0 +1,10 @@
+.propCardsRow {
+  width: 100%;
+}
+@media (max-width: 993px) {
+  .propCardsRow {
+    display: flex;
+    flex-direction: column-reverse;
+    width: -webkit-fill-available;
+  }
+}

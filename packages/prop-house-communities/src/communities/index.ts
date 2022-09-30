@@ -1,4 +1,4 @@
-import { balanceOfErc721, erc1155, onchainMonkey } from '../strategies';
+import { balanceOfErc721, erc1155, onchainMonkey, oneHundredVotes } from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
@@ -28,5 +28,7 @@ export const communities = new CaseInsensitiveMap(
     '0x4b10701Bfd7BFEdc47d50562b76b436fbB5BdB3B': lilNouns(),
     // mfers
     '0x79FCDEF22feeD20eDDacbB2587640e45491b757f': balanceOfErc721(),
+    // test house
+    '0x0000000000000000000000000000000000000000': oneHundredVotes(),
   }),
 );
