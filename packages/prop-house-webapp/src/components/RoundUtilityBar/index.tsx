@@ -91,7 +91,8 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
             <div className={classes.itemData}>
               <TruncateThousands amount={auction.fundingAmount} />
-              {` ${auction.currencyType} × ${auction.numWinners}`}
+              {auction.currencyType}
+              <span className={classes.xDivide}>{' × '}</span> {auction.numWinners}
             </div>
           </div>
 
