@@ -87,7 +87,7 @@ const House = () => {
       // check if searching via input
       (input.length === 0
         ? // if a filter has been clicked that isn't "All rounds" (default)
-          currentRoundStatus != RoundStatus.Active
+          currentRoundStatus !== RoundStatus.Active
           ? // filter by all rounds
             setRoundsOnDisplay(rounds)
           : // filter by active rounds (proposing & voting)
