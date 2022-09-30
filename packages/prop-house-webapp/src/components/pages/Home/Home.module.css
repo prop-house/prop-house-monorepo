@@ -1,0 +1,16 @@
+.homeCardsContainer {
+  border: 1px solid blue;
+}
+
+@media (min-width: 991px) {
+  .homeCardsContainer {
+    padding: 0;
+  }
+}
+
+@media (max-width: 990px) {
+  .homeCardsContainer {
+    max-width: 960px;
+    padding: 0 40px;
+  }
+}

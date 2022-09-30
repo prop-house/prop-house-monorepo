@@ -1,4 +1,5 @@
 import HomeHeader from '../../HomeHeader';
+import classes from './Home.module.css';
 import { Container } from 'react-bootstrap';
 import CommunityCardGrid from '../../CommunityCardGrid';
 import { useEffect, useState, useRef } from 'react';
@@ -64,7 +65,7 @@ const Home = () => {
         <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
       </div>
 
-      <Container>
+      <Container className={classes.homeCardsContainer}>
         <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
       </Container>
     </>

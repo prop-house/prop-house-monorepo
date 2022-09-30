@@ -6,8 +6,8 @@
 .title {
   margin-top: 12px;
   font-weight: bold;
-  font-size: 18px;
-  line-height: 23px;
+  font-size: 16px;
+  line-height: normal;
   text-align: left;
   align-self: flex-start;
   padding: 0px 6px;
@@ -31,7 +31,6 @@
 .infoWithSymbol {
   display: flex;
   align-items: center;
-
   gap: 4px;
 }
 .symbolContainer {
@@ -75,10 +74,24 @@
   filter: drop-shadow(var(--shadow-none));
 }
 @media (max-width: 993px) {
-  .container {
-    gap: 6px;
+  .cardInfo {
+    align-items: flex-start;
+    flex-direction: column;
   }
+}
+@media (max-width: 767px) {
+  .container {
+    gap: 2px;
+  }
+}
+@media (max-width: 375px) {
   .title {
-    font-size: 15px;
+    font-size: 24px;
+  }
+  .infoText {
+    font-size: 20px;
+  }
+  .symbolContainer img {
+    height: 18px;
   }
 }
