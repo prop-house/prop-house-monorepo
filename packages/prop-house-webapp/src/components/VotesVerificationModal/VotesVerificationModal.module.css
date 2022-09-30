@@ -88,6 +88,7 @@
 .verifyVoteBtn {
   font-size: 14px;
   font-weight: bold;
+  color: var(--brand-black);
   background-color: var(--bg-light);
   border-color: var(--border-med);
   padding: 8px 12px;

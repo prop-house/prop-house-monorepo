@@ -65,7 +65,7 @@ const VotesVerificationModal: React.FC<{
         </div>
 
         <div className={classes.buttonContainer}>
-          <Button text="Close" bgColor={ButtonColor.Purple} onClick={() => setDisplay(false)} />
+          <Button text="Close" bgColor={ButtonColor.White} onClick={() => setDisplay(false)} />
         </div>
       </Modal>
     </div>
