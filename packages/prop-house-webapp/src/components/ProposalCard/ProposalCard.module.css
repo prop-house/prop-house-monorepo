@@ -8,7 +8,6 @@
 }
 
 .proposalCard:hover {
-  /* border: 1px solid var(--brand-gray-semi-transparent); */
   cursor: pointer;
   filter: drop-shadow(var(--shadow-high));
 }
@@ -43,6 +42,10 @@
   font-weight: normal;
   color: var(--brand-black-transparent);
   display: inline;
+}
+
+.date {
+  font-weight: 500;
 }
 
 .title {
