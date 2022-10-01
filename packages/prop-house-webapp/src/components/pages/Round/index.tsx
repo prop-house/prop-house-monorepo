@@ -86,7 +86,7 @@ const Round = () => {
         </div>
       )}
 
-      <div style={{ background: '#f5f5f5' }}>
+      <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
             {round && proposals ? (
