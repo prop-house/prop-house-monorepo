@@ -34,11 +34,11 @@ export class CommunitiesController {
   }
 
   @Get('communities/id/:id')
-  async findOne(@Param('id') id: number): Promise<ExtendedCommunity> {
+  async findOne(@Param('id') id: number): Promise<Community> {
     const foundCommunity = await this.communitiesService.findOne(id);
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);
-    return buildExtendedCommunity(foundCommunity);
+    return foundCommunity;
   }
 
   @Get('communities/name/:name')

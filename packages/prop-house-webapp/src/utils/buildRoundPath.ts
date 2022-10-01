@@ -1,17 +1,8 @@
-import { CommunityWithAuctions } from '@nouns/prop-house-wrapper/dist/builders';
+import { Auction, Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { nameToSlug } from './communitySlugs';
 
 /**
- * when /:house/:round/:id is the entry point, the round is not yet
- * avail for back button so it has to be fetched.
+ * build url path to round (/:community-name/:round-name)
  */
-const buildRoundPath = (community: CommunityWithAuctions, roundTitle: string) => {
-  const round = community.auctions.filter(
-    r => nameToSlug(r.title.toString()) === nameToSlug(roundTitle),
-  );
-
-  const path = nameToSlug(round[0].title);
-  return path;
-};
-
-export default buildRoundPath;
+export const buildRoundPath = (community: Community, round: Auction) =>
+  `/${nameToSlug(community.name)}/${nameToSlug(round.title)}`;
