@@ -73,12 +73,7 @@
 .container:active {
   filter: drop-shadow(var(--shadow-none));
 }
-@media (max-width: 990px) {
-  .cardInfo {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
+
 @media (max-width: 767px) {
   .container {
     gap: 2px;

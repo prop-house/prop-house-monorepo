@@ -10,7 +10,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (max-width: 575px) {
+@media (max-width: 650px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
   }
