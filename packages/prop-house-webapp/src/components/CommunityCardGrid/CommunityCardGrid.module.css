@@ -5,18 +5,13 @@
   margin-top: 44px;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 990px) {
   .cardGrid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-@media (max-width: 575px) {
+@media (max-width: 675px) {
   .cardGrid {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 375px) {
-  .cardGrid {
-    grid-template-columns: repeat(1, 1fr);
   }
 }
