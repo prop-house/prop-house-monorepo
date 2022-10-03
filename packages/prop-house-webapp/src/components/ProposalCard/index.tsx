@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
