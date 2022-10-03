@@ -31,6 +31,12 @@ const NavBar = () => {
               </Link>
               <span className={classes.divider}></span>
             </Nav.Link>
+            <Nav.Link as="div" className={classes.menuLink}>
+              <Link to="/learn" className={classes.link}>
+                {t('learn')}
+              </Link>
+              <span className={classes.divider}></span>
+            </Nav.Link>
 
             <div className={classes.buttonGroup}>
               <LocaleSwitcher />
