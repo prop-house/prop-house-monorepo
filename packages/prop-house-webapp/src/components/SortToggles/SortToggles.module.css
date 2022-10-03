@@ -43,8 +43,10 @@
 }
 
 .disabled {
+  opacity: 0.5;
   pointer-events: none;
 }
+
 .disabled svg {
   background: var(--border-light);
   color: #666666;
