@@ -77,7 +77,19 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
         )
       ) : (
         <p className={classes.sideCardBody}>
-          Owners of the <b>{communityName}</b> token are voting on their favorite proposals.
+          <b>Proposers:</b>
+          <div className={classes.bulletList}>
+            <div className={classes.bulletItem}>
+              <p>Connect your wallet to vote of view the status of your proposal.</p>
+            </div>
+          </div>
+
+          <b>Voters:</b>
+          <div className={classes.bulletList}>
+            <div className={classes.bulletItem}>
+              <p>Connect and vote on your favorite proposals.</p>
+            </div>
+          </div>
         </p>
       )}
     </>
