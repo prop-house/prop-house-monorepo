@@ -6,8 +6,8 @@
 .title {
   margin-top: 12px;
   font-weight: bold;
-  font-size: 18px;
-  line-height: 23px;
+  font-size: 16px;
+  line-height: normal;
   text-align: left;
   align-self: flex-start;
   padding: 0px 6px;
@@ -15,6 +15,7 @@
 .cardInfo {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .divider {
@@ -30,7 +31,6 @@
 .infoWithSymbol {
   display: flex;
   align-items: center;
-  max-height: 16px;
   gap: 4px;
 }
 .symbolContainer {
@@ -73,11 +73,17 @@
 .container:active {
   filter: drop-shadow(var(--shadow-none));
 }
-@media (max-width: 993px) {
+
+@media (max-width: 767px) {
   .container {
-    gap: 6px;
+    gap: 2px;
   }
+}
+@media (max-width: 450px) {
   .title {
-    font-size: 15px;
+    font-size: 14px;
+  }
+  .infoText {
+    font-size: 12px;
   }
 }

@@ -1,8 +1,6 @@
 .searchBar {
   display: flex;
   align-items: center;
-  max-width: 993px;
-  margin: auto;
   margin-bottom: -30px !important;
 }
 
@@ -46,17 +44,9 @@
   }
 }
 
-@media (max-width: 993px) {
-  .searchBar {
-    margin-top: 0px !important;
-    margin-bottom: -45px !important;
-  }
-}
 @media (max-width: 767px) {
   .searchBar {
     margin-bottom: -35px !important;
-    padding-left: 24px;
-    padding-right: 24px;
   }
 }
 
@@ -66,17 +56,5 @@
     max-width: 992px !important;
     padding-left: 0px;
     padding-right: 0px;
-  }
-}
-
-@media (min-width: 992px) {
-  .searchBar {
-    max-width: 960px !important;
-  }
-}
-
-@media (min-width: 768px) {
-  .searchBar {
-    max-width: 720px;
   }
 }
