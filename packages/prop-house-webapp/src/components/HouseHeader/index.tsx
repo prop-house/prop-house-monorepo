@@ -19,7 +19,7 @@ interface OpenInNewTabProps {
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
 
 const HouseHeader: React.FC<{
-  community: Community;
+  community?: Community;
 }> = props => {
   const { community } = props;
 
@@ -34,8 +34,13 @@ const HouseHeader: React.FC<{
 
       <div className={classes.communityInfoCol}>
         <div className={classes.houseTitleInfo}>
-          <div className={clsx(classes.titleRow, isLongName(community.name) && classes.longName)}>
-            <div className={classes.title}>{`${community.name} House`}</div>
+          <div
+            className={clsx(
+              classes.titleRow,
+              isLongName(community ? community.name : '') && classes.longName,
+            )}
+          >
+            <div className={classes.title}>{community ? community.name : ''}</div>
             <Tooltip
               content={
                 <div
@@ -62,18 +67,18 @@ const HouseHeader: React.FC<{
           </div>
 
           <div className={classes.propHouseDataRow}>
-            <div className={classes.itemData}>{community.numAuctions}</div>
+            <div className={classes.itemData}>{community ? community.numAuctions : 0}</div>
             <div className={classes.itemTitle}>
-              {community.numAuctions === 1 ? 'Round' : 'Rounds'}
+              {community?.numAuctions === 1 ? 'Round' : 'Rounds'}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
-            <div className={classes.itemData}>{community.numProposals}</div>
+            <div className={classes.itemData}>{community ? community.numProposals : 0}</div>
             <div className={classes.itemTitle}>{'Proposals'}</div>
           </div>
         </div>
 
-        {community.description && (
+        {community?.description && (
           <div className={classes.communityDescriptionRow}>
             {/* support both markdown & html links in community's description.  */}
             <Markdown
@@ -89,7 +94,7 @@ const HouseHeader: React.FC<{
                 },
               }}
             >
-              {sanitizeHtml(community.description as any, {
+              {sanitizeHtml(community?.description as any, {
                 allowedAttributes: {
                   a: ['href', 'target'],
                 },
