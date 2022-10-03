@@ -79,14 +79,11 @@
     gap: 2px;
   }
 }
-@media (max-width: 375px) {
+@media (max-width: 450px) {
   .title {
-    font-size: 24px;
+    font-size: 14px;
   }
   .infoText {
-    font-size: 20px;
-  }
-  .symbolContainer img {
-    height: 18px;
+    font-size: 12px;
   }
 }

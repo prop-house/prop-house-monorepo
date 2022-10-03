@@ -18,12 +18,9 @@ const CommunityCard: React.FC<{
         <hr className={classes.divider} />
         <div className={classes.cardInfo}>
           <div className={classes.infoWithSymbol}>
-            <div className={classes.symbolContainer}>
-              <img src="/eth.png" alt="eth" />
-            </div>
             <div className={classes.infoText}>
               <span className={classes.infoAmount}>
-                <TruncateThousands amount={community.ethFunded} />
+                Ξ <TruncateThousands amount={community.ethFunded} />
               </span>{' '}
               <span className={classes.infoCopy}>funded</span>
             </div>
