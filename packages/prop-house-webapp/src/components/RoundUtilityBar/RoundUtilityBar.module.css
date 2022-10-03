@@ -38,8 +38,7 @@
     display: none;
   }
 }
-/* @media (max-width: 766px) {
-} */
+
 .propHouseDataRow {
   display: flex;
   padding-bottom: 12px;
