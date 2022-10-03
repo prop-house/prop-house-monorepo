@@ -3,6 +3,23 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  align-items: center;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.learnMoreBtn {
+  margin-top: 1rem;
+  width: fit-content;
+  border-radius: 28px;
+  background-color: transparent;
+  border: 1px solid var(--brand-purple-semi-transparent);
+  color: var(--brand-purple);
+  font-size: 14px;
+  font-weight: bold;
+}
+.learnMoreBtn:hover {
+  background: rgba(148, 23, 226, 0.08);
 }
 
 @media (max-width: 992px) {
