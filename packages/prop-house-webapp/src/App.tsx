@@ -4,7 +4,6 @@ import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
-import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
 import House from './components/pages/House';
 import Proposal from './components/pages/Proposal';
@@ -54,7 +53,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/learn" element={<Learn />} />
+
             <Route path="/faq" element={<FAQ />} />
             <Route path="/proposal/:id" element={<Proposal />} />
             <Route path="/:house" element={<House />} />
