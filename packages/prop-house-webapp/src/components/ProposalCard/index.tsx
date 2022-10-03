@@ -11,7 +11,6 @@ import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { useEthers } from '@usedapp/core';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
@@ -25,7 +24,6 @@ const ProposalCard: React.FC<{
 }> = props => {
   const { proposal, auctionStatus, cardStatus, winner } = props;
 
-  const { account } = useEthers();
   let navigate = useNavigate();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -33,7 +31,7 @@ const ProposalCard: React.FC<{
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
-  const connectedDuringVoting = () => auctionStatus === AuctionStatus.AuctionVoting && account;
+  const isVotingPeriod = () => auctionStatus === AuctionStatus.AuctionVoting;
 
   return (
     <>
@@ -76,11 +74,11 @@ const ProposalCard: React.FC<{
             <div className={classes.address}>
               <EthAddress address={proposal.address} truncate />
 
-              <span className={clsx(classes.bullet, connectedDuringVoting() && classes.hideDate)}>
+              <span className={clsx(classes.bullet, isVotingPeriod() && classes.hideDate)}>
                 {' • '}
               </span>
               <div
-                className={clsx(classes.date, connectedDuringVoting() && classes.hideDate)}
+                className={clsx(classes.date, isVotingPeriod() && classes.hideDate)}
                 title={detailedTime(proposal.createdDate)}
               >
                 {diffTime(proposal.createdDate)}

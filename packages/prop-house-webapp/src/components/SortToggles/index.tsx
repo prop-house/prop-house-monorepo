@@ -29,6 +29,8 @@ const SortToggles: React.FC<{
 
   const dispatch = useDispatch();
 
+  const disabled = () => !auction || auctionNotStarted || (proposals && proposals.length <= 1);
+
   return (
     <>
       <div className={classes.sortContainer}>
@@ -43,8 +45,7 @@ const SortToggles: React.FC<{
             className={clsx(
               classes.sortItem,
               votesSorted && classes.active,
-              (!auction || auctionNotStarted || (proposals && proposals.length <= 1)) &&
-                classes.disabled,
+              disabled() && classes.disabled,
             )}
           >
             <div className={classes.sortLabel}>{t('votes')}</div>
