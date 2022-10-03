@@ -80,7 +80,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
           <b>Proposers:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>Connect your wallet to vote of view the status of your proposal.</p>
+              <p>Connect your wallet to view the status of your proposal.</p>
             </div>
           </div>
 
