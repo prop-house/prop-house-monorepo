@@ -23,7 +23,7 @@ const config: Config = {
   readOnlyUrls: {
     [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   },
-  autoConnect: false,
+  autoConnect: true,
 };
 
 function App() {
