@@ -54,7 +54,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/learn" element={<Learn />} />
+
             <Route path="/faq" element={<FAQ />} />
             <Route path="/proposal/:id" element={<Proposal />} />
             <Route path="/:house" element={<House />} />
