@@ -1,0 +1,14 @@
+.skeletonGrid {
+  margin: 12px 0px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+}
+.column {
+  grid-template-columns: repeat(1, 1fr);
+}
+
+.loadingSvg svg,
+.loadingSvg rect {
+  width: 100% !important;
+}
