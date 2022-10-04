@@ -19,7 +19,8 @@ import LoadingIndicator from '../../LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../../utils/buildRoundPath';
-import Helmet from 'react-helmet';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import OpenGraphElements from '../../OpenGraphElements';
 
 const Proposal = () => {
   const params = useParams();
@@ -87,16 +88,13 @@ const Proposal = () => {
   return (
     <>
       <Container>
-        <Helmet>
-          <meta
-            property="og:image"
-            content="http://graphics8.nytimes.com/images/2012/02/19/us/19whitney-span/19whitney-span-articleLarge.jpg"
+        {proposal && (
+          <OpenGraphElements
+            title={proposal.title}
+            description={proposal.tldr}
+            imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
           />
-          <meta
-            name="twitter:image"
-            content="http://graphics8.nytimes.com/images/2012/02/19/us/19whitney-span/19whitney-span-articleLarge.jpg"
-          />
-        </Helmet>
+        )}
         {proposal ? (
           <>
             <RenderedProposalFields

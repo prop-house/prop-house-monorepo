@@ -19,6 +19,8 @@ import NoSearchResults from '../../NoSearchResults';
 import NotFound from '../../NotFound';
 import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../StatusFilters';
+import OpenGraphElements from '../../OpenGraphElements';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 
 const House = () => {
   const location = useLocation();
@@ -112,6 +114,14 @@ const House = () => {
 
   return (
     <>
+      {community && (
+        <OpenGraphElements
+          title={community.name}
+          description={community.description.toString()}
+          imageUrl={cardServiceUrl(CardType.house, community.id).href}
+        />
+      )}
+
       {isLoading ? (
         <LoadingIndicator />
       ) : !community ? (

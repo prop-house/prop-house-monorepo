@@ -45,6 +45,11 @@ function App() {
           {location.pathname !== '/' && <NavBar />}
 
           <Routes>
+            {/** todo: implement actual card components */}
+            <Route path="/proposal/:id/card" element={<>rendered card for prop</>} />
+            <Route path="/round/:id/card" element={<>rendered card for round</>} />
+            <Route path="/house/:id/card" element={<>rendered card for house</>} />
+
             <Route path="/" element={<Home />} />
             <Route
               path="/create"
