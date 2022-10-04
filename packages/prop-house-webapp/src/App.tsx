@@ -16,6 +16,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
+import clsx from 'clsx';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -40,7 +41,7 @@ function App() {
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <div className={bgColorForPage(location.pathname)}>
+        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
           {location.pathname !== '/' && <NavBar />}
 
           <Routes>
