@@ -1,3 +1,4 @@
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Auction } from 'src/auction/auction.entity';
 import { SignedEntity } from 'src/entities/signed';
 import { Vote } from 'src/vote/vote.entity';
@@ -14,44 +15,56 @@ import {
 } from 'typeorm';
 
 @Entity()
+@ObjectType()
 export class Proposal extends SignedEntity {
   @PrimaryGeneratedColumn()
+  @Field(type => Int)
   id: number;
 
   @Column({ default: true })
   visible: boolean;
 
   @Column({ default: false })
+  @Field(type => Boolean)
   isWinner: boolean;
 
   @Column()
+  @Field(type => String)
   title: string;
 
   @Column({ type: 'text' })
+  @Field(type => String)
   who: string;
 
   @Column({ type: 'text' })
+  @Field(type => String)
   what: string;
 
   @Column({ type: 'text' })
+  @Field(type => String)
   tldr: string;
 
   @Column({ type: 'text' })
+  @Field(type => String)
   links: string;
 
   @ManyToOne(() => Auction, (auction) => auction.proposals)
   @JoinColumn()
+  @Field(type => Auction)
   auction: Auction;
 
   @RelationId((proposal: Proposal) => proposal.auction)
   @Column({ type: 'number' })
+  @Field(type => Int)
   auctionId: number;
 
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()
+  @Field(type => [Vote])
   votes: Vote[];
 
   @Column({ type: 'numeric', default: 0 })
+  @Field(type => Float)
   score: number;
 
   @BeforeUpdate()
@@ -62,9 +75,11 @@ export class Proposal extends SignedEntity {
   }
 
   @Column()
+  @Field(type => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
+  @Field(type => Date)
   lastUpdatedDate: Date;
 
   @BeforeInsert()

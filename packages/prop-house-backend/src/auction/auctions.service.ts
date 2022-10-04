@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Auction } from './auction.entity';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class AuctionsService {
   findAll(): Promise<Auction[]> {
     return this.auctionsRepository.find({
       loadRelationIds: {
-        relations: ['proposals.auction', 'community']
+        relations: ['proposals.auction', 'community'],
       },
       where: {
         visible: true,
@@ -25,9 +25,26 @@ export class AuctionsService {
     return this.auctionsRepository.findOne(id, {
       relations: ['proposals'],
       loadRelationIds: {
-        relations: ['community']
+        relations: ['community'],
       },
       where: { visible: true },
+    });
+  }
+
+  findWhere(
+    start: number,
+    limit: number,
+    where: Partial<Auction>,
+    relations: string[] = [],
+    relationIds?: string[],
+  ) {
+    return this.auctionsRepository.find({
+      skip: start,
+      take: limit,
+      where,
+      order: {id: 'ASC'},
+      relations,
+      loadRelationIds: relationIds ? {relations: relationIds} : undefined
     });
   }
 

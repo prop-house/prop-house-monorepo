@@ -48,10 +48,11 @@ export class CommunitiesController {
     return buildExtendedCommunity(foundCommunity);
   }
 
-  @Get(':address')
+  @Get('0x:address')
   async findByAddress(
     @Param('address') address: string,
   ): Promise<ExtendedCommunity> {
+    address = `0x${address}`
     const foundCommunity = await this.communitiesService.findByAddress(address);
     if (!foundCommunity)
       throw new HttpException('Community not found', HttpStatus.NOT_FOUND);

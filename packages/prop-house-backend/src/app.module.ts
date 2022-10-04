@@ -6,6 +6,8 @@ import configuration from './config/configuration';
 import { PostgresDatabaseProviderModule } from './db/postgres.provider';
 import { IpfsModule } from './ipfs/ipfs.module';
 import { FileModule } from './file/file.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 
 @Module({
   imports: [
@@ -13,6 +15,10 @@ import { FileModule } from './file/file.module';
       load: [configuration],
     }),
     PostgresDatabaseProviderModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true
+    }),
     IpfsModule,
     FileModule,
   ],

@@ -1,3 +1,4 @@
+import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Community } from 'src/community/community.entity';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
@@ -12,54 +13,84 @@ import {
 } from 'typeorm';
 
 @Entity()
+@ObjectType()
 export class Auction {
   @PrimaryGeneratedColumn()
+  @Field(type => Int, {
+    description: "All auctions are issued a unique ID number"
+  })
   id: number;
 
   @Column({ default: true })
   visible: boolean;
 
   @Column()
+  @Field(type => String)
   title: string;
 
   @Column()
+  @Field(type => Date, {
+    description: "After the Start Time users may submit proposals"
+  })
   startTime: Date;
 
   @Column()
+  @Field(type => Date,
+    {
+      description: "Users may submit proposals up until Proposal End Time"
+    })
   proposalEndTime: Date;
 
   @Column()
+  @Field(type => Date, {
+    description: "Between Proposal End Time and Voting End Time, users may submit votes for proposals"
+  })
   votingEndTime: Date;
 
   @Column()
+  @Field(type => Float, {
+    description: "The number of currency units paid to each winner"
+  })
   fundingAmount: number;
 
   @Column({ nullable: true })
+  @Field(type => String, {
+    description: "The currency for the auction that winners will be paid in"
+  })
   currencyType: string;
 
   @Column({ nullable: true })
+  @Field(type => String)
   description: string;
 
   @Column()
+  @Field(type => Int, {
+    description: "The number of winners that will be paid from the auction"
+  })
   numWinners: number;
 
   @OneToMany(() => Proposal, (proposal) => proposal.auction, {
     eager: true,
   })
   @JoinColumn()
+  @Field(type => [Proposal])
   proposals: Proposal[];
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()
+  @Field(type => Community)
   community: Community;
 
   @Column()
+  @Field(type => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
+  @Field(type => Date)
   lastUpdatedDate: Date;
 
   @Column({default: "latest"})
+  @Field(type => String)
   balanceBlockTag: string;
 
   @BeforeInsert()
@@ -72,3 +103,6 @@ export class Auction {
     this.lastUpdatedDate = new Date();
   }
 }
+
+@InputType()
+export class AuctionInput extends Auction {}
