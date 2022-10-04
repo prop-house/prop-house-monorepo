@@ -1,11 +1,11 @@
-FROM ghcr.io/puppeteer/puppeteer:16.1.0
-
+FROM node:16 AS builder
 WORKDIR /app
 
 ADD package.json .
 ADD yarn.lock .
 
 ADD . .
+
 
 RUN yarn
 
@@ -22,6 +22,11 @@ WORKDIR /app/packages/prop-house-card-renderer
 RUN yarn
 
 RUN yarn build
+
+
+FROM ghcr.io/puppeteer/puppeteer:16.1.0
+
+COPY --from=builder /app .
 
 RUN mkdir /tmp/phcache
 
