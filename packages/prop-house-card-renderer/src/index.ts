@@ -13,7 +13,7 @@ type Config = {
 }
 
 const config: Config = {
-    port: process.env.PORT ? Number(process.env.PORT) : 3000,
+    port: process.env.PORT ? Number(process.env.PORT) : 3002,
     webAppBase: process.env.WEB_APP_BASE ?? "https://prop.house",
     apiBase: process.env.ABI_BASE ?? "https://prod.backend.prop.house",
     cachePath: process.env.CACHE_PATH ?? "/tmp/phcache",
@@ -38,9 +38,9 @@ const localHtml = async (propId: string) => {
 `
 }
 
-const remoteCardUrl = (propId: string) => [config.webAppBase, "proposal", propId, "card"].join('/')
+const remoteCardUrl = (path: string) => [config.webAppBase, path, "card"].join('/')
 
-const cachePath = (propId: string) => [config.cachePath, [propId.replace(/\.\//g, ""), "png"].join('.')].join("/")
+const cachePath = (propId: string) => [config.cachePath, [propId.replace(/\.\//g, "").replace(/\//g, "_"), "png"].join('.')].join("/")
 
 const generateLocal = async (req: express.Request<{ propId: string }>, res: express.Response) => {
     const { propId } = req.params;
@@ -65,9 +65,9 @@ const generateLocal = async (req: express.Request<{ propId: string }>, res: expr
         .send(fs.readFileSync(path))
 }
 
-const generateRemote = async (req: express.Request<{ propId: string }>, res: express.Response) => {
-    const { propId } = req.params;
-    const path = cachePath(propId)
+const generateRemote = async (req: express.Request, res: express.Response) => {
+    const path = req.params[0]
+    const cacheFilePath = cachePath(path)
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -78,15 +78,16 @@ const generateRemote = async (req: express.Request<{ propId: string }>, res: exp
         },
         userAgent: "PropHouseSnapshotBot"
     })
-    await page.goto(remoteCardUrl(propId), {
+    console.log(remoteCardUrl(path))
+    await page.goto(remoteCardUrl(path), {
         waitUntil: "networkidle0"
     })
-    await page.screenshot({ path });
+    await page.screenshot({ path: cacheFilePath });
 
     await browser.close();
     res.header("X-PropHouse-Type", "local")
         .header("Content-Type", "image/png")
-        .send(fs.readFileSync(path))
+        .send(fs.readFileSync(cacheFilePath))
 }
 
 (async () => {
@@ -97,7 +98,7 @@ const generateRemote = async (req: express.Request<{ propId: string }>, res: exp
     })
 
     app.get('/:propId', generateLocal)
-    app.get('/:propId/remote', generateRemote)
+    app.get('/remote/*', generateRemote)
     app.get('/:propId/local', generateLocal)
 
 

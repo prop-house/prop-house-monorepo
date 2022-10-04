@@ -21,6 +21,6 @@ mkdir cache
 CACHE_PATH=cache yarn start:dev
 ```
 
-Once the script is running you can edit the HTML block in [index.ts](src/index.ts) which uses normal JavaScript string interpolation. Pointing your browser at `http://localhost:3000/:proposalId` will render the card using the local HTML.
+Once the script is running you can edit the HTML block in [index.ts](src/index.ts) which uses normal JavaScript string interpolation. Pointing your browser at `http://localhost:3002/:proposalId` will render the card using the local HTML.
 
-Alternatively, calling `http://localhost:3000/:proposalId/remote` will just render a PNG of the frontend at `https://prop.house/proposal/:proposalId/card` if frontend devs would prefer to use React and keep the card within the main codebase.
+Alternatively, calling `http://localhost:3000/remote/:path` will just render a PNG of the frontend at `https://prop.house/:path/card` if frontend devs would prefer to use React and keep the card within the main codebase. The `:path` property can be multiple levels as well, meaning `http://localhost:3002/remote/proposal/99` will fetch `https://prop.house/proposal/99/card`.
