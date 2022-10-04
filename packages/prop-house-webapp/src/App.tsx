@@ -46,8 +46,7 @@ function App() {
           {location.pathname !== '/' && <NavBar />}
 
           <Routes>
-            {/** todo: implement actual card components */}
-            <Route path="/proposal/:id/card" element={<>rendered card for prop</>} />
+            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
             <Route path="/round/:id/card" element={<>rendered card for round</>} />
             <Route path="/house/:id/card" element={<>rendered card for house</>} />
 
@@ -63,9 +62,6 @@ function App() {
 
             <Route path="/faq" element={<FAQ />} />
             <Route path="/proposal/:id" element={<Proposal />} />
-
-            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
             <Route path="/:house/:title/:id" element={<Proposal />} />
