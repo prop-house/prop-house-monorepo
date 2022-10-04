@@ -88,7 +88,10 @@ const Proposal = () => {
     <>
       <Container>
         <Helmet>
-          <meta property="twitter:image" content="https://i.imgur.com/RW1upaE.png" />
+          <meta
+            name="twitter:image"
+            content="http://graphics8.nytimes.com/images/2012/02/19/us/19whitney-span/19whitney-span-articleLarge.jpg"
+          />
         </Helmet>
         {proposal ? (
           <>
