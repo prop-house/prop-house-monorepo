@@ -17,6 +17,7 @@ import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
+import Helmet from 'react-helmet';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -40,6 +41,9 @@ function App() {
 
   return (
     <DAppProvider config={config}>
+      <Helmet>
+        <meta property="og:image" content="https://i.imgur.com/RW1upaE.png" />
+      </Helmet>
       <Suspense fallback={<LoadingIndicator />}>
         <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
           {location.pathname !== '/' && <NavBar />}
