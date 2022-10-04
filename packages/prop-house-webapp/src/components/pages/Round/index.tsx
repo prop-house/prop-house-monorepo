@@ -17,10 +17,10 @@ import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
 import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
-import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import RoundSkeletonCards from '../../RoundSkeletonCards';
 
 const Round = () => {
