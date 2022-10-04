@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import RoundHeader from '../../RoundHeader';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
@@ -21,6 +21,7 @@ import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
+import RoundSkeletonCards from '../../RoundSkeletonCards';
 
 const Round = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ const Round = () => {
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -69,6 +71,7 @@ const Round = () => {
         auctionStatus(round) === AuctionStatus.AuctionEnded ? SortType.VoteCount : SortType.Random,
         false,
       );
+      setIsLoading(false);
     };
     fetchAuctionProposals();
     return () => {
@@ -100,13 +103,17 @@ const Round = () => {
 
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
-          <div className={classes.propCards}>
-            {round && proposals ? (
-              <RoundContent auction={round} proposals={proposals} />
-            ) : (
-              <RoundMessage message="No rounds available" />
-            )}
-          </div>
+          {isLoading ? (
+            <RoundSkeletonCards numberOfCards={4} column />
+          ) : (
+            <div className={classes.propCards}>
+              {round && proposals ? (
+                <RoundContent auction={round} proposals={proposals} />
+              ) : (
+                <RoundMessage message="No rounds available" />
+              )}
+            </div>
+          )}
         </Container>
       </div>
     </>

@@ -1,0 +1,23 @@
+.skeletonGrid {
+  margin: 12px 0px;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.loadingSvg {
+  background: white;
+  border-radius: 24px;
+  padding: 15px;
+  height: 200px;
+  height: auto;
+}
+.loadingSvg svg {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .skeletonGrid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

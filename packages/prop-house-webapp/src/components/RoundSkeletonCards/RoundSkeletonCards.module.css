@@ -1,0 +1,39 @@
+.skeletonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin: 12px 0px;
+  gap: 20px;
+}
+.skeletonGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(1, 1fr);
+  width: 70%;
+}
+.skeletonInfoCardGrid {
+  width: 30%;
+}
+
+.loadingSvg {
+  background: white;
+  border-radius: 24px;
+  padding: 15px;
+  height: auto;
+}
+
+.skeletonInfoCardGrid svg {
+  width: auto;
+}
+
+@media (max-width: 992px) {
+  .skeletonContainer {
+    flex-direction: column-reverse;
+  }
+  .skeletonGrid,
+  .loadingSvg svg {
+    width: 100%;
+  }
+  .skeletonInfoCardGrid {
+    display: none;
+  }
+}
