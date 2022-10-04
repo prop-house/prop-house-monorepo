@@ -16,7 +16,7 @@ const config: Config = {
     port: process.env.PORT ? Number(process.env.PORT) : 3000,
     webAppBase: process.env.WEB_APP_BASE ?? "https://prop.house",
     apiBase: process.env.ABI_BASE ?? "https://prod.backend.prop.house",
-    cachePath: process.env.CACHEPATH ?? "/tmp/phcache",
+    cachePath: process.env.CACHE_PATH ?? "/tmp/phcache",
     cardHeight: process.env.CARD_HEIGHT ? Number(process.env.CARD_HEIGHT) : 512,
     cardWidth: process.env.CARD_WIDTH ? Number(process.env.CARD_WIDTH) : 1024,
 }
@@ -33,6 +33,7 @@ const localHtml = async (propId: string) => {
     return `
 <html>
 <h1>${proposal.title}</h1>
+<p>${proposal.tldr}</p>
 </html>
 `
 }
