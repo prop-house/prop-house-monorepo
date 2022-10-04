@@ -17,6 +17,7 @@ import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
+import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -57,9 +58,13 @@ function App() {
 
             <Route path="/faq" element={<FAQ />} />
             <Route path="/proposal/:id" element={<Proposal />} />
+
+            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
             <Route path="/:house/:title/:id" element={<Proposal />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
