@@ -89,6 +89,10 @@ const Proposal = () => {
       <Container>
         <Helmet>
           <meta
+            property="og:image"
+            content="http://graphics8.nytimes.com/images/2012/02/19/us/19whitney-span/19whitney-span-articleLarge.jpg"
+          />
+          <meta
             name="twitter:image"
             content="http://graphics8.nytimes.com/images/2012/02/19/us/19whitney-span/19whitney-span-articleLarge.jpg"
           />
