@@ -19,6 +19,7 @@ import LoadingIndicator from '../../LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../../utils/buildRoundPath';
+import Helmet from 'react-helmet';
 
 const Proposal = () => {
   const params = useParams();
@@ -86,6 +87,9 @@ const Proposal = () => {
   return (
     <>
       <Container>
+        <Helmet>
+          <meta property="twitter:image" content="https://i.imgur.com/RW1upaE.png" />
+        </Helmet>
         {proposal ? (
           <>
             <RenderedProposalFields
