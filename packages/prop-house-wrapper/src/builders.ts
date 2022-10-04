@@ -47,7 +47,7 @@ export class Auction extends Signable {
     public readonly currencyType: string,
     public readonly numWinners: number,
     public readonly community: number,
-    public readonly balanceBlockTag: number | undefined,
+    public readonly balanceBlockTag: number,
     public readonly description: string,
   ) {
     super();
@@ -74,7 +74,7 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
-  public readonly proposals: StoredProposal[];
+  public readonly numProposals: number;
   //@ts-ignore
   public readonly createdDate: Date;
 
@@ -92,10 +92,8 @@ export class StoredAuction extends Auction {
 export class Proposal extends Signable {
   constructor(
     public readonly title: string,
-    public readonly who: string,
     public readonly what: string,
     public readonly tldr: string,
-    public readonly links: string,
     public readonly auctionId: number,
   ) {
     super();
@@ -104,10 +102,8 @@ export class Proposal extends Signable {
   toPayload() {
     return {
       title: this.title,
-      who: this.who,
       what: this.what,
       tldr: this.tldr,
-      links: this.links,
       parentAuctionId: this.auctionId,
     };
   }
@@ -117,7 +113,7 @@ export interface StoredProposal extends Proposal {
   id: number;
   address: string;
   createdDate: Date;
-  score: number;
+  voteCount: number;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {

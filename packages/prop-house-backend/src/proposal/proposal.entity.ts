@@ -21,23 +21,14 @@ export class Proposal extends SignedEntity {
   @Column({ default: true })
   visible: boolean;
 
-  @Column({ default: false })
-  isWinner: boolean;
-
   @Column()
   title: string;
-
-  @Column({ type: 'text' })
-  who: string;
 
   @Column({ type: 'text' })
   what: string;
 
   @Column({ type: 'text' })
   tldr: string;
-
-  @Column({ type: 'text' })
-  links: string;
 
   @ManyToOne(() => Auction, (auction) => auction.proposals)
   @JoinColumn()
@@ -52,11 +43,11 @@ export class Proposal extends SignedEntity {
   votes: Vote[];
 
   @Column({ type: 'numeric', default: 0 })
-  score: number;
+  voteCount: number;
 
   @BeforeUpdate()
-  updateScore() {
-    this.score = this.votes.reduce((acc, vote) => {
+  updateVoteCount() {
+    this.voteCount = this.votes.reduce((acc, vote) => {
       return Number(acc) + Number(vote.weight);
     }, 0);
   }

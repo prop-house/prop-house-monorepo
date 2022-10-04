@@ -12,6 +12,7 @@ import { isValidVoteDirection, VoteDirections } from 'src/utils/vote';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
+import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 
 @Controller('votes')
 export class VotesController {
@@ -73,7 +74,10 @@ export class VotesController {
       );
 
     // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(createVoteDto, foundProposal.auction.balanceBlockTag);
+    const totalVotesAvail = await this.votesService.getNumVotes(
+      createVoteDto,
+      foundProposal.auction.balanceBlockTag,
+    );
 
     if (totalVotesAvail === 0)
       throw new HttpException(
@@ -103,30 +107,7 @@ export class VotesController {
         );
 
       await this.votesService.createNewVote(createVoteDto, foundProposal);
-      await this.proposalService.rollupScore(foundProposal.id);
-    }
-
-    // Voting down
-    if (createVoteDto.direction === VoteDirections.Down) {
-      // Verify that proposal has votes
-      if (
-        signerVotesForAuction.filter(
-          (vote) => vote.proposalId === foundProposal.id,
-        ).length === 0
-      )
-        throw new HttpException(
-          `Signer has no votes to downvote on proposal #${foundProposal.id}`,
-          HttpStatus.BAD_REQUEST,
-        );
-
-      // Delete *last* vote submitted on proposal
-      await Vote.delete(
-        signerVotesForAuction
-          .reverse()
-          .find((vote) => vote.proposalId === foundProposal.id),
-      );
-
-      await this.proposalService.rollupScore(foundProposal.id);
+      await this.proposalService.rollupVoteCount(foundProposal.id);
     }
   }
 }

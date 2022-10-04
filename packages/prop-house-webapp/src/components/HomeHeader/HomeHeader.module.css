@@ -1,70 +1,56 @@
 .wrapper {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-.poweredByNouns {
-  color: var(--brand-black-transparent);
-  font-weight: medium;
-  margin-bottom: 0.5rem;
-}
-
-.poweredByNouns a {
-  color: var(--brand-pink);
-  text-decoration: none;
-}
-
-@media (max-width: 992px) {
-  .weeklyFunding {
-    font-size: 34px !important;
-  }
-}
-
-.leftCol h1 {
-  font-size: 50px;
-  font-weight: 600;
-  margin-bottom: 0px;
-}
-
-.leftCol p {
-  margin: 1rem 0.2rem;
-  font-size: 18px;
-  font-weight: medium;
-}
-
-.btnsContainer {
-  display: flex;
-  gap: 10px;
-}
-
-.rightCol {
+  padding-top: 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
   align-items: center;
+  margin-left: 0;
+  margin-right: 0;
 }
-.rightCol img {
-  border-radius: 3px;
-}
-.rightCol p {
+
+.learnMoreBtn {
   margin-top: 1rem;
-  margin-bottom: 0;
-  color: var(--brand-gray);
-  font-size: small;
+  width: fit-content;
+  border-radius: 28px;
+  background-color: transparent;
+  border: 1px solid var(--brand-purple-semi-transparent);
+  color: var(--brand-purple);
+  font-size: 14px;
+  font-weight: bold;
+}
+.learnMoreBtn:hover {
+  background: rgba(148, 23, 226, 0.08);
+}
+.searchBarContainer {
+  height: 20px;
+}
+
+@media (min-width: 991px) {
+  .searchBarContainer {
+    padding: 0 !important;
+  }
+}
+
+@media (max-width: 1199px) {
+  .searchBarContainer {
+    max-width: 960px !important;
+  }
 }
 
 @media (max-width: 992px) {
-  .btnsContainer {
-    margin-bottom: 2rem;
+  .homeCardsContainer {
+    padding: 0px !important;
   }
+}
 
-  .btnsContainer div {
-    text-align: center;
+@media (max-width: 990px) {
+  .searchBarContainer {
+    max-width: 960px !important;
+    padding: 0 40px !important;
   }
-  .btnsContainer button {
-    width: 95%;
-  }
-  .rightCol {
-    display: none;
+}
+
+@media (max-width: 575px) {
+  .searchBarContainer {
+    padding: 0 20px !important;
   }
 }

@@ -1,0 +1,44 @@
+.sideCardHeader {
+  font-weight: 700;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.sideCardHeader svg {
+  width: 24px;
+  height: 24px;
+}
+.sideCardBody {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+.title {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+.subtitle {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.winnersText {
+  font-weight: 700;
+  color: var(--brand-gray);
+  font-size: 14px;
+}
+.blackIcon {
+  border: 1px solid var(--border-med);
+}
+
+.divider {
+  margin: 18px 0px;
+}

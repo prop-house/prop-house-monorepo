@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Proposal } from './proposal.entity';
+import { GetProposalsDto } from './proposal.types';
 
 @Injectable()
 export class ProposalsService {
@@ -10,8 +11,13 @@ export class ProposalsService {
     private proposalsRepository: Repository<Proposal>,
   ) {}
 
-  findAll(): Promise<Proposal[]> {
+  findAll(dto: GetProposalsDto): Promise<Proposal[]> {
     return this.proposalsRepository.find({
+      skip: dto.skip,
+      take: dto.limit,
+      order: {
+        createdDate: dto.order,
+      },
       loadRelationIds: {
         relations: ['votes'],
       },
@@ -28,7 +34,7 @@ export class ProposalsService {
 
   findOne(id: number): Promise<Proposal> {
     return this.proposalsRepository.findOne(id, {
-      relations: ['votes'],
+      relations: ['votes', 'auction'],
       where: { visible: true },
     });
   }
@@ -37,10 +43,10 @@ export class ProposalsService {
     await this.proposalsRepository.delete(id);
   }
 
-  async rollupScore(id: number) {
+  async rollupVoteCount(id: number) {
     const foundProposal = await this.findOne(id);
     if (!foundProposal) return;
-    foundProposal.updateScore();
+    foundProposal.updateVoteCount();
     this.proposalsRepository.save(foundProposal);
   }
 
@@ -48,8 +54,8 @@ export class ProposalsService {
     return await this.proposalsRepository.save(proposal);
   }
 
-  async scoreById(id: number): Promise<number> {
+  async voteCountById(id: number): Promise<number> {
     const foundProposal = await this.proposalsRepository.findOneOrFail(id);
-    return foundProposal.score;
+    return foundProposal.voteCount;
   }
 }

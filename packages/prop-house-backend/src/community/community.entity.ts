@@ -9,6 +9,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   RelationCount,
+  RelationId,
 } from 'typeorm';
 
 @Entity()
@@ -31,13 +32,10 @@ export class Community {
   @Column({ nullable: true })
   description: string;
 
-  // TODO: refactor to not use deprecated decorator
-  @RelationCount((community: Community) => community.auctions)
+  @RelationId((community: Community) => community.auctions)
   numAuctions: number;
 
-  @OneToMany(() => Auction, (auction) => auction.community, {
-    eager: true,
-  })
+  @OneToMany(() => Auction, (auction) => auction.community)
   @JoinColumn()
   auctions: Auction[];
 

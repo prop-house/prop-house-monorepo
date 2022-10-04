@@ -1,50 +1,48 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import classes from "./NavBar.module.css";
-import Web3ModalButton from "../Web3ModalButton.tsx";
-import clsx from "clsx";
-import LocaleSwitcher from "../LocaleSwitcher";
-import { useTranslation } from "react-i18next";
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import classes from './NavBar.module.css';
+import Web3ModalButton from '../Web3ModalButton.tsx';
+import clsx from 'clsx';
+import LocaleSwitcher from '../LocaleSwitcher';
+import { useTranslation } from 'react-i18next';
 
 const NavBar = () => {
   const { t } = useTranslation();
 
   return (
-    <Navbar bg="transparent" expand="lg" className={classes.navbar}>
-      <Navbar.Brand>
-        <Link to="/" className={classes.navbarBrand}>
-          {t('propHouse')}
+    <Container>
+      <Navbar bg="transparent" expand="lg" className={classes.navbar}>
+        <Link to="/" className={classes.logoGroup}>
+          <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
+          <Navbar.Brand>
+            <div className={classes.navbarBrand}>{t('propHouse')}</div>
+            <div className={classes.poweredByNouns}>
+              {t('powered')} {t('nounsdao')}
+            </div>
+          </Navbar.Brand>
         </Link>
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-          <Nav.Link as="div" className={classes.menuLink}>
-            <Link to="/learn" className={classes.link}>
-              {t('learn')}
-            </Link>
-          </Nav.Link>
-          <Nav.Link as="div" className={classes.menuLink}>
-            <Link to={`/explore`} className={classes.link}>
-              {t('explore')}
-            </Link>
-          </Nav.Link>
-          <Nav.Link as="div" className={classes.menuLink}>
-            <Link to="/faq" className={classes.link}>
-              {t('faq')}
-            </Link>
-          </Nav.Link>
 
-          <div className={classes.buttonGroup}>
-            <LocaleSwitcher />
-
-            <Nav.Link as="div">
-              <Web3ModalButton classNames={classes.link} />
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
+            <Nav.Link as="div" className={classes.menuLink}>
+              <Link to="/faq" className={classes.link}>
+                {t('faq')}
+              </Link>
+              <span className={classes.divider}></span>
             </Nav.Link>
-          </div>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>
+
+            <div className={classes.buttonGroup}>
+              <LocaleSwitcher />
+
+              <Nav.Link as="div">
+                <Web3ModalButton classNames={classes.link} />
+              </Nav.Link>
+            </div>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+    </Container>
   );
 };
 

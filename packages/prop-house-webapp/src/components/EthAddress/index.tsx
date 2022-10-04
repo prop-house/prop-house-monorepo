@@ -11,8 +11,9 @@ const EthAddress: React.FC<{
   address: string;
   truncate?: boolean;
   className?: string;
+  hideDavatar?: boolean;
 }> = props => {
-  const { address, truncate } = props;
+  const { address, truncate, hideDavatar } = props;
   const { library: provider } = useEthers();
 
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -21,14 +22,12 @@ const EthAddress: React.FC<{
   const ens = useReverseENSLookUp(address);
 
   return (
-    <div
-      onClick={(e: any) => e.stopPropagation()}
-      className={clsx(props.className, classes.ethAddress)}
-    >
+    <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        <Davatar size={24} address={address} provider={provider} generatedAvatarType="blockies" />
-
-        <span className={clsx(classes.address, truncate && classes.truncate)}>
+        {!hideDavatar && (
+          <Davatar size={24} address={address} provider={provider} generatedAvatarType="blockies" />
+        )}
+        <span className={clsx(classes.address, truncate && classes.truncate, props.className)}>
           {ens ? ens : trimEthAddress(address)}
         </span>
       </a>
