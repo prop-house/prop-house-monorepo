@@ -15,53 +15,37 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
     setLoading(true);
   };
 
+  const homeStats = [
+    {
+      amount: stats.accEthFunded,
+      text: 'ETH funded',
+    },
+    {
+      amount: stats.accRounds,
+      text: 'Funding Rounds',
+    },
+    {
+      amount: stats.accProps,
+      text: 'Submitted props',
+    },
+  ];
+
   return (
     <div className={classes.statsContainer}>
-      {!loading ? (
-        <>
-          <div className={classes.stat}>
-            <CountUp start={0} end={stats.accEthFunded} suffix="+" delay={0} onEnd={onEnd}>
+      {homeStats.map(s => (
+        <div className={classes.stat}>
+          {!loading ? (
+            <CountUp start={0} end={s.amount} suffix="+" delay={0} onEnd={onEnd}>
               {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
             </CountUp>
-            <p className={classes.subtitle}>ETH funded</p>
-          </div>
-          <div className={classes.stat}>
-            <CountUp start={0} end={stats.accRounds} suffix="+" delay={0} onEnd={onEnd}>
-              {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
-            </CountUp>
-            <p className={classes.subtitle}>Funding Rounds</p>
-          </div>
-          <div className={classes.stat}>
-            <CountUp start={0} end={stats.accProps} suffix="+" delay={0} onEnd={onEnd}>
-              {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
-            </CountUp>
-            <p className={classes.subtitle}>Submitted props</p>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className={classes.stat}>
+          ) : (
             <span className={classes.amount}>
-              <TruncateThousands amount={stats.accEthFunded} />+
+              <TruncateThousands amount={s.amount} />+
             </span>
-            <p className={classes.subtitle}>ETH funded</p>
-          </div>
-
-          <div className={classes.stat}>
-            <span className={classes.amount}>
-              <TruncateThousands amount={stats.accRounds} />+
-            </span>
-            <p className={classes.subtitle}>Funding Rounds</p>
-          </div>
-
-          <div className={classes.stat}>
-            <span className={classes.amount}>
-              <TruncateThousands amount={stats.accProps} />+
-            </span>
-            <p className={classes.subtitle}>Submitted props</p>
-          </div>
-        </>
-      )}
+          )}
+          <p className={classes.subtitle}>{s.text}</p>
+        </div>
+      ))}
     </div>
   );
 };
