@@ -51,10 +51,7 @@ const RoundHeader: React.FC<{
               isLongName(community ? community.name : '') && classes.longName,
             )}
           >
-            <div className={classes.title}>
-              {community ? community.name : ''}
-              {auction && `: ${auction.title}`}
-            </div>
+            <div className={classes.title}>{auction && `${auction.title}`}</div>
           </Col>
 
           {community?.description && (
