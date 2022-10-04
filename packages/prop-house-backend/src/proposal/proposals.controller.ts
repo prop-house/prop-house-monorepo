@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { Proposal } from 'src/proposal/proposal.entity';
-import { CreateProposalDto } from './proposal.types';
+import { CreateProposalDto, GetProposalsDto } from './proposal.types';
 import { ProposalsService } from './proposals.service';
 
 @Controller('proposals')
@@ -21,8 +22,8 @@ export class ProposalsController {
   ) {}
 
   @Get()
-  getProposals(): Promise<Proposal[]> {
-    return this.proposalsService.findAll();
+  getProposals(@Query() dto: GetProposalsDto): Promise<Proposal[]> {
+    return this.proposalsService.findAll(dto);
   }
 
   @Get(':id')
@@ -47,15 +48,14 @@ export class ProposalsController {
       );
 
     // Verify that signed data equals this payload
-    const signedPayload: CreateProposalDto = JSON.parse(
-      createProposalDto.signedData.message,
+    const signedPayload = JSON.parse(
+      Buffer.from(createProposalDto.signedData.message, 'base64').toString(),
     );
+
     if (
       !(
-        signedPayload.who === createProposalDto.who &&
         signedPayload.what === createProposalDto.what &&
         signedPayload.tldr === createProposalDto.tldr &&
-        signedPayload.links === createProposalDto.links &&
         signedPayload.title === createProposalDto.title &&
         signedPayload.parentAuctionId === createProposalDto.parentAuctionId
       )
@@ -67,10 +67,8 @@ export class ProposalsController {
 
     const proposal = new Proposal();
     proposal.address = createProposalDto.address;
-    proposal.who = createProposalDto.who;
     proposal.what = createProposalDto.what;
     proposal.tldr = createProposalDto.tldr;
-    proposal.links = createProposalDto.links;
     proposal.title = createProposalDto.title;
     proposal.signedData = createProposalDto.signedData;
     proposal.auction = foundAuction;

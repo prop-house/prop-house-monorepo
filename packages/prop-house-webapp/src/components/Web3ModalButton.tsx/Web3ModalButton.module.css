@@ -23,4 +23,5 @@
 }
 .connectBtn {
   min-width: 85px !important;
+  margin-left: 0 !important;
 }

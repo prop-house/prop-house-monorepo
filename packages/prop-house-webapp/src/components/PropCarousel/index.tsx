@@ -1,21 +1,22 @@
-import classes from "./PropCarousel.module.css";
-import CarouselSection from "../CarouselSection";
-import { useAppSelector } from "../../hooks";
-import ProposalCard from "../ProposalCard";
-import { PropHouseWrapper } from "@nouns/prop-house-wrapper";
-import { useRef, useEffect, useState } from "react";
-import { useEthers } from "@usedapp/core";
-import { useDispatch } from "react-redux";
-import { StoredProposalWithVotes } from "@nouns/prop-house-wrapper/dist/builders";
-import LoadingIndicator from "../LoadingIndicator";
-import { useTranslation } from "react-i18next";
+import classes from './PropCarousel.module.css';
+import CarouselSection from '../CarouselSection';
+import { useAppSelector } from '../../hooks';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useRef, useEffect, useState } from 'react';
+import { useEthers } from '@usedapp/core';
+import { useDispatch } from 'react-redux';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import LoadingIndicator from '../LoadingIndicator';
+import { useTranslation } from 'react-i18next';
+import HomeProposalCard from '../HomeProposalCard';
+import ProposalCard from '../ProposalCard';
 
 const PropCarousel = () => {
   const { library } = useEthers();
   const dispatch = useDispatch();
   const [proposals, setProposals] = useState<StoredProposalWithVotes[]>();
   const [isLoading, setIsLoading] = useState(false);
-  const host = useAppSelector((state) => state.configuration.backendHost);
+  const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
@@ -27,7 +28,7 @@ const PropCarousel = () => {
   useEffect(() => {
     setIsLoading(true);
     const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAllProposals();
+      const proposals = await client.current.getProposals();
       setProposals(proposals);
       setIsLoading(false);
     };
@@ -42,7 +43,7 @@ const PropCarousel = () => {
       .map((_, index) => {
         return (
           <div className={classes.propCardContainer} key={index}>
-            <ProposalCard proposal={proposals[index]} />
+            <HomeProposalCard fromHome proposal={proposals[index]} />
           </div>
         );
       });
@@ -53,7 +54,7 @@ const PropCarousel = () => {
     <CarouselSection
       contextTitle={t('browseProps')}
       mainTitle={t('recentProps')}
-      cards={propCards ? propCards : []}
+      cards={propCards || []}
     />
   );
 };

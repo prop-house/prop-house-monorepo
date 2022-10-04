@@ -1,18 +1,19 @@
-import { addressFormLink } from "../../utils/addressFormLink";
-import CTA from "../CTA";
-import { useTranslation } from "react-i18next";
+import { addressFormLink } from '../../utils/addressFormLink';
+import CTA from '../CTA';
+import { useTranslation } from 'react-i18next';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const ContactUsCTA = () => {
   const { t } = useTranslation();
 
   return (
     <CTA
-      title={t("supercharge")}
-      content={t("interested")}
+      title={t('supercharge')}
+      content={t('interested')}
       btnAction={() => {
-        window.open(addressFormLink, "_blank");
+        openInNewTab(addressFormLink);
       }}
-      btnTitle={t("contactUs")}
+      btnTitle={t('contactUs')}
     />
   );
 };

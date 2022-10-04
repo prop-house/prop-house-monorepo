@@ -7,10 +7,8 @@ export interface EditorSlice {
 
 export const emptyProposal = () => ({
   title: '',
-  who: '',
   what: '',
   tldr: '',
-  links: '',
 });
 
 const initialState: EditorSlice = {
@@ -18,8 +16,7 @@ const initialState: EditorSlice = {
 };
 
 const proposalSliceFactory =
-  (fieldName: 'title' | 'who' | 'what' | 'tldr' | 'links') =>
-  (state: EditorSlice, action: PayloadAction<string>) => {
+  (fieldName: 'title' | 'what' | 'tldr') => (state: EditorSlice, action: PayloadAction<string>) => {
     state.proposal[fieldName] = action.payload;
   };
 
@@ -37,11 +34,9 @@ export const editorSlice = createSlice({
       };
     },
     updateProposalTitle: proposalSliceFactory('title'),
-    updateProposalWho: proposalSliceFactory('who'),
     updateProposalWhat: proposalSliceFactory('what'),
     updateProposaltldr: proposalSliceFactory('tldr'),
-    updateProposalLinks: proposalSliceFactory('links'),
-    clearProposal: (state) => {
+    clearProposal: state => {
       state.proposal = emptyProposal();
     },
   },
@@ -52,11 +47,9 @@ export const {
   updateProposal,
   patchProposal,
   clearProposal,
-  updateProposalLinks,
   updateProposaltldr,
   updateProposalTitle,
   updateProposalWhat,
-  updateProposalWho,
 } = editorSlice.actions;
 
 export default editorSlice.reducer;

@@ -9,16 +9,16 @@ export interface SortProps {
 }
 
 export enum SortType {
-  Score,
+  VoteCount,
   CreatedAt,
   Random,
 }
 
 export const _sortProps = (proposals: StoredProposalWithVotes[], props: SortProps) => {
   switch (props.sortType) {
-    case SortType.Score:
+    case SortType.VoteCount:
       return proposals.sort((a, b) =>
-        sortHelper(Number(a.score), Number(b.score), props.ascending),
+        sortHelper(Number(a.voteCount), Number(b.voteCount), props.ascending),
       );
     case SortType.Random:
       return proposals.sort(() => Math.random() - 0.5);

@@ -12,7 +12,7 @@
   background-color: var(--brand-gray);
 }
 
-/* PURPLE BG */
+/* PINK BG */
 
 .btnPinkBg {
   background-color: var(--brand-pink);
@@ -27,7 +27,7 @@
   box-shadow: 0 0 0 0.25rem var(--brand-pink-transparent) !important;
 }
 
-/* PINK BG */
+/* PURPLE BG */
 
 .btnPurpleBg {
   background-color: var(--brand-purple);
@@ -40,6 +40,24 @@
 .btnPurpleBg:focus {
   background-color: var(--brand-purple-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-purple-transparent) !important;
+}
+
+/* PURPLE LIGHT BG */
+
+.btnPurpleLightBg {
+  background-color: var(--brand-purple-hint);
+  color: var(--brand-purple);
+  border: none;
+}
+.btnPurpleLightBg:hover {
+  background-color: var(--brand-purple-semi-transparent);
+  background-color: var(--brand-purple-hint);
+  color: var(--brand-purple);
+}
+.btnPurpleLightBg:active,
+.btnPurpleLightBg:focus {
+  background-color: var(--brand-purple-hint);
+  color: var(--brand-purple);
 }
 
 /* WHITE BG */
@@ -125,4 +143,25 @@
 .btnGreenBg:focus {
   background-color: var(--brand-green-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-green-semi-transparent) !important;
+}
+
+/* GRAY BG */
+
+.btnGrayBg {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border: none;
+  color: var(--brand-gray);
+}
+
+.btnGrayBg:hover {
+  color: var(--brand-gray-semi-transparent);
+}
+
+.btnGrayBg:active,
+.btnGrayBg:focus {
+  color: var(--brand-gray);
+}
+
+.btnGrayBg:disabled {
+  color: var(--brand-gray-semi-transparent);
 }

@@ -4,25 +4,26 @@ import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
-import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
-import Community from './components/pages/Community';
+import House from './components/pages/House';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
-import { Container } from 'react-bootstrap';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './components/pages/FAQ';
-import Explore from './components/pages/Explore';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import NotFound from './components/NotFound';
+import Round from './components/pages/Round';
+import bgColorForPage from './utils/bgColorForPage';
+import clsx from 'clsx';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
     [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   },
-  autoConnect: false,
+  autoConnect: true,
 };
 
 function App() {
@@ -40,8 +41,9 @@ function App() {
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <Container>
-          <NavBar />
+        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+          {location.pathname !== '/' && <NavBar />}
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -52,14 +54,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
+
             <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<Community />} />
+            <Route path="/proposal/:id" element={<Proposal />} />
+            <Route path="/:house" element={<House />} />
+            <Route path="/:house/:title" element={<Round />} />
+            <Route path="/:house/:title/:id" element={<Proposal />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
           <Footer />
-        </Container>
+        </div>
       </Suspense>
     </DAppProvider>
   );
