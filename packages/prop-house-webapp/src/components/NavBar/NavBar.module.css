@@ -77,9 +77,9 @@
 }
 .poweredByNouns {
   color: var(--brand-black-transparent);
-  font-weight: medium;
+  font-weight: 550;
   font-size: 14px;
-  margin-top: -.3rem;
+  margin-top: -0.3rem;
 }
 
 .poweredByNouns a {

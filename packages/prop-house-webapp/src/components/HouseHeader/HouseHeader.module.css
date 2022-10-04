@@ -114,6 +114,7 @@
   }
   .communityInfoCol {
     margin: 0 1rem;
+    gap: 10px;
   }
   .propHouseDataRow .item {
     margin-right: 0.75rem;
@@ -133,8 +134,7 @@
 @media (max-width: 767px) {
   .profileHeaderRow {
     flex-direction: column;
-    gap: 24px;
-    margin-bottom: 50px;
+    gap: 28px;
   }
   .profilePicCol {
     margin-bottom: 0rem;
@@ -144,8 +144,8 @@
     margin: 0px 4px;
   }
   .profilePicCol img {
-    width: 88px !important;
-    height: 88px !important;
+    width: 220px !important;
+    height: 220px !important;
   }
 
   .houseTitleInfo {
