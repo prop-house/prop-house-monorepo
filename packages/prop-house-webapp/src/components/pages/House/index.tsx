@@ -13,7 +13,7 @@ import RoundCard from '../../RoundCard';
 import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import LoadingIndicator from '../../LoadingIndicator';
+
 import RoundMessage from '../../RoundMessage';
 import NoSearchResults from '../../NoSearchResults';
 import NotFound from '../../NotFound';
@@ -23,6 +23,8 @@ import OpenGraphElements from '../../OpenGraphElements';
 import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import HouseSkeletonCards from '../../HouseSkeletonCards';
+import LoadingIndicator from '../../LoadingIndicator';
 
 const House = () => {
   const location = useLocation();
@@ -147,31 +149,37 @@ const House = () => {
               />
             </Container>
           </div>
-
-          <div className={classes.houseContainer}>
-            <Container>
-              <Row>
-                {roundsOnDisplay ? (
-                  roundsOnDisplay.length > 0 ? (
-                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
-                      <Col key={index} xl={6}>
-                        <RoundCard round={round} />
-                      </Col>
-                    ))
-                  ) : input === '' ? (
-                    <Col>
-                      <RoundMessage message="No rounds available" />
-                    </Col>
-                  ) : (
-                    <NoSearchResults />
-                  )
-                ) : (
-                  <LoadingIndicator />
-                )}
-              </Row>
-            </Container>
-          </div>
         </>
+      )}
+
+      {!community || isLoading || !roundsOnDisplay ? (
+        <div className={classes.houseContainer}>
+          <Container>
+            <Row>
+              <HouseSkeletonCards numberOfCards={4} />
+            </Row>
+          </Container>
+        </div>
+      ) : (
+        <div className={classes.houseContainer}>
+          <Container>
+            <Row>
+              {roundsOnDisplay.length > 0 ? (
+                sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+                  <Col key={index} xl={6}>
+                    <RoundCard round={round} />
+                  </Col>
+                ))
+              ) : input === '' ? (
+                <Col>
+                  <RoundMessage message="No rounds available" />
+                </Col>
+              ) : (
+                <NoSearchResults />
+              )}
+            </Row>
+          </Container>
+        </div>
       )}
     </>
   );

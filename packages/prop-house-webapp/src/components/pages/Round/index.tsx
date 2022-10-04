@@ -104,7 +104,7 @@ const Round = () => {
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           {isLoading ? (
-            <RoundSkeletonCards numberOfCards={4} column />
+            <RoundSkeletonCards numberOfCards={4} />
           ) : (
             <div className={classes.propCards}>
               {round && proposals ? (
