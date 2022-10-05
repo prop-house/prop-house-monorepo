@@ -8,8 +8,8 @@ import { useEthers } from '@usedapp/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
-import EthAddress from '../EthAddress';
 import classes from './OpenGraphProposalCard.module.css';
+import trimEthAddress from '../../utils/trimEthAddress';
 
 const OpenGraphProposalCard: React.FC = () => {
   const params = useParams();
@@ -58,11 +58,7 @@ const OpenGraphProposalCard: React.FC = () => {
 
           <div className={classes.userInfo}>
             <span className={classes.proposedBy}>Proposed by</span>
-            <EthAddress
-              imgSize={35}
-              address={proposal.address}
-              className={classes.openGraphAvatar}
-            />
+            <div className={classes.openGraphAvatar}>{trimEthAddress(proposal.address)}</div>
           </div>
         </div>
       )}
