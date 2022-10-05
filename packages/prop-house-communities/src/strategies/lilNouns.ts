@@ -8,7 +8,7 @@ import { lilNounsSubgraphApiUri } from '../constants/lilNounsSubgraphApiUri';
  * Total delegated votes for address
  */
 export const lilNouns = (multiplier: number = 1): Strategy => {
-  return async (userAddress: string, communityAddress: string, blockTag: string) => {
+  return async (userAddress: string, communityAddress: string, blockTag: number) => {
     const result = await client(lilNounsSubgraphApiUri).query({
       query: gql(nounishDelegatedVotesToAddressQuery(userAddress.toLocaleLowerCase(), blockTag)),
     });

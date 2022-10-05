@@ -1,16 +1,6 @@
 .navbar {
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 993px) {
-  .navbar {
-    margin-bottom: 0.5rem;
-  }
-  .navbar-nav .dropdown-menu {
-    position: absolute !important;
-    background: yellow !important;
-  }
+  padding-top: 2rem;
+  padding-bottom: 2rem;
 }
 
 .navBarCollapse {
@@ -39,9 +29,9 @@
   border-radius: 10px !important;
 }
 
-@media (max-width: 993px) {
+@media (max-width: 991px) {
   .menuLink {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-med);
     border-radius: 10px;
     width: 100%;
     text-align: center;
@@ -61,10 +51,48 @@
 .buttonGroup {
   display: flex;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .buttonGroup {
     gap: 10px;
     display: flex;
     justify-content: space-between;
   }
+}
+
+@media (min-width: 992px) {
+  .divider {
+    border: 1px solid var(--border-light);
+    border-radius: 1px;
+  }
+  .link {
+    margin-right: 0.75rem;
+  }
+  .menuLink {
+    padding-left: 0rem !important;
+    padding-right: 0.75rem !important;
+  }
+  .menuLink:nth-child(2) {
+    padding-right: 0rem !important;
+  }
+}
+.poweredByNouns {
+  color: var(--brand-black-transparent);
+  font-weight: 550;
+  font-size: 14px;
+  margin-top: -0.3rem;
+}
+
+.poweredByNouns a {
+  color: var(--brand-pink);
+  text-decoration: none;
+}
+
+.bulbImg {
+  height: 50px;
+  width: 50px;
+}
+.logoGroup {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }

@@ -1,43 +1,30 @@
-import { Col, Row, Image } from "react-bootstrap";
-import Button, { ButtonColor } from "../Button";
-import classes from "./HomeHeader.module.css";
-import { Link } from "react-router-dom";
-import grempBulb from "../../assets/gremp-lightbulb.png";
-import { useTranslation } from "react-i18next";
+import { Container, Row } from 'react-bootstrap';
+import classes from './HomeHeader.module.css';
+import HomeTitle from '../HomeTitle';
+import HomeStats from '../HomeStats';
+import HomeSearchBar from '../HomeSeachBar';
+import { StatsProps } from '../pages/Home';
+import { useNavigate } from 'react-router-dom';
 
-const HomeHeader = () => {
-  const { t } = useTranslation();
+interface HomeHeaderProps {
+  input: string;
+  handleSeachInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  stats: StatsProps;
+}
+
+const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) => {
+  const navigate = useNavigate();
 
   return (
     <Row className={classes.wrapper}>
-      <Col lg={7} className={classes.leftCol}>
-        <div className={classes.poweredByNouns}>
-          {t('powered')}{' '}
-          <a href="https://nouns.wtf" target="_blank" rel="noreferrer">
-            {t('nounsdao')}
-          </a>
-        </div>
-
-        <h1 className={classes.weeklyFunding}>{t('weekly')}</h1>
-
-        <p>{t('bringToLife')}</p>
-        <div className={classes.btnsContainer}>
-          <Col xs={6} md="auto">
-            <Link to="/learn">
-              <Button text={t(`learnMore`)} bgColor={ButtonColor.Pink} />
-            </Link>
-          </Col>
-          <Col xs={6} md="auto">
-            <Link to={`/explore`}>
-              <Button text={t(`viewHouses`)} bgColor={ButtonColor.White} />
-            </Link>
-          </Col>
-        </div>
-      </Col>
-      <Col lg={{ span: 4, offset: 1 }} className={classes.rightCol}>
-        <Image src={grempBulb} fluid />
-        <p>{t("artByGremplin")}</p>
-      </Col>
+      <HomeTitle />
+      <button className={classes.learnMoreBtn} onClick={() => navigate('/faq')}>
+        Learn more →
+      </button>
+      <HomeStats stats={stats} />
+      <Container className={classes.searchBarContainer}>
+        <HomeSearchBar input={input} handleSeachInputChange={handleSeachInputChange} />
+      </Container>
     </Row>
   );
 };

@@ -21,7 +21,6 @@
   max-width: 100%;
 }
 .previewCol a {
-  color: var(--brand-pink) !important;
   text-decoration: underline !important;
 }
 .previewCol h2 {
@@ -42,7 +41,7 @@ hr {
 
 .subinfo {
   display: flex;
-  color: var(--brand-black-transparent);
+  color: var(--brand-black);
   font-weight: 700;
   flex-direction: row;
   padding-bottom: 5px;
@@ -66,6 +65,10 @@ hr {
 }
 .submittedBy {
   display: flex;
+  align-items: flex-end;
+  color: var(--brand-black);
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .markdown a {

@@ -4,18 +4,22 @@ import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
-import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
-import Community from './components/pages/Community';
+import House from './components/pages/House';
 import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
-import { Container } from 'react-bootstrap';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './components/pages/FAQ';
-import Explore from './components/pages/Explore';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import NotFound from './components/NotFound';
+import Round from './components/pages/Round';
+import bgColorForPage from './utils/bgColorForPage';
+import clsx from 'clsx';
+import OpenGraphHouseCard from './components/OpenGraphHouseCard';
+import OpenGraphRoundCard from './components/OpenGraphRoundCard';
+import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -37,11 +41,21 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
-  return (
+  const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
+  const noNavPath = openGraphCardPath || location.pathname === '/';
+
+  return openGraphCardPath ? (
+    <Routes>
+      <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+      <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+      <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
+    </Routes>
+  ) : (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <Container>
-          <NavBar />
+        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+          {!noNavPath && <NavBar />}
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -52,14 +66,18 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/explore" element={<Explore />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
+
             <Route path="/faq" element={<FAQ />} />
-            <Route path="*" element={<Community />} />
+            <Route path="/proposal/:id" element={<Proposal />} />
+            <Route path="/:house" element={<House />} />
+            <Route path="/:house/:title" element={<Round />} />
+            <Route path="/:house/:title/:id" element={<Proposal />} />
+
+            <Route path="*" element={<NotFound />} />
           </Routes>
+
           <Footer />
-        </Container>
+        </div>
       </Suspense>
     </DAppProvider>
   );

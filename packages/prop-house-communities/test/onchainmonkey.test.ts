@@ -53,11 +53,11 @@ describe('onchainmonkey votes', () => {
     const ocmBalanceOf = await ocmContract.balanceOf(holderAddress);
 
     const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
-    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress);
+    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 15568893 });
 
     const sum = BigNumber.from(ocmBalanceOf).add(BigNumber.from(karmaBalanceOf)).toNumber();
 
-    const votes = await getNumVotes(holderAddress, onChainMonkeyAddress, provider);
+    const votes = await getNumVotes(holderAddress, onChainMonkeyAddress, provider, 15568893);
 
     expect(votes).to.eq(sum);
   });

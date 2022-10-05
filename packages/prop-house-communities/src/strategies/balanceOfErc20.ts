@@ -13,7 +13,7 @@ export const balanceOfErc20 = (decimals: number, multiplier: number = 1): Strate
   return async (
     userAddress: string,
     communityAddress: string,
-    blockTag: string,
+    blockTag: number,
     provider: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOfABI, provider);

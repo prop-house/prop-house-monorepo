@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Raw, Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Community } from './community.entity';
 import * as ethers from 'ethers';
-import {BigNumberish} from '@ethersproject/bignumber';
+import { BigNumberish } from '@ethersproject/bignumber';
 import config from 'src/config/configuration';
 import { getNumVotes } from 'prop-house-communities';
+import { ExtendedCommunity } from './community.types';
 
 @Injectable()
 export class CommunitiesService {
@@ -22,28 +23,34 @@ export class CommunitiesService {
     });
   }
 
+  findAllExtended(): Promise<ExtendedCommunity[]> {
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    ).getRawMany();
+  }
+
   findOne(id: number): Promise<Community> {
-    return this.communitiesRepository.findOne(id, {
-      relations: ['auctions'],
-      where: { visible: true },
-    });
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    )
+      .where('c.id = :id', { id })
+      .getRawOne();
   }
 
   findByAddress(address: string): Promise<Community> {
     return this.communitiesRepository.findOne({
       where: {
         contractAddress: address,
-        visible: true,
       },
-      relations: ['auctions'],
     });
   }
 
   findByName(name: string): Promise<Community> {
-    return this.communitiesRepository.findOne({
-      where: `"name" ILIKE '${name}'`, // case insensitive comparison
-      relations: ['auctions'],
-    });
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    )
+      .where('c.name ILIKE :name', { name })
+      .getRawOne();
   }
 
   async remove(id: number): Promise<void> {
@@ -56,10 +63,43 @@ export class CommunitiesService {
 
   async votesAtBlockTag(
     community: Community,
-    blockTag: string,
-    address: string
+    blockTag: number,
+    address: string,
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return getNumVotes(address, community.contractAddress, provider, blockTag)
+    return getNumVotes(address, community.contractAddress, provider, blockTag);
+  }
+
+  private extendedAuctionQuery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('c.*')
+      .addSelect('SUM(a."numAuctions")', 'numAuctions')
+      .addSelect('SUM(a."ethFunded")', 'ethFunded')
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(
+        this.auctionCountAndFundingSubquery,
+        'a',
+        'a."communityId" = c.id',
+      )
+      .leftJoin(this.proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('c.id');
+  }
+
+  private auctionCountAndFundingSubquery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('a.id', 'id')
+      .addSelect('a.communityId')
+      .addSelect('COUNT(a.id)', 'numAuctions')
+      .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
+      .from('auction', 'a')
+      .groupBy('a.id');
+  }
+
+  private proposalCountSubquery(qb: SelectQueryBuilder<Community>) {
+    return qb
+      .select('p.auctionId', 'auctionId')
+      .addSelect('COUNT(p.id)', 'numProposals')
+      .from('proposal', 'p')
+      .groupBy('p.auctionId');
   }
 }
