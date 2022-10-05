@@ -36,8 +36,12 @@ const PROPOSAL_TYPE_HASH_HIGH = 0x584855567c87b898d44e9c4c4ecefc3b
 const PROPOSAL_TYPE_HASH_LOW = 0xba1009599490c69d83652afb70d51457
 
 # keccak256("Vote(bytes32 auth_strategy,bytes32 house_strategy,address voter,bytes32 proposal_votes_hash,bytes32 strategies_hash,bytes32 strategies_params_hash,uint256 salt)")
-const VOTE_TYPE_HASH_HIGH = 0x7447c7739792d6f88f0aa34e2cf93bd8
-const VOTE_TYPE_HASH_LOW = 0x48144e543c4c3b5bb4ed0677601fcbc0
+const VOTE_TYPE_HASH_HIGH = 0x48144e543c4c3b5bb4ed0677601fcbc0
+const VOTE_TYPE_HASH_LOW = 0x7447c7739792d6f88f0aa34e2cf93bd8
+
+# keccak256("CancelProposal(bytes32 auth_strategy,bytes32 house_strategy,address author,uint256 proposal_id,uint256 salt)")
+const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0xe355112cd859d159e594add52a99f218
+const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0xf8288275bc67f55a0acb0c97b3645dba
 
 # keccak256("SessionKey(address address,bytes32 sessionPublicKey,uint256 sessionDuration,uint256 salt)")
 const SESSION_KEY_INIT_TYPE_HASH_HIGH = 0x53f1294cb551b4ff97c8fd4caefa8ec6
@@ -206,6 +210,89 @@ namespace EIP712:
         assert data[2] = house_strategy
         assert data[3] = proposer_address_u256
         assert data[4] = metadata_uri_hash
+        assert data[5] = salt
+
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data)
+
+        # Prepare the encoded data
+        let (prepared_encoded : Uint256*) = alloc()
+        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH)
+        assert prepared_encoded[1] = hash_struct
+
+        # Prepend the ethereum prefix
+        let (encoded_data : Uint256*) = alloc()
+        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded)
+
+        # Now go from Uint256s to Uint64s (required in order to call `keccak`)
+        let (signable_bytes) = alloc()
+        let signable_bytes_start = signable_bytes
+        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1)
+
+        # Compute the hash
+        let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+        )
+
+        # `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+        # We substract `27` because `v` = `{0, 1} + 27`
+        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, proposer_address)
+
+        # Verify that all the previous keccaks are correct
+        finalize_keccak(keccak_ptr_start, keccak_ptr)
+
+        # Write the salt to prevent replay attack
+        EIP712_salts.write(proposer_address, salt, 1)
+
+        return ()
+    end
+
+    func verify_cancel_proposal_sig{
+        syscall_ptr : felt*,
+        pedersen_ptr : HashBuiltin*,
+        range_check_ptr,
+        bitwise_ptr : BitwiseBuiltin*,
+    }(
+        r : Uint256,
+        s : Uint256,
+        v : felt,
+        salt : Uint256,
+        target : felt,
+        calldata_len : felt,
+        calldata : felt*,
+    ):
+        alloc_locals
+
+        # Proposer address should be located in calldata[0]
+        let proposer_address = calldata[0]
+
+        let (auth_strategy_address) = get_contract_address()
+        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address)
+
+        # Ensure proposer has not already used this salt in a previous action
+        let (already_used) = EIP712_salts.read(proposer_address, salt)
+
+        with_attr error_message("Salt already used"):
+            assert already_used = 0
+        end
+
+        let (local keccak_ptr : felt*) = alloc()
+        let keccak_ptr_start = keccak_ptr
+
+        # We don't need to pad because calling `.address` with starknet.js
+        # already left pads the address with 0s
+        let (house_strategy) = FeltUtils.felt_to_uint256(target)
+
+        let (proposer_address_u256) = FeltUtils.felt_to_uint256(proposer_address)
+        let (proposal_id) = FeltUtils.felt_to_uint256(calldata[1])
+
+        # Now construct the data hash (hashStruct)
+        let (data : Uint256*) = alloc()
+
+        assert data[0] = Uint256(CANCEL_PROPOSAL_TYPE_HASH_LOW, CANCEL_PROPOSAL_TYPE_HASH_HIGH)
+        assert data[1] = auth_address_u256
+        assert data[2] = house_strategy
+        assert data[3] = proposer_address_u256
+        assert data[4] = proposal_id
         assert data[5] = salt
 
         let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data)

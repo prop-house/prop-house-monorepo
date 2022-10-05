@@ -18,10 +18,13 @@ const DOMAIN_HASH = 0xe555db13b92f041c987f35e960ce967667d7aa3095c901826b6191ab69
 const STARKNET_MESSAGE = 0x537461726b4e6574204d657373616765
 
 # print(get_selector_from_name("Propose(house_strategy:felt,author:felt,metadata_uri:felt*,salt:felt)"))
-const PROPOSAL_TYPE_HASH = 0x2092032d2957beaa83248292f326648fd2ad923d97f59c75296e41d924c5355
+const PROPOSAL_TYPE_HASH = 0x2135226d79a7eea8572b8b9127ae9cbca1a4528d4ec4f895ea5e6c0bf458c1c
 
-# print(get_selector_from_name("Vote(house_strategy:felt,voter:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)")
-const VOTE_TYPE_HASH = 0x31236321e2e03bd76ca3b07ff9544b3d50aa3e677b473a2850a894dcd983781
+# print(get_selector_from_name("Vote(house_strategy:felt,voter:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
+const VOTE_TYPE_HASH = 0x21ddfcc11169518c069a812d335fe573dac137c5b5ce6fa402e6502e8a81fb5
+
+# print(get_selector_from_name("CancelProposal(house_strategy:felt,author:felt,proposal)id:felt,salt:felt)"))
+const CANCEL_PROPOSAL_TYPE_HASH = 0x26c68c95620857bbeef996bed31b6a942dc01005cc19ae4fd05a007ca67282d
 
 # print(get_selector_from_name("RevokeSessionKey(salt:felt)")
 const REVOKE_SESSION_KEY_TYPE_HASH = 0x31F0BF4E2BBD12ECBA02E325F0EA3231350A638FC633AF8EBF244F50663ACE8
@@ -160,6 +163,61 @@ namespace StarkEIP191:
         verify_ecdsa_signature(message_hash, public_key, r, s)
 
         StarkEIP191_salts.write(voter_address, salt, 1)
+
+        return ()
+    end
+
+    func verify_cancel_proposal_sig{
+        syscall_ptr : felt*,
+        range_check_ptr,
+        pedersen_ptr : HashBuiltin*,
+        ecdsa_ptr : SignatureBuiltin*,
+    }(
+        r : felt,
+        s : felt,
+        salt : felt,
+        target : felt,
+        calldata_len : felt,
+        calldata : felt*,
+        public_key : felt,
+    ):
+        alloc_locals
+
+        let proposer_address = calldata[0]
+
+        let (auth_strategy) = get_contract_address()
+
+        # Ensure proposer has not already used this salt in a previous action
+        let (already_used) = StarkEIP191_salts.read(proposer_address, salt)
+
+        with_attr error_message("Salt already used"):
+            assert already_used = 0
+        end
+
+        let proposal_id = calldata[1]
+
+        let (structure : felt*) = alloc()
+
+        assert structure[0] = CANCEL_PROPOSAL_TYPE_HASH
+        assert structure[1] = target
+        assert structure[2] = proposer_address
+        assert structure[3] = proposal_id
+        assert structure[4] = salt
+
+        let (hash_struct) = HashArray.hash_array(5, structure)
+
+        let (message : felt*) = alloc()
+
+        assert message[0] = STARKNET_MESSAGE
+        assert message[1] = DOMAIN_HASH
+        assert message[2] = auth_strategy
+        assert message[3] = hash_struct
+
+        let (message_hash) = HashArray.hash_array(4, message)
+
+        verify_ecdsa_signature(message_hash, public_key, r, s)
+
+        StarkEIP191_salts.write(proposer_address, salt, 1)
 
         return ()
     end

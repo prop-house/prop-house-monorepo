@@ -14,6 +14,8 @@ from src.starknet.strategies.timed_funding_round.lib.stark_eip191 import StarkEI
 const PROPOSAL_SELECTOR = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f4ad8d220b81
 # print(get_selector_from_name("vote"))
 const VOTE_SELECTOR = 0x132bdf85fc8aa10ac3c22f02317f8f53d4b4f52235ed1eabb3a4cbbe08b5c41
+# print(get_selector_from_name("cancel_proposal"))
+const CANCEL_PROPOSAL_SELECTOR = 0xf58b7fa5874c036308bea0b54ae78e8ecf78d868aa18e666aa7fc4e0cbed6d
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
@@ -57,8 +59,14 @@ func authenticate{
                 r, s, salt, target, calldata_len, calldata, session_public_key
             )
         else:
-            # Invalid selector
-            return ()
+            if function_selector == CANCEL_PROPOSAL_SELECTOR:
+                StarkEIP191.verify_cancel_proposal_sig(
+                    r, s, salt, target, calldata_len, calldata, session_public_key
+                )
+            else:
+                # Invalid selector
+                return ()
+            end
         end
     end
 
