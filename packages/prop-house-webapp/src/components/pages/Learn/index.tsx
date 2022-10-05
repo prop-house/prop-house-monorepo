@@ -18,8 +18,11 @@ const Learn = () => {
   return (
     <>
       <Helmet>
-        <meta property="og:image" content="cards.backend.prop.house/remote/proposal/3" />
-        <meta property="twitter:image" content="cards.backend.prop.house/remote/proposal/3" />
+        <meta property="og:image" content="https://cards.backend.prop.house/remote/proposal/3" />
+        <meta
+          property="twitter:image"
+          content="https://cards.backend.prop.house/remote/proposal/3"
+        />
       </Helmet>
       <div className={clsx('break-out', classes.breakOutMobile)}>
         <Row className={clsx('g-0', classes.row, 'justify-content-start')}>
