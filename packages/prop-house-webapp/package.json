@@ -37,7 +37,6 @@
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.2",
     "react-dom": "^17.0.2",
-    "react-helmet": "^6.1.0",
     "react-html-parser": "^2.0.2",
     "react-i18next": "^11.17.3",
     "react-icons": "^4.3.1",
@@ -81,7 +80,6 @@
     ]
   },
   "devDependencies": {
-    "@types/quill": "^2.0.9",
-    "@types/react-helmet": "^6.1.5"
+    "@types/quill": "^2.0.9"
   }
 }
