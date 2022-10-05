@@ -101,6 +101,28 @@ Within each query we can choose to load its related entities or not, we could ev
 
 This could be the case where we are attempting to render a single proposal but want to fetch some information about the other proposals int he same Auction. With a REST API this would require a handful of requests or the API would return too much data. With GraphQL we can ask for just what we need.
 
+The Auctions query allows for providing a partial `Auction` to match against. Note that the where will match all properties with a logical `AND`.
+
+```gql
+query AllUmaAuctions {
+  auctions(where: { currencyType: "UMA" }) {
+    title
+    id
+    startTime
+    votingEndTime
+    proposalEndTime
+    community {
+      contractAddress
+    }
+    proposals {
+      title
+      score
+      tldr
+    }
+  }
+}
+```
+
 Now, go ahead and play with the GraphQL Playground at https://prod.backend.prop.house/graphql and try some of these example queries. See the `Schema` and `Docs` tabs on the right side for more information about the shapes and fields available.
 
 
