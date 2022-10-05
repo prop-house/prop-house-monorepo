@@ -56,6 +56,9 @@
   flex-direction: column;
   gap: 12px;
 }
+.roundInfo p {
+  margin-bottom: 0;
+}
 .xDivide {
   color: var(--brand-gray-transparent);
   font-weight: 500;
@@ -69,6 +72,6 @@
 .subtitle {
   font-weight: 700;
   font-size: 42px;
-  line-height: 70%;
+  line-height: 83%;
   color: #14161b;
 }
