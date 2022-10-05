@@ -58,6 +58,9 @@ hr {
 .subinfo a {
   font-weight: 650;
 }
+.propSubmissionData {
+  display: flex;
+}
 @media (max-width: 577px) {
   .propSpacer {
     display: none !important;
@@ -69,6 +72,11 @@ hr {
   color: var(--brand-black);
   font-weight: 700;
   font-size: 1rem;
+  gap: 5px;
+}
+
+.textSpacer {
+  padding: 0px 5px;
 }
 
 .markdown a {
