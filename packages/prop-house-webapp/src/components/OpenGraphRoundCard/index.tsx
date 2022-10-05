@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import formatTime from '../../utils/formatTime';
 import CommunityProfImg from '../CommunityProfImg';
-import { deadlineTime } from '../../utils/auctionStatus';
+import { deadlineTime, deadlineCopy } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
@@ -72,7 +72,7 @@ const OpenGraphRoundCard: React.FC = () => {
             </div>
 
             <div className={classes.roundInfo}>
-              <span className={classes.proposedBy}>{`DeadlineCopy(round)`}:</span>
+              <span className={classes.proposedBy}>{deadlineCopy(round)}:</span>
               <p className={classes.openGraphAvatar}>{diffTime(deadlineTime(round))}</p>
             </div>
           </span>

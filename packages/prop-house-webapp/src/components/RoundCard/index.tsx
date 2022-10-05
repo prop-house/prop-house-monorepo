@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import {
   auctionStatus,
   AuctionStatus,
-  DeadlineCopy,
+  deadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useNavigate } from 'react-router-dom';
@@ -77,7 +77,7 @@ const RoundCard: React.FC<{
               <Tooltip
                 content={
                   <>
-                    <p className={classes.title}>{DeadlineCopy(round)}</p>
+                    <p className={classes.title}>{deadlineCopy(round)}</p>
                     <p className={classes.info}>
                       {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
