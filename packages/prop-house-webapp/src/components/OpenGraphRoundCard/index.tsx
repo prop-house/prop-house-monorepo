@@ -63,8 +63,8 @@ const OpenGraphRoundCard: React.FC = () => {
 
           <span className={classes.roundInfoContainer}>
             <div className={classes.roundInfo}>
-              <span className={classes.proposedBy}>Funding:</span>
-              <p className={classes.openGraphAvatar}>
+              <span className={classes.title}>Funding:</span>
+              <p className={classes.subtitle}>
                 <TruncateThousands amount={round.fundingAmount} />
                 {round.currencyType}
                 <span className={classes.xDivide}>{' × '}</span> {round.numWinners}
