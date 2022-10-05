@@ -1,14 +1,4 @@
-import classes from "./Learn.module.css";
-import { Row, Col, Image } from "react-bootstrap";
-import Button, { ButtonColor } from "../../Button";
-import outletsImg from "../../../assets/learn page/outlets.png";
-import auctionImg from "../../../assets/learn page/auction.png";
-import auctionFullImg from "../../../assets/learn page/auction_full.png";
-import communityImg from "../../../assets/learn page/community.png";
-import clsx from "clsx";
-import { useNavigate } from "react-router-dom";
-import ContactUsCTA from "../../ContactUsCTA";
-import { useTranslation } from "react-i18next";
+import Helmet from 'react-helmet';
 
 const Learn = () => {
   const navigate = useNavigate();
@@ -16,10 +6,10 @@ const Learn = () => {
 
   return (
     <>
-      <div className={clsx("break-out", classes.breakOutMobile)}>
-        <Row className={clsx("g-0", classes.row, "justify-content-start")}>
-          <Col
-            xl={{ span: 5 }}
+      <Helmet>
+        <meta property="og:image" content="cards.backend.prop.house/remote/proposal/3" />
+        <meta property="twitter:image" content="cards.backend.prop.house/remote/proposal/3" />
+      </Helmet>
             xs={{ order: "first" }}
             className={classes.leftCol}
           >
