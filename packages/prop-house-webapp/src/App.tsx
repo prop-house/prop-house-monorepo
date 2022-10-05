@@ -41,20 +41,22 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
-  const socalCardPath = new RegExp('.+?/card').test(location.pathname);
-  const noNavPath = socalCardPath || location.pathname === '/';
+  const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
+  const noNavPath = openGraphCardPath || location.pathname === '/';
 
-  return (
+  return openGraphCardPath ? (
+    <Routes>
+      <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+      <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+      <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
+    </Routes>
+  ) : (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
         <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
           {!noNavPath && <NavBar />}
 
           <Routes>
-            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-            <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
-            <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
-
             <Route path="/" element={<Home />} />
             <Route
               path="/create"
@@ -74,7 +76,7 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
 
-          {!socalCardPath && <Footer />}
+          <Footer />
         </div>
       </Suspense>
     </DAppProvider>
