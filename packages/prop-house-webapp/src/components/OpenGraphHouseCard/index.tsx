@@ -1,20 +1,19 @@
 import classes from './OpenGraphHouseCard.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
-import React, { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import { setActiveCommunity } from '../../state/slices/propHouse';
-import { slugToName } from '../../utils/communitySlugs';
+import React, { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppSelector } from '../../hooks';
 import CommunityProfImg from '../CommunityProfImg';
+import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
 const OpenGraphHouseCard: React.FC = () => {
-  const location = useLocation();
-  const slug = location.pathname.substring(1).split('/')[0];
+  const params = useParams();
+  const { id } = params;
+
+  const [community, setCommunity] = useState<Community>();
 
   const { library } = useEthers();
-  const dispatch = useAppDispatch();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -22,14 +21,14 @@ const OpenGraphHouseCard: React.FC = () => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch community
   useEffect(() => {
-    const fetchCommunity = async () => {
-      const community = await client.current.getCommunityWithName(slugToName(slug));
-      dispatch(setActiveCommunity(community));
+    if (!id) return;
+    const fetch = async () => {
+      const community = await client.current.getCommunityWithId(Number(id));
+      setCommunity(community);
     };
-    fetchCommunity();
-  }, [slug, dispatch]);
+    fetch();
+  }, [id]);
 
   return (
     <>

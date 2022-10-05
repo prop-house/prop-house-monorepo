@@ -52,8 +52,8 @@ function App() {
 
           <Routes>
             <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-            <Route path="/:house/:round/card" element={<OpenGraphRoundCard />} />
-            <Route path="/:house/card" element={<OpenGraphHouseCard />} />
+            <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+            <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
 
             <Route path="/" element={<Home />} />
             <Route
