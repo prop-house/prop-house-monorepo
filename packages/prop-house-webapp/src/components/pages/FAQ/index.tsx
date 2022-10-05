@@ -5,6 +5,7 @@ import ReactHtmlParser from 'react-html-parser';
 import SearchBar from '../../SeachBar';
 import { useEffect, useState } from 'react';
 import RoundMessage from '../../RoundMessage';
+import NavBar from '../../NavBar';
 
 interface ContentItem {
   title: string;
@@ -57,17 +58,23 @@ const FAQ = () => {
 
   return (
     <>
-      <Container>
-        <h1 className={classes.title}>{t('frequentlyAsked')}</h1>
+      <div className="faqGradientBg">
+        <Container>
+          <NavBar />
 
-        <div className={classes.searchWrapper}>
-          <SearchBar
-            input={input}
-            handleSeachInputChange={handleFAQInputChange}
-            placeholder="Search for questions"
-          />
-        </div>
+          <div className={classes.searchWrapper}>
+            <h1 className={classes.title}>{t('frequentlyAsked')}</h1>
 
+            <SearchBar
+              input={input}
+              handleSeachInputChange={handleFAQInputChange}
+              placeholder="Search for questions"
+            />
+          </div>
+        </Container>
+      </div>
+
+      <Container className={classes.faqBackground}>
         {filteredFAQs.length === 0 ? (
           <RoundMessage message="No FAQs found" />
         ) : (
