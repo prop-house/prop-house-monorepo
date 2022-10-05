@@ -82,21 +82,24 @@ namespace EIP712:
 
         # We don't need to pad because calling `.address` with starknet.js
         # already left pads the address with 0s
-        let (space) = FeltUtils.felt_to_uint256(target)
+        let (house_strategy) = FeltUtils.felt_to_uint256(target)
 
         let (voter_address_u256) = FeltUtils.felt_to_uint256(voter_address)
 
-        let (proposal_id) = FeltUtils.felt_to_uint256(calldata[1])
-        let (choice) = FeltUtils.felt_to_uint256(calldata[2])
-
-        let used_voting_strategies_len = calldata[3]
-        let used_voting_strategies = &calldata[4]
-        let (used_voting_strategies_hash) = _get_padded_hash(
-            used_voting_strategies_len, used_voting_strategies
+        let proposal_votes_len = calldata[1]
+        let proposal_votes = &calldata[2]
+        let (proposal_votes_hash) = _get_padded_hash(
+            proposal_votes_len, proposal_votes
         )
 
-        let user_voting_strategy_params_flat_len = calldata[4 + used_voting_strategies_len]
-        let user_voting_strategy_params_flat = &calldata[5 + used_voting_strategies_len]
+        let used_voting_strategy_hash_indexes_len = calldata[2 + proposal_votes_len]
+        let used_voting_strategy_hash_indexes = &calldata[3 + proposal_votes_len]
+        let (used_voting_strategy_hash_indexes_hash) = _get_padded_hash(
+            used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
+        )
+
+        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_hash_indexes_len]
+        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_hash_indexes_len]
         let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
             user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
         )
@@ -105,18 +108,17 @@ namespace EIP712:
         let (data : Uint256*) = alloc()
         assert data[0] = Uint256(VOTE_TYPE_HASH_LOW, VOTE_TYPE_HASH_HIGH)
         assert data[1] = auth_address_u256
-        assert data[2] = space
+        assert data[2] = house_strategy
         assert data[3] = voter_address_u256
-        assert data[4] = proposal_id
-        assert data[5] = choice
-        assert data[6] = used_voting_strategies_hash
-        assert data[7] = user_voting_strategy_params_flat_hash
-        assert data[8] = salt
+        assert data[4] = proposal_votes_hash
+        assert data[5] = used_voting_strategy_hash_indexes_hash
+        assert data[6] = user_voting_strategy_params_flat_hash
+        assert data[7] = salt
 
         let (local keccak_ptr : felt*) = alloc()
         let keccak_ptr_start = keccak_ptr
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(9, data)
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(8, data)
 
         # Prepare the encoded data
         let (prepared_encoded : Uint256*) = alloc()
@@ -183,7 +185,7 @@ namespace EIP712:
 
         # We don't need to pad because calling `.address` with starknet.js
         # already left pads the address with 0s
-        let (space) = FeltUtils.felt_to_uint256(target)
+        let (house_strategy) = FeltUtils.felt_to_uint256(target)
 
         # Proposer address
         let (proposer_address_u256) = FeltUtils.felt_to_uint256(proposer_address)
@@ -196,44 +198,17 @@ namespace EIP712:
             metadata_uri_string_len, metadata_uri_len, metadata_uri
         )
 
-        # Executor
-        let executor = calldata[3 + metadata_uri_len]
-        let (executor_u256) = FeltUtils.felt_to_uint256(executor)
-
-        # Used voting strategies
-        let used_voting_strats_len = calldata[4 + metadata_uri_len]
-        let used_voting_strats = &calldata[5 + metadata_uri_len]
-        let (used_voting_strategies_hash) = _get_padded_hash(
-            used_voting_strats_len, used_voting_strats
-        )
-
-        # User voting strategy params flat
-        let user_voting_strat_params_flat_len = calldata[5 + metadata_uri_len + used_voting_strats_len]
-        let user_voting_strat_params_flat = &calldata[6 + metadata_uri_len + used_voting_strats_len]
-        let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
-            user_voting_strat_params_flat_len, user_voting_strat_params_flat
-        )
-
-        # Execution hash
-        let execution_params_len = calldata[6 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len]
-        let execution_params_ptr : felt* = &calldata[7 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len]
-        let (execution_hash) = _get_padded_hash(execution_params_len, execution_params_ptr)
-
         # Now construct the data hash (hashStruct)
         let (data : Uint256*) = alloc()
 
         assert data[0] = Uint256(PROPOSAL_TYPE_HASH_LOW, PROPOSAL_TYPE_HASH_HIGH)
         assert data[1] = auth_address_u256
-        assert data[2] = space
+        assert data[2] = house_strategy
         assert data[3] = proposer_address_u256
         assert data[4] = metadata_uri_hash
-        assert data[5] = executor_u256
-        assert data[6] = execution_hash
-        assert data[7] = used_voting_strategies_hash
-        assert data[8] = user_voting_strategy_params_flat_hash
-        assert data[9] = salt
+        assert data[5] = salt
 
-        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(10, data)
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(6, data)
 
         # Prepare the encoded data
         let (prepared_encoded : Uint256*) = alloc()

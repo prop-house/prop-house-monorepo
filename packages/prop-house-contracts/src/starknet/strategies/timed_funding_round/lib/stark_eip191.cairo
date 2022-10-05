@@ -17,10 +17,10 @@ const DOMAIN_HASH = 0xe555db13b92f041c987f35e960ce967667d7aa3095c901826b6191ab69
 
 const STARKNET_MESSAGE = 0x537461726b4e6574204d657373616765
 
-# print(get_selector_from_name("Propose(space:felt,author:felt,metadata_uri:felt*,executor:felt,execution_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
+# print(get_selector_from_name("Propose(house_strategy:felt,author:felt,metadata_uri:felt*,salt:felt)"))
 const PROPOSAL_TYPE_HASH = 0x2092032d2957beaa83248292f326648fd2ad923d97f59c75296e41d924c5355
 
-# print(get_selector_from_name("Vote(space:felt,voter:felt,proposal:felt,choice:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)")
+# print(get_selector_from_name("Vote(house_strategy:felt,voter:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)")
 const VOTE_TYPE_HASH = 0x31236321e2e03bd76ca3b07ff9544b3d50aa3e677b473a2850a894dcd983781
 
 # print(get_selector_from_name("RevokeSessionKey(salt:felt)")
@@ -65,42 +65,15 @@ namespace StarkEIP191:
         let metadata_uri : felt* = &calldata[3]
         let (metadata_uri_hash) = HashArray.hash_array(metadata_uri_len, metadata_uri)
 
-        # Executor
-        let executor = calldata[3 + metadata_uri_len]
-        let (executor_u256) = FeltUtils.felt_to_uint256(executor)
-
-        # Used voting strategies
-        let used_voting_strats_len = calldata[4 + metadata_uri_len]
-        let used_voting_strats = &calldata[5 + metadata_uri_len]
-        let (used_voting_strategies_hash) = HashArray.hash_array(
-            used_voting_strats_len, used_voting_strats
-        )
-
-        # User voting strategy params flat
-        let user_voting_strat_params_flat_len = calldata[5 + metadata_uri_len + used_voting_strats_len]
-        let user_voting_strat_params_flat = &calldata[6 + metadata_uri_len + used_voting_strats_len]
-        let (user_voting_strategy_params_flat_hash) = HashArray.hash_array(
-            user_voting_strat_params_flat_len, user_voting_strat_params_flat
-        )
-
-        # Execution hash
-        let execution_params_len = calldata[6 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len]
-        let execution_params_ptr : felt* = &calldata[7 + metadata_uri_len + used_voting_strats_len + user_voting_strat_params_flat_len]
-        let (execution_hash) = HashArray.hash_array(execution_params_len, execution_params_ptr)
-
         let (structure : felt*) = alloc()
 
         assert structure[0] = PROPOSAL_TYPE_HASH
         assert structure[1] = target
         assert structure[2] = proposer_address
         assert structure[3] = metadata_uri_hash
-        assert structure[4] = executor
-        assert structure[5] = execution_hash
-        assert structure[6] = used_voting_strategies_hash
-        assert structure[7] = user_voting_strategy_params_flat_hash
-        assert structure[8] = salt
+        assert structure[4] = salt
 
-        let (hash_struct) = HashArray.hash_array(9, structure)
+        let (hash_struct) = HashArray.hash_array(5, structure)
 
         let (message : felt*) = alloc()
 
@@ -145,17 +118,20 @@ namespace StarkEIP191:
             assert already_used = 0
         end
 
-        let proposal_id = calldata[1]
-        let choice = calldata[2]
-
-        let used_voting_strategies_len = calldata[3]
-        let used_voting_strategies = &calldata[4]
-        let (used_voting_strategies_hash) = HashArray.hash_array(
-            used_voting_strategies_len, used_voting_strategies
+        let proposal_votes_len = calldata[1]
+        let proposal_votes = &calldata[2]
+        let (proposal_votes_hash) = HashArray.hash_array(
+            proposal_votes_len, proposal_votes
         )
 
-        let user_voting_strategy_params_flat_len = calldata[4 + used_voting_strategies_len]
-        let user_voting_strategy_params_flat = &calldata[5 + used_voting_strategies_len]
+        let used_voting_strategy_hash_indexes_len = calldata[2 + proposal_votes_len]
+        let used_voting_strategy_hash_indexes = &calldata[3 + proposal_votes_len]
+        let (used_voting_strategy_hash_indexes_hash) = HashArray.hash_array(
+            used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
+        )
+
+        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_hash_indexes_len]
+        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_hash_indexes_len]
         let (user_voting_strategy_params_flat_hash) = HashArray.hash_array(
             user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
         )
@@ -165,13 +141,12 @@ namespace StarkEIP191:
         assert structure[0] = VOTE_TYPE_HASH
         assert structure[1] = target
         assert structure[2] = voter_address
-        assert structure[3] = proposal_id
-        assert structure[4] = choice
-        assert structure[5] = used_voting_strategies_hash
-        assert structure[6] = user_voting_strategy_params_flat_hash
-        assert structure[7] = salt
+        assert structure[3] = proposal_votes_hash
+        assert structure[4] = used_voting_strategy_hash_indexes_hash
+        assert structure[5] = user_voting_strategy_params_flat_hash
+        assert structure[6] = salt
 
-        let (hash_struct) = HashArray.hash_array(8, structure)
+        let (hash_struct) = HashArray.hash_array(7, structure)
 
         let (message : felt*) = alloc()
 
