@@ -44,8 +44,8 @@ A common use case is to fetch all the auctions for a given Community. This query
       status
       proposals {
         title
-        score
         address
+        voteCount
       }
     }
   }
@@ -92,7 +92,7 @@ Within each query we can choose to load its related entities or not, we could ev
       proposals {
         id
         title
-        score
+        voteCount
       }
     }
   }
@@ -116,7 +116,7 @@ query AllUmaAuctions {
     }
     proposals {
       title
-      score
+      voteCount
       tldr
     }
   }
