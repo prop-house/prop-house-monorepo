@@ -72,8 +72,8 @@ const OpenGraphRoundCard: React.FC = () => {
             </div>
 
             <div className={classes.roundInfo}>
-              <span className={classes.proposedBy}>{deadlineCopy(round)}:</span>
-              <p className={classes.openGraphAvatar}>{diffTime(deadlineTime(round))}</p>
+              <span className={classes.title}>{deadlineCopy(round)}:</span>
+              <p className={classes.subtitle}>{diffTime(deadlineTime(round))}</p>
             </div>
           </span>
         </div>
