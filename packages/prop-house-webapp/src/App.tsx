@@ -39,11 +39,14 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
+  const socalCardPath = new RegExp('.+?/card').test(location.pathname);
+  const noNavPath = socalCardPath || location.pathname === '/';
+
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
         <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-          {location.pathname !== '/' && <NavBar />}
+          {!noNavPath && <NavBar />}
 
           <Routes>
             <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
@@ -68,7 +71,8 @@ function App() {
 
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Footer />
+
+          {!socalCardPath && <Footer />}
         </div>
       </Suspense>
     </DAppProvider>
