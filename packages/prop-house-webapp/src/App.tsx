@@ -17,6 +17,9 @@ import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
+import OpenGraphHouseCard from './components/OpenGraphHouseCard';
+import OpenGraphRoundCard from './components/OpenGraphRoundCard';
+import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -38,13 +41,20 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
+  const socalCardPath = new RegExp('.+?/card').test(location.pathname);
+  const noNavPath = socalCardPath || location.pathname === '/';
+
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
         <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-          {location.pathname !== '/' && <NavBar />}
+          {!noNavPath && <NavBar />}
 
           <Routes>
+            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+            <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+            <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
+
             <Route path="/" element={<Home />} />
             <Route
               path="/create"
@@ -60,9 +70,11 @@ function App() {
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
             <Route path="/:house/:title/:id" element={<Proposal />} />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
-          <Footer />
+
+          {!socalCardPath && <Footer />}
         </div>
       </Suspense>
     </DAppProvider>

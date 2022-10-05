@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import {
   auctionStatus,
   AuctionStatus,
-  DeadlineCopy,
+  deadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
@@ -64,7 +64,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {DeadlineCopy(auction)}{' '}
+                        {deadlineCopy(auction)}{' '}
                         <span className="infoSymbol">
                           <MdInfoOutline />
                         </span>

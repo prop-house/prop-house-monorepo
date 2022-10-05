@@ -19,6 +19,8 @@ import LoadingIndicator from '../../LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../../utils/buildRoundPath';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import OpenGraphElements from '../../OpenGraphElements';
 
 const Proposal = () => {
   const params = useParams();
@@ -86,6 +88,13 @@ const Proposal = () => {
   return (
     <>
       <Container>
+        {proposal && (
+          <OpenGraphElements
+            title={proposal.title}
+            description={proposal.tldr}
+            imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
+          />
+        )}
         {proposal ? (
           <>
             <RenderedProposalFields
