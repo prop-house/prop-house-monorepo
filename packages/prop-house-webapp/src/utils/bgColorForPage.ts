@@ -1,5 +1,6 @@
 const bgColorForPage = (path: string) => {
-  if (path === '/') return 'bgGray';
+  const isProposalPath = new RegExp('.*/.*/.*/.+').test(path);
+  if (path === '/' || isProposalPath) return 'bgGray';
 
   return 'bgWhite';
 };

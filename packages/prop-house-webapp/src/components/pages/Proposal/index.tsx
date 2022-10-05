@@ -102,10 +102,10 @@ const Proposal = () => {
               address={proposal.address}
               proposalId={proposal.id}
               community={community}
+              roundName={round && round?.title}
               backButton={
                 <div className={classes.backToAuction} onClick={() => handleBackClick()}>
                   <IoArrowBackCircleOutline size={'1.5rem'} />
-                  <span>Back</span>
                 </div>
               }
             />

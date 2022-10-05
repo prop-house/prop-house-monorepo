@@ -9,7 +9,7 @@
 
 @media (min-width: 577px) {
   .headerContainer {
-    flex-direction: row;
+    flex-direction: column;
     gap: 20px;
   }
 }
@@ -20,14 +20,12 @@
 .previewCol img {
   max-width: 100%;
 }
-.previewCol a {
-  text-decoration: underline !important;
-}
+
 .previewCol h2 {
-  margin-top: 3rem;
+  margin-top: 2rem;
   font-size: 18px;
   font-weight: 600;
-  color: var(--brand-gray);
+  color: var(--brand-black);
 }
 
 .previewCol p {
@@ -36,7 +34,7 @@
 }
 
 hr {
-  background-color: var(--brand-gray);
+  background-color: var(--brand-gray-semi-transparent);
 }
 
 .subinfo {
@@ -44,11 +42,8 @@ hr {
   color: var(--brand-black);
   font-weight: 700;
   flex-direction: row;
-  padding-bottom: 5px;
 }
-.propNumber {
-  color: black;
-}
+
 @media (max-width: 577px) {
   .subinfo {
     flex-direction: column;
@@ -58,6 +53,7 @@ hr {
 .subinfo a {
   font-weight: 650;
 }
+
 .propSubmissionData {
   display: flex;
 }
@@ -69,7 +65,7 @@ hr {
 .submittedBy {
   display: flex;
   align-items: flex-end;
-  color: var(--brand-black);
+  color: var(--brand-pink);
   font-weight: 700;
   font-size: 1rem;
   gap: 5px;
@@ -91,6 +87,8 @@ hr {
 .communityAndPropNumber {
   display: flex;
   align-items: center;
+  color: var(--brand-gray) !important;
+  gap: 5px;
 }
 
 .communityProfImgContainer {
@@ -103,4 +101,16 @@ hr {
   height: 24px;
   border-radius: 24px;
   margin-right: 4px;
+}
+.backBtnContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-weight: 700;
+  color: var(--brand-gray);
+}
+@media (max-width: 577px) {
+  .backBtnContainer {
+    padding-bottom: 25px;
+  }
 }
