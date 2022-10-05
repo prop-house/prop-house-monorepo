@@ -17,6 +17,8 @@ import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
 import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import OpenGraphElements from '../../OpenGraphElements';
 
 const Round = () => {
   const location = useLocation();
@@ -74,6 +76,14 @@ const Round = () => {
 
   return (
     <>
+      {round && (
+        <OpenGraphElements
+          title={round.title}
+          description={round.description}
+          imageUrl={cardServiceUrl(CardType.round, round.id).href}
+        />
+      )}
+
       <Container>
         {community && round && <RoundHeader auction={round} community={community} />}
       </Container>

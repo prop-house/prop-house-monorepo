@@ -30,7 +30,11 @@ export class CommunitiesService {
   }
 
   findOne(id: number): Promise<Community> {
-    return this.communitiesRepository.findOne(id, {});
+    return this.extendedAuctionQuery(
+      this.communitiesRepository.createQueryBuilder('c'),
+    )
+      .where('c.id = :id', { id })
+      .getRawOne();
   }
 
   findByAddress(address: string): Promise<Community> {

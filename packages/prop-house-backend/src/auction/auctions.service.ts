@@ -53,6 +53,23 @@ export class AuctionsService {
     });
   }
 
+  findWhere(
+    start: number,
+    limit: number,
+    where: Partial<Auction>,
+    relations: string[] = [],
+    relationIds?: string[],
+  ) {
+    return this.auctionsRepository.find({
+      skip: start,
+      take: limit,
+      where,
+      order: {id: 'ASC'},
+      relations,
+      loadRelationIds: relationIds ? {relations: relationIds} : undefined
+    });
+  }
+
   async remove(id: number): Promise<void> {
     await this.auctionsRepository.delete(id);
   }

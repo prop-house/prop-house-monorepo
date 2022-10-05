@@ -12,8 +12,9 @@ const EthAddress: React.FC<{
   truncate?: boolean;
   className?: string;
   hideDavatar?: boolean;
+  imgSize?: number;
 }> = props => {
-  const { address, truncate, hideDavatar } = props;
+  const { address, truncate, hideDavatar, imgSize } = props;
   const { library: provider } = useEthers();
 
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -25,7 +26,12 @@ const EthAddress: React.FC<{
     <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
         {!hideDavatar && (
-          <Davatar size={24} address={address} provider={provider} generatedAvatarType="blockies" />
+          <Davatar
+            size={imgSize ? imgSize : 24}
+            address={address}
+            provider={provider}
+            generatedAvatarType="blockies"
+          />
         )}
         <span className={clsx(classes.address, truncate && classes.truncate, props.className)}>
           {ens ? ens : trimEthAddress(address)}

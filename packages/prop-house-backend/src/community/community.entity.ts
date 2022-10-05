@@ -1,5 +1,5 @@
+import { Field, InputType, Int, ObjectType, PartialType } from '@nestjs/graphql';
 import { Auction } from 'src/auction/auction.entity';
-import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
   Column,
@@ -13,36 +13,48 @@ import {
 } from 'typeorm';
 
 @Entity()
+@ObjectType()
 export class Community {
   @PrimaryGeneratedColumn()
+  @Field(type => Int)
   id: number;
 
   @Column({ default: true })
   visible: boolean;
 
   @Column()
+  @Field(type => String, {
+    description: "The contract address that is queried for balances"
+  })
   contractAddress: string;
 
   @Column()
+  @Field(type => String)
   name: string;
 
   @Column()
+  @Field(type => String)
   profileImageUrl: string;
 
   @Column({ nullable: true })
+  @Field(type => String)
   description: string;
 
   @RelationId((community: Community) => community.auctions)
+  @Field(type => Int)
   numAuctions: number;
 
   @OneToMany(() => Auction, (auction) => auction.community)
   @JoinColumn()
+  @Field(type => [Auction])
   auctions: Auction[];
 
   @Column()
+  @Field(type => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
+  @Field(type => Date)
   lastUpdatedDate: Date;
 
   @BeforeInsert()
@@ -55,3 +67,6 @@ export class Community {
     this.lastUpdatedDate = new Date();
   }
 }
+
+@InputType()
+export class CommunityInput extends PartialType(Community) {}
