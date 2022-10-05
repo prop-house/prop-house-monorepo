@@ -70,8 +70,6 @@ const OpenGraphProposalCard: React.FC = () => {
     fetchCommunity();
   }, [id, dispatch, proposal]);
 
-  console.log('p', proposal);
-
   return (
     <>
       {community && proposal && (
