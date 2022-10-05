@@ -6,6 +6,7 @@ import classes from './StatusFilters.module.css';
 
 // We aren't using AuctionStatus enum becuase AuctionStatus[0] is 'not started' and we don't filter by 'not started', rather RoundStatus[0] is the default 'all rounds'
 export enum RoundStatus {
+  Active,
   AllRounds,
   Proposing,
   Voting,
@@ -20,23 +21,13 @@ export interface Status {
 
 const statuses: Status[] = [
   {
-    status: RoundStatus.AllRounds,
-    title: 'All rounds',
+    status: RoundStatus.Active,
+    title: 'Active',
     bgColor: classes.pink,
   },
   {
-    status: RoundStatus.Proposing,
-    title: 'Proposing',
-    bgColor: classes.green,
-  },
-  {
-    status: RoundStatus.Voting,
-    title: 'Voting',
-    bgColor: classes.purple,
-  },
-  {
-    status: RoundStatus.Ended,
-    title: 'Ended',
+    status: RoundStatus.AllRounds,
+    title: 'All rounds',
     bgColor: classes.black,
   },
 ];
@@ -49,7 +40,7 @@ const StatusFilters: React.FC<{
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
 
-  const handleClick = (status: number) => {
+  const handleClick = (status: RoundStatus) => {
     setInput('');
     setCurrentRoundStatus(status);
   };

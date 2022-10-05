@@ -30,7 +30,16 @@
     width: 120px !important;
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 575px) {
+  .title h1 {
+    font-size: 35px !important;
+  }
+  .build img {
+    width: 100px !important;
+  }
+}
+
+@media (max-width: 435px) {
   .title h1 {
     font-size: 24px !important;
   }

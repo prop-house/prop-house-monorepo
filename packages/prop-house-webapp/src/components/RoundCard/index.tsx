@@ -17,6 +17,9 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
+import { useAppDispatch } from '../../hooks';
+import { setActiveRound } from '../../state/slices/propHouse';
+import TruncateThousands from '../TruncateThousands';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -24,19 +27,18 @@ const RoundCard: React.FC<{
   const { round } = props;
   const { t } = useTranslation();
   let navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   return (
     <>
       <div
         onClick={e => {
+          dispatch(setActiveRound(round));
           if (cmdPlusClicked(e)) {
             openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
             return;
           }
-          navigate(`${nameToSlug(round.title)}`, {
-            replace: false,
-            state: { round },
-          });
+          navigate(`${nameToSlug(round.title)}`);
         }}
       >
         <Card
@@ -61,7 +63,8 @@ const RoundCard: React.FC<{
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
                 <span className="">
-                  {round.fundingAmount} {round.currencyType}
+                  <TruncateThousands amount={round.fundingAmount} />
+                  {` ${round.currencyType}`}
                 </span>
                 <span className={classes.xDivide}>{' × '}</span>
                 <span className="">{round.numWinners}</span>
@@ -90,7 +93,7 @@ const RoundCard: React.FC<{
 
             <div className={clsx(classes.section, classes.propSection)}>
               <p className={classes.title}> {t('proposals2')}</p>
-              <p className={classes.info}>{round.proposals.length}</p>
+              <p className={classes.info}>{round.numProposals}</p>
             </div>
           </div>
         </Card>

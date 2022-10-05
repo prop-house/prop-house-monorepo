@@ -4,7 +4,6 @@ import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
-import Learn from './components/pages/Learn';
 import Create from './components/pages/Create';
 import House from './components/pages/House';
 import Proposal from './components/pages/Proposal';
@@ -17,13 +16,14 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
+import clsx from 'clsx';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
   readOnlyUrls: {
     [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   },
-  autoConnect: false,
+  autoConnect: true,
 };
 
 function App() {
@@ -41,8 +41,9 @@ function App() {
   return (
     <DAppProvider config={config}>
       <Suspense fallback={<LoadingIndicator />}>
-        <div className={bgColorForPage(location.pathname)}>
-          <NavBar />
+        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+          {location.pathname !== '/' && <NavBar />}
+
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -53,7 +54,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/learn" element={<Learn />} />
+
             <Route path="/faq" element={<FAQ />} />
             <Route path="/proposal/:id" element={<Proposal />} />
             <Route path="/:house" element={<House />} />

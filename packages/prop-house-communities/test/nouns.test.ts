@@ -46,7 +46,7 @@ describe('Nouns delegation', () => {
       nounderSafeAddress,
       nounsTokenAddress,
       provider,
-      '15529004',
+      15529004,
     );
 
     // remove multiplier

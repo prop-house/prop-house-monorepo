@@ -13,7 +13,7 @@ const getWinningIds = (
   proposals &&
     proposals
       .slice()
-      .sort((a, b) => (Number(a.score) < Number(b.score) ? 1 : -1))
+      .sort((a, b) => (Number(a.voteCount) < Number(b.voteCount) ? 1 : -1))
       .slice(0, auction.numWinners)
       .map(p => winningIds.push(p.id));
 

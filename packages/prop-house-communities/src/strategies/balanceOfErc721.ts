@@ -12,7 +12,7 @@ export const balanceOfErc721 = (multiplier: number = 1): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
-    blockTag: string,
+    blockTag: number,
     provider: Provider,
   ) => {
     const contract = new Contract(communityAddress, BalanceOfABI, provider);

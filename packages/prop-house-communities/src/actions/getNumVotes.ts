@@ -9,7 +9,7 @@ export const getNumVotes = async (
   userAddress: string,
   communityAddress: string,
   provider: Provider,
-  blockTag: string = 'latest',
+  blockTag: number,
 ): Promise<number> => {
   if (!ethers.utils.isAddress(userAddress)) throw new Error('User address is not valid');
   if (!ethers.utils.isAddress(communityAddress)) throw new Error('Community address is not valid');

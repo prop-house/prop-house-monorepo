@@ -38,8 +38,7 @@
     display: none;
   }
 }
-/* @media (max-width: 766px) {
-} */
+
 .propHouseDataRow {
   display: flex;
   padding-bottom: 12px;
@@ -65,6 +64,9 @@
   color: var(--brand-gray);
   font-size: 13px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .purpleText {
   color: var(--brand-purple);
@@ -74,14 +76,16 @@
   font-size: 18px;
   margin-right: 0.5rem;
 }
-
+.xDivide {
+  color: var(--brand-gray-transparent);
+  font-weight: 500;
+}
 .infoBar {
   padding-top: 2rem;
   display: flex;
   justify-content: space-between;
   position: sticky !important;
   position: fixed;
-  border: 1px solid red;
   top: 0px !important;
   align-self: flex-start;
   height: auto;

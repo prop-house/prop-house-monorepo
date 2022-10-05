@@ -10,6 +10,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
   ManyToOne,
+  RelationId,
 } from 'typeorm';
 
 @Entity()
@@ -69,12 +70,13 @@ export class Auction {
   })
   numWinners: number;
 
-  @OneToMany(() => Proposal, (proposal) => proposal.auction, {
-    eager: true,
-  })
+  @OneToMany(() => Proposal, (proposal) => proposal.auction)
   @JoinColumn()
   @Field(type => [Proposal])
   proposals: Proposal[];
+
+  @RelationId((auction: Auction) => auction.proposals)
+  numProposals: number;
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()
@@ -89,9 +91,9 @@ export class Auction {
   @Field(type => Date)
   lastUpdatedDate: Date;
 
-  @Column({default: "latest"})
+  @Column({ default: 0 })
   @Field(type => String)
-  balanceBlockTag: string;
+  balanceBlockTag: number;
 
   @BeforeInsert()
   setCreatedDate() {

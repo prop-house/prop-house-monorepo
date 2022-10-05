@@ -4,9 +4,9 @@ import classes from './Web3ModalButton.module.css';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import clsx from 'clsx';
 import { useAppDispatch } from '../../hooks';
-import { setDelegatedVotes } from '../../state/slices/propHouse';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
+import { setVotingPower } from '../../state/slices/voting';
 
 const Web3ModalButton: React.FC<{
   classNames?: string | string[];
@@ -26,7 +26,7 @@ const Web3ModalButton: React.FC<{
           <div
             className={clsx(classNames)}
             onClick={() => {
-              dispatch(setDelegatedVotes(undefined));
+              dispatch(setVotingPower(0));
               deactivate();
             }}
           >

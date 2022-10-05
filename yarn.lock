@@ -1563,10 +1563,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/normalize.css/-/normalize.css-10.1.0.tgz#f0950bba18819512d42f7197e56c518aa491cf18"
   integrity sha512-ij4wRiunFfaJxjB0BdrYHIH8FxBJpOwNPhhAcunlmPdXudL1WQV1qoP9un6JsEBAgQH+7UXyyjh0g7jTxXK6tg==
 
-"@davatar/react@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@davatar/react/-/react-1.11.0.tgz#956f339e426636028344ca0b1c8ae303832fbbca"
-  integrity sha512-qsFZN09nw7HkwtNpdf+P15Dr4NZW/G0eU3p6G/qBTS7KN4fD3AB4eoObBtQ8fzzJagviEP3OmfqGBmvfAVM0yg==
+"@davatar/react@^1.11.1":
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/@davatar/react/-/react-1.11.1.tgz#4d260ee3ec178da78002ce070422bcafe7c92288"
+  integrity sha512-j28OvzkRs/Ce+kVJ+w14HPlV9bTtGE43pr2BZb2plgptoT8LRCziX/abzFDNk9Zib5/Qf3/eWUitI0ksXAl+3w==
   dependencies:
     "@ethersproject/abstract-signer" "^5"
     "@ethersproject/contracts" "^5"

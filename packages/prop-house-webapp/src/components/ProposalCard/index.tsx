@@ -5,54 +5,45 @@ import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { useEthers } from '@usedapp/core';
 import { openInNewTab } from '../../utils/openInNewTab';
+import VotesDisplay from '../VotesDisplay';
+import { useAppSelector } from '../../hooks';
+import { nameToSlug } from '../../utils/communitySlugs';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  voteAllotments: VoteAllotment[];
-  canAllotVotes: boolean;
-  handleVoteAllotment: (proposalId: number, support: boolean) => void;
-  fromHome?: boolean;
   winner?: boolean;
 }> = props => {
-  const {
-    proposal,
-    auctionStatus,
-    cardStatus,
-    voteAllotments,
-    canAllotVotes,
-    handleVoteAllotment,
-    fromHome,
-    winner,
-  } = props;
+  const { proposal, auctionStatus, cardStatus, winner } = props;
 
-  const { account } = useEthers();
   let navigate = useNavigate();
+
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const round = useAppSelector(state => state.propHouse.activeRound);
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
-  const connectedDuringVoting = () => auctionStatus === AuctionStatus.AuctionVoting && account;
+  const isVotingPeriod = () => auctionStatus === AuctionStatus.AuctionVoting;
 
   return (
     <>
       <div
         onClick={e => {
+          if (!community || !round) return;
+
           if (cmdPlusClicked(e)) {
-            openInNewTab(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+            openInNewTab(`${nameToSlug(round.title)}/${proposal.id}`);
             return;
           }
-          navigate(`${fromHome ? `proposal/${proposal.id}` : proposal.id}`);
+          navigate(`${proposal.id}`);
         }}
       >
         <Card
@@ -83,11 +74,11 @@ const ProposalCard: React.FC<{
             <div className={classes.address}>
               <EthAddress address={proposal.address} truncate />
 
-              <span className={clsx(classes.bullet, connectedDuringVoting() && classes.hideDate)}>
+              <span className={clsx(classes.bullet, isVotingPeriod() && classes.hideDate)}>
                 {' • '}
               </span>
               <div
-                className={clsx(classes.date, connectedDuringVoting() && classes.hideDate)}
+                className={clsx(classes.date, isVotingPeriod() && classes.hideDate)}
                 title={detailedTime(proposal.createdDate)}
               >
                 {diffTime(proposal.createdDate)}
@@ -100,23 +91,12 @@ const ProposalCard: React.FC<{
                 !roundIsVotingOrOver() && classes.hideVoteModule,
               )}
             >
-              <div className={classes.scoreCopy} title={detailedTime(proposal.createdDate)}>
-                {roundIsVotingOrOver() && (
-                  <div className={classes.scoreAndIcon}>
-                    <VoteIcon /> {Number(proposal.score).toFixed()}
-                  </div>
-                )}
-
+              <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
+                {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
                 {cardStatus === ProposalCardStatus.Voting && (
                   <div className={classes.votingArrows}>
                     <span className={classes.plusArrow}>+</span>
-                    <PropCardVotingModule
-                      proposal={proposal}
-                      cardStatus={cardStatus}
-                      voteAllotments={voteAllotments}
-                      canAllotVotes={canAllotVotes}
-                      handleVoteAllotment={handleVoteAllotment}
-                    />
+                    <PropCardVotingModule proposal={proposal} cardStatus={cardStatus} />
                   </div>
                 )}
               </div>

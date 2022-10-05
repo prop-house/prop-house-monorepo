@@ -8,7 +8,7 @@ import {
 import clsx from 'clsx';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
-import { VoteAllotment } from '../../utils/voteAllotment';
+import { VoteAllotment } from '../../types/VoteAllotment';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';

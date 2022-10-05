@@ -12,7 +12,7 @@ export const onchainMonkey = (): Strategy => {
   return async (
     userAddress: string,
     communityAddress: string,
-    blockTag: string,
+    blockTag: number,
     provider: Provider,
   ) => {
     const karmaContract = new Contract(
