@@ -34,25 +34,28 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                   <div className={classes.communityAndPropNumber}>
                     <span className={classes.propNumber}>Prop #{proposalId} </span>
                   </div>
-                  &nbsp;
-                  <div className={classes.submittedBy}>
-                    by&nbsp;
-                    <EthAddress
-                      address={address}
-                      hideDavatar={true}
-                      className={classes.submittedBy}
-                    />
-                  </div>
-                  &nbsp;in&nbsp;the&nbsp;
-                  {community && (
-                    <Link
-                      to={`/${nameToSlug(community.name)}`}
-                      className={classes.communityProfImgContainer}
-                    >
-                      {community.name.charAt(0).toUpperCase() + community.name.slice(1)}
-                      &nbsp;house
-                    </Link>
-                  )}
+
+                  <span className={classes.propSubmissionData}>
+                    <div className={classes.submittedBy}>
+                      by
+                      <EthAddress
+                        address={address}
+                        hideDavatar={true}
+                        className={classes.submittedBy}
+                      />
+                    </div>
+                    <span className={classes.textSpacer}>{'in the '}</span>
+
+                    {community && (
+                      <Link
+                        to={`/${nameToSlug(community.name)}`}
+                        className={classes.communityProfImgContainer}
+                      >
+                        {community.name.charAt(0).toUpperCase() + community.name.slice(1)}
+                        &nbsp;house
+                      </Link>
+                    )}
+                  </span>
                 </div>
               )}
 
