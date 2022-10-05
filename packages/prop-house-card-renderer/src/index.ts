@@ -1,5 +1,5 @@
 import express from 'express'
-import puppeteer from 'puppeteer';
+import puppeteer, { PuppeteerLifeCycleEvent } from 'puppeteer';
 import fs from 'fs'
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
@@ -10,7 +10,7 @@ type Config = {
     cachePath: string,
     cardHeight: number,
     cardWidth: number,
-    remoteWaitUntil: string
+    remoteWaitUntil: PuppeteerLifeCycleEvent
 }
 
 const config: Config = {
@@ -20,7 +20,7 @@ const config: Config = {
     cachePath: process.env.CACHE_PATH ?? "/tmp/phcache",
     cardHeight: process.env.CARD_HEIGHT ? Number(process.env.CARD_HEIGHT) : 512,
     cardWidth: process.env.CARD_WIDTH ? Number(process.env.CARD_WIDTH) : 1024,
-    remoteWaitUntil: process.env.REMOTE_WAIT_UNTIL ?? "networkidle0"
+    remoteWaitUntil: process.env.REMOTE_WAIT_UNTIL as PuppeteerLifeCycleEvent ?? "networkidle0"
 }
 
 const wrapper = new PropHouseWrapper(config.apiBase)
