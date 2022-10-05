@@ -501,12 +501,13 @@ end
 # Cancels a proposal. Only callable by the proposal creator.
 @external
 func cancel_proposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt}(
-    proposal_id : felt, execution_params_len : felt, execution_params : felt*
+    proposer_address : Address,
+    proposal_id : felt,
 ):
     alloc_locals
 
     # Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy() # TODO: Add cancel block in `authenticate` if statement.
+    assert_valid_auth_strategy()
 
     # Verify that the funding round is active
     assert_round_active()
@@ -518,9 +519,10 @@ func cancel_proposal{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_che
         assert has_been_cancelled = 0
     end
 
-    let (proposer_address) = proposer_address_registry_store.read(proposal_id)
+    let (stored_proposer_address) = proposer_address_registry_store.read(proposal_id)
     with_attr error_message("Invalid proposal id"):
-        assert_not_zero(proposer_address.value)
+        assert_not_zero(stored_proposer_address.value)
+        assert proposer_address.value = stored_proposer_address.value
     end
 
     # Flag this proposal as cancelled
