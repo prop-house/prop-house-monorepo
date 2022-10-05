@@ -4,12 +4,12 @@ import {
   Community,
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
-import { useEthers } from '@usedapp/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import classes from './OpenGraphProposalCard.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
+import { InfuraProvider } from '@ethersproject/providers';
 
 const OpenGraphProposalCard: React.FC = () => {
   const params = useParams();
@@ -18,14 +18,25 @@ const OpenGraphProposalCard: React.FC = () => {
   const [proposal, setProposal] = useState<StoredProposalWithVotes>();
   const [round, setRound] = useState<Auction>();
   const [community, setCommunity] = useState<Community>();
+  const [ens, setEns] = useState<null | string>(null);
 
-  const { library: provider } = useEthers();
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const client = useRef(new PropHouseWrapper(backendHost));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    client.current = new PropHouseWrapper(backendHost);
+  }, [backendHost]);
+
+  useEffect(() => {
+    if (!proposal || !process.env.REACT_APP_INFURA_PROJECT_ID) return;
+
+    const lookUpEns = async () => {
+      const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
+      const ens = await provider.lookupAddress(proposal.address);
+      setEns(ens);
+    };
+    lookUpEns();
+  }, [proposal]);
 
   useEffect(() => {
     if (!id) return;
@@ -58,7 +69,9 @@ const OpenGraphProposalCard: React.FC = () => {
 
           <div className={classes.userInfo}>
             <span className={classes.proposedBy}>Proposed by</span>
-            <div className={classes.openGraphAvatar}>{trimEthAddress(proposal.address)}</div>
+            <div className={classes.openGraphAvatar}>
+              {ens ? ens : trimEthAddress(proposal.address)}
+            </div>
           </div>
         </div>
       )}
