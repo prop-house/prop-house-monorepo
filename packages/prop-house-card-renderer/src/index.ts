@@ -9,7 +9,8 @@ type Config = {
     apiBase: string,
     cachePath: string,
     cardHeight: number,
-    cardWidth: number
+    cardWidth: number,
+    remoteWaitUntil: string
 }
 
 const config: Config = {
@@ -19,6 +20,7 @@ const config: Config = {
     cachePath: process.env.CACHE_PATH ?? "/tmp/phcache",
     cardHeight: process.env.CARD_HEIGHT ? Number(process.env.CARD_HEIGHT) : 512,
     cardWidth: process.env.CARD_WIDTH ? Number(process.env.CARD_WIDTH) : 1024,
+    remoteWaitUntil: process.env.REMOTE_WAIT_UNTIL ?? "networkidle0"
 }
 
 const wrapper = new PropHouseWrapper(config.apiBase)
@@ -80,7 +82,7 @@ const generateRemote = async (req: express.Request, res: express.Response) => {
     })
     console.log(remoteCardUrl(path))
     await page.goto(remoteCardUrl(path), {
-        waitUntil: "networkidle0"
+        waitUntil: config.remoteWaitUntil
     })
     await page.screenshot({ path: cacheFilePath });
 
