@@ -60,7 +60,7 @@ const OpenGraphHouseCard: React.FC = () => {
                 </div>
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Funded</span>
-                  <p className={classes.subtitle}>{community.ethFunded}</p>
+                  <p className={classes.subtitle}>Ξ {community.ethFunded}</p>
                 </div>
               </span>
             </span>
