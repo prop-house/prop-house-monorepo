@@ -20,6 +20,7 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { useAppDispatch } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
+import ReactMarkdown from 'react-markdown';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -55,7 +56,17 @@ const RoundCard: React.FC<{
               <StatusPill status={auctionStatus(round)} />
             </div>
 
-            <div className={classes.truncatedTldr}>{round.description}</div>
+            <ReactMarkdown
+              className={classes.truncatedTldr}
+              children={round.description}
+              disallowedElements={['img', '']}
+              components={{
+                h1: 'p',
+                h2: 'p',
+                h3: 'p',
+                a: 'span',
+              }}
+            ></ReactMarkdown>
           </div>
 
           <div className={classes.roundInfo}>
