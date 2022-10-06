@@ -15,10 +15,11 @@ export interface RenderedProposalProps {
   proposalId?: number;
   backButton?: React.ReactNode;
   community?: any;
+  roundName?: string;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
-  const { fields, address, proposalId, backButton, community } = props;
+  const { fields, address, proposalId, backButton, community, roundName } = props;
   const { t } = useTranslation();
 
   return (
@@ -26,33 +27,34 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
       <Row>
         <Col xl={12} className={classes.previewCol}>
           <div className={classes.headerContainer}>
-            {backButton && backButton}
+            <div className={classes.backBtnContainer}>
+              {backButton && backButton}
+
+              {community && roundName && (
+                <Link
+                  to={`/${nameToSlug(community.name)}`}
+                  className={classes.communityProfImgContainer}
+                >
+                  {community.name.charAt(0).toUpperCase() + community.name.slice(1)} House:{' '}
+                  {roundName}
+                </Link>
+              )}
+            </div>
 
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
                   <div className={classes.communityAndPropNumber}>
                     <span className={classes.propNumber}>Prop #{proposalId} </span>
+                    by
+                    <div className={classes.submittedBy}>
+                      <EthAddress
+                        address={address}
+                        hideDavatar={true}
+                        className={classes.submittedBy}
+                      />
+                    </div>
                   </div>
-                  &nbsp;
-                  <div className={classes.submittedBy}>
-                    by&nbsp;
-                    <EthAddress
-                      address={address}
-                      hideDavatar={true}
-                      className={classes.submittedBy}
-                    />
-                  </div>
-                  &nbsp;in&nbsp;the&nbsp;
-                  {community && (
-                    <Link
-                      to={`/${nameToSlug(community.name)}`}
-                      className={classes.communityProfImgContainer}
-                    >
-                      {community.name.charAt(0).toUpperCase() + community.name.slice(1)}
-                      &nbsp;house
-                    </Link>
-                  )}
                 </div>
               )}
 
