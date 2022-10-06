@@ -152,11 +152,13 @@
   color: var(--brand-green);
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
   .hideDate {
     display: none;
   }
+}
 
+@media (max-width: 575px) {
   .address {
     width: max-content;
     white-space: nowrap;
