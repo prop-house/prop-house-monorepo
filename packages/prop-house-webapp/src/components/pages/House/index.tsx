@@ -2,7 +2,7 @@ import classes from './House.module.css';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import HouseHeader from '../../HouseHeader';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { setActiveCommunity } from '../../../state/slices/propHouse';
@@ -21,6 +21,8 @@ import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../StatusFilters';
 import OpenGraphElements from '../../OpenGraphElements';
 import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import ReactMarkdown from 'react-markdown';
+import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 
 const House = () => {
   const location = useLocation();
@@ -116,8 +118,10 @@ const House = () => {
     <>
       {community && (
         <OpenGraphElements
-          title={community.name}
-          description={community.description.toString()}
+          title={`${community.name} Prop House`}
+          description={markdownComponentToPlainText(
+            <ReactMarkdown children={community.description.toString()} />,
+          )}
           imageUrl={cardServiceUrl(CardType.house, community.id).href}
         />
       )}

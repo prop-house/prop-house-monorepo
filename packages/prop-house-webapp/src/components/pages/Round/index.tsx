@@ -19,6 +19,8 @@ import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
+import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import ReactMarkdown from 'react-markdown';
 
 const Round = () => {
   const location = useLocation();
@@ -79,7 +81,7 @@ const Round = () => {
       {round && (
         <OpenGraphElements
           title={round.title}
-          description={round.description}
+          description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
           imageUrl={cardServiceUrl(CardType.round, round.id).href}
         />
       )}
