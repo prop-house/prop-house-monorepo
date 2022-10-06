@@ -59,9 +59,8 @@ const FAQ = () => {
   return (
     <>
       <div className="faqGradientBg">
+        <NavBar />
         <Container>
-          <NavBar />
-
           <div className={classes.searchWrapper}>
             <h1 className={classes.title}>{t('frequentlyAsked')}</h1>
 
