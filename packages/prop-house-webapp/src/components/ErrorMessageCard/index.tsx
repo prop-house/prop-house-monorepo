@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import classes from './RoundMessage.module.css';
+import classes from './ErrorMessageCard.module.css';
 
-interface RoundMessageProps {
+interface ErrorMessageCardProps {
   message: string;
   date?: Date;
 }
 
-const RoundMessage = ({ message, date }: RoundMessageProps) => {
+const ErrorMessageCard = ({ message, date }: ErrorMessageCardProps) => {
   return (
     <div className={classes.noResultsContainer}>
       <div className={classes.cardImage}>
@@ -26,4 +26,4 @@ const RoundMessage = ({ message, date }: RoundMessageProps) => {
   );
 };
 
-export default RoundMessage;
+export default ErrorMessageCard;

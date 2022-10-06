@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ReactHtmlParser from 'react-html-parser';
 import SearchBar from '../../SeachBar';
 import { useEffect, useState } from 'react';
-import RoundMessage from '../../RoundMessage';
+import ErrorMessageCard from '../../ErrorMessageCard';
 import NavBar from '../../NavBar';
 
 interface ContentItem {
@@ -76,7 +76,7 @@ const FAQ = () => {
 
       <Container className={classes.faqBackground}>
         {filteredFAQs.length === 0 ? (
-          <RoundMessage message="No FAQs found" />
+          <ErrorMessageCard message="No FAQs found" />
         ) : (
           <Accordion className={classes.accordion}>
             {filteredFAQs.map((item, i) => (
