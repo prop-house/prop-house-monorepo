@@ -37,7 +37,7 @@ const Home = () => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch communities & proposals
+  // fetch communities
   useEffect(() => {
     const getCommunities = async () => {
       setIsLoading(true);
