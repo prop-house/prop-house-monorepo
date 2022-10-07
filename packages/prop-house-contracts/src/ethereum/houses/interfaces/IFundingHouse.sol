@@ -13,10 +13,17 @@ interface IFundingHouse is IHouse, IVault {
         Cancelled
     }
 
+    /// @notice An account that deposits award assets for use by another account
+    struct Sponsor {
+        address addr;
+        uint256 contribution;
+    }
+
     /// @notice An award asset offered to one or more round winners
     struct Award {
-        bytes32 assetId;
+        bytes assetData;
         uint256 amount;
+        Sponsor[] sponsors;
     }
 
     /// @notice Voting strategy information used during house initialization
@@ -33,7 +40,7 @@ interface IFundingHouse is IHouse, IVault {
         address strategy; // The strategy contract address
         bytes config; // The strategy contract configuration
         uint256[] votingStrategies; // The hashes of the selected voting strategies
-        Award[] awards; // The assets offered to round winners
+        Award[] awards; // The assets offered to round winners, including sponsor information
     }
 
     /// @notice Round information that's persisted in storage

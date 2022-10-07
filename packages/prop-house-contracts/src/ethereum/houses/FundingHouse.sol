@@ -1,20 +1,22 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
+import { Math } from '@openzeppelin/contracts/utils/math/Math.sol';
+
 import { HouseBase } from '../HouseBase.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IFundingHouse } from './interfaces/IFundingHouse.sol';
 import { IStrategy } from '../strategies/interfaces/IStrategy.sol';
 import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
+import { AllowanceVault } from '../utils/AllowanceVault.sol';
 import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
 import { Uint256Utils } from '../utils/Uint256Utils.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
 import { MerkleProof } from '../utils/MerkleProof.sol';
 import { ETH_ADDRESS } from '../Constants.sol';
-import { Vault } from '../utils/Vault.sol';
 
-contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 {
+contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseStorageV1 {
     using { Uint256Utils.split } for uint256;
     using { Uint256Utils.mask250 } for bytes32;
     using { Uint256Utils.toUint256 } for address;
@@ -123,7 +125,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         _requireRoundInitiatorWhitelisted(_initiator);
 
         // Debiting of award balances reverts on overflow
-        _debitAwardsFromAccount(_initiator, round.awards);
+        _debitAwardsFromAccounts(_initiator, round.awards);
 
         uint256 _roundId = ++roundId;
         bytes32 awardHash = keccak256(abi.encode(round.awards));
@@ -192,7 +194,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
             nonce
         );
 
-        _creditAwardsToAccount(msg.sender, round.awards);
+        _creditAwardsToAccounts(msg.sender, round.awards);
         _round.state = RoundState.Cancelled;
 
         emit RoundCancelled(roundId);
@@ -217,7 +219,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
 
         _messenger.starknet().consumeMessageFromL2(cancellationHashRelayer, payload);
 
-        _creditAwardsToAccount(round.initiator, awards);
+        _creditAwardsToAccounts(round.initiator, awards);
         round.state = RoundState.Cancelled;
 
         emit RoundCancelled(roundId);
@@ -377,26 +379,64 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         return IStrategy(round.strategy).getL2Payload(config);
     }
 
-    /// @notice Debit the award asset amounts from the provided account
-    /// @param account The account to debit
-    /// @param awards The award assets and amounts to debit
-    function _debitAwardsFromAccount(address account, Award[] memory awards) internal {
+    /// @notice Debit the award asset amounts from the provided sponsors and/or initiator
+    /// @param initiator The initiator to debit when sponsor contributions are insufficient
+    /// @param awards The award assets and amounts to debit, including sponsor information
+    function _debitAwardsFromAccounts(address initiator, Award[] memory awards) internal {
+        uint256 remainingDebit;
         uint256 numAwards = awards.length;
         for (uint256 i = 0; i < numAwards; ) {
-            _debitInternalBalance(account, awards[i].assetId, awards[i].amount);
+            remainingDebit = awards[i].amount;
+
+            (, address assetAddress, bytes32 assetId) = AssetDataUtils.decodeAssetData(awards[i].assetData);
+
+            uint256 numSponsors = awards[i].sponsors.length;
+            for (uint256 sponsorIndex = 0; sponsorIndex < numSponsors; ) {
+                Sponsor memory sponsor = awards[i].sponsors[sponsorIndex];
+
+                uint256 debitAmount = Math.min(remainingDebit, sponsor.contribution);
+                _debitInternalSpendingLimit(sponsor.addr, msg.sender, assetAddress, debitAmount);
+                _debitInternalBalance(sponsor.addr, assetId, debitAmount);
+                remainingDebit -= debitAmount;
+                unchecked {
+                    ++sponsorIndex;
+                }
+            }
+            if (remainingDebit > 0) {
+                _debitInternalBalance(initiator, assetId, remainingDebit);
+            }
             unchecked {
                 ++i;
             }
         }
     }
 
-    /// @notice Credit the award asset amounts to the provided account
-    /// @param account The account to credit
+    /// @notice Credit the award asset amounts to the provided sponsors and/or initiator
+    /// @param initiator The initiator to credit
     /// @param awards The award assets and amounts to credit
-    function _creditAwardsToAccount(address account, Award[] memory awards) internal {
+    function _creditAwardsToAccounts(address initiator, Award[] memory awards) internal {
+        uint256 remainingCredit;
         uint256 numAwards = awards.length;
         for (uint256 i = 0; i < numAwards; ) {
-            _creditInternalBalance(account, awards[i].assetId, awards[i].amount);
+            remainingCredit = awards[i].amount;
+
+            (, address assetAddress, bytes32 assetId) = AssetDataUtils.decodeAssetData(awards[i].assetData);
+
+            uint256 numSponsors = awards[i].sponsors.length;
+            for (uint256 sponsorIndex = 0; sponsorIndex < numSponsors; ) {
+                Sponsor memory sponsor = awards[i].sponsors[sponsorIndex];
+
+                uint256 creditAmount = Math.min(remainingCredit, sponsor.contribution);
+                _creditInternalSpendingLimit(sponsor.addr, msg.sender, assetAddress, creditAmount);
+                _creditInternalBalance(sponsor.addr, assetId, creditAmount);
+                remainingCredit -= creditAmount;
+                unchecked {
+                    ++sponsorIndex;
+                }
+            }
+            if (remainingCredit > 0) {
+                _creditInternalBalance(initiator, assetId, remainingCredit);
+            }
             unchecked {
                 ++i;
             }
