@@ -125,7 +125,7 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
         _requireRoundInitiatorWhitelisted(_initiator);
 
         // Debiting of award balances reverts on overflow
-        _debitAwardsFromAccounts(_initiator, round.awards);
+        _debitAwardsFromAccounts(_initiator, round.assets, round.awards);
 
         uint256 _roundId = ++roundId;
         bytes32 awardHash = keccak256(abi.encode(round.awards));
@@ -194,7 +194,7 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
             nonce
         );
 
-        _creditAwardsToAccounts(msg.sender, round.awards);
+        _creditAwardsToAccounts(msg.sender, round.assets, round.awards);
         _round.state = RoundState.Cancelled;
 
         emit RoundCancelled(roundId);
@@ -203,8 +203,13 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
     /// @notice Complete the cancellation of a round by consuming the message from Starknet,
     /// which includes the round ID and cancellation hash.
     /// @param roundId The ID of the round to cancel
+    /// @param assets The round assets
     /// @param awards The round awards
-    function completeRoundCancellation(uint256 roundId, Award[] calldata awards) external {
+    function completeRoundCancellation(
+        uint256 roundId,
+        Asset[] calldata assets,
+        Award[] calldata awards
+    ) external {
         Round storage round = rounds[roundId];
         if (round.state != RoundState.Active) {
             revert RoundNotActive();
@@ -219,7 +224,7 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
 
         _messenger.starknet().consumeMessageFromL2(cancellationHashRelayer, payload);
 
-        _creditAwardsToAccounts(round.initiator, awards);
+        _creditAwardsToAccounts(round.initiator, assets, awards);
         round.state = RoundState.Cancelled;
 
         emit RoundCancelled(roundId);
@@ -381,64 +386,106 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
 
     /// @notice Debit the award asset amounts from the provided sponsors and/or initiator
     /// @param initiator The initiator to debit when sponsor contributions are insufficient
-    /// @param awards The award assets and amounts to debit, including sponsor information
-    function _debitAwardsFromAccounts(address initiator, Award[] memory awards) internal {
-        uint256 remainingDebit;
+    /// @param assets Information describing all award assets and backing accounts
+    /// @param awards The award asset pointers and amounts to debit
+    function _debitAwardsFromAccounts(
+        address initiator,
+        Asset[] memory assets,
+        Award[] memory awards
+    ) internal {
+        bytes32[] memory cachedAssetIDs = new bytes32[](assets.length);
+        address[] memory cachedAssetAddresses = new address[](assets.length);
+
         uint256 numAwards = awards.length;
-        for (uint256 i = 0; i < numAwards; ) {
-            remainingDebit = awards[i].amount;
+        for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
+            uint256 amountOutstanding = awards[awardIndex].amount;
+            uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            (, address assetAddress, bytes32 assetId) = AssetDataUtils.decodeAssetData(awards[i].assetData);
+            if (cachedAssetIDs[assetIndex] == bytes4(0)) {
+                (, cachedAssetAddresses[assetIndex], cachedAssetIDs[assetIndex]) = AssetDataUtils.decodeAssetData(
+                    assets[assetIndex].assetData
+                );
+            }
 
-            uint256 numSponsors = awards[i].sponsors.length;
+            // Debit balances from sponsors first, if applicable
+            uint256 numSponsors = assets[assetIndex].sponsors.length;
             for (uint256 sponsorIndex = 0; sponsorIndex < numSponsors; ) {
-                Sponsor memory sponsor = awards[i].sponsors[sponsorIndex];
+                if (amountOutstanding == 0) {
+                    break; // No amount outstanding. Exit early.
+                }
 
-                uint256 debitAmount = Math.min(remainingDebit, sponsor.contribution);
-                _debitInternalSpendingLimit(sponsor.addr, msg.sender, assetAddress, debitAmount);
-                _debitInternalBalance(sponsor.addr, assetId, debitAmount);
-                remainingDebit -= debitAmount;
+                Sponsor memory sponsor = assets[assetIndex].sponsors[sponsorIndex];
+
+                uint256 debitAmount = Math.min(amountOutstanding, sponsor.contribution);
+                _debitInternalSpendingLimit(sponsor.addr, initiator, cachedAssetAddresses[assetIndex], debitAmount);
+                _debitInternalBalance(sponsor.addr, cachedAssetIDs[assetIndex], debitAmount);
+                assets[assetIndex].sponsors[sponsorIndex].contribution -= debitAmount;
+                amountOutstanding -= debitAmount;
+
                 unchecked {
                     ++sponsorIndex;
                 }
             }
-            if (remainingDebit > 0) {
-                _debitInternalBalance(initiator, assetId, remainingDebit);
+
+            // Debit remaining balance from the initiator
+            if (amountOutstanding > 0) {
+                _debitInternalBalance(initiator, cachedAssetIDs[assetIndex], amountOutstanding);
             }
+
             unchecked {
-                ++i;
+                ++awardIndex;
             }
         }
     }
 
     /// @notice Credit the award asset amounts to the provided sponsors and/or initiator
     /// @param initiator The initiator to credit
-    /// @param awards The award assets and amounts to credit
-    function _creditAwardsToAccounts(address initiator, Award[] memory awards) internal {
-        uint256 remainingCredit;
+    /// @param assets Information describing all award assets and backing accounts
+    /// @param awards The award asset pointers and amounts to credit
+    function _creditAwardsToAccounts(
+        address initiator,
+        Asset[] memory assets,
+        Award[] memory awards
+    ) internal {
+        bytes32[] memory cachedAssetIDs = new bytes32[](assets.length);
+        address[] memory cachedAssetAddresses = new address[](assets.length);
+
         uint256 numAwards = awards.length;
-        for (uint256 i = 0; i < numAwards; ) {
-            remainingCredit = awards[i].amount;
+        for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
+            uint256 amountOutstanding = awards[awardIndex].amount;
+            uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            (, address assetAddress, bytes32 assetId) = AssetDataUtils.decodeAssetData(awards[i].assetData);
+            if (cachedAssetIDs[assetIndex] == bytes4(0)) {
+                (, cachedAssetAddresses[assetIndex], cachedAssetIDs[assetIndex]) = AssetDataUtils.decodeAssetData(
+                    assets[assetIndex].assetData
+                );
+            }
 
-            uint256 numSponsors = awards[i].sponsors.length;
+            // Credit balances to the sponsors first, if applicable
+            uint256 numSponsors = assets[assetIndex].sponsors.length;
             for (uint256 sponsorIndex = 0; sponsorIndex < numSponsors; ) {
-                Sponsor memory sponsor = awards[i].sponsors[sponsorIndex];
+                if (amountOutstanding == 0) {
+                    break; // No amount outstanding. Exit early.
+                }
 
-                uint256 creditAmount = Math.min(remainingCredit, sponsor.contribution);
-                _creditInternalSpendingLimit(sponsor.addr, msg.sender, assetAddress, creditAmount);
-                _creditInternalBalance(sponsor.addr, assetId, creditAmount);
-                remainingCredit -= creditAmount;
+                Sponsor memory sponsor = assets[assetIndex].sponsors[sponsorIndex];
+
+                uint256 creditAmount = Math.min(amountOutstanding, sponsor.contribution);
+                _creditInternalSpendingLimit(sponsor.addr, initiator, cachedAssetAddresses[assetIndex], creditAmount);
+                _creditInternalBalance(sponsor.addr, cachedAssetIDs[assetIndex], creditAmount);
+                amountOutstanding -= creditAmount;
                 unchecked {
                     ++sponsorIndex;
                 }
             }
-            if (remainingCredit > 0) {
-                _creditInternalBalance(initiator, assetId, remainingCredit);
+
+            // Credit remaining balance to the initiator
+            if (amountOutstanding > 0) {
+                _creditInternalBalance(initiator, cachedAssetIDs[assetIndex], amountOutstanding);
             }
+
             unchecked {
-                ++i;
+                ++awardIndex;
             }
         }
     }
