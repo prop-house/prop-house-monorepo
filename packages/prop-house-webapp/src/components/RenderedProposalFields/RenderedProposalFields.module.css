@@ -32,6 +32,13 @@
   font-size: 18px;
   color: var(--brand-black);
 }
+.proposalBody a {
+  font-weight: 600;
+  color: var(--brand-pink) !important;
+}
+.proposalBody a:hover {
+  text-decoration: underline !important;
+}
 
 hr {
   background-color: var(--brand-gray-semi-transparent);
