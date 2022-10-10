@@ -37,13 +37,13 @@ const Home = () => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch communities & proposals
+  // fetch communities
   useEffect(() => {
     const getCommunities = async () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
 
-      setCommunities(communities);
+      setCommunities(communities.sort((a, b) => (a.ethFunded < b.ethFunded ? 1 : -1)));
       const accEthFunded = communities.reduce((prev, current) => prev + current.ethFunded, 0);
       const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
       const accProps = communities.reduce((prev, current) => prev + current.numProposals, 0);
