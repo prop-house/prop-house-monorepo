@@ -22,11 +22,11 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
     },
     {
       amount: stats.accRounds,
-      text: 'Funding Rounds',
+      text: `Funding ${stats.accRounds === 1 ? 'round' : 'rounds'}`,
     },
     {
       amount: stats.accProps,
-      text: 'Submitted props',
+      text: `Submitted ${stats.accProps === 1 ? 'prop' : 'props'}`,
     },
   ];
 
