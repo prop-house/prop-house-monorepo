@@ -5,6 +5,8 @@ import HomeStats from '../HomeStats';
 import HomeSearchBar from '../HomeSeachBar';
 import { StatsProps } from '../pages/Home';
 import { useNavigate } from 'react-router-dom';
+import { openInNewTab } from '../../utils/openInNewTab';
+import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 
 interface HomeHeaderProps {
   input: string;
@@ -18,7 +20,18 @@ const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) =
   return (
     <Row className={classes.wrapper}>
       <HomeTitle />
-      <button className={classes.learnMoreBtn} onClick={() => navigate('/faq')}>
+
+      <button
+        className={classes.learnMoreBtn}
+        onClick={e => {
+          if (cmdPlusClicked(e)) {
+            openInNewTab('/faq');
+            return;
+          }
+
+          navigate('/faq');
+        }}
+      >
         Learn more →
       </button>
       <HomeStats stats={stats} />
