@@ -22,7 +22,10 @@ export const communities = new CaseInsensitiveMap(
     // cryptoadz
     '0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6': balanceOfErc721(),
     // nouns japan
-    '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb': balanceOfErc721(),
+    '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb': balanceOfErc721Multiple([
+      '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb',
+      '0x866648ef4dd51e857ca05ea200ed5d5d0c6f93ce',
+    ]),
     // nounpunks
     '0xe169c2ed585e62b1d32615bf2591093a629549b6': balanceOfErc721(),
     // uma
