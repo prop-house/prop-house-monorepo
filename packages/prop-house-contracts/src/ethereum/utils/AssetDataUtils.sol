@@ -37,6 +37,36 @@ library AssetDataUtils {
         return (assetType, assetAddress, assetId);
     }
 
+    /// @notice Decodes an asset data and returns the asset type, contract address, token ID information, and asset ID
+    /// @param assetData The data describing an asset
+    function decodeAssetDataWithTokenIdInfo(bytes memory assetData)
+        internal
+        pure
+        returns (
+            bytes4 assetType,
+            address assetAddress,
+            bool hasTokenId,
+            uint256 tokenId,
+            bytes32 assetId
+        )
+    {
+        assetType = extractAssetType(assetData);
+        if (assetType == IAssetData.ETH.selector) {
+            (assetAddress, assetId) = decodeETHAssetData(assetType, assetData);
+        } else if (assetType == IAssetData.ERC20Token.selector) {
+            (assetAddress, assetId) = decodeERC20AssetData(assetType, assetData);
+        } else if (assetType == IAssetData.ERC721Token.selector) {
+            (assetAddress, tokenId, assetId) = decodeERC721AssetData(assetType, assetData);
+            hasTokenId = true;
+        } else if (assetType == IAssetData.ERC1155Token.selector) {
+            (assetAddress, tokenId, assetId) = decodeERC1155AssetData(assetType, assetData);
+            hasTokenId = true;
+        } else {
+            revert InvalidAssetType();
+        }
+        return (assetType, assetAddress, hasTokenId, tokenId, assetId);
+    }
+
     /// @notice Calculates the asset ID from an asset type and token address
     /// @param assetType The asset type
     /// @param token The token address

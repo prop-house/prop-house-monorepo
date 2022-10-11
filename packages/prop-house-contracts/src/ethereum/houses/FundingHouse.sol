@@ -9,14 +9,14 @@ import { IFundingHouse } from './interfaces/IFundingHouse.sol';
 import { IStrategy } from '../strategies/interfaces/IStrategy.sol';
 import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
-import { AllowanceVault } from '../utils/AllowanceVault.sol';
+import { SpendingLimitEnabledVault } from '../utils/SpendingLimitEnabledVault.sol';
 import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
 import { Uint256Utils } from '../utils/Uint256Utils.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
 import { MerkleProof } from '../utils/MerkleProof.sol';
 import { ETH_ADDRESS } from '../Constants.sol';
 
-contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseStorageV1 {
+contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, FundingHouseStorageV1 {
     using { Uint256Utils.split } for uint256;
     using { Uint256Utils.mask250 } for bytes32;
     using { Uint256Utils.toUint256 } for address;
@@ -393,18 +393,21 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
         Asset[] memory assets,
         Award[] memory awards
     ) internal {
-        bytes32[] memory cachedAssetIDs = new bytes32[](assets.length);
-        address[] memory cachedAssetAddresses = new address[](assets.length);
+        DecodedAsset[] memory cachedAssets = new DecodedAsset[](assets.length);
 
         uint256 numAwards = awards.length;
         for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
             uint256 amountOutstanding = awards[awardIndex].amount;
             uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            if (cachedAssetIDs[assetIndex] == bytes4(0)) {
-                (, cachedAssetAddresses[assetIndex], cachedAssetIDs[assetIndex]) = AssetDataUtils.decodeAssetData(
-                    assets[assetIndex].assetData
-                );
+            if (cachedAssets[assetIndex].assetId == bytes32(0)) {
+                (
+                    ,
+                    cachedAssets[assetIndex].addr,
+                    cachedAssets[assetIndex].hasTokenId,
+                    cachedAssets[assetIndex].tokenId,
+                    cachedAssets[assetIndex].assetId
+                ) = AssetDataUtils.decodeAssetDataWithTokenIdInfo(assets[assetIndex].assetData);
             }
 
             // Debit balances from sponsors first, if applicable
@@ -417,8 +420,28 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
                 Sponsor memory sponsor = assets[assetIndex].sponsors[sponsorIndex];
 
                 uint256 debitAmount = Math.min(amountOutstanding, sponsor.contribution);
-                _debitInternalSpendingLimit(sponsor.addr, initiator, cachedAssetAddresses[assetIndex], debitAmount);
-                _debitInternalBalance(sponsor.addr, cachedAssetIDs[assetIndex], debitAmount);
+                // prettier-ignore
+                if (cachedAssets[assetIndex].hasTokenId) {
+                    bool isWithinLimit = tokenSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr) >= debitAmount;
+
+                    // prettier-ignore
+                    bool canSpend = isWithinLimit || isApprovedToSpendTokenId(
+                        sponsor.addr,
+                        initiator,
+                        cachedAssets[assetIndex].addr,
+                        cachedAssets[assetIndex].tokenId
+                    );
+                    if (!canSpend) {
+                        revert InsufficientSpendingLimitOrApproval();
+                    }
+                    if (isWithinLimit) {
+                        _debitSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr, debitAmount);
+                    }
+                    _setTokenIdApproval(sponsor.addr, initiator, cachedAssets[assetIndex].addr, cachedAssets[assetIndex].tokenId, false);
+                } else {
+                    _debitSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr, debitAmount);
+                }
+                _debitInternalBalance(sponsor.addr, cachedAssets[assetIndex].assetId, debitAmount);
                 assets[assetIndex].sponsors[sponsorIndex].contribution -= debitAmount;
                 amountOutstanding -= debitAmount;
 
@@ -429,7 +452,7 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
 
             // Debit remaining balance from the initiator
             if (amountOutstanding > 0) {
-                _debitInternalBalance(initiator, cachedAssetIDs[assetIndex], amountOutstanding);
+                _debitInternalBalance(initiator, cachedAssets[assetIndex].assetId, amountOutstanding);
             }
 
             unchecked {
@@ -447,19 +470,23 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
         Asset[] memory assets,
         Award[] memory awards
     ) internal {
-        bytes32[] memory cachedAssetIDs = new bytes32[](assets.length);
-        address[] memory cachedAssetAddresses = new address[](assets.length);
+        DecodedAsset[] memory cachedAssets = new DecodedAsset[](assets.length);
 
         uint256 numAwards = awards.length;
         for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
             uint256 amountOutstanding = awards[awardIndex].amount;
             uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            if (cachedAssetIDs[assetIndex] == bytes4(0)) {
-                (, cachedAssetAddresses[assetIndex], cachedAssetIDs[assetIndex]) = AssetDataUtils.decodeAssetData(
-                    assets[assetIndex].assetData
-                );
+            if (cachedAssets[assetIndex].assetId == bytes32(0)) {
+                (
+                    ,
+                    cachedAssets[assetIndex].addr,
+                    cachedAssets[assetIndex].hasTokenId,
+                    cachedAssets[assetIndex].tokenId,
+                    cachedAssets[assetIndex].assetId
+                ) = AssetDataUtils.decodeAssetDataWithTokenIdInfo(assets[assetIndex].assetData);
             }
+            DecodedAsset memory asset = cachedAssets[assetIndex];
 
             // Credit balances to the sponsors first, if applicable
             uint256 numSponsors = assets[assetIndex].sponsors.length;
@@ -471,8 +498,15 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
                 Sponsor memory sponsor = assets[assetIndex].sponsors[sponsorIndex];
 
                 uint256 creditAmount = Math.min(amountOutstanding, sponsor.contribution);
-                _creditInternalSpendingLimit(sponsor.addr, initiator, cachedAssetAddresses[assetIndex], creditAmount);
-                _creditInternalBalance(sponsor.addr, cachedAssetIDs[assetIndex], creditAmount);
+
+                // When crediting, we only allow the spender to re-spend of the same token IDs
+                if (cachedAssets[assetIndex].hasTokenId) {
+                    _setTokenIdApproval(sponsor.addr, initiator, asset.addr, asset.tokenId, true);
+                } else {
+                    _creditSpendingLimit(sponsor.addr, initiator, asset.addr, creditAmount);
+                }
+                _creditInternalBalance(sponsor.addr, asset.assetId, creditAmount);
+
                 amountOutstanding -= creditAmount;
                 unchecked {
                     ++sponsorIndex;
@@ -481,7 +515,7 @@ contract FundingHouse is IFundingHouse, HouseBase, AllowanceVault, FundingHouseS
 
             // Credit remaining balance to the initiator
             if (amountOutstanding > 0) {
-                _creditInternalBalance(initiator, cachedAssetIDs[assetIndex], amountOutstanding);
+                _creditInternalBalance(initiator, asset.assetId, amountOutstanding);
             }
 
             unchecked {

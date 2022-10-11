@@ -25,10 +25,18 @@ interface IFundingHouse is IHouse, IVault {
         uint256 contribution;
     }
 
-    /// Information describing an award asset and backing accounts
+    /// @notice Information describing an award asset and backing accounts
     struct Asset {
         bytes assetData;
         Sponsor[] sponsors;
+    }
+
+    /// @notice Decoded asset information, used to store the decoded asset data
+    struct DecodedAsset {
+        address addr;
+        bool hasTokenId;
+        uint256 tokenId;
+        bytes32 assetId;
     }
 
     /// @notice An award asset offered to one or more round winners
@@ -74,6 +82,8 @@ interface IFundingHouse is IHouse, IVault {
     error OnlyRoundInitiatorCanCancel();
 
     error InvalidMerkleProof();
+
+    error InsufficientSpendingLimitOrApproval();
 
     event RoundInitiatorAddedToWhitelist(address initiator);
 
