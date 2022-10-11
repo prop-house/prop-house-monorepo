@@ -1,4 +1,4 @@
-import { balanceOfErc721, erc1155, onchainMonkey, oneHundredVotes } from '../strategies';
+import { balanceOfErc721, balanceOfErc721Multiple, erc1155, oneHundredVotes } from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
@@ -11,7 +11,10 @@ export const communities = new CaseInsensitiveMap(
     // nouns
     '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(10),
     // onchainmonkey
-    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': onchainMonkey(),
+    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': balanceOfErc721Multiple([
+      '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b',
+      '0x960b7a6bcd451c9968473f7bbfd9be826efd549a',
+    ]),
     // the noun square team rewards
     '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 1),
     // the noun square contests
