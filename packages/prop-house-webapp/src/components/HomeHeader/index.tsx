@@ -7,6 +7,7 @@ import { StatsProps } from '../pages/Home';
 import { useNavigate } from 'react-router-dom';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
+import { useTranslation } from 'react-i18next';
 
 interface HomeHeaderProps {
   input: string;
@@ -16,6 +17,7 @@ interface HomeHeaderProps {
 
 const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Row className={classes.wrapper}>
@@ -32,7 +34,7 @@ const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) =
           navigate('/faq');
         }}
       >
-        Learn more →
+        {t('learnMore')} →
       </button>
       <HomeStats stats={stats} />
       <Container className={classes.searchBarContainer}>
