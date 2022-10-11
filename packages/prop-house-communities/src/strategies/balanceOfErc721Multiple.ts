@@ -11,16 +11,21 @@ import { Provider } from '@ethersproject/providers';
 export const balanceOfErc721Multiple = (addresses: string[], multiplier: number = 1): Strategy => {
   return async (
     userAddress: string,
-    communityAddress: string,
+    _communityAddress: string,
     blockTag: number,
     provider: Provider,
   ) => {
-    let sum = new BigNumber(0);
-    for (let i = 0; i < addresses.length; i++) {
-      const contract = new Contract(addresses[i], BalanceOfABI, provider);
-      const balance = await contract.balanceOf(userAddress, { blockTag: parseBlockTag(blockTag) });
-      sum = sum.plus(new BigNumber(balance.toString()));
-    }
-    return sum.times(multiplier).toNumber();
+    const balances = await Promise.all(
+      addresses.map(async address => {
+        const contract = new Contract(address, BalanceOfABI, provider);
+        const balance = await contract.balanceOf(userAddress, {
+          blockTag: parseBlockTag(blockTag),
+        });
+        return new BigNumber(balance.toString());
+      }),
+    );
+    return BigNumber.sum(...balances)
+      .times(multiplier)
+      .toNumber();
   };
 };
