@@ -1,28 +1,30 @@
 import classes from './Footer.module.css';
-import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import bgColorForFooter from '../../utils/bgColorForFooter';
+import { FaDiscord, FaTwitter, FaGithub } from 'react-icons/fa';
+import { externalURL, ExternalURL } from '../../utils/externalURLs';
 
 const Footer = () => {
-  const { t } = useTranslation();
   const location = useLocation();
+
+  const discordURL = externalURL(ExternalURL.discord);
+  const twitterURL = externalURL(ExternalURL.twitter);
+  const githubURL = externalURL(ExternalURL.github);
 
   return (
     <div className={clsx(classes.footerContainer, bgColorForFooter(location.pathname))}>
       <div className={classes.footer}>
-        {t('questions')}{' '}
-        <a
-          href="https://twitter.com/nounsprophouse"
-          target="_blank"
-          rel="noreferrer"
-          style={{ marginRight: '0.5rem' }}
-        >
-          {t('dmsOpen')}
+        <a href={discordURL} target="_blank" rel="noreferrer">
+          <FaDiscord />
         </a>
-        {t('joinUs')}{' '}
-        <a href="https://discord.com/invite/SKPzM8GHts" target="_blank" rel="noreferrer">
-          {t('discord')}
+
+        <a href={twitterURL} target="_blank" rel="noreferrer">
+          <FaTwitter />
+        </a>
+
+        <a href={githubURL} target="_blank" rel="noreferrer">
+          <FaGithub />
         </a>
       </div>
     </div>
