@@ -9,8 +9,8 @@
 
 .footer {
   display: flex;
-  gap: 25px;
-  font-size: 28px;
+  gap: 15px;
+  font-size: 18px;
 }
 
 .footer a {
