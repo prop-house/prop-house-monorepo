@@ -14,7 +14,7 @@ const EthAddress: React.FC<{
   hideDavatar?: boolean;
   imgSize?: number;
 }> = props => {
-  const { address, truncate, hideDavatar, imgSize } = props;
+  const { address, truncate, hideDavatar = true, imgSize } = props;
   const { library: provider } = useEthers();
 
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
