@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { useEthers } from '@usedapp/core';
 import { useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
@@ -9,6 +8,7 @@ import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVot
 
 import classes from './VotingModule.module.css';
 import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 export interface VotingModuleProps {
   communityName: string;
@@ -16,7 +16,8 @@ export interface VotingModuleProps {
 }
 const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
   const { communityName, totalVotes } = props;
-  const { account } = useEthers();
+
+  const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
