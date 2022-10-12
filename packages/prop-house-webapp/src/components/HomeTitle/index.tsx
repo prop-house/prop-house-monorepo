@@ -1,18 +1,21 @@
 import classes from './HomeTitle.module.css';
+import { useTranslation } from 'react-i18next';
 
 const HomeTitle = () => {
+  const { t } = useTranslation();
+
   return (
     <div className={classes.title}>
       <h1 className={classes.fundedText}>
-        <span> Get funded to</span>
+        <span>{t('getFunded')}</span>
         <div className={classes.build}>
-          <span>build</span>
+          <span>{t('build')}</span>
           <img src="/line.svg" alt="line" />
         </div>
-        <span>with</span>
+        <span>{t('with')}</span>
       </h1>
 
-      <h1>your favorite communities</h1>
+      <h1>{t('yourFavCommunities')}</h1>
     </div>
   );
 };

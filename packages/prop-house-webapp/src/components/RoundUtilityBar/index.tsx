@@ -100,7 +100,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
           <div className={classes.item}>
             <div className={classes.itemTitle}>
-              {proposals && proposals.length === 1 ? 'Proposal' : 'Proposals'}
+              {proposals && proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
             </div>
             <div className={classes.itemData}>{proposals && proposals.length}</div>
           </div>

@@ -3,6 +3,7 @@ import classes from './SuccessModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
+import { useTranslation } from 'react-i18next';
 
 const SuccessModal: React.FC<{
   showSuccessModal: boolean;
@@ -11,9 +12,10 @@ const SuccessModal: React.FC<{
   signerIsContract: boolean;
 }> = props => {
   const { showSuccessModal, setShowSuccessModal, numPropsVotedFor, signerIsContract } = props;
+  const { t } = useTranslation();
 
-  const eoaSignerMsg = `You've successfully voted for ${numPropsVotedFor} ${
-    numPropsVotedFor === 1 ? 'prop' : 'props'
+  const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
+    numPropsVotedFor === 1 ? t('prop') : t('props')
   }!`;
   const contractSignerMsg = `You've submitted votes for ${numPropsVotedFor} props. They will be counted automagically once your Gnosis Safe transaction is confirmed.`;
 
@@ -29,7 +31,7 @@ const SuccessModal: React.FC<{
         </div>
 
         <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>very nounish</p>
+          <p className={classes.modalTitle}>{t('veryNounish')}</p>
           <p className={classes.modalSubtitle}>
             {signerIsContract ? contractSignerMsg : eoaSignerMsg}
           </p>
@@ -40,7 +42,7 @@ const SuccessModal: React.FC<{
 
       <div className={classes.buttonContainer}>
         <Button
-          text="Close"
+          text={t('close')}
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowSuccessModal(false);

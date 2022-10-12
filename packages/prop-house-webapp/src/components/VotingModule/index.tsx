@@ -8,6 +8,7 @@ import { votesRemaining } from '../../utils/votesRemaining';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 
 import classes from './VotingModule.module.css';
+import { useTranslation } from 'react-i18next';
 
 export interface VotingModuleProps {
   communityName: string;
@@ -24,6 +25,8 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
@@ -36,10 +39,10 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
           <VoteIcon />
         </div>
         <div className={classes.textContainer}>
-          <p className={classes.title}>Voting in progress</p>
+          <p className={classes.title}>{t('votingInProgress')}</p>
           <p className={classes.subtitle}>
             <span className={classes.purpleText}>{totalVotes}</span>{' '}
-            {totalVotes === 1 ? 'vote' : 'votes'} cast so far!
+            {totalVotes === 1 ? t('vote') : t('votes')} {t('castSoFar')}!
           </p>
         </div>
       </div>
@@ -50,12 +53,12 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
         votingPower > 0 ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
-              <span>Cast your votes</span>
+              <span>{t('castYourVotes')}</span>
 
               <span className={classes.totalVotes}>{`${
                 votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                  : 'no votes left'
+                  ? `${votingPower - submittedVotes - numAllotedVotes} ${t('left')}`
+                  : t('noVotesLeft')
               }`}</span>
             </h1>
 
@@ -72,22 +75,24 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
           </>
         ) : (
           <p className={classes.subtitle}>
-            <b>You don't have any {communityName} required to vote in this house.</b>
+            <b>
+              {t('youDontHaveAny')} {communityName} {t('requiredToVote')}.
+            </b>
           </p>
         )
       ) : (
         <p className={classes.sideCardBody}>
-          <b>Proposers:</b>
+          <b>{t('proposers')}:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>Connect your wallet to view the status of your proposal.</p>
+              <p>{t('connectToViewPropStatus')}.</p>
             </div>
           </div>
 
-          <b>Voters:</b>
+          <b>{t('voters')}:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>Connect and vote on your favorite proposals.</p>
+              <p>{t('connectToVoteOnProps')}.</p>
             </div>
           </div>
         </p>

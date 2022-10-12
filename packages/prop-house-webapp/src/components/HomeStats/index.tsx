@@ -3,6 +3,7 @@ import CountUp from 'react-countup';
 import { StatsProps } from '../pages/Home';
 import { useState } from 'react';
 import TruncateThousands from '../TruncateThousands';
+import { useTranslation } from 'react-i18next';
 
 interface HomeStatsProps {
   stats: StatsProps;
@@ -10,6 +11,7 @@ interface HomeStatsProps {
 
 const HomeStats = ({ stats }: HomeStatsProps) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const onEnd = () => {
     setLoading(true);
@@ -18,15 +20,15 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
   const homeStats = [
     {
       amount: stats.accEthFunded,
-      text: 'ETH funded',
+      text: 'ethFunded',
     },
     {
       amount: stats.accRounds,
-      text: `Funding ${stats.accRounds === 1 ? 'round' : 'rounds'}`,
+      text: `${stats.accRounds === 1 ? 'fundingRound' : 'fundingRound'}`,
     },
     {
       amount: stats.accProps,
-      text: `Submitted ${stats.accProps === 1 ? 'prop' : 'props'}`,
+      text: `${stats.accProps === 1 ? 'submittedProp' : 'submittedProps'}`,
     },
   ];
 
@@ -43,7 +45,7 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
               <TruncateThousands amount={s.amount} />+
             </span>
           )}
-          <p className={classes.subtitle}>{s.text}</p>
+          <p className={classes.subtitle}>{t('s.text')}</p>
         </div>
       ))}
     </div>

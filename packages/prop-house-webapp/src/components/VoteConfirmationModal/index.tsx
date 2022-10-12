@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { VoteAllotment } from '../../types/VoteAllotment';
+import { useTranslation } from 'react-i18next';
 
 const VoteConfirmationModal: React.FC<{
   showNewModal: boolean;
@@ -21,6 +22,7 @@ const VoteConfirmationModal: React.FC<{
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
   const votesLeft = votesRemaining(votingPower, submittedVotes, voteAllotments);
+  const { t } = useTranslation();
 
   function closeModal() {
     setShowNewModal(false);
@@ -30,10 +32,11 @@ const VoteConfirmationModal: React.FC<{
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          Cast {voteAllotments.reduce((total, prop) => (total = total + prop.votes), 0)} votes?
+          {t('cast')} {voteAllotments.reduce((total, prop) => (total = total + prop.votes), 0)}{' '}
+          {t('votes')}?
         </p>
         <p className={classes.modalSubtitle}>
-          You'll have {votesLeft} remaining to cast over the next{' '}
+          {t('youllHave')} {votesLeft} {t('remainingToCastOverTheNext')}{' '}
           {dayjs(votingEndTime).fromNow(true)}
         </p>
       </div>
@@ -54,7 +57,7 @@ const VoteConfirmationModal: React.FC<{
 
       <div className={classes.buttonContainer}>
         <Button
-          text="Nope"
+          text={t('nope')}
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowNewModal(false);
@@ -62,7 +65,7 @@ const VoteConfirmationModal: React.FC<{
         />
 
         {secondBtn && (
-          <Button text="Sign &amp; Submit" bgColor={ButtonColor.Purple} onClick={submitVote} />
+          <Button text={t('signSubmit')} bgColor={ButtonColor.Purple} onClick={submitVote} />
         )}
       </div>
     </Modal>

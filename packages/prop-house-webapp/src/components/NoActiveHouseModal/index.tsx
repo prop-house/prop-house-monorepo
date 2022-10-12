@@ -4,9 +4,11 @@ import classes from './NoActiveHouseModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
+import { useTranslation } from 'react-i18next';
 
 const NoActiveHouseModal: React.FC<{}> = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Modal
@@ -22,10 +24,8 @@ const NoActiveHouseModal: React.FC<{}> = () => {
         </div>
 
         <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>No round selected</p>
-          <p className={classes.modalSubtitle}>
-            Check the homepage for houses with open funding rounds.
-          </p>
+          <p className={classes.modalTitle}>{t('noRoundSelected')}</p>
+          <p className={classes.modalSubtitle}>{t('proposalCreation')}</p>
         </div>
       </div>
 
@@ -33,7 +33,7 @@ const NoActiveHouseModal: React.FC<{}> = () => {
 
       <div className={classes.buttonContainer}>
         <Button
-          text="Go Home"
+          text={t('goHome')}
           bgColor={ButtonColor.White}
           onClick={() => {
             navigate(`/`);

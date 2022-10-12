@@ -153,8 +153,8 @@ const RoundContent: React.FC<{
       setShowVoteConfirmationModal(false);
     } catch (e) {
       setErrorModalMessage({
-        title: 'Failed to submit votes',
-        message: 'Please go back and try again.',
+        title: t('errorModalTitle'),
+        message: t('errorModalMessage'),
         image: 'banana.png',
       });
       setShowErrorModal(true);
@@ -193,7 +193,7 @@ const RoundContent: React.FC<{
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <ErrorMessageCard message="Funding round starting soon" date={auction.startTime} />
+        <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
       ) : (
         <>
           {community && (
@@ -201,7 +201,7 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProps')} />
+                    <ErrorMessageCard message={t('submittedProposals')} />
                   ) : (
                     proposals.map((proposal, index) => {
                       return (
