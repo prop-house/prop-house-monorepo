@@ -18,23 +18,12 @@
   background: white;
   border-radius: 24px;
   padding: 15px;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-  /* height: 200px; */
->>>>>>> 2fdd59c (WIP: round skeletons)
-=======
->>>>>>> 0644ecf (loading skeleton card for round)
   height: auto;
 }
 
 .skeletonInfoCardGrid svg {
   width: auto;
 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0644ecf (loading skeleton card for round)
 
 @media (max-width: 992px) {
   .skeletonContainer {
@@ -48,8 +37,3 @@
     display: none;
   }
 }
-<<<<<<< HEAD
-=======
->>>>>>> 2fdd59c (WIP: round skeletons)
-=======
->>>>>>> 0644ecf (loading skeleton card for round)
