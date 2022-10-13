@@ -2,6 +2,10 @@ import { Accordion, Container } from 'react-bootstrap';
 import classes from './FAQ.module.css';
 import { useTranslation } from 'react-i18next';
 import ReactHtmlParser from 'react-html-parser';
+import SearchBar from '../../SeachBar';
+import { useEffect, useState } from 'react';
+import ErrorMessageCard from '../../ErrorMessageCard';
+import NavBar from '../../NavBar';
 
 interface ContentItem {
   title: string;
@@ -31,22 +35,61 @@ const content: ContentItem[] = [
 ];
 
 const FAQ = () => {
+  const [input, setInput] = useState('');
+  const [filteredFAQs, setfFilteredFAQs] = useState(content);
+
   const { t } = useTranslation();
+
+  const handleFAQInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  useEffect(() => {
+    if (input.length === 0) setfFilteredFAQs(content);
+
+    setfFilteredFAQs(
+      content.filter(c => {
+        const query = input.toLowerCase();
+
+        return t(c.title.toLowerCase()).indexOf(query) >= 0;
+      }),
+    );
+  }, [input, t]);
 
   return (
     <>
-      <Container>
-        <h1 className={classes.title}>{t('frequentlyAsked')}</h1>
-        <Accordion flush className={classes.accordion}>
-          {content.map((item, i) => (
-            <div key={item.title}>
-              <Accordion.Item eventKey={`${i}`} className={classes.accordionItem}>
-                <Accordion.Header>{t(content[i].title)}</Accordion.Header>
-                <Accordion.Body>{ReactHtmlParser(t(`${content[i].content}`))}</Accordion.Body>
-              </Accordion.Item>
-            </div>
-          ))}
-        </Accordion>
+      <div className="faqGradientBg">
+        <NavBar />
+        <Container>
+          <div className={classes.searchWrapper}>
+            <h1 className={classes.title}>{t('frequentlyAsked')}</h1>
+
+            <SearchBar
+              input={input}
+              handleSeachInputChange={handleFAQInputChange}
+              placeholder="Search for questions"
+            />
+          </div>
+        </Container>
+      </div>
+
+      <Container className={classes.faqBackground}>
+        {filteredFAQs.length === 0 ? (
+          <ErrorMessageCard message="No FAQs found" />
+        ) : (
+          <Accordion className={classes.accordion}>
+            {filteredFAQs.map((item, i) => (
+              <div key={item.title}>
+                <Accordion.Item eventKey={`${i}`} className={classes.accordionItem}>
+                  <Accordion.Header>{t(filteredFAQs[i].title)}</Accordion.Header>
+                  <Accordion.Body>
+                    {ReactHtmlParser(t(`${filteredFAQs[i].content}`))}
+                  </Accordion.Body>
+                </Accordion.Item>
+              </div>
+            ))}
+          </Accordion>
+        )}
       </Container>
     </>
   );

@@ -60,7 +60,7 @@ const Home = () => {
 
   return (
     <>
-      <div className="gradientBg">
+      <div className="homeGradientBg">
         <NavBar />
         <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
       </div>

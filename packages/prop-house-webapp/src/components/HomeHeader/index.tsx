@@ -2,7 +2,7 @@ import { Container, Row } from 'react-bootstrap';
 import classes from './HomeHeader.module.css';
 import HomeTitle from '../HomeTitle';
 import HomeStats from '../HomeStats';
-import HomeSearchBar from '../HomeSeachBar';
+import SearchBar from '../SeachBar';
 import { StatsProps } from '../pages/Home';
 import { useNavigate } from 'react-router-dom';
 import { openInNewTab } from '../../utils/openInNewTab';
@@ -38,7 +38,11 @@ const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) =
       </button>
       <HomeStats stats={stats} />
       <Container className={classes.searchBarContainer}>
-        <HomeSearchBar input={input} handleSeachInputChange={handleSeachInputChange} />
+        <SearchBar
+          input={input}
+          handleSeachInputChange={handleSeachInputChange}
+          placeholder="Search community houses"
+        />
       </Container>
     </Row>
   );
