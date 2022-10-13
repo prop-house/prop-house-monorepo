@@ -3,7 +3,7 @@ import classes from './CommunityCardGrid.module.css';
 import { useEffect, useState } from 'react';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
-import RoundMessage from '../RoundMessage';
+import ErrorMessageCard from '../ErrorMessageCard';
 import LoadingIndicator from '../LoadingIndicator';
 
 interface CommunityCardGridProps {
@@ -39,7 +39,7 @@ const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridP
         filteredHouses && filteredHouses.length > 0 ? (
           <div className={classes.cardGrid}>{cards}</div>
         ) : (
-          <RoundMessage message="No houses found" />
+          <ErrorMessageCard message="No houses found" />
         )
       ) : (
         <LoadingIndicator />

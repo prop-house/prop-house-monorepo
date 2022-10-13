@@ -42,7 +42,7 @@ function App() {
   }, [noActiveCommunity, location.state]);
 
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
-  const noNavPath = openGraphCardPath || location.pathname === '/';
+  const noNavPath = location.pathname === '/' || location.pathname === '/faq';
 
   return openGraphCardPath ? (
     <Routes>

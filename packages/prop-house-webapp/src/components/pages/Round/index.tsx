@@ -11,7 +11,7 @@ import {
 } from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import RoundMessage from '../../RoundMessage';
+import ErrorMessageCard from '../../ErrorMessageCard';
 import RoundUtilityBar from '../../RoundUtilityBar';
 import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
@@ -104,7 +104,7 @@ const Round = () => {
             {round && proposals ? (
               <RoundContent auction={round} proposals={proposals} />
             ) : (
-              <RoundMessage message="No rounds available" />
+              <ErrorMessageCard message="No rounds available" />
             )}
           </div>
         </Container>

@@ -15,7 +15,7 @@ import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
-import RoundMessage from '../RoundMessage';
+import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
@@ -164,7 +164,7 @@ const RoundContent: React.FC<{
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <RoundMessage message="Funding round starting soon" date={auction.startTime} />
+        <ErrorMessageCard message="Funding round starting soon" date={auction.startTime} />
       ) : (
         <>
           {community && (
@@ -172,7 +172,7 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <RoundMessage message={t('submittedProps')} />
+                    <ErrorMessageCard message={t('submittedProps')} />
                   ) : (
                     proposals.map((proposal, index) => {
                       return (

@@ -62,35 +62,37 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
             </div>
           </div>
 
-          {fields.tldr && (
-            <>
-              <hr></hr>
-              <h2>{t('tldr2')}</h2>
-              <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
-            </>
-          )}
+          <span className={classes.proposalBody}>
+            {fields.tldr && (
+              <>
+                <hr></hr>
+                <h2>{t('tldr2')}</h2>
+                <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
+              </>
+            )}
 
-          <h2>{t('description')}</h2>
-          {/*
-           * We sanitize HTML coming from rich text editor to prevent xss attacks.
-           *
-           * <Markdown/> component used to render HTML, while supporting Markdown.
-           */}
-          <Markdown>
-            {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-              allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-              allowedAttributes: {
-                img: ['src', 'alt'],
-                a: ['href', 'target'],
-              },
-              allowedClasses: {
-                code: ['language-*', 'lang-*'],
-                pre: ['language-*', 'lang-*'],
-              },
-              // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
-          </Markdown>
+            <h2>{t('description')}</h2>
+            {/*
+             * We sanitize HTML coming from rich text editor to prevent xss attacks.
+             *
+             * <Markdown/> component used to render HTML, while supporting Markdown.
+             */}
+            <Markdown>
+              {sanitizeHtml(fields.what, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                allowedAttributes: {
+                  img: ['src', 'alt'],
+                  a: ['href', 'target'],
+                },
+                allowedClasses: {
+                  code: ['language-*', 'lang-*'],
+                  pre: ['language-*', 'lang-*'],
+                },
+                // edge case: handle ampersands in img links encoded from sanitization
+              }).replaceAll('&amp;', '&')}
+            </Markdown>
+          </span>
         </Col>
       </Row>
     </>

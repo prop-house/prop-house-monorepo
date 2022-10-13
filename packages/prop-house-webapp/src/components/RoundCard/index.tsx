@@ -20,7 +20,8 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { useAppDispatch } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
-import ReactMarkdown from 'react-markdown';
+import Markdown from 'markdown-to-jsx';
+import sanitizeHtml from 'sanitize-html';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -29,6 +30,16 @@ const RoundCard: React.FC<{
   const { t } = useTranslation();
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  interface changeTagProps {
+    children: React.ReactNode;
+  }
+
+  // overrides any tag to become a <p> tag
+  const changeTagToParagraph = ({ children }: changeTagProps) => <p>{children}</p>;
+
+  // overrides any tag to become a <span> tag
+  const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
 
   return (
     <>
@@ -56,17 +67,21 @@ const RoundCard: React.FC<{
               <StatusPill status={auctionStatus(round)} />
             </div>
 
-            <ReactMarkdown
+            {/* support both markdown & html in round's description.  */}
+            <Markdown
               className={classes.truncatedTldr}
-              children={round.description}
-              disallowedElements={['img', '']}
-              components={{
-                h1: 'p',
-                h2: 'p',
-                h3: 'p',
-                a: 'span',
+              options={{
+                overrides: {
+                  h1: changeTagToParagraph,
+                  h2: changeTagToParagraph,
+                  h3: changeTagToParagraph,
+                  a: changeTagToSpan,
+                  br: changeTagToSpan,
+                },
               }}
-            ></ReactMarkdown>
+            >
+              {sanitizeHtml(round.description)}
+            </Markdown>
           </div>
 
           <div className={classes.roundInfo}>

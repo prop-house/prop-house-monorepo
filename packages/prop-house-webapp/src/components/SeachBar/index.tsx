@@ -1,12 +1,13 @@
-import classes from './HomeSearchBar.module.css';
+import classes from './SearchBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 
-interface HomeSearchBarProps {
+interface SearchBarProps {
   input: string;
   handleSeachInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
 }
 
-const HomeSearchBar = ({ input, handleSeachInputChange }: HomeSearchBarProps) => {
+const SearchBar = ({ input, handleSeachInputChange, placeholder }: SearchBarProps) => {
   return (
     <div className={classes.searchBar}>
       <span className={classes.searchIcon}>
@@ -17,10 +18,10 @@ const HomeSearchBar = ({ input, handleSeachInputChange }: HomeSearchBarProps) =>
         type="text"
         value={input}
         onChange={e => handleSeachInputChange(e)}
-        placeholder="Search community houses"
+        placeholder={placeholder}
       />
     </div>
   );
 };
 
-export default HomeSearchBar;
+export default SearchBar;

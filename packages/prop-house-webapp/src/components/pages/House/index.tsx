@@ -14,7 +14,7 @@ import HouseUtilityBar from '../../HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import LoadingIndicator from '../../LoadingIndicator';
-import RoundMessage from '../../RoundMessage';
+import ErrorMessageCard from '../../ErrorMessageCard';
 import NoSearchResults from '../../NoSearchResults';
 import NotFound from '../../NotFound';
 import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
@@ -160,7 +160,7 @@ const House = () => {
                     ))
                   ) : input === '' ? (
                     <Col>
-                      <RoundMessage message="No rounds available" />
+                      <ErrorMessageCard message="No rounds available" />
                     </Col>
                   ) : (
                     <NoSearchResults />
