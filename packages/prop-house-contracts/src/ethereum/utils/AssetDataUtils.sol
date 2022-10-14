@@ -71,7 +71,7 @@ library AssetDataUtils {
     /// @param assetType The asset type
     /// @param token The token address
     function getAssetID(bytes4 assetType, address token) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(assetType, token));
+        return bytes32(abi.encodePacked(assetType, token));
     }
 
     /// @notice Calculates the asset ID from an asset type, token address, and token ID

@@ -393,21 +393,15 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
         Asset[] memory assets,
         Award[] memory awards
     ) internal {
-        DecodedAsset[] memory cachedAssets = new DecodedAsset[](assets.length);
+        DecodedAsset[] memory cache = new DecodedAsset[](assets.length);
 
         uint256 numAwards = awards.length;
         for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
             uint256 amountOutstanding = awards[awardIndex].amount;
             uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            if (cachedAssets[assetIndex].assetId == bytes32(0)) {
-                (
-                    ,
-                    cachedAssets[assetIndex].addr,
-                    cachedAssets[assetIndex].hasTokenId,
-                    cachedAssets[assetIndex].tokenId,
-                    cachedAssets[assetIndex].assetId
-                ) = AssetDataUtils.decodeAssetDataWithTokenIdInfo(assets[assetIndex].assetData);
+            if (cache[assetIndex].assetId == bytes32(0)) {
+                cache[assetIndex] = _decodePartialAssetDataWithTokenID(assets[assetIndex].assetData);
             }
 
             // Debit balances from sponsors first, if applicable
@@ -421,27 +415,27 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
 
                 uint256 debitAmount = Math.min(amountOutstanding, sponsor.contribution);
                 // prettier-ignore
-                if (cachedAssets[assetIndex].hasTokenId) {
-                    bool isWithinLimit = tokenSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr) >= debitAmount;
+                if (cache[assetIndex].hasTokenId) {
+                    bool isWithinLimit = tokenSpendingLimit(sponsor.addr, initiator, cache[assetIndex].addr) >= debitAmount;
 
                     // prettier-ignore
                     bool canSpend = isWithinLimit || isApprovedToSpendTokenId(
                         sponsor.addr,
                         initiator,
-                        cachedAssets[assetIndex].addr,
-                        cachedAssets[assetIndex].tokenId
+                        cache[assetIndex].addr,
+                        cache[assetIndex].tokenId
                     );
                     if (!canSpend) {
                         revert InsufficientSpendingLimitOrApproval();
                     }
                     if (isWithinLimit) {
-                        _debitSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr, debitAmount);
+                        _debitSpendingLimit(sponsor.addr, initiator, cache[assetIndex].addr, debitAmount);
                     }
-                    _setTokenIdApproval(sponsor.addr, initiator, cachedAssets[assetIndex].addr, cachedAssets[assetIndex].tokenId, false);
+                    _setTokenIdApproval(sponsor.addr, initiator, cache[assetIndex].addr, cache[assetIndex].tokenId, false);
                 } else {
-                    _debitSpendingLimit(sponsor.addr, initiator, cachedAssets[assetIndex].addr, debitAmount);
+                    _debitSpendingLimit(sponsor.addr, initiator, cache[assetIndex].addr, debitAmount);
                 }
-                _debitInternalBalance(sponsor.addr, cachedAssets[assetIndex].assetId, debitAmount);
+                _debitInternalBalance(sponsor.addr, cache[assetIndex].assetId, debitAmount);
                 assets[assetIndex].sponsors[sponsorIndex].contribution -= debitAmount;
                 amountOutstanding -= debitAmount;
 
@@ -452,7 +446,7 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
 
             // Debit remaining balance from the initiator
             if (amountOutstanding > 0) {
-                _debitInternalBalance(initiator, cachedAssets[assetIndex].assetId, amountOutstanding);
+                _debitInternalBalance(initiator, cache[assetIndex].assetId, amountOutstanding);
             }
 
             unchecked {
@@ -470,23 +464,17 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
         Asset[] memory assets,
         Award[] memory awards
     ) internal {
-        DecodedAsset[] memory cachedAssets = new DecodedAsset[](assets.length);
+        DecodedAsset[] memory cache = new DecodedAsset[](assets.length);
 
         uint256 numAwards = awards.length;
         for (uint256 awardIndex = 0; awardIndex < numAwards; ) {
             uint256 amountOutstanding = awards[awardIndex].amount;
             uint256 assetIndex = awards[awardIndex].assetIndex;
 
-            if (cachedAssets[assetIndex].assetId == bytes32(0)) {
-                (
-                    ,
-                    cachedAssets[assetIndex].addr,
-                    cachedAssets[assetIndex].hasTokenId,
-                    cachedAssets[assetIndex].tokenId,
-                    cachedAssets[assetIndex].assetId
-                ) = AssetDataUtils.decodeAssetDataWithTokenIdInfo(assets[assetIndex].assetData);
+            if (cache[assetIndex].assetId == bytes32(0)) {
+                cache[assetIndex] = _decodePartialAssetDataWithTokenID(assets[assetIndex].assetData);
             }
-            DecodedAsset memory asset = cachedAssets[assetIndex];
+            DecodedAsset memory asset = cache[assetIndex];
 
             // Credit balances to the sponsors first, if applicable
             uint256 numSponsors = assets[assetIndex].sponsors.length;
@@ -500,7 +488,7 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
                 uint256 creditAmount = Math.min(amountOutstanding, sponsor.contribution);
 
                 // When crediting, we only allow the spender to re-spend of the same token IDs
-                if (cachedAssets[assetIndex].hasTokenId) {
+                if (cache[assetIndex].hasTokenId) {
                     _setTokenIdApproval(sponsor.addr, initiator, asset.addr, asset.tokenId, true);
                 } else {
                     _creditSpendingLimit(sponsor.addr, initiator, asset.addr, creditAmount);
@@ -522,6 +510,18 @@ contract FundingHouse is IFundingHouse, HouseBase, SpendingLimitEnabledVault, Fu
                 ++awardIndex;
             }
         }
+    }
+
+    /// @notice Decode an asset data into a `DecodedAsset` struct
+    /// @param assetData THe data describing the asset
+    function _decodePartialAssetDataWithTokenID(bytes memory assetData)
+        internal
+        pure
+        returns (DecodedAsset memory asset)
+    {
+        (, asset.addr, asset.hasTokenId, asset.tokenId, asset.assetId) = AssetDataUtils.decodeAssetDataWithTokenIdInfo(
+            assetData
+        );
     }
 
     /// @notice Reverts if the round initiator is not whitelisted
