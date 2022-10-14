@@ -1,0 +1,18 @@
+{
+  "name": "@prophouse/sdk",
+  "version": "0.1.0",
+  "description": "Useful tooling for interacting with the Prop House protocol",
+  "author": "solimander",
+  "homepage": "https://prop.house",
+  "license": "GPL-3.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist tsconfig.build.tsbuildinfo",
+    "build": "tsc -p tsconfig.build.json",
+    "prepare": "yarn build",
+    "test": "mocha -r ts-node/register \"test/**/*.test.ts\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
