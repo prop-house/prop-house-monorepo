@@ -47,29 +47,17 @@ export class VotesController {
     if (!foundProposal)
       throw new HttpException('No Proposal with that ID', HttpStatus.NOT_FOUND);
 
-    // Verify that vote direction is valid
-    if (!isValidVoteDirection(createVoteDto.direction))
-      throw new HttpException(
-        `${createVoteDto.direction} is not a valid vote direction`,
-        HttpStatus.BAD_REQUEST,
-      );
-
     // Verify that signed data equals this payload
     const signedPayload: CreateVoteDto = JSON.parse(
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
 
-    // Get corresponding vote within signed payload (bulk voting payloads may have multiple votes)
+    // Get corresponding vote from signed payload (bulk voting payloads may have multiple votes)
     var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
     const correspondingVote = arr.find(
       (v) => v.proposalId === foundProposal.id,
     );
-    if (
-      !(
-        correspondingVote.direction === createVoteDto.direction &&
-        correspondingVote.proposalId === createVoteDto.proposalId
-      )
-    )
+    if (!(correspondingVote.proposalId === createVoteDto.proposalId))
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
         HttpStatus.BAD_REQUEST,
@@ -94,22 +82,19 @@ export class VotesController {
       .filter((vote) => vote.proposal.auctionId === foundProposal.auctionId)
       .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
 
-    // Voting up
-    if (createVoteDto.direction === VoteDirections.Up) {
-      const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
-        (agg, current) => Number(agg) + Number(current.weight),
-        0,
+    const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
+      (agg, current) => Number(agg) + Number(current.weight),
+      0,
+    );
+
+    // Verify that user has not reached max votes
+    if (aggVoteWeightSubmitted >= totalVotesAvail)
+      throw new HttpException(
+        'Signer has consumed all delegated votes',
+        HttpStatus.BAD_REQUEST,
       );
 
-      // Verify that user has not reached max votes
-      if (aggVoteWeightSubmitted >= totalVotesAvail)
-        throw new HttpException(
-          'Signer has consumed all delegated votes',
-          HttpStatus.BAD_REQUEST,
-        );
-
-      await this.votesService.createNewVote(createVoteDto, foundProposal);
-      await this.proposalService.rollupVoteCount(foundProposal.id);
-    }
+    await this.votesService.createNewVote(createVoteDto, foundProposal);
+    await this.proposalService.rollupVoteCount(foundProposal.id);
   }
 }
