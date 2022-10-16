@@ -36,7 +36,9 @@ export class VotesController {
   }
 
   @Post()
-  async create(@Body() createVoteDto: CreateVoteDto) {
+  async create(
+    @Body(SignedPayloadValidationPipe) createVoteDto: CreateVoteDto,
+  ) {
     const foundProposal = await this.proposalService.findOne(
       createVoteDto.proposalId,
     );

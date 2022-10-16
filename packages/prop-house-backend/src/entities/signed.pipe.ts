@@ -16,10 +16,18 @@ export class SignedPayloadValidationPipe implements PipeTransform {
   transform(value: SignedEntity, metadata: ArgumentMetadata) {
     const signedData: SignedDataPayload = value.signedData;
     const message = Buffer.from(signedData.message, 'base64').toString();
+
+    let actualSigner;
     try {
-      verifyMessage(message, signedData.signature);
+      actualSigner = verifyMessage(message, signedData.signature);
     } catch (e) {
-      throw new HttpException('Signature invalid', HttpStatus.BAD_REQUEST);
+      throw new Error(`Signature invalid. Error: ${e}`);
+    }
+
+    if (actualSigner.toLowerCase() !== value.address.toLowerCase()) {
+      throw new Error(
+        `Incorrect Signer. Actual: ${actualSigner}. Expected: ${value.address}.`,
+      );
     }
     return value;
   }
