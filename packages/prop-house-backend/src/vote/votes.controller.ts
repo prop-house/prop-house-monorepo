@@ -63,15 +63,15 @@ export class VotesController {
         HttpStatus.BAD_REQUEST,
       );
 
-    // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(
+    // Verify that signer has voting power
+    const votingPower = await this.votesService.getNumVotes(
       createVoteDto,
       foundProposal.auction.balanceBlockTag,
     );
 
-    if (totalVotesAvail === 0)
+    if (votingPower === 0)
       throw new HttpException(
-        'Signer does not have delegated votes',
+        'Signer does not have voting power',
         HttpStatus.BAD_REQUEST,
       );
 
@@ -87,10 +87,10 @@ export class VotesController {
       0,
     );
 
-    // Verify that user has not reached max votes
-    if (aggVoteWeightSubmitted >= totalVotesAvail)
+    // Check that user won't exceed voting power by casting vote
+    if (aggVoteWeightSubmitted + correspondingVote.weight >= votingPower)
       throw new HttpException(
-        'Signer has consumed all delegated votes',
+        'Signer does not have enough voting power to cast vote',
         HttpStatus.BAD_REQUEST,
       );
 
