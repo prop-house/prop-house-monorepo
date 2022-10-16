@@ -47,17 +47,20 @@ export class VotesController {
     if (!foundProposal)
       throw new HttpException('No Proposal with that ID', HttpStatus.NOT_FOUND);
 
-    // Verify that signed data equals this payload
+    // Get corresponding vote from signed payload (bulk voting payloads may have multiple votes)
     const signedPayload: CreateVoteDto = JSON.parse(
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
-
-    // Get corresponding vote from signed payload (bulk voting payloads may have multiple votes)
     var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
     const correspondingVote = arr.find(
       (v) => v.proposalId === foundProposal.id,
     );
-    if (!(correspondingVote.proposalId === createVoteDto.proposalId))
+
+    // Verify that signed payload is for corresponding prop and community
+    if (
+      correspondingVote.proposalId !== createVoteDto.proposalId ||
+      correspondingVote.communityAddress !== createVoteDto.communityAddress
+    )
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
         HttpStatus.BAD_REQUEST,
