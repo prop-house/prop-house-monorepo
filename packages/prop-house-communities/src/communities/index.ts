@@ -39,6 +39,6 @@ export const communities = new CaseInsensitiveMap(
     // foodnouns
     '0xF72FAf0050a2cBb645362452a12d46EAdCC09177': balanceOfErc721(),
     // coordinouns
-    '0xbFe00921005F86699760C84C38e3cC86d38745CF': balanceOfErc721(100),
+    '0x7c2748C7Ec984b559EADc39C7a4944398E34911a': erc1155(1, 100),
   }),
 );
