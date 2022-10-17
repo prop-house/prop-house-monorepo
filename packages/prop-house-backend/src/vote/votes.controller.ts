@@ -58,8 +58,10 @@ export class VotesController {
 
     // Verify that signed payload is for corresponding prop and community
     if (
-      correspondingVote.proposalId !== createVoteDto.proposalId &&
-      correspondingVote.communityAddress !== createVoteDto.communityAddress
+      correspondingVote.proposalId !== createVoteDto.proposalId ||
+      correspondingVote.communityAddress !== createVoteDto.communityAddress ||
+      correspondingVote.address !== createVoteDto.address ||
+      correspondingVote.weight !== createVoteDto.weight
     )
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
