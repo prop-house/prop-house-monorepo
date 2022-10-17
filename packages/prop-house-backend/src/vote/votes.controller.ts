@@ -58,7 +58,6 @@ export class VotesController {
     if (
       voteFromPayload.proposalId !== createVoteDto.proposalId ||
       voteFromPayload.communityAddress !== createVoteDto.communityAddress ||
-      voteFromPayload.address !== createVoteDto.address ||
       voteFromPayload.weight !== createVoteDto.weight
     )
       throw new HttpException(
