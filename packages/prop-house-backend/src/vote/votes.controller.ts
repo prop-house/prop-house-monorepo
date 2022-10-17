@@ -52,14 +52,13 @@ export class VotesController {
       Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
     );
     var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
-    const correspondingVote = arr.find(
-      (v) => v.proposalId === foundProposal.id,
-    );
+    const voteFromPayload = arr.find((v) => v.proposalId === foundProposal.id);
 
     // Verify that signed payload is for corresponding prop and community
     if (
-      correspondingVote.proposalId !== createVoteDto.proposalId &&
-      correspondingVote.communityAddress !== createVoteDto.communityAddress
+      voteFromPayload.proposalId !== createVoteDto.proposalId ||
+      voteFromPayload.communityAddress !== createVoteDto.communityAddress ||
+      voteFromPayload.weight !== createVoteDto.weight
     )
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
@@ -91,7 +90,7 @@ export class VotesController {
     );
 
     // Check that user won't exceed voting power by casting vote
-    if (aggVoteWeightSubmitted + correspondingVote.weight > votingPower)
+    if (aggVoteWeightSubmitted + voteFromPayload.weight > votingPower)
       throw new HttpException(
         'Signer does not have enough voting power to cast vote',
         HttpStatus.BAD_REQUEST,
