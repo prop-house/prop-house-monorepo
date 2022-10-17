@@ -91,7 +91,7 @@ export class VotesController {
     );
 
     // Check that user won't exceed voting power by casting vote
-    if (aggVoteWeightSubmitted + correspondingVote.weight >= votingPower)
+    if (aggVoteWeightSubmitted + correspondingVote.weight > votingPower)
       throw new HttpException(
         'Signer does not have enough voting power to cast vote',
         HttpStatus.BAD_REQUEST,
