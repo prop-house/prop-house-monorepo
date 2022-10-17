@@ -58,7 +58,7 @@ export class VotesController {
 
     // Verify that signed payload is for corresponding prop and community
     if (
-      correspondingVote.proposalId !== createVoteDto.proposalId ||
+      correspondingVote.proposalId !== createVoteDto.proposalId &&
       correspondingVote.communityAddress !== createVoteDto.communityAddress
     )
       throw new HttpException(
