@@ -36,5 +36,9 @@ export const communities = new CaseInsensitiveMap(
     '0x79FCDEF22feeD20eDDacbB2587640e45491b757f': balanceOfErc721(),
     // test house
     '0x0000000000000000000000000000000000000000': oneHundredVotes(),
+    // foodnouns
+    '0xF72FAf0050a2cBb645362452a12d46EAdCC09177': balanceOfErc721(),
+    // coordinouns
+    '0xbFe00921005F86699760C84C38e3cC86d38745CF': balanceOfErc721(100),
   }),
 );
