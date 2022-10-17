@@ -52,15 +52,6 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
         _strategyFactory = strategyFactory_;
     }
 
-    /// @notice Initialize the house
-    /// @param _creator The house creator
-    function initialize(address _creator) internal initializer {
-        __Ownable_init();
-
-        // Transfer ownership to the DAO creator
-        transferOwnership(_creator);
-    }
-
     /// @notice Enable a house strategy
     function enableStrategy(address strategy) external {
         if (!_strategyManager.isValidStrategy(id, version, strategy)) {
@@ -77,6 +68,15 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
         isStrategyEnabled[strategy] = false;
 
         emit StrategyDisabled(strategy);
+    }
+
+    /// @notice Initialize the house
+    /// @param _creator The house creator
+    function _initialize(address _creator) internal {
+        __Ownable_init();
+
+        // Transfer ownership to the DAO creator
+        transferOwnership(_creator);
     }
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation

@@ -45,6 +45,9 @@ const config: HardhatUserConfig = {
       },
     }),
   },
+  mocha: {
+    timeout: 120_000,
+  },
   starknet: {
     venv: 'active',
     network: 'starknetLocal',

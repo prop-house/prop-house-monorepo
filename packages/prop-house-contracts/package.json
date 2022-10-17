@@ -36,6 +36,7 @@
     "test:setup": "yarn test:users && yarn compile:l2",
     "test:l1": "forge test --match-path test/ethereum/*.t.sol --optimize --optimizer-runs 1000000 -v",
     "test:l2": "hardhat test test/starknet/*.test.ts",
-    "test": "yarn test:l1 && yarn test:l2"
+    "test:crosschain": "hardhat test test/crosschain/**/*.test.ts",
+    "test": "yarn test:l1 && yarn test:l2 && yarn test:crosschain"
   }
 }

@@ -24,7 +24,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     uint256 constant REGISTER_VOTING_STRATEGY_SELECTOR = 0x8a9207beb9733d5e7212568d21aae1d276a3c89cb2f7f84acbd99f90410b73;
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
-    uint256 constant AWARD_RECLAMATION_AFTER = 8 weeks;
+    uint256 public constant AWARD_RECLAMATION_AFTER = 8 weeks;
 
     /// @notice The house name
     string public constant name = 'FUNDING_HOUSE';
@@ -44,9 +44,9 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         uint256 votingStrategyRegistry_,
         address upgradeManager_,
         address strategyManager_,
-        address starknetCore_,
-        uint256 l2GovEntryPoint_
-    ) HouseBase(name, 1, upgradeManager_, strategyManager_, starknetCore_, l2GovEntryPoint_) {
+        address starknetMessenger_,
+        uint256 strategyFactory_
+    ) HouseBase(name, 1, upgradeManager_, strategyManager_, starknetMessenger_, strategyFactory_) {
         merkleRootRelayer = merkleRootRelayer_;
         cancellationHashRelayer = cancellationHashRelayer_;
         votingStrategyRegistry = votingStrategyRegistry_;
@@ -56,7 +56,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @param creator The creator of the prop house
     /// @param data Initialization data
     function initialize(address creator, bytes calldata data) external payable initializer {
-        super.initialize(creator);
+        super._initialize(creator);
 
         (address[] memory initiators, VotingStrategy[] memory votingStrategies) = abi.decode(
             data,
@@ -257,7 +257,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @param assetData THe data describing the award asset
     /// @param proof The merkle proof used to verify the validity of the award payout
     /// @dev This function is only callable by the round initiator
-    function relaimAwardToRecipient(
+    function reclaimAwardToRecipient(
         uint256 roundId,
         uint256 proposalId,
         address winner,

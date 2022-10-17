@@ -19,11 +19,12 @@ contract HouseFactory is IHouseFactory {
     /// @notice Create and initialize a house proxy
     /// @param houseImpl The house implementation contract address
     /// @param data Initialization payload sent to the proxy contract
-    function create(address houseImpl, bytes calldata data) external payable {
+    function create(address houseImpl, bytes calldata data) external payable returns (address house) {
         if (!DeploymentManager.isValidDeploymentTarget(houseImpl)) {
             revert InvalidDeploymentTarget();
         }
-        address house = address(new HouseProxy(houseImpl, ''));
+        house = address(new HouseProxy(houseImpl, ''));
+        isHouse[house] = true;
 
         IHouse(house).initialize{ value: msg.value }(msg.sender, data);
 

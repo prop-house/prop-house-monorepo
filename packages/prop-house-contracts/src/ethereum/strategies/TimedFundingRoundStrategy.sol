@@ -42,8 +42,9 @@ contract TimedFundingRoundStrategy is IStrategy {
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 256;
 
+    // prettier-ignore
     /// @notice The hash of the target strategy contract code on Starknet
-    uint256 public constant HOUSE_STRATEGY_CLASS_HASH = 450723475664937775680534560701408094262997602934084738341249781;
+    uint256 public constant HOUSE_STRATEGY_CLASS_HASH = 0x6312054d066ecf919b6510f9b062c1260fb46e700c38de2f8c1fc86ab5d6b62;
 
     /// @notice The timed funding round house strategy params
     struct TimedFundingRound {
