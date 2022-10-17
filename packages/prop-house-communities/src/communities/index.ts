@@ -15,10 +15,6 @@ export const communities = new CaseInsensitiveMap(
       '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b',
       '0x960b7a6bcd451c9968473f7bbfd9be826efd549a',
     ]),
-    // the noun square team rewards
-    '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 1),
-    // the noun square contests
-    '0x7c2748c7ec984b559eadc39c7a4944398e34911a': erc1155(2, 1),
     // cryptoadz
     '0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6': balanceOfErc721(),
     // nouns japan
@@ -36,5 +32,11 @@ export const communities = new CaseInsensitiveMap(
     '0x79FCDEF22feeD20eDDacbB2587640e45491b757f': balanceOfErc721(),
     // test house
     '0x0000000000000000000000000000000000000000': oneHundredVotes(),
+    // foodnouns
+    '0xF72FAf0050a2cBb645362452a12d46EAdCC09177': balanceOfErc721(),
+    // the noun square contests
+    '0x7c2748c7ec984b559eadc39c7a4944398e34911a': erc1155(2, 1),
+    // coordinouns
+    '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 100),
   }),
 );
