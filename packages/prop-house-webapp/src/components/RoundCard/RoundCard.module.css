@@ -289,7 +289,7 @@
 }
 
 .roundEnded {
-  background: var(--bg-dark);
+  background: var(--bg-dark) !important;
   box-shadow: none;
 }
 .roundEnded .roundInfo {

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { BiWorld as World } from 'react-icons/bi';
 import i18n from 'i18next';
+import { Dispatch, SetStateAction } from 'react';
 
 interface Languages {
   en: Language;
@@ -13,7 +14,9 @@ interface Language {
   nativeName: string;
 }
 
-const LocalSwitcher: React.FC<{}> = () => {
+const LocalSwitcher: React.FC<{ setIsNavExpanded: Dispatch<SetStateAction<boolean>> }> = props => {
+  const { setIsNavExpanded } = props;
+
   const lngs: Languages = {
     en: {
       nativeName: 'English',
@@ -29,7 +32,10 @@ const LocalSwitcher: React.FC<{}> = () => {
         <Dropdown.Item
           key={lng}
           as="button"
-          onClick={() => i18n.changeLanguage(lng)}
+          onClick={() => {
+            i18n.changeLanguage(lng);
+            setIsNavExpanded(false);
+          }}
           disabled={i18n.resolvedLanguage === lng}
         >
           {lngs[lng as keyof Languages].nativeName}

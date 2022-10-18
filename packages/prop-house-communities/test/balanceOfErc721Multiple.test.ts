@@ -4,8 +4,9 @@ import { infuraEndpoint } from './src/constants/infuraEndpoint';
 import BalanceOfABI from '../src/abi/BalanceOfABI.json';
 import { strategyForCommunity } from '../src/utils/strategyForCommunity';
 import { getNumVotes } from '../src/actions';
+import { balanceOfErc721, balanceOfErc721Multiple } from '../src/strategies';
 
-describe('onchainmonkey votes', () => {
+describe('balance of erc721 multiple', () => {
   let apiKey;
   const onChainMonkeyAddress = '0x960b7a6bcd451c9968473f7bbfd9be826efd549a';
   const karmaAddress = '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b';
@@ -57,7 +58,12 @@ describe('onchainmonkey votes', () => {
 
     const sum = BigNumber.from(ocmBalanceOf).add(BigNumber.from(karmaBalanceOf)).toNumber();
 
-    const votes = await getNumVotes(holderAddress, onChainMonkeyAddress, provider, 15568893);
+    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress])(
+      holderAddress,
+      onChainMonkeyAddress,
+      15568893,
+      provider,
+    );
 
     expect(votes).to.eq(sum);
   });

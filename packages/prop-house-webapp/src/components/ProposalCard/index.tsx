@@ -31,7 +31,9 @@ const ProposalCard: React.FC<{
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
-  const isVotingPeriod = () => auctionStatus === AuctionStatus.AuctionVoting;
+  const roundIsActive = () =>
+    auctionStatus === AuctionStatus.AuctionAcceptingProps ||
+    auctionStatus === AuctionStatus.AuctionVoting;
 
   return (
     <>
@@ -74,11 +76,11 @@ const ProposalCard: React.FC<{
             <div className={classes.address}>
               <EthAddress address={proposal.address} truncate />
 
-              <span className={clsx(classes.bullet, isVotingPeriod() && classes.hideDate)}>
+              <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
                 {' • '}
               </span>
               <div
-                className={clsx(classes.date, isVotingPeriod() && classes.hideDate)}
+                className={clsx(classes.date, roundIsActive() && classes.hideDate)}
                 title={detailedTime(proposal.createdDate)}
               >
                 {diffTime(proposal.createdDate)}

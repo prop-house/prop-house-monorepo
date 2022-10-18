@@ -18,6 +18,8 @@
   height: 38px;
   border: 1px solid var(--border-med);
   width: 100%;
+  border: var(--border-light);
+  box-shadow: var(--shadow-high);
 }
 .searchBar input:active,
 .searchBar input:focus:focus-visible {
@@ -52,7 +54,7 @@
 
 @media (min-width: 1200px) {
   .searchBar {
-    width: 992px !important;
+    width: auto !important;
     max-width: 992px !important;
     padding-left: 0px;
     padding-right: 0px;

@@ -5,13 +5,15 @@ import Web3ModalButton from '../Web3ModalButton.tsx';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 const NavBar = () => {
   const { t } = useTranslation();
+  const [isNavExpanded, setIsNavExpanded] = useState(false);
 
   return (
     <Container>
-      <Navbar bg="transparent" expand="lg" className={classes.navbar}>
+      <Navbar bg="transparent" expand="lg" className={classes.navbar} expanded={isNavExpanded}>
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>
@@ -22,10 +24,13 @@ const NavBar = () => {
           </Navbar.Brand>
         </Link>
 
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Toggle
+          aria-controls="basic-navbar-nav"
+          onClick={() => setIsNavExpanded(!isNavExpanded)}
+        />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-            <Nav.Link as="div" className={classes.menuLink}>
+            <Nav.Link as="div" className={classes.menuLink} onClick={() => setIsNavExpanded(false)}>
               <Link to="/faq" className={classes.link}>
                 {t('faq')}
               </Link>
@@ -33,7 +38,7 @@ const NavBar = () => {
             </Nav.Link>
 
             <div className={classes.buttonGroup}>
-              <LocaleSwitcher />
+              <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
               <Nav.Link as="div">
                 <Web3ModalButton classNames={classes.link} />
