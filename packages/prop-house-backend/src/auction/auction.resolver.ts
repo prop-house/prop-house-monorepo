@@ -208,6 +208,7 @@ export class AuctionsResolver {
   @ResolveField()
   async community(@Parent() auction: Auction) {
     // This approach is slightly faster than letting typeorm eager load
-    return this.communitiesService.findOne(auction.community.id);
+    // @ts-ignore
+    return this.communitiesService.findOne(auction.community);
   }
 }
