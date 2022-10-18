@@ -48,9 +48,9 @@ export class Auction {
   })
   votingEndTime: Date;
 
-  @Column()
-  @Field(type => Float, {
-    description: "The number of currency units paid to each winner"
+  @Column({ type: 'decimal', scale: 2, default: 0.0 })
+  @Field((type) => Float, {
+    description: 'The number of currency units paid to each winner',
   })
   fundingAmount: number;
 
