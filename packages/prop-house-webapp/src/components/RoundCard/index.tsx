@@ -89,7 +89,7 @@ const RoundCard: React.FC<{
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
                 <span className="">
-                  <TruncateThousands amount={round.fundingAmount} />
+                  <TruncateThousands amount={round.fundingAmount} decimals={2} />
                   {` ${round.currencyType}`}
                 </span>
                 <span className={classes.xDivide}>{' × '}</span>
