@@ -26,6 +26,7 @@ export abstract class SignedEntity extends BaseEntity {
   @Column('varchar', {
     length: 60,
     nullable: false,
+    default: SignatureState.VALIDATED,
   })
   @IsEnum(SignatureState)
   @Field(() => String)
