@@ -12,7 +12,12 @@ import { AuctionsService } from './auctions.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Auction, Proposal, Community])],
   controllers: [AuctionsController],
-  providers: [AuctionsService, ProposalsService, AuctionsResolver, CommunitiesService],
+  providers: [
+    AuctionsService,
+    ProposalsService,
+    AuctionsResolver,
+    CommunitiesService,
+  ],
   exports: [TypeOrmModule],
 })
 export class AuctionsModule {}

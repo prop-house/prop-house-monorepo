@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  DeepPartial,
+  FindConditions,
+  FindManyOptions,
+  Repository,
+} from 'typeorm';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
@@ -15,9 +20,8 @@ export class VotesService {
     private votesRepository: Repository<Vote>,
   ) {}
 
-  async findAll(): Promise<Vote[]> {
-    const proposals = await this.votesRepository.find();
-    return proposals;
+  async findAll(opts?: FindManyOptions<Vote>): Promise<Vote[]> {
+    return this.votesRepository.find(opts);
   }
 
   async findAllByAuctionId(auctionId: number): Promise<Vote[]> {
@@ -32,19 +36,19 @@ export class VotesService {
     await this.votesRepository.delete(id);
   }
 
-  async store(vote: Vote) {
+  async store(vote: DeepPartial<Vote>) {
     return this.votesRepository.save(vote);
   }
 
-  async findByAddress(address: string) {
+  async findByAddress(address: string, conditions?: FindConditions<Vote>) {
     return this.votesRepository.find({
       relations: ['proposal'],
-      where: { address },
+      where: { ...conditions, address },
     });
   }
 
   async getNumVotes(
-    dto: CreateVoteDto,
+    dto: Pick<CreateVoteDto, 'address' | 'communityAddress'>,
     balanceblockTag: number,
   ): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
@@ -58,13 +62,16 @@ export class VotesService {
 
   async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
     // Create vote for proposal
-    const vote = new Vote();
-    vote.address = createVoteDto.address;
-    vote.proposal = proposal;
-    vote.direction = createVoteDto.direction;
-    vote.signedData = createVoteDto.signedData;
-    vote.auctionId = proposal.auctionId;
-    vote.weight = createVoteDto.weight;
+    const vote = new Vote({
+      address: createVoteDto.address,
+      direction: createVoteDto.direction,
+      signedData: createVoteDto.signedData,
+      signatureState: createVoteDto.signatureState,
+      proposalId: createVoteDto.proposalId,
+      auctionId: proposal.auctionId,
+      weight: createVoteDto.weight,
+      proposal,
+    });
 
     // Store the new vote
     await this.store(vote);

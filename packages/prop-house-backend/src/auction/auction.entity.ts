@@ -17,8 +17,8 @@ import {
 @ObjectType()
 export class Auction {
   @PrimaryGeneratedColumn()
-  @Field(type => Int, {
-    description: "All auctions are issued a unique ID number"
+  @Field(() => Int, {
+    description: 'All auctions are issued a unique ID number',
   })
   id: number;
 
@@ -26,53 +26,53 @@ export class Auction {
   visible: boolean;
 
   @Column()
-  @Field(type => String)
+  @Field(() => String)
   title: string;
 
   @Column()
-  @Field(type => Date, {
-    description: "After the Start Time users may submit proposals"
+  @Field(() => Date, {
+    description: 'After the Start Time users may submit proposals',
   })
   startTime: Date;
 
   @Column()
-  @Field(type => Date,
-    {
-      description: "Users may submit proposals up until Proposal End Time"
-    })
+  @Field(() => Date, {
+    description: 'Users may submit proposals up until Proposal End Time',
+  })
   proposalEndTime: Date;
 
   @Column()
-  @Field(type => Date, {
-    description: "Between Proposal End Time and Voting End Time, users may submit votes for proposals"
+  @Field(() => Date, {
+    description:
+      'Between Proposal End Time and Voting End Time, users may submit votes for proposals',
   })
   votingEndTime: Date;
 
   @Column({ type: 'decimal', scale: 2, default: 0.0 })
-  @Field((type) => Float, {
+  @Field(() => Float, {
     description: 'The number of currency units paid to each winner',
   })
   fundingAmount: number;
 
   @Column({ nullable: true })
-  @Field(type => String, {
-    description: "The currency for the auction that winners will be paid in"
+  @Field(() => String, {
+    description: 'The currency for the auction that winners will be paid in',
   })
   currencyType: string;
 
   @Column({ nullable: true })
-  @Field(type => String)
+  @Field(() => String)
   description: string;
 
   @Column()
-  @Field(type => Int, {
-    description: "The number of winners that will be paid from the auction"
+  @Field(() => Int, {
+    description: 'The number of winners that will be paid from the auction',
   })
   numWinners: number;
 
   @OneToMany(() => Proposal, (proposal) => proposal.auction)
   @JoinColumn()
-  @Field(type => [Proposal])
+  @Field(() => [Proposal])
   proposals: Proposal[];
 
   @RelationId((auction: Auction) => auction.proposals)
@@ -80,19 +80,19 @@ export class Auction {
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()
-  @Field(type => Community)
+  @Field(() => Community)
   community: Community;
 
   @Column()
-  @Field(type => Date)
+  @Field(() => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
-  @Field(type => Date)
+  @Field(() => Date)
   lastUpdatedDate: Date;
 
   @Column({ default: 0 })
-  @Field(type => String)
+  @Field(() => String)
   balanceBlockTag: number;
 
   @BeforeInsert()

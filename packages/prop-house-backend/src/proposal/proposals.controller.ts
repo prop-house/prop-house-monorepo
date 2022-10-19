@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { AuctionsService } from 'src/auction/auctions.service';
-import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
+import { ECDSASignedPayloadValidationPipe } from 'src/entities/ecdsa-signed.pipe';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { CreateProposalDto, GetProposalsDto } from './proposal.types';
 import { ProposalsService } from './proposals.service';
@@ -36,7 +36,8 @@ export class ProposalsController {
 
   @Post()
   async create(
-    @Body(SignedPayloadValidationPipe) createProposalDto: CreateProposalDto,
+    @Body(ECDSASignedPayloadValidationPipe)
+    createProposalDto: CreateProposalDto,
   ): Promise<Proposal> {
     const foundAuction = await this.auctionsService.findOne(
       createProposalDto.parentAuctionId,

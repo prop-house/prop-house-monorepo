@@ -21,7 +21,7 @@ import { Seeder } from './seeder.provider';
     AuctionsModule,
     ProposalsModule,
     PostgresDatabaseProviderModule,
-    TypeOrmModule.forFeature([Auction])
+    TypeOrmModule.forFeature([Auction]),
   ],
   controllers: [],
   providers: [Seeder],

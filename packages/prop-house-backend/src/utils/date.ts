@@ -1,1 +1,1 @@
-export const ParseDate = str => new Date(str)
+export const ParseDate = (str) => new Date(str);

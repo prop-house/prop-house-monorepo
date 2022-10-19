@@ -4,9 +4,6 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class Seeder {
-  constructor(
-	  private auctionRepository: Repository<Auction>
-  ) {}
-  async seed() {
-  }
+  constructor(private auctionRepository: Repository<Auction>) {}
+  async seed() {}
 }
