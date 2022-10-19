@@ -8,7 +8,7 @@ export class ECDSASignedPayloadValidationPipe implements PipeTransform {
   /**
    * Verifies that a signed data payload has a valid signature and matches the address in the payload
    */
-  async transform(value: SignedEntity) {
+  transform(value: SignedEntity) {
     const message = Buffer.from(value.signedData.message, 'base64').toString();
 
     const { isValidAccountSig, accountSigError } = verifyAccountSignature(
