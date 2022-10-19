@@ -21,7 +21,7 @@ export const verifyContractSignature = async (
   try {
     const res = await contract.isValidSignature(
       utils.hashMessage(message),
-      value.signedData.signature,
+      value.signedData.signature || '0x',
     );
     const isValidContractSig = res === EIP1271_MAGICVALUE;
     // prettier-ignore

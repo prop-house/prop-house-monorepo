@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { IsEnum, IsEthereumAddress } from 'class-validator';
+import { IsEthereumAddress } from 'class-validator';
 import { Address } from 'src/types/address';
 import { SignatureState } from 'src/types/signature';
 import { BaseEntity, Column } from 'typeorm';
@@ -28,7 +28,6 @@ export abstract class SignedEntity extends BaseEntity {
     nullable: false,
     default: SignatureState.VALIDATED,
   })
-  @IsEnum(SignatureState)
   @Field(() => String)
   signatureState: SignatureState;
 

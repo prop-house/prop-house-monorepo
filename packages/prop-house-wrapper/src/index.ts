@@ -110,7 +110,7 @@ export class PropHouseWrapper {
     }
   }
 
-  async logVotes(votes: Vote[]) {
+  async logVotes(votes: Vote[], isContract = false) {
     if (!this.signer) return;
 
     try {
@@ -119,8 +119,13 @@ export class PropHouseWrapper {
       const payload = { ...filtered.map(v => v.toPayload()) };
       const jsonPayload = JSON.stringify(payload);
 
-      // sign pay load and use for all votes
-      const signature = await this.signer.signMessage(jsonPayload);
+      // sign payload and use for all votes, awaiting if the signer is not a contract
+      let signature = '0x';
+
+      const signaturePromise = this.signer.signMessage(jsonPayload);
+      if (!isContract) {
+        signature = await signaturePromise;
+      }
 
       let responses = [];
 

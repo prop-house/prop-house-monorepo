@@ -68,6 +68,7 @@ export class ProposalsController {
 
     const proposal = new Proposal();
     proposal.address = createProposalDto.address;
+    proposal.signatureState = createProposalDto.signatureState;
     proposal.what = createProposalDto.what;
     proposal.tldr = createProposalDto.tldr;
     proposal.title = createProposalDto.title;

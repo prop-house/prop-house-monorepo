@@ -110,13 +110,22 @@ const RoundContent: React.FC<{
       dispatch(setNumSubmittedVotes(aggVoteWeightForProps(proposals, account)));
   }, [proposals, account, dispatch]);
 
+  const signerIsContract = async () => {
+    if (!library || !account) {
+      return false;
+    }
+    const code = await library?.getCode(account);
+    return code !== '0x';
+  };
+
   const handleSubmitVote = async () => {
     try {
       const votes = voteAllotments
         .map(a => new Vote(1, a.proposalId, a.votes, community!.contractAddress))
         .filter(v => v.weight > 0);
+      const isContract = await signerIsContract();
 
-      await client.current.logVotes(votes);
+      await client.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessModal(true);
