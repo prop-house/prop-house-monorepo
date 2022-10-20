@@ -182,3 +182,12 @@ body {
 .infoSymbol svg {
   margin-bottom: 2px;
 }
+
+/* modals */
+.ReactModal__Content {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  max-height: max-content !important;
+}
