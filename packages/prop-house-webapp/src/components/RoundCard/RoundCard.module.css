@@ -308,6 +308,7 @@
   }
   .roundInfo {
     padding: 1rem;
+    gap: 10px !important;
   }
 }
 @media (max-width: 375px) {
