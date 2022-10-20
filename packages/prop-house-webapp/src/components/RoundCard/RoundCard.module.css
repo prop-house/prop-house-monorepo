@@ -306,12 +306,8 @@
   .info {
     font-size: 14px;
   }
-  .roundInfo {
-    padding: 1rem;
-    gap: 10px !important;
-  }
 }
-@media (max-width: 375px) {
+@media (max-width: 450px) {
   .propSection {
     display: none;
   }
