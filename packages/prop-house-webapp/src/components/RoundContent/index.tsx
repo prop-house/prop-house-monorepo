@@ -95,6 +95,7 @@ const RoundContent: React.FC<{
           community.contractAddress,
           library,
           auction.balanceBlockTag,
+          auction.id,
         );
         dispatch(setVotingPower(votes));
       } catch (e) {

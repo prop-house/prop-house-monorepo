@@ -5,4 +5,5 @@ export type Strategy = (
   communityAddress: string,
   blockTag: number,
   provider: Provider,
+  roundId?: number,
 ) => Promise<number>;
