@@ -18,6 +18,7 @@ import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import VotingModule from '../VotingModule';
 import RoundOverModule from '../RoundOverModule';
+import Leaderboard from '../../components/Leaderboard';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
@@ -137,6 +138,13 @@ const RoundModules: React.FC<{
             <></>
           )}
         </div>
+      </Card>
+      <Card 
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.thirty}
+        classNames={classes.sidebarContainerCard}
+      >
+        <Leaderboard tops={5} />
       </Card>
     </Col>
   );

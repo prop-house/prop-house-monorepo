@@ -1,0 +1,49 @@
+.wrapper h1 {
+  font-family: 'Londrina Solid';
+}
+
+.wrapper h2 {
+  font-family: 'Londrina Solid';
+}
+
+.wrapper tr {
+  font-family: 'PT Root UI', sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: -0.25px;
+  line-height: 28px;
+  margin: 0px !important;
+}
+
+@media (max-width: 992px) {
+  .wrapper {
+    padding: 2rem;
+  }
+
+  .wrapper h1 {
+    font-size: 3.75rem;
+  }
+
+  .wrapper h2 {
+    font-size: 2rem;
+  }
+
+  tr > *:nth-child(3) {
+    display: none;
+  }
+
+  tr > *:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (min-width: 992px) {
+  .wrapper h1 {
+    font-size: 4rem;
+    margin-left: 2rem;
+  }
+
+  .wrapper h2 {
+    font-size: 3rem;
+  }
+}
