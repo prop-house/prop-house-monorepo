@@ -1,4 +1,10 @@
-import { Field, InputType, Int, ObjectType, PartialType } from '@nestjs/graphql';
+import {
+  Field,
+  InputType,
+  Int,
+  ObjectType,
+  PartialType,
+} from '@nestjs/graphql';
 import { Auction } from 'src/auction/auction.entity';
 import {
   Entity,
@@ -8,7 +14,6 @@ import {
   JoinColumn,
   BeforeInsert,
   BeforeUpdate,
-  RelationCount,
   RelationId,
 } from 'typeorm';
 
@@ -16,45 +21,45 @@ import {
 @ObjectType()
 export class Community {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ default: true })
   visible: boolean;
 
   @Column()
-  @Field(type => String, {
-    description: "The contract address that is queried for balances"
+  @Field(() => String, {
+    description: 'The contract address that is queried for balances',
   })
   contractAddress: string;
 
   @Column()
-  @Field(type => String)
+  @Field(() => String)
   name: string;
 
   @Column()
-  @Field(type => String)
+  @Field(() => String)
   profileImageUrl: string;
 
   @Column({ nullable: true })
-  @Field(type => String)
+  @Field(() => String)
   description: string;
 
   @RelationId((community: Community) => community.auctions)
-  @Field(type => Int)
+  @Field(() => Int)
   numAuctions: number;
 
   @OneToMany(() => Auction, (auction) => auction.community)
   @JoinColumn()
-  @Field(type => [Auction])
+  @Field(() => [Auction])
   auctions: Auction[];
 
   @Column()
-  @Field(type => Date)
+  @Field(() => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
-  @Field(type => Date)
+  @Field(() => Date)
   lastUpdatedDate: Date;
 
   @BeforeInsert()

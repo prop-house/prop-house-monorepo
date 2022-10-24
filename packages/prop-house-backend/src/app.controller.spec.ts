@@ -16,7 +16,9 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return "Welcome to the Prop House!"', () => {
-      expect(appController.getHello()).toBe('Welcome to the Prop House!');
+      expect(appController.getWelcomeMessage()).toBe(
+        'Welcome to the Prop House!',
+      );
     });
   });
 });

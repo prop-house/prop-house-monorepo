@@ -6,26 +6,29 @@ import { File } from './file.entity';
 
 @Injectable()
 export class FileService {
-	constructor(
-		private readonly ipfsService: IpfsService,
+  constructor(
+    private readonly ipfsService: IpfsService,
     @InjectRepository(File)
     private fileRepository: Repository<File>,
-	) {}
+  ) {}
 
-	async pinBuffer(buffer: Buffer, filename: string) {
-		return this.ipfsService.pinBuffer(buffer, filename)
-	}
+  async pinBuffer(buffer: Buffer, filename: string) {
+    return this.ipfsService.pinBuffer(buffer, filename);
+  }
 
   async findAll(): Promise<File[]> {
-    const proposals = await this.fileRepository.find({where: {hidden: false}});
+    const proposals = await this.fileRepository.find({
+      where: { hidden: false },
+    });
     return proposals;
   }
 
   async findAllByAddress(address: string): Promise<File[]> {
-    const proposals = await this.fileRepository.find({where: {address, hidden: false}});
+    const proposals = await this.fileRepository.find({
+      where: { address, hidden: false },
+    });
     return proposals;
   }
-
 
   findOne(id: number): Promise<File> {
     return this.fileRepository.findOne(id);

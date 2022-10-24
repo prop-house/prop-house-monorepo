@@ -1,26 +1,46 @@
-import { Field, ObjectType } from "@nestjs/graphql";
-import { Address } from "src/types/address";
-import { BaseEntity, Column, Entity } from "typeorm";
+import { Field, ObjectType } from '@nestjs/graphql';
+import { IsEthereumAddress } from 'class-validator';
+import { Address } from 'src/types/address';
+import { SignatureState } from 'src/types/signature';
+import { BaseEntity, Column } from 'typeorm';
 
 @ObjectType()
 export class SignedDataPayload {
-  @Field(type => String)
-	signature: string;
+  @Field(() => String)
+  signature: string;
 
-  @Field(type => String)
-	message: string;
+  @Field(() => String)
+  message: string;
 
-  @Field(type => String)
-	signer: string;
+  @Field(() => String)
+  signer: string;
 }
 
 @ObjectType()
 export abstract class SignedEntity extends BaseEntity {
   @Column()
-  @Field(type => String)
+  @IsEthereumAddress()
+  @Field(() => String)
   address: Address;
 
+  @Column('varchar', {
+    length: 60,
+    nullable: false,
+    default: SignatureState.VALIDATED,
+  })
+  @Field(() => String)
+  signatureState: SignatureState;
+
   @Column({ type: 'jsonb' })
-  @Field(type => SignedDataPayload)
+  @Field(() => SignedDataPayload)
   signedData: SignedDataPayload;
+
+  constructor(opts?: Partial<SignedEntity>) {
+    super();
+    if (opts) {
+      this.address = opts.address;
+      this.signatureState = opts.signatureState;
+      this.signedData = opts.signedData;
+    }
+  }
 }

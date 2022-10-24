@@ -100,6 +100,10 @@
   opacity: 0.75;
 }
 
+.verifyVoteBtn:disabled {
+  opacity: 0.75;
+}
+
 .buttonContainer {
   display: flex;
   gap: 8px;

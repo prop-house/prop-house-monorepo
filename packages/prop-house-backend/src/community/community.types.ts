@@ -1,8 +1,8 @@
-import { Community } from "./community.entity";
+import { Community } from './community.entity';
 
 export interface ComputedCommunityAttributes {
-    numProposals: number;
-    ethFunded: number;
+  numProposals: number;
+  ethFunded: number;
 }
 
 export type CommunityOverview = Partial<Community>;

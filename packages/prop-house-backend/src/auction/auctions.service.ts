@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { proposalCountSubquery } from 'src/utils/proposalCountSubquery';
+import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
 
@@ -64,9 +64,9 @@ export class AuctionsService {
       skip: start,
       take: limit,
       where,
-      order: {id: 'ASC'},
+      order: { id: 'ASC' },
       relations,
-      loadRelationIds: relationIds ? {relations: relationIds} : undefined
+      loadRelationIds: relationIds ? { relations: relationIds } : undefined,
     });
   }
 

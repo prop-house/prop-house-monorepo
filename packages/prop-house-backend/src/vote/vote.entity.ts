@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Type } from 'class-transformer';
 import { SignedEntity } from 'src/entities/signed';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
@@ -15,11 +14,11 @@ import {
 @ObjectType()
 export class Vote extends SignedEntity {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ default: 1 })
-  @Field(type => Int)
+  @Field(() => Int)
   direction: number;
 
   @ManyToOne(() => Proposal, (proposal) => proposal.votes)
@@ -27,23 +26,34 @@ export class Vote extends SignedEntity {
   proposal: Proposal;
 
   @Column()
-  @Field(type => Date)
-  createdDate: Date;
+  @Field(() => Date)
+  createdDate?: Date;
 
   @Column()
-  @Field(type => Int)
+  @Field(() => Int)
   proposalId: number;
 
   @Column()
-  @Field(type => Int)
+  @Field(() => Int)
   auctionId: number;
 
   @Column()
-  @Field(type => Int)
+  @Field(() => Int)
   weight: number;
 
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
+  }
+
+  constructor(opts?: Partial<Vote>) {
+    super(opts);
+    if (opts) {
+      this.direction = opts.direction;
+      this.proposal = opts.proposal;
+      this.proposalId = opts.proposalId;
+      this.auctionId = opts.auctionId;
+      this.weight = opts.weight;
+    }
   }
 }
