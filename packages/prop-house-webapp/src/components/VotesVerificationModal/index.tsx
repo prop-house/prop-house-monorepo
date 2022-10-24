@@ -2,11 +2,12 @@ import classes from './VotesVerificationModal.module.css';
 import Modal from 'react-modal';
 import Button from '../Button';
 import { ButtonColor } from '../Button';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { SignatureState, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { BsArrowRightShort } from 'react-icons/bs';
+import { MdOutlinePendingActions } from 'react-icons/md';
 import { buildMyCryptoVerificationLink } from '../../utils/buildMyCryptoVerificationLink';
 
 const VotesVerificationModal: React.FC<{
@@ -34,33 +35,41 @@ const VotesVerificationModal: React.FC<{
           </div>
 
           <div className={classes.votesContainer}>
-            {proposal.votes.map((vote, index) => (
-              <div key={index} className={classes.votesRow}>
-                <div className={classes.voteRowTitle}>
-                  {`${vote.weight}  ${vote.weight === 1 ? 'vote' : 'votes'} ${'by'}`}
-                  <EthAddress
-                    address={vote.address}
-                    hideDavatar={true}
-                    className={classes.vRowFontSize}
-                  />
-                </div>
+            {proposal.votes
+              .filter(v => v.signatureState !== SignatureState.FAILED_VALIDATION)
+              .map((vote, index) => (
+                <div key={index} className={classes.votesRow}>
+                  <div className={classes.voteRowTitle}>
+                    {`${vote.weight}  ${vote.weight === 1 ? 'vote' : 'votes'} ${'by'}`}
+                    <EthAddress
+                      address={vote.address}
+                      hideDavatar={true}
+                      className={classes.vRowFontSize}
+                    />
+                  </div>
 
-                <button
-                  className={classes.verifyVoteBtn}
-                  onClick={() =>
-                    openInNewTab(
-                      buildMyCryptoVerificationLink(
-                        Object(vote.signedData).signer,
-                        decodeBase64(Object(vote.signedData).message),
-                        Object(vote.signedData).signature,
-                      ),
-                    )
-                  }
-                >
-                  Verify <BsArrowRightShort />
-                </button>
-              </div>
-            ))}
+                  {vote.signatureState === SignatureState.PENDING_VALIDATION ? (
+                    <button className={classes.verifyVoteBtn} disabled={true}>
+                      Pending <MdOutlinePendingActions />
+                    </button>
+                  ) : (
+                    <button
+                      className={classes.verifyVoteBtn}
+                      onClick={() =>
+                        openInNewTab(
+                          buildMyCryptoVerificationLink(
+                            Object(vote.signedData).signer,
+                            decodeBase64(Object(vote.signedData).message),
+                            Object(vote.signedData).signature,
+                          ),
+                        )
+                      }
+                    >
+                      Verify <BsArrowRightShort />
+                    </button>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
 

@@ -126,12 +126,19 @@ export enum Direction {
   Abstain = 0,
 }
 
+export enum SignatureState {
+  PENDING_VALIDATION = 'PENDING_VALIDATION',
+  FAILED_VALIDATION = 'FAILED_VALIDATION',
+  VALIDATED = 'VALIDATED',
+}
+
 export class Vote extends Signable {
   constructor(
     public readonly direction: Direction,
     public readonly proposalId: number,
     public readonly weight: number,
     public readonly communityAddress: string,
+    public readonly signatureState: SignatureState,
   ) {
     super();
   }
@@ -142,6 +149,7 @@ export class Vote extends Signable {
       proposalId: this.proposalId,
       weight: this.weight,
       communityAddress: this.communityAddress,
+      signatureState: this.signatureState,
     };
   }
 }

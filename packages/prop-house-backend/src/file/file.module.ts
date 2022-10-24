@@ -10,6 +10,6 @@ import { File } from './file.entity';
 @Module({
   imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([File])],
   providers: [FileService, IpfsService],
-  controllers: [FileController]
+  controllers: [FileController],
 })
 export class FileModule {}

@@ -12,6 +12,6 @@ import { ProposalsService } from './proposals.service';
   imports: [TypeOrmModule.forFeature([Proposal, Vote, Auction])],
   controllers: [ProposalsController],
   providers: [ProposalsService, AuctionsService, ProposalsResolver],
-  exports:[TypeOrmModule]
+  exports: [TypeOrmModule],
 })
 export class ProposalsModule {}

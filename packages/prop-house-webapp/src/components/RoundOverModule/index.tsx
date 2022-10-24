@@ -18,12 +18,11 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
         </div>
         <div className={classes.textContainer}>
           <p className={classes.title}>Voting ended</p>
-          {numOfProposals && (
-            <p className={classes.subtitle}>
-              {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? 'vote' : 'votes'} cast
-              for {numOfProposals} props!
-            </p>
-          )}
+
+          <p className={classes.subtitle}>
+            {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? 'vote' : 'votes'} cast
+            for {numOfProposals} props!
+          </p>
         </div>
       </div>
 
