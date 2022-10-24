@@ -93,7 +93,7 @@ const RoundContent: React.FC<{
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          library as any,
           auction.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
