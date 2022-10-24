@@ -8,8 +8,14 @@ const SuccessModal: React.FC<{
   showSuccessModal: boolean;
   numPropsVotedFor: number;
   setShowSuccessModal: Dispatch<SetStateAction<boolean>>;
+  signerIsContract: boolean;
 }> = props => {
-  const { showSuccessModal, setShowSuccessModal, numPropsVotedFor } = props;
+  const { showSuccessModal, setShowSuccessModal, numPropsVotedFor, signerIsContract } = props;
+
+  const eoaSignerMsg = `You've successfully voted for ${numPropsVotedFor} ${
+    numPropsVotedFor === 1 ? 'prop' : 'props'
+  }!`;
+  const contractSignerMsg = `You've submitted votes for ${numPropsVotedFor} props. They will be counted automagically once your Gnosis Safe transaction is confirmed.`;
 
   return (
     <Modal
@@ -25,8 +31,7 @@ const SuccessModal: React.FC<{
         <div className={classes.titleContainer}>
           <p className={classes.modalTitle}>very nounish</p>
           <p className={classes.modalSubtitle}>
-            You've successfully voted for {numPropsVotedFor}{' '}
-            {numPropsVotedFor === 1 ? 'prop' : 'props'}!
+            {signerIsContract ? contractSignerMsg : eoaSignerMsg}
           </p>
         </div>
       </div>
