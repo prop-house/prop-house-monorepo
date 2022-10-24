@@ -15,6 +15,7 @@ import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './components/pages/Round';
+import Leaderboard from './components/pages/Leaderboard';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
@@ -72,6 +73,8 @@ function App() {
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
             <Route path="/:house/:title/:id" element={<Proposal />} />
+            <Route path="/leaderboard" element={<Leaderboard/>} />
+
 
             <Route path="*" element={<NotFound />} />
           </Routes>
