@@ -1,7 +1,7 @@
 import classes from './Profile.module.css';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import HouseHeader from '../../HouseHeader';
+import ProfileHeader from '../../ProfileHeader';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';

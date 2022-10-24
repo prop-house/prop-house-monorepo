@@ -11,6 +11,7 @@ export enum RoundStatus {
   Proposing,
   Voting,
   Ended,
+  IsWinner,
 }
 
 export interface Status {
@@ -30,6 +31,12 @@ const statuses: Status[] = [
     title: 'All rounds',
     bgColor: classes.black,
   },
+  {
+    status: RoundStatus.IsWinner,
+    title: 'Wins',
+    bgColor: classes.green,
+  },
+
 ];
 
 const StatusFilters: React.FC<{
