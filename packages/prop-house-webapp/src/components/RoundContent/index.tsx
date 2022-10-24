@@ -1,4 +1,5 @@
 import {
+  SignatureState,
   StoredAuction,
   StoredProposalWithVotes,
   Vote,
@@ -124,7 +125,16 @@ const RoundContent: React.FC<{
   const handleSubmitVote = async () => {
     try {
       const votes = voteAllotments
-        .map(a => new Vote(1, a.proposalId, a.votes, community!.contractAddress))
+        .map(
+          a =>
+            new Vote(
+              1,
+              a.proposalId,
+              a.votes,
+              community!.contractAddress,
+              SignatureState.PENDING_VALIDATION,
+            ),
+        )
         .filter(v => v.weight > 0);
       const isContract = await _signerIsContract();
 
