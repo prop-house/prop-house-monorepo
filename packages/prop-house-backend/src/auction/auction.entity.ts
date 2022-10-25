@@ -95,6 +95,14 @@ export class Auction {
   @Field(type => String)
   balanceBlockTag: number;
 
+  @Column({ default: 0 })
+  @Field((type) => Number)
+  type: number;
+
+  @Column({ type: 'decimal', scale: 2, default: null })
+  @Field((type) => Number)
+  quorum: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
