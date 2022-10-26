@@ -147,7 +147,7 @@ body {
 .houseDropdown .dropdown-item:active,
 .houseDropdown .dropdown-item:focus,
 .houseDropdown .dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--border-light);
   border-radius: 10px;
 }
 
