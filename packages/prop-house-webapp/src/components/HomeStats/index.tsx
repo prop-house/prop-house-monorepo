@@ -20,15 +20,15 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
   const homeStats = [
     {
       amount: stats.accEthFunded,
-      text: 'ethFunded',
+      text: t('ethFunded'),
     },
     {
       amount: stats.accRounds,
-      text: `${stats.accRounds === 1 ? 'fundingRound' : 'fundingRound'}`,
+      text: `${stats.accRounds === 1 ? t('fundingRoundCap') : t('fundingRoundsCap')}`,
     },
     {
       amount: stats.accProps,
-      text: `${stats.accProps === 1 ? 'submittedProp' : 'submittedProps'}`,
+      text: `${stats.accProps === 1 ? t('submittedProp') : t('submittedProps')}`,
     },
   ];
 
@@ -45,7 +45,7 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
               <TruncateThousands amount={s.amount} />+
             </span>
           )}
-          <p className={classes.subtitle}>{t('s.text')}</p>
+          <p className={classes.subtitle}>{s.text}</p>
         </div>
       ))}
     </div>
