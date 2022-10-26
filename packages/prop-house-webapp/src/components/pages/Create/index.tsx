@@ -19,6 +19,7 @@ import removeTags from '../../../utils/removeTags';
 import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
 import { nameToSlug } from '../../../utils/communitySlugs';
+import LoadingIndicator from '../../LoadingIndicator';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -105,70 +106,72 @@ const Create: React.FC<{}> = () => {
       ),
   };
 
-  return activeAuction ? (
-    <>
-      <Container>
-        {showModal && <Modal data={successfulSubmissionModalContent} />}
+  return (
+    <Container>
+      {activeAuction ? (
+        <>
+          {showModal && <Modal data={successfulSubmissionModalContent} />}
 
-        <Row>
-          <Col xl={12} className={classes.proposalHelperWrapper}>
-            <h1 className={classes.proposalHelper}>
-              {t('creatingProp')}{' '}
-              <span>
-                {` ${activeCommunity.name}: ${activeAuction.title}`}
-                {' ('}
-                <FundingAmount
-                  amount={activeAuction.fundingAmount}
-                  currencyType={activeAuction.currencyType}
-                />
-                {')'}
-              </span>
-            </h1>
-          </Col>
-        </Row>
+          <Row>
+            <Col xl={12} className={classes.proposalHelperWrapper}>
+              <h1 className={classes.proposalHelper}>
+                {t('creatingProp')}{' '}
+                <span>
+                  {` ${activeCommunity.name}: ${activeAuction.title}`}
+                  {' ('}
+                  <FundingAmount
+                    amount={activeAuction.fundingAmount}
+                    currencyType={activeAuction.currencyType}
+                  />
+                  {')'}
+                </span>
+              </h1>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col xl={12}>
-            {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
-          </Col>
-        </Row>
+          <Row>
+            <Col xl={12}>
+              {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
+            </Col>
+          </Row>
 
-        <Row>
-          <Col xl={12} className={classes.btnContainer}>
-            <Button
-              text={showPreview ? t('backToEditor') : t('preview')}
-              bgColor={ButtonColor.Pink}
-              onClick={() =>
-                setShowPreview(prev => {
-                  return !prev;
-                })
-              }
-              disabled={!isValidPropData(proposalEditorData)}
-            />
+          <Row>
+            <Col xl={12} className={classes.btnContainer}>
+              <Button
+                text={showPreview ? t('backToEditor') : t('preview')}
+                bgColor={ButtonColor.Pink}
+                onClick={() =>
+                  setShowPreview(prev => {
+                    return !prev;
+                  })
+                }
+                disabled={!isValidPropData(proposalEditorData)}
+              />
 
-            {showPreview &&
-              (account ? (
-                <Button
-                  classNames={classes.actionBtn}
-                  text={t('signSubmit')}
-                  bgColor={ButtonColor.Pink}
-                  onClick={submitProposal}
-                  disabled={!isValidPropData(proposalEditorData)}
-                />
-              ) : (
-                <Button
-                  classNames={classes.actionBtn}
-                  bgColor={ButtonColor.Pink}
-                  text={t('connectWallet')}
-                  onClick={connect}
-                />
-              ))}
-          </Col>
-        </Row>
-      </Container>
-    </>
-  ) : (
-    <>Loading...</>
+              {showPreview &&
+                (account ? (
+                  <Button
+                    classNames={classes.actionBtn}
+                    text={t('signSubmit')}
+                    bgColor={ButtonColor.Pink}
+                    onClick={submitProposal}
+                    disabled={!isValidPropData(proposalEditorData)}
+                  />
+                ) : (
+                  <Button
+                    classNames={classes.actionBtn}
+                    bgColor={ButtonColor.Pink}
+                    text={t('connectWallet')}
+                    onClick={connect}
+                  />
+                ))}
+            </Col>
+          </Row>
+        </>
+      ) : (
+        <LoadingIndicator />
+      )}
+    </Container>
   );
 };
 

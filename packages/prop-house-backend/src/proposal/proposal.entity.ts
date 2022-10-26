@@ -18,41 +18,41 @@ import {
 @ObjectType()
 export class Proposal extends SignedEntity {
   @PrimaryGeneratedColumn()
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Column({ default: true })
   visible: boolean;
 
   @Column()
-  @Field(type => String)
+  @Field(() => String)
   title: string;
 
   @Column({ type: 'text' })
-  @Field(type => String)
+  @Field(() => String)
   what: string;
 
   @Column({ type: 'text' })
-  @Field(type => String)
+  @Field(() => String)
   tldr: string;
 
   @ManyToOne(() => Auction, (auction) => auction.proposals)
   @JoinColumn()
-  @Field(type => Auction)
+  @Field(() => Auction)
   auction: Auction;
 
   @RelationId((proposal: Proposal) => proposal.auction)
   @Column({ type: 'number' })
-  @Field(type => Int)
+  @Field(() => Int)
   auctionId: number;
 
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()
-  @Field(type => [Vote])
+  @Field(() => [Vote])
   votes: Vote[];
 
   @Column({ type: 'numeric', default: 0 })
-  @Field(type => Float)
+  @Field(() => Float)
   voteCount: number;
 
   @BeforeUpdate()
@@ -63,11 +63,11 @@ export class Proposal extends SignedEntity {
   }
 
   @Column()
-  @Field(type => Date)
+  @Field(() => Date)
   createdDate: Date;
 
   @Column({ nullable: true })
-  @Field(type => Date)
+  @Field(() => Date)
   lastUpdatedDate: Date;
 
   @BeforeInsert()
