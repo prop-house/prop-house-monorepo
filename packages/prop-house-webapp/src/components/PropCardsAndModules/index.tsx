@@ -23,9 +23,9 @@ import VotingModule from '../VotingModule';
 import RoundOverModule from '../RoundOverModule';
 import { useTranslation } from 'react-i18next';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import ErrorMessageCard from '../ErrorMessageCard';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
-import ErrorMessageCard from '../ErrorMessageCard';
 
 const PropCardsAndModules: React.FC<{
   auction: StoredAuction;
