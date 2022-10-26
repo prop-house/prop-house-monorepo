@@ -33,7 +33,7 @@ export const communities = new CaseInsensitiveMap(
     // test house
     '0x0000000000000000000000000000000000000000': oneHundredVotes(),
     // foodnouns
-    '0xF72FAf0050a2cBb645362452a12d46EAdCC09177': balanceOfErc721(),
+    '0xF5331380e1d19757388A6E6198BF3BDc93D8b07a': balanceOfErc721(),
     // the noun square contests
     '0x7c2748c7ec984b559eadc39c7a4944398e34911a': erc1155(2, 1),
     // coordinouns
