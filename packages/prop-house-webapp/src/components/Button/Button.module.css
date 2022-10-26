@@ -148,7 +148,7 @@
 /* GRAY BG */
 
 .btnGrayBg {
-  background: rgba(0, 0, 0, 0.04) !important;
+  background: var(--border-light) !important;
   border: none;
   color: var(--brand-gray);
 }
