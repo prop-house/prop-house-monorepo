@@ -77,7 +77,6 @@ export class VotesController {
         'Proposal being voted on does not match community contract address of vote',
         HttpStatus.BAD_REQUEST,
       );
-    }
 
     // Verify that signer has voting power
     const votingPower = await this.votesService.getNumVotes(
