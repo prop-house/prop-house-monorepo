@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
 import { nameToSlug } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
+import Divider from '../../Divider';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -125,6 +126,8 @@ const Create: React.FC<{}> = () => {
               </h1>
             </Col>
           </Row>
+
+          <Divider />
 
           <Row>
             <Col xl={12}>
