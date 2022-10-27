@@ -1,6 +1,7 @@
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { Auction } from 'src/auction/auction.entity';
 import { SignedEntity } from 'src/entities/signed';
+import { SignatureState } from 'src/types/signature';
 import { Vote } from 'src/vote/vote.entity';
 import {
   Entity,
@@ -58,6 +59,7 @@ export class Proposal extends SignedEntity {
   @BeforeUpdate()
   updateVoteCount() {
     this.voteCount = this.votes.reduce((acc, vote) => {
+      if (vote.signatureState !== SignatureState.VALIDATED) return;
       return Number(acc) + Number(vote.weight);
     }, 0);
   }
