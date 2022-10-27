@@ -149,7 +149,6 @@ export class Vote extends Signable {
       proposalId: this.proposalId,
       weight: this.weight,
       communityAddress: this.communityAddress,
-      signatureState: this.signatureState,
     };
   }
 }
