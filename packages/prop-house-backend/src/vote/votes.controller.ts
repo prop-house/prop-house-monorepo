@@ -8,10 +8,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProposalsService } from 'src/proposal/proposals.service';
+import { verifySignedPayload } from 'src/utils/verifySignedPayload';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
+import { AuctionsService } from 'src/auction/auctions.service';
 import { SignatureState } from 'src/types/signature';
 
 @Controller('votes')
@@ -19,6 +21,7 @@ export class VotesController {
   constructor(
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
+    private readonly auctionService: AuctionsService,
   ) {}
 
   @Get()
@@ -36,6 +39,16 @@ export class VotesController {
     return this.votesService.findByAddress(address);
   }
 
+  /**
+   * Checks:
+   * - signature is valid via `SignedPayloadValidationPipe`
+   * - proposal being voted on exists
+   * - signature matches dto
+   * - proposal being voted for matches signed vote community address
+   * - signer has voting power for signed vote
+   * - casting vote does not exceed > voting power
+   * @param createVoteDto
+   */
   @Post()
   async create(
     @Body(SignedPayloadValidationPipe) createVoteDto: CreateVoteDto,
@@ -49,24 +62,21 @@ export class VotesController {
       throw new HttpException('No Proposal with that ID', HttpStatus.NOT_FOUND);
     }
 
-    // Get corresponding vote from signed payload (bulk voting payloads may have multiple votes)
-    const signedPayload: CreateVoteDto = JSON.parse(
-      Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
-    );
-    const arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
-    const voteFromPayload = arr.find((v) => v.proposalId === foundProposal.id);
+    // Verify signed payload against dto
+    const voteFromPayload = verifySignedPayload(createVoteDto, foundProposal);
 
-    // Verify that signed payload is for corresponding prop and community
+    // Verify that prop being voted on matches community address of signed vote
+    const foundProposalAuction = await this.auctionService.findOneWithCommunity(
+      foundProposal.auction.id,
+    );
     if (
-      voteFromPayload.proposalId !== createVoteDto.proposalId ||
-      voteFromPayload.communityAddress !== createVoteDto.communityAddress ||
-      voteFromPayload.weight !== createVoteDto.weight
-    ) {
+      voteFromPayload.communityAddress !==
+      foundProposalAuction.community.contractAddress
+    )
       throw new HttpException(
-        "Signed payload and supplied data doesn't match",
+        'Proposal being voted on does not match community contract address of vote',
         HttpStatus.BAD_REQUEST,
       );
-    }
 
     // Verify that signer has voting power
     const votingPower = await this.votesService.getNumVotes(
