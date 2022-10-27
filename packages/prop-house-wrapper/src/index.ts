@@ -129,6 +129,7 @@ export class PropHouseWrapper {
 
       let responses = [];
 
+      // POST each vote with the signature of the payload of all votes
       for (const vote of votes) {
         const signedPayload = await vote.presignedPayload(this.signer, jsonPayload, signature);
         responses.push((await axios.post(`${this.host}/votes`, signedPayload)).data);
