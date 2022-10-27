@@ -52,7 +52,7 @@ const VotesVerificationModal: React.FC<{
 
                   {vote.signatureState === SignatureState.PENDING_VALIDATION ? (
                     <button className={classes.verifyVoteBtn} disabled={true}>
-                      Pending <MdOutlinePendingActions />
+                      {t('pending')} <MdOutlinePendingActions />
                     </button>
                   ) : (
                     <button

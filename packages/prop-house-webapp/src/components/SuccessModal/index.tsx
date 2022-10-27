@@ -17,7 +17,9 @@ const SuccessModal: React.FC<{
   const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
     numPropsVotedFor === 1 ? t('prop') : t('props')
   }!`;
-  const contractSignerMsg = `You've submitted votes for ${numPropsVotedFor} props. They will be counted automagically once your Gnosis Safe transaction is confirmed.`;
+  const contractSignerMsg = `${t('youveSubmittedVotesFor')} ${
+    numPropsVotedFor === 1 ? t('prop') : t('props')
+  }. ${t('theyWillBeCounted')}.`;
 
   return (
     <Modal

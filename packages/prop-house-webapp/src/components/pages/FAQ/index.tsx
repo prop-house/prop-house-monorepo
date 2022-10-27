@@ -68,7 +68,7 @@ const FAQ = () => {
             <SearchBar
               input={input}
               handleSeachInputChange={handleFAQInputChange}
-              placeholder="Search for questions"
+              placeholder={t('searchForQuestions')}
             />
           </div>
         </Container>
@@ -76,7 +76,7 @@ const FAQ = () => {
 
       <Container className={classes.faqBackground}>
         {filteredFAQs.length === 0 ? (
-          <ErrorMessageCard message="No FAQs found" />
+          <ErrorMessageCard message={t('noFaqsFound')} />
         ) : (
           <Accordion className={classes.accordion}>
             {filteredFAQs.map((item, i) => (
