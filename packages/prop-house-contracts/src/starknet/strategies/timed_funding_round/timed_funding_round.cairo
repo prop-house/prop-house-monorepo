@@ -47,11 +47,15 @@ const MAX_WINNERS = 256
 
 const MAX_LOG_N_WINNERS = 8
 
-const VOTING_STRATEGY_REGISTRY = 0x0031bb43c3d12c51a5f4b56595297ce960902cf5be91660f4ec6d6b676e2aa5a
+#
+# Deployment-Time Constants
+#
 
-const ETH_TX_AUTH_STRATEGY = 0x0042e5c568c94d100b3ebd4131e85bee11c8d678a2ea34b63c855b154e717b03
+const VOTING_STRATEGY_REGISTRY = 0x0
 
-const ETH_SIG_AUTH_STRATEGY = 0x7de0e01d32c750081ca7f267532cc38e2ca3ab490359a077c322c3e9f4cb6bd2
+const ETH_TX_AUTH_STRATEGY = 0x0
+
+const ETH_SIG_AUTH_STRATEGY = 0x0
 
 #
 # Storage
@@ -128,6 +132,15 @@ end
 
 @event
 func vote_created(proposal_id : felt, voter_address : Address, voting_power : Uint256):
+end
+
+@event
+func round_finalized(
+    round_id : felt,
+    merkle_root : Uint256,
+    winners_len : felt,
+    winners : ProposalInfo*,
+):
 end
 
 #
@@ -467,8 +480,10 @@ func finalize_round{
         execution_params=execution_params,
     )
 
-    # Flag the round as having been executed
-    round_state_store.write(RoundState.EXECUTED)
+    # Flag the round as having been finalized
+    round_state_store.write(RoundState.FINALIZED)
+
+    round_finalized.emit(round_id, merkle_root, winners_len, winners)
 
     return ()
 end
@@ -534,6 +549,15 @@ end
 #
 # View functions
 #
+
+# Fetches the round state
+@view
+func get_round_state{
+    syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr : felt
+}() -> (round_state : felt):
+    let (round_state) = round_state_store.read()
+    return (round_state)
+end
 
 # Fetches proposal information for a specific proposal id
 @view
@@ -762,7 +786,7 @@ func populate_proposal_info_arr{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*
     acc: ProposalInfo*,
 ) -> (proposal_info_len : felt):
     if current_proposal_id == next_unused_proposal_nonce:
-        return (current_index + 1)
+        return (current_index)
     end
 
     let (has_been_cancelled) = cancelled_proposals_store.read(current_proposal_id)

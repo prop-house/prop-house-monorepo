@@ -58,10 +58,13 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     function initialize(address creator, bytes calldata data) external payable initializer {
         super._initialize(creator);
 
-        (address[] memory initiators, VotingStrategy[] memory votingStrategies) = abi.decode(
-            data,
-            (address[], VotingStrategy[])
-        );
+        // prettier-ignore
+        (address[] memory houseStrategies, address[] memory initiators, VotingStrategy[] memory votingStrategies) = abi.decode(data, (
+            address[],
+            address[],
+            VotingStrategy[]
+        ));
+        _enableManyStrategies(houseStrategies);
         _addManyRoundInitiatorsToWhitelist(initiators);
         _addManyVotingStrategiesToWhitelist(votingStrategies);
 
@@ -73,8 +76,8 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @notice Add a voting strategy to the whitelist
     /// @param strategy The L2 voting strategy information
     /// @dev This function is only callable by the house owner
-    function addVotingStrategyToWhitelist(VotingStrategy calldata strategy) external onlyOwner {
-        _addVotingStrategyToWhitelist(strategy);
+    function addVotingStrategyToWhitelist(VotingStrategy calldata strategy) external onlyOwner returns (uint256) {
+        return _addVotingStrategyToWhitelist(strategy);
     }
 
     /// @notice Remove a voting strategy from the whitelist
@@ -121,6 +124,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
 
         _requireStrategyEnabled(round.strategy);
         _requireRoundInitiatorWhitelisted(_initiator);
+        _requireVotingStrategiesWhitelisted(round.votingStrategies);
 
         // Debiting of award balances reverts on overflow
         _debitAwardsFromAccount(_initiator, round.awards);
@@ -403,6 +407,33 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         }
     }
 
+    /// @notice Reverts if any of the provided voting strategies are not whitelisted
+    /// For easy duplicate checking, provided strategy hashes MUST be ordered least to greatest
+    /// @param strategyHashes The voting strategy hashes
+    function _requireVotingStrategiesWhitelisted(uint256[] memory strategyHashes) internal view {
+        unchecked {
+            uint256 lastVotingStrategy = 0;
+            uint256 numVotingStrategies = strategyHashes.length;
+            for (uint256 i = 0; i < numVotingStrategies; ++i) {
+                uint256 votingStrategy = strategyHashes[i];
+                _requireVotingStrategyWhitelisted(votingStrategy);
+
+                if (votingStrategy <= lastVotingStrategy) {
+                    revert DuplicateVotingStrategy();
+                }
+                lastVotingStrategy = votingStrategy;
+            }
+        }
+    }
+
+    /// @notice Reverts if the voting strategy is not whitelisted
+    /// @param strategyHash The voting strategy hash
+    function _requireVotingStrategyWhitelisted(uint256 strategyHash) internal view {
+        if (!isVotingStrategyWhitelisted[strategyHash]) {
+            revert VotingStrategyNotWhitelisted();
+        }
+    }
+
     /// @notice Reverts if the round initiator is not whitelisted
     /// @param initiator The address of the round initiator
     function _requireRoundInitiatorWhitelisted(address initiator) internal view {
@@ -456,12 +487,14 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
 
     /// @notice Add a voting strategy to the whitelist
     /// @param strategy The L2 voting strategy information
-    function _addVotingStrategyToWhitelist(VotingStrategy memory strategy) internal {
+    function _addVotingStrategyToWhitelist(VotingStrategy memory strategy) internal returns (uint256) {
         uint256 strategyHash = keccak256(abi.encode(strategy.addr, strategy.params)).mask250();
         _registerVotingStrategyOnL2(strategyHash, strategy);
 
         isVotingStrategyWhitelisted[strategyHash] = true;
         emit VotingStrategyAddedToWhitelist(strategyHash, strategy.addr, strategy.params);
+
+        return strategyHash;
     }
 
     /// @notice Add many voting strategies to the whitelist

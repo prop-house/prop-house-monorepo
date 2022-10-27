@@ -1,9 +1,9 @@
 from starkware.cairo.common.bool import TRUE
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import unsigned_div_rem
-from starkware.cairo.common.uint256 import Uint256, uint256_le
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
+from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_unsigned_div_rem
 
 from src.starknet.common.lib.felt_utils import FeltUtils
 from src.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
@@ -15,7 +15,7 @@ namespace ProposalUtils:
     func generate_leaves{range_check_ptr, bitwise_ptr : BitwiseBuiltin*, keccak_ptr : felt*}(
         proposal_info_arr_len : felt,
         proposal_info_arr : ProposalInfo*,
-        awards_flat_len: felt,
+        awards_flat_len : felt,
         awards_flat : Uint256*,
         curr_award_index : felt,
         acc : Uint256*,
@@ -38,7 +38,7 @@ namespace ProposalUtils:
         assert hash_input_arr[0] = proposal_id_uint256
         assert hash_input_arr[1] = proposer_address_uint256
         assert hash_input_arr[2] = awards_flat[curr_award_index]
-        assert hash_input_arr[3] = awards_flat[curr_award_index + 1]
+        assert hash_input_arr[3] = awards_flat[curr_award_index + 1] # TODO: Split award amount if only one asset
 
         let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr)
 

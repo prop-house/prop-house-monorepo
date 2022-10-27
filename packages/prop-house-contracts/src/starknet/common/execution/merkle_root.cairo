@@ -31,7 +31,7 @@ func execute{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
 
     # Only params should be merkle root split into two parts
     with_attr error_message("Invalid execution param array"):
-        assert execution_params_len = 2
+        assert execution_params_len = 3
     end
 
     let (l1_house_address) = get_l1_house_address_for_caller()

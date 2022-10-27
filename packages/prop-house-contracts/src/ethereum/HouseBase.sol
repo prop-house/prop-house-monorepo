@@ -53,21 +53,41 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
     }
 
     /// @notice Enable a house strategy
-    function enableStrategy(address strategy) external {
-        if (!_strategyManager.isValidStrategy(id, version, strategy)) {
-            revert IStrategyManager.StrategyNotRegistered();
-        }
-        isStrategyEnabled[strategy] = true;
-
-        emit StrategyEnabled(strategy);
+    /// @param strategy The strategy to enable
+    /// @dev This function is only callable by the house owner
+    function enableStrategy(address strategy) external onlyOwner {
+        _enableStrategy(strategy);
     }
 
     /// @notice Disable a house strategy
-    function disableStrategy(address strategy) external {
-        _requireStrategyEnabled(strategy);
-        isStrategyEnabled[strategy] = false;
+    /// @param strategy The strategy to disable
+    /// @dev This function is only callable by the house owner
+    function disableStrategy(address strategy) external onlyOwner {
+        _disableStrategy(strategy);
+    }
 
-        emit StrategyDisabled(strategy);
+    /// @notice Enable many house strategies
+    /// @param strategies The strategies to enable
+    /// @dev This function is only callable by the house owner
+    function enableManyStrategies(address[] calldata strategies) external onlyOwner {
+        unchecked {
+            uint256 numStrategies = strategies.length;
+            for (uint256 i = 0; i < numStrategies; ++i) {
+                _enableStrategy(strategies[i]);
+            }
+        }
+    }
+
+    /// @notice Disable many house strategies
+    /// @param strategies The strategies to disable
+    /// @dev This function is only callable by the house owner
+    function disableManyStrategies(address[] calldata strategies) external onlyOwner {
+        unchecked {
+            uint256 numStrategies = strategies.length;
+            for (uint256 i = 0; i < numStrategies; ++i) {
+                _disableStrategy(strategies[i]);
+            }
+        }
     }
 
     /// @notice Initialize the house
@@ -77,6 +97,34 @@ abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgrad
 
         // Transfer ownership to the DAO creator
         transferOwnership(_creator);
+    }
+
+    /// @notice Enable a house strategy
+    function _enableStrategy(address strategy) internal {
+        if (!_strategyManager.isValidStrategy(id, version, strategy)) {
+            revert IStrategyManager.StrategyNotRegistered();
+        }
+        isStrategyEnabled[strategy] = true;
+
+        emit StrategyEnabled(strategy);
+    }
+
+    /// @notice Disable a house strategy
+    function _disableStrategy(address strategy) internal {
+        _requireStrategyEnabled(strategy);
+        isStrategyEnabled[strategy] = false;
+
+        emit StrategyDisabled(strategy);
+    }
+
+    /// @notice Enable many house strategies
+    function _enableManyStrategies(address[] memory strategies) internal {
+        unchecked {
+            uint256 numStrategies = strategies.length;
+            for (uint256 i = 0; i < numStrategies; ++i) {
+                _enableStrategy(strategies[i]);
+            }
+        }
     }
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation

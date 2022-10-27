@@ -46,6 +46,10 @@ interface IFundingHouse is IHouse, IVault {
         bytes32 merkleRoot; // Merkle root used to claim awards
     }
 
+    error DuplicateVotingStrategy();
+
+    error VotingStrategyNotWhitelisted();
+
     error RoundInitiatorNotWhitelisted();
 
     error RoundNotActive();

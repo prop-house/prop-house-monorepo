@@ -27,8 +27,8 @@ contract TimedFundingRoundStrategy is IStrategy {
     /// @notice Thrown when the winner count is greater than the maximum allowable count
     error WinnerCountTooHigh();
 
-    /// @notice Thrown when an invalid number of voting strategies are provided
-    error InvalidVotingStrategyLength();
+    /// @notice Thrown when no voting strategies are provided
+    error NoVotingStrategiesProvided();
 
     /// @notice The minimum time required between round initiation and the start of the proposal period
     uint256 public constant MIN_TIME_UNTIL_PROPOSAL_PERIOD = 2 hours;
@@ -42,9 +42,8 @@ contract TimedFundingRoundStrategy is IStrategy {
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 256;
 
-    // prettier-ignore
-    /// @notice The hash of the target strategy contract code on Starknet
-    uint256 public constant HOUSE_STRATEGY_CLASS_HASH = 0x6312054d066ecf919b6510f9b062c1260fb46e700c38de2f8c1fc86ab5d6b62;
+    /// @notice The hash of the house strategy on Starknet
+    uint256 public immutable classHash;
 
     /// @notice The timed funding round house strategy params
     struct TimedFundingRound {
@@ -52,6 +51,10 @@ contract TimedFundingRoundStrategy is IStrategy {
         uint40 proposalPeriodDuration;
         uint40 votePeriodDuration;
         uint16 winnerCount;
+    }
+
+    constructor(uint256 _classHash) {
+        classHash = _classHash;
     }
 
     /// @notice Validate the timed funding round strategy `data` and return the L2 strategy class hash and params.
@@ -89,17 +92,17 @@ contract TimedFundingRoundStrategy is IStrategy {
         if (round.winnerCount > MAX_WINNER_COUNT) {
             revert WinnerCountTooHigh();
         }
-        if (votingStrategies.length != 1) {
-            revert InvalidVotingStrategyLength();
+        if (votingStrategies.length == 0) {
+            revert NoVotingStrategiesProvided();
         }
 
-        uint256 offset = 8;
+        uint256 offset = 10;
         uint256 numVotingStrategies = votingStrategies.length;
         uint256 numExecutionStrategies = executionStrategies.length;
 
         payload = new uint256[](offset + 2 + numVotingStrategies + numExecutionStrategies);
         payload[0] = msg.sender.toUint256();
-        payload[1] = HOUSE_STRATEGY_CLASS_HASH;
+        payload[1] = classHash;
 
         // Strategy Params
         payload[2] = 7; // Strategy Params Length

@@ -8,7 +8,7 @@ from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.alloc import alloc
 
 @storage_var
-func l1_bridge_store() -> (l1_bridge : felt):
+func starknet_messenger_store() -> (starknet_messenger : felt):
 end
 
 @storage_var
@@ -25,9 +25,9 @@ end
 
 @constructor
 func constructor{syscall_ptr : felt*, pedersen_ptr : HashBuiltin*, range_check_ptr}(
-    l1_bridge : felt
+    starknet_messenger : felt
 ):
-    l1_bridge_store.write(value=l1_bridge)
+    starknet_messenger_store.write(value=starknet_messenger)
     return ()
 end
 
@@ -64,7 +64,7 @@ func register_voting_strategy{
     alloc_locals
 
     # Check L1 message origin is equal to the L1 messenger
-    let (origin) = l1_bridge_store.read()
+    let (origin) = starknet_messenger_store.read()
     with_attr error_message("Invalid message origin address"):
         assert from_address = origin
     end

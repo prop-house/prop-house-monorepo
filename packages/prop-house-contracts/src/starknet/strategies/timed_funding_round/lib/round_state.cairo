@@ -3,5 +3,5 @@
 struct RoundState:
     member ACTIVE : felt
     member CANCELLED : felt
-    member EXECUTED : felt
+    member FINALIZED : felt
 end

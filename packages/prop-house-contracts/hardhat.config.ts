@@ -1,6 +1,6 @@
 import { HardhatUserConfig, task } from 'hardhat/config';
 import { example } from './tasks/example';
-import '@shardlabs/starknet-hardhat-plugin';
+import 'starknet-hardhat-plugin-extended';
 import '@nomiclabs/hardhat-waffle';
 import 'hardhat-preprocessor';
 import fs from 'fs';
@@ -53,8 +53,11 @@ const config: HardhatUserConfig = {
     network: 'starknetLocal',
   },
   networks: {
+    ethereumLocal: {
+      url: 'http://127.0.0.1:8545/',
+    },
     starknetLocal: {
-      url: 'http://localhost:5050',
+      url: 'http://127.0.0.1:5050/',
     },
   },
 };

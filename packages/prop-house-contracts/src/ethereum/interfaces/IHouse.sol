@@ -36,4 +36,10 @@ interface IHouse {
 
     /// @notice Disable a house strategy
     function disableStrategy(address strategy) external;
+
+    /// @notice Enable many house strategies
+    function enableManyStrategies(address[] calldata strategies) external;
+
+    /// @notice Disable many house strategies
+    function disableManyStrategies(address[] calldata strategies) external;
 }

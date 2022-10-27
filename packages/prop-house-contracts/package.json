@@ -7,20 +7,26 @@
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
-    "@shardlabs/starknet-hardhat-plugin": "^0.6.3",
+    "starknet-hardhat-plugin-extended": "0.6.5-fork.0",
     "@snapshot-labs/sx": "^0.1.0-beta.12",
+    "@typechain/ethers-v5": "^10.1.0",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
     "chai": "^4.3.6",
     "concurrently": "^7.3.0",
+    "ethereum-waffle": "^3.4.4",
     "hardhat": "^2.10.2",
     "hardhat-preprocessor": "^0.1.4",
     "prettier": "^2.7.0",
     "prettier-plugin-solidity": "^1.0.0-beta.22",
-    "starknet": "^3.18.2",
-    "ts-node": "^10.9.1"
+    "starknet": "^4.9.0",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.1.0"
   },
   "scripts": {
+    "postinstall": "typechain",
+    "hardhat": "hardhat",
+    "typechain": "typechain --target=ethers-v5 out/**/*.json --out-dir typechain",
     "format:l1": "prettier --write '{src,test}/{,*/**/}*.sol'",
     "format:l2": "cairo-format -i --one_item_per_line src/starknet/**/*.cairo && cairo-format -i --one_item_per_line src/starknet/*.cairo",
     "format:ts": "prettier --write '{,*/**/}*.ts'",
@@ -36,7 +42,7 @@
     "test:setup": "yarn test:users && yarn compile:l2",
     "test:l1": "forge test --match-path test/ethereum/*.t.sol --optimize --optimizer-runs 1000000 -v",
     "test:l2": "hardhat test test/starknet/*.test.ts",
-    "test:crosschain": "hardhat test test/crosschain/**/*.test.ts",
-    "test": "yarn test:l1 && yarn test:l2 && yarn test:crosschain"
+    "test:crosschain": "hardhat test test/crosschain/**/*.test.ts --network 'ethereumLocal' --starknet-network 'starknetLocal'",
+    "test": "yarn test:l1 && yarn test:l2"
   }
 }

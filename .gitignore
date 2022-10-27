@@ -147,3 +147,6 @@ blacksmith
 cache_hardhat
 artifacts
 starknet-artifacts
+
+# Typechain
+typechain

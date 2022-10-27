@@ -1,5 +1,6 @@
 import { starknet, ethers } from 'hardhat';
 import { commonL1Setup } from './common';
+import { FundingHouse__factory, TimedFundingRoundStrategy__factory } from '../../../typechain';
 
 export const fundingHouseSetup = async () => {
   const config = await commonL1Setup();
@@ -14,14 +15,19 @@ export const fundingHouseSetup = async () => {
     './src/starknet/common/registry/voting_strategy_registry.cairo',
   );
 
-  const fundingHouseFactory = await ethers.getContractFactory('FundingHouse');
+  // The deploy transaction always runs out of gas when deploying from the `FundingHouse__factory` class. Investigate at some point.
+  const fundingHouseFactory = (await ethers.getContractFactory(
+    'FundingHouse',
+  )) as FundingHouse__factory;
 
-  const houseStrategyFactory = await houseStrategyDeployerFactory.deploy();
+  const houseStrategyFactory = await houseStrategyDeployerFactory.deploy({
+    starknet_messenger: config.starknetMessenger.address,
+  });
   const merkleRootExecutionStrategy = await merkleRootExecutionStrategyFactory.deploy({
     house_strategy_factory_address: houseStrategyFactory.address,
   });
   const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy({
-    l1_bridge: config.starknetMessenger.address,
+    starknet_messenger: config.starknetMessenger.address,
   });
 
   const fundingHouseImpl = await fundingHouseFactory.deploy(
@@ -39,49 +45,20 @@ export const fundingHouseSetup = async () => {
   return {
     ...config,
     fundingHouseImpl,
+    houseStrategyFactory,
+    votingStrategyRegistry,
   };
 };
 
 export const fundingHouseTimedFundingRoundSetup = async () => {
   const config = await fundingHouseSetup();
 
-  const timedFundingRoundStrategyL1Factory = await ethers.getContractFactory(
-    'TimedFundingRoundStrategy',
+  const timedFundingRoundStrategyL1Factory = new TimedFundingRoundStrategy__factory(
+    config.registrar,
   );
   const timedFundingRoundStrategyL2Factory = await starknet.getContractFactory(
     './src/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
   );
-
-  const [timedFundingRoundStrategy, timedFundingRoundStrategyClassHash] = await Promise.all([
-    timedFundingRoundStrategyL1Factory.deploy(),
-    timedFundingRoundStrategyL2Factory.declare(),
-  ]);
-
-  // prettier-ignore
-  const expectedTimedFundingRoundClassHash = await timedFundingRoundStrategy.HOUSE_STRATEGY_CLASS_HASH();
-  const actualTimedFundingRoundClassHash = ethers.BigNumber.from(
-    timedFundingRoundStrategyClassHash,
-  ).toString();
-  if (expectedTimedFundingRoundClassHash.toString() !== actualTimedFundingRoundClassHash) {
-    throw new Error(
-      `TimedFundingRoundStrategy class has mismatch. Expected: ${expectedTimedFundingRoundClassHash}. Actual: ${actualTimedFundingRoundClassHash}.`,
-    );
-  }
-
-  await config.strategyManager['registerStrategy(bytes32,address)'](
-    await config.fundingHouseImpl.id(),
-    timedFundingRoundStrategy.address,
-  );
-
-  return {
-    ...config,
-    timedFundingRoundStrategy,
-    timedFundingRoundStrategyClassHash,
-  };
-};
-
-export const fundingHouseTimedFundingRoundEthTxSetup = async () => {
-  const config = await fundingHouseTimedFundingRoundSetup();
 
   const timedFundingRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
     './src/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
@@ -93,8 +70,26 @@ export const fundingHouseTimedFundingRoundEthTxSetup = async () => {
     },
   );
 
+  const timedFundingRoundStrategyClassHash = await timedFundingRoundStrategyL2Factory.declare({
+    constants: {
+      VOTING_STRATEGY_REGISTRY: config.votingStrategyRegistry.address,
+      ETH_TX_AUTH_STRATEGY: timedFundingRoundEthTxAuthStrategy.address,
+    },
+  });
+  const timedFundingRoundStrategy = await timedFundingRoundStrategyL1Factory.deploy(
+    timedFundingRoundStrategyClassHash,
+  );
+
+  await config.strategyManager['registerStrategy(bytes32,address)'](
+    await config.fundingHouseImpl.id(),
+    timedFundingRoundStrategy.address,
+  );
+
   return {
     ...config,
+    timedFundingRoundStrategy,
+    timedFundingRoundStrategyL2Factory,
+    timedFundingRoundStrategyClassHash,
     timedFundingRoundEthTxAuthStrategy,
   };
 };
