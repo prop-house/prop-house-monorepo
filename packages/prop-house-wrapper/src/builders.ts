@@ -18,6 +18,9 @@ export abstract class Signable {
     };
   }
 
+  /**
+   * The signed payload using a supplied signature
+   */
   async presignedPayload(signer: Signer | Wallet, jsonPayload: string, signature: string) {
     const address = await signer.getAddress();
     return {
@@ -139,6 +142,7 @@ export class Vote extends Signable {
     public readonly weight: number,
     public readonly communityAddress: string,
     public readonly signatureState: SignatureState,
+    public readonly blockHeight: number,
   ) {
     super();
   }
@@ -149,6 +153,7 @@ export class Vote extends Signable {
       proposalId: this.proposalId,
       weight: this.weight,
       communityAddress: this.communityAddress,
+      blockHeight: this.blockHeight,
     };
   }
 }

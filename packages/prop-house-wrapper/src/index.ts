@@ -116,7 +116,9 @@ export class PropHouseWrapper {
     try {
       // create payload of all votes
       const filtered = votes.filter(v => v.weight > 0);
-      const payload = { ...filtered.map(v => v.toPayload()) };
+      const payload = {
+        ...filtered.map(v => v.toPayload()),
+      };
       const jsonPayload = JSON.stringify(payload);
 
       // sign payload and use for all votes, awaiting if the signer is not a contract
