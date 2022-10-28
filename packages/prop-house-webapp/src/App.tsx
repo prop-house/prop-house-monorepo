@@ -6,7 +6,6 @@ import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Create from './components/pages/Create';
 import House from './components/pages/House';
-import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
@@ -69,7 +68,7 @@ function App() {
             />
 
             <Route path="/faq" element={<FAQ />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
+            <Route path="/proposal/:id" element={<ProposalModal />} />
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
             <Route path="/:house/:title/:id" element={<ProposalModal />} />
