@@ -191,3 +191,11 @@ body {
   transform: translate(-50%, -50%) !important;
   max-height: max-content !important;
 }
+
+.proposalModalContainer {
+  max-height: 100% !important;
+  overflow: scroll !important;
+}
+.proposalModalContainer .container {
+  padding-right: 0 !important;
+}
