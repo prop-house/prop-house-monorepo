@@ -8,21 +8,29 @@ Prop House uses a novel mechanism for communities to deploy capital within their
 
 ## Packages
 
-### prop-house-backend
+### @prophouse/backend
 
-The [prop house backend](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-backend) is implemented using Nestjs and will handle the CRUD actions for storing prop house data. It currently requires every message to the API to be signed by an Ethereum address for attribution purposes and this will morph into permissions and rate limiting as well.
+The [Prop House backend](./packages/prop-house-backend) is implemented using Nestjs and will handle the CRUD actions for storing prop house data. It currently requires every message to the API to be signed by an Ethereum address for attribution purposes and this will morph into permissions and rate limiting as well.
 
-### @nouns/prop-house-wrapper
+### @prophouse/wrapper
 
-The [prop house wrapper](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-wrapper) is a convenience class that wraps the HTTP interaction with a prop house backend and performs the signing of payloads. It also provides types for the response and input objects. The package also includes examples for creating proposals, uploading files, and voting.
+The [Prop House wrapper](./packages/prop-house-wrapper) is a convenience class that wraps the HTTP interaction with a prop house backend and performs the signing of payloads. It also provides types for the response and input objects. The package also includes examples for creating proposals, uploading files, and voting.
 
-### prop-house-webapp
+### @prophouse/webapp
 
-The [prop house webapp](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-webapp) is the frontend for interacting with houses as hosted at [prop.house](https://prop.house).
+The [Prop House webapp](./packages/prop-house-webapp) is the frontend for interacting with houses as hosted at [prop.house](https://prop.house).
 
-### prop-house-communities
+### @prophouse/communities
 
-The [prop house communities](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
+The [Prop House communities](./packages/prop-house-communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
+
+### @prophouse/contracts
+
+The [Prop House contracts](./packages/prop-house-contracts) package contains the Solidity and Cairo contracts that power the Prop House protocol.
+
+### @prophouse/sdk
+
+The [Prop House SDK](./prop-house-sdk) package contains utilities that simplify interaction with the Prop House protocol.
 
 ## Quick Start
 
