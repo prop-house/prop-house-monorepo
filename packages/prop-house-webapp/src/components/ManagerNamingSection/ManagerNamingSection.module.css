@@ -41,7 +41,7 @@
   justify-content: space-between;
   gap: 15px;
 }
-input {
+.nameHouseSection input {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
   padding: 2px 8px;
@@ -50,12 +50,12 @@ input {
   width: 100%;
   border: 1px solid var(--border-med);
 }
-input:active,
-input:focus:focus-visible {
+.nameHouseSection input:active,
+.nameHouseSection input:focus:focus-visible {
   outline: none;
   border: 1px solid var(--border-dark) !important;
 }
-input::placeholder {
+.nameHouseSection input::placeholder {
   color: var(--brand-black-semi-transparent);
 }
 .inputNote {
