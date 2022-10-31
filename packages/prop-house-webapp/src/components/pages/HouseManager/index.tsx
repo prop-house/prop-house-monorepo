@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 const HouseManager = () => {
   const [activeStep, setActiveStep] = useState(1);
+
   return (
     <>
       <Container>
