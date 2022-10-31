@@ -4,18 +4,3 @@
   width: 100%;
   color: var(--brand-black);
 }
-.primaryCard {
-  width: 66.666667%;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-low);
-}
-.secondaryCard {
-  width: 33.333333%;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-low);
-  height: max-content;
-  min-height: 200px;
-}
-.divider {
-  margin: 18px 0px;
-}
