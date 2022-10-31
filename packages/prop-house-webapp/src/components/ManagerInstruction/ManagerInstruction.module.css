@@ -1,0 +1,48 @@
+.divider {
+  margin: 18px 0px;
+}
+.instructionSection button {
+  width: 100%;
+  margin-top: 15px;
+}
+.number {
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 0.02em;
+  color: var(--brand-pink);
+  border: 2px solid var(--brand-pink);
+  border-radius: 99px;
+  padding: 0px 10px;
+}
+.titleAndOptional {
+  display: flex;
+  flex-direction: column;
+}
+.optional {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  color: var(--brand-gray-transparent);
+}
+.instructionTitle {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  letter-spacing: 0.02em;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.instruction {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  color: var(--brand-gray);
+}
