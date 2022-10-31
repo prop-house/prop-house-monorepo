@@ -1,0 +1,66 @@
+.cardsContainer {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  color: var(--brand-black);
+}
+.primaryCard {
+  width: 66.666667%;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-low);
+}
+.secondaryCard {
+  width: 33.333333%;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-low);
+}
+.title {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+}
+.subtitle {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.divider {
+  margin: 18px 0px;
+}
+.imgContainer {
+  width: 150px;
+  height: 150px;
+  min-width: 150px;
+  min-height: 150px;
+  background: var(--bg-med);
+  border: 2px solid --border-med;
+  border: 1px solid gray;
+  border-radius: 6px;
+}
+.nameHouseSection {
+  display: flex;
+  gap: 18px;
+}
+.inputs {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 36px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+}
+.inputNote {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+}
