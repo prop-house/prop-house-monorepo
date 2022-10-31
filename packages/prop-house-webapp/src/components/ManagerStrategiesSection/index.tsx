@@ -54,13 +54,20 @@ const ManagerStrategiesSection = () => {
               </p>
 
               <div className={classes.multiplierInputAndBtns}>
-                <input type="checkbox" />
+                <input
+                  type="text"
+                  // value={displayWarningTooltip ? attemptedInputVotes : voteCount}
+                  value={10}
+                  className={classes.multiplierInput}
+                  // onChange={e => handleInputChange(e)}
+                  // onFocus={() => setInputIsInFocus(true)}
+                />
                 <div className={classes.multiplierBtns}>
                   <Button
                     text="↓"
                     // bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
                     bgColor={ButtonColor.Gray}
-                    classNames={classes.voteBtn}
+                    classNames={classes.arrowBtn}
                     // onClick={e => handleClickVote(e, Direction.Down)}
                     // disabled={}
                   />
@@ -68,7 +75,7 @@ const ManagerStrategiesSection = () => {
                     text="↑"
                     // bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
                     bgColor={ButtonColor.Gray}
-                    classNames={classes.voteBtn}
+                    classNames={classes.arrowBtn}
                     // onClick={e => handleClickVote(e, Direction.Up)}
                     // disabled={}
                   />

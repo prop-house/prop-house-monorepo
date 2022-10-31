@@ -73,6 +73,22 @@
 }
 .multiplierInputAndBtns {
   display: flex;
+  gap: 5px;
+  margin-top: 5px;
+}
+.multiplierInput {
+  width: 40px !important;
+  height: 40px !important;
+  text-align: center;
+  font-weight: 700 !important;
 }
 .multiplierBtns {
+  display: flex;
+  gap: 2px;
+}
+.arrowBtn {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
 }
