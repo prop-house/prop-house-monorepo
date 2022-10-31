@@ -26,8 +26,12 @@ import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/r
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
+<<<<<<< HEAD
 import { base } from './types/base';
 import Banner from './components/Banner';
+=======
+import HouseManager from './components/pages/HouseManager';
+>>>>>>> 824d9258 (new path for house manager page)
 
 const { chains, provider } = configureChains(
   [mainnet, base],
@@ -104,6 +108,7 @@ function App() {
                   />
                   <Route path="/create-round" element={<CreateRound />} />
                   <Route path="/faq" element={<FAQ />} />
+                  <Route path="/admin" element={<HouseManager />} />
                   <Route path="/proposal/:id" element={<Proposal />} />
                   <Route path="/:house" element={<House />} />
                   <Route path="/:house/:title" element={<Round />} />
