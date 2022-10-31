@@ -1,0 +1,16 @@
+.supportedStrategiesSection {
+}
+.title {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+  margin-bottom: 0;
+}
+.subtitle {
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--brand-gray);
+  margin-top: 4px;
+}
