@@ -8,18 +8,24 @@ const ManagerInstruction: React.FC<{
   number: number;
   title: string;
   instruction: string;
-  optional?: boolean;
-  button?: React.ReactNode;
+  optional: boolean;
+  button: React.ReactNode;
 }> = props => {
   const { activeStep, number, title, instruction, optional, button } = props;
 
   const completedStep = () => activeStep > number;
 
+  const getStylesForStep = () => {
+    if (activeStep > number) return classes.completedStep;
+    if (activeStep === number) return classes.currentStep;
+    if (activeStep < number) return classes.futureStep;
+  };
+
   return (
     <>
       <div className={classes.instructionSection}>
-        <div className={classes.instructionTitle}>
-          <span className={clsx(classes.number, completedStep() && classes.pinkBg)}>
+        <div className={clsx(classes.instructionTitle, getStylesForStep())}>
+          <span className={clsx(classes.number)}>
             {completedStep() ? (
               <span className={classes.check}>
                 <CheckIcon />
@@ -28,7 +34,6 @@ const ManagerInstruction: React.FC<{
               number
             )}
           </span>
-
           <div className={classes.titleAndOptional}>
             {optional && <span className={classes.optional}>Optional</span>}
             <span>{title}</span>
