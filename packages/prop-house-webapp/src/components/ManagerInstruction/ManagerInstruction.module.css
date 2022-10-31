@@ -18,6 +18,12 @@
   border-radius: 99px;
   padding: 0px 10px;
 }
+/* .notActive span {
+  color: var(--brand-gray) !important;
+}
+.notActive .number {
+  border: 1px solid var(--brand-gray) !important;
+} */
 .titleAndOptional {
   display: flex;
   flex-direction: column;
@@ -38,6 +44,15 @@
   letter-spacing: 0.02em;
   gap: 10px;
   margin-bottom: 10px;
+}
+.pinkBg {
+  background: var(--brand-pink);
+}
+.check svg {
+  color: white;
+  height: 15px;
+  font-size: 10px;
+  margin: 2px 0px;
 }
 .instruction {
   font-weight: 500;
