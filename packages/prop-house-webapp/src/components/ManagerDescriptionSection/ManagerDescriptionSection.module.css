@@ -30,17 +30,17 @@
   letter-spacing: 0.02em;
 }
 
-textarea:active,
-textarea:focus:focus-visible {
+.describeHouseSection textarea:active,
+.describeHouseSection textarea:focus:focus-visible {
   outline: none;
   border: 1px solid var(--border-dark) !important;
 }
 
-textarea::placeholder {
+.describeHouseSection textarea::placeholder {
   color: var(--brand-black-semi-transparent);
 }
 
-textarea {
+.describeHouseSection textarea {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
   padding: 2px 8px;
