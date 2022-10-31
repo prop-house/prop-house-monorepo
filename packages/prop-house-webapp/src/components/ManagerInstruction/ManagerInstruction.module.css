@@ -13,27 +13,30 @@
   align-items: center;
   text-align: center;
   letter-spacing: 0.02em;
-  color: var(--brand-pink);
-  border: 2px solid var(--brand-pink);
   border-radius: 99px;
   padding: 0px 10px;
 }
-/* .notActive span {
+.currentStep .number {
+  color: var(--brand-pink);
+  border: 2px solid var(--brand-pink);
+}
+.futureStep span {
   color: var(--brand-gray) !important;
 }
-.notActive .number {
-  border: 1px solid var(--brand-gray) !important;
-} */
+.futureStep .number {
+  border: 2px solid var(--border-med);
+}
 .titleAndOptional {
   display: flex;
   flex-direction: column;
 }
-.optional {
+.optional,
+.futureStep .optional {
   font-weight: 500;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.02em;
-  color: var(--brand-gray-transparent);
+  color: var(--brand-gray-transparent) !important;
 }
 .instructionTitle {
   display: flex;
@@ -45,7 +48,7 @@
   gap: 10px;
   margin-bottom: 10px;
 }
-.pinkBg {
+.completedStep .number {
   background: var(--brand-pink);
 }
 .check svg {
