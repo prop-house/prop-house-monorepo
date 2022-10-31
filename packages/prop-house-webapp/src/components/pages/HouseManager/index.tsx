@@ -1,6 +1,7 @@
 import classes from './HouseManager.module.css';
 import { Col, Container, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import { FaLink as LinkIcon } from 'react-icons/fa';
 
 const HouseManager = () => {
   return (
@@ -18,7 +19,9 @@ const HouseManager = () => {
               <hr className={classes.divider} />
 
               <div className={classes.nameHouseSection}>
-                <div className={classes.imgContainer}>{/* <img src="" alt="" /> */}</div>
+                <div className={classes.imgContainer}>
+                  <img src="tricolor.png" alt="drop-img-here" />
+                </div>
 
                 <div className={classes.inputs}>
                   <div className={classes.titleAndInput}>
@@ -34,6 +37,19 @@ const HouseManager = () => {
                     </span>
                   </div>
                 </div>
+              </div>
+
+              <hr className={classes.divider} />
+
+              <div className={classes.describeHouseSection}>
+                <span className={classes.nameAndButton}>
+                  <p className={classes.title}>Describe your House</p>
+                  <button>
+                    <LinkIcon size={10} />
+                    <span>Add Link</span>
+                  </button>
+                </span>
+                <textarea rows={5} placeholder="Tell everyone what your House is about" />
               </div>
             </Card>
 
