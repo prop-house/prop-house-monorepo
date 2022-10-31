@@ -108,7 +108,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     } = config);
 
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
-      './src/starknet/common/voting/vanilla.cairo',
+      './contracts/starknet/common/voting/vanilla.cairo',
     );
     const vanillaVotingStrategy = await vanillaVotingStrategyFactory.deploy();
 

@@ -1,15 +1,14 @@
-import { StarknetContract } from 'hardhat/types/runtime';
 import { starknet, ethers } from 'hardhat';
 import { utils } from '@snapshot-labs/sx';
 import { expect } from 'chai';
 
 const setup = async () => {
   const testWordsFactory = await starknet.getContractFactory(
-    './src/starknet/test_contracts/test_felt_utils.cairo',
+    './contracts/starknet/test_contracts/test_felt_utils.cairo',
   );
   const testWords = await testWordsFactory.deploy();
   return {
-    testWords: testWords as StarknetContract,
+    testWords,
   };
 };
 
@@ -21,10 +20,10 @@ describe('Felt Utils', () => {
     const word3 = BigInt(utils.bytes.bytesToHex(ethers.utils.randomBytes(2)));
     const word4 = BigInt(utils.bytes.bytesToHex(ethers.utils.randomBytes(2)));
     const { uint256: uint256 } = await testWords.call('test_words_to_uint256', {
-      word1: word1,
-      word2: word2,
-      word3: word3,
-      word4: word4,
+      word1,
+      word2,
+      word3,
+      word4,
     });
     const uint = utils.words64.wordsToUint(word1, word2, word3, word4);
 
@@ -40,7 +39,7 @@ describe('Felt Utils', () => {
     const { testWords } = await setup();
     const input = BigInt(utils.bytes.bytesToHex(ethers.utils.randomBytes(31)));
     const { words: words } = await testWords.call('test_felt_to_words', {
-      input: input,
+      input,
     });
     const uint = utils.words64.wordsToUint(words.word_1, words.word_2, words.word_3, words.word_4);
     expect(uint).to.deep.equal(input);

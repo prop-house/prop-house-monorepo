@@ -8,13 +8,13 @@ export const fundingHouseSetup = async () => {
   const starknetSigner = await starknet.deployAccount('OpenZeppelin');
 
   const houseStrategyDeployerFactory = await starknet.getContractFactory(
-    './src/starknet/house_strategy_factory.cairo',
+    './contracts/starknet/house_strategy_factory.cairo',
   );
   const merkleRootExecutionStrategyFactory = await starknet.getContractFactory(
-    './src/starknet/common/execution/merkle_root.cairo',
+    './contracts/starknet/common/execution/merkle_root.cairo',
   );
   const votingStrategyRegistryFactory = await starknet.getContractFactory(
-    './src/starknet/common/registry/voting_strategy_registry.cairo',
+    './contracts/starknet/common/registry/voting_strategy_registry.cairo',
   );
 
   const fundingHouseFactory = new FundingHouse__factory(config.registrar);
@@ -57,11 +57,11 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
     config.registrar,
   );
   const timedFundingRoundStrategyL2Factory = await starknet.getContractFactory(
-    './src/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
+    './contracts/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
   );
 
   const timedFundingRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
-    './src/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
+    './contracts/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
   );
 
   const timedFundingRoundEthTxAuthStrategy = await timedFundingRoundEthTxAuthStrategyFactory.deploy(

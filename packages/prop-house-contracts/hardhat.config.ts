@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
     },
   },
   paths: {
-    sources: 'src',
+    sources: 'contracts',
     cache: 'cache_hardhat', // Use a different cache for Hardhat than Foundry
     cairoPaths: ['lib/fossil/contracts'],
   },

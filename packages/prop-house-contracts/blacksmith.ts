@@ -16,7 +16,7 @@ const runBlacksmith = () => {
     case 'create': {
       console.log('running :: forge build');
       exec(
-        `rm -rf ${test}/blacksmith && mv ${test} _test && forge build --contracts src`,
+        `rm -rf ${test}/blacksmith && mv ${test} _test && forge build --contracts contracts`,
         (err, stdout, _stderr) => {
           if (stdout) {
             console.log(err || 'success');
@@ -36,8 +36,8 @@ const runBlacksmith = () => {
       cleanBlacksmith();
       break;
     case 'build':
-      console.log('running :: forge build :: only src');
-      exec(`mv ${test} _test && forge build --contracts src --force`, (err, stdout, _stderr) => {
+      console.log('running :: forge build :: only contracts');
+      exec(`mv ${test} _test && forge build --contracts contracts --force`, (err, stdout, _stderr) => {
         if (stdout) {
           const nochange = stdout.split('\n')[1]?.indexOf('No files changed') === 0;
           const success = stdout.split('\n')[1]?.indexOf('Compiler run successful') === 0;
@@ -204,7 +204,7 @@ const createCode = ({ name, source, abi }: SolidityContract & { abi: JsonFragmen
   const code = `// SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.13;
 import "./Blacksmith.sol";
-import "../../../src/${source.slice(4)}";
+import "../../../contracts/${source.slice(10)}";
 contract ${name}BS {
     Bsvm constant bsvm = Bsvm(0x7109709ECfa91a80626fF3989D68f67F5b1DD12D);
     address addr;
@@ -262,8 +262,8 @@ const getFiles = () => {
       .filter(c => whitelistedContracts.includes(c))
       .forEach(contract => {
         const dir = file.sourceName.split('/');
-        if (dir[0] !== 'src') return;
-        if (dir[0] === 'src' && dir[1] === 'test') return;
+        if (dir[0] !== 'contracts') return;
+        if (dir[0] === 'contracts' && dir[1] === 'test') return;
         contractPaths.push({
           name: contract,
           source: file.sourceName,
