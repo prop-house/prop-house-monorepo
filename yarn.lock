@@ -20096,17 +20096,16 @@ stacktrace-parser@^0.1.10:
   dependencies:
     type-fest "^0.7.1"
 
-starknet-hardhat-plugin-extended@0.6.5-fork.0:
-  version "0.6.5-fork.0"
-  resolved "https://registry.yarnpkg.com/starknet-hardhat-plugin-extended/-/starknet-hardhat-plugin-extended-0.6.5-fork.0.tgz#7193cf836b50b00483d7a04146ff6b6dbca1cb6b"
-  integrity sha512-mc1MswOplHQwdI7+8O4GI4gPeSEpVDfbgSV9fVpcomvvDQoG2X9JRQm3bBwEU0bQ+FZmyJ4OZ3QkN39isvcvGQ==
+starknet-hardhat-plugin-extended@0.6.8:
+  version "0.6.8"
+  resolved "https://registry.yarnpkg.com/starknet-hardhat-plugin-extended/-/starknet-hardhat-plugin-extended-0.6.8.tgz#437671fd9047b284ac9d1f9736c1adc0d2a65608"
+  integrity sha512-KKavEZFiH24o+iXAx1q7QW47vGvH8S5bs4mg2NOuAJ9jJgqMHfGp8KoPujFHQpa61JdHPwLArx9yIoHplSXuzg==
   dependencies:
     "@nomiclabs/hardhat-docker" "^2.0.2"
     axios "^0.24.0"
     exit-hook "2.2.1"
     form-data "^4.0.0"
     glob "^7.2.0"
-    is-wsl "^2.2.0"
     starknet "^3.15.0"
 
 starknet@^3.15.0:

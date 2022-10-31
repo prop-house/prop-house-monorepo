@@ -1,9 +1,11 @@
-import { starknet, ethers } from 'hardhat';
+import { starknet } from 'hardhat';
 import { commonL1Setup } from './common';
 import { FundingHouse__factory, TimedFundingRoundStrategy__factory } from '../../../typechain';
 
 export const fundingHouseSetup = async () => {
   const config = await commonL1Setup();
+
+  const starknetSigner = await starknet.deployAccount('OpenZeppelin');
 
   const houseStrategyDeployerFactory = await starknet.getContractFactory(
     './src/starknet/house_strategy_factory.cairo',
@@ -15,10 +17,7 @@ export const fundingHouseSetup = async () => {
     './src/starknet/common/registry/voting_strategy_registry.cairo',
   );
 
-  // The deploy transaction always runs out of gas when deploying from the `FundingHouse__factory` class. Investigate at some point.
-  const fundingHouseFactory = (await ethers.getContractFactory(
-    'FundingHouse',
-  )) as FundingHouse__factory;
+  const fundingHouseFactory = new FundingHouse__factory(config.registrar);
 
   const houseStrategyFactory = await houseStrategyDeployerFactory.deploy({
     starknet_messenger: config.starknetMessenger.address,
@@ -44,6 +43,7 @@ export const fundingHouseSetup = async () => {
 
   return {
     ...config,
+    starknetSigner,
     fundingHouseImpl,
     houseStrategyFactory,
     votingStrategyRegistry,
@@ -70,12 +70,15 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
     },
   );
 
-  const timedFundingRoundStrategyClassHash = await timedFundingRoundStrategyL2Factory.declare({
-    constants: {
-      VOTING_STRATEGY_REGISTRY: config.votingStrategyRegistry.address,
-      ETH_TX_AUTH_STRATEGY: timedFundingRoundEthTxAuthStrategy.address,
+  const timedFundingRoundStrategyClassHash = await config.starknetSigner.declare(
+    timedFundingRoundStrategyL2Factory,
+    {
+      constants: {
+        VOTING_STRATEGY_REGISTRY: config.votingStrategyRegistry.address,
+        ETH_TX_AUTH_STRATEGY: timedFundingRoundEthTxAuthStrategy.address,
+      },
     },
-  });
+  );
   const timedFundingRoundStrategy = await timedFundingRoundStrategyL1Factory.deploy(
     timedFundingRoundStrategyClassHash,
   );
