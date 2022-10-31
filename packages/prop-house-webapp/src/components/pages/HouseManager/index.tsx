@@ -4,6 +4,7 @@ import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import ManagerNamingSection from '../../ManagerNamingSection';
 import ManagerDescriptionSection from '../../ManagerDescriptionSection';
 import ManagerStrategiesSection from '../../ManagerStrategiesSection';
+import ManagerAllowlistSection from '../../ManagerAllowlistSection';
 
 const HouseManager = () => {
   return (
@@ -25,6 +26,10 @@ const HouseManager = () => {
               <hr className={classes.divider} />
 
               <ManagerStrategiesSection />
+
+              <hr className={classes.divider} />
+
+              <ManagerAllowlistSection />
             </Card>
 
             <Card
