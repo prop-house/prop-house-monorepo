@@ -48,22 +48,39 @@
 .strategy input[type='checkbox']:checked {
   accent-color: var(--brand-pink);
 }
+.strategy input[type='number'],
 .strategy input[type='text'] {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
-  padding: 2px 8px;
+  padding: 2px 4px;
   font-weight: 500;
   width: 100%;
   border: 1px solid var(--border-med);
 }
-.strategy input[type='text']:active,
-.strategy input[type='text']:focus:focus-visible {
+.strategy input[type='text'] {
+  padding: 2px 8px;
+}
+.strategy input[type='number']:active,
+.strategy input[type='number']:focus:focus-visible {
   outline: none;
   border: 1px solid var(--border-dark) !important;
 }
-.strategy input[type='text']::placeholder {
+.strategy input[type='number']::placeholder {
   color: var(--brand-black-semi-transparent);
 }
+
+/* Chrome, Safari, Edge, Opera */
+.strategy input[type='number']::-webkit-outer-spin-button,
+.strategy input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.strategy input[type='number'] {
+  -moz-appearance: textfield;
+}
+
 .divider {
   margin: 18px 0px;
 }
@@ -91,4 +108,11 @@
   height: 40px !important;
   min-width: 40px !important;
   min-height: 40px !important;
+}
+
+.arrowBtn:focus,
+.arrowBtn:focus-visible,
+.arrowBtn:active {
+  box-shadow: none !important;
+  outline: none !important;
 }
