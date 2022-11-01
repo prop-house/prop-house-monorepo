@@ -1,5 +1,6 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
+import { EIP712Domain, EIP712MessageTypes } from './types/eip712Types';
 
 export abstract class Signable {
   abstract toPayload(): any;
@@ -177,17 +178,21 @@ export class SignableVotes extends Signable {
   /**
    * Signature for payload of all votes
    */
-  async multiVoteSignature(signer: Signer) {
-    return await signer.signMessage(this.jsonPayload());
+  async multiVoteSignature(signer: Signer): Promise<string> {
+    const typedSigner = signer as Signer & TypedDataSigner;
+    return await typedSigner._signTypedData(EIP712Domain, EIP712MessageTypes, this.toPayload());
   }
 
   /**
    * Payload for all votes
    */
   private allVotesPayload() {
-    const filtered = this.votes.filter(v => v.weight > 0);
     return {
-      ...filtered.map(v => v.toPayload()),
+      votes: this.votes.map(v => {
+        return {
+          ...v.toPayload(),
+        };
+      }),
     };
   }
 
