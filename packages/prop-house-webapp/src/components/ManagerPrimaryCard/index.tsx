@@ -1,11 +1,13 @@
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import ManagerAllowlistSection from '../ManagerAllowlistSection';
-import ManagerDescriptionSection from '../ManagerDescriptionSection';
-import ManagerNamingSection from '../ManagerNamingSection';
-import ManagerStrategiesSection from '../ManagerStrategiesSection';
+import DeployContractStep from '../DeployContractStep';
+import SetupRoundStep from '../SetupRoundStep';
 import classes from './ManagerPrimaryCard.module.css';
 
-const ManagerPrimaryCard = () => {
+const ManagerPrimaryCard: React.FC<{
+  activeStep: number;
+}> = props => {
+  const { activeStep } = props;
+
   return (
     <>
       <Card
@@ -13,19 +15,9 @@ const ManagerPrimaryCard = () => {
         borderRadius={CardBorderRadius.thirty}
         classNames={classes.primaryCard}
       >
-        <ManagerNamingSection />
-
-        <hr className={classes.divider} />
-
-        <ManagerDescriptionSection />
-
-        <hr className={classes.divider} />
-
-        <ManagerStrategiesSection />
-
-        <hr className={classes.divider} />
-
-        <ManagerAllowlistSection />
+        {activeStep === 1 && <DeployContractStep />}
+        {/* {activeStep === 2 && < />} */}
+        {activeStep === 3 && <SetupRoundStep />}
       </Card>
     </>
   );
