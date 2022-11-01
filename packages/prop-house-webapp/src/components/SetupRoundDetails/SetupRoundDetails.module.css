@@ -1,0 +1,33 @@
+.title {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.detailsSection {
+  margin-bottom: 12px;
+}
+.dropdown button,
+.dropdown a {
+  height: 30px !important;
+  font-size: 14px !important;
+}
+.roundSetupButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+}
+.roundSetupButtons button {
+  width: 33%;
+  font-size: 12px !important;
+  padding: 5px;
+}
+.roundSetupButtons button:focus-visible,
+.roundSetupButtons button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
