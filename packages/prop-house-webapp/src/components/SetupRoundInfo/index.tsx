@@ -1,6 +1,5 @@
 import classes from './SetupRoundInfo.module.css';
 import { FaLink as LinkIcon } from 'react-icons/fa';
-import Divider from '../Divider';
 import Input from '../Input';
 import { useState } from 'react';
 
@@ -8,10 +7,6 @@ const SetupRoundInfo = () => {
   const [roundTitle, setRoundTitle] = useState('');
   return (
     <>
-      <p className={classes.title}>Set up your first round</p>
-
-      <Divider />
-
       <div className={classes.setupSection}>
         <Input
           title="Round title"
