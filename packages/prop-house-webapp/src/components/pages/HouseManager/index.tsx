@@ -12,7 +12,7 @@ const HouseManager = () => {
       <Container>
         <Row className={classes.propCardsRow}>
           <Col xl={8} className={classes.cardsContainer}>
-            <ManagerPrimaryCard />
+            <ManagerPrimaryCard activeStep={activeStep} />
 
             <ManagerSecondaryCard activeStep={activeStep} setActiveStep={setActiveStep} />
           </Col>
