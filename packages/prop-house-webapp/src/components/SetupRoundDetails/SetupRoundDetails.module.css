@@ -13,6 +13,9 @@
   height: 30px !important;
   font-size: 14px !important;
 }
+.fundsDropdown {
+  width: 20%;
+}
 .roundSetupButtons {
   display: flex;
   align-items: center;
@@ -30,4 +33,20 @@
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+.rewardFunds {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.rewardFunds input {
+  font-weight: 700 !important;
+  height: 30px !important;
+}
+.winnersInput {
+  text-align: center;
+  width: 40px !important;
+}
+.rewardInput {
+  width: 80px !important;
 }
