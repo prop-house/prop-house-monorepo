@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import Button, { ButtonColor } from '../Button';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import Divider from '../Divider';
 import ManagerInstruction from '../ManagerInstruction';
 import classes from './ManagerSecondaryCard.module.css';
 
@@ -82,7 +83,7 @@ const ManagerSecondaryCard: React.FC<{
               optional={i.optional}
             />
 
-            {idx !== instructions.length - 1 && <hr className={classes.divider} />}
+            {idx !== instructions.length - 1 && <Divider />}
           </>
         ))}
       </Card>
