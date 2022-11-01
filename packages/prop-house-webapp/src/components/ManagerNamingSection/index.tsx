@@ -1,13 +1,8 @@
-import Divider from '../Divider';
 import classes from './ManagerNamingSection.module.css';
 
 const ManagerNamingSection = () => {
   return (
     <>
-      <p className={classes.title}>Create and deploy the contract for your House</p>
-
-      <Divider />
-
       <div className={classes.nameHouseSection}>
         <div className={classes.imgContainer}>
           <img src="tricolor.png" alt="drop-img-here" />
