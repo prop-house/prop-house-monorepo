@@ -1,6 +1,12 @@
 .inputContainer {
   margin-bottom: 10px;
 }
+.rowLayout {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0px;
+}
 .inputTitle {
   font-weight: 700;
   font-size: 14px;
@@ -31,4 +37,15 @@
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.02em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+.numberInput input[type='number']::-webkit-outer-spin-button,
+.numberInput input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.numberInput input[type='number'] {
+  -moz-appearance: textfield;
 }
