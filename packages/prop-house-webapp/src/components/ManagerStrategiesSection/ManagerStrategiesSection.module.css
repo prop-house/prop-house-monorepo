@@ -68,21 +68,15 @@
 .strategy input[type='number']::placeholder {
   color: var(--brand-black-semi-transparent);
 }
-
 /* Chrome, Safari, Edge, Opera */
 .strategy input[type='number']::-webkit-outer-spin-button,
 .strategy input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 /* Firefox */
 .strategy input[type='number'] {
   -moz-appearance: textfield;
-}
-
-.divider {
-  margin: 18px 0px;
 }
 .multiplierAmount {
   color: var(--brand-black);
