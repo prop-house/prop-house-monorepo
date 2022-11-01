@@ -11,6 +11,7 @@
   line-height: 14px;
   color: var(--brand-gray);
   margin-top: 4px;
+  margin-bottom: 12px;
 }
 .strategy {
   display: flex;
@@ -65,7 +66,8 @@
   outline: none;
   border: 1px solid var(--border-dark) !important;
 }
-.strategy input[type='number']::placeholder {
+.strategy input[type='number']::placeholder,
+.strategy input[type='text']::placeholder {
   color: var(--brand-black-semi-transparent);
 }
 /* Chrome, Safari, Edge, Opera */

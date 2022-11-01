@@ -41,7 +41,7 @@ const ManagerStrategiesSection = () => {
               <p className={classes.subtitle}>One vote per each ERC20/ERC721 held.</p>
             </div>
 
-            <div className={classes.section}>
+            <div>
               <p className={classes.title}>Token contract address</p>
               <input placeholder="0x830BD73E4184ceF73443C15111a1DF14e495C706" type="text" />
             </div>

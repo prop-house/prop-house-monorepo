@@ -1,0 +1,87 @@
+.subtitle {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.depositFundsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid var(--border-dark);
+  border-radius: 16px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.currencySelector {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 10px;
+  gap: 8px;
+  border: 1px solid var(--border-med);
+  border-radius: 8px;
+}
+.currencyImg {
+  width: 18px;
+  height: 18px;
+}
+.currencyType {
+  color: var(--brand-black);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+  margin-bottom: 0;
+}
+.fundsValue {
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 34px;
+  text-align: right;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+  color: var(--border-dark);
+}
+.balance {
+  width: fit-content;
+  gap: 5px;
+}
+.balanceAmount {
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 19px;
+  letter-spacing: 0.02em;
+  color: var(--brand-gray);
+}
+.balanceBtn {
+  background: rgba(138, 43, 226, 0.08);
+  border-radius: 99px;
+  padding: 0px 9px;
+}
+.balanceBtn:hover {
+  cursor: pointer;
+}
+.balanceBtn span {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 19px;
+  color: var(--brand-purple);
+  margin: 0 auto;
+  display: table;
+}
+.depositFundsNote {
+  margin-top: 5px;
+  color: var(--brand-gray);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+}
