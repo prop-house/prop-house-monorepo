@@ -1,7 +1,25 @@
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import { useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import classes from './ManagerStrategiesSection.module.css';
 
 const ManagerStrategiesSection = () => {
+  const [multiplierAmount, setMultiplierAmount] = useState(0);
+  const [allottedMultiplierAmount, setAllottedMultiplierAmount] = useState(0);
+  const [inputIsInFocus, setInputIsInFocus] = useState(false);
+
+  const isAllotting = () => allottedMultiplierAmount > 0 || inputIsInFocus;
+
+  const handleArrowClick = (direction: Direction) => {
+    setAllottedMultiplierAmount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+    setMultiplierAmount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+
+    setMultiplierAmount(Number(value));
+  };
   return (
     <>
       <div className={classes.supportedStrategiesSection}>
@@ -55,29 +73,26 @@ const ManagerStrategiesSection = () => {
 
               <div className={classes.multiplierInputAndBtns}>
                 <input
-                  type="text"
+                  type="number"
                   // value={displayWarningTooltip ? attemptedInputVotes : voteCount}
-                  value={10}
+                  value={multiplierAmount}
                   className={classes.multiplierInput}
-                  // onChange={e => handleInputChange(e)}
-                  // onFocus={() => setInputIsInFocus(true)}
+                  onChange={e => handleInputChange(e)}
+                  onFocus={() => setInputIsInFocus(true)}
                 />
                 <div className={classes.multiplierBtns}>
                   <Button
                     text="↓"
-                    // bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
-                    bgColor={ButtonColor.Gray}
+                    bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
                     classNames={classes.arrowBtn}
-                    // onClick={e => handleClickVote(e, Direction.Down)}
-                    // disabled={}
+                    onClick={() => handleArrowClick(Direction.Down)}
+                    disabled={multiplierAmount === 0}
                   />
                   <Button
                     text="↑"
-                    // bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
-                    bgColor={ButtonColor.Gray}
+                    bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
                     classNames={classes.arrowBtn}
-                    // onClick={e => handleClickVote(e, Direction.Up)}
-                    // disabled={}
+                    onClick={() => handleArrowClick(Direction.Up)}
                   />
                 </div>
               </div>
