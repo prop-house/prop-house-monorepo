@@ -104,7 +104,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
           </div>
 
           <div className={classes.item}>
-            <div className={classes.itemTitle}>{t('snapshot')}</div>
+            <div className={classes.itemTitle}>{t('Snapshot')}</div>
             <div className={classes.itemData}>{auction.balanceBlockTag}</div>
           </div>
         </Col>
