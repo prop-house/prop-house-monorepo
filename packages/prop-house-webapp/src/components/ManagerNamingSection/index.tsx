@@ -1,3 +1,4 @@
+import Divider from '../Divider';
 import classes from './ManagerNamingSection.module.css';
 
 const ManagerNamingSection = () => {
@@ -5,7 +6,7 @@ const ManagerNamingSection = () => {
     <>
       <p className={classes.title}>Create and deploy the contract for your House</p>
 
-      <hr className={classes.divider} />
+      <Divider />
 
       <div className={classes.nameHouseSection}>
         <div className={classes.imgContainer}>
