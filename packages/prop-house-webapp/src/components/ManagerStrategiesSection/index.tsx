@@ -1,6 +1,7 @@
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useState } from 'react';
 import Button, { ButtonColor } from '../Button';
+import Divider from '../Divider';
 import classes from './ManagerStrategiesSection.module.css';
 
 const ManagerStrategiesSection = () => {
@@ -20,6 +21,7 @@ const ManagerStrategiesSection = () => {
 
     setMultiplierAmount(Number(value));
   };
+
   return (
     <>
       <div className={classes.supportedStrategiesSection}>
@@ -46,7 +48,7 @@ const ManagerStrategiesSection = () => {
           </div>
         </div>
 
-        <hr className={classes.divider} />
+        <Divider />
 
         <div className={classes.strategy}>
           <input type="checkbox" />
