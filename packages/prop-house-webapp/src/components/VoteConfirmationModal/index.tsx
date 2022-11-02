@@ -26,12 +26,17 @@ const VoteConfirmationModal: React.FC<{
     setShowNewModal(false);
   }
 
+  const totalVotesBeingSubmitted = voteAllotments.reduce(
+    (total, prop) => (total = total + prop.votes),
+    0,
+  );
+
   return (
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          {t('cast')} {voteAllotments.reduce((total, prop) => (total = total + prop.votes), 0)}{' '}
-          {t('votes')}?
+          {t('cast')} {totalVotesBeingSubmitted}{' '}
+          {totalVotesBeingSubmitted === 1 ? t('vote') : t('votes')}?
         </p>
         <p className={classes.modalSubtitle}>
           {t('youllHave')} {votesLeft} {t('votesRemaining')}{' '}
