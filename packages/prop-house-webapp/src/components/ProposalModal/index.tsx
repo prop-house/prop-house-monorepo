@@ -8,7 +8,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
-import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  Direction,
+  SignatureState,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import {
@@ -20,19 +25,28 @@ import {
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
 import NotFound from '../NotFound';
+import ProposalFooter from '../ProposalFooter';
+import { votesRemaining } from '../../utils/votesRemaining';
+import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+import ErrorModal from '../ErrorModal';
+import VoteConfirmationModal from '../VoteConfirmationModal';
+import SuccessModal from '../SuccessModal';
+import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import { clearVoteAllotments } from '../../state/slices/voting';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
 
   const params = useParams();
   const { id } = params;
-  const { library: provider } = useEthers();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  const dispatch = useDispatch();
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+
+  const { account, library: provider } = useEthers();
+
+  const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
@@ -41,6 +55,29 @@ const ProposalModal = () => {
   const [failedFetch, setFailedFetch] = useState(false);
   const [currentProposal, setCurrentProposal] = useState<StoredProposalWithVotes | any>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number>();
+
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
+  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+
+  const [signerIsContract, setSignerIsContract] = useState(false);
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
+
+  const [errorModalMessage, setErrorModalMessage] = useState({
+    title: '',
+    message: '',
+    image: '',
+  });
+  const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
+  const [numAllotedVotes, setNumAllotedVotes] = useState(0);
+
+  useEffect(() => {
+    setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
+    setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
+  }, [submittedVotes, voteAllotments, votingPower]);
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -132,28 +169,119 @@ const ProposalModal = () => {
         }`,
       );
   };
+  const _signerIsContract = async () => {
+    if (!provider || !account) {
+      return false;
+    }
+    const code = await provider?.getCode(account);
+    const isContract = code !== '0x';
+    setSignerIsContract(isContract);
+    return isContract;
+  };
+
+  const handleSubmitVote = async () => {
+    try {
+      const votes = voteAllotments
+        .map(
+          a =>
+            new Vote(
+              1,
+              a.proposalId,
+              a.votes,
+              community!.contractAddress,
+              SignatureState.PENDING_VALIDATION,
+            ),
+        )
+        .filter(v => v.weight > 0);
+      const isContract = await _signerIsContract();
+
+      await backendClient.current.logVotes(votes, isContract);
+
+      setNumPropsVotedFor(voteAllotments.length);
+      setShowSuccessModal(true);
+      refreshActiveProposals(backendClient.current, round!.id, dispatch);
+      dispatch(clearVoteAllotments());
+      setShowVoteConfirmationModal(false);
+    } catch (e) {
+      setErrorModalMessage({
+        title: 'Failed to submit votes',
+        message: 'Please go back and try again.',
+        image: 'banana.png',
+      });
+      setShowErrorModal(true);
+    }
+  };
 
   return (
-    <Modal
-      isOpen={showProposalModal}
-      onRequestClose={() => handleClosePropModal()}
-      className={clsx(classes.modal, 'proposalModalContainer')}
-    >
-      {proposal && proposals && proposals.length > 0 && currentPropIndex && currentProposal ? (
-        <Proposal
-          proposal={proposal}
-          proposals={proposals}
-          currentProposal={currentProposal}
-          currentPropIndex={currentPropIndex}
-          handleDirectionalArrowClick={handleDirectionalArrowClick}
-          handleClosePropModal={handleClosePropModal}
+    <>
+      {showVoteConfirmationModal && round && (
+        <VoteConfirmationModal
+          showNewModal={showVoteConfirmationModal}
+          setShowNewModal={setShowVoteConfirmationModal}
+          votingEndTime={round.votingEndTime}
+          submitVote={handleSubmitVote}
+          secondBtn
         />
-      ) : failedFetch ? (
-        <NotFound />
-      ) : (
-        <LoadingIndicator />
       )}
-    </Modal>
+
+      {showSuccessModal && (
+        <SuccessModal
+          showSuccessModal={showSuccessModal}
+          setShowSuccessModal={setShowSuccessModal}
+          numPropsVotedFor={numPropsVotedFor}
+          signerIsContract={signerIsContract}
+        />
+      )}
+
+      {showErrorModal && (
+        <ErrorModal
+          showErrorModal={showErrorModal}
+          setShowErrorModal={setShowErrorModal}
+          title={errorModalMessage.title}
+          message={errorModalMessage.message}
+          image={errorModalMessage.image}
+        />
+      )}
+
+      <Modal
+        isOpen={showProposalModal}
+        onRequestClose={() => handleClosePropModal()}
+        className={clsx(classes.modal, 'proposalModalContainer')}
+      >
+        {proposal &&
+        proposals &&
+        proposals.length > 0 &&
+        currentPropIndex &&
+        currentProposal &&
+        round ? (
+          <>
+            <Proposal
+              proposal={proposal}
+              proposals={proposals}
+              currentProposal={currentProposal}
+              currentPropIndex={currentPropIndex}
+              handleDirectionalArrowClick={handleDirectionalArrowClick}
+              handleClosePropModal={handleClosePropModal}
+            />
+
+            <ProposalFooter
+              proposal={proposal}
+              round={round}
+              votingPower={votingPower}
+              voteAllotments={voteAllotments}
+              votesLeftToAllot={votesLeftToAllot}
+              submittedVotes={submittedVotes}
+              numAllotedVotes={numAllotedVotes}
+              setShowVotingModal={setShowVoteConfirmationModal}
+            />
+          </>
+        ) : failedFetch ? (
+          <NotFound />
+        ) : (
+          <LoadingIndicator />
+        )}
+      </Modal>
+    </>
   );
 };
 
