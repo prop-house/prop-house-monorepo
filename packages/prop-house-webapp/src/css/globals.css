@@ -196,6 +196,3 @@ body {
   max-height: 100% !important;
   overflow: scroll !important;
 }
-.proposalModalContainer .container {
-  padding-right: 0 !important;
-}
