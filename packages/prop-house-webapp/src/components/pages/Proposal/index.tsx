@@ -10,7 +10,6 @@ import OpenGraphElements from '../../OpenGraphElements';
 import ProposalHeader from '../../ProposalHeader';
 import Divider from '../../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import ProposalFooter from '../../ProposalFooter';
 
 interface ProposalProps {
   proposal: StoredProposalWithVotes;
@@ -62,10 +61,6 @@ const Proposal: React.FC<ProposalProps> = (props: ProposalProps) => {
             </div>
 
             <ProposalContent fields={proposalFields(currentProposal)} />
-          </Col>
-
-          <Col>
-            <ProposalFooter />
           </Col>
         </div>
       </Container>

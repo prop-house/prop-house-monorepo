@@ -1,2 +1,49 @@
 .footerContainer {
+  position: sticky !important;
+  bottom: 0;
+  z-index: 1;
+  background: white !important;
+  margin: 0 !important;
+  padding: 12px 26px 0px 26px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
+  width: 100%;
+}
+.votingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.votingProgressBar,
+.voteAllotmentSection {
+  width: 33%;
+}
+.voteAllotmentSection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+.icon {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand-gray);
+}
+.icon span {
+  color: var(--brand-gray-transparent) !important;
+}
+.votingInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.totalVotes {
+  color: var(--brand-gray);
+}
+.submitVotesButton {
+  font-size: 14px !important;
+  padding: 4px 12px !important;
+  line-height: 18px !important;
 }
