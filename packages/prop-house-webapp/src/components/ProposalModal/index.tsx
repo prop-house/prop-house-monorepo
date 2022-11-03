@@ -33,6 +33,7 @@ import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
@@ -264,16 +265,18 @@ const ProposalModal = () => {
               handleClosePropModal={handleClosePropModal}
             />
 
-            <ProposalFooter
-              proposal={proposal}
-              round={round}
-              votingPower={votingPower}
-              voteAllotments={voteAllotments}
-              votesLeftToAllot={votesLeftToAllot}
-              submittedVotes={submittedVotes}
-              numAllotedVotes={numAllotedVotes}
-              setShowVotingModal={setShowVoteConfirmationModal}
-            />
+            {account && votingPower > 0 && auctionStatus(round) === AuctionStatus.AuctionVoting && (
+              <ProposalFooter
+                proposal={proposal}
+                round={round}
+                votingPower={votingPower}
+                voteAllotments={voteAllotments}
+                votesLeftToAllot={votesLeftToAllot}
+                submittedVotes={submittedVotes}
+                numAllotedVotes={numAllotedVotes}
+                setShowVotingModal={setShowVoteConfirmationModal}
+              />
+            )}
           </>
         ) : failedFetch ? (
           <NotFound />
