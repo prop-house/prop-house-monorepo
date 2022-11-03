@@ -162,12 +162,13 @@ const ProposalModal = () => {
       currentProposal.id &&
       direction &&
       navigate(
-        `${pathname.slice(0, -2)}${
+        `${pathname.replace(
+          /[^/]*$/,
           proposals[
             proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) +
               direction
-          ].id
-        }`,
+          ].id.toString(),
+        )}`,
       );
   };
   const _signerIsContract = async () => {
