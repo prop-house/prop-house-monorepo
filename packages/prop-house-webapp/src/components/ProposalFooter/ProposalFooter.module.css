@@ -46,3 +46,103 @@
   padding: 4px 12px !important;
   line-height: 18px !important;
 }
+
+@media (max-width: 992px) {
+  .voteAllotmentSection {
+    width: 66%;
+  }
+}
+@media (max-width: 767px) {
+  .votingProgressBar,
+  .voteAllotmentSection {
+    width: 50%;
+  }
+}
+@media (max-width: 650px) {
+  .icon {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .votingProgressBar {
+    width: 40%;
+  }
+}
+
+@media (min-width: 476px) {
+  .btnContainer,
+  .footerDivider {
+    display: none !important;
+  }
+}
+.backBtnContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-weight: 700;
+  color: var(--brand-gray);
+}
+@media (max-width: 577px) {
+  .backBtnContainer {
+    padding-bottom: 25px;
+  }
+}
+.propNavigationButtons {
+  display: flex;
+  gap: 2px;
+}
+.propNavigationButtons button {
+  border: 1.5px solid rgba(102, 102, 102, 0.25);
+  padding: 0;
+  background-color: white;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+  width: 34px;
+  height: 34px;
+}
+.propNavigationButtons button:disabled {
+  background: var(--border-light);
+}
+.propNavigationButtons button:disabled svg {
+  color: var(--brand-gray-transparent);
+}
+.propNavigationButtons button svg {
+  padding: 4px;
+}
+
+.propNavigationButtons button:first-child {
+  border-radius: 10px 4px 4px 10px;
+}
+.propNavigationButtons button:nth-child(2) {
+  border-radius: 4px 10px 10px 4px;
+}
+
+.propNavigationButtons {
+  gap: 5px;
+}
+.propNavigationButtons button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 10px;
+  height: 38px;
+}
+
+@media (max-width: 475px) {
+  .votingProgressBar,
+  .icon {
+    display: none !important;
+  }
+  .voteAllotmentSection {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .submitVotesButton {
+    height: 38px;
+  }
+  .votBtns {
+    border: 2px solid red;
+  }
+}
