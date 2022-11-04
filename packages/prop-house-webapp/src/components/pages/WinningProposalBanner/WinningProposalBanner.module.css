@@ -1,0 +1,20 @@
+.winnerBanner {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-high);
+  border-radius: 10px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.winnerBanner p {
+  margin-bottom: 0px;
+  position: absolute;
+}
+.winnerBanner img {
+  height: 38px;
+  object-fit: cover;
+  align-self: stretch;
+  width: 100%;
+}
