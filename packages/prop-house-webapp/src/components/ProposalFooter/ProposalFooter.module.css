@@ -3,8 +3,7 @@
   bottom: -1px;
   z-index: 1;
   background: white !important;
-  padding: 13px 36px 13px 0px !important;
-  margin-left: 18px;
+  padding: 13px 20px 13px 18px !important;
   border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
   width: 100%;
 }
