@@ -8,6 +8,7 @@ import OpenGraphElements from '../../OpenGraphElements';
 import ProposalHeader from '../../ProposalHeader';
 import Divider from '../../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 
 interface ProposalHeaderAndBodyProps {
   proposal: StoredProposalWithVotes;
@@ -15,7 +16,8 @@ interface ProposalHeaderAndBodyProps {
   currentProposal: StoredProposalWithVotes;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
-  handleClosePropModal: any;
+  handleClosePropModal: () => void;
+  isWinner?: boolean;
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -28,7 +30,9 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentPropIndex,
     handleDirectionalArrowClick,
     handleClosePropModal,
+    isWinner,
   } = props;
+
   return (
     <>
       <Container>
@@ -59,6 +63,8 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
 
               <Divider />
             </div>
+
+            {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
             <ProposalContent fields={proposalFields(currentProposal)} />
           </Col>
