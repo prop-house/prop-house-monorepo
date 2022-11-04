@@ -10,6 +10,9 @@ import TruncateThousands from '../TruncateThousands';
 import { VoteAllotment } from '../../types/VoteAllotment';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { Dispatch, SetStateAction } from 'react';
+import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import Divider from '../Divider';
 
 const ProposalFooter: React.FC<{
   round: StoredAuction;
@@ -20,6 +23,9 @@ const ProposalFooter: React.FC<{
   submittedVotes: number;
   voteAllotments: VoteAllotment[];
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
+  propIndex: number | undefined;
+  numberOfProps: number;
+  handleDirectionalArrowClick: (e: any) => void;
 }> = props => {
   const {
     proposal,
@@ -29,11 +35,14 @@ const ProposalFooter: React.FC<{
     submittedVotes,
     voteAllotments,
     setShowVotingModal,
+    propIndex,
+    numberOfProps,
+    handleDirectionalArrowClick,
   } = props;
 
   return (
     <>
-      <div className={classes.footerContainer}>
+      <div className={clsx(classes.footerContainer, 'footer')}>
         <div className={classes.votingContainer}>
           <div className={classes.votingProgressBar}>
             <div className={classes.votingInfo}>
@@ -74,6 +83,29 @@ const ProposalFooter: React.FC<{
               }
               onClick={() => setShowVotingModal(true)}
             />
+          </div>
+        </div>
+
+        <span className={classes.footerDivider}>
+          <Divider />
+        </span>
+
+        <div className={classes.btnContainer}>
+          <div className={classes.propNavigationButtons}>
+            <button
+              disabled={propIndex === 1}
+              onClick={() => handleDirectionalArrowClick(Direction.Down)}
+            >
+              <ImArrowLeft2 size={'1.5rem'} />
+              <span>Back</span>
+            </button>
+
+            <button
+              onClick={() => handleDirectionalArrowClick(Direction.Up)}
+              disabled={propIndex === numberOfProps}
+            >
+              <span>Next</span> <ImArrowRight2 size={'1.5rem'} />
+            </button>
           </div>
         </div>
       </div>

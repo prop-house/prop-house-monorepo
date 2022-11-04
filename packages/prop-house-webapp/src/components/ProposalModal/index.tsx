@@ -276,6 +276,9 @@ const ProposalModal = () => {
                 submittedVotes={submittedVotes}
                 numAllotedVotes={numAllotedVotes}
                 setShowVotingModal={setShowVoteConfirmationModal}
+                propIndex={currentPropIndex}
+                numberOfProps={proposals.length}
+                handleDirectionalArrowClick={handleDirectionalArrowClick}
               />
             )}
           </>

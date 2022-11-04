@@ -104,7 +104,6 @@ hr {
 .btnContainer {
   display: flex;
   align-items: center;
-
   gap: 12px;
 }
 .propNavigationButtons {
@@ -152,4 +151,9 @@ hr {
 .propTitle {
   font-size: 22px !important;
   margin-bottom: 0;
+}
+@media (max-width: 475px) {
+  .propNavigationButtons {
+    display: none;
+  }
 }
