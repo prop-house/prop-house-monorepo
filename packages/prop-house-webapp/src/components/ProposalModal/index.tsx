@@ -34,6 +34,8 @@ import SuccessModal from '../SuccessModal';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import isWinner from '../../utils/isWinner';
+import getWinningIds from '../../utils/getWinningIds';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
@@ -214,6 +216,8 @@ const ProposalModal = () => {
     }
   };
 
+  const winningIds = round && getWinningIds(proposals, round);
+
   return (
     <>
       {showVoteConfirmationModal && round && (
@@ -257,30 +261,35 @@ const ProposalModal = () => {
         currentProposal &&
         round ? (
           <>
-            <ProposalHeaderAndBody
-              proposal={proposal}
-              proposals={proposals}
-              currentProposal={currentProposal}
-              currentPropIndex={currentPropIndex}
-              handleDirectionalArrowClick={handleDirectionalArrowClick}
-              handleClosePropModal={handleClosePropModal}
-            />
-
-            {account && votingPower > 0 && auctionStatus(round) === AuctionStatus.AuctionVoting && (
-              <ProposalFooter
+            <>
+              <ProposalHeaderAndBody
                 proposal={proposal}
-                round={round}
-                votingPower={votingPower}
-                voteAllotments={voteAllotments}
-                votesLeftToAllot={votesLeftToAllot}
-                submittedVotes={submittedVotes}
-                numAllotedVotes={numAllotedVotes}
-                setShowVotingModal={setShowVoteConfirmationModal}
-                propIndex={currentPropIndex}
-                numberOfProps={proposals.length}
+                proposals={proposals}
+                currentProposal={currentProposal}
+                currentPropIndex={currentPropIndex}
                 handleDirectionalArrowClick={handleDirectionalArrowClick}
+                handleClosePropModal={handleClosePropModal}
+                isWinner={winningIds && isWinner(winningIds, proposal.id)}
               />
-            )}
+
+              {account &&
+                votingPower > 0 &&
+                auctionStatus(round) === AuctionStatus.AuctionVoting && (
+                  <ProposalFooter
+                    proposal={proposal}
+                    round={round}
+                    votingPower={votingPower}
+                    voteAllotments={voteAllotments}
+                    votesLeftToAllot={votesLeftToAllot}
+                    submittedVotes={submittedVotes}
+                    numAllotedVotes={numAllotedVotes}
+                    setShowVotingModal={setShowVoteConfirmationModal}
+                    propIndex={currentPropIndex}
+                    numberOfProps={proposals.length}
+                    handleDirectionalArrowClick={handleDirectionalArrowClick}
+                  />
+                )}
+            </>
           </>
         ) : failedFetch ? (
           <NotFound />
