@@ -110,14 +110,14 @@ const PropCardVotingModule: React.FC<{
             <input
               type="text"
               value={displayWarningTooltip ? attemptedInputVotes : voteCount}
-              className={classes.votesAllottedInput}
+              className={clsx(classes.votesAllottedInput, 'voteInput')}
               onChange={e => handleInputChange(e)}
               onFocus={() => setInputIsInFocus(true)}
             />
           </OverlayTrigger>
         </div>
 
-        <div className={classes.voteBtns}>
+        <div className={clsx(classes.voteBtns, 'votingBtns')}>
           <Button
             text="↓"
             bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}

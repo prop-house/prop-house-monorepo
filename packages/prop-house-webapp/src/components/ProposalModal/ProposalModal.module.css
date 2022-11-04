@@ -115,3 +115,28 @@
     min-width: 300px;
   }
 }
+.backToAuction {
+  color: white;
+  background: var(--brand-pink);
+  cursor: pointer;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+  align-items: center;
+  font-size: 1.25rem;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-self: center;
+  border: 1.5px solid #e02ecf;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+@media (min-width: 577px) {
+  .backToAuction svg {
+    height: 2rem;
+    width: 2rem;
+  }
+}
