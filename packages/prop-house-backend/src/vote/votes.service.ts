@@ -32,11 +32,14 @@ export class VotesService {
     return this.votesRepository.findOne(id);
   }
 
-  findByBlockHeightAndPropId(
+  findBy(
     blockHeight: number,
     proposalId: number,
+    address: string,
   ): Promise<Vote> {
-    return this.votesRepository.findOne({ where: { blockHeight, proposalId } });
+    return this.votesRepository.findOne({
+      where: { address, blockHeight, proposalId },
+    });
   }
 
   async remove(id: string): Promise<void> {

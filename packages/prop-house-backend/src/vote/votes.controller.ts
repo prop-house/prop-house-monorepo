@@ -66,9 +66,10 @@ export class VotesController {
     const voteFromPayload = verifySignedPayload(createVoteDto, foundProposal);
 
     // Protect against casting same vote twice
-    const sameBlockVote = await this.votesService.findByBlockHeightAndPropId(
+    const sameBlockVote = await this.votesService.findBy(
       voteFromPayload.blockHeight,
       foundProposal.id,
+      voteFromPayload.address,
     );
     if (sameBlockVote)
       throw new HttpException(
