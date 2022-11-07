@@ -38,5 +38,7 @@ export const communities = new CaseInsensitiveMap(
     '0x7c2748c7ec984b559eadc39c7a4944398e34911a': erc1155(2, 1),
     // coordinouns
     '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 100),
+    // purple
+    '0xa45662638E9f3bbb7A6FeCb4B17853B7ba0F3a60': balanceOfErc721(10),
   }),
 );
