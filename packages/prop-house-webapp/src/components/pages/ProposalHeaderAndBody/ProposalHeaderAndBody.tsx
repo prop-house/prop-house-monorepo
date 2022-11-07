@@ -33,6 +33,9 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     isWinner,
   } = props;
 
+  const isFirstProp = currentPropIndex === 1;
+  const isLastProp = currentPropIndex === proposals.length;
+
   return (
     <>
       <Container>
@@ -59,6 +62,8 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                 propIndex={currentPropIndex}
                 numberOfProps={proposals.length}
                 handleDirectionalArrowClick={handleDirectionalArrowClick}
+                isFirstProp={isFirstProp}
+                isLastProp={isLastProp}
               />
 
               <Divider />
