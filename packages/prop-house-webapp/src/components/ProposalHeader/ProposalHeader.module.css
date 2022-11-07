@@ -152,7 +152,7 @@ hr {
   font-size: 22px !important;
   margin-bottom: 0;
 }
-@media (max-width: 475px) {
+@media (max-width: 575px) {
   .propNavigationButtons {
     display: none;
   }
