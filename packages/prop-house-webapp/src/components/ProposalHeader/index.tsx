@@ -2,6 +2,7 @@ import classes from './ProposalHeader.module.css';
 import EthAddress from '../EthAddress';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import { useCallback, useEffect } from 'react';
 
 export interface ProposalHeaderProps {
   fieldTitle: string;
@@ -11,6 +12,8 @@ export interface ProposalHeaderProps {
   propIndex: number | undefined;
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
+  isFirstProp: boolean;
+  isLastProp: boolean;
 }
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
@@ -22,7 +25,35 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
     propIndex,
     numberOfProps,
     handleDirectionalArrowClick,
+    isFirstProp,
+    isLastProp,
   } = props;
+
+  const handleKeyPress = useCallback(
+    event => {
+      if (event.key === 'ArrowLeft') {
+        if (!isFirstProp) {
+          handleDirectionalArrowClick(Direction.Down);
+        }
+      }
+      if (event.key === 'ArrowRight') {
+        if (!isLastProp) {
+          handleDirectionalArrowClick(Direction.Up);
+        }
+      }
+    },
+    [handleDirectionalArrowClick, isFirstProp, isLastProp],
+  );
+
+  useEffect(() => {
+    // attach the event listener
+    document.addEventListener('keydown', handleKeyPress);
+
+    // remove the event listener
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <div className={classes.headerContainer}>
@@ -48,16 +79,13 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
       <div className={classes.btnContainer}>
         <div className={classes.propNavigationButtons}>
           <button
-            disabled={propIndex === 1}
+            disabled={isFirstProp}
             onClick={() => handleDirectionalArrowClick(Direction.Down)}
           >
             <ImArrowLeft2 size={'1.5rem'} />
           </button>
 
-          <button
-            onClick={() => handleDirectionalArrowClick(Direction.Up)}
-            disabled={propIndex === numberOfProps}
-          >
+          <button onClick={() => handleDirectionalArrowClick(Direction.Up)} disabled={isLastProp}>
             <ImArrowRight2 size={'1.5rem'} />
           </button>
         </div>
