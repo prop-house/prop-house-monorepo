@@ -53,6 +53,13 @@ export class AuctionsService {
     });
   }
 
+  findOneWithCommunity(id: number): Promise<Auction> {
+    return this.auctionsRepository.findOne(id, {
+      relations: ['proposals', 'community'],
+      where: { visible: true },
+    });
+  }
+
   findWhere(
     start: number,
     limit: number,
