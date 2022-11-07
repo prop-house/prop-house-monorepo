@@ -69,7 +69,7 @@
   }
 }
 
-@media (min-width: 476px) {
+@media (min-width: 576px) {
   .btnContainer,
   .footerDivider {
     display: none !important;
@@ -129,7 +129,7 @@
   height: 38px;
 }
 
-@media (max-width: 475px) {
+@media (max-width: 575px) {
   .votingProgressBar,
   .icon {
     display: none !important;
