@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
@@ -172,6 +172,7 @@ const ProposalModal = () => {
         )}`,
       );
   };
+
   const _signerIsContract = async () => {
     if (!provider || !account) {
       return false;
@@ -252,6 +253,7 @@ const ProposalModal = () => {
         isOpen={showProposalModal}
         onRequestClose={() => handleClosePropModal()}
         className={clsx(classes.modal, 'proposalModalContainer')}
+        id="propModal"
       >
         {proposal &&
         proposals &&

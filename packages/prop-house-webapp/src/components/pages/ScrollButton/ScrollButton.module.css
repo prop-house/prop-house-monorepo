@@ -1,0 +1,30 @@
+.scrollToBottomBtn {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  position: absolute;
+  right: 0;
+  bottom: 35px;
+}
+.scrollToBottomBtn button {
+  width: max-content;
+  background: var(--bg-med);
+  color: var(--brand-black-transparent) !important;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-high);
+  font-weight: 700;
+  border-radius: 99px;
+  margin-bottom: 0;
+  padding: 4px 12px 4px 10px;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.hideButton {
+  display: none !important;
+}
+@media (max-width: 767px) {
+  .scrollToBottomBtn {
+    display: none;
+  }
+}
