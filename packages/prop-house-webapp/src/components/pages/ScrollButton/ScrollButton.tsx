@@ -9,12 +9,7 @@ const ScrollButton: React.FC<{
   setHideButton: Dispatch<SetStateAction<boolean>>;
 }> = props => {
   const { setToggleScrollButton, hideButton, setHideButton } = props;
-  // const [hideButton, setHideButton] = useState(false);
 
-  // useEffect(() => {
-  //   setHideButton(false);
-  //   console.log('d', hideButton);
-  // }, []);
   return (
     <>
       <div className={clsx(classes.scrollToBottomBtn, hideButton && classes.hideButton)}>
