@@ -218,6 +218,21 @@ const ProposalModal = () => {
 
   const winningIds = round && getWinningIds(proposals, round);
 
+  const [hideScrollButton, setHideScrollButton] = useState(false);
+
+  const modal = document.querySelector('#propModal');
+  useEffect(() => {
+    if (modal) {
+      modal.addEventListener(
+        'scroll',
+        function () {
+          setHideScrollButton(true);
+        },
+        false,
+      );
+    }
+  }, [modal]);
+
   return (
     <>
       {showVoteConfirmationModal && round && (
@@ -262,31 +277,31 @@ const ProposalModal = () => {
         currentProposal &&
         round ? (
           <>
-            <>
-              <ProposalHeaderAndBody
-                proposal={proposal}
-                proposals={proposals}
-                currentProposal={currentProposal}
-                currentPropIndex={currentPropIndex}
-                handleDirectionalArrowClick={handleDirectionalArrowClick}
-                handleClosePropModal={handleClosePropModal}
-                isWinner={winningIds && isWinner(winningIds, proposal.id)}
-              />
+            <ProposalHeaderAndBody
+              proposal={proposal}
+              proposals={proposals}
+              currentProposal={currentProposal}
+              currentPropIndex={currentPropIndex}
+              handleDirectionalArrowClick={handleDirectionalArrowClick}
+              handleClosePropModal={handleClosePropModal}
+              isWinner={winningIds && isWinner(winningIds, proposal.id)}
+              hideScrollButton={hideScrollButton}
+              setHideScrollButton={setHideScrollButton}
+            />
 
-              <ProposalFooter
-                proposal={proposal}
-                round={round}
-                votingPower={votingPower}
-                voteAllotments={voteAllotments}
-                votesLeftToAllot={votesLeftToAllot}
-                submittedVotes={submittedVotes}
-                numAllotedVotes={numAllotedVotes}
-                setShowVotingModal={setShowVoteConfirmationModal}
-                propIndex={currentPropIndex}
-                numberOfProps={proposals.length}
-                handleDirectionalArrowClick={handleDirectionalArrowClick}
-              />
-            </>
+            <ProposalFooter
+              proposal={proposal}
+              round={round}
+              votingPower={votingPower}
+              voteAllotments={voteAllotments}
+              votesLeftToAllot={votesLeftToAllot}
+              submittedVotes={submittedVotes}
+              numAllotedVotes={numAllotedVotes}
+              setShowVotingModal={setShowVoteConfirmationModal}
+              propIndex={currentPropIndex}
+              numberOfProps={proposals.length}
+              handleDirectionalArrowClick={handleDirectionalArrowClick}
+            />
           </>
         ) : failedFetch ? (
           <NotFound />
