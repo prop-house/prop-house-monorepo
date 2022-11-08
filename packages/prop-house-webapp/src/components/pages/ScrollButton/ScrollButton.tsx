@@ -4,19 +4,19 @@ import { Dispatch, SetStateAction } from 'react';
 import clsx from 'clsx';
 
 const ScrollButton: React.FC<{
+  toggleScrollButton: boolean;
   setToggleScrollButton: Dispatch<SetStateAction<boolean>>;
-  hideButton: boolean;
-  setHideButton: Dispatch<SetStateAction<boolean>>;
+  setHideScrollButton: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { setToggleScrollButton, hideButton, setHideButton } = props;
+  const { toggleScrollButton, setToggleScrollButton, setHideScrollButton } = props;
 
   return (
     <>
-      <div className={clsx(classes.scrollToBottomBtn, hideButton && classes.hideButton)}>
+      <div className={clsx(classes.scrollToBottomBtn, toggleScrollButton && classes.hideButton)}>
         <button
           onClick={() => {
+            setHideScrollButton(true);
             setToggleScrollButton(true);
-            setHideButton(true);
           }}
         >
           <>

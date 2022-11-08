@@ -41,7 +41,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   const isFirstProp = currentPropIndex === 1;
   const isLastProp = currentPropIndex === proposals.length;
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [hideButton, setHideButton] = useState(false);
   const [toggleScrollButton, setToggleScrollButton] = useState(false);
 
   useEffect(() => {
@@ -97,8 +96,8 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
 
             {!hideScrollButton && (
               <ScrollButton
-                hideButton={hideButton}
-                setHideButton={setHideButton}
+                toggleScrollButton={toggleScrollButton}
+                setHideScrollButton={setHideScrollButton}
                 setToggleScrollButton={setToggleScrollButton}
               />
             )}
