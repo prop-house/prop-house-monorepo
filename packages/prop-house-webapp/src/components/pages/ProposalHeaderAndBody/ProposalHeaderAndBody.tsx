@@ -9,7 +9,7 @@ import ProposalHeader from '../../ProposalHeader';
 import Divider from '../../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
-import { useEffect, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 
 interface ProposalHeaderAndBodyProps {
@@ -20,6 +20,8 @@ interface ProposalHeaderAndBodyProps {
   handleDirectionalArrowClick: any;
   handleClosePropModal: () => void;
   isWinner?: boolean;
+  hideScrollButton: boolean;
+  setHideScrollButton: Dispatch<SetStateAction<boolean>>;
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -33,14 +35,14 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     handleDirectionalArrowClick,
     handleClosePropModal,
     isWinner,
+    hideScrollButton,
+    setHideScrollButton,
   } = props;
-  const [toggleScrollButton, setToggleScrollButton] = useState(false);
   const isFirstProp = currentPropIndex === 1;
   const isLastProp = currentPropIndex === proposals.length;
-
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [hideScrollButton, setHideScrollButton] = useState(false);
   const [hideButton, setHideButton] = useState(false);
+  const [toggleScrollButton, setToggleScrollButton] = useState(false);
 
   useEffect(() => {
     toggleScrollButton && bottomRef && bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,20 +51,14 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   }, [toggleScrollButton]);
 
   useEffect(() => {
+    setHideScrollButton(false);
     if (
-      document.querySelector('#propModal')!.getBoundingClientRect().height <
-      document.querySelector('#propContainer')!.getBoundingClientRect().height
-    ) {
-      setHideScrollButton(false);
-    }
-
-    if (
-      document.querySelector('#propModal')!.getBoundingClientRect().height <
+      document.querySelector('#propModal')!.getBoundingClientRect().height >
       document.querySelector('#propContainer')!.getBoundingClientRect().height
     ) {
       setHideScrollButton(true);
     }
-  }, []);
+  }, [setHideScrollButton]);
 
   return (
     <>
@@ -96,9 +92,10 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
 
               <Divider />
             </div>
+
             {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
-            {hideScrollButton && (
+            {!hideScrollButton && (
               <ScrollButton
                 hideButton={hideButton}
                 setHideButton={setHideButton}
