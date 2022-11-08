@@ -162,6 +162,9 @@ const ProposalModal = () => {
       currentProposal &&
       currentProposal.id &&
       direction &&
+      proposals[
+        proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) + direction
+      ].id &&
       navigate(
         `${pathname.replace(
           /[^/]*$/,
