@@ -59,7 +59,7 @@ export class Proposal extends SignedEntity {
   @BeforeUpdate()
   updateVoteCount() {
     this.voteCount = this.votes.reduce((acc, vote) => {
-      if (vote.signatureState !== SignatureState.VALIDATED) return;
+      if (vote.signatureState !== SignatureState.VALIDATED) return acc;
       return Number(acc) + Number(vote.weight);
     }, 0);
   }
