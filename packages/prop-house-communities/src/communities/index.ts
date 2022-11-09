@@ -40,5 +40,12 @@ export const communities = new CaseInsensitiveMap(
     '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 100),
     // purple
     '0xa45662638E9f3bbb7A6FeCb4B17853B7ba0F3a60': balanceOfErc721(10),
+    // meebits
+    '0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7': balanceOfErc721(),
+    // VesselVerse
+    '0x2Fd43FfA417C1F9e9E260fdE9a0B59fC2AB22069': balanceOfErc721Multiple(
+      ['0x2Fd43FfA417C1F9e9E260fdE9a0B59fC2AB22069', '0x15D019034cd704F4101a0B522aB8999dF42E0FB2'],
+      [1, 2],
+    ),
   }),
 );
