@@ -12,7 +12,12 @@ const run = async () => {
   const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
   const response = await local.postFileFromDisk("./110.png", "110.png")
-  console.log(response)
+  console.log(response?.data)
+
+  const signerless = new PropHouseWrapper("http://localhost:3000");
+
+  const signerlessResponse = await signerless.postFileFromDisk("./211.png", "211.png")
+  console.log(signerlessResponse?.data)
 };
 
 run();

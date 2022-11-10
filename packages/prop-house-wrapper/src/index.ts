@@ -158,15 +158,15 @@ export class PropHouseWrapper {
   }
 
   async postFile(file: File, name: string) {
-    if (!this.signer) return;
     try {
       const form = new FormData();
       form.append('file', file, name);
       form.append('name', name);
       const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const signature = await this.signer.signMessage(fileBuffer);
-      form.append('signature', signature);
-      console.log(form);
+      if (this.signer) {
+        const signature = await this.signer.signMessage(fileBuffer);
+        form.append('signature', signature);
+      }
       return await axios.post(`${this.host}/file`, form);
     } catch (e: any) {
       throw e.response.data.message;
@@ -174,15 +174,14 @@ export class PropHouseWrapper {
   }
 
   async postFileBuffer(fileBuffer: Buffer, name: string) {
-    if (!this.signer) return;
     try {
       const form = new FormData();
       form.append('file', fileBuffer, name);
       form.append('name', name);
-      const signature = await this.signer.signMessage(fileBuffer);
-      form.append('signature', signature);
-      console.log(form);
-      console.log(form.getHeaders());
+      if (this.signer) {
+        const signature = await this.signer.signMessage(fileBuffer);
+        form.append('signature', signature);
+      }
       return await axios.post(`${this.host}/file`, form, {
         headers: {
           ...form.getHeaders(),

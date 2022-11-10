@@ -34,7 +34,8 @@ export class FileController {
     @Body() body: FileUploadDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const address = verifyMessage(file.buffer, body.signature);
+    let address = undefined;
+    if (body.signature) address = verifyMessage(file.buffer, body.signature);
     const ipfsResult = await this.fileService.pinBuffer(file.buffer, body.name);
     const fileEntity = new File();
     fileEntity.name = body.name;
@@ -43,6 +44,6 @@ export class FileController {
     fileEntity.ipfsTimestamp = ipfsResult.Timestamp;
     fileEntity.pinSize = ipfsResult.PinSize;
     fileEntity.mimeType = file.mimetype;
-    this.fileService.store(fileEntity);
+    return this.fileService.store(fileEntity);
   }
 }
