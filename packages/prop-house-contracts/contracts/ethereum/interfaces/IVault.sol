@@ -9,6 +9,9 @@ interface IVault {
     /// @notice Thrown on transfer failure
     error TransferFailed();
 
+    /// Thrown when the caller is not the WETH token contract
+    error OnlyWETH();
+
     /// @notice Emitted when a deposit is processed
     event Deposit(address indexed account, bytes4 assetType, address asset, uint256 amount);
 

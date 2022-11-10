@@ -13,6 +13,14 @@
     "prepare": "yarn build",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\""
   },
-  "dependencies": {},
+  "dependencies": {
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/address": "^5.7.0",
+    "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "@prophouse/contracts": "~0.1.0",
+    "time-ts": "^0.1.0"
+  },
   "devDependencies": {}
 }

@@ -29,31 +29,14 @@ func execute{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ) {
     alloc_locals;
 
-    // Only params should be merkle root split into two parts
-    with_attr error_message("Invalid execution param array") {
-        assert execution_params_len = 3;
-    }
-
     let (l1_house_address) = get_l1_house_address_for_caller();
     with_attr error_message("Caller is not a valid house strategy") {
         assert_not_zero(l1_house_address);
     }
 
-    let round_id = execution_params[0];
-    let merkle_root_low = execution_params[1];
-    let merkle_root_high = execution_params[2];
-
-    // Create the payload
-    let (message_payload: felt*) = alloc();
-    assert message_payload[0] = round_id;
-    assert message_payload[1] = merkle_root_low;
-    assert message_payload[2] = merkle_root_high;
-
-    let payload_size = 3;
-
     // Send message to L1 Contract
     send_message_to_l1(
-        to_address=l1_house_address, payload_size=payload_size, payload=message_payload
+        to_address=l1_house_address, payload_size=execution_params_len, payload=execution_params
     );
     return ();
 }

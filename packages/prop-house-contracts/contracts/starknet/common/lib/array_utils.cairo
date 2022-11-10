@@ -1,3 +1,8 @@
+from starkware.cairo.common.cairo_builtins import HashBuiltin
+from starkware.cairo.common.hash_state import hash_init, hash_update, hash_finalize
+from starkware.cairo.common.bool import TRUE, FALSE
+from starkware.cairo.common.math import assert_not_equal
+
 struct Immutable2DArray {
     offsets_len: felt,  // The length of the offsets array is the number of sub arrays in the 2d array
     offsets: felt*,  // offsets[i] is the index of elements where the ith array starts
@@ -5,8 +10,30 @@ struct Immutable2DArray {
     elements: felt*,  // elements stores all the values of each sub array in the 2d array
 }
 
-namespace Array2D {
-    // Currently there is no way to pass struct types with pointers in calldata, so we must pass the 2d array as a flat array and then reconstruct the type.
+namespace ArrayUtils {
+    // @dev Computes the pedersen hash of an array of felts
+    // @param array The array of felts
+    // @return hash The hash of the array
+    func hash{pedersen_ptr: HashBuiltin*}(array_len: felt, array: felt*) -> (hash: felt) {
+        let (hash_state_ptr) = hash_init();
+        let (hash_state_ptr) = hash_update{hash_ptr=pedersen_ptr}(hash_state_ptr, array, array_len);
+        let (hash) = hash_finalize{hash_ptr=pedersen_ptr}(hash_state_ptr);
+        return (hash,);
+    }
+
+    // Asserts that the array does not contain any duplicates.
+    // O(N^2) as it loops over each element N times.
+    func assert_no_duplicates{}(array_len: felt, array: felt*) {
+        if (array_len == 0) {
+            return ();
+        } else {
+            _assert_not_in_array(array[0], array_len - 1, &array[1]);
+            assert_no_duplicates(array_len - 1, &array[1]);
+            return ();
+        }
+    }
+
+    // Construct an Immutable2D array from a flat encoding.
     // The structure of the flat array that is passed should be as follows:
     // flat_array[0] = num_arrays
     // flat_array[1:1+num_arrays] = offsets
@@ -22,6 +49,7 @@ namespace Array2D {
         return (array2d,);
     }
 
+    // Extracts sub array at the specified index from an Immutable2DArray
     func get_sub_array{range_check_ptr}(array2d: Immutable2DArray, index: felt) -> (
         array_len: felt, array: felt*
     ) {
@@ -37,4 +65,18 @@ namespace Array2D {
         }
         return (array_len, array);
     }
+}
+
+// @dev Asserts that a value is not present in an array
+// @param value The value
+// @param array The array
+func _assert_not_in_array{}(value: felt, array_len: felt, array: felt*) {
+    if (array_len == 0) {
+        return ();
+    }
+    with_attr error_message("ArrayUtils: Duplicate entry found") {
+        assert_not_equal(value, array[0]);
+    }
+    _assert_not_in_array(value, array_len - 1, &array[1]);
+    return ();
 }

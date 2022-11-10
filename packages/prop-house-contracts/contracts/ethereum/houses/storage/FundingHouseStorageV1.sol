@@ -20,7 +20,7 @@ abstract contract FundingHouseStorageV1 {
     /// @dev Masked Voting Strategy & Params Hash => Is Whitelisted
     mapping(uint256 => bool) public isVotingStrategyWhitelisted;
 
-    /// @notice Determine if a round winner has claimed their award
-    /// @dev Round ID => Winner => Is Claimed
-    mapping(uint256 => mapping(address => bool)) isAwardClaimed;
+    /// @notice Determine if a proposer has claimed their award
+    /// @dev Round ID => Proposal ID => Is Claimed
+    mapping(uint256 => mapping(uint256 => bool)) public isAwardClaimed;
 }

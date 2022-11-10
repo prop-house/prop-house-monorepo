@@ -31,14 +31,15 @@ from contracts.starknet.common.interfaces.voting_strategy_registry_interface imp
 
 // Types
 from contracts.starknet.common.lib.general_address import Address
+from contracts.starknet.common.lib.execution_type import ExecutionType
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
 from contracts.starknet.strategies.timed_funding_round.lib.round_state import RoundState
 
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
-from contracts.starknet.common.lib.array_2d import Array2D, Immutable2DArray
 from contracts.starknet.common.lib.merkle_tree import MerkleTree
+from contracts.starknet.common.lib.array_utils import ArrayUtils, Immutable2DArray
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_utils import ProposalUtils
 
 //
@@ -53,11 +54,13 @@ const MAX_LOG_N_WINNERS = 8;
 // Deployment-Time Constants
 //
 
-const VOTING_STRATEGY_REGISTRY = 0xBAD0001;
+const voting_strategy_registry = 0xDEAD0001;
 
-const ETH_TX_AUTH_STRATEGY = 0xBAD0002;
+const eth_execution_strategy = 0xDEAD0002;
 
-const ETH_SIG_AUTH_STRATEGY = 0xBAD0003;
+const eth_tx_auth_strategy = 0xDEAD0003;
+
+const eth_sig_auth_strategy = 0xDEAD0004;
 
 //
 // Storage
@@ -115,10 +118,6 @@ func cancelled_proposals_store(proposal_id: felt) -> (cancelled: felt) {
 func voting_strategy_hashes_store(index: felt) -> (strategy_hash: felt) {
 }
 
-@storage_var
-func execution_strategy_store() -> (execution_strategy_address: felt) {
-}
-
 //
 // Events
 //
@@ -149,8 +148,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     house_strategy_params: felt*,
     voting_strategy_hashes_len: felt,
     voting_strategy_hashes: felt*,
-    execution_strategies_len: felt,
-    execution_strategies: felt*,
 ) {
     alloc_locals;
 
@@ -176,9 +173,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         assert_not_zero(vote_period_duration);
         assert_not_zero(winner_count);
         assert_le(winner_count, MAX_WINNERS);
-
-        // This strategy only supports a single execution strategy
-        assert execution_strategies_len = 1;
     }
 
     let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
@@ -191,7 +185,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     proposal_period_end_timestamp_store.write(proposal_period_end_timestamp);
     vote_period_end_timestamp_store.write(vote_period_end_timestamp);
     winner_count_store.write(winner_count);
-    execution_strategy_store.write(execution_strategies[0]);
 
     unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len, voting_strategy_hashes, 0);
 
@@ -242,7 +235,7 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
     }
 
     // Reconstruct the voting params 2D array (1 sub array per strategy) from the flattened version.
-    let (user_voting_strategy_params_all: Immutable2DArray) = Array2D.construct_array2d(
+    let (user_voting_strategy_params_all: Immutable2DArray) = ArrayUtils.construct_array2d(
         user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
     );
 
@@ -466,15 +459,15 @@ func finalize_round{
     let (round_id) = round_id_store.read();
 
     let (execution_params: felt*) = alloc();
-    assert execution_params[0] = round_id;
-    assert execution_params[1] = merkle_root.low;
-    assert execution_params[2] = merkle_root.high;
+    assert execution_params[0] = ExecutionType.MERKLE_PROOF;
+    assert execution_params[1] = round_id;
+    assert execution_params[2] = merkle_root.low;
+    assert execution_params[3] = merkle_root.high;
 
-    let (execution_strategy_address) = execution_strategy_store.read();
-    let execution_params_len = 3;
+    let execution_params_len = 4;
 
     IExecutionStrategy.execute(
-        contract_address=execution_strategy_address,
+        contract_address=eth_execution_strategy,
         execution_params_len=execution_params_len,
         execution_params=execution_params,
     );
@@ -503,6 +496,23 @@ func cancel_round{
 
     // Verify that the funding round is active
     assert_round_active();
+
+    let (round_id) = round_id_store.read();
+    let (award_hash) = award_hash_store.read();
+
+    let (cancellation_params: felt*) = alloc();
+    assert cancellation_params[0] = ExecutionType.CANCELLATION;
+    assert cancellation_params[1] = round_id;
+    assert cancellation_params[2] = award_hash.low;
+    assert cancellation_params[3] = award_hash.high;
+
+    let cancellation_params_len = 4;
+
+    IExecutionStrategy.execute(
+        contract_address=eth_execution_strategy,
+        execution_params_len=cancellation_params_len,
+        execution_params=cancellation_params,
+    );
 
     // TODO: Send message to L1 to unlock funds.
 
@@ -598,8 +608,8 @@ func get_auth_strategy(index: felt) -> (strategy_addr: felt) {
     return ([data_address + index],);
 
     strategies:
-    dw ETH_TX_AUTH_STRATEGY;
-    dw ETH_SIG_AUTH_STRATEGY;
+    dw eth_tx_auth_strategy;
+    dw eth_sig_auth_strategy;
 }
 
 // Determines whether the provided address is a valid auth strategy
@@ -641,29 +651,6 @@ func assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     return ();
 }
 
-// Asserts that the array does not contain any duplicates.
-// O(N^2) as it loops over each element N times.
-func assert_no_duplicates{}(array_len: felt, array: felt*) {
-    if (array_len == 0) {
-        return ();
-    } else {
-        let to_find = array[0];
-
-        // For each element in the array, try to find
-        // this element in the rest of the array
-        let (found) = find(to_find, array_len - 1, &array[1]);
-
-        // If the element was found, we have found a duplicate.
-        // Raise an error!
-        with_attr error_message("Duplicate entry found") {
-            assert found = FALSE;
-        }
-
-        assert_no_duplicates(array_len - 1, &array[1]);
-        return ();
-    }
-}
-
 // Tries to find `to_find` in `array`. Returns `TRUE` if it finds it, else returns `FALSE`.
 func find{}(to_find: felt, array_len: felt, array: felt*) -> (found: felt) {
     if (array_len == 0) {
@@ -687,7 +674,7 @@ func get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
     index: felt,
 ) -> (voting_power: Uint256) {
     // Make sure there are no duplicates to avoid an attack where people double count a voting strategy
-    assert_no_duplicates(used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes);
+    ArrayUtils.assert_no_duplicates(used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes);
 
     return unchecked_get_cumulative_voting_power(
         current_timestamp,
@@ -723,7 +710,7 @@ func unchecked_get_cumulative_voting_power{
     let (
         voting_strategy_address, voting_strategy_params_len, voting_strategy_params
     ) = IVotingStrategyRegistry.get_voting_strategy(
-        contract_address=VOTING_STRATEGY_REGISTRY, strategy_hash=voting_strategy_hash
+        contract_address=voting_strategy_registry, strategy_hash=voting_strategy_hash
     );
 
     with_attr error_message("Invalid voting strategy") {
@@ -731,7 +718,7 @@ func unchecked_get_cumulative_voting_power{
     }
 
     // Extract voting params array for the voting strategy specified by the index
-    let (user_voting_strategy_params_len, user_voting_strategy_params) = Array2D.get_sub_array(
+    let (user_voting_strategy_params_len, user_voting_strategy_params) = ArrayUtils.get_sub_array(
         user_voting_strategy_params_all, index
     );
 

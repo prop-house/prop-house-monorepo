@@ -4,7 +4,6 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.memcpy import memcpy
 
-from contracts.starknet.common.lib.hash_array import HashArray
 from contracts.starknet.common.lib.execute import execute
 from contracts.starknet.common.lib.eth_tx import EthTx
 from contracts.starknet.strategies.timed_funding_round.lib.session_key import SessionKey

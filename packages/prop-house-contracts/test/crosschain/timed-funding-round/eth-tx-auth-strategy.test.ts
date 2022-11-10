@@ -119,7 +119,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       ethers.utils.defaultAbiCoder.encode(
         ['address[]', 'address[]', 'tuple(uint256,uint256[])[]'],
         [
-          [config.timedFundingRoundStrategy.address],
+          [config.timedFundingRoundStrategyValidator.address],
           [signer.address],
           [[vanillaVotingStrategy.address, []]],
         ],
@@ -145,12 +145,14 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       title: 'Test Round',
       description: 'A round used for testing purposes',
       tags: ['test', 'prop-house'],
-      strategy: config.timedFundingRoundStrategy.address,
-      config: ethers.utils.defaultAbiCoder.encode(
-        ['tuple(uint40,uint40,uint40,uint16)'], // TODO: SDK
-        [[start, ONE_DAY_SEC, ONE_DAY_SEC, 5]],
-      ),
       votingStrategies: [votingStrategyHash],
+      strategy: {
+        validator: config.timedFundingRoundStrategyValidator.address,
+        config: ethers.utils.defaultAbiCoder.encode(
+          ['tuple(uint40,uint40,uint40,uint16)'], // TODO: SDK
+          [[start, ONE_DAY_SEC, ONE_DAY_SEC, 5]],
+        ),
+      },
       awards: [
         {
           assetId: '0x8322fff200000000000000000000000000000000000000000000000000000000', // TODO: SDK
@@ -220,10 +222,12 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   it('should not allow the same commit to be executed multiple times', async () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit.connect(signer).commit(
-      ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
-    );
+    await starknetCommit
+      .connect(signer)
+      .commit(
+        ethTxAuth.address,
+        hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
+      );
 
     await starknet.devnet.flush();
     await starknetSigner.invoke(ethTxAuth, 'authenticate', {
@@ -245,10 +249,12 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   });
 
   it('should fail if the correct hash of the payload is not committed on L1 before execution is called', async () => {
-    await starknetCommit.connect(signer).commit(
-      ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...proposeCalldata]),
-    ); // Wrong selector
+    await starknetCommit
+      .connect(signer)
+      .commit(
+        ethTxAuth.address,
+        hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...proposeCalldata]),
+      ); // Wrong selector
 
     await starknet.devnet.flush();
     try {

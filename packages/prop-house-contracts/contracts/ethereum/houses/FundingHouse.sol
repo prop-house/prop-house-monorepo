@@ -4,17 +4,18 @@ pragma solidity ^0.8.13;
 import { HouseBase } from '../HouseBase.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IFundingHouse } from './interfaces/IFundingHouse.sol';
-import { IStrategy } from '../strategies/interfaces/IStrategy.sol';
 import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
+import { IStrategyValidator } from '../strategies/interfaces/IStrategyValidator.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
 import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
 import { Uint256Utils } from '../utils/Uint256Utils.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
 import { MerkleProof } from '../utils/MerkleProof.sol';
+import { Batchable } from '../utils/Batchable.sol';
 import { ETH_ADDRESS } from '../Constants.sol';
 import { Vault } from '../utils/Vault.sol';
 
-contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 {
+contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHouseStorageV1 {
     using { Uint256Utils.split } for uint256;
     using { Uint256Utils.mask250 } for bytes32;
     using { Uint256Utils.toUint256 } for address;
@@ -29,26 +30,22 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @notice The house name
     string public constant name = 'FUNDING_HOUSE';
 
-    /// @notice The merkle root relayer contract on Starknet
-    uint256 public immutable merkleRootRelayer;
-
-    /// @notice The cancellation hash relayer contract on Starknet
-    uint256 public immutable cancellationHashRelayer;
+    /// @notice The generalized execution relayer contract on Starknet
+    uint256 public immutable executionRelayer;
 
     /// @notice The voting strategy registry contract on Starknet
     uint256 public immutable votingStrategyRegistry;
 
     constructor(
-        uint256 merkleRootRelayer_,
-        uint256 cancellationHashRelayer_,
+        uint256 executionRelayer_,
         uint256 votingStrategyRegistry_,
         address upgradeManager_,
         address strategyManager_,
         address starknetMessenger_,
-        uint256 strategyFactory_
-    ) HouseBase(name, 1, upgradeManager_, strategyManager_, starknetMessenger_, strategyFactory_) {
-        merkleRootRelayer = merkleRootRelayer_;
-        cancellationHashRelayer = cancellationHashRelayer_;
+        uint256 strategyFactory_,
+        address weth_
+    ) HouseBase(name, 1, upgradeManager_, strategyManager_, starknetMessenger_, strategyFactory_) Vault(weth_) {
+        executionRelayer = executionRelayer_;
         votingStrategyRegistry = votingStrategyRegistry_;
     }
 
@@ -119,11 +116,11 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
 
     /// @notice Initiate a funding round
     /// @param round The details required to initiate the funding round
-    function initiateRound(RoundInitConfig calldata round) external {
+    function initiateRound(RoundParams calldata round) external {
         address _initiator = msg.sender;
 
-        _requireStrategyEnabled(round.strategy);
         _requireRoundInitiatorWhitelisted(_initiator);
+        _requireStrategyEnabled(round.strategy.validator);
         _requireVotingStrategiesWhitelisted(round.votingStrategies);
 
         // Debiting of award balances reverts on overflow
@@ -157,7 +154,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @param nonce The message cancellation nonce
     function requestRoundInitiationCancellation(
         uint256 roundId,
-        RoundInitConfig calldata round,
+        RoundParams calldata round,
         uint256 nonce
     ) external {
         Round storage _round = rounds[roundId];
@@ -181,7 +178,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @param nonce The message cancellation nonce
     function completeRoundInitiationCancellation(
         uint256 roundId,
-        RoundInitConfig calldata round,
+        RoundParams calldata round,
         uint256 nonce
     ) external {
         Round storage _round = rounds[roundId];
@@ -199,7 +196,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         _creditAwardsToAccount(msg.sender, round.awards);
         _round.state = RoundState.Cancelled;
 
-        emit RoundCancelled(roundId);
+        emit RoundInitiationCancellationCompleted(roundId);
     }
 
     /// @notice Complete the cancellation of a round by consuming the message from Starknet,
@@ -214,12 +211,13 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
 
         (uint256 awardHashLow, uint256 awardHashHigh) = uint256(keccak256(abi.encode(awards))).split();
 
-        uint256[] memory payload = new uint256[](3);
-        payload[0] = roundId;
-        payload[1] = awardHashLow;
-        payload[2] = awardHashHigh;
+        uint256[] memory payload = new uint256[](4);
+        payload[0] = uint256(ExecutionType.Cancellation);
+        payload[1] = roundId;
+        payload[2] = awardHashLow;
+        payload[3] = awardHashHigh;
 
-        _messenger.starknet().consumeMessageFromL2(cancellationHashRelayer, payload);
+        _messenger.starknet().consumeMessageFromL2(executionRelayer, payload);
 
         _creditAwardsToAccount(round.initiator, awards);
         round.state = RoundState.Cancelled;
@@ -236,13 +234,14 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         uint256 merkleRootLow,
         uint256 merkleRootHigh
     ) external {
-        uint256[] memory payload = new uint256[](3);
-        payload[0] = roundId;
-        payload[1] = merkleRootLow;
-        payload[2] = merkleRootHigh;
+        uint256[] memory payload = new uint256[](4);
+        payload[0] = uint256(ExecutionType.MerkleProof);
+        payload[1] = roundId;
+        payload[2] = merkleRootLow;
+        payload[3] = merkleRootHigh;
 
         // This function will revert if the message does not exist
-        _messenger.starknet().consumeMessageFromL2(merkleRootRelayer, payload);
+        _messenger.starknet().consumeMessageFromL2(executionRelayer, payload);
 
         // Reconstruct the execution hash, store it, and move the round to the finalized state
         Round storage round = rounds[roundId];
@@ -280,13 +279,13 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         if (round.initiator != msg.sender) {
             revert OnlyRoundInitiatorCanReclaim();
         }
-        if (isAwardClaimed[roundId][winner]) {
+        if (isAwardClaimed[roundId][proposalId]) {
             revert AwardAlreadyClaimed();
         }
         (, , bytes32 assetId) = AssetDataUtils.decodeAssetData(assetData);
 
         _computeLeafAndVerify(roundId, proposalId, winner, amount, assetId, proof);
-        isAwardClaimed[roundId][winner] = true;
+        isAwardClaimed[roundId][proposalId] = true;
 
         _withdrawTo(assetData, amount, recipient);
         emit AwardReclaimed(roundId, proposalId, winner, assetId, amount, recipient);
@@ -308,13 +307,13 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         bytes32[] calldata proof
     ) public {
         address winner = msg.sender;
-        if (isAwardClaimed[roundId][winner]) {
+        if (isAwardClaimed[roundId][proposalId]) {
             revert AwardAlreadyClaimed();
         }
         (, , bytes32 assetId) = AssetDataUtils.decodeAssetData(assetData);
 
         _computeLeafAndVerify(roundId, proposalId, winner, amount, assetId, proof);
-        isAwardClaimed[roundId][winner] = true;
+        isAwardClaimed[roundId][proposalId] = true;
 
         _withdrawTo(assetData, amount, recipient);
         emit AwardPaid(roundId, proposalId, winner, assetId, amount, recipient);
@@ -363,22 +362,33 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     /// @param awardHash A hash of the locked asset ids and amounts
     function _getL2Payload(
         uint256 roundId,
-        RoundInitConfig memory round,
+        RoundParams memory round,
         bytes32 awardHash
     ) internal returns (uint256[] memory payload) {
-        uint256[] memory executionStrategies = new uint256[](1);
-        executionStrategies[0] = merkleRootRelayer;
-
-        bytes memory config = abi.encode(
-            msg.sender,
-            roundId,
-            awardHash,
-            round.config,
-            round.awards,
-            round.votingStrategies,
-            executionStrategies
+        IStrategyValidator validator = IStrategyValidator(round.strategy.validator);
+        uint256[] memory params = validator.getStrategyParams(
+            abi.encode(msg.sender, roundId, awardHash, round.strategy.config, round.awards)
         );
-        return IStrategy(round.strategy).getL2Payload(config);
+        uint256 numVotingStrategies = round.votingStrategies.length;
+        if (numVotingStrategies == 0) {
+            revert NoVotingStrategiesProvided();
+        }
+
+        uint256 offset = params.length;
+        payload = new uint256[](offset + 1 + numVotingStrategies);
+        unchecked {
+            // Strategy Params
+            for (uint256 i = 0; i < offset; ++i) {
+                payload[i] = params[i];
+            }
+
+            // Voting Strategies
+            payload[offset++] = numVotingStrategies;
+            for (uint256 i = 0; i < numVotingStrategies; ++i) {
+                payload[offset++] = round.votingStrategies[i];
+            }
+        }
+        return payload;
     }
 
     /// @notice Debit the award asset amounts from the provided account
@@ -442,14 +452,14 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
         }
     }
 
-    /// @notice Add a voting token to the whitelist
+    /// @notice Add a round initiator to the whitelist
     /// @param initiator The initiator to add to the whitelist
     function _addRoundInitiatorToWhitelist(address initiator) internal {
         isRoundInitiatorWhitelisted[initiator] = true;
         emit RoundInitiatorAddedToWhitelist(initiator);
     }
 
-    /// @notice Remove a voting token from the whitelist
+    /// @notice Remove a round initiator from the whitelist
     /// @param initiator The initiator to remove from the whitelist
     function _removeRoundInitiatorFromWhitelist(address initiator) internal {
         isRoundInitiatorWhitelisted[initiator] = false;
@@ -457,6 +467,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Vault, FundingHouseStorageV1 
     }
 
     /// @notice Add many round initiators to the whitelist
+    /// @param initiators The initiators to add to the whitelist
     function _addManyRoundInitiatorsToWhitelist(address[] memory initiators) internal {
         unchecked {
             uint256 numInitiators = initiators.length;

@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-/// @title Multicall
+/// @title Batchable
 /// @author Modified from Uniswap (https://github.com/Uniswap/v3-periphery/blob/main/contracts/base/Multicall.sol)
 /// @notice Utility contract that enables calling multiple local methods in a single call
-abstract contract Multicall {
+abstract contract Batchable {
+    error LeftoverETH();
+
     /// @notice Allows multiple function calls within a contract that inherits from it
     /// @param _data List of encoded function calls to make in this contract
     /// @return results List of return responses for each encoded call passed
-    function multicall(bytes[] calldata _data) external returns (bytes[] memory results) {
+    /// @dev `msg.value` should not be trusted for any method callable using this contract
+    function batch(bytes[] calldata _data) external payable returns (bytes[] memory results) {
         uint256 length = _data.length;
         results = new bytes[](length);
 
@@ -30,6 +33,11 @@ abstract contract Multicall {
             unchecked {
                 ++i;
             }
+        }
+
+        // There should never be ETH left in this contract at the end of batch execution
+        if (address(this).balance != 0) {
+            revert LeftoverETH();
         }
     }
 

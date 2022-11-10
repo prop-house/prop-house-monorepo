@@ -10,14 +10,23 @@ import { ERC1155Holder } from '@openzeppelin/contracts/token/ERC1155/utils/ERC11
 import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
 import { IVault } from '../interfaces/IVault.sol';
+import { IWETH } from '../interfaces/IWETH.sol';
 import { ETH_ADDRESS } from '../Constants.sol';
 
-contract Vault is IVault, ERC721Holder, ERC1155Holder {
+/// @notice A multicall-safe vault contract for depositing ETH, ERC20, ERC721, & ERC1155 tokens
+abstract contract Vault is IVault, ERC721Holder, ERC1155Holder {
     using SafeERC20 for IERC20;
+
+    /// @notice WETH token instance
+    IWETH internal immutable _weth;
 
     /// @notice Available asset balances
     /// @dev Depositor => Asset ID => Balance
     mapping(address => mapping(bytes32 => uint256)) internal _balances;
+
+    constructor(address weth) {
+        _weth = IWETH(weth);
+    }
 
     /// @notice Deposits ETH
     function depositETH() external payable {
@@ -268,14 +277,20 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
     /// @notice Deposits ETH
     /// @param account The account address
     function _depositETH(address account) internal {
-        _creditInternalBalance(account, IAssetData.ETH.selector, msg.value);
-        emit Deposit(account, IAssetData.ETH.selector, ETH_ADDRESS, msg.value);
+        uint256 value = address(this).balance;
+
+        _weth.deposit{ value: value }();
+
+        _creditInternalBalance(account, IAssetData.ETH.selector, value);
+        emit Deposit(account, IAssetData.ETH.selector, ETH_ADDRESS, value);
     }
 
     /// @notice Transfers ETH to a recipient address
     /// @param amount The amount of ETH to transfer
     /// @param recipient The transfer recipient
     function _transferETHTo(uint256 amount, address recipient) internal {
+        _weth.withdraw(amount);
+
         (bool success, ) = recipient.call{ value: amount, gas: 30_000 }(new bytes(0));
         if (!success) {
             revert TransferFailed();
@@ -368,5 +383,11 @@ contract Vault is IVault, ERC721Holder, ERC1155Holder {
         uint256 amount
     ) internal {
         _balances[account][assetId] -= amount;
+    }
+
+    receive() external payable {
+        if (msg.sender != address(_weth)) {
+            revert OnlyWETH();
+        }
     }
 }

@@ -6,6 +6,15 @@ import { IVault } from '../../interfaces/IVault.sol';
 
 /// @notice Interface for the Funding House
 interface IFundingHouse is IHouse, IVault {
+    /// @notice Thrown when no voting strategies are provided
+    error NoVotingStrategiesProvided();
+
+    /// @notice Supported funding house execution types
+    enum ExecutionType {
+        MerkleProof,
+        Cancellation
+    }
+
     /// @notice All possible L1 round states
     enum RoundState {
         Active,
@@ -25,14 +34,19 @@ interface IFundingHouse is IHouse, IVault {
         uint256[] params;
     }
 
-    /// @notice Round initiation configuration data
-    struct RoundInitConfig {
+    /// @notice House strategy validator and configuration information
+    struct HouseStrategy {
+        address validator;
+        bytes config;
+    }
+
+    /// @notice Round initiation parameters
+    struct RoundParams {
         string title; // A short title for the round
         string description; // A desciption that adds context about the round
         string[] tags; // Tags used to improve searchability and filtering
-        address strategy; // The strategy contract address
-        bytes config; // The strategy contract configuration
         uint256[] votingStrategies; // The hashes of the selected voting strategies
+        HouseStrategy strategy; // The house strategy validator contract and configuration data
         Award[] awards; // The assets offered to round winners
     }
 
@@ -80,7 +94,7 @@ interface IFundingHouse is IHouse, IVault {
         string title,
         string description,
         string[] tags,
-        address strategy,
+        HouseStrategy strategy,
         Award[] awards
     );
 

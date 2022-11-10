@@ -7,9 +7,8 @@ import { IStrategyManager } from './interfaces/IStrategyManager.sol';
 import { IUpgradeManager } from './interfaces/IUpgradeManager.sol';
 import { IStarknetMessenger } from './interfaces/IStarknetMessenger.sol';
 import { IHouse } from './interfaces/IHouse.sol';
-import { Multicall } from './utils/Multicall.sol';
 
-abstract contract HouseBase is IHouse, Multicall, UUPSUpgradeable, OwnableUpgradeable {
+abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     // prettier-ignore
     // print(get_selector_from_name("create_house_strategy"))
     uint256 constant CREATE_STRATEGY_SELECTOR = 0x30b7e460d06ee4b7bb5f97430a8881944e86a98a4d7916a524d07c761ac4219;

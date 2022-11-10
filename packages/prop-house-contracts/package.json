@@ -30,7 +30,7 @@
     "postinstall": "typechain",
     "hardhat": "hardhat",
     "typechain": "typechain --target=ethers-v5 out/**/*.json --out-dir typechain",
-    "format:l1": "prettier --write '{src,test}/{,*/**/}*.sol'",
+    "format:l1": "prettier --write '{contracts,test}/{,*/**/}*.sol'",
     "format:l2": "cairo-format -i --one_item_per_line contracts/starknet/**/*.cairo && cairo-format -i --one_item_per_line contracts/starknet/*.cairo",
     "format:ts": "prettier --write '{,*/**/}*.ts'",
     "format": "concurrently 'yarn format:l1' 'yarn format:l2' 'yarn format:ts'",

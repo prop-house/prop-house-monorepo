@@ -4,7 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.memcpy import memcpy
 
-from contracts.starknet.common.lib.hash_array import HashArray
+from contracts.starknet.common.lib.array_utils import ArrayUtils
 from contracts.starknet.common.lib.execute import execute
 from contracts.starknet.common.lib.eth_tx import EthTx
 
@@ -26,7 +26,7 @@ func authenticate{syscall_ptr: felt*, range_check_ptr, pedersen_ptr: HashBuiltin
     assert input_array[0] = target;
     assert input_array[1] = function_selector;
     memcpy(input_array + 2, calldata, calldata_len);
-    let (hash) = HashArray.hash_array(calldata_len + 2, input_array);
+    let (hash) = ArrayUtils.hash(calldata_len + 2, input_array);
 
     // Checks that hash matches a commit and that the commit was created by the correct address
     let address = calldata[0];

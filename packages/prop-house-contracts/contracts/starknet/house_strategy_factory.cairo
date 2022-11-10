@@ -67,8 +67,6 @@ func create_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
     house_strategy_params: felt*,
     voting_strategy_hashes_len: felt,
     voting_strategy_hashes: felt*,
-    execution_strategies_len: felt,
-    execution_strategies: felt*,
 ) {
     alloc_locals;
     only_starknet_messenger(from_address_=from_address);
@@ -82,14 +80,7 @@ func create_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range
         calldata + 2 + house_strategy_params_len, voting_strategy_hashes, voting_strategy_hashes_len
     );
 
-    assert calldata[2 + house_strategy_params_len + voting_strategy_hashes_len] = execution_strategies_len;
-    memcpy(
-        calldata + 3 + house_strategy_params_len + voting_strategy_hashes_len,
-        execution_strategies,
-        execution_strategies_len,
-    );
-
-    let calldata_len = 3 + house_strategy_params_len + voting_strategy_hashes_len + execution_strategies_len;
+    let calldata_len = 2 + house_strategy_params_len + voting_strategy_hashes_len;
     let (current_salt) = salt_store.read();
 
     let (strategy_address) = deploy(

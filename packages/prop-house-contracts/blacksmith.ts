@@ -7,7 +7,13 @@ interface SolidityContract {
   source: string;
 }
 
-const whitelistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'Vault'];
+const whitelistedContracts = [
+  'MockERC20',
+  'MockERC721',
+  'MockERC1155',
+  'MockWETH',
+  'BatchableVault',
+];
 const test = 'test/ethereum';
 
 const runBlacksmith = () => {
@@ -37,22 +43,25 @@ const runBlacksmith = () => {
       break;
     case 'build':
       console.log('running :: forge build :: only contracts');
-      exec(`mv ${test} _test && forge build --contracts contracts --force`, (err, stdout, _stderr) => {
-        if (stdout) {
-          const nochange = stdout.split('\n')[1]?.indexOf('No files changed') === 0;
-          const success = stdout.split('\n')[1]?.indexOf('Compiler run successful') === 0;
-          if (success || nochange) {
-            console.log('\x1b[32m%s\x1b[0m', 'build   :: completed');
+      exec(
+        `mv ${test} _test && forge build --contracts contracts --force`,
+        (err, stdout, _stderr) => {
+          if (stdout) {
+            const nochange = stdout.split('\n')[1]?.indexOf('No files changed') === 0;
+            const success = stdout.split('\n')[1]?.indexOf('Compiler run successful') === 0;
+            if (success || nochange) {
+              console.log('\x1b[32m%s\x1b[0m', 'build   :: completed');
+            } else {
+              console.log('\x1b[31m%s\x1b[0m', 'build   :: failed');
+              console.log(err);
+            }
           } else {
-            console.log('\x1b[31m%s\x1b[0m', 'build   :: failed');
             console.log(err);
+            console.log('\x1b[31m%s\x1b[0m', 'build   :: failed badly');
           }
-        } else {
-          console.log(err);
-          console.log('\x1b[31m%s\x1b[0m', 'build   :: failed badly');
-        }
-        exec(`mv _test ${test}`);
-      });
+          exec(`mv _test ${test}`);
+        },
+      );
       break;
 
     default:

@@ -1,6 +1,10 @@
 import { starknet } from 'hardhat';
 import { commonL1Setup } from './common';
-import { FundingHouse__factory, TimedFundingRoundStrategy__factory } from '../../../typechain';
+import {
+  FundingHouse__factory,
+  MockWETH__factory,
+  TimedFundingRoundStrategyValidator__factory,
+} from '../../../typechain';
 
 export const fundingHouseSetup = async () => {
   const config = await commonL1Setup();
@@ -10,33 +14,35 @@ export const fundingHouseSetup = async () => {
   const houseStrategyDeployerFactory = await starknet.getContractFactory(
     './contracts/starknet/house_strategy_factory.cairo',
   );
-  const merkleRootExecutionStrategyFactory = await starknet.getContractFactory(
-    './contracts/starknet/common/execution/merkle_root.cairo',
+  const ethHouseExecutionStrategyFactory = await starknet.getContractFactory(
+    './contracts/starknet/common/execution/eth_house.cairo',
   );
   const votingStrategyRegistryFactory = await starknet.getContractFactory(
     './contracts/starknet/common/registry/voting_strategy_registry.cairo',
   );
 
   const fundingHouseFactory = new FundingHouse__factory(config.registrar);
+  const wethFactory = new MockWETH__factory(config.registrar);
 
   const houseStrategyFactory = await houseStrategyDeployerFactory.deploy({
     starknet_messenger: config.starknetMessenger.address,
   });
-  const merkleRootExecutionStrategy = await merkleRootExecutionStrategyFactory.deploy({
+  const ethHouseExecutionStrategy = await ethHouseExecutionStrategyFactory.deploy({
     house_strategy_factory_address: houseStrategyFactory.address,
   });
   const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy({
     starknet_messenger: config.starknetMessenger.address,
   });
 
+  const weth = await wethFactory.deploy();
   const fundingHouseImpl = await fundingHouseFactory.deploy(
-    merkleRootExecutionStrategy.address,
-    merkleRootExecutionStrategy.address, // TODO: Consolidate
+    ethHouseExecutionStrategy.address,
     votingStrategyRegistry.address,
     config.upgradeManager.address,
     config.strategyManager.address,
     config.starknetMessenger.address,
     houseStrategyFactory.address,
+    weth.address,
   );
 
   await config.deploymentManager.registerDeployment(fundingHouseImpl.address);
@@ -47,13 +53,14 @@ export const fundingHouseSetup = async () => {
     fundingHouseImpl,
     houseStrategyFactory,
     votingStrategyRegistry,
+    ethHouseExecutionStrategy,
   };
 };
 
 export const fundingHouseTimedFundingRoundSetup = async () => {
   const config = await fundingHouseSetup();
 
-  const timedFundingRoundStrategyL1Factory = new TimedFundingRoundStrategy__factory(
+  const timedFundingRoundStrategyValidatorFactory = new TimedFundingRoundStrategyValidator__factory(
     config.registrar,
   );
   const timedFundingRoundStrategyL2Factory = await starknet.getContractFactory(
@@ -74,23 +81,24 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
     timedFundingRoundStrategyL2Factory,
     {
       constants: {
-        VOTING_STRATEGY_REGISTRY: config.votingStrategyRegistry.address,
-        ETH_TX_AUTH_STRATEGY: timedFundingRoundEthTxAuthStrategy.address,
+        voting_strategy_registry: config.votingStrategyRegistry.address,
+        eth_execution_strategy: config.ethHouseExecutionStrategy.address,
+        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
       },
     },
   );
-  const timedFundingRoundStrategy = await timedFundingRoundStrategyL1Factory.deploy(
+  const timedFundingRoundStrategyValidator = await timedFundingRoundStrategyValidatorFactory.deploy(
     timedFundingRoundStrategyClassHash,
   );
 
   await config.strategyManager['registerStrategy(bytes32,address)'](
     await config.fundingHouseImpl.id(),
-    timedFundingRoundStrategy.address,
+    timedFundingRoundStrategyValidator.address,
   );
 
   return {
     ...config,
-    timedFundingRoundStrategy,
+    timedFundingRoundStrategyValidator,
     timedFundingRoundStrategyL2Factory,
     timedFundingRoundStrategyClassHash,
     timedFundingRoundEthTxAuthStrategy,
