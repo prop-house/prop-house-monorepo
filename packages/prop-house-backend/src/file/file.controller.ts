@@ -35,6 +35,12 @@ export class FileController {
     return this.fileService.findAllByAddress(address);
   }
 
+  /**
+   * Attempt to fetch a file from local storage based
+   * on its hash (filename). This function reads directly
+   * from disk and does not require that a file record exist
+   * in the database for the provided file.
+   */
   @Get('/local/hash/:filename')
   async getLocal(@Param('filename') filename: string, @Res() res: Response) {
     const fileBuf = await this.fileService.readFileFromDisk(filename)
@@ -43,6 +49,12 @@ export class FileController {
     res.send(fileBuf)
   }
 
+  /**
+   * Attempt to fetch a file from local storage based
+   * on its File ID. This function queries the database
+   * to find information about the file and thus requires
+   * that the File record exist.
+   */
   @Get('/local/id/:id')
   async getById(@Param('id') id: string, @Res() res: Response) {
     const file = await this.fileService.findOne(Number(id))
@@ -51,6 +63,11 @@ export class FileController {
     res.send(fileBuf)
   }
 
+  /**
+   * Attempt to upload and pin a file. Files can be optionally
+   * signed to prevent them being pruned in the future. (If
+   * abuse occurs, unsigned files are likely the first to go)
+   */
   @Post()
   @Throttle(5, 300)
   @UseInterceptors(FileInterceptor('file'))
