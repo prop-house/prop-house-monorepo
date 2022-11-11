@@ -402,6 +402,7 @@ input::file-selector-button {
 }
 
 .character-style-popup {
+  display: none !important;
   height: auto !important;
 }
 .character-style-popup .popup-item:nth-child(4),
