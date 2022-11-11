@@ -27,6 +27,8 @@ export class FileService {
   }
 
   public diskFilePath(filename) {
+    // protect against directory traversal
+    filename = filename.replace("..", "") 
     return [this.diskFileDirectory(filename), filename].join('/')
 
   }
@@ -36,8 +38,6 @@ export class FileService {
   }
 
   async writeFileToDisk(buffer: Buffer, filename: string) {
-    // protect against directory traversal
-    filename = filename.replace("..", "") 
     const base = config().file.basePath
     this._ensureDiskDirectoryExists(filename)
     writeFileSync(this.diskFilePath(filename), buffer)
