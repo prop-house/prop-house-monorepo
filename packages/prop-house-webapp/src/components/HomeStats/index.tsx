@@ -34,8 +34,8 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
 
   return (
     <div className={classes.statsContainer}>
-      {homeStats.map(s => (
-        <div className={classes.stat}>
+      {homeStats.map((s, idx) => (
+        <div key={idx} className={classes.stat}>
           {!loading ? (
             <CountUp start={0} end={s.amount} suffix="+" delay={0} onEnd={onEnd}>
               {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
