@@ -19,6 +19,7 @@ import { FileService } from './file.service';
 import { FileUploadDto } from './file.types';
 import * as mime from 'mime-types'
 import { fromBuffer } from 'file-type';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('file')
 export class FileController {
@@ -51,6 +52,7 @@ export class FileController {
   }
 
   @Post()
+  @Throttle(5, 300)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Body() body: FileUploadDto,
