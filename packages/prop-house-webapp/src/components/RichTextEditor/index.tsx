@@ -24,7 +24,7 @@ const RichTextEditor: React.FC<{
 
   const handleOnChange = (editorState: any) => {
     const editorContent = document.querySelector('.ContentEditable__root')?.innerHTML;
-    editorContent && console.log(editorContent);
+
     editorContent && setContent(editorContent);
 
     onDataChange({ what: content });
