@@ -56,9 +56,6 @@
 .descriptionInput {
   height: 15rem;
 }
-.quillArea {
-  width: 100%;
-}
 :global(.editPropContainer) .inputGroup,
 :global(.editPropContainer) .inputSection:first-child {
   margin-top: 0 !important;

@@ -2,13 +2,10 @@ import classes from './ProposalEditor.module.css';
 import { Row, Col, Form } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { ProposalFields } from '../../utils/proposalFields';
-import 'react-quill/dist/quill.snow.css';
-import { useEffect, useState } from 'react';
-import { useQuill } from 'react-quilljs';
+import { useState } from 'react';
 import clsx from 'clsx';
-import QuillEditorModal from '../QuillEditorModal';
-import '../../quill.css';
 import { useTranslation } from 'react-i18next';
+import RichTextEditor from '../RichTextEditor';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -17,9 +14,7 @@ const ProposalEditor: React.FC<{
   const { fields, onDataChange } = props;
   const data = useAppSelector(state => state.editor.proposal);
   const [blurred, setBlurred] = useState(false);
-  const [editorBlurred, setEditorBlurred] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
-  const [showImageModal, setShowImageModal] = useState(false);
+  // const [editorBlurred, setEditorBlurred] = useState(false);
   const { t } = useTranslation();
 
   const validateInput = (min: number, count: number) => 0 < count && count < min;
@@ -60,70 +55,6 @@ const ProposalEditor: React.FC<{
     minCount: 50,
     error: t('descriptionError'),
   };
-
-  const formats = [
-    'header',
-    'bold',
-    'underline',
-    'strike',
-    'blockquote',
-    'code-block',
-    'list',
-    'bullet',
-    'link',
-    'image',
-  ];
-
-  const imageHandler = () => setShowImageModal(true);
-  const linkHandler = () => setShowLinkModal(true);
-
-  const modules = {
-    toolbar: {
-      container: [
-        [{ header: [1, 2, false] }],
-        ['bold', 'underline', 'strike', 'blockquote', 'code-block'],
-        [{ list: 'ordered' }],
-        ['link'],
-        ['image'],
-      ],
-    },
-    clipboard: {
-      matchVisual: false,
-    },
-  };
-  const theme = 'snow';
-  const placeholder = descriptionData.placeholder;
-
-  const { quill, quillRef, Quill } = useQuill({
-    theme,
-    modules,
-    formats,
-    placeholder,
-  });
-
-  useEffect(() => {
-    if (quill) {
-      var toolbar = quill.getModule('toolbar');
-      toolbar.addHandler('image', imageHandler);
-      toolbar.addHandler('link', linkHandler);
-
-      quill.clipboard.dangerouslyPasteHTML(data.what);
-
-      quill.on('text-change', () => {
-        setEditorBlurred(false);
-
-        onDataChange({ what: quill.root.innerHTML });
-      });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quill]);
-
-  useEffect(() => {
-    if (fields) onDataChange(fields);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
 
   return (
     <>
@@ -171,59 +102,34 @@ const ProposalEditor: React.FC<{
 
               <>
                 <div className={classes.inputInfo}>
-                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>{descriptionData.title}</Form.Label>
-
-                  <Form.Label className={classes.inputChars}>
-                    {quill && quill.getText().length - 1}
-                  </Form.Label>
+                  <Form.Label className={classes.inputLabel}>{descriptionData.title}</Form.Label>
                 </div>
 
                 <>
                   {/* 
                     When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
                   */}
-                  <div className="hideBorderBox"></div>
-                  <div
+                  {/* <div
                     ref={quillRef}
                     placeholder={descriptionData.placeholder}
                     onBlur={() => {
                       setEditorBlurred(true);
                     }}
-                  />
-
-                  {editorBlurred &&
-                    quill &&
-                    validateInput(descriptionData.minCount, quill.getText().length - 1) && (
-                      <p className={classes.inputError}>{descriptionData.error}</p>
-                    )}
+                    />
+                    
+                    {editorBlurred &&
+                      quill &&
+                      validateInput(descriptionData.minCount, quill.getText().length - 1) && (
+                        <p className={classes.inputError}>{descriptionData.error}</p>
+                      )} */}
+                  <div className="hideBorderBox"></div>
+                  <RichTextEditor onDataChange={onDataChange} />
                 </>
               </>
             </Form.Group>
           </Form>
         </Col>
       </Row>
-
-      <QuillEditorModal
-        quill={quill}
-        Quill={Quill}
-        title={t('addLink')}
-        subtitle={t('pasteLink')}
-        showModal={showLinkModal}
-        setShowModal={setShowLinkModal}
-        placeholder="ex. https://nouns.wtf/"
-        quillModule="link"
-      />
-
-      <QuillEditorModal
-        quill={quill}
-        Quill={Quill}
-        title={t('addImage')}
-        subtitle={t('pasteImage')}
-        showModal={showImageModal}
-        setShowModal={setShowImageModal}
-        placeholder="ex. https://noun.pics/1.jpg"
-        quillModule="image"
-      />
     </>
   );
 };
