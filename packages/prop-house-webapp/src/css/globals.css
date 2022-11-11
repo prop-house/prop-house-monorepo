@@ -193,6 +193,29 @@ body {
   margin-bottom: 2px;
 }
 
+/* revert stles to Bootstrap nav dropdown that get overridden by rich text editor because both use a generic .dropdown class */
+.navbar-nav .dropdown {
+  z-index: inherit !important;
+  display: inherit !important;
+  position: relative !important;
+  box-shadow: inherit !important;
+  border-radius: inherit !important;
+  min-width: inherit !important;
+  min-height: inherit !important;
+  background-color: inherit !important;
+}
+.navbar-light .navbar-nav .nav-link:first-child {
+  padding-right: 0 !important;
+}
+
+.hideBorderBox {
+  background: #f5f5f5;
+  top: 0;
+  position: sticky !important;
+  z-index: 1;
+  height: 10px;
+}
+
 /* modals */
 .ReactModal__Overlay--after-open {
   backdrop-filter: blur(5px) !important;
