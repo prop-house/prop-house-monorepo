@@ -8,23 +8,27 @@ import {
   Post,
 } from '@nestjs/common';
 import { ProposalsService } from 'src/proposal/proposals.service';
-import { isValidVoteDirection, VoteDirections } from 'src/utils/vote';
+import { verifySignedPayload } from 'src/utils/verifySignedPayload';
 import { Vote } from './vote.entity';
 import { CreateVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
+import { AuctionsService } from 'src/auction/auctions.service';
+import { SignatureState } from 'src/types/signature';
 
 @Controller('votes')
 export class VotesController {
   constructor(
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
+    private readonly auctionService: AuctionsService,
   ) {}
 
   @Get()
   getVotes(): Promise<Vote[]> {
     return this.votesService.findAll();
   }
+
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Vote> {
     return this.votesService.findOne(id);
@@ -35,78 +39,87 @@ export class VotesController {
     return this.votesService.findByAddress(address);
   }
 
+  /**
+   * Checks:
+   * - signature is valid via `SignedPayloadValidationPipe`
+   * - proposal being voted on exists
+   * - signature matches dto
+   * - proposal being voted for matches signed vote community address
+   * - signer has voting power for signed vote
+   * - casting vote does not exceed > voting power
+   * @param createVoteDto
+   */
   @Post()
-  async create(@Body() createVoteDto: CreateVoteDto) {
+  async create(
+    @Body(SignedPayloadValidationPipe) createVoteDto: CreateVoteDto,
+  ) {
     const foundProposal = await this.proposalService.findOne(
       createVoteDto.proposalId,
     );
 
     // Verify that proposal exist
-    if (!foundProposal)
+    if (!foundProposal) {
       throw new HttpException('No Proposal with that ID', HttpStatus.NOT_FOUND);
+    }
 
-    // Verify that vote direction is valid
-    if (!isValidVoteDirection(createVoteDto.direction))
-      throw new HttpException(
-        `${createVoteDto.direction} is not a valid vote direction`,
-        HttpStatus.BAD_REQUEST,
-      );
+    // Verify signed payload against dto
+    const voteFromPayload = verifySignedPayload(createVoteDto, foundProposal);
 
-    // Verify that signed data equals this payload
-    const signedPayload: CreateVoteDto = JSON.parse(
-      Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
-    );
-
-    // Get corresponding vote within signed payload (bulk voting payloads may have multiple votes)
-    var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
-    const correspondingVote = arr.find(
-      (v) => v.proposalId === foundProposal.id,
+    // Verify that prop being voted on matches community address of signed vote
+    const foundProposalAuction = await this.auctionService.findOneWithCommunity(
+      foundProposal.auction.id,
     );
     if (
-      !(
-        correspondingVote.direction === createVoteDto.direction &&
-        correspondingVote.proposalId === createVoteDto.proposalId
-      )
+      voteFromPayload.communityAddress !==
+      foundProposalAuction.community.contractAddress
     )
       throw new HttpException(
-        "Signed payload and supplied data doesn't match",
+        'Proposal being voted on does not match community contract address of vote',
         HttpStatus.BAD_REQUEST,
       );
 
-    // Verify that signer has allowed votes
-    const totalVotesAvail = await this.votesService.getNumVotes(
+    // Verify that signer has voting power
+    const votingPower = await this.votesService.getNumVotes(
       createVoteDto,
       foundProposal.auction.balanceBlockTag,
     );
 
-    if (totalVotesAvail === 0)
+    if (votingPower === 0) {
       throw new HttpException(
-        'Signer does not have delegated votes',
+        'Signer does not have voting power',
         HttpStatus.BAD_REQUEST,
       );
+    }
 
     // Get votes by user for auction
-    const signerVotesForAuction = (
-      await this.votesService.findByAddress(createVoteDto.address)
-    )
+    const validatedSignerVotes = await this.votesService.findByAddress(
+      createVoteDto.address,
+      {
+        signatureState: SignatureState.VALIDATED,
+      },
+    );
+
+    const signerVotesForAuction = validatedSignerVotes
       .filter((vote) => vote.proposal.auctionId === foundProposal.auctionId)
       .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
 
-    // Voting up
-    if (createVoteDto.direction === VoteDirections.Up) {
-      const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
-        (agg, current) => Number(agg) + Number(current.weight),
-        0,
+    const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
+      (agg, current) => Number(agg) + Number(current.weight),
+      0,
+    );
+
+    // Check that user won't exceed voting power by casting vote
+    if (aggVoteWeightSubmitted + voteFromPayload.weight > votingPower) {
+      throw new HttpException(
+        'Signer does not have enough voting power to cast vote',
+        HttpStatus.BAD_REQUEST,
       );
+    }
 
-      // Verify that user has not reached max votes
-      if (aggVoteWeightSubmitted >= totalVotesAvail)
-        throw new HttpException(
-          'Signer has consumed all delegated votes',
-          HttpStatus.BAD_REQUEST,
-        );
+    await this.votesService.createNewVote(createVoteDto, foundProposal);
 
-      await this.votesService.createNewVote(createVoteDto, foundProposal);
+    // Only increase proposal vote count if the signature has been validated
+    if (createVoteDto.signatureState === SignatureState.VALIDATED) {
       await this.proposalService.rollupVoteCount(foundProposal.id);
     }
   }

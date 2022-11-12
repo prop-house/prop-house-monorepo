@@ -11,12 +11,16 @@ import {
 } from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import RoundMessage from '../../RoundMessage';
+import ErrorMessageCard from '../../ErrorMessageCard';
 import RoundUtilityBar from '../../RoundUtilityBar';
 import RoundContent from '../../RoundContent';
 import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
 import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
 import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
+import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import OpenGraphElements from '../../OpenGraphElements';
+import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import ReactMarkdown from 'react-markdown';
 
 const Round = () => {
   const location = useLocation();
@@ -74,6 +78,14 @@ const Round = () => {
 
   return (
     <>
+      {round && (
+        <OpenGraphElements
+          title={round.title}
+          description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
+          imageUrl={cardServiceUrl(CardType.round, round.id).href}
+        />
+      )}
+
       <Container>
         {community && round && <RoundHeader auction={round} community={community} />}
       </Container>
@@ -92,7 +104,7 @@ const Round = () => {
             {round && proposals ? (
               <RoundContent auction={round} proposals={proposals} />
             ) : (
-              <RoundMessage message="No rounds available" />
+              <ErrorMessageCard message="No rounds available" />
             )}
           </div>
         </Container>

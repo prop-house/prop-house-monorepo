@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import {
   auctionStatus,
   AuctionStatus,
-  DeadlineCopy,
+  deadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
@@ -64,7 +64,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {DeadlineCopy(auction)}{' '}
+                        {deadlineCopy(auction)}{' '}
                         <span className="infoSymbol">
                           <MdInfoOutline />
                         </span>
@@ -90,9 +90,9 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemTitle}>{t('funding')}</div>
 
             <div className={classes.itemData}>
-              <TruncateThousands amount={auction.fundingAmount} />
-              {auction.currencyType}
-              <span className={classes.xDivide}>{' × '}</span> {auction.numWinners}
+              <TruncateThousands amount={auction.fundingAmount} decimals={2} />{' '}
+              {auction.currencyType} <span className={classes.xDivide}>{' × '}</span>{' '}
+              {auction.numWinners}
             </div>
           </div>
 
@@ -101,6 +101,11 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
               {proposals && proposals.length === 1 ? 'Proposal' : 'Proposals'}
             </div>
             <div className={classes.itemData}>{proposals && proposals.length}</div>
+          </div>
+
+          <div className={classes.item}>
+            <div className={classes.itemTitle}>{t('Snapshot')}</div>
+            <div className={classes.itemData}>{auction.balanceBlockTag}</div>
           </div>
         </Col>
       </div>

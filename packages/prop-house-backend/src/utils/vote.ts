@@ -1,5 +1,3 @@
-import { Vote } from 'src/vote/vote.entity';
-
 export enum VoteDirections {
   Up = 1,
   Down = -1,

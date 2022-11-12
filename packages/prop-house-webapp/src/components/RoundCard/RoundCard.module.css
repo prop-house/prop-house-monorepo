@@ -277,7 +277,7 @@
 .info {
   color: var(--brand-black);
   font-weight: 700;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 23px;
   letter-spacing: 0.02em;
   height: 23px;
@@ -289,7 +289,7 @@
 }
 
 .roundEnded {
-  background: var(--bg-dark);
+  background: var(--bg-dark) !important;
   box-shadow: none;
 }
 .roundEnded .roundInfo {
@@ -306,11 +306,8 @@
   .info {
     font-size: 14px;
   }
-  .roundInfo {
-    padding: 1rem;
-  }
 }
-@media (max-width: 375px) {
+@media (max-width: 450px) {
   .propSection {
     display: none;
   }

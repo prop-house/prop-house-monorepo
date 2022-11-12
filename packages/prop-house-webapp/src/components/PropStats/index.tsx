@@ -33,7 +33,7 @@ const PropStats: React.FC<{
     return (
       currentlyWinningProps &&
       Number(currentlyWinningProps[currentlyWinningProps.length - 1].voteCount) -
-        Number(prop.score) +
+        Number(prop.voteCount) +
         1
     );
   };

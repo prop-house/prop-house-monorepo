@@ -1,4 +1,5 @@
 import {
+  SignatureState,
   StoredAuction,
   StoredProposalWithVotes,
   Vote,
@@ -15,7 +16,7 @@ import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
-import RoundMessage from '../RoundMessage';
+import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import ErrorModal from '../ErrorModal';
@@ -41,6 +42,7 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorModalMessage, setErrorModalMessage] = useState({
@@ -110,13 +112,33 @@ const RoundContent: React.FC<{
       dispatch(setNumSubmittedVotes(aggVoteWeightForProps(proposals, account)));
   }, [proposals, account, dispatch]);
 
+  const _signerIsContract = async () => {
+    if (!library || !account) {
+      return false;
+    }
+    const code = await library?.getCode(account);
+    const isContract = code !== '0x';
+    setSignerIsContract(isContract);
+    return isContract;
+  };
+
   const handleSubmitVote = async () => {
     try {
       const votes = voteAllotments
-        .map(a => new Vote(1, a.proposalId, a.votes, community!.contractAddress))
+        .map(
+          a =>
+            new Vote(
+              1,
+              a.proposalId,
+              a.votes,
+              community!.contractAddress,
+              SignatureState.PENDING_VALIDATION,
+            ),
+        )
         .filter(v => v.weight > 0);
+      const isContract = await _signerIsContract();
 
-      await client.current.logVotes(votes);
+      await client.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessModal(true);
@@ -150,6 +172,7 @@ const RoundContent: React.FC<{
           showSuccessModal={showSuccessModal}
           setShowSuccessModal={setShowSuccessModal}
           numPropsVotedFor={numPropsVotedFor}
+          signerIsContract={signerIsContract}
         />
       )}
 
@@ -164,7 +187,7 @@ const RoundContent: React.FC<{
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <RoundMessage message="Funding round starting soon" date={auction.startTime} />
+        <ErrorMessageCard message="Funding round starting soon" date={auction.startTime} />
       ) : (
         <>
           {community && (
@@ -172,7 +195,7 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <RoundMessage message={t('submittedProps')} />
+                    <ErrorMessageCard message={t('submittedProps')} />
                   ) : (
                     proposals.map((proposal, index) => {
                       return (

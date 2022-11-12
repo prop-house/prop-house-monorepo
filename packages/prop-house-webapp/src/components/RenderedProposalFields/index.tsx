@@ -15,10 +15,11 @@ export interface RenderedProposalProps {
   proposalId?: number;
   backButton?: React.ReactNode;
   community?: any;
+  roundName?: string;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
-  const { fields, address, proposalId, backButton, community } = props;
+  const { fields, address, proposalId, backButton, community, roundName } = props;
   const { t } = useTranslation();
 
   return (
@@ -26,33 +27,34 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
       <Row>
         <Col xl={12} className={classes.previewCol}>
           <div className={classes.headerContainer}>
-            {backButton && backButton}
+            <div className={classes.backBtnContainer}>
+              {backButton && backButton}
+
+              {community && roundName && (
+                <Link
+                  to={`/${nameToSlug(community.name)}`}
+                  className={classes.communityProfImgContainer}
+                >
+                  {community.name.charAt(0).toUpperCase() + community.name.slice(1)} House:{' '}
+                  {roundName}
+                </Link>
+              )}
+            </div>
 
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
                   <div className={classes.communityAndPropNumber}>
                     <span className={classes.propNumber}>Prop #{proposalId} </span>
+                    by
+                    <div className={classes.submittedBy}>
+                      <EthAddress
+                        address={address}
+                        hideDavatar={true}
+                        className={classes.submittedBy}
+                      />
+                    </div>
                   </div>
-                  &nbsp;
-                  <div className={classes.submittedBy}>
-                    by&nbsp;
-                    <EthAddress
-                      address={address}
-                      hideDavatar={true}
-                      className={classes.submittedBy}
-                    />
-                  </div>
-                  &nbsp;in&nbsp;the&nbsp;
-                  {community && (
-                    <Link
-                      to={`/${nameToSlug(community.name)}`}
-                      className={classes.communityProfImgContainer}
-                    >
-                      {community.name.charAt(0).toUpperCase() + community.name.slice(1)}
-                      &nbsp;house
-                    </Link>
-                  )}
                 </div>
               )}
 
@@ -60,35 +62,37 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
             </div>
           </div>
 
-          {fields.tldr && (
-            <>
-              <hr></hr>
-              <h2>{t('tldr2')}</h2>
-              <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
-            </>
-          )}
+          <span className={classes.proposalBody}>
+            {fields.tldr && (
+              <>
+                <hr></hr>
+                <h2>{t('tldr2')}</h2>
+                <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
+              </>
+            )}
 
-          <h2>{t('description')}</h2>
-          {/*
-           * We sanitize HTML coming from rich text editor to prevent xss attacks.
-           *
-           * <Markdown/> component used to render HTML, while supporting Markdown.
-           */}
-          <Markdown>
-            {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-              allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-              allowedAttributes: {
-                img: ['src', 'alt'],
-                a: ['href', 'target'],
-              },
-              allowedClasses: {
-                code: ['language-*', 'lang-*'],
-                pre: ['language-*', 'lang-*'],
-              },
-              // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
-          </Markdown>
+            <h2>{t('description')}</h2>
+            {/*
+             * We sanitize HTML coming from rich text editor to prevent xss attacks.
+             *
+             * <Markdown/> component used to render HTML, while supporting Markdown.
+             */}
+            <Markdown>
+              {sanitizeHtml(fields.what, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                allowedAttributes: {
+                  img: ['src', 'alt'],
+                  a: ['href', 'target'],
+                },
+                allowedClasses: {
+                  code: ['language-*', 'lang-*'],
+                  pre: ['language-*', 'lang-*'],
+                },
+                // edge case: handle ampersands in img links encoded from sanitization
+              }).replaceAll('&amp;', '&')}
+            </Markdown>
+          </span>
         </Col>
       </Row>
     </>

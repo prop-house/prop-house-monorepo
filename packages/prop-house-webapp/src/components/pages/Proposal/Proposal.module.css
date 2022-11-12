@@ -11,9 +11,8 @@
 
 .backToAuction:hover {
   color: var(--brand-black);
-  transition-property: color, background-color, border-color,
-    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
-    backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -22,13 +21,5 @@
   .backToAuction svg {
     height: 2rem;
     width: 2rem;
-  }
-  .backToAuction span {
-    display: none;
-  }
-}
-@media (max-width: 576px) {
-  .backToAuction {
-    padding-bottom: 25px;
   }
 }

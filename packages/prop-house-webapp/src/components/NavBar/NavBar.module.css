@@ -37,6 +37,9 @@
     text-align: center;
     margin-bottom: 5px;
   }
+  .link {
+    display: block;
+  }
 }
 
 .link {

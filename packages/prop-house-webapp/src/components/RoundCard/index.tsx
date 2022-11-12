@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import {
   auctionStatus,
   AuctionStatus,
-  DeadlineCopy,
+  deadlineCopy,
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,8 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { useAppDispatch } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
+import Markdown from 'markdown-to-jsx';
+import sanitizeHtml from 'sanitize-html';
 
 const RoundCard: React.FC<{
   round: StoredAuction;
@@ -28,6 +30,16 @@ const RoundCard: React.FC<{
   const { t } = useTranslation();
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  interface changeTagProps {
+    children: React.ReactNode;
+  }
+
+  // overrides any tag to become a <p> tag
+  const changeTagToParagraph = ({ children }: changeTagProps) => <p>{children}</p>;
+
+  // overrides any tag to become a <span> tag
+  const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
 
   return (
     <>
@@ -55,7 +67,21 @@ const RoundCard: React.FC<{
               <StatusPill status={auctionStatus(round)} />
             </div>
 
-            <div className={classes.truncatedTldr}>{round.description}</div>
+            {/* support both markdown & html in round's description.  */}
+            <Markdown
+              className={classes.truncatedTldr}
+              options={{
+                overrides: {
+                  h1: changeTagToParagraph,
+                  h2: changeTagToParagraph,
+                  h3: changeTagToParagraph,
+                  a: changeTagToSpan,
+                  br: changeTagToSpan,
+                },
+              }}
+            >
+              {sanitizeHtml(round.description)}
+            </Markdown>
           </div>
 
           <div className={classes.roundInfo}>
@@ -63,7 +89,7 @@ const RoundCard: React.FC<{
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
                 <span className="">
-                  <TruncateThousands amount={round.fundingAmount} />
+                  <TruncateThousands amount={round.fundingAmount} decimals={2} />
                   {` ${round.currencyType}`}
                 </span>
                 <span className={classes.xDivide}>{' × '}</span>
@@ -77,7 +103,7 @@ const RoundCard: React.FC<{
               <Tooltip
                 content={
                   <>
-                    <p className={classes.title}>{DeadlineCopy(round)}</p>
+                    <p className={classes.title}>{deadlineCopy(round)}</p>
                     <p className={classes.info}>
                       {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>

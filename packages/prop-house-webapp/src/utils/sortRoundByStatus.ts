@@ -9,5 +9,8 @@ export const sortRoundByStatus = (rounds: StoredAuction[]) => [
   ...rounds.filter(round => auctionStatus(round) === 1),
   ...rounds.filter(round => auctionStatus(round) === 2),
   ...rounds.filter(round => auctionStatus(round) === 0),
-  ...rounds.filter(round => auctionStatus(round) === 3),
+
+  ...rounds
+    .filter(round => auctionStatus(round) === 3)
+    .sort((a, b) => (a.startTime > b.startTime ? -1 : 1)),
 ];
