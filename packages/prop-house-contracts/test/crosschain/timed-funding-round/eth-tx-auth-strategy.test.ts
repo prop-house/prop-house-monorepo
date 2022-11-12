@@ -133,7 +133,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     await starknet.devnet.flush();
 
-    fundingHouse = new FundingHouse(fundingHouseAddress, signer as any);
+    fundingHouse = new FundingHouse(fundingHouseAddress, signer);
 
     await fundingHouse.depositETH({ value: ONE_ETHER });
 
