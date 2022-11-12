@@ -27,7 +27,7 @@ export class FundingHouse extends as<BaseContract, FundingHouseContract>(BaseCon
    * @param round The round initiation parameters
    * @param overrides Optional transaction overrides
    */
-  public async initiateRoundSimple(round: RoundParams, overrides?: Overrides) {
+  public async initiateRoundSimple(round: RoundParams, overrides: Overrides = {}) {
     return this.initiateRound(
       {
         title: round.title,

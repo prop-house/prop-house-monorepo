@@ -7,14 +7,10 @@ import {
   VOTE_SELECTOR,
 } from '../../utils';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
+import { AssetType, FundingHouse, FundingHouseStrategyType } from '@prophouse/sdk';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
 import { IntsSequence } from '@snapshot-labs/sx/dist/utils/ints-sequence';
-import {
-  HouseFactory,
-  FundingHouse,
-  MockStarknetMessaging,
-  StarkNetCommit,
-} from '../../../typechain';
+import { HouseFactory, MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { BigNumberish } from 'ethers';
@@ -73,12 +69,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   let timestamp: number;
 
+  let fundingHouse: FundingHouse;
+
   let signer: SignerWithAddress;
   let starknetSigner: Account;
 
   // Contracts
   let houseFactory: HouseFactory;
-  let fundingHouse: FundingHouse;
   let mockStarknetMessaging: MockStarknetMessaging;
   let starknetCommit: StarkNetCommit;
 
@@ -136,26 +133,29 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     await starknet.devnet.flush();
 
-    fundingHouse = config.fundingHouseImpl.attach(fundingHouseAddress);
+    fundingHouse = new FundingHouse(fundingHouseAddress, signer as any);
 
     await fundingHouse.depositETH({ value: ONE_ETHER });
 
     const start = timestamp + ONE_DAY_SEC;
-    const tx = await fundingHouse.initiateRound({
+    const tx = await fundingHouse.initiateRoundSimple({
       title: 'Test Round',
       description: 'A round used for testing purposes',
       tags: ['test', 'prop-house'],
       votingStrategies: [votingStrategyHash],
       strategy: {
+        strategyType: FundingHouseStrategyType.TIMED_FUNDING_ROUND,
+        config: {
+          proposalPeriodStartTimestamp: start,
+          proposalPeriodDuration: ONE_DAY_SEC,
+          votePeriodDuration: ONE_DAY_SEC,
+          winnerCount: 5,
+        },
         validator: config.timedFundingRoundStrategyValidator.address,
-        config: ethers.utils.defaultAbiCoder.encode(
-          ['tuple(uint40,uint40,uint40,uint16)'], // TODO: SDK
-          [[start, ONE_DAY_SEC, ONE_DAY_SEC, 5]],
-        ),
       },
       awards: [
         {
-          assetId: '0x8322fff200000000000000000000000000000000000000000000000000000000', // TODO: SDK
+          assetType: AssetType.ETH,
           amount: ONE_ETHER,
         },
       ],

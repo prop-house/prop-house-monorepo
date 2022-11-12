@@ -56,7 +56,7 @@ export const getTimedFundingRoundInfo = (strategy: TimedFundingRoundStrategy, aw
     if (awards[0].assetType === AssetType.ERC721) {
       throw new Error(`Cannot split ERC721 between multiple winners`);
     }
-    if (BigNumber.from(awards[0].amount).toNumber() % config.winnerCount !== 0) {
+    if (!BigNumber.from(awards[0].amount).mod(config.winnerCount).eq(0)) {
       throw new Error(`Award must split equally between winners`);
     }
   }
@@ -74,10 +74,12 @@ export const getTimedFundingRoundInfo = (strategy: TimedFundingRoundStrategy, aw
     config: defaultAbiCoder.encode(
       [TIMED_FUNDING_ROUND_STRUCT_TYPE],
       [
-        config.proposalPeriodStartTimestamp,
-        config.proposalPeriodDuration,
-        config.votePeriodDuration,
-        config.winnerCount,
+        [
+          config.proposalPeriodStartTimestamp,
+          config.proposalPeriodDuration,
+          config.votePeriodDuration,
+          config.winnerCount,
+        ],
       ],
     ),
   };

@@ -70,12 +70,17 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
   const timedFundingRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
     './contracts/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
   );
+  const timedFundingRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
+    './contracts/starknet/strategies/timed_funding_round/auth/eth_sig.cairo',
+  );
 
   const timedFundingRoundEthTxAuthStrategy = await timedFundingRoundEthTxAuthStrategyFactory.deploy(
     {
       starknet_commit_address: config.starknetCommit.address,
     },
   );
+  const timedFundingRoundEthSigAuthStrategy =
+    await timedFundingRoundEthSigAuthStrategyFactory.deploy();
 
   const timedFundingRoundStrategyClassHash = await config.starknetSigner.declare(
     timedFundingRoundStrategyL2Factory,
@@ -84,6 +89,7 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
         voting_strategy_registry: config.votingStrategyRegistry.address,
         eth_execution_strategy: config.ethHouseExecutionStrategy.address,
         eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
+        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
       },
     },
   );
@@ -102,5 +108,6 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
     timedFundingRoundStrategyL2Factory,
     timedFundingRoundStrategyClassHash,
     timedFundingRoundEthTxAuthStrategy,
+    timedFundingRoundEthSigAuthStrategy,
   };
 };

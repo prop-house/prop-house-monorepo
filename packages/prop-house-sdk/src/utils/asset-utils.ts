@@ -1,7 +1,9 @@
 import { BigNumberish } from '@ethersproject/bignumber';
-import { pack } from '@ethersproject/solidity';
-import { keccak256 } from '@ethersproject/keccak256';
 import { IAssetData__factory } from '@prophouse/contracts';
+import { BytesLike, concat, hexlify } from '@ethersproject/bytes';
+import { HashZero } from '@ethersproject/constants';
+import { keccak256 } from '@ethersproject/keccak256';
+import { pack } from '@ethersproject/solidity';
 
 export const assetUtils = {
   assetDataIface: IAssetData__factory.createInterface(),
@@ -64,10 +66,22 @@ export const assetUtils = {
   },
 
   /**
+   * Convert `bytes` to a `bytes32` hex string
+   * @param bytes The bytes to convert
+   */
+  toBytes32(bytes: BytesLike) {
+    // Ensure we have room for null-termination
+    if (bytes.length > 31) {
+      throw new Error('bytes32 string must be less than 32 bytes');
+    }
+    return hexlify(concat([bytes, HashZero]).slice(0, 32));
+  },
+
+  /**
    * Generate an ETH asset ID
    */
   getETHAssetID(): string {
-    return this.encodeETHAssetData();
+    return this.toBytes32(this.encodeETHAssetData());
   },
 
   /**
@@ -75,7 +89,7 @@ export const assetUtils = {
    * @param tokenAddress The ERC20 token address
    */
   getERC20AssetID(tokenAddress: string): string {
-    return this.encodeERC20AssetData(tokenAddress);
+    return this.toBytes32(this.encodeERC20AssetData(tokenAddress));
   },
 
   /**
