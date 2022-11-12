@@ -22,6 +22,8 @@ from starkware.cairo.common.uint256 import (
 from contracts.starknet.common.lib.felt_utils import FeltUtils
 from contracts.starknet.common.lib.array_utils import ArrayUtils
 
+from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
+
 const ETHEREUM_PREFIX = 0x1901;
 
 // This is the domainSeparator, obtained by using those fields (see more about it in EIP712):
@@ -90,7 +92,7 @@ namespace EIP712 {
 
         let (voter_address_u256) = FeltUtils.felt_to_uint256(voter_address);
 
-        let proposal_votes_len = calldata[1];
+        let proposal_votes_len = calldata[1] * ProposalVote.SIZE;
         let proposal_votes = &calldata[2];
         let (proposal_votes_hash) = _get_padded_hash(proposal_votes_len, proposal_votes);
 
