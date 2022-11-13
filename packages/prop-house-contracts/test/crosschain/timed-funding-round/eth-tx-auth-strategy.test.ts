@@ -1,5 +1,6 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
+  CANCEL_PROPOSAL_SELECTOR,
   fundingHouseTimedFundingRoundSetup,
   METADATA_URI,
   ONE_DAY_SEC,
@@ -23,7 +24,7 @@ import { hash } from 'starknet';
 chai.use(solidity);
 
 interface ProposalVote {
-  proposalID: number;
+  proposalId: number;
   votingPower: BigNumberish;
 }
 
@@ -34,6 +35,10 @@ const getProposeCalldata = (proposerAddress: string, metadataUri: IntsSequence):
     `0x${metadataUri.values.length.toString(16)}`,
     ...metadataUri.values,
   ];
+};
+
+const getCancelProposalCalldata = (proposerAddress: string, proposalId: BigNumberish): string[] => {
+  return [proposerAddress, ethers.BigNumber.from(proposalId).toHexString()];
 };
 
 const getVoteCalldata = (
@@ -52,7 +57,7 @@ const getVoteCalldata = (
           BigInt(vote.votingPower.toString()),
         );
         return [
-          `0x${vote.proposalID.toString(16)}`,
+          `0x${vote.proposalId.toString(16)}`,
           ethers.BigNumber.from(low).toHexString(),
           ethers.BigNumber.from(high).toHexString(),
         ];
@@ -181,7 +186,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       signer.address,
       [
         {
-          proposalID: 1,
+          proposalId: 1,
           votingPower: 1,
         },
       ],
@@ -196,7 +201,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   it('should create a proposal using an Ethereum transaction', async () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit.connect(signer).commit(
+    await starknetCommit.commit(
       ethTxAuth.address,
       hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]), // TODO: SDK, utils.encoding.getCommit
     );
@@ -223,12 +228,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   it('should not allow the same commit to be executed multiple times', async () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit
-      .connect(signer)
-      .commit(
-        ethTxAuth.address,
-        hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
-      );
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
+    );
 
     await starknet.devnet.flush();
     await starknetSigner.invoke(ethTxAuth, 'authenticate', {
@@ -250,12 +253,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   });
 
   it('should fail if the correct hash of the payload is not committed on L1 before execution is called', async () => {
-    await starknetCommit
-      .connect(signer)
-      .commit(
-        ethTxAuth.address,
-        hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...proposeCalldata]),
-      ); // Wrong selector
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...proposeCalldata]),
+    ); // Wrong selector
 
     await starknet.devnet.flush();
     try {
@@ -272,12 +273,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   it('should fail if the commit sender address is not equal to the address in the payload', async () => {
     proposeCalldata[0] = ethers.Wallet.createRandom().address; // Random l1 address in the calldata
-    await starknetCommit
-      .connect(signer)
-      .commit(
-        ethTxAuth.address,
-        hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
-      );
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
+    );
 
     await starknet.devnet.flush();
     try {
@@ -292,14 +291,63 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     }
   });
 
+  it('should cancel a proposal using an Ethereum transaction', async () => {
+    const proposeCalldata = getProposeCalldata(
+      signer.address,
+      utils.intsSequence.IntsSequence.LEFromString('Test cancel proposal!'),
+    );
+
+    // Commit the hash of the payload to the StarkNet commit L1 contract
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]), // TODO: SDK, utils.encoding.getCommit
+    );
+    // Check that the L1 -> L2 message has been propagated
+    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
+
+    const proposeTxHash = await starknetSigner.invoke(ethTxAuth, 'authenticate', {
+      target: houseStrategyAddress,
+      function_selector: PROPOSE_SELECTOR,
+      calldata: proposeCalldata,
+    });
+    const { events } = await starknet.getTransactionReceipt(proposeTxHash);
+    const [proposalId] = events[0].data;
+
+    let { is_cancelled } = await timedFundingRound.call('get_proposal_info', {
+      proposal_id: proposalId,
+    });
+    expect(parseInt(is_cancelled, 16)).to.equal(0);
+
+    const cancelProposalCalldata = getCancelProposalCalldata(signer.address, proposalId);
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([
+        houseStrategyAddress,
+        CANCEL_PROPOSAL_SELECTOR,
+        ...cancelProposalCalldata,
+      ]),
+    );
+
+    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
+
+    await starknetSigner.invoke(ethTxAuth, 'authenticate', {
+      target: houseStrategyAddress,
+      function_selector: CANCEL_PROPOSAL_SELECTOR,
+      calldata: cancelProposalCalldata,
+    });
+
+    ({ is_cancelled } = await timedFundingRound.call('get_proposal_info', {
+      proposal_id: proposalId,
+    }));
+    expect(parseInt(is_cancelled, 16)).to.equal(1);
+  });
+
   it('should create a vote using an Ethereum transaction', async () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit
-      .connect(signer)
-      .commit(
-        ethTxAuth.address,
-        hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...voteCalldata]),
-      );
+    await starknetCommit.commit(
+      ethTxAuth.address,
+      hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...voteCalldata]),
+    );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
 
