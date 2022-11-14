@@ -17,11 +17,17 @@
     git submodule update --init --recursive
     ```
 
+### Compile TypeScript, Contracts, and Generate Typechain Typings
+
+```sh
+yarn build
+```
+
 ### Tests
 
 1. Generate test users:
     ```sh
-    yarn test:setup
+    yarn test:users
     ```
 2. Run local chains:
     ```sh
@@ -36,10 +42,4 @@
 
 ```sh
 yarn format
-```
-
-### Compile Contracts
-
-```sh
-yarn compile
 ```

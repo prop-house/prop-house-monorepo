@@ -571,12 +571,14 @@ func get_round_state{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 @view
 func get_proposal_info{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     proposal_id: felt
-) -> (proposal_info: ProposalInfo) {
+) -> (proposal_info: ProposalInfo, is_cancelled: felt) {
     let (proposal_address) = proposer_address_registry_store.read(proposal_id);
     let (voting_power) = proposal_vote_power_store.read(proposal_id);
+    let (is_cancelled) = cancelled_proposals_store.read(proposal_id);
 
     return (
         ProposalInfo(proposal_id=proposal_id, proposer_address=proposal_address, voting_power=voting_power),
+        is_cancelled,
     );
 }
 
