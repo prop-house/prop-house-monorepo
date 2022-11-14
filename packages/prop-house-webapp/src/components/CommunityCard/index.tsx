@@ -20,7 +20,10 @@ const CommunityCard: React.FC<{
           <div className={classes.infoWithSymbol}>
             <div className={classes.infoText}>
               <span className={classes.infoAmount}>
-                Ξ <TruncateThousands amount={community.ethFunded} />
+                {community.contractAddress === '0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7'
+                  ? 'APE'
+                  : 'Ξ'}{' '}
+                <TruncateThousands amount={community.ethFunded} />
               </span>{' '}
               <span className={classes.infoCopy}>funded</span>
             </div>
