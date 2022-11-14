@@ -62,14 +62,16 @@ const HouseHeader: React.FC<{
           </div>
 
           <div className={classes.propHouseDataRow}>
-            <div className={classes.itemData}>{community.numAuctions}</div>
+            <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
             <div className={classes.itemTitle}>
-              {community?.numAuctions === 1 ? 'Round' : 'Rounds'}
+              {community.numAuctions === 1 ? 'Round' : 'Rounds'}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
-            <div className={classes.itemData}>{community.numProposals}</div>
-            <div className={classes.itemTitle}>{'Proposals'}</div>
+            <div className={classes.itemData}>{community.numProposals ?? 0}</div>
+            <div className={classes.itemTitle}>
+              {community.numProposals === 1 ? 'Proposal' : 'Proposals'}
+            </div>
           </div>
         </div>
 
