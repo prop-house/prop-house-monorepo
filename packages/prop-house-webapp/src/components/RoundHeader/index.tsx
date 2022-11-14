@@ -71,9 +71,9 @@ const RoundHeader: React.FC<{
           <Col className={classes.communityDescriptionRow}>
             <ReadMore description={roundDescription} />
           </Col>
-        </Col>
-      </Col>
-    </Row>
+        </Col >
+      </Col >
+    </Row >
   );
 };
 

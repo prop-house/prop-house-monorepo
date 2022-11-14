@@ -8,6 +8,7 @@ import { nameToSlug } from '../../utils/communitySlugs';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
+import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 
 export interface RenderedProposalProps {
   fields: ProposalFields;
@@ -79,21 +80,35 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
              *
              * <Markdown/> component used to render HTML, while supporting Markdown.
              */}
-            <Markdown>
-              {sanitizeHtml(fields.what, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-                allowedAttributes: {
-                  img: ['src', 'alt'],
-                  a: ['href', 'target'],
-                },
-                allowedClasses: {
-                  code: ['language-*', 'lang-*'],
-                  pre: ['language-*', 'lang-*'],
-                },
-                // edge case: handle ampersands in img links encoded from sanitization
-              }).replaceAll('&amp;', '&')}
-            </Markdown>
+            <div className="proposalCopy">
+              <Markdown
+                options={{
+                  overrides: {
+                    a: {
+                      component: ForceOpenInNewTab,
+                      props: {
+                        target: '_blank',
+                        rel: 'noreferrer',
+                      },
+                    },
+                  },
+                }}
+              >
+                {sanitizeHtml(fields.what, {
+                  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                  allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                  allowedAttributes: {
+                    img: ['src', 'alt'],
+                    a: ['href', 'target'],
+                  },
+                  allowedClasses: {
+                    code: ['language-*', 'lang-*'],
+                    pre: ['language-*', 'lang-*'],
+                  },
+                  // edge case: handle ampersands in img links encoded from sanitization
+                }).replaceAll('&amp;', '&')}
+              </Markdown>
+            </div>
           </span>
         </Col>
       </Row>
