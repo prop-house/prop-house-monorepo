@@ -8,6 +8,10 @@ describe('community strategies', () => {
     const communityAddresses = (await wrapper.getCommunities()).map(
       community => community.contractAddress,
     );
-    communityAddresses.forEach(add => expect(strategyForCommunity(add)).to.not.be.undefined);
+    communityAddresses.forEach(add => {
+      const s = strategyForCommunity(add);
+      if (s === undefined) console.log(`no strategy found for community with address: ${add}`);
+      expect(strategyForCommunity(add)).to.not.be.undefined;
+    });
   });
 });

@@ -11,17 +11,17 @@ export const communities = new CaseInsensitiveMap(
     // nouns
     '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(10),
     // onchainmonkey
-    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': balanceOfErc721Multiple([
-      '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b',
-      '0x960b7a6bcd451c9968473f7bbfd9be826efd549a',
-    ]),
+    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': balanceOfErc721Multiple(
+      ['0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b', '0x960b7a6bcd451c9968473f7bbfd9be826efd549a'],
+      [1, 1],
+    ),
     // cryptoadz
     '0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6': balanceOfErc721(),
     // nouns japan
-    '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb': balanceOfErc721Multiple([
-      '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb',
-      '0x866648ef4dd51e857ca05ea200ed5d5d0c6f93ce',
-    ]),
+    '0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb': balanceOfErc721Multiple(
+      ['0x898a7dbfddf13962df089fbc8f069fa7ce92cdbb', '0x866648ef4dd51e857ca05ea200ed5d5d0c6f93ce'],
+      [1, 1],
+    ),
     // nounpunks
     '0xe169c2ed585e62b1d32615bf2591093a629549b6': balanceOfErc721(),
     // uma
@@ -40,5 +40,12 @@ export const communities = new CaseInsensitiveMap(
     '0xbfe00921005f86699760c84c38e3cc86d38745cf': erc1155(1, 100),
     // purple
     '0xa45662638E9f3bbb7A6FeCb4B17853B7ba0F3a60': balanceOfErc721(10),
+    // meebits
+    '0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7': balanceOfErc721(),
+    // VesselVerse
+    '0x2Fd43FfA417C1F9e9E260fdE9a0B59fC2AB22069': balanceOfErc721Multiple(
+      ['0x2Fd43FfA417C1F9e9E260fdE9a0B59fC2AB22069', '0x15D019034cd704F4101a0B522aB8999dF42E0FB2'],
+      [1, 2],
+    ),
   }),
 );

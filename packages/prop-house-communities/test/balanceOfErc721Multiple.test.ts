@@ -58,7 +58,33 @@ describe('balance of erc721 multiple', () => {
 
     const sum = BigNumber.from(ocmBalanceOf).add(BigNumber.from(karmaBalanceOf)).toNumber();
 
-    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress])(
+    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], [1, 1])(
+      holderAddress,
+      onChainMonkeyAddress,
+      15568893,
+      provider,
+    );
+
+    expect(votes).to.eq(sum);
+  });
+
+  it('custom strategy should return votes corresponding to diff multipliers across mutiple contracts ', async () => {
+    apiKey = process.env.INFURA_PROJECT_ID;
+    if (!apiKey) return;
+    const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
+    const multipliers = [1, 5];
+
+    const ocmContract = new Contract(onChainMonkeyAddress, BalanceOfABI, provider);
+    const ocmBalanceOf = await ocmContract.balanceOf(holderAddress);
+    const ocmBalanceWMult = BigNumber.from(ocmBalanceOf).mul(multipliers[0]);
+
+    const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
+    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 15568893 });
+    const karmaBalanceWMult = BigNumber.from(karmaBalanceOf).mul(multipliers[1]);
+
+    const sum = BigNumber.from(ocmBalanceWMult).add(BigNumber.from(karmaBalanceWMult)).toNumber();
+
+    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], multipliers)(
       holderAddress,
       onChainMonkeyAddress,
       15568893,
