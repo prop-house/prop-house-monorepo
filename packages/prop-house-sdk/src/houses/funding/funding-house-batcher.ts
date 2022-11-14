@@ -1,8 +1,8 @@
 import { FundingHouseContract } from '@prophouse/contracts';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { ContractReceipt, Overrides } from '@ethersproject/contracts';
-import { getHouseStrategyInfo } from '../../strategies';
-import { getAssetIDsAndAmounts } from './utils';
+import { getHouseStrategyCalldata } from '../../strategies';
+import { getAwardsCalldata } from './utils';
 import {
   PayableFundingHouseAction as PayableAction,
   FundingHouseActionName as ActionName,
@@ -95,8 +95,8 @@ export class FundingHouseBatcher {
           description: round.description,
           tags: round.tags,
           votingStrategies: round.votingStrategies,
-          strategy: getHouseStrategyInfo(round.strategy, round.awards),
-          awards: getAssetIDsAndAmounts(round.awards),
+          strategy: getHouseStrategyCalldata(round.strategy, round.awards),
+          awards: getAwardsCalldata(round.awards),
         },
       ]),
     });

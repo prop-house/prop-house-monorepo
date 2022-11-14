@@ -13,62 +13,23 @@ import {
   VOTE_TYPES,
 } from '../../utils';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
-import { AssetType, assetUtils, FundingHouse, FundingHouseStrategyType } from '@prophouse/sdk';
+import {
+  AssetType,
+  FundingHouse,
+  FundingHouseStrategyType,
+  getTimedFundingRoundProposeCalldata,
+  getTimedFundingRoundVoteCalldata,
+  utils,
+} from '@prophouse/sdk';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
-import { IntsSequence } from '@snapshot-labs/sx/dist/utils/ints-sequence';
 import { HouseFactory, MockStarknetMessaging } from '../../../typechain';
 import { computeHashOnElements } from 'starknet/dist/utils/hash';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
-import { BigNumberish } from 'ethers';
 import { solidity } from 'ethereum-waffle';
-import { utils } from '@snapshot-labs/sx';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
-
-interface ProposalVote {
-  proposalID: number;
-  votingPower: BigNumberish;
-}
-
-const getProposeCalldata = (proposerAddress: string, metadataUri: IntsSequence): string[] => {
-  return [
-    proposerAddress,
-    `0x${metadataUri.bytesLength.toString(16)}`,
-    `0x${metadataUri.values.length.toString(16)}`,
-    ...metadataUri.values,
-  ];
-};
-
-const getVoteCalldata = (
-  voterAddress: string,
-  proposalVotes: ProposalVote[],
-  usedVotingStrategies: number[],
-  usedVotingStrategyParams: string[][],
-): string[] => {
-  const usedVotingStrategyParamsFlat = utils.encoding.flatten2DArray(usedVotingStrategyParams);
-  return [
-    voterAddress,
-    `0x${proposalVotes.length.toString(16)}`,
-    ...proposalVotes
-      .map(vote => {
-        const { low, high } = utils.splitUint256.SplitUint256.fromUint(
-          BigInt(vote.votingPower.toString()),
-        );
-        return [
-          `0x${vote.proposalID.toString(16)}`,
-          ethers.BigNumber.from(low).toHexString(),
-          ethers.BigNumber.from(high).toHexString(),
-        ];
-      })
-      .flat(),
-    `0x${usedVotingStrategies.length.toString(16)}`,
-    ...usedVotingStrategies.map(strategy => `0x${strategy.toString(16)}`),
-    `0x${usedVotingStrategyParamsFlat.length.toString(16)}`,
-    ...usedVotingStrategyParamsFlat,
-  ];
-};
 
 describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
   const networkUrl = network.config.url!;
@@ -83,7 +44,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
   let fundingHouse: FundingHouse;
   let mockStarknetMessaging: MockStarknetMessaging;
 
-  let timedFundingRound: StarknetContract;
+  let timedFundingRoundContract: StarknetContract;
   let ethSigAuth: StarknetContract;
 
   let timedFundingRoundStrategyL2Factory: StarknetContractFactory;
@@ -175,17 +136,17 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     });
     [, houseStrategyAddress] = block.transaction_receipts[0].events[0].data;
 
-    timedFundingRound = timedFundingRoundStrategyL2Factory.getContractAt(
+    timedFundingRoundContract = timedFundingRoundStrategyL2Factory.getContractAt(
       `0x${BigInt(houseStrategyAddress).toString(16)}`,
     );
 
     metadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
-    proposeCalldata = getProposeCalldata(signer.address, metadataUri);
-    voteCalldata = getVoteCalldata(
+    proposeCalldata = getTimedFundingRoundProposeCalldata(signer.address, METADATA_URI);
+    voteCalldata = getTimedFundingRoundVoteCalldata(
       signer.address,
       [
         {
-          proposalID: 1,
+          proposalId: 1,
           votingPower: 1,
         },
       ],
@@ -204,7 +165,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const salt = utils.splitUint256.SplitUint256.fromHex('0x01');
     const message: Propose = {
       auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRound.address, 32),
+      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
       author: signer.address,
       metadata_uri: METADATA_URI,
       salt: salt.toHex(),
@@ -216,7 +177,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       s,
       v,
       salt,
-      target: timedFundingRound.address,
+      target: timedFundingRoundContract.address,
       function_selector: PROPOSE_SELECTOR,
       calldata: proposeCalldata,
     });
@@ -237,7 +198,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const salt = utils.splitUint256.SplitUint256.fromHex('0x01');
     const message: Propose = {
       auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRound.address, 32),
+      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
       author: signer.address,
       metadata_uri: METADATA_URI,
       salt: salt.toHex(),
@@ -256,7 +217,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
         s,
         v,
         salt,
-        target: timedFundingRound.address,
+        target: timedFundingRoundContract.address,
         function_selector: PROPOSE_SELECTOR,
         calldata: badProposeCalldata,
       });
@@ -299,7 +260,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     );
     const message: Vote = {
       auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRound.address, 32),
+      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
       voter: signer.address,
       proposal_votes_hash: proposalVotesHash,
       strategies_hash: usedVotingStrategiesHashPadded,
@@ -313,7 +274,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       s,
       v,
       salt,
-      target: timedFundingRound.address,
+      target: timedFundingRoundContract.address,
       function_selector: VOTE_SELECTOR,
       calldata: voteCalldata,
     });
@@ -335,10 +296,12 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const AWARD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(1));
 
     // Finalize the round
-    const assetId = utils.splitUint256.SplitUint256.fromUint(BigInt(assetUtils.getETHAssetID()));
+    const assetId = utils.splitUint256.SplitUint256.fromUint(
+      BigInt(utils.encoding.getETHAssetID()),
+    );
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
-    const txHash = await starknetSigner.invoke(timedFundingRound, 'finalize_round', {
+    const txHash = await starknetSigner.invoke(timedFundingRoundContract, 'finalize_round', {
       awards_flat: [WORD_LENGTH, AWARD_LENGTH, assetId, amount],
     });
     const { events } = await starknet.getTransactionReceipt(txHash);

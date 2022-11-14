@@ -1,10 +1,10 @@
 import { FundingHouse__factory, FundingHouseContract } from '@prophouse/contracts';
 import { BaseContract, Overrides } from '@ethersproject/contracts';
-import { Provider } from '@ethersproject/providers';
-import { Signer } from '@ethersproject/abstract-signer';
 import { FundingHouseBatcher } from './funding-house-batcher';
-import { getHouseStrategyInfo } from '../../strategies';
-import { as, getAssetIDsAndAmounts } from './utils';
+import { Signer } from '@ethersproject/abstract-signer';
+import { getHouseStrategyCalldata } from '../../strategies';
+import { Provider } from '@ethersproject/providers';
+import { as, getAwardsCalldata } from './utils';
 import { RoundParams } from './types';
 
 export class FundingHouse extends as<BaseContract, FundingHouseContract>(BaseContract) {
@@ -34,8 +34,8 @@ export class FundingHouse extends as<BaseContract, FundingHouseContract>(BaseCon
         description: round.description,
         tags: round.tags,
         votingStrategies: round.votingStrategies,
-        strategy: getHouseStrategyInfo(round.strategy, round.awards),
-        awards: getAssetIDsAndAmounts(round.awards),
+        strategy: getHouseStrategyCalldata(round.strategy, round.awards),
+        awards: getAwardsCalldata(round.awards),
       },
       overrides,
     );

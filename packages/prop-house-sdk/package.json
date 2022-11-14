@@ -25,6 +25,7 @@
     "@ethersproject/providers": "~5.5.0",
     "@ethersproject/solidity": "~5.5.0",
     "@prophouse/contracts": "~0.1.0",
+    "starknet": "^4.9.0",
     "time-ts": "^0.1.0"
   },
   "devDependencies": {}

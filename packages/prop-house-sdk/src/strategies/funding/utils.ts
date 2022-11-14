@@ -1,4 +1,4 @@
-import { getTimedFundingRoundInfo } from './timed-funding-round-strategy';
+import { getTimedFundingRoundCalldata } from './timed-funding-round-strategy';
 import { FundingHouseStrategy, FundingHouseStrategyType } from './types';
 import { Award } from '../../houses';
 
@@ -7,10 +7,10 @@ import { Award } from '../../houses';
  * @param strategy The funding house strategy information
  * @param awards The funding round awards
  */
-export const getHouseStrategyInfo = (strategy: FundingHouseStrategy, awards: Award[]) => {
+export const getHouseStrategyCalldata = (strategy: FundingHouseStrategy, awards: Award[]) => {
   switch (strategy.strategyType) {
     case FundingHouseStrategyType.TIMED_FUNDING_ROUND:
-      return getTimedFundingRoundInfo(strategy, awards);
+      return getTimedFundingRoundCalldata(strategy, awards);
     default:
       throw new Error(`Unknown house strategy type: ${strategy.strategyType}.`);
   }
