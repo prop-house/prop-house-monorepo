@@ -6,9 +6,9 @@
 ### Install Dependencies
 
 1. Install [Foundry](https://github.com/foundry-rs/foundry)
-2. Install Python 3.7, activate virtualenv, and install dependencies:
+2. Install Python 3.9, activate virtualenv, and install dependencies:
     ```sh
-    python3.7 -m venv ~/cairo_venv
+    python3.9 -m venv ~/cairo_venv
     source ~/cairo_venv/bin/activate
     pip3 install -r requirements.txt
     ```
