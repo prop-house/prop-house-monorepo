@@ -22,10 +22,9 @@ const NoActiveHouseModal: React.FC<{}> = () => {
         </div>
 
         <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>No active house</p>
+          <p className={classes.modalTitle}>No round selected</p>
           <p className={classes.modalSubtitle}>
-            Proposal creation can only be done via a round page. Check for open funding rounds
-            within the houses.
+            Check the homepage for houses with open funding rounds.
           </p>
         </div>
       </div>
