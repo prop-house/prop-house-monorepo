@@ -1,3 +1,5 @@
+import { BigNumberish } from '@ethersproject/bignumber';
+
 export enum FundingHouseStrategyType {
   TIMED_FUNDING_ROUND = 'TIMED_FUNDING_ROUND',
 }
@@ -16,3 +18,8 @@ export interface TimedFundingRoundStrategy {
 }
 
 export type FundingHouseStrategy = TimedFundingRoundStrategy;
+
+export interface ProposalVote {
+  proposalId: number;
+  votingPower: BigNumberish;
+}

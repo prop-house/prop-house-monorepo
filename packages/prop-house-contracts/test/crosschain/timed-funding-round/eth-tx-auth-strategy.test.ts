@@ -9,66 +9,23 @@ import {
   VOTE_SELECTOR,
 } from '../../utils';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
-import { AssetType, assetUtils, FundingHouse, FundingHouseStrategyType } from '@prophouse/sdk';
+import {
+  AssetType,
+  FundingHouse,
+  FundingHouseStrategyType,
+  getTimedFundingRoundProposeCalldata,
+  getTimedFundingRoundCancelProposalCalldata,
+  getTimedFundingRoundVoteCalldata,
+  utils,
+} from '@prophouse/sdk';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
-import { IntsSequence } from '@snapshot-labs/sx/dist/utils/ints-sequence';
 import { HouseFactory, MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
-import { BigNumberish } from 'ethers';
 import { solidity } from 'ethereum-waffle';
-import { utils } from '@snapshot-labs/sx';
 import chai, { expect } from 'chai';
-import { hash } from 'starknet';
 
 chai.use(solidity);
-
-interface ProposalVote {
-  proposalId: number;
-  votingPower: BigNumberish;
-}
-
-const getProposeCalldata = (proposerAddress: string, metadataUri: IntsSequence): string[] => {
-  return [
-    proposerAddress,
-    `0x${metadataUri.bytesLength.toString(16)}`,
-    `0x${metadataUri.values.length.toString(16)}`,
-    ...metadataUri.values,
-  ];
-};
-
-const getCancelProposalCalldata = (proposerAddress: string, proposalId: BigNumberish): string[] => {
-  return [proposerAddress, ethers.BigNumber.from(proposalId).toHexString()];
-};
-
-const getVoteCalldata = (
-  voterAddress: string,
-  proposalVotes: ProposalVote[],
-  usedVotingStrategies: number[],
-  usedVotingStrategyParams: string[][],
-): string[] => {
-  const usedVotingStrategyParamsFlat = utils.encoding.flatten2DArray(usedVotingStrategyParams);
-  return [
-    voterAddress,
-    `0x${proposalVotes.length.toString(16)}`,
-    ...proposalVotes
-      .map(vote => {
-        const { low, high } = utils.splitUint256.SplitUint256.fromUint(
-          BigInt(vote.votingPower.toString()),
-        );
-        return [
-          `0x${vote.proposalId.toString(16)}`,
-          ethers.BigNumber.from(low).toHexString(),
-          ethers.BigNumber.from(high).toHexString(),
-        ];
-      })
-      .flat(),
-    `0x${usedVotingStrategies.length.toString(16)}`,
-    ...usedVotingStrategies.map(strategy => `0x${strategy.toString(16)}`),
-    `0x${usedVotingStrategyParamsFlat.length.toString(16)}`,
-    ...usedVotingStrategyParamsFlat,
-  ];
-};
 
 describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   const networkUrl = network.config.url!;
@@ -85,7 +42,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   let mockStarknetMessaging: MockStarknetMessaging;
   let starknetCommit: StarkNetCommit;
 
-  let timedFundingRound: StarknetContract;
+  let timedFundingRoundContract: StarknetContract;
   let ethTxAuth: StarknetContract;
 
   let timedFundingRoundStrategyL2Factory: StarknetContractFactory;
@@ -176,13 +133,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     });
     [, houseStrategyAddress] = block.transaction_receipts[0].events[0].data;
 
-    timedFundingRound = timedFundingRoundStrategyL2Factory.getContractAt(
+    timedFundingRoundContract = timedFundingRoundStrategyL2Factory.getContractAt(
       `0x${BigInt(houseStrategyAddress).toString(16)}`,
     );
 
     metadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
-    proposeCalldata = getProposeCalldata(signer.address, metadataUri);
-    voteCalldata = getVoteCalldata(
+    proposeCalldata = getTimedFundingRoundProposeCalldata(signer.address, METADATA_URI);
+    voteCalldata = getTimedFundingRoundVoteCalldata(
       signer.address,
       [
         {
@@ -203,7 +160,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]), // TODO: SDK, utils.encoding.getCommit
+      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
@@ -230,7 +187,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
+      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
 
     await starknet.devnet.flush();
@@ -255,7 +212,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   it('should fail if the correct hash of the payload is not committed on L1 before execution is called', async () => {
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...proposeCalldata]),
+      utils.encoding.getCommit(houseStrategyAddress, VOTE_SELECTOR, proposeCalldata),
     ); // Wrong selector
 
     await starknet.devnet.flush();
@@ -275,7 +232,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     proposeCalldata[0] = ethers.Wallet.createRandom().address; // Random l1 address in the calldata
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]),
+      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
 
     await starknet.devnet.flush();
@@ -292,15 +249,15 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   });
 
   it('should cancel a proposal using an Ethereum transaction', async () => {
-    const proposeCalldata = getProposeCalldata(
+    const proposeCalldata = getTimedFundingRoundProposeCalldata(
       signer.address,
-      utils.intsSequence.IntsSequence.LEFromString('Test cancel proposal!'),
+      'Test cancel proposal!',
     );
 
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, PROPOSE_SELECTOR, ...proposeCalldata]), // TODO: SDK, utils.encoding.getCommit
+      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
@@ -313,19 +270,22 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const { events } = await starknet.getTransactionReceipt(proposeTxHash);
     const [proposalId] = events[0].data;
 
-    let { is_cancelled } = await timedFundingRound.call('get_proposal_info', {
+    let { is_cancelled } = await timedFundingRoundContract.call('get_proposal_info', {
       proposal_id: proposalId,
     });
     expect(parseInt(is_cancelled, 16)).to.equal(0);
 
-    const cancelProposalCalldata = getCancelProposalCalldata(signer.address, proposalId);
+    const cancelProposalCalldata = getTimedFundingRoundCancelProposalCalldata(
+      signer.address,
+      proposalId,
+    );
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([
+      utils.encoding.getCommit(
         houseStrategyAddress,
         CANCEL_PROPOSAL_SELECTOR,
-        ...cancelProposalCalldata,
-      ]),
+        cancelProposalCalldata,
+      ),
     );
 
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
@@ -336,7 +296,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       calldata: cancelProposalCalldata,
     });
 
-    ({ is_cancelled } = await timedFundingRound.call('get_proposal_info', {
+    ({ is_cancelled } = await timedFundingRoundContract.call('get_proposal_info', {
       proposal_id: proposalId,
     }));
     expect(parseInt(is_cancelled, 16)).to.equal(1);
@@ -346,7 +306,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      hash.computeHashOnElements([houseStrategyAddress, VOTE_SELECTOR, ...voteCalldata]),
+      utils.encoding.getCommit(houseStrategyAddress, VOTE_SELECTOR, voteCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
@@ -378,10 +338,12 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const AWARD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(1));
 
     // Finalize the round
-    const assetId = utils.splitUint256.SplitUint256.fromUint(BigInt(assetUtils.getETHAssetID()));
+    const assetId = utils.splitUint256.SplitUint256.fromUint(
+      BigInt(utils.encoding.getETHAssetID()),
+    );
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
-    const txHash = await starknetSigner.invoke(timedFundingRound, 'finalize_round', {
+    const txHash = await starknetSigner.invoke(timedFundingRoundContract, 'finalize_round', {
       awards_flat: [WORD_LENGTH, AWARD_LENGTH, assetId, amount],
     });
     const { events } = await starknet.getTransactionReceipt(txHash);
