@@ -12,6 +12,11 @@
     source ~/cairo_venv/bin/activate
     pip3 install -r requirements.txt
     ```
+2a. If you run into Apple M1 chip errors related to installing fastecdsa (gmp), try:
+    ```sh
+    CFLAGS=-I/opt/homebrew/opt/gmp/include LDFLAGS=-L/opt/homebrew/opt/gmp/lib pip install fastecdsa
+    pip3 install -r requirements.txt
+    ```
 3. Install submodules:
     ```sh
     git submodule update --init --recursive
