@@ -18,19 +18,6 @@ export abstract class Signable {
     };
   }
 
-  async presignedPayload(signer: Signer | Wallet, jsonPayload: string, signature: string) {
-    const address = await signer.getAddress();
-    return {
-      signedData: {
-        message: Buffer.from(jsonPayload).toString('base64'),
-        signature,
-        signer: address,
-      },
-      address,
-      ...this.toPayload(),
-    };
-  }
-
   jsonPayload() {
     return JSON.stringify(this.toPayload());
   }
@@ -139,6 +126,7 @@ export class Vote extends Signable {
     public readonly weight: number,
     public readonly communityAddress: string,
     public readonly signatureState: SignatureState,
+    public readonly blockHeight: number,
   ) {
     super();
   }
@@ -149,8 +137,62 @@ export class Vote extends Signable {
       proposalId: this.proposalId,
       weight: this.weight,
       communityAddress: this.communityAddress,
-      signatureState: this.signatureState,
+      blockHeight: this.blockHeight,
     };
+  }
+}
+
+/**
+ * Manages single vote submission with multi-vote signatures.
+ *
+ * To prevent users form signing each vote, we group together all votes and sign one payload.
+ * This one signature is then used to submit each vote to the backend.
+ */
+export class SignableVotes extends Signable {
+  constructor(public readonly votes: Vote[]) {
+    super();
+  }
+
+  /**
+   * The signed payload for a `vote` using a supplied signature
+   */
+  async presignedPayload(
+    vote: Vote,
+    signer: Signer | Wallet,
+    jsonPayload: string,
+    signature: string,
+  ) {
+    const address = await signer.getAddress();
+    return {
+      signedData: {
+        message: Buffer.from(jsonPayload).toString('base64'),
+        signature,
+        signer: address,
+      },
+      address,
+      ...vote.toPayload(),
+    };
+  }
+
+  /**
+   * Signature for payload of all votes
+   */
+  async multiVoteSignature(signer: Signer) {
+    return await signer.signMessage(this.jsonPayload());
+  }
+
+  /**
+   * Payload for all votes
+   */
+  private allVotesPayload() {
+    const filtered = this.votes.filter(v => v.weight > 0);
+    return {
+      ...filtered.map(v => v.toPayload()),
+    };
+  }
+
+  toPayload() {
+    return this.allVotesPayload();
   }
 }
 

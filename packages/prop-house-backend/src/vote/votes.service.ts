@@ -32,6 +32,16 @@ export class VotesService {
     return this.votesRepository.findOne(id);
   }
 
+  findBy(
+    blockHeight: number,
+    proposalId: number,
+    address: string,
+  ): Promise<Vote> {
+    return this.votesRepository.findOne({
+      where: { address, blockHeight, proposalId },
+    });
+  }
+
   async remove(id: string): Promise<void> {
     await this.votesRepository.delete(id);
   }
@@ -70,6 +80,7 @@ export class VotesService {
       proposalId: createVoteDto.proposalId,
       auctionId: proposal.auctionId,
       weight: createVoteDto.weight,
+      blockHeight: createVoteDto.blockHeight,
       proposal,
     });
 

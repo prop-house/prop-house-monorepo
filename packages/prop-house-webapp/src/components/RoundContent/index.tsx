@@ -123,7 +123,9 @@ const RoundContent: React.FC<{
   };
 
   const handleSubmitVote = async () => {
+    if (!library) return;
     try {
+      const blockHeight = await library.getBlockNumber();
       const votes = voteAllotments
         .map(
           a =>
@@ -133,6 +135,7 @@ const RoundContent: React.FC<{
               a.votes,
               community!.contractAddress,
               SignatureState.PENDING_VALIDATION,
+              blockHeight,
             ),
         )
         .filter(v => v.weight > 0);
