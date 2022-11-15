@@ -7,6 +7,7 @@ import { useAppSelector } from '../../hooks';
 import CommunityProfImg from '../CommunityProfImg';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import getHouseCurrency from '../../utils/getHouseCurrency';
+import TruncateThousands from '../TruncateThousands';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
@@ -62,7 +63,8 @@ const OpenGraphHouseCard: React.FC = () => {
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Funded</span>
                   <p className={classes.subtitle}>
-                    {community.ethFunded ?? 0} {getHouseCurrency(community.contractAddress)}
+                    <TruncateThousands amount={community.ethFunded ?? 0} />{' '}
+                    {getHouseCurrency(community.contractAddress)}
                   </p>
                 </div>
               </span>
