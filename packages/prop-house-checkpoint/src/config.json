@@ -1,0 +1,16 @@
+{
+    "network": "goerli-alpha",
+    "sources": [
+      {
+        "contract": "",
+        "start": 185778,
+        "deploy_fn": "handleDeploy",
+        "events": [
+          {
+            "name": "",
+            "fn": ""
+          }
+        ]
+      }
+    ]
+  }
