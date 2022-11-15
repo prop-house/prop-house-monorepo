@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha",
   "description": "Useful tooling for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -15,6 +15,8 @@
     "format": "prettier --write '{,*/**/}*.ts'"
   },
   "dependencies": {
+    "@ethereumjs/block": "~3.6.3",
+    "@ethereumjs/common": "~2.6.5",
     "@ethersproject/abi": "~5.5.0",
     "@ethersproject/address": "~5.5.0",
     "@ethersproject/bignumber": "~5.5.0",
@@ -24,9 +26,12 @@
     "@ethersproject/keccak256": "~5.5.0",
     "@ethersproject/providers": "~5.5.0",
     "@ethersproject/solidity": "~5.5.0",
-    "@prophouse/contracts": "~0.1.0",
+    "@prophouse/contracts": "~0.1.0-alpha",
+    "bn.js": "^5.2.1",
     "starknet": "^4.9.0",
     "time-ts": "^0.1.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/bn.js": "^5.1.1"
+  }
 }
