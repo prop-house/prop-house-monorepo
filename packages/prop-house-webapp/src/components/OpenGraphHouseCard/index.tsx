@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import CommunityProfImg from '../CommunityProfImg';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
+import getHouseCurrency from '../../utils/getHouseCurrency';
+import TruncateThousands from '../TruncateThousands';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
@@ -60,7 +62,10 @@ const OpenGraphHouseCard: React.FC = () => {
                 </div>
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Funded</span>
-                  <p className={classes.subtitle}>Ξ {community.ethFunded ?? 0}</p>
+                  <p className={classes.subtitle}>
+                    <TruncateThousands amount={community.ethFunded ?? 0} />{' '}
+                    {getHouseCurrency(community.contractAddress)}
+                  </p>
                 </div>
               </span>
             </span>
