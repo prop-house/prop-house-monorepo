@@ -51,16 +51,16 @@ const OpenGraphHouseCard: React.FC = () => {
               <span className={classes.roundInfoContainer}>
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Rounds</span>
-                  <p className={classes.subtitle}>{community.numAuctions}</p>
+                  <p className={classes.subtitle}>{community.numAuctions ?? 0}</p>
                 </div>
 
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Proposals</span>
-                  <p className={classes.subtitle}>{community.numProposals}</p>
+                  <p className={classes.subtitle}>{community.numProposals ?? 0}</p>
                 </div>
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Funded</span>
-                  <p className={classes.subtitle}>Ξ {community.ethFunded}</p>
+                  <p className={classes.subtitle}>Ξ {community.ethFunded ?? 0}</p>
                 </div>
               </span>
             </span>
