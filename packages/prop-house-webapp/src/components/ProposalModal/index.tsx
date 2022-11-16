@@ -187,8 +187,13 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
+    if (!provider) return;
+
     try {
+      const blockHeight = await provider.getBlockNumber();
+
       const votes = voteAllotments
+
         .map(
           a =>
             new Vote(
@@ -197,6 +202,7 @@ const ProposalModal = () => {
               a.votes,
               community!.contractAddress,
               SignatureState.PENDING_VALIDATION,
+              blockHeight,
             ),
         )
         .filter(v => v.weight > 0);
