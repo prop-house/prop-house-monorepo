@@ -1,5 +1,5 @@
 import { HardhatUserConfig, task } from 'hardhat/config';
-import { example } from './tasks/example';
+import './tasks/deploy';
 import 'starknet-hardhat-plugin-extended';
 import '@nomiclabs/hardhat-waffle';
 import 'hardhat-preprocessor';
@@ -12,8 +12,6 @@ const getRemappings = () => {
     .filter(Boolean)
     .map(line => line.trim().split('='));
 };
-
-task('example', 'Example task').setAction(example);
 
 const config: HardhatUserConfig = {
   solidity: {
