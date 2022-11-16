@@ -6,7 +6,8 @@ const WinningProposalBanner: React.FC<{ numOfVotes: number }> = props => {
   return (
     <div className={classes.winnerBanner}>
       <p>
-        This prop won with {numOfVotes} {numOfVotes === 1 ? 'vote' : 'votes'}!
+        This prop won with {Number(numOfVotes).toFixed()}{' '}
+        {Number(numOfVotes).toFixed() === '1' ? 'vote' : 'votes'}!
       </p>
       <img src="/winner_banner.png" alt="winning-proposal" />
     </div>
