@@ -44,7 +44,11 @@ const Home = () => {
       const communities = await client.current.getCommunities();
 
       setCommunities(communities.sort((a, b) => (a.ethFunded < b.ethFunded ? 1 : -1)));
-      const accEthFunded = communities.reduce((prev, current) => prev + current.ethFunded, 0);
+
+      const accEthFunded = communities
+        .filter((c: any) => c.contractAddress !== '0x7Bd29408f11D2bFC23c34f18275bBf23bB716Bc7')
+        .filter((c: any) => c.contractAddress !== '0x2381b67c6f1cb732fdf8b3b29d3260ec6f7420bc')
+        .reduce((prev, current) => prev + current.ethFunded, 0);
       const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
       const accProps = communities.reduce((prev, current) => prev + current.numProposals, 0);
       setStats({
