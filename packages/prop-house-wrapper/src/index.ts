@@ -173,12 +173,19 @@ export class PropHouseWrapper {
     }
   }
 
-  async postFileBuffer(fileBuffer: Buffer, name: string) {
+  /**
+   * POST a buffer for storage.
+   * @param fileBuffer The buffer to store
+   * @param name The filename to upload the buffer as
+   * @param signBuffer Whether a signer (if provided during instantiation)
+   * should be used to sign the payload.
+   */
+  async postFileBuffer(fileBuffer: Buffer, name: string, signBuffer: boolean = false) {
     try {
       const form = new FormData();
       form.append('file', fileBuffer, name);
       form.append('name', name);
-      if (this.signer) {
+      if (this.signer && signBuffer) {
         const signature = await this.signer.signMessage(fileBuffer);
         form.append('signature', signature);
       }
@@ -192,8 +199,15 @@ export class PropHouseWrapper {
     }
   }
 
-  async postFileFromDisk(path: string, name: string) {
-    return this.postFileBuffer(fs.readFileSync(path), name);
+  /**
+   * POST a file for storage from on disk data.
+   * @param path Path to the file on disk
+   * @param name The filename to upload as
+   * @param signBuffer Whether a signer (if provided during instantiation)
+   * should be used to sign the payload.
+   */
+  async postFileFromDisk(path: string, name: string, signBuffer: boolean = false) {
+    return this.postFileBuffer(fs.readFileSync(path), name, signBuffer);
   }
 
   async getAddress() {

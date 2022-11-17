@@ -11,7 +11,12 @@ const run = async () => {
 
   const local = new PropHouseWrapper("http://localhost:3000", exampleWallet);
 
+  // Post with signature
   const response = await local.postFileFromDisk("./110.png", "110.png")
+  console.log(response?.data)
+
+  // Post without signature
+  const unsignedResponse = await local.postFileFromDisk("./110.png", "110.png", false)
   console.log(response?.data)
 
   const signerless = new PropHouseWrapper("http://localhost:3000");
