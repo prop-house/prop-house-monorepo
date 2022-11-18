@@ -8,7 +8,7 @@ import OpenGraphElements from '../OpenGraphElements';
 import ProposalHeader from '../ProposalHeader';
 import Divider from '../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import WinningProposalBanner from '../pages/WinningProposalBanner/WinningProposalBanner';
+import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 
