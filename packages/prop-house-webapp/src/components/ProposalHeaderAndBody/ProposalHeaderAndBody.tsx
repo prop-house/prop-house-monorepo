@@ -5,7 +5,7 @@ import { IoClose } from 'react-icons/io5';
 import { Col, Container } from 'react-bootstrap';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../OpenGraphElements';
-import ProposalHeader from '../ProposalHeader';
+import ProposalModalHeader from '../ProposalModalHeader';
 import Divider from '../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
@@ -74,7 +74,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
           <div id="propContainer" className={classes.propContainer}>
             <Col xl={12} className={classes.propCol}>
               <div className={classes.stickyContainer}>
-                <ProposalHeader
+                <ProposalModalHeader
                   backButton={
                     <div className={classes.backToAuction} onClick={() => handleClosePropModal()}>
                       <IoClose size={'1.5rem'} />
