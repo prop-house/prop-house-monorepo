@@ -1,10 +1,10 @@
-import classes from './ProposalHeader.module.css';
+import classes from './ProposalModalHeader.module.css';
 import EthAddress from '../EthAddress';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useCallback, useEffect } from 'react';
 
-export interface ProposalHeaderProps {
+export interface ProposalModalHeaderProps {
   fieldTitle: string;
   address: string;
   proposalId: number;
@@ -16,7 +16,7 @@ export interface ProposalHeaderProps {
   isLastProp: boolean | undefined;
 }
 
-const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
+const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
   const {
     backButton,
     fieldTitle,
@@ -96,4 +96,4 @@ const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
   );
 };
 
-export default ProposalHeader;
+export default ProposalModalHeader;
