@@ -25,7 +25,7 @@ import {
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
 import NotFound from '../NotFound';
-import ProposalFooter from '../ProposalFooter';
+import ProposalModalFooter from '../ProposalModalFooter';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import ErrorModal from '../ErrorModal';
@@ -298,7 +298,7 @@ const ProposalModal = () => {
               setHideScrollButton={setHideScrollButton}
             />
 
-            <ProposalFooter
+            <ProposalModalFooter
               proposal={proposal}
               round={round}
               votingPower={votingPower}
