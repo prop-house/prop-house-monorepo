@@ -1,14 +1,14 @@
 import classes from './ProposalHeaderAndBody.module.css';
-import ProposalContent from '../../ProposalContent';
-import proposalFields from '../../../utils/proposalFields';
+import ProposalContent from '../ProposalContent';
+import proposalFields from '../../utils/proposalFields';
 import { IoClose } from 'react-icons/io5';
 import { Col, Container } from 'react-bootstrap';
-import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
-import OpenGraphElements from '../../OpenGraphElements';
-import ProposalHeader from '../../ProposalHeader';
-import Divider from '../../Divider';
+import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
+import OpenGraphElements from '../OpenGraphElements';
+import ProposalHeader from '../ProposalHeader';
+import Divider from '../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
+import WinningProposalBanner from '../pages/WinningProposalBanner/WinningProposalBanner';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 
