@@ -24,8 +24,8 @@
 .previewCol h2 {
   margin-top: 2rem;
   font-size: 18px;
-  font-weight: 600;
-  color: var(--brand-black);
+
+  color: var(--brand-gray);
 }
 
 .previewCol p {
