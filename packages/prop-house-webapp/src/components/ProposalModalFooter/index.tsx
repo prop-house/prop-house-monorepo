@@ -24,6 +24,8 @@ const ProposalModalFooter: React.FC<{
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
   isWinner?: boolean;
+  editProposalMode: boolean;
+  setEditProposalMode: (e: any) => void;
 }> = props => {
   const {
     setShowVotingModal,
@@ -32,6 +34,8 @@ const ProposalModalFooter: React.FC<{
     numberOfProps,
     handleDirectionalArrowClick,
     isWinner,
+    editProposalMode,
+    setEditProposalMode,
   } = props;
 
   const { account, library } = useEthers();
@@ -68,6 +72,15 @@ const ProposalModalFooter: React.FC<{
     };
     fetchVotes();
   }, [account, library, dispatch, community, round]);
+
+  const saveProposal = async () => {
+    console.log('saved!');
+    setEditProposalMode(false);
+  };
+  const deleteProposal = () => {
+    console.log('deleted!');
+    setEditProposalMode(false);
+  };
 
   return (
     <>
@@ -153,12 +166,16 @@ const ProposalModalFooter: React.FC<{
             )}
           </>
 
+          {/* 
+          
+           */}
+
           <ProposalModalNavButtons
             propIndex={propIndex}
             numberOfProps={numberOfProps}
             handleDirectionalArrowClick={handleDirectionalArrowClick}
           />
-        </div>
+        </div >
       )}
     </>
   );

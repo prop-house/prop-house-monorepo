@@ -28,6 +28,8 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 
 const ProposalModal = () => {
+  const [editProposalMode, setEditProposalMode] = useState(false);
+
   const params = useParams();
   const { id } = params;
   const navigate = useNavigate();
@@ -117,7 +119,7 @@ const ProposalModal = () => {
   }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (!activeProposal || !proposals || proposals.length === 0) return;
+    if (!activeProposal || !proposals || proposals.length === 0 || editProposalMode) return;
 
     const newPropIndex =
       proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
@@ -212,7 +214,10 @@ const ProposalModal = () => {
 
       <Modal
         isOpen={true}
-        onRequestClose={() => handleClosePropModal()}
+        onRequestClose={() => {
+          setEditProposalMode(false);
+          handleClosePropModal();
+        }}
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
@@ -224,8 +229,11 @@ const ProposalModal = () => {
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               handleClosePropModal={handleClosePropModal}
               hideScrollButton={hideScrollButton}
+              isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
             />
 
             <ProposalModalFooter
@@ -236,6 +244,8 @@ const ProposalModal = () => {
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
             />
           </>
         )}

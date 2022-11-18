@@ -11,10 +11,11 @@ import '../../quill.css';
 import { useTranslation } from 'react-i18next';
 
 const ProposalEditor: React.FC<{
+  fields?: ProposalFields;
   onDataChange: (data: Partial<ProposalFields>) => void;
 }> = props => {
   const data = useAppSelector(state => state.editor.proposal);
-  const { onDataChange } = props;
+  const { fields, onDataChange } = props;
   const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -121,6 +122,13 @@ const ProposalEditor: React.FC<{
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quill]);
+
+  useEffect(() => {
+    if (fields) {
+      onDataChange(fields);
+    }
+    console.log('fields', fields);
+  }, [fields, onDataChange]);
 
   return (
     <>

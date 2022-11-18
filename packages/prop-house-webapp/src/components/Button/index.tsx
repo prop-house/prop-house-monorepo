@@ -11,6 +11,7 @@ export enum ButtonColor {
   Purple,
   PurpleLight,
   Gray,
+  Red,
 }
 const Button: React.FC<{
   text: string;
@@ -34,6 +35,8 @@ const Button: React.FC<{
       ? classes.btnYellowBg
       : bgColor === ButtonColor.Green
       ? classes.btnGreenBg
+      : bgColor === ButtonColor.Red
+      ? classes.btnRedBg
       : bgColor === ButtonColor.Gray
       ? classes.btnGrayBg
       : classes.btnWhiteYellowBg;

@@ -54,3 +54,51 @@
   align-items: center;
   justify-content: space-between;
 }
+.proposalWindowButtons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: space-between;
+  width: 100%;
+}
+/* .editModeButtons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: space-between;
+}
+.editModeButtons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  padding: 6px 14px !important;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px !important;
+  font-weight: bold;
+  line-height: 140%;
+} */
+
+.editProp button:hover {
+  background-color: var(--brand-purple-semi-transparent);
+}
+.editProp button:active,
+.editProp button:focus {
+  background-color: var(--brand-purple-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-purple-transparent) !important;
+}
+.editProp {
+  background-color: var(--brand-purple);
+}
+.deleteProp {
+  background-color: var(--brand-gray-transparent);
+}
+.deleteProp:hover {
+  background-color: var(--brand-gray-semi-transparent);
+}
+.deleteProp button:active,
+.deleteProp button:focus {
+  background-color: var(--brand-gray-semi-transparent);
+  box-shadow: 0 0 0 0.25rem var(--brand-gray-transparent) !important;
+}

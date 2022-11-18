@@ -1,6 +1,6 @@
 import classes from './ProposalHeaderAndBody.module.css';
 import ProposalContent from '../ProposalContent';
-import proposalFields from '../../utils/proposalFields';
+import proposalFields, { ProposalFields } from '../../utils/proposalFields';
 import { IoClose } from 'react-icons/io5';
 import { Col, Container } from 'react-bootstrap';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
@@ -10,16 +10,22 @@ import Divider from '../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import ProposalEditor from '../ProposalEditor';
+import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
+import { patchProposal } from '../../state/slices/editor';
 
 interface ProposalHeaderAndBodyProps {
   currentProposal: StoredProposalWithVotes;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
   handleClosePropModal: () => void;
+  isWinner?: boolean;
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
   showVoteAllotmentModal: boolean;
+  editProposalMode: boolean;
+  setEditProposalMode: (e: any) => void;
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -30,10 +36,16 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentPropIndex,
     handleDirectionalArrowClick,
     handleClosePropModal,
+    isWinner,
     hideScrollButton,
     setHideScrollButton,
     showVoteAllotmentModal,
+    editProposalMode,
+    setEditProposalMode,
   } = props;
+
+  const dispatch = useAppDispatch();
+
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
@@ -59,6 +71,10 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     // watch for proposal change to reset scroll button
   }, [proposal, setHideScrollButton]);
 
+  const onDataChange = (data: Partial<ProposalFields>) => {
+    dispatch(patchProposal(data));
+  };
+
   return (
     <>
       <Container>
@@ -76,7 +92,13 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
               <div className={classes.stickyContainer}>
                 <ProposalModalHeader
                   backButton={
-                    <div className={classes.backToAuction} onClick={() => handleClosePropModal()}>
+                    <div
+                      className={classes.backToAuction}
+                      onClick={() => {
+                        setEditProposalMode(false);
+                        handleClosePropModal();
+                      }}
+                    >
                       <IoClose size={'1.5rem'} />
                     </div>
                   }
@@ -90,10 +112,13 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                   isLastProp={isLastProp && isLastProp}
                   showVoteAllotmentModal={showVoteAllotmentModal}
                   proposal={currentProposal}
+                  editProposalMode={editProposalMode}
                 />
 
                 <Divider />
               </div>
+
+              {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
               {!hideScrollButton && (
                 <div className="scrollMoreContainer">
@@ -105,7 +130,14 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                 </div>
               )}
 
-              <ProposalContent fields={proposalFields(currentProposal)} />
+              {editProposalMode ? (
+                <ProposalEditor
+                  fields={proposalFields(currentProposal)}
+                  onDataChange={onDataChange}
+                />
+              ) : (
+                <ProposalContent fields={proposalFields(currentProposal)} />
+              )}
 
               <div ref={bottomRef} />
             </Col>

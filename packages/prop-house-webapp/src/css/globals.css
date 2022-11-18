@@ -68,6 +68,11 @@ body {
   --brand-black-transparent: rgba(20, 22, 27, 0.6);
   --brand-black-semi-transparent: rgba(20, 22, 27, 0.25);
 
+  /* Red */
+  --brand-red: #fe4f0c;
+  --brand-red-transparent: rgba(254, 79, 12, 0.6);
+  --brand-red-semi-transparent: rgba(254, 79, 12, 0.25);
+
   /* Gray */
   --brand-gray: #666666;
   --brand-gray-transparent: rgba(102, 102, 102, 0.6);
