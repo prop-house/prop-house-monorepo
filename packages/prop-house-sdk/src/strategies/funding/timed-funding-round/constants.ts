@@ -3,7 +3,8 @@ import { Time, TimeUnit } from 'time-ts';
 /**
  * Voting strategy registry contract address on Starknet
  */
-export const VOTING_STRATEGY_REGISTRY_ADDRESS = '0xdeadbeef';
+// prettier-ignore
+export const VOTING_STRATEGY_REGISTRY_ADDRESS = '0x139d7b4e50b182303bf7a7c185b766f569e2c82df70a372518f7792c97ab242';
 
 /**
  * The `TimedFundingRound` struct type
