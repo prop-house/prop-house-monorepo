@@ -178,7 +178,9 @@ export class SignableVotes extends Signable {
   /**
    * Signature for payload of all votes
    */
-  async multiVoteSignature(signer: Signer): Promise<string> {
+  async multiVoteSignature(signer: Signer, isContract: boolean): Promise<string> {
+    if (isContract) return await signer.signMessage(this.jsonPayload());
+
     const typedSigner = signer as Signer & TypedDataSigner;
     return await typedSigner._signTypedData(EIP712Domain, EIP712MessageTypes, this.toPayload());
   }
