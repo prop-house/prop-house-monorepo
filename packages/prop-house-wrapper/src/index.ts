@@ -119,7 +119,7 @@ export class PropHouseWrapper {
       // sign payload and use for all votes, awaiting if the signer is not a contract
       let signature = '0x';
 
-      const signaturePromise = signableVotes.multiVoteSignature(this.signer);
+      const signaturePromise = signableVotes.multiVoteSignature(this.signer, isContract);
       if (!isContract) {
         signature = await signaturePromise;
       }
