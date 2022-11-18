@@ -279,16 +279,9 @@ const ProposalModal = () => {
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
-        {proposal &&
-        proposals &&
-        proposals.length > 0 &&
-        currentPropIndex &&
-        currentProposal &&
-        round ? (
+        {proposal && proposals && proposals.length > 0 && currentPropIndex && currentProposal ? (
           <>
             <ProposalHeaderAndBody
-              proposal={proposal}
-              proposals={proposals}
               currentProposal={currentProposal}
               currentPropIndex={currentPropIndex}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
@@ -299,8 +292,6 @@ const ProposalModal = () => {
             />
 
             <ProposalModalFooter
-              proposal={proposal}
-              round={round}
               votingPower={votingPower}
               voteAllotments={voteAllotments}
               votesLeftToAllot={votesLeftToAllot}
