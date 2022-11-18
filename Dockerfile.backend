@@ -15,6 +15,12 @@ RUN yarn
 
 RUN yarn build
 
+WORKDIR /app/packages/prop-house-wrapper
+
+RUN yarn
+
+RUN yarn build
+
 WORKDIR /app/packages/prop-house-backend
 
 RUN yarn
