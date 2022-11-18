@@ -1,4 +1,4 @@
-import { getTimedFundingRoundCalldata } from './timed-funding-round-strategy';
+import { getTimedFundingRoundCalldata } from './timed-funding-round';
 import { FundingHouseStrategy, FundingHouseStrategyType } from './types';
 import { Award } from '../../houses';
 

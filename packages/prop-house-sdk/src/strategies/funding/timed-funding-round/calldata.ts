@@ -1,34 +1,16 @@
-import { ProposalVote, TimedFundingRoundStrategy } from './types';
+import { TimedFundingRoundStrategy } from '../types';
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { encoding, intsSequence, splitUint256 } from '../../utils';
+import { encoding, intsSequence, splitUint256 } from '../../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
-import { AssetType, Award } from '../../houses';
-import { Time, TimeUnit } from 'time-ts';
-
-/**
- * The `TimedFundingRound` struct type
- */
-export const TIMED_FUNDING_ROUND_STRUCT_TYPE = 'tuple(uint40,uint40,uint40,uint16)';
-
-/**
- * The minimum time required between round initiation and the start of the proposal period
- */
-export const MIN_TIME_UNTIL_PROPOSAL_PERIOD = Time.toSeconds(2, TimeUnit.Hours);
-
-/**
- * The minimum proposal submission period duration
- */
-export const MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(4, TimeUnit.Hours);
-
-/**
- * The minimum vote period duration
- */
-export const MIN_VOTE_PERIOD_DURATION = Time.toSeconds(4, TimeUnit.Hours);
-
-/**
- * Maximum winner count for this strategy
- */
-export const MAX_WINNER_COUNT = 256;
+import { AssetType, Award } from '../../../houses';
+import { ProposalVote } from './types';
+import {
+  MIN_TIME_UNTIL_PROPOSAL_PERIOD,
+  MIN_PROPOSAL_PERIOD_DURATION,
+  MIN_VOTE_PERIOD_DURATION,
+  MAX_WINNER_COUNT,
+  TIMED_FUNDING_ROUND_STRUCT_TYPE,
+} from './constants';
 
 /**
  * Get the validator and encoded config information for the timed funding round house strategy

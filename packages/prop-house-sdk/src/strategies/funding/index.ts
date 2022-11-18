@@ -1,3 +1,3 @@
-export * from './timed-funding-round-strategy';
+export * from './timed-funding-round';
 export * from './types';
 export * from './utils';

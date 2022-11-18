@@ -14,7 +14,7 @@ export class IntsSequence {
     const rem = this.bytesLength % 8;
     let uint = BigInt(this.values[this.values.length - 1]);
     let shift = BigInt(0);
-    if (rem == 0) {
+    if (rem === 0) {
       shift += BigInt(64);
     } else {
       shift += BigInt(rem * 8);
@@ -65,7 +65,7 @@ export class IntsSequence {
 
   static fromUint(uint: bigint): IntsSequence {
     let hex = uint.toString(16);
-    if (hex.length % 2 != 0) {
+    if (hex.length % 2 !== 0) {
       hex = `0x0${hex}`;
     } else {
       hex = `0x${hex}`;

@@ -6,7 +6,7 @@ export const hexPadRight = (s: string) => {
     s = s.substring(2);
   }
   // Odd length, need to prefix with a 0
-  if (s.length % 2 != 0) {
+  if (s.length % 2 !== 0) {
     s = `0${s}`;
   }
   const numZeroes = 64 - s.length;
