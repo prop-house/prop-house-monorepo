@@ -35,8 +35,8 @@ const VoteConfirmationModal: React.FC<{
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          {t('cast')} {totalVotesBeingSubmitted}{' '}
-          {totalVotesBeingSubmitted === 1 ? t('vote') : t('votes')}?
+          {t('cast')} {totalVotesBeingSubmitted} {totalVotesBeingSubmitted === 1 ? 'vote' : 'votes'}
+          ?
         </p>
         <p className={classes.modalSubtitle}>
           {t('youllHave')} {votesLeft} {t('votesRemaining')}{' '}
