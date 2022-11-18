@@ -133,29 +133,40 @@
 
 @media (max-width: 767px) {
   .profileHeaderRow {
-    flex-direction: column;
-    gap: 28px;
+    flex-direction: row;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .titleRow .title {
+    font-size: large;
+    font-weight: 700;
   }
   .profilePicCol {
-    margin-bottom: 0rem;
-    margin-top: 40px;
+    margin: 0;
   }
   .communityInfoCol {
-    margin: 0px 4px;
+    margin-left: 1rem;
+    gap: 0px;
   }
   .profilePicCol img {
-    width: 220px !important;
-    height: 220px !important;
+    width: 80px !important;
+    height: 80px !important;
   }
 
   .houseTitleInfo {
-    align-self: center;
+    align-self: flex-start;
     border: none;
+    gap: 1px;
+  }
+  .propHouseDataRow {
+    padding-bottom: 0;
+  }
+  .contractAddressPill {
+    display: none;
   }
   .communityDescriptionRow {
-    border-top: 1px solid var(--border-light);
-    padding-top: 24px;
-    border-radius: 1px;
+    margin: 10px 0;
   }
 }
 
