@@ -6,10 +6,17 @@ import { IpfsService } from 'src/ipfs/ipfs.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { File } from './file.entity';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
   imports: [ConfigModule.forRoot(), TypeOrmModule.forFeature([File])],
-  providers: [FileService, IpfsService],
+  providers: [FileService, IpfsService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
+  ],
   controllers: [FileController],
 })
 export class FileModule {}
