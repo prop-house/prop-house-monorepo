@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
-import ProposalHeaderAndBody from '../pages/ProposalHeaderAndBody/ProposalHeaderAndBody';
+import ProposalHeaderAndBody from '../ProposalHeaderAndBody/ProposalHeaderAndBody';
 import { useParams } from 'react-router';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
