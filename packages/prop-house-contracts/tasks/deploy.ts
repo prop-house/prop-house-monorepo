@@ -10,34 +10,51 @@ import {
   UpgradeManager__factory,
 } from '../typechain';
 import { task, types } from 'hardhat/config';
-import { writeFileSync } from 'fs';
-import { starknet } from 'hardhat';
+import { NonceManager } from '@ethersproject/experimental';
+import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'fs';
+import { DeployContractPayload, Provider } from 'starknet';
 
 enum ChainId {
   Mainnet = 1,
   Goerli = 5,
 }
 
-const starknetCoreContracts: Record<number, string> = {
-  [ChainId.Mainnet]: '0xc662c410C0ECf747543f5bA90660f6ABeBD9C8c4',
-  [ChainId.Goerli]: '0xde29d060D45901Fb19ED6C6e959EB22d8626708e',
+interface NetworkConfig {
+  starknet: {
+    network: 'mainnet-alpha' | 'goerli-alpha';
+    core: string;
+  };
+  weth: string;
+  fossil?: {
+    factRegistry: string;
+    l1HeadersStore: string;
+  };
+}
+
+const networkConfig: Record<number, NetworkConfig> = {
+  [ChainId.Mainnet]: {
+    starknet: {
+      network: 'mainnet-alpha',
+      core: '0xc662c410C0ECf747543f5bA90660f6ABeBD9C8c4',
+    },
+    weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+  },
+  [ChainId.Goerli]: {
+    starknet: {
+      network: 'goerli-alpha',
+      core: '0xde29d060D45901Fb19ED6C6e959EB22d8626708e',
+    },
+    weth: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
+    fossil: {
+      factRegistry: '0x363108ac1521a47b4f7d82f8ba868199bc1535216bbedfc1b071ae93cc406fd',
+      l1HeadersStore: '0x6ca3d25e901ce1fff2a7dd4079a24ff63ca6bbf8ba956efc71c1467975ab78f',
+    },
+  },
 };
 
-const wethContracts: Record<number, string> = {
-  [ChainId.Mainnet]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  [ChainId.Goerli]: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
-};
-
-const fossilFactRegistryContracts: Record<number, string> = {
-  [ChainId.Goerli]: '0x363108ac1521a47b4f7d82f8ba868199bc1535216bbedfc1b071ae93cc406fd',
-};
-
-const fossilL1HeadersStoreContracts: Record<number, string> = {
-  [ChainId.Goerli]: '0x6ca3d25e901ce1fff2a7dd4079a24ff63ca6bbf8ba956efc71c1467975ab78f',
-};
+const sleep = (ms = 1_000) => new Promise(resolve => setTimeout(resolve, ms));
 
 task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
-  .addParam('')
   .addOptionalParam('registrar', 'The registrar address', undefined, types.string)
   .addOptionalParam('starknetCore', 'The Starknet core contract address', undefined, types.string)
   .addOptionalParam('weth', 'The WETH contract address', undefined, types.string)
@@ -53,54 +70,60 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     undefined,
     types.string,
   )
-  .setAction(async (args, { ethers }) => {
+  .setAction(async (args, hre) => {
+    const { ethers, starknet } = hre;
+
     const ethNetwork = await ethers.provider.getNetwork();
-    const [ethDeployer] = await ethers.getSigners();
-    const starknetDeployer = await starknet.getAccountFromAddress(
-      process.env.OZ_ACCOUNT_ADDRESS!,
-      process.env.OZ_ACCOUNT_PRIVATE_KEY!,
-      'OpenZeppelin',
-    );
+    const config = networkConfig[ethNetwork.chainId];
+
+    const [ethSigner] = await ethers.getSigners();
+    const ethDeployer = new NonceManager(ethSigner as any);
+
+    const starknetProvider = new Provider({
+      sequencer: {
+        network: config.starknet.network,
+      },
+    });
+    const deployContract = starknetProvider.deployContract.bind(starknetProvider);
+    starknetProvider.deployContract = async (payload: DeployContractPayload) => {
+      await sleep(); // Naive approach to avoid strict gateway rate-limiting
+      return deployContract(payload);
+    };
 
     if (!args.registrar) {
-      args.registrar = ethDeployer.address;
+      args.registrar = await ethDeployer.getAddress();
     }
     if (!args.starknetCore) {
-      const deployedStarknetCoreContract = starknetCoreContracts[ethNetwork.chainId];
-      if (!deployedStarknetCoreContract) {
+      if (!config.starknet?.core) {
         throw new Error(
           `Can not auto-detect StarknetCore contract on chain ${ethNetwork.name}. Provide it with the --starknet-core arg.`,
         );
       }
-      args.starknetCore = deployedStarknetCoreContract;
+      args.starknetCore = config.starknet.core;
     }
     if (!args.weth) {
-      const deployedWETHContract = wethContracts[ethNetwork.chainId];
-      if (!deployedWETHContract) {
+      if (!config.weth) {
         throw new Error(
           `Can not auto-detect WETH contract on chain ${ethNetwork.name}. Provide it with the --weth arg.`,
         );
       }
-      args.weth = deployedWETHContract;
+      args.weth = config.weth;
     }
     if (!args.fossilFactRegistry) {
-      const deployedFossilFactRegistryContract = fossilFactRegistryContracts[ethNetwork.chainId];
-      if (!deployedFossilFactRegistryContract) {
+      if (!config.fossil?.factRegistry) {
         throw new Error(
           `Can not auto-detect Fossil fact registry contract on chain ${ethNetwork.name}. Provide it with the --fossil-fact-registry arg.`,
         );
       }
-      args.fossilFactRegistry = deployedFossilFactRegistryContract;
+      args.fossilFactRegistry = config.fossil.factRegistry;
     }
     if (!args.fossilL1HeadersStore) {
-      const deployedFossilL1HeadersStoreContract =
-        fossilL1HeadersStoreContracts[ethNetwork.chainId];
-      if (!deployedFossilL1HeadersStoreContract) {
+      if (!config.fossil?.l1HeadersStore) {
         throw new Error(
           `Can not auto-detect Fossil L1 headers store contract on chain ${ethNetwork.name}. Provide it with the --fossil-l1-headers-store arg.`,
         );
       }
-      args.fossilL1HeadersStore = deployedFossilL1HeadersStoreContract;
+      args.fossilL1HeadersStore = config.fossil.l1HeadersStore;
     }
 
     // L1 factories
@@ -154,52 +177,59 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       args.starknetCore,
       houseFactory.address,
     );
-    const houseStrategyFactory = await houseStrategyDeployerFactory.deploy({
-      starknet_messenger: starknetMessenger.address,
+    const houseStrategyFactory = await starknetProvider.deployContract({
+      contract: readFileSync(houseStrategyDeployerFactory.metadataPath, 'ascii'),
+      constructorCalldata: [starknetMessenger.address],
     });
-    const ethHouseExecutionStrategy = await ethHouseExecutionStrategyFactory.deploy({
-      house_strategy_factory_address: houseStrategyFactory.address,
+    const ethHouseExecutionStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(ethHouseExecutionStrategyFactory.metadataPath, 'ascii'),
+      constructorCalldata: [houseStrategyFactory.contract_address],
     });
-    const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy({
-      starknet_messenger: starknetMessenger.address,
+    const votingStrategyRegistry = await starknetProvider.deployContract({
+      contract: readFileSync(votingStrategyRegistryFactory.metadataPath, 'ascii'),
+      constructorCalldata: [starknetMessenger.address],
     });
 
     // Deploy funding house contracts
-    const timedFundingRoundEthTxAuthStrategy =
-      await timedFundingRoundEthTxAuthStrategyFactory.deploy({
-        starknet_commit_address: starknetCommit.address,
+    const timedFundingRoundEthTxAuthStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(timedFundingRoundEthTxAuthStrategyFactory.metadataPath, 'ascii'),
+      constructorCalldata: [starknetCommit.address],
+    });
+    const timedFundingRoundEthSigAuthStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(timedFundingRoundEthSigAuthStrategyFactory.metadataPath, 'ascii'),
+    });
+
+    const generatedTimedFundingRoundStrategyMetadataPath =
+      hre.starknetWrapper.writeConstantsToOutput(timedFundingRoundStrategyL2Factory.metadataPath, {
+        voting_strategy_registry: votingStrategyRegistry.contract_address,
+        eth_execution_strategy: ethHouseExecutionStrategy.contract_address,
+        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.contract_address,
+        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.contract_address,
       });
-    const timedFundingRoundEthSigAuthStrategy =
-      await timedFundingRoundEthSigAuthStrategyFactory.deploy();
-    const timedFundingRoundStrategyClassHash = await starknetDeployer.declare(
-      timedFundingRoundStrategyL2Factory,
-      {
-        constants: {
-          voting_strategy_registry: votingStrategyRegistry.address,
-          eth_execution_strategy: ethHouseExecutionStrategy.address,
-          eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
-          eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
-        },
-      },
+    // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
+    const timedFundingRoundStrategyClassHash = await hre.starknetWrapper.getClassHash(
+      generatedTimedFundingRoundStrategyMetadataPath,
     );
     const timedFundingRoundStrategyValidator =
       await timedFundingRoundStrategyValidatorFactory.deploy(timedFundingRoundStrategyClassHash);
     const fundingHouseImpl = await fundingHouseFactory.deploy(
-      ethHouseExecutionStrategy.address,
-      votingStrategyRegistry.address,
+      ethHouseExecutionStrategy.contract_address,
+      votingStrategyRegistry.contract_address,
       upgradeManager.address,
       strategyManager.address,
       starknetMessenger.address,
-      houseStrategyFactory.address,
+      houseStrategyFactory.contract_address,
       args.weth,
     );
 
     // Deploy voting strategy contracts
-    const vanillaVotingStrategy = await vanillaVotingStrategyFactory.deploy();
-    const ethereumBalanceOfVotingStrategy = await ethereumBalanceOfVotingStrategyFactory.deploy(
-      args.fossilFactRegistry,
-      args.fossilL1HeadersStore,
-    );
+    const vanillaVotingStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(vanillaVotingStrategyFactory.metadataPath, 'ascii'),
+    });
+    const ethereumBalanceOfVotingStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(ethereumBalanceOfVotingStrategyFactory.metadataPath, 'ascii'),
+      constructorCalldata: [args.fossilFactRegistry, args.fossilL1HeadersStore],
+    });
 
     // Configure contracts
     await deploymentManager.registerDeployment(fundingHouseImpl.address);
@@ -210,24 +240,36 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
 
     const deployment = {
       ethereum: {
-        registrarManager: registrarManager.address,
-        deploymentManager: deploymentManager.address,
-        upgradeManager: upgradeManager.address,
-        strategyManager: strategyManager.address,
-        houseFactory: houseFactory.address,
-        starknetCommit: starknetCommit.address,
-        starknetMessenger: starknetMessenger.address,
-        timedFundingRoundStrategyValidator: timedFundingRoundStrategyValidator.address,
-        fundingHouseImpl: fundingHouseImpl.address,
+        address: {
+          registrarManager: registrarManager.address,
+          deploymentManager: deploymentManager.address,
+          upgradeManager: upgradeManager.address,
+          strategyManager: strategyManager.address,
+          houseFactory: houseFactory.address,
+          starknetCommit: starknetCommit.address,
+          starknetMessenger: starknetMessenger.address,
+          timedFundingRoundStrategyValidator: timedFundingRoundStrategyValidator.address,
+          fundingHouseImpl: fundingHouseImpl.address,
+        },
       },
       starknet: {
-        houseStrategyFactory: houseStrategyFactory.address,
-        ethHouseExecutionStrategy: ethHouseExecutionStrategy.address,
-        votingStrategyRegistry: votingStrategyRegistry.address,
-        timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.address,
-        vanillaVotingStrategy: vanillaVotingStrategy.address,
-        ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.address,
+        address: {
+          houseStrategyFactory: houseStrategyFactory.contract_address,
+          ethHouseExecutionStrategy: ethHouseExecutionStrategy.contract_address,
+          votingStrategyRegistry: votingStrategyRegistry.contract_address,
+          timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.contract_address,
+          timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.contract_address,
+          vanillaVotingStrategy: vanillaVotingStrategy.contract_address,
+          ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.contract_address,
+        },
+        classHash: {
+          timedFundingRoundStrategy: timedFundingRoundStrategyClassHash,
+        },
       },
     };
-    writeFileSync('./deployments/goerli.json', JSON.stringify(deployment));
+
+    if (!existsSync('./deployments')) {
+      mkdirSync('./deployments');
+    }
+    writeFileSync('./deployments/goerli.json', JSON.stringify(deployment, null, 2));
   });
