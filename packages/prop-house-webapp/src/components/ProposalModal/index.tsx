@@ -155,16 +155,16 @@ const ProposalModal = () => {
   }, [currentProposal, dispatch, round]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (!community || !round) return;
-
-    proposals &&
+    if (
+      proposals &&
       proposals.length > 0 &&
       currentProposal &&
       currentProposal.id &&
       direction &&
       proposals[
         proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) + direction
-      ].id &&
+      ].id
+    ) {
       navigate(
         `${pathname.replace(
           /[^/]*$/,
@@ -174,6 +174,7 @@ const ProposalModal = () => {
           ].id.toString(),
         )}`,
       );
+    }
   };
 
   const _signerIsContract = async () => {
