@@ -1,5 +1,5 @@
 import { ProgressBar } from 'react-bootstrap';
-import classes from './ProposalFooter.module.css';
+import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
@@ -16,7 +16,7 @@ import Divider from '../Divider';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 
-const ProposalFooter: React.FC<{
+const ProposalModalFooter: React.FC<{
   round: StoredAuction;
   proposal: StoredProposalWithVotes;
   votingPower: number;
@@ -126,4 +126,4 @@ const ProposalFooter: React.FC<{
   );
 };
 
-export default ProposalFooter;
+export default ProposalModalFooter;
