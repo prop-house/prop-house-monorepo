@@ -76,6 +76,8 @@ const ProposalModal = () => {
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
 
+  const [hideScrollButton, setHideScrollButton] = useState(false);
+
   useEffect(() => {
     setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
@@ -154,6 +156,20 @@ const ProposalModal = () => {
     };
   }, [currentProposal, dispatch, round]);
 
+  // calculate if modal content is scrollable in order to show 'More' button
+  const modal = document.querySelector('#propModal');
+  useEffect(() => {
+    if (modal) {
+      modal.addEventListener(
+        'scroll',
+        function () {
+          setHideScrollButton(true);
+        },
+        false,
+      );
+    }
+  }, [modal]);
+
   const handleDirectionalArrowClick = (direction: Direction) => {
     if (
       proposals &&
@@ -227,21 +243,6 @@ const ProposalModal = () => {
   };
 
   const winningIds = round && getWinningIds(proposals, round);
-
-  const [hideScrollButton, setHideScrollButton] = useState(false);
-
-  const modal = document.querySelector('#propModal');
-  useEffect(() => {
-    if (modal) {
-      modal.addEventListener(
-        'scroll',
-        function () {
-          setHideScrollButton(true);
-        },
-        false,
-      );
-    }
-  }, [modal]);
 
   return (
     <>
