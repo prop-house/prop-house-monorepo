@@ -11,10 +11,9 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
+import { useAppSelector } from '../../hooks';
 
 interface ProposalHeaderAndBodyProps {
-  proposal: StoredProposalWithVotes;
-  proposals: StoredProposalWithVotes[];
   currentProposal: StoredProposalWithVotes;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
@@ -28,8 +27,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   props: ProposalHeaderAndBodyProps,
 ) => {
   const {
-    proposals,
-    proposal,
     currentProposal,
     currentPropIndex,
     handleDirectionalArrowClick,
@@ -38,8 +35,11 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     hideScrollButton,
     setHideScrollButton,
   } = props;
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+
   const isFirstProp = currentPropIndex === 1;
-  const isLastProp = currentPropIndex === proposals.length;
+  const isLastProp = proposals && currentPropIndex === proposals.length;
   const bottomRef = useRef<HTMLDivElement>(null);
   const [toggleScrollButton, setToggleScrollButton] = useState(false);
 
@@ -70,43 +70,45 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
           />
         )}
 
-        <div id="propContainer" className={classes.propContainer}>
-          <Col xl={12} className={classes.propCol}>
-            <div className={classes.stickyContainer}>
-              <ProposalHeader
-                backButton={
-                  <div className={classes.backToAuction} onClick={() => handleClosePropModal()}>
-                    <IoClose size={'1.5rem'} />
-                  </div>
-                }
-                fieldTitle={proposalFields(currentProposal).title}
-                address={currentProposal.address}
-                proposalId={currentProposal.id}
-                propIndex={currentPropIndex}
-                numberOfProps={proposals.length}
-                handleDirectionalArrowClick={handleDirectionalArrowClick}
-                isFirstProp={isFirstProp}
-                isLastProp={isLastProp}
-              />
+        {proposals && (
+          <div id="propContainer" className={classes.propContainer}>
+            <Col xl={12} className={classes.propCol}>
+              <div className={classes.stickyContainer}>
+                <ProposalHeader
+                  backButton={
+                    <div className={classes.backToAuction} onClick={() => handleClosePropModal()}>
+                      <IoClose size={'1.5rem'} />
+                    </div>
+                  }
+                  fieldTitle={proposalFields(currentProposal).title}
+                  address={currentProposal.address}
+                  proposalId={currentProposal.id}
+                  propIndex={currentPropIndex}
+                  numberOfProps={proposals.length}
+                  handleDirectionalArrowClick={handleDirectionalArrowClick}
+                  isFirstProp={isFirstProp}
+                  isLastProp={isLastProp && isLastProp}
+                />
 
-              <Divider />
-            </div>
+                <Divider />
+              </div>
 
-            {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
+              {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
-            {!hideScrollButton && (
-              <ScrollButton
-                toggleScrollButton={toggleScrollButton}
-                setHideScrollButton={setHideScrollButton}
-                setToggleScrollButton={setToggleScrollButton}
-              />
-            )}
+              {!hideScrollButton && (
+                <ScrollButton
+                  toggleScrollButton={toggleScrollButton}
+                  setHideScrollButton={setHideScrollButton}
+                  setToggleScrollButton={setToggleScrollButton}
+                />
+              )}
 
-            <ProposalContent fields={proposalFields(currentProposal)} />
+              <ProposalContent fields={proposalFields(currentProposal)} />
 
-            <div ref={bottomRef} />
-          </Col>
-        </div>
+              <div ref={bottomRef} />
+            </Col>
+          </div>
+        )}
       </Container>
     </>
   );

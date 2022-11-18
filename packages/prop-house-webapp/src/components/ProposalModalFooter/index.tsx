@@ -2,7 +2,7 @@ import { ProgressBar } from 'react-bootstrap';
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import PropCardVotingModule from '../PropCardVotingModule';
-import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
@@ -15,10 +15,9 @@ import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import Divider from '../Divider';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
+import { useAppSelector } from '../../hooks';
 
 const ProposalModalFooter: React.FC<{
-  round: StoredAuction;
-  proposal: StoredProposalWithVotes;
   votingPower: number;
   votesLeftToAllot: number;
   numAllotedVotes: number;
@@ -30,7 +29,6 @@ const ProposalModalFooter: React.FC<{
   handleDirectionalArrowClick: (e: any) => void;
 }> = props => {
   const {
-    proposal,
     votingPower,
     votesLeftToAllot,
     numAllotedVotes,
@@ -40,68 +38,77 @@ const ProposalModalFooter: React.FC<{
     propIndex,
     numberOfProps,
     handleDirectionalArrowClick,
-    round,
   } = props;
 
   const { account } = useEthers();
 
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
+
   return (
     <>
       <div className={clsx(classes.footerContainer, 'footer')}>
-        {account && votingPower > 0 && auctionStatus(round) === AuctionStatus.AuctionVoting && (
-          <>
-            <div className={classes.votingContainer}>
-              <div className={classes.votingProgressBar}>
-                <div className={classes.votingInfo}>
-                  <span>Cast your votes</span>
+        {account &&
+          round &&
+          proposal &&
+          votingPower > 0 &&
+          auctionStatus(round) === AuctionStatus.AuctionVoting && (
+            <>
+              <div className={classes.votingContainer}>
+                <div className={classes.votingProgressBar}>
+                  <div className={classes.votingInfo}>
+                    <span>Cast your votes</span>
 
-                  <span className={classes.totalVotes}>{`${
-                    votesLeftToAllot > 0
-                      ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                      : 'no votes left'
-                  }`}</span>
-                </div>
-
-                <ProgressBar
-                  className={clsx(
-                    classes.votingBar,
-                    submittedVotes > 0 && votingPower !== submittedVotes && 'roundAllotmentBar',
-                  )}
-                >
-                  <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
+                    <span className={classes.totalVotes}>{`${
+                      votesLeftToAllot > 0
+                        ? `${votingPower - submittedVotes - numAllotedVotes} left`
+                        : 'no votes left'
+                    }`}</span>
+                  </div>
 
                   <ProgressBar
-                    variant="warning"
-                    now={(numAllotedVotes / votingPower) * 100}
-                    key={2}
-                  />
-                </ProgressBar>
-              </div>
+                    className={clsx(
+                      classes.votingBar,
+                      submittedVotes > 0 && votingPower !== submittedVotes && 'roundAllotmentBar',
+                    )}
+                  >
+                    <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
 
-              <div className={classes.voteAllotmentSection}>
-                <div className={classes.icon}>
-                  <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
+                    <ProgressBar
+                      variant="warning"
+                      now={(numAllotedVotes / votingPower) * 100}
+                      key={2}
+                    />
+                  </ProgressBar>
                 </div>
 
-                <PropCardVotingModule proposal={proposal} cardStatus={ProposalCardStatus.Voting} />
+                <div className={classes.voteAllotmentSection}>
+                  <div className={classes.icon}>
+                    <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
+                  </div>
 
-                <Button
-                  classNames={classes.submitVotesButton}
-                  text={'Submit votes'}
-                  bgColor={ButtonColor.Purple}
-                  disabled={
-                    voteWeightForAllottedVotes(voteAllotments) === 0 ||
-                    submittedVotes === votingPower
-                  }
-                  onClick={() => setShowVotingModal(true)}
-                />
+                  <PropCardVotingModule
+                    proposal={proposal}
+                    cardStatus={ProposalCardStatus.Voting}
+                  />
+
+                  <Button
+                    classNames={classes.submitVotesButton}
+                    text={'Submit votes'}
+                    bgColor={ButtonColor.Purple}
+                    disabled={
+                      voteWeightForAllottedVotes(voteAllotments) === 0 ||
+                      submittedVotes === votingPower
+                    }
+                    onClick={() => setShowVotingModal(true)}
+                  />
+                </div>
               </div>
-            </div>
-            <span className={classes.footerDivider}>
-              <Divider />
-            </span>
-          </>
-        )}
+              <span className={classes.footerDivider}>
+                <Divider />
+              </span>
+            </>
+          )}
 
         <div className={classes.btnContainer}>
           <div className={classes.propNavigationButtons}>

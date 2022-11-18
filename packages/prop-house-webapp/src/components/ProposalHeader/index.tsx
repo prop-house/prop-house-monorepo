@@ -13,7 +13,7 @@ export interface ProposalHeaderProps {
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
   isFirstProp: boolean;
-  isLastProp: boolean;
+  isLastProp: boolean | undefined;
 }
 
 const ProposalHeader: React.FC<ProposalHeaderProps> = props => {
