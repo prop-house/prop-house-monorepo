@@ -47,5 +47,7 @@ export const communities = new CaseInsensitiveMap(
       ['0x2Fd43FfA417C1F9e9E260fdE9a0B59fC2AB22069', '0x15D019034cd704F4101a0B522aB8999dF42E0FB2'],
       [1, 2],
     ),
+    // The LP
+    '0x38930aae699c4cd99d1d794df9db41111b13092b': balanceOfErc721(),
   }),
 );

@@ -41,6 +41,10 @@ export class Vote extends SignedEntity {
   @Field(() => Int)
   weight: number;
 
+  @Column({ default: null })
+  @Field(() => Int)
+  blockHeight: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
@@ -54,6 +58,7 @@ export class Vote extends SignedEntity {
       this.proposalId = opts.proposalId;
       this.auctionId = opts.auctionId;
       this.weight = opts.weight;
+      this.blockHeight = opts.blockHeight;
     }
   }
 }
