@@ -20,14 +20,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
-    ThrottlerModule.forRoot({
-      ttl: 1,
-      limit: 10,
-    }),
     IpfsModule,
     FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
