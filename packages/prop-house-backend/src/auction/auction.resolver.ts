@@ -205,10 +205,16 @@ export class AuctionsResolver {
     return this.proposalsService.findAllWithAuctionId(id);
   }
 
+  /**
+   * Resolve the Community based on its ID. The resolver assumes
+   * that `community` is the ID for the desired community rather
+   * than a resolved Community entity.
+   * @param auctionPartial An Auction partial that has community
+   * represented as an ID that should be resolved.
+   */
   @ResolveField()
-  async community(@Parent() auction: Auction) {
+  async community(@Parent() auctionPartial: { community: number }) {
     // This approach is slightly faster than letting typeorm eager load
-    // @ts-ignore
-    return this.communitiesService.findOne(auction.community);
+    return this.communitiesService.findOne(auctionPartial.community);
   }
 }
