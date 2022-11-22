@@ -14,6 +14,7 @@ import {
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
+import { ProposalMessageTypes, VoteMessageTypes } from './types/eip712Types';
 
 export class PropHouseWrapper {
   constructor(
@@ -101,10 +102,14 @@ export class PropHouseWrapper {
     }
   }
 
-  async createProposal(proposal: Proposal) {
+  async createProposal(proposal: Proposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await proposal.signedPayload(this.signer);
+      const signedPayload = await proposal.signedPayload(
+        this.signer,
+        isContract,
+        ProposalMessageTypes,
+      );
       return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
@@ -133,20 +138,11 @@ export class PropHouseWrapper {
           this.signer,
           signableVotes.jsonPayload(),
           signature,
+          VoteMessageTypes,
         );
         responses.push((await axios.post(`${this.host}/votes`, signedPayload)).data);
       }
       return responses;
-    } catch (e: any) {
-      throw e.response.data.message;
-    }
-  }
-
-  async logVote(vote: Vote) {
-    if (!this.signer) return;
-    try {
-      const signedPayload = await vote.signedPayload(this.signer);
-      return (await axios.post(`${this.host}/votes`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }

@@ -3,6 +3,8 @@ import { IsEthereumAddress } from 'class-validator';
 import { Address } from 'src/types/address';
 import { SignatureState } from 'src/types/signature';
 import { BaseEntity, Column } from 'typeorm';
+import { EIP712MessageType } from 'src/types/eip712MessageType';
+import { TypedDataDomain } from '@ethersproject/abstract-signer';
 
 @ObjectType()
 export class SignedDataPayload {
@@ -34,6 +36,14 @@ export abstract class SignedEntity extends BaseEntity {
   @Column({ type: 'jsonb' })
   @Field(() => SignedDataPayload)
   signedData: SignedDataPayload;
+
+  @Column({ type: 'jsonb', default: null })
+  // @Field(() => ???)
+  domainSeparator: TypedDataDomain;
+
+  @Column({ type: 'jsonb', default: null })
+  // @Field(() => ???)
+  messageTypes: EIP712MessageType;
 
   constructor(opts?: Partial<SignedEntity>) {
     super();
