@@ -138,6 +138,9 @@
     flex-wrap: wrap;
     align-items: center;
   }
+  .titleRow {
+    align-items: flex-start;
+  }
   .titleRow .title {
     font-size: large;
     font-weight: 700;
@@ -148,6 +151,7 @@
   .communityInfoCol {
     margin-left: 1rem;
     gap: 0px;
+    max-width: min-content;
   }
   .profilePicCol img {
     width: 80px !important;
