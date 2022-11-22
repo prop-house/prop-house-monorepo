@@ -59,9 +59,6 @@ const Create: React.FC<{}> = () => {
   const submitProposal = async () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
-    console.log(typeof proposalEditorData.tldr);
-    console.log(typeof activeAuction.id);
-
     const proposal = await backendClient.current.createProposal(
       new Proposal(
         proposalEditorData.title,
