@@ -5,6 +5,7 @@
   transition: background-color var(--card-transition), filter var(--card-transition);
   filter: drop-shadow(var(--shadow-low));
   border: 1px solid var(--border-med);
+  margin: 1.5rem 0;
 }
 
 .proposalCard:hover {
