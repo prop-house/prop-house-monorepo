@@ -1,20 +1,49 @@
-import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
+import {
+  Signer,
+  TypedDataSigner,
+  TypedDataField,
+  TypedDataDomain,
+} from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
-import { EIP712Domain, EIP712MessageTypes } from './types/eip712Types';
+import { DomainSeparator, VoteMessageTypes } from './types/eip712Types';
 
 export abstract class Signable {
   abstract toPayload(): any;
 
-  async signedPayload(signer: Signer | Wallet) {
+  async typedSignature(
+    signer: Signer,
+    domainSeparator: TypedDataDomain,
+    eip712MessageType: Record<string, TypedDataField[]>,
+  ) {
+    const typedSigner = signer as Signer & TypedDataSigner;
+    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, this.toPayload());
+  }
+
+  async signedPayload(
+    signer: Signer | Wallet,
+    isContract: boolean,
+    eip712MessageTypes?: Record<string, TypedDataField[]>,
+  ) {
     const jsonPayload = this.jsonPayload();
     const address = await signer.getAddress();
+
+    let signature: string | undefined;
+
+    if (isContract) signature = await signer.signMessage(jsonPayload);
+    if (eip712MessageTypes)
+      signature = await this.typedSignature(signer, DomainSeparator, eip712MessageTypes);
+
+    if (!signature) throw new Error(`Error signing payload.`);
+
     return {
       signedData: {
         message: Buffer.from(jsonPayload).toString('base64'),
-        signature: await signer.signMessage(jsonPayload),
+        signature: signature,
         signer: address,
       },
       address,
+      messageTypes: eip712MessageTypes,
+      domainSeparator: DomainSeparator,
       ...this.toPayload(),
     };
   }
@@ -162,6 +191,7 @@ export class SignableVotes extends Signable {
     signer: Signer | Wallet,
     jsonPayload: string,
     signature: string,
+    eip712MessageTypes?: Record<string, TypedDataField[]>,
   ) {
     const address = await signer.getAddress();
     return {
@@ -171,6 +201,8 @@ export class SignableVotes extends Signable {
         signer: address,
       },
       address,
+      messageTypes: eip712MessageTypes,
+      domainSeparator: DomainSeparator,
       ...vote.toPayload(),
     };
   }
@@ -182,7 +214,7 @@ export class SignableVotes extends Signable {
     if (isContract) return await signer.signMessage(this.jsonPayload());
 
     const typedSigner = signer as Signer & TypedDataSigner;
-    return await typedSigner._signTypedData(EIP712Domain, EIP712MessageTypes, this.toPayload());
+    return await typedSigner._signTypedData(DomainSeparator, VoteMessageTypes, this.toPayload());
   }
 
   /**

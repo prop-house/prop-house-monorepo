@@ -1,8 +1,4 @@
 import { verifyTypedData } from '@ethersproject/wallet';
-import {
-  EIP712Domain,
-  EIP712MessageTypes,
-} from '@nouns/prop-house-wrapper/dist/types/eip712Types';
 import { SignedEntity } from 'src/entities/signed';
 
 /**
@@ -17,8 +13,8 @@ export const verifyAccountSignature = (
   let actualSigner: string | undefined;
   try {
     actualSigner = verifyTypedData(
-      EIP712Domain,
-      EIP712MessageTypes,
+      value.domainSeparator,
+      value.messageTypes,
       JSON.parse(message),
       value.signedData.signature,
     );
