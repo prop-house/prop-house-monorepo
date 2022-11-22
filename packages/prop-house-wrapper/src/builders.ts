@@ -5,7 +5,7 @@ import {
   TypedDataDomain,
 } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
-import { DomainSeparator, VoteMessageTypes } from './types/eip712Types';
+import { DomainSeparator } from './types/eip712Types';
 
 export abstract class Signable {
   abstract toPayload(): any;
@@ -39,6 +39,29 @@ export abstract class Signable {
       signedData: {
         message: Buffer.from(jsonPayload).toString('base64'),
         signature: signature,
+        signer: address,
+      },
+      address,
+      messageTypes: eip712MessageTypes,
+      domainSeparator: DomainSeparator,
+      ...this.toPayload(),
+    };
+  }
+
+  /**
+   * Signed payload with supplied signature
+   */
+  async presignedPayload(
+    signer: Signer | Wallet,
+    signature: string,
+    jsonPayload?: string,
+    eip712MessageTypes?: Record<string, TypedDataField[]>,
+  ) {
+    const address = await signer.getAddress();
+    return {
+      signedData: {
+        message: Buffer.from(jsonPayload ? jsonPayload : this.jsonPayload()).toString('base64'),
+        signature,
         signer: address,
       },
       address,
@@ -169,69 +192,6 @@ export class Vote extends Signable {
       communityAddress: this.communityAddress,
       blockHeight: this.blockHeight,
     };
-  }
-}
-
-/**
- * Manages single vote submission with multi-vote signatures.
- *
- * To prevent users form signing each vote, we group together all votes and sign one payload.
- * This one signature is then used to submit each vote to the backend.
- */
-export class SignableVotes extends Signable {
-  constructor(public readonly votes: Vote[]) {
-    super();
-  }
-
-  /**
-   * The signed payload for a `vote` using a supplied signature
-   */
-  async presignedPayload(
-    vote: Vote,
-    signer: Signer | Wallet,
-    jsonPayload: string,
-    signature: string,
-    eip712MessageTypes?: Record<string, TypedDataField[]>,
-  ) {
-    const address = await signer.getAddress();
-    return {
-      signedData: {
-        message: Buffer.from(jsonPayload).toString('base64'),
-        signature,
-        signer: address,
-      },
-      address,
-      messageTypes: eip712MessageTypes,
-      domainSeparator: DomainSeparator,
-      ...vote.toPayload(),
-    };
-  }
-
-  /**
-   * Signature for payload of all votes
-   */
-  async multiVoteSignature(signer: Signer, isContract: boolean): Promise<string> {
-    if (isContract) return await signer.signMessage(this.jsonPayload());
-
-    const typedSigner = signer as Signer & TypedDataSigner;
-    return await typedSigner._signTypedData(DomainSeparator, VoteMessageTypes, this.toPayload());
-  }
-
-  /**
-   * Payload for all votes
-   */
-  private allVotesPayload() {
-    return {
-      votes: this.votes.map(v => {
-        return {
-          ...v.toPayload(),
-        };
-      }),
-    };
-  }
-
-  toPayload() {
-    return this.allVotesPayload();
   }
 }
 

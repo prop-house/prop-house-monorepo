@@ -10,11 +10,12 @@ import {
   Vote,
   Community,
   CommunityWithAuctions,
-  SignableVotes,
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
 import { ProposalMessageTypes, VoteMessageTypes } from './types/eip712Types';
+import { multiVoteSignature } from './utils/multiVoteSignature';
+import { multiVotePayload } from './utils/multiVotePayload';
 
 export class PropHouseWrapper {
   constructor(
@@ -120,11 +121,11 @@ export class PropHouseWrapper {
     if (!this.signer) return;
 
     try {
-      const signableVotes = new SignableVotes(votes);
       // sign payload and use for all votes, awaiting if the signer is not a contract
       let signature = '0x';
+      const payload = multiVotePayload(votes);
 
-      const signaturePromise = signableVotes.multiVoteSignature(this.signer, isContract);
+      const signaturePromise = multiVoteSignature(this.signer, isContract, payload);
       if (!isContract) {
         signature = await signaturePromise;
       }
@@ -132,12 +133,11 @@ export class PropHouseWrapper {
       let responses = [];
 
       // POST each vote with the signature of the payload of all votes
-      for (const vote of signableVotes.votes) {
-        const signedPayload = await signableVotes.presignedPayload(
-          vote,
+      for (const vote of votes) {
+        const signedPayload = await vote.presignedPayload(
           this.signer,
-          signableVotes.jsonPayload(),
           signature,
+          JSON.stringify(payload),
           VoteMessageTypes,
         );
         responses.push((await axios.post(`${this.host}/votes`, signedPayload)).data);
