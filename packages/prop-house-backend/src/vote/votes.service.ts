@@ -78,6 +78,8 @@ export class VotesService {
       auctionId: proposal.auctionId,
       weight: createVoteDto.weight,
       blockHeight: createVoteDto.blockHeight,
+      domainSeparator: createVoteDto.domainSeparator,
+      messageTypes: createVoteDto.messageTypes,
       proposal,
     });
 
