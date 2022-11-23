@@ -61,8 +61,12 @@ export type TimedFundingRoundAuthStrategy = AuthStrategy<
   TimedFundingRoundAction
 >;
 
-export interface TimedFundingRoundClientConfig extends ClientConfig {
-  votingStrategyRegistry?: string;
+export interface TimedFundingRoundEthSigClientConfig extends ClientConfig {
+  starknetRelayerUrl: string;
+  votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
+}
+
+export interface TimedFundingRoundStarknetTxClientConfig extends ClientConfig {
   authStrategies?: Record<string, TimedFundingRoundAuthStrategy>;
   votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 }

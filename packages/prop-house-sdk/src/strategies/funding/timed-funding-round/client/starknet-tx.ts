@@ -1,27 +1,27 @@
 import { Account, hash, Provider } from 'starknet';
-import { encoding } from '../../../utils';
-import { VotingStrategy } from '../../types';
-import { DEFAULT_AUTH_STRATEGIES } from './auth';
-import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from './calldata';
-import { VOTING_STRATEGY_REGISTRY_ADDRESS } from './constants';
-import { DEFAULT_VOTING_STRATEGIES } from './voting';
+import { encoding } from '../../../../utils';
+import { VotingStrategy } from '../../../types';
+import { DEFAULT_AUTH_STRATEGIES } from '../auth';
+import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from '../calldata';
+import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
+import { DEFAULT_VOTING_STRATEGIES } from '../voting';
 import {
   EthSigProposeMessage,
   EthSigVoteMessage,
   ProposeMessage,
   TimedFundingRoundAuthStrategy,
-  TimedFundingRoundClientConfig,
   TimedFundingRoundEnvelope,
+  TimedFundingRoundStarknetTxClientConfig,
   VoteMessage,
-} from './types';
+} from '../types';
 
-export class TimedFundingRoundClient {
+export class TimedFundingRoundStarknetTxClient {
   public readonly ethUrl: string;
   public readonly starkProvider: Provider;
   public readonly authStrategies: Map<string, TimedFundingRoundAuthStrategy>;
   public readonly votingStrategies: Map<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 
-  constructor(config: TimedFundingRoundClientConfig) {
+  constructor(config: TimedFundingRoundStarknetTxClientConfig) {
     this.ethUrl = config.ethUrl;
     this.starkProvider = config.starkProvider;
     this.authStrategies = new Map(
@@ -36,6 +36,11 @@ export class TimedFundingRoundClient {
     );
   }
 
+  /**
+   * Submit a propose transaction
+   * @param account The Starknet account who's invoking the propose function
+   * @param envelope The propose message envelope
+   */
   public async propose(
     account: Account,
     envelope: TimedFundingRoundEnvelope<ProposeMessage | EthSigProposeMessage>,
@@ -55,6 +60,11 @@ export class TimedFundingRoundClient {
     });
   }
 
+  /**
+   * Submit a vote transaction
+   * @param account The Starknet account who's invoking the vote function
+   * @param envelope The vote message envelope
+   */
   public async vote(
     account: Account,
     envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
@@ -76,14 +86,19 @@ export class TimedFundingRoundClient {
     });
   }
 
+  /**
+   * Get the Starknet transaction vote calldata
+   * @param strategyAddresses The used voting strategy addresses
+   * @param envelope The vote message envelope
+   */
   public async getVoteCalldata(
-    strategiesAddresses: string[],
+    strategyAddresses: string[],
     envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
   ) {
     const { address, data } = envelope;
     const { votingStrategies, proposalVotes } = data.message;
 
-    const votingStrategyParams = await this.getVotingStrategyParams(strategiesAddresses, envelope);
+    const votingStrategyParams = await this.getVotingStrategyParams(strategyAddresses, envelope);
     return getTimedFundingRoundVoteCalldata(
       address,
       proposalVotes,
@@ -92,6 +107,10 @@ export class TimedFundingRoundClient {
     );
   }
 
+  /**
+   * Get the voting strategy addresses for the provided vote message envelope
+   * @param envelope The vote message envelope
+   */
   public async getVotingStrategyAddresses(
     envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
   ) {
@@ -116,12 +135,17 @@ export class TimedFundingRoundClient {
     return votingStrategyAddresses;
   }
 
+  /**
+   * Get the voting strategy params for the provided strategy addresses
+   * @param strategyAddresses The used voting strategy addresses
+   * @param envelope The vote message envelope
+   */
   public async getVotingStrategyParams(
-    strategiesAddresses: string[],
+    strategyAddresses: string[],
     envelope: TimedFundingRoundEnvelope,
   ) {
     return Promise.all(
-      strategiesAddresses.map((address, index) => {
+      strategyAddresses.map((address, index) => {
         const votingStrategy = this.votingStrategies.get(address);
         if (!votingStrategy) {
           throw new Error(`Invalid voting strategy: ${address}`);

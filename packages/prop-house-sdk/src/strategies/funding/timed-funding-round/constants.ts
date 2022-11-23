@@ -30,3 +30,40 @@ export const MIN_VOTE_PERIOD_DURATION = Time.toSeconds(4, TimeUnit.Hours);
  * Maximum winner count for this strategy
  */
 export const MAX_WINNER_COUNT = 256;
+
+/**
+ * EIP712 domain
+ */
+export const DOMAIN = {
+  name: 'prop-house',
+  version: '1',
+  chainId: '5', // Goerli
+};
+
+/**
+ * EIP712 timed funding round propose types
+ */
+export const TIMED_FUNDING_ROUND_PROPOSE_TYPES = {
+  Propose: [
+    { name: 'authStrategy', type: 'bytes32' },
+    { name: 'houseStrategy', type: 'bytes32' },
+    { name: 'author', type: 'address' },
+    { name: 'metadataUri', type: 'string' },
+    { name: 'salt', type: 'uint256' },
+  ],
+};
+
+/**
+ * EIP712 timed funding round vote types
+ */
+export const TIMED_FUNDING_ROUND_VOTE_TYPES = {
+  Vote: [
+    { name: 'authStrategy', type: 'bytes32' },
+    { name: 'houseStrategy', type: 'bytes32' },
+    { name: 'voter', type: 'address' },
+    { name: 'proposalVotesHash', type: 'bytes32' },
+    { name: 'strategiesHash', type: 'bytes32' },
+    { name: 'strategiesParamsHash', type: 'bytes32' },
+    { name: 'salt', type: 'uint256' },
+  ],
+};
