@@ -214,3 +214,14 @@ body {
 .web3modal-modal-lightbox {
   z-index: 9999999 !important;
 }
+
+.scroll-gradient:before {
+  content: '';
+  position: absolute;
+  display: flex;
+  left: 0;
+  right: 0;
+  top: 300px;
+  bottom: 60px;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}

@@ -6,6 +6,7 @@
   padding: 13px 20px 13px 18px !important;
   border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
   width: 100%;
+  min-height: 68px;
 }
 .votingContainer {
   display: flex;
@@ -161,5 +162,11 @@
   }
   .submitVotesButton {
     height: 38px;
+  }
+  .footerContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
   }
 }

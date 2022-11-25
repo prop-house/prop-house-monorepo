@@ -96,11 +96,13 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
               {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
               {!hideScrollButton && (
-                <ScrollButton
-                  toggleScrollButton={toggleScrollButton}
-                  setHideScrollButton={setHideScrollButton}
-                  setToggleScrollButton={setToggleScrollButton}
-                />
+                <div className="scroll-gradient">
+                  <ScrollButton
+                    toggleScrollButton={toggleScrollButton}
+                    setHideScrollButton={setHideScrollButton}
+                    setToggleScrollButton={setToggleScrollButton}
+                  />
+                </div>
               )}
 
               <ProposalContent fields={proposalFields(currentProposal)} />
