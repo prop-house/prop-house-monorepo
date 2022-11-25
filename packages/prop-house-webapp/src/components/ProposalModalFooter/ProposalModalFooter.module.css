@@ -12,9 +12,22 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.allottedVotesTooltip {
+  width: min-content;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.votingBarAndTooltip {
+  display: flex;
+  width: 65%;
+  gap: 20px;
+  justify-content: space-between;
+}
 .votingProgressBar,
 .voteAllotmentSection {
-  width: 33%;
+  width: 100%;
 }
 .voteAllotmentSection {
   display: flex;
@@ -66,6 +79,10 @@
 @media (max-width: 767px) {
   .votingProgressBar {
     width: 40%;
+    width: 100%;
+  }
+  .votingBarAndTooltip {
+    width: 50%;
   }
 }
 
@@ -130,7 +147,11 @@
 }
 
 @media (max-width: 575px) {
+  /* .votingBarAndTooltip {
+    width: auto;
+  } */
   .votingProgressBar,
+  .votingBarAndTooltip,
   .icon {
     display: none !important;
   }
