@@ -26,8 +26,7 @@ import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
 import NotFound from '../NotFound';
 import ProposalModalFooter from '../ProposalModalFooter';
-import { votesRemaining } from '../../utils/votesRemaining';
-import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
@@ -59,8 +58,6 @@ const ProposalModal = () => {
   const [currentPropIndex, setCurrentPropIndex] = useState<number>();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const votingPower = useAppSelector(state => state.voting.votingPower);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
 
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -73,15 +70,7 @@ const ProposalModal = () => {
     message: '',
     image: '',
   });
-  const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
-  const [numAllotedVotes, setNumAllotedVotes] = useState(0);
-
   const [hideScrollButton, setHideScrollButton] = useState(false);
-
-  useEffect(() => {
-    setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
-    setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
-  }, [submittedVotes, voteAllotments, votingPower]);
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -210,7 +199,6 @@ const ProposalModal = () => {
       const blockHeight = await provider.getBlockNumber();
 
       const votes = voteAllotments
-
         .map(
           a =>
             new Vote(
@@ -294,11 +282,6 @@ const ProposalModal = () => {
             />
 
             <ProposalModalFooter
-              votingPower={votingPower}
-              voteAllotments={voteAllotments}
-              votesLeftToAllot={votesLeftToAllot}
-              submittedVotes={submittedVotes}
-              numAllotedVotes={numAllotedVotes}
               setShowVotingModal={setShowVoteConfirmationModal}
               propIndex={currentPropIndex}
               numberOfProps={proposals.length}
