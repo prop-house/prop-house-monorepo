@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
 import { BsCardChecklist } from 'react-icons/bs';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
-import Divider from '../Divider';
+// import Divider from '../Divider';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
@@ -26,6 +26,7 @@ import { getNumVotes } from 'prop-house-communities';
 import { setNumSubmittedVotes, setVotingPower } from '../../state/slices/voting';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByVotes';
+import { useNavigate } from 'react-router-dom';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -51,7 +52,11 @@ const ProposalModalFooter: React.FC<{
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
 
+  const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
+  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!account || !library || !community) return;
@@ -91,8 +96,24 @@ const ProposalModalFooter: React.FC<{
     <>
       <div className={clsx(classes.footerContainer, 'footer')}>
         {/* VOTING WINDOW, NOT CONNECTED */}
-        {isVotingWindow && !account && (
-          <Button text={'Connect to vote'} bgColor={ButtonColor.Pink} onClick={connect} />
+        {!isRoundOver && !account && (
+          <Button
+            text={isVotingWindow ? 'Connect to vote' : 'Connect to submit'}
+            bgColor={ButtonColor.Pink}
+            onClick={connect}
+          />
+        )}
+        {account && round && community && isProposingWindow ? (
+          <Button
+            text={'Create your proposal'}
+            bgColor={ButtonColor.Green}
+            onClick={() => {
+              // console.log('c', round, community);
+              navigate('/create', { state: { auction: round, community } });
+            }}
+          />
+        ) : (
+          <></>
         )}
 
         {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
@@ -136,7 +157,7 @@ const ProposalModalFooter: React.FC<{
                   tooltipContent={`${
                     voteAllotmentsForTooltip.length > 0
                       ? voteAllotmentsForTooltip.toString().replaceAll(',', '\n')
-                      : 'vote allotements will appear here'
+                      : 'no votes allotted'
                   }`}
                 />
               </div>
@@ -160,9 +181,9 @@ const ProposalModalFooter: React.FC<{
                 />
               </div>
             </div>
-            <span className={classes.footerDivider}>
+            {/* <span className={classes.footerDivider}>
               <Divider />
-            </span>
+            </span> */}
           </>
         ) : (
           <></>
