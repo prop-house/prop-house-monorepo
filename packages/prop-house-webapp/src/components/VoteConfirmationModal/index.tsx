@@ -7,6 +7,7 @@ import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { VoteAllotment } from '../../types/VoteAllotment';
 import { useTranslation } from 'react-i18next';
+import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByVotes';
 
 const VoteConfirmationModal: React.FC<{
   showNewModal: boolean;
@@ -31,6 +32,8 @@ const VoteConfirmationModal: React.FC<{
     0,
   );
 
+  const allottedVotes = removeZeroVotesAndSortByVotes(voteAllotments);
+
   return (
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
@@ -46,7 +49,7 @@ const VoteConfirmationModal: React.FC<{
       <hr className={classes.divider} />
 
       <div className={classes.props}>
-        {voteAllotments.map((prop: VoteAllotment) => (
+        {allottedVotes.map((prop: VoteAllotment) => (
           <div key={prop.proposalId} className={classes.propCopy}>
             <p className={classes.voteCount}>{prop.votes}</p>
             <hr className={classes.line} />
