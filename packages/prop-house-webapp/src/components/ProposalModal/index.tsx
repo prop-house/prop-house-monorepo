@@ -26,7 +26,6 @@ import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
 import NotFound from '../NotFound';
 import ProposalModalFooter from '../ProposalModalFooter';
-
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
@@ -34,6 +33,7 @@ import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
@@ -71,6 +71,8 @@ const ProposalModal = () => {
     image: '',
   });
   const [hideScrollButton, setHideScrollButton] = useState(false);
+
+  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -131,7 +133,9 @@ const ProposalModal = () => {
       const proposals = await backendClient.current.getAuctionProposals(round.id);
       dispatch(setActiveProposals(proposals));
 
-      dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+      isRoundOver
+        ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
+        : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
 
       currentProposal &&
         setCurrentPropIndex(
@@ -143,7 +147,7 @@ const ProposalModal = () => {
     return () => {
       dispatch(setActiveProposals([]));
     };
-  }, [currentProposal, dispatch, round]);
+  }, [currentProposal, dispatch, isRoundOver, round]);
 
   // calculate if modal content is scrollable in order to show 'More' button
   const modal = document.querySelector('#propModal');
@@ -163,7 +167,6 @@ const ProposalModal = () => {
     if (
       proposals &&
       proposals.length > 0 &&
-      currentProposal &&
       currentProposal.id &&
       direction &&
       proposals[

@@ -107,10 +107,7 @@ const ProposalModalFooter: React.FC<{
           <Button
             text={'Create your proposal'}
             bgColor={ButtonColor.Green}
-            onClick={() => {
-              // console.log('c', round, community);
-              navigate('/create', { state: { auction: round, community } });
-            }}
+            onClick={() => navigate('/create', { state: { auction: round, community } })}
           />
         ) : (
           <></>
