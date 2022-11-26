@@ -98,7 +98,7 @@ const ProposalModalFooter: React.FC<{
         {/* VOTING WINDOW, NOT CONNECTED */}
         {!isRoundOver && !account && (
           <Button
-            text={isVotingWindow ? 'Connect to vote' : 'Connect to submit'}
+            text={isVotingWindow ? 'Connect to vote' : 'Connect to submit a prop'}
             bgColor={ButtonColor.Pink}
             onClick={connect}
           />
