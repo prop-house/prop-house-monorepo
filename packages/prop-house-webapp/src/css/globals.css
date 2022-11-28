@@ -215,7 +215,7 @@ body {
   z-index: 9999999 !important;
 }
 
-.scroll-gradient:before {
+.scrollMoreContainer:before {
   content: '';
   position: absolute;
   display: flex;
@@ -224,4 +224,9 @@ body {
   top: 300px;
   bottom: 60px;
   background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+@media (max-width: 575px) {
+  .scrollMoreContainer {
+    display: none;
+  }
 }
