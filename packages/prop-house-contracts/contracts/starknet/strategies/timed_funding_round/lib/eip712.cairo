@@ -33,17 +33,17 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x367959fbff4da0a038f30383de089bcd;
 const DOMAIN_HASH_LOW = 0x293b7960f35bd1db59a620d4c2cbfd81;
 
-// keccak256("Propose(bytes32 auth_strategy,bytes32 house_strategy,address author,string metadata_uri,uint256 salt)")
-const PROPOSAL_TYPE_HASH_HIGH = 0x584855567c87b898d44e9c4c4ecefc3b;
-const PROPOSAL_TYPE_HASH_LOW = 0xba1009599490c69d83652afb70d51457;
+// keccak256("Propose(bytes32 authStrategy,bytes32 houseStrategy,address proposerAddress,string metadataUri,uint256 salt)")
+const PROPOSAL_TYPE_HASH_HIGH = 0xE9EF30A75143EFB91633457A3DA2EED2;
+const PROPOSAL_TYPE_HASH_LOW = 0x13AD4E7ED21203F5990DC04D819E79EE;
 
-// keccak256("Vote(bytes32 auth_strategy,bytes32 house_strategy,address voter,bytes32 proposal_votes_hash,bytes32 strategies_hash,bytes32 strategies_params_hash,uint256 salt)")
-const VOTE_TYPE_HASH_HIGH = 0x48144e543c4c3b5bb4ed0677601fcbc0;
-const VOTE_TYPE_HASH_LOW = 0x7447c7739792d6f88f0aa34e2cf93bd8;
+// keccak256("Vote(bytes32 authStrategy,bytes32 houseStrategy,address voterAddress,bytes32 proposalVotesHash,bytes32 votingStrategiesHash,bytes32 votingStrategyParamsHash,uint256 salt)")
+const VOTE_TYPE_HASH_HIGH = 0x2DF4A490F0DA73A4804C16B31FFAD04B;
+const VOTE_TYPE_HASH_LOW = 0x46BDFC71C0CA7FFD5A85CE9FA9777868;
 
-// keccak256("CancelProposal(bytes32 auth_strategy,bytes32 house_strategy,address author,uint256 proposal_id,uint256 salt)")
-const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0xe355112cd859d159e594add52a99f218;
-const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0xf8288275bc67f55a0acb0c97b3645dba;
+// keccak256("CancelProposal(bytes32 authStrategy,bytes32 houseStrategy,address proposerAddress,uint256 proposalId,uint256 salt)")
+const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0x69E48746EF56A2276B12F179EA13EC55;
+const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0x25F52F519DF1AE69AE2C251BAEBE7D1F;
 
 // keccak256("SessionKey(address address,bytes32 sessionPublicKey,uint256 sessionDuration,uint256 salt)")
 const SESSION_KEY_INIT_TYPE_HASH_HIGH = 0x53f1294cb551b4ff97c8fd4caefa8ec6;

@@ -67,7 +67,7 @@ export class TimedFundingRoundStarknetTxClient {
    */
   public async vote(
     account: Account,
-    envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
+    envelope: TimedFundingRoundEnvelope<VoteMessage>,
   ) {
     const { data } = envelope;
     const authStrategyAddress = encoding.hexPadRight(data.message.authStrategy).toLowerCase();
@@ -93,7 +93,7 @@ export class TimedFundingRoundStarknetTxClient {
    */
   public async getVoteCalldata(
     strategyAddresses: string[],
-    envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
+    envelope: TimedFundingRoundEnvelope<VoteMessage>,
   ) {
     const { address, data } = envelope;
     const { votingStrategies, proposalVotes } = data.message;
@@ -112,7 +112,7 @@ export class TimedFundingRoundStarknetTxClient {
    * @param envelope The vote message envelope
    */
   public async getVotingStrategyAddresses(
-    envelope: TimedFundingRoundEnvelope<VoteMessage | EthSigVoteMessage>,
+    envelope: TimedFundingRoundEnvelope<VoteMessage>,
   ) {
     const votingStrategyHashes = await Promise.all(
       envelope.data.message.votingStrategies.map(index =>

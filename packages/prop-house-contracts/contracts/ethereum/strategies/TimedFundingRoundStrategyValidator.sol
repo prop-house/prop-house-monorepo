@@ -24,6 +24,9 @@ contract TimedFundingRoundStrategyValidator is IStrategyValidator {
     /// @notice Thrown when the award amount is invalid
     error InvalidAwardAmount();
 
+    /// @notice Thrown when the winner count is zero
+    error WinnerCountMustBeGreaterThanZero();
+
     /// @notice Thrown when the winner count is greater than the maximum allowable count
     error WinnerCountTooHigh();
 
@@ -80,6 +83,9 @@ contract TimedFundingRoundStrategyValidator is IStrategyValidator {
         }
         if (awards.length == 1 && round.winnerCount > 1 && awards[0].amount % round.winnerCount != 0) {
             revert InvalidAwardAmount();
+        }
+        if (round.winnerCount == 0) {
+            revert WinnerCountMustBeGreaterThanZero();
         }
         if (round.winnerCount > MAX_WINNER_COUNT) {
             revert WinnerCountTooHigh();

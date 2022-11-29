@@ -1,16 +1,11 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  DOMAIN,
   fundingHouseTimedFundingRoundSetup,
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
-  Propose,
   PROPOSE_SELECTOR,
-  PROPOSE_TYPES,
-  Vote,
   VOTE_SELECTOR,
-  VOTE_TYPES,
 } from '../../utils';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import {
@@ -19,6 +14,11 @@ import {
   FundingHouseStrategyType,
   getTimedFundingRoundProposeCalldata,
   getTimedFundingRoundVoteCalldata,
+  EthSigProposeMessage,
+  EthSigVoteMessage,
+  TIMED_FUNDING_ROUND_PROPOSE_TYPES,
+  TIMED_FUNDING_ROUND_VOTE_TYPES,
+  DOMAIN,
   utils,
 } from '@prophouse/sdk';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
@@ -163,14 +163,14 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
 
   it('should create a proposal using an Ethereum signature', async () => {
     const salt = utils.splitUint256.SplitUint256.fromHex('0x01');
-    const message: Propose = {
-      auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
-      author: signer.address,
-      metadata_uri: METADATA_URI,
+    const message: EthSigProposeMessage = {
+      authStrategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
+      houseStrategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
+      proposerAddress: signer.address,
+      metadataUri: METADATA_URI,
       salt: salt.toHex(),
     };
-    const sig = await signer._signTypedData(DOMAIN, PROPOSE_TYPES, message);
+    const sig = await signer._signTypedData(DOMAIN, TIMED_FUNDING_ROUND_PROPOSE_TYPES, message);
     const { r, s, v } = utils.encoding.getRSVFromSig(sig);
     const txHash = await starknetSigner.invoke(ethSigAuth, 'authenticate', {
       r,
@@ -196,15 +196,15 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
 
   it('should not authenticate an invalid signature', async () => {
     const salt = utils.splitUint256.SplitUint256.fromHex('0x01');
-    const message: Propose = {
-      auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
-      author: signer.address,
-      metadata_uri: METADATA_URI,
+    const message: EthSigProposeMessage = {
+      authStrategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
+      houseStrategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
+      proposerAddress: signer.address,
+      metadataUri: METADATA_URI,
       salt: salt.toHex(),
     };
     const badProposeCalldata = [...proposeCalldata];
-    const sig = await signer._signTypedData(DOMAIN, PROPOSE_TYPES, message);
+    const sig = await signer._signTypedData(DOMAIN, TIMED_FUNDING_ROUND_PROPOSE_TYPES, message);
     const { r, s, v } = utils.encoding.getRSVFromSig(sig);
 
     // Data is signed with accounts[0] but the proposer is accounts[1] so it should fail
@@ -258,16 +258,16 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const userVotingStrategyParamsFlatHashPadded = utils.encoding.hexPadRight(
       userVotingStrategyParamsFlatHash,
     );
-    const message: Vote = {
-      auth_strategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
-      house_strategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
-      voter: signer.address,
-      proposal_votes_hash: proposalVotesHash,
-      strategies_hash: usedVotingStrategiesHashPadded,
-      strategies_params_hash: userVotingStrategyParamsFlatHashPadded,
+    const message: EthSigVoteMessage = {
+      authStrategy: ethers.utils.hexZeroPad(ethSigAuth.address, 32),
+      houseStrategy: ethers.utils.hexZeroPad(timedFundingRoundContract.address, 32),
+      voterAddress: signer.address,
+      proposalVotesHash: proposalVotesHash,
+      votingStrategiesHash: usedVotingStrategiesHashPadded,
+      votingStrategyParamsHash: userVotingStrategyParamsFlatHashPadded,
       salt: salt.toHex(),
     };
-    const sig = await signer._signTypedData(DOMAIN, VOTE_TYPES, message);
+    const sig = await signer._signTypedData(DOMAIN, TIMED_FUNDING_ROUND_VOTE_TYPES, message);
     const { r, s, v } = utils.encoding.getRSVFromSig(sig);
     const txHash = await starknetSigner.invoke(ethSigAuth, 'authenticate', {
       r,

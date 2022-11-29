@@ -47,7 +47,7 @@ export const TIMED_FUNDING_ROUND_PROPOSE_TYPES = {
   Propose: [
     { name: 'authStrategy', type: 'bytes32' },
     { name: 'houseStrategy', type: 'bytes32' },
-    { name: 'author', type: 'address' },
+    { name: 'proposerAddress', type: 'address' },
     { name: 'metadataUri', type: 'string' },
     { name: 'salt', type: 'uint256' },
   ],
@@ -60,10 +60,10 @@ export const TIMED_FUNDING_ROUND_VOTE_TYPES = {
   Vote: [
     { name: 'authStrategy', type: 'bytes32' },
     { name: 'houseStrategy', type: 'bytes32' },
-    { name: 'voter', type: 'address' },
+    { name: 'voterAddress', type: 'address' },
     { name: 'proposalVotesHash', type: 'bytes32' },
-    { name: 'strategiesHash', type: 'bytes32' },
-    { name: 'strategiesParamsHash', type: 'bytes32' },
+    { name: 'votingStrategiesHash', type: 'bytes32' },
+    { name: 'votingStrategyParamsHash', type: 'bytes32' },
     { name: 'salt', type: 'uint256' },
   ],
 };

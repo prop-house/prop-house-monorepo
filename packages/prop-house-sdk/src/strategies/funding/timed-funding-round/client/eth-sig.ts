@@ -140,15 +140,14 @@ export class TimedFundingRoundEthSigClient {
       ),
     );
     const message: EthSigVoteMessage = {
-      ...data,
       houseStrategy: encoding.hexPadRight(data.houseStrategy),
       authStrategy: encoding.hexPadRight(data.authStrategy),
       voterAddress: encoding.hexPadRight(address),
       proposalVotesHash: encoding.hexPadRight(proposalVotesHash),
-      usedVotingStrategiesHash: encoding.hexPadRight(
+      votingStrategiesHash: encoding.hexPadRight(
         hash.computeHashOnElements(data.votingStrategies.map(s => `0x${s.toString(16)}`)),
       ),
-      userVotingStrategyParamsFlatHash: encoding.hexPadRight(
+      votingStrategyParamsHash: encoding.hexPadRight(
         hash.computeHashOnElements(encoding.flatten2DArray(votingStrategyParams)),
       ),
       salt: this.generateSalt(),

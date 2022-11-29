@@ -28,15 +28,17 @@ export interface VoteMessage {
 
 export interface EthSigProposeMessage extends ProposeMessage {
   proposerAddress: string;
-  salt: number;
+  salt: string | number;
 }
 
-export interface EthSigVoteMessage extends VoteMessage {
+export interface EthSigVoteMessage {
+  houseStrategy: string;
+  authStrategy: string;
   voterAddress: string;
   proposalVotesHash: string;
-  usedVotingStrategiesHash: string;
-  userVotingStrategyParamsFlatHash: string;
-  salt: number;
+  votingStrategiesHash: string;
+  votingStrategyParamsHash: string;
+  salt: string | number;
 }
 
 export type TimedFundingRoundVanillaMessage = ProposeMessage | VoteMessage;
