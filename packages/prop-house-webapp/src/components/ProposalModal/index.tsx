@@ -78,7 +78,10 @@ const ProposalModal = () => {
   const handleClosePropModal = () => {
     if (!community || !round) return;
     setShowProposalModal(false);
-    navigate(buildRoundPath(community, round), { replace: false });
+    navigate(buildRoundPath(community, round), {
+      state: { fromProposalPage: true },
+      replace: false,
+    });
   };
 
   useEffect(() => {
