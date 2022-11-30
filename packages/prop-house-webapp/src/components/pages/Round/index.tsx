@@ -44,6 +44,8 @@ const Round = () => {
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
+  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
