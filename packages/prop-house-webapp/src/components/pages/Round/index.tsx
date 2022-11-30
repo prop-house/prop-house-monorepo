@@ -27,6 +27,7 @@ const Round = () => {
   const location = useLocation();
   const communityName = location.pathname.substring(1).split('/')[0];
   const roundName = location.pathname.substring(1).split('/')[1];
+  const fromProposalPage = location.state && location.state.fromProposalPage;
 
   const dispatch = useAppDispatch();
   const { library } = useEthers();
@@ -37,6 +38,8 @@ const Round = () => {
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
+
+  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -63,6 +66,7 @@ const Round = () => {
 
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(round.id);
+
       dispatch(setActiveProposals(proposals));
 
       // default sorting method is random, unless the auction is over, in which case its by votes
@@ -79,7 +83,7 @@ const Round = () => {
     return () => {
       dispatch(setActiveProposals([]));
     };
-  }, [dispatch, round]);
+  }, [dispatch, fromProposalPage, isRoundOver, round]);
 
   return (
     <>
