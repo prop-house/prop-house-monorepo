@@ -69,15 +69,17 @@ const Round = () => {
 
       dispatch(setActiveProposals(proposals));
 
-      // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(
-        dispatch,
-        auctionStatus(round) === AuctionStatus.AuctionEnded ||
-          auctionStatus(round) === AuctionStatus.AuctionVoting
-          ? SortType.VoteCount
-          : SortType.Random,
-        false,
-      );
+      // default sorting method is random, but if user is navigating back from the proposal page we sort by date (which is the order the user is viewing the props in the modal), however if the auction is over we sort by votes
+      fromProposalPage && !isRoundOver
+        ? dispatchSortProposals(dispatch, SortType.CreatedAt, false)
+        : dispatchSortProposals(
+            dispatch,
+            auctionStatus(round) === AuctionStatus.AuctionEnded ||
+              auctionStatus(round) === AuctionStatus.AuctionVoting
+              ? SortType.VoteCount
+              : SortType.Random,
+            false,
+          );
     };
     fetchAuctionProposals();
     return () => {
