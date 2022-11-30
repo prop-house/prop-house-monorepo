@@ -8,7 +8,6 @@ import OpenGraphElements from '../OpenGraphElements';
 import ProposalModalHeader from '../ProposalModalHeader';
 import Divider from '../Divider';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 import { useAppSelector } from '../../hooks';
@@ -18,7 +17,6 @@ interface ProposalHeaderAndBodyProps {
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
   handleClosePropModal: () => void;
-  isWinner?: boolean;
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
 }
@@ -31,7 +29,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentPropIndex,
     handleDirectionalArrowClick,
     handleClosePropModal,
-    isWinner,
     hideScrollButton,
     setHideScrollButton,
   } = props;
@@ -92,8 +89,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
 
                 <Divider />
               </div>
-
-              {/* {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />} */}
 
               {!hideScrollButton && (
                 <div className="scrollMoreContainer">

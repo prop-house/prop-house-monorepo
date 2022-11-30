@@ -34,6 +34,7 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
@@ -279,7 +280,6 @@ const ProposalModal = () => {
               currentPropIndex={currentPropIndex}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               handleClosePropModal={handleClosePropModal}
-              isWinner={winningIds && isWinner(winningIds, proposal.id)}
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
             />
@@ -289,6 +289,7 @@ const ProposalModal = () => {
               propIndex={currentPropIndex}
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
+              isWinner={winningIds && isWinner(winningIds, proposal.id)}
             />
           </>
         ) : failedFetch ? (
