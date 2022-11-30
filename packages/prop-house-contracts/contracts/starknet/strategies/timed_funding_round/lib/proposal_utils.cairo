@@ -10,9 +10,10 @@ from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import 
 
 namespace ProposalUtils {
     // Generate an array of uint256 leaves from the provided ProposalInfo array for the purposes
-    // of building a merkle tree. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
+    // of building a merkle tree. This function should only be used when each winner has been assigned
+    // a specific award. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
-    func generate_leaves{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+    func generate_leaves_for_assigned_awards{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
         awards_flat_len: felt,
@@ -38,29 +39,13 @@ namespace ProposalUtils {
         assert hash_input_arr[0] = proposal_id_uint256;
         assert hash_input_arr[1] = proposer_address_uint256;
         assert hash_input_arr[2] = awards_flat[curr_award_index];
-        assert hash_input_arr[3] = awards_flat[curr_award_index + 1];  // TODO: Split award amount if only one asset
+        assert hash_input_arr[3] = awards_flat[curr_award_index + 1];
 
         let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr);
 
         assert acc[curr_proposal_index] = hash;
 
-        // If awards length is 4, then there is only one award in the array. Do not iterate. Format: [offset, length, asset_id, amount]
-        if (awards_flat_len == 4) {
-            let (winners_len_uint256) = FeltUtils.felt_to_uint256(proposal_info_arr_len);
-            let (split_award_amount, _) = uint256_unsigned_div_rem(awards_flat[3], winners_len_uint256);
-            return generate_leaves_for_equal_split_award(
-                proposal_info_arr_len,
-                proposal_info_arr,
-                awards_flat_len,
-                awards_flat,
-                curr_award_index,
-                acc,
-                curr_proposal_index + 1,
-                split_award_amount,
-            );
-        }
-
-        return generate_leaves(
+        return generate_leaves_for_assigned_awards(
             proposal_info_arr_len,
             proposal_info_arr,
             awards_flat_len,
@@ -75,15 +60,13 @@ namespace ProposalUtils {
     // a merkle tree. This function should only be used for a single award asset that is equally split
     // between winners. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
-    func generate_leaves_for_equal_split_award{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+    func generate_leaves_for_split_award{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
-        awards_flat_len: felt,
-        awards_flat: Uint256*,
-        curr_award_index: felt,
+        award_asset_id: Uint256,
+        award_asset_amount: Uint256,
         acc: Uint256*,
         curr_proposal_index: felt,
-        split_award_amount: Uint256
     ) -> (leaves_ptr: Uint256*) {
         alloc_locals;
 
@@ -101,21 +84,19 @@ namespace ProposalUtils {
 
         assert hash_input_arr[0] = proposal_id_uint256;
         assert hash_input_arr[1] = proposer_address_uint256;
-        assert hash_input_arr[2] = awards_flat[curr_award_index];
-        assert hash_input_arr[3] = split_award_amount;
+        assert hash_input_arr[2] = award_asset_id;
+        assert hash_input_arr[3] = award_asset_amount;
 
         let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr);
         assert acc[curr_proposal_index] = hash;
 
-        return generate_leaves_for_equal_split_award(
+        return generate_leaves_for_split_award(
             proposal_info_arr_len,
             proposal_info_arr,
-            awards_flat_len,
-            awards_flat,
-            curr_award_index,
+            award_asset_id,
+            award_asset_amount,
             acc,
             curr_proposal_index + 1,
-            split_award_amount
         );
     }
 

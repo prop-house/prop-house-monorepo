@@ -5,7 +5,7 @@
 // Standard Library
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin, BitwiseBuiltin
-from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq
+from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq, uint256_unsigned_div_rem
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
 from starkware.cairo.common.registers import get_label_location
@@ -38,6 +38,7 @@ from contracts.starknet.strategies.timed_funding_round.lib.round_state import Ro
 
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
+from contracts.starknet.common.lib.felt_utils import FeltUtils
 from contracts.starknet.common.lib.merkle_tree import MerkleTree
 from contracts.starknet.common.lib.array_utils import ArrayUtils, Immutable2DArray
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_utils import ProposalUtils
@@ -447,9 +448,20 @@ func finalize_round{
     let offset = 2;
 
     let (leaves: Uint256*) = alloc();
-    ProposalUtils.generate_leaves{keccak_ptr=keccak_ptr}(
-        winners_len, winners, awards_flat_len, awards_flat, offset, leaves, 0
-    );
+
+    // If awards length is 4, then there is only one award in the array. Split the award between winners.
+    // Format: [offset, length, asset_id, amount]
+    if (awards_flat_len == 4) {
+        let (winners_len_uint256) = FeltUtils.felt_to_uint256(winners_len);
+        let (split_award_amount, _) = uint256_unsigned_div_rem(awards_flat[3], winners_len_uint256);
+        ProposalUtils.generate_leaves_for_split_award{keccak_ptr=keccak_ptr}(
+            winners_len, winners, awards_flat[2], split_award_amount, leaves, 0
+        );
+    } else {
+        ProposalUtils.generate_leaves_for_assigned_awards{keccak_ptr=keccak_ptr}(
+            winners_len, winners, awards_flat_len, awards_flat, offset, leaves, 0
+        );
+    }
 
     let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
         winners_len, leaves, 0, MAX_LOG_N_WINNERS
