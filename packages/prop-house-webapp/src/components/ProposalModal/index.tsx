@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
-import ProposalHeaderAndBody from '../ProposalHeaderAndBody/ProposalHeaderAndBody';
 import { useParams } from 'react-router';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -25,6 +24,7 @@ import {
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
 import NotFound from '../NotFound';
+import ProposalHeaderAndBody from '../ProposalHeaderAndBody/ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';

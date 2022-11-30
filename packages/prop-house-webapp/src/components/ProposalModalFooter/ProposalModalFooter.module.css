@@ -1,12 +1,16 @@
 .footerContainer {
   position: sticky !important;
   bottom: -1px;
+  bottom: 0px;
   z-index: 1;
   background: white !important;
-  padding: 13px 20px 13px 18px !important;
   border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
   width: 100%;
   min-height: 68px;
+  max-width: 100%;
+}
+.footerPadding {
+  padding: 13px 20px 13px 18px;
 }
 .votingContainer {
   display: flex;
@@ -54,6 +58,11 @@
 }
 .totalVotes {
   color: var(--brand-gray);
+  display: flex;
+  gap: 5px;
+}
+.totalVotes svg {
+  color: var(--brand-gray-transparent);
 }
 .submitVotesButton {
   font-size: 14px !important;
@@ -88,8 +97,7 @@
 }
 
 @media (min-width: 576px) {
-  .btnContainer,
-  .footerDivider {
+  .btnContainer {
     display: none !important;
   }
 }
@@ -148,9 +156,6 @@
 }
 
 @media (max-width: 575px) {
-  /* .votingBarAndTooltip {
-    width: auto;
-  } */
   .votingProgressBar,
   .votingBarAndTooltip,
   .icon {
@@ -167,6 +172,15 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 120px;
+    min-height: auto;
+  }
+  .btnContainer {
+    padding: 0px 12px;
+  }
+  .footerPadding .btnContainer {
+    padding: 10px 0px 0px 0px;
+  }
+  .fullWidthButton {
+    width: 100%;
   }
 }
