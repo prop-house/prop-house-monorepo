@@ -19,7 +19,6 @@ const VoteAllotmentTooltip: React.FC<{}> = () => {
 
   const params = useParams();
   const { id } = params;
-  console.log('id', id);
 
   const voteAllotmentsForTooltip = removeZeroVotesAndSortByVotes(voteAllotments).map((v, idx) => (
     <div key={idx} className={classes.votesRow}>
@@ -52,10 +51,7 @@ const VoteAllotmentTooltip: React.FC<{}> = () => {
   return (
     <>
       <div
-        // data-tip="custom show"
-        // data-scroll-hide="true"
-        // data-event="click focus"
-        // data-for="allotmentTooltip"
+        className="voteTooltip"
         data-tip="custom show"
         data-event="click focus"
         data-iscapture="true"
@@ -65,22 +61,7 @@ const VoteAllotmentTooltip: React.FC<{}> = () => {
         </div>
       </div>
 
-      <ReactTooltip
-        globalEventOff="scroll"
-        // data-iscapture="true"
-        // globalEventOff="click scroll"
-        // id="allotmentTooltip"
-        // scrollHide={true}
-        // aria-haspopup="true"
-        // id="overridePosition"
-        //
-        // ref={parentRef}
-        // afterHide={() => {
-        //   // var node = ReactDOM.findDOMNode(this!.refs.tooltipComponent) as any;
-        //   parentRef.style.left = null;
-        //   parentRef.style.top = null;
-        // }}
-      >
+      <ReactTooltip globalEventOff="scroll">
         <div className={classes.votesContainer}>
           {voteAllotmentsForTooltip.length > 0 ? voteAllotmentsForTooltip : 'no votes allotted'}
         </div>

@@ -156,10 +156,14 @@ const ProposalModalFooter: React.FC<{
                       <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
                     </div>
 
-                    <PropCardVotingModule
-                      proposal={proposal}
-                      cardStatus={ProposalCardStatus.Voting}
-                    />
+                    <div className="mobileTooltipContainer">
+                      <PropCardVotingModule
+                        proposal={proposal}
+                        cardStatus={ProposalCardStatus.Voting}
+                      />
+
+                      <VoteAllotmentTooltip />
+                    </div>
 
                     <Button
                       classNames={classes.submitVotesButton}

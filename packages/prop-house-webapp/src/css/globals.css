@@ -243,7 +243,6 @@ body {
   font-weight: 700 !important;
   font-size: 16px !important;
   line-height: 21px !important;
-  /* min-width: 325px; */
   max-width: 375px;
   overflow-y: scroll;
 }
@@ -256,4 +255,17 @@ body {
 }
 .__react_component_tooltip:after {
   background: var(--bg-light) !important;
+}
+
+@media (min-width: 576px) {
+  .mobileTooltipContainer .voteTooltip {
+    display: none;
+  }
+}
+@media (max-width: 575px) {
+  .mobileTooltipContainer {
+    display: flex !important;
+    align-items: center;
+    gap: 20px;
+  }
 }
