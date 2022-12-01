@@ -10,7 +10,7 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s, keccak_u
 
 from contracts.starknet.common.lib.felt_utils import FeltUtils
 
-namespace MerkleTree {
+namespace MerkleKeccak {
     // Generate an array of uint256 leaves from the provided felt input
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
     func generate_leaves{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
@@ -34,9 +34,9 @@ namespace MerkleTree {
         return generate_leaves(input_len, input, acc, current_index + 1);
     }
 
-    // Calculate the merkle root for the provided uint256 leaves
+    // Compute the merkle root for the provided uint256 leaves
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
-    func get_merkle_root{bitwise_ptr: BitwiseBuiltin*, range_check_ptr, keccak_ptr: felt*}(
+    func compute_merkle_root{bitwise_ptr: BitwiseBuiltin*, range_check_ptr, keccak_ptr: felt*}(
         leaves_ptr_len: felt, leaves_ptr: Uint256*, left_index: felt, height: felt
     ) -> (root: Uint256) {
         alloc_locals;
@@ -45,7 +45,7 @@ namespace MerkleTree {
             return (leaves_ptr[left_index],);
         }
 
-        let (curr1) = get_merkle_root(leaves_ptr_len, leaves_ptr, left_index, height - 1);
+        let (curr1) = compute_merkle_root(leaves_ptr_len, leaves_ptr, left_index, height - 1);
         let (interval_size) = pow(2, height);
         let right_index = left_index + interval_size - 1;
         let (right_subtree_left_index, _) = unsigned_div_rem(left_index + right_index, 2);
@@ -54,7 +54,7 @@ namespace MerkleTree {
         if (out_of_bounds == 1) {
             return (curr1,);
         } else {
-            let (curr2) = get_merkle_root(
+            let (curr2) = compute_merkle_root(
                 leaves_ptr_len, leaves_ptr, right_subtree_left_index + 1, height - 1
             );
         }

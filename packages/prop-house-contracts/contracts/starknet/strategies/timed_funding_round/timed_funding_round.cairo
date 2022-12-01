@@ -39,7 +39,7 @@ from contracts.starknet.strategies.timed_funding_round.lib.round_state import Ro
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.felt_utils import FeltUtils
-from contracts.starknet.common.lib.merkle_tree import MerkleTree
+from contracts.starknet.common.lib.merkle_keccak import MerkleKeccak
 from contracts.starknet.common.lib.array_utils import ArrayUtils, Immutable2DArray
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_utils import ProposalUtils
 
@@ -463,7 +463,7 @@ func finalize_round{
         );
     }
 
-    let (merkle_root) = MerkleTree.get_merkle_root{keccak_ptr=keccak_ptr}(
+    let (merkle_root) = MerkleKeccak.compute_merkle_root{keccak_ptr=keccak_ptr}(
         winners_len, leaves, 0, MAX_LOG_N_WINNERS
     );
     finalize_keccak(keccak_ptr_start, keccak_ptr);
