@@ -24,8 +24,10 @@ const SortToggles: React.FC<{
 
   const [datesSorted, setDatesSorted] = useState(false);
   const [dateAscending, setDateAscending] = useState(false);
-  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
-  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded || auctionVoting ? true : false);
+  const [votesAscending, setVotesAscending] = useState(
+    auctionEnded || auctionVoting ? true : false,
+  );
 
   const dispatch = useDispatch();
 

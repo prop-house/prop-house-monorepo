@@ -66,7 +66,10 @@ const Round = () => {
       // default sorting method is random, unless the auction is over, in which case its by votes
       dispatchSortProposals(
         dispatch,
-        auctionStatus(round) === AuctionStatus.AuctionEnded ? SortType.VoteCount : SortType.Random,
+        auctionStatus(round) === AuctionStatus.AuctionEnded ||
+          auctionStatus(round) === AuctionStatus.AuctionVoting
+          ? SortType.VoteCount
+          : SortType.Random,
         false,
       );
     };
