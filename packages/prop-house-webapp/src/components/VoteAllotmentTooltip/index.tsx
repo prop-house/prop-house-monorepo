@@ -63,7 +63,7 @@ const VoteAllotmentTooltip: React.FC<{}> = () => {
 
       <ReactTooltip globalEventOff="scroll">
         <div className={classes.votesContainer}>
-          {voteAllotmentsForTooltip.length > 0 ? voteAllotmentsForTooltip : 'no votes allotted'}
+          {voteAllotmentsForTooltip.length > 0 ? voteAllotmentsForTooltip : 'No votes allotted'}
         </div>
       </ReactTooltip>
     </>

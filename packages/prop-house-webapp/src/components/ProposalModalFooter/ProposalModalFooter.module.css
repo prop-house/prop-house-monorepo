@@ -12,6 +12,10 @@
 .footerPadding {
   padding: 13px 20px 13px 18px;
 }
+.footerPadding {
+  text-align: center;
+}
+
 .votingContainer {
   display: flex;
   align-items: center;
@@ -92,6 +96,9 @@
 @media (min-width: 576px) {
   .btnContainer {
     display: none !important;
+  }
+  .fullWidthButton {
+    min-width: 200px;
   }
 }
 .backBtnContainer {
