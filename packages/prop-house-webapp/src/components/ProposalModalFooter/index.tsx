@@ -2,31 +2,26 @@ import { ProgressBar } from 'react-bootstrap';
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import PropCardVotingModule from '../PropCardVotingModule';
-
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import TruncateThousands from '../TruncateThousands';
-
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
-import { FaList } from 'react-icons/fa';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { votesRemaining } from '../../utils/votesRemaining';
-import Tooltip from '../Tooltip';
-
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setNumSubmittedVotes, setVotingPower } from '../../state/slices/voting';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
-import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByVotes';
 import { useNavigate } from 'react-router-dom';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
+import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -90,10 +85,6 @@ const ProposalModalFooter: React.FC<{
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
   }, [submittedVotes, voteAllotments, votingPower]);
 
-  const voteAllotmentsForTooltip = removeZeroVotesAndSortByVotes(voteAllotments).map(
-    v => `${v.votes} - ${v.proposalTitle}`,
-  );
-
   return (
     <>
       <div className={clsx(classes.footerContainer, 'footer')}>
@@ -131,18 +122,8 @@ const ProposalModalFooter: React.FC<{
                         <span>Cast your votes</span>
 
                         <span className={classes.totalVotes}>
-                          <Tooltip
-                            content={
-                              <div className={classes.allottedVotesTooltip}>
-                                <FaList />
-                              </div>
-                            }
-                            tooltipContent={`${
-                              voteAllotmentsForTooltip.length > 0
-                                ? voteAllotmentsForTooltip.toString().replaceAll(',', '\n')
-                                : 'no votes allotted'
-                            }`}
-                          />
+                          <VoteAllotmentTooltip />
+
                           {`${
                             votesLeftToAllot > 0
                               ? `${votingPower - submittedVotes - numAllotedVotes} left`

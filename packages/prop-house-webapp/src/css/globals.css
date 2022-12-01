@@ -230,3 +230,30 @@ body {
     display: none;
   }
 }
+
+/* tooltip */
+.__react_component_tooltip {
+  pointer-events: auto !important;
+  font-family: 'PT Root UI', sans-serif !important;
+  font-weight: bold !important;
+  background: var(--bg-light) !important;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low) !important;
+  border-radius: 8px !important;
+  color: black !important;
+  font-weight: 700 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  /* min-width: 325px; */
+  max-width: 375px;
+  overflow-y: scroll;
+}
+.__react_component_tooltip.show {
+  opacity: 1 !important;
+}
+
+.__react_component_tooltip:before {
+  background: none !important;
+}
+.__react_component_tooltip:after {
+  background: var(--bg-light) !important;
+}

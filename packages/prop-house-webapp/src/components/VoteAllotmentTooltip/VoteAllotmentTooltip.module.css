@@ -1,0 +1,74 @@
+.allottedVotesTooltip {
+  width: min-content;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.allottedVotesTooltip:hover {
+  cursor: pointer;
+}
+.votesContainer {
+  max-height: 20rem;
+}
+.votesRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  width: 100%;
+  max-width: 100%;
+}
+.votesRow:not(:last-child) {
+  border-bottom: 1px var(--bg-dark) solid;
+}
+.votesAndTitle {
+  display: flex;
+  color: var(--brand-black);
+  max-width: 85%;
+}
+.voteRowTitle {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0.3rem 0rem;
+  gap: 5px;
+}
+.voteRowTitle span {
+  font-size: 16px;
+  margin-left: 4px;
+}
+
+.verifyVoteBtn {
+  font-size: 14px;
+  border: 1px solid red;
+  font-weight: bold;
+  color: var(--brand-black);
+  background-color: var(--bg-light);
+  border-color: var(--border-med);
+  padding: 8px 12px;
+  padding: 4px 8px;
+  border-width: 1px;
+  border-radius: 10px;
+  width: 10%;
+  width: min-content;
+}
+.verifyVoteBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.propVotes {
+  min-width: max-content;
+}
+.propTitle {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
+  color: var(--brand-gray) !important;
+  width: auto;
+}
