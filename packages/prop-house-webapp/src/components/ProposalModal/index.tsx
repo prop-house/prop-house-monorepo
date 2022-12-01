@@ -34,7 +34,6 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
