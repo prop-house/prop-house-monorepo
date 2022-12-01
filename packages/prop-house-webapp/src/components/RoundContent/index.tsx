@@ -73,7 +73,14 @@ const RoundContent: React.FC<{
       dispatch(setActiveProposals(proposals));
 
       // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(dispatch, SortType.VoteCount, false);
+      dispatchSortProposals(
+        dispatch,
+        auctionStatus(auction) === AuctionStatus.AuctionEnded ||
+          auctionStatus(auction) === AuctionStatus.AuctionVoting
+          ? SortType.VoteCount
+          : SortType.Random,
+        false,
+      );
     };
     fetchAuctionProposals();
     return () => {
