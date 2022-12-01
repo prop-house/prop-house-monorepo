@@ -49,5 +49,7 @@ export const communities = new CaseInsensitiveMap(
     ),
     // The LP
     '0x38930aae699c4cd99d1d794df9db41111b13092b': balanceOfErc721(),
+    // Anata
+    '0xf729f878F95548BC7F14B127c96089cf121505F8': balanceOfErc721(),
   }),
 );

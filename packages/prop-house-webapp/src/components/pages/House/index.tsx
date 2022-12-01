@@ -36,7 +36,7 @@ const House = () => {
 
   const [rounds, setRounds] = useState<StoredAuction[]>([]);
   const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuction[]>([]);
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.Active);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
