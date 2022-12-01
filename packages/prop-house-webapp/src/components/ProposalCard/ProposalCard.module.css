@@ -5,6 +5,7 @@
   transition: background-color var(--card-transition), filter var(--card-transition);
   filter: drop-shadow(var(--shadow-low));
   border: 1px solid var(--border-med);
+  margin: 1.5rem 0;
 }
 
 .proposalCard:hover {
@@ -163,8 +164,13 @@
     width: max-content;
     white-space: nowrap;
     text-overflow: ellipsis;
-    display: block;
+    display: flex;
     overflow: hidden;
+  }
+  .date {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 

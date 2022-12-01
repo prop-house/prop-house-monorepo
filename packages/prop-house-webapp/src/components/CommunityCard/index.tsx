@@ -3,6 +3,7 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import CommunityProfImg from '../CommunityProfImg';
 import { useTranslation } from 'react-i18next';
 import TruncateThousands from '../TruncateThousands';
+import getHouseCurrency from '../../utils/getHouseCurrency';
 
 const CommunityCard: React.FC<{
   community: Community;
@@ -20,7 +21,8 @@ const CommunityCard: React.FC<{
           <div className={classes.infoWithSymbol}>
             <div className={classes.infoText}>
               <span className={classes.infoAmount}>
-                Ξ <TruncateThousands amount={community.ethFunded} />
+                <TruncateThousands amount={community.ethFunded} />{' '}
+                {getHouseCurrency(community.contractAddress)}
               </span>{' '}
               <span className={classes.infoCopy}>funded</span>
             </div>

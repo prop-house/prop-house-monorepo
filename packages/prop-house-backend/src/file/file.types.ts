@@ -5,5 +5,6 @@ export class FileUploadDto {
   name: string;
 
   @IsString()
+  @IsOptional()
   signature: string;
 }

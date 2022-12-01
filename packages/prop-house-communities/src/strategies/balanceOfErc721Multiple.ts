@@ -8,13 +8,16 @@ import { Provider } from '@ethersproject/providers';
 /**
  * Calculates `balanceOf` for multiple ERC-721 contracts
  */
-export const balanceOfErc721Multiple = (addresses: string[], multiplier: number = 1): Strategy => {
+export const balanceOfErc721Multiple = (addresses: string[], multipliers: number[]): Strategy => {
   return async (
     userAddress: string,
     _communityAddress: string,
     blockTag: number,
     provider: Provider,
   ) => {
+    if (multipliers.length !== addresses.length)
+      throw new Error('Number of multipliers do not match number of addresses provided.');
+
     const balances = await Promise.all(
       addresses.map(async address => {
         const contract = new Contract(address, BalanceOfABI, provider);
@@ -24,8 +27,9 @@ export const balanceOfErc721Multiple = (addresses: string[], multiplier: number 
         return new BigNumber(balance.toString());
       }),
     );
-    return BigNumber.sum(...balances)
-      .times(multiplier)
+
+    return balances
+      .reduce((prev, current, index) => prev.plus(current.times(multipliers[index])))
       .toNumber();
   };
 };

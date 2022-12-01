@@ -65,6 +65,18 @@ export class VotesController {
     // Verify signed payload against dto
     const voteFromPayload = verifySignedPayload(createVoteDto, foundProposal);
 
+    // Protect against casting same vote twice
+    const sameBlockVote = await this.votesService.findBy(
+      voteFromPayload.blockHeight,
+      createVoteDto.proposalId,
+      createVoteDto.address,
+    );
+    if (sameBlockVote)
+      throw new HttpException(
+        `Vote for prop ${foundProposal.id} has already been casted for block number ${voteFromPayload.blockHeight}`,
+        HttpStatus.FORBIDDEN,
+      );
+
     // Verify that prop being voted on matches community address of signed vote
     const foundProposalAuction = await this.auctionService.findOneWithCommunity(
       foundProposal.auction.id,

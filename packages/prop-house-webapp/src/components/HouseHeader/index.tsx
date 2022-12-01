@@ -8,6 +8,7 @@ import Tooltip from '../Tooltip';
 // import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
+import { isMobile } from 'web3modal';
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -24,7 +25,31 @@ const HouseHeader: React.FC<{
   const { community } = props;
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
-  // const { t } = useTranslation();
+
+  const communityDescription = (
+    <div className={classes.communityDescriptionRow}>
+      {/* support both markdown & html links in community's description.  */}
+      <Markdown
+        options={{
+          overrides: {
+            a: {
+              component: OpenInNewTab,
+              props: {
+                target: '_blank',
+                rel: 'noreferrer',
+              },
+            },
+          },
+        }}
+      >
+        {sanitizeHtml(community.description as any, {
+          allowedAttributes: {
+            a: ['href', 'target'],
+          },
+        })}
+      </Markdown>
+    </div>
+  );
 
   return (
     <div className={classes.profileHeaderRow}>
@@ -62,42 +87,19 @@ const HouseHeader: React.FC<{
           </div>
 
           <div className={classes.propHouseDataRow}>
-            <div className={classes.itemData}>{community.numAuctions}</div>
+            <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
             <div className={classes.itemTitle}>
-              {community?.numAuctions === 1 ? 'Round' : 'Rounds'}
+              {Number(community?.numAuctions) === 1 ? 'Round' : 'Rounds'}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
-            <div className={classes.itemData}>{community.numProposals}</div>
+            <div className={classes.itemData}>{community.numProposals ?? 0}</div>
             <div className={classes.itemTitle}>{'Proposals'}</div>
           </div>
         </div>
-
-        {community?.description && (
-          <div className={classes.communityDescriptionRow}>
-            {/* support both markdown & html links in community's description.  */}
-            <Markdown
-              options={{
-                overrides: {
-                  a: {
-                    component: OpenInNewTab,
-                    props: {
-                      target: '_blank',
-                      rel: 'noreferrer',
-                    },
-                  },
-                },
-              }}
-            >
-              {sanitizeHtml(community?.description as any, {
-                allowedAttributes: {
-                  a: ['href', 'target'],
-                },
-              })}
-            </Markdown>
-          </div>
-        )}
+        {!isMobile() && communityDescription}
       </div>
+      {isMobile() && communityDescription}
     </div>
   );
 };

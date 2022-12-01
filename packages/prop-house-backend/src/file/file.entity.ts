@@ -8,7 +8,7 @@ export class File {
   @Column({ default: false })
   hidden: boolean;
 
-  @Column()
+  @Column({nullable: true})
   address: string;
 
   @Column()

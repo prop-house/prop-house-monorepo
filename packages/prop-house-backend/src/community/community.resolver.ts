@@ -6,12 +6,16 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
+import { AuctionsService } from 'src/auction/auctions.service';
 import { Community } from './community.entity';
 import { CommunitiesService } from './community.service';
 
 @Resolver((of) => Community)
 export class CommunityResolver {
-  constructor(private communityService: CommunitiesService) {}
+  constructor(
+    private communityService: CommunitiesService,
+    private auctionsService: AuctionsService
+    ) {}
 
   @Query((returns) => Community)
   async community(@Args('id', { type: () => Int }) id: number) {
@@ -30,6 +34,9 @@ export class CommunityResolver {
 
   @ResolveField()
   async auctions(@Parent() community: Community) {
-    return community.auctions;
+    return this.auctionsService.findWhere(0, 9999, {
+      //@ts-ignore
+      community: community.id
+    })
   }
 }

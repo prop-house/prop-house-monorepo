@@ -11,6 +11,9 @@ export class CreateVoteDto extends SignedEntity {
   @IsNumber()
   weight: number;
 
+  @IsNumber()
+  blockHeight: number;
+
   @IsString()
   communityAddress: string;
 }

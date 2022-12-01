@@ -8,6 +8,7 @@ import { IpfsModule } from './ipfs/ipfs.module';
 import { FileModule } from './file/file.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -25,4 +26,4 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

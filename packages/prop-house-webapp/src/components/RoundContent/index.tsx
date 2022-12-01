@@ -32,6 +32,7 @@ import getWinningIds from '../../utils/getWinningIds';
 import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
+import { InfuraProvider } from '@ethersproject/providers';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
@@ -92,10 +93,11 @@ const RoundContent: React.FC<{
 
     const fetchVotes = async () => {
       try {
+        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          provider,
           auction.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
@@ -123,7 +125,9 @@ const RoundContent: React.FC<{
   };
 
   const handleSubmitVote = async () => {
+    if (!library) return;
     try {
+      const blockHeight = await library.getBlockNumber();
       const votes = voteAllotments
         .map(
           a =>
@@ -133,6 +137,7 @@ const RoundContent: React.FC<{
               a.votes,
               community!.contractAddress,
               SignatureState.PENDING_VALIDATION,
+              blockHeight,
             ),
         )
         .filter(v => v.weight > 0);
