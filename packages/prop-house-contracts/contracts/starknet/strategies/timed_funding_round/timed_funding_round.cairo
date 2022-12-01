@@ -76,6 +76,10 @@ func round_state_store() -> (state: felt) {
 }
 
 @storage_var
+func round_initiator_address_store() -> (address: Address) {
+}
+
+@storage_var
 func award_hash_store() -> (award_hash: Uint256) {
 }
 
@@ -130,6 +134,10 @@ func proposal_created(
 }
 
 @event
+func proposal_cancelled(proposal_id: felt) {
+}
+
+@event
 func vote_created(proposal_id: felt, voter_address: Address, voting_power: Uint256) {
 }
 
@@ -137,6 +145,10 @@ func vote_created(proposal_id: felt, voter_address: Address, voting_power: Uint2
 func round_finalized(
     round_id: felt, merkle_root: Uint256, winners_len: felt, winners: ProposalInfo*
 ) {
+}
+
+@event
+func round_cancelled(round_id: felt) {
 }
 
 //
@@ -154,6 +166,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
     let (
         round_id,
+        round_initiator,
         award_hash_low,
         award_hash_high,
         proposal_period_start_timestamp,
@@ -167,6 +180,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     // however it is unlikely due to the scheduling checks on L1.
     with_attr error_message("Invalid constructor parameters") {
         assert_not_zero(round_id);
+        assert_not_zero(round_initiator);
         assert_not_zero(award_hash_low);
         assert_not_zero(award_hash_high);
         assert_not_zero(proposal_period_start_timestamp);
@@ -181,6 +195,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
     // Initialize the storage variables
     round_id_store.write(round_id);
+    round_initiator_address_store.write(Address(value=round_initiator));
     award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high));
     proposal_period_start_timestamp_store.write(proposal_period_start_timestamp);
     proposal_period_end_timestamp_store.write(proposal_period_end_timestamp);
@@ -500,14 +515,20 @@ func cancel_round{
     range_check_ptr,
     ecdsa_ptr: SignatureBuiltin*,
     bitwise_ptr: BitwiseBuiltin*,
-}() {
+}(round_initiator_address: Address) {
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy();  // TODO: Add initiator_cancel block in `authenticate` if statement.
+    assert_valid_auth_strategy();
 
     // Verify that the funding round is active
     assert_round_active();
+
+    let (stored_round_initiator_address) = round_initiator_address_store.read();
+    with_attr error_message("Caller is not round initiator") {
+        assert_not_zero(stored_round_initiator_address.value);
+        assert round_initiator_address.value = stored_round_initiator_address.value;
+    }
 
     let (round_id) = round_id_store.read();
     let (award_hash) = award_hash_store.read();
@@ -526,10 +547,11 @@ func cancel_round{
         execution_params=cancellation_params,
     );
 
-    // TODO: Send message to L1 to unlock funds.
-
     // Flag the round as having been cancelled
     round_state_store.write(RoundState.CANCELLED);
+
+    // Emit event
+    round_cancelled.emit(round_id);
 
     return ();
 }
@@ -561,7 +583,10 @@ func cancel_proposal{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     }
 
     // Flag this proposal as cancelled
-    cancelled_proposals_store.write(proposal_id, 1);  // TODO: Events on these
+    cancelled_proposals_store.write(proposal_id, 1);
+
+    // Emit event
+    proposal_cancelled.emit(proposal_id);
 
     return ();
 }
@@ -762,6 +787,7 @@ func unchecked_get_cumulative_voting_power{
 // Decodes the array of house strategy params
 func decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_params: felt*) -> (
     round_id: felt,
+    round_initiator: felt,
     award_hash_low: felt,
     award_hash_high: felt,
     proposal_period_start_timestamp: felt,
@@ -769,7 +795,7 @@ func decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_par
     vote_period_duration: felt,
     winner_count: felt,
 ) {
-    assert_nn_le(7, strategy_params_len);
+    assert_nn_le(8, strategy_params_len);
     return (
         strategy_params[0],
         strategy_params[1],
@@ -778,6 +804,7 @@ func decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_par
         strategy_params[4],
         strategy_params[5],
         strategy_params[6],
+        strategy_params[7],
     );
 }
 

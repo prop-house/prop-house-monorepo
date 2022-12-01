@@ -17,14 +17,17 @@ const DOMAIN_HASH = 0xe555db13b92f041c987f35e960ce967667d7aa3095c901826b6191ab69
 
 const STARKNET_MESSAGE = 0x537461726b4e6574204d657373616765;
 
-// print(get_selector_from_name("Propose(house_strategy:felt,author:felt,metadata_uri:felt*,salt:felt)"))
-const PROPOSAL_TYPE_HASH = 0x2135226d79a7eea8572b8b9127ae9cbca1a4528d4ec4f895ea5e6c0bf458c1c;
+// print(get_selector_from_name("Propose(house_strategy:felt,proposer_address:felt,metadata_uri:felt*,salt:felt)"))
+const PROPOSAL_TYPE_HASH = 0x44d93addcdbfc5b1f3f45d3425cdd57fd135eff6a1b7748ce6aa2f6ac081f1;
 
-// print(get_selector_from_name("Vote(house_strategy:felt,voter:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
-const VOTE_TYPE_HASH = 0x21ddfcc11169518c069a812d335fe573dac137c5b5ce6fa402e6502e8a81fb5;
+// print(get_selector_from_name("Vote(house_strategy:felt,voter_address:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
+const VOTE_TYPE_HASH = 0x2171fa7a357682500d2758586610c73eb1114a7257de59ff7d2bc03184bd8e1;
 
-// print(get_selector_from_name("CancelProposal(house_strategy:felt,author:felt,proposal)id:felt,salt:felt)"))
-const CANCEL_PROPOSAL_TYPE_HASH = 0x26c68c95620857bbeef996bed31b6a942dc01005cc19ae4fd05a007ca67282d;
+// print(get_selector_from_name("CancelProposal(house_strategy:felt,proposer_address:felt,proposal_id:felt,salt:felt)"))
+const CANCEL_PROPOSAL_TYPE_HASH = 0x26ddb2d957b32296ccaa4486158f926acb3f1fae41d71894037acae90229863;
+
+// print(get_selector_from_name("CancelRound(house_strategy:felt,round_initiator_address:felt,salt:felt)"))
+const CANCEL_ROUND_TYPE_HASH = 0x3f1b8eb98c8ddf63acd6fbf71612667dd4553ac7d888c317fee48ac6a96acb9;
 
 // print(get_selector_from_name("RevokeSessionKey(salt:felt)")
 const REVOKE_SESSION_KEY_TYPE_HASH = 0x31F0BF4E2BBD12ECBA02E325F0EA3231350A638FC633AF8EBF244F50663ACE8;
@@ -216,6 +219,58 @@ namespace StarkEIP191 {
         verify_ecdsa_signature(message_hash, public_key, r, s);
 
         StarkEIP191_salts.write(proposer_address, salt, 1);
+
+        return ();
+    }
+
+    func verify_cancel_round_sig{
+        syscall_ptr: felt*,
+        range_check_ptr,
+        pedersen_ptr: HashBuiltin*,
+        ecdsa_ptr: SignatureBuiltin*,
+    }(
+        r: felt,
+        s: felt,
+        salt: felt,
+        target: felt,
+        calldata_len: felt,
+        calldata: felt*,
+        public_key: felt,
+    ) {
+        alloc_locals;
+
+        let round_initiator_address = calldata[0];
+
+        let (auth_strategy) = get_contract_address();
+
+        // Ensure round initiator has not already used this salt in a previous action
+        let (already_used) = StarkEIP191_salts.read(round_initiator_address, salt);
+
+        with_attr error_message("Salt already used") {
+            assert already_used = 0;
+        }
+
+        let (structure: felt*) = alloc();
+
+        assert structure[0] = CANCEL_ROUND_TYPE_HASH;
+        assert structure[1] = target;
+        assert structure[2] = round_initiator_address;
+        assert structure[3] = salt;
+
+        let (hash_struct) = ArrayUtils.hash(4, structure);
+
+        let (message: felt*) = alloc();
+
+        assert message[0] = STARKNET_MESSAGE;
+        assert message[1] = DOMAIN_HASH;
+        assert message[2] = auth_strategy;
+        assert message[3] = hash_struct;
+
+        let (message_hash) = ArrayUtils.hash(4, message);
+
+        verify_ecdsa_signature(message_hash, public_key, r, s);
+
+        StarkEIP191_salts.write(round_initiator_address, salt, 1);
 
         return ();
     }

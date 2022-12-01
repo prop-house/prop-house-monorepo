@@ -45,6 +45,10 @@ const VOTE_TYPE_HASH_LOW = 0x46BDFC71C0CA7FFD5A85CE9FA9777868;
 const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0x69E48746EF56A2276B12F179EA13EC55;
 const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0x25F52F519DF1AE69AE2C251BAEBE7D1F;
 
+// keccak256("CancelRound(bytes32 authStrategy,bytes32 houseStrategy,address roundInitiatorAddress,uint256 salt)")
+const CANCEL_ROUND_TYPE_HASH_HIGH = 0x9C8D53F4766EB124290BED6664ED985;
+const CANCEL_ROUND_TYPE_HASH_LOW = 0x3C2506601D1BA61FCA6DC79B9EB11203;
+
 // keccak256("SessionKey(address address,bytes32 sessionPublicKey,uint256 sessionDuration,uint256 salt)")
 const SESSION_KEY_INIT_TYPE_HASH_HIGH = 0x53f1294cb551b4ff97c8fd4caefa8ec6;
 const SESSION_KEY_INIT_TYPE_HASH_LOW = 0xaa9d835345c95b1a435ddff5ae910083;
@@ -325,6 +329,87 @@ namespace EIP712 {
 
         // Write the salt to prevent replay attack
         EIP712_salts.write(proposer_address, salt, 1);
+
+        return ();
+    }
+
+    func verify_cancel_round_sig{
+        syscall_ptr: felt*,
+        pedersen_ptr: HashBuiltin*,
+        range_check_ptr,
+        bitwise_ptr: BitwiseBuiltin*,
+    }(
+        r: Uint256,
+        s: Uint256,
+        v: felt,
+        salt: Uint256,
+        target: felt,
+        calldata_len: felt,
+        calldata: felt*,
+    ) {
+        alloc_locals;
+
+        // Round initiator address should be located in calldata[0]
+        let round_initiator_address = calldata[0];
+
+        let (auth_strategy_address) = get_contract_address();
+        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address);
+
+        // Ensure round initiator has not already used this salt in a previous action
+        let (already_used) = EIP712_salts.read(round_initiator_address, salt);
+
+        with_attr error_message("Salt already used") {
+            assert already_used = 0;
+        }
+
+        let (local keccak_ptr: felt*) = alloc();
+        let keccak_ptr_start = keccak_ptr;
+
+        // We don't need to pad because calling `.address` with starknet.js
+        // already left pads the address with 0s
+        let (house_strategy) = FeltUtils.felt_to_uint256(target);
+
+        let (round_initiator_address_u256) = FeltUtils.felt_to_uint256(round_initiator_address);
+
+        // Now construct the data hash (hashStruct)
+        let (data: Uint256*) = alloc();
+
+        assert data[0] = Uint256(CANCEL_ROUND_TYPE_HASH_LOW, CANCEL_ROUND_TYPE_HASH_HIGH);
+        assert data[1] = auth_address_u256;
+        assert data[2] = house_strategy;
+        assert data[3] = round_initiator_address_u256;
+        assert data[4] = salt;
+
+        let (hash_struct) = _get_keccak_hash{keccak_ptr=keccak_ptr}(5, data);
+
+        // Prepare the encoded data
+        let (prepared_encoded: Uint256*) = alloc();
+        assert prepared_encoded[0] = Uint256(DOMAIN_HASH_LOW, DOMAIN_HASH_HIGH);
+        assert prepared_encoded[1] = hash_struct;
+
+        // Prepend the ethereum prefix
+        let (encoded_data: Uint256*) = alloc();
+        _prepend_prefix_2bytes(ETHEREUM_PREFIX, encoded_data, 2, prepared_encoded);
+
+        // Now go from Uint256s to Uint64s (required in order to call `keccak`)
+        let (signable_bytes) = alloc();
+        let signable_bytes_start = signable_bytes;
+        keccak_add_uint256s{inputs=signable_bytes}(n_elements=3, elements=encoded_data, bigend=1);
+
+        // Compute the hash
+        let (hash) = keccak_bigend{keccak_ptr=keccak_ptr}(
+            inputs=signable_bytes_start, n_bytes=2 * 32 + 2
+        );
+
+        // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
+        // We substract `27` because `v` = `{0, 1} + 27`
+        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, round_initiator_address);
+
+        // Verify that all the previous keccaks are correct
+        finalize_keccak(keccak_ptr_start, keccak_ptr);
+
+        // Write the salt to prevent replay attack
+        EIP712_salts.write(round_initiator_address, salt, 1);
 
         return ();
     }

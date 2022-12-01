@@ -62,7 +62,7 @@ contract TimedFundingRoundStrategyValidator is IStrategyValidator {
     /// array of awards equal in length to the number of winners, which can include varying assets and amounts.
     /// @param data The timed funding round config
     function getStrategyParams(bytes calldata data) external view returns (uint256[] memory params) {
-        (, uint256 roundId, bytes32 awardHash, bytes memory config, IFundingHouse.Award[] memory awards) = abi.decode(
+        (address initiator, uint256 roundId, bytes32 awardHash, bytes memory config, IFundingHouse.Award[] memory awards) = abi.decode(
             data,
             (address, uint256, bytes32, bytes, IFundingHouse.Award[])
         );
@@ -91,16 +91,17 @@ contract TimedFundingRoundStrategyValidator is IStrategyValidator {
             revert WinnerCountTooHigh();
         }
 
-        params = new uint256[](10);
+        params = new uint256[](11);
         params[0] = msg.sender.toUint256();
         params[1] = classHash;
-        params[2] = 7; // Strategy Params Length
+        params[2] = 8; // Strategy Params Length
         params[3] = roundId;
-        (params[4], params[5]) = uint256(awardHash).split();
-        params[6] = round.proposalPeriodStartTimestamp;
-        params[7] = round.proposalPeriodDuration;
-        params[8] = round.votePeriodDuration;
-        params[9] = round.winnerCount;
+        params[4] = initiator.toUint256();
+        (params[5], params[6]) = uint256(awardHash).split();
+        params[7] = round.proposalPeriodStartTimestamp;
+        params[8] = round.proposalPeriodDuration;
+        params[9] = round.votePeriodDuration;
+        params[10] = round.winnerCount;
 
         return params;
     }

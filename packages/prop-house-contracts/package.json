@@ -43,7 +43,7 @@
     "build:l1": "FOUNDRY_PROFILE=ignore_test forge build",
     "build:l2": "hardhat starknet-compile contracts/starknet/house_strategy_factory.cairo && hardhat starknet-compile contracts/starknet/**/",
     "build:ts": "tsc -p tsconfig.build.json",
-    "build": "concurrently 'yarn build:l1' 'yarn build:l2' && yarn typechain && yarn build:ts",
+    "build": "yarn build:l1 && yarn typechain && yarn build:l2 && yarn build:ts",
     "test:users": "ts-node blacksmith.ts create",
     "test:setup": "yarn test:users && yarn build:l2",
     "test:l1": "forge test --match-path test/ethereum/*.t.sol --optimize --optimizer-runs 1000000 -v",

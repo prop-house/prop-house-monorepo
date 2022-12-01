@@ -21,6 +21,8 @@ const PROPOSAL_SELECTOR = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f
 const VOTE_SELECTOR = 0x132bdf85fc8aa10ac3c22f02317f8f53d4b4f52235ed1eabb3a4cbbe08b5c41;
 // print(get_selector_from_name("cancel_proposal"))
 const CANCEL_PROPOSAL_SELECTOR = 0xf58b7fa5874c036308bea0b54ae78e8ecf78d868aa18e666aa7fc4e0cbed6d;
+// print(get_selector_from_name("cancel_round"))
+const CANCEL_ROUND_SELECTOR = 0x8af3ea41808c9515720e56add54a2d8008458a8bc5e347b791c6d75cd0e407;
 
 // Calls get_session_key with the ethereum address (calldata[0]) to check that a session is active.
 // If so, perfoms stark signature verification to check the sig is valid. If so calls execute with the payload.
@@ -61,8 +63,14 @@ func authenticate{
                     r, s, salt, target, calldata_len, calldata, session_public_key
                 );
             } else {
-                // Invalid selector
-                return ();
+                if (function_selector == CANCEL_ROUND_SELECTOR) {
+                    StarkEIP191.verify_cancel_round_sig(
+                        r, s, salt, target, calldata_len, calldata, session_public_key
+                    );
+                } else {
+                    // Invalid selector
+                    return ();
+                }
             }
         }
     }
