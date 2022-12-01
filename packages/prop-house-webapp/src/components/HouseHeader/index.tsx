@@ -89,7 +89,7 @@ const HouseHeader: React.FC<{
           <div className={classes.propHouseDataRow}>
             <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
             <div className={classes.itemTitle}>
-              {community?.numAuctions === 1 ? 'Round' : 'Rounds'}
+              {Number(community?.numAuctions) === 1 ? 'Round' : 'Rounds'}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
