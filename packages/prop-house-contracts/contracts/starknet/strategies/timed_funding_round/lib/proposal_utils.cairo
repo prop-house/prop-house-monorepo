@@ -5,7 +5,7 @@ from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_eq, uint256_unsigned_div_rem
 
-from contracts.starknet.common.lib.felt_utils import FeltUtils
+from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
 
 namespace ProposalUtils {
@@ -29,10 +29,10 @@ namespace ProposalUtils {
         }
 
         let (hash_input_arr: Uint256*) = alloc();
-        let (proposal_id_uint256) = FeltUtils.felt_to_uint256(
+        let (proposal_id_uint256) = MathUtils.felt_to_uint256(
             proposal_info_arr[curr_proposal_index].proposal_id
         );
-        let (proposer_address_uint256) = FeltUtils.felt_to_uint256(
+        let (proposer_address_uint256) = MathUtils.felt_to_uint256(
             proposal_info_arr[curr_proposal_index].proposer_address.value
         );
 
@@ -75,10 +75,10 @@ namespace ProposalUtils {
         }
 
         let (hash_input_arr: Uint256*) = alloc();
-        let (proposal_id_uint256) = FeltUtils.felt_to_uint256(
+        let (proposal_id_uint256) = MathUtils.felt_to_uint256(
             proposal_info_arr[curr_proposal_index].proposal_id
         );
-        let (proposer_address_uint256) = FeltUtils.felt_to_uint256(
+        let (proposer_address_uint256) = MathUtils.felt_to_uint256(
             proposal_info_arr[curr_proposal_index].proposer_address.value
         );
 

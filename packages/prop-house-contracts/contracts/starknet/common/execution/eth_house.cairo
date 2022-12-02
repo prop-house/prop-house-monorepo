@@ -29,8 +29,8 @@ func execute{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 ) {
     alloc_locals;
 
-    let (l1_house_address) = get_l1_house_address_for_caller();
-    with_attr error_message("Caller is not a valid house strategy") {
+    let (l1_house_address) = _get_l1_house_address_for_caller();
+    with_attr error_message("ETHHouse: Caller is not a valid house strategy") {
         assert_not_zero(l1_house_address);
     }
 
@@ -42,7 +42,7 @@ func execute{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
 }
 
 // Fetches the L1 house address for the given caller (strategy)
-func get_l1_house_address_for_caller{
+func _get_l1_house_address_for_caller{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }() -> (l1_house_address: felt) {
     let (house_strategy_factory_address) = house_strategy_factory_address_store.read();

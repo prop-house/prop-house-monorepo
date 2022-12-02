@@ -8,7 +8,6 @@ from starkware.cairo.common.signature import verify_ecdsa_signature
 from starkware.cairo.common.alloc import alloc
 
 from contracts.starknet.common.lib.array_utils import ArrayUtils
-from contracts.starknet.common.lib.felt_utils import FeltUtils
 
 // Following a Starknet version of the EIP191 standard
 
@@ -61,7 +60,7 @@ namespace StarkEIP191 {
         // Ensure proposer has not already used this salt in a previous action
         let (already_used) = StarkEIP191_salts.read(proposer_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("StarkEIP191: Salt already used") {
             assert already_used = 0;
         }
 
@@ -120,7 +119,7 @@ namespace StarkEIP191 {
         // Ensure voter has not already used this salt in a previous action
         let (already_used) = StarkEIP191_salts.read(voter_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("StarkEIP191: Salt already used") {
             assert already_used = 0;
         }
 
@@ -191,7 +190,7 @@ namespace StarkEIP191 {
         // Ensure proposer has not already used this salt in a previous action
         let (already_used) = StarkEIP191_salts.read(proposer_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("StarkEIP191: Salt already used") {
             assert already_used = 0;
         }
 
@@ -246,7 +245,7 @@ namespace StarkEIP191 {
         // Ensure round initiator has not already used this salt in a previous action
         let (already_used) = StarkEIP191_salts.read(round_initiator_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("StarkEIP191: Salt already used") {
             assert already_used = 0;
         }
 
@@ -287,7 +286,7 @@ namespace StarkEIP191 {
 
         // Ensure voter has not already used this salt in a previous action
         let (already_used) = StarkEIP191_salts.read(public_key, salt);
-        with_attr error_message("Salt already used") {
+        with_attr error_message("StarkEIP191: Salt already used") {
             assert already_used = 0;
         }
 

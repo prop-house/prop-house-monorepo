@@ -19,7 +19,7 @@ from starkware.cairo.common.uint256 import (
     uint256_mul,
     uint256_unsigned_div_rem,
 )
-from contracts.starknet.common.lib.felt_utils import FeltUtils
+from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.array_utils import ArrayUtils
 
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
@@ -81,20 +81,19 @@ namespace EIP712 {
         let voter_address = calldata[0];
 
         let (auth_strategy_address) = get_contract_address();
-        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address);
+        let (auth_address_u256) = MathUtils.felt_to_uint256(auth_strategy_address);
 
         // Ensure voter has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(voter_address, salt);
-
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = FeltUtils.felt_to_uint256(target);
+        let (house_strategy) = MathUtils.felt_to_uint256(target);
 
-        let (voter_address_u256) = FeltUtils.felt_to_uint256(voter_address);
+        let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
 
         let proposal_votes_len = calldata[1] * ProposalVote.SIZE;
         let proposal_votes = &calldata[2];
@@ -179,12 +178,12 @@ namespace EIP712 {
         let proposer_address = calldata[0];
 
         let (auth_strategy_address) = get_contract_address();
-        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address);
+        let (auth_address_u256) = MathUtils.felt_to_uint256(auth_strategy_address);
 
         // Ensure proposer has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(proposer_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
@@ -193,10 +192,10 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = FeltUtils.felt_to_uint256(target);
+        let (house_strategy) = MathUtils.felt_to_uint256(target);
 
         // Proposer address
-        let (proposer_address_u256) = FeltUtils.felt_to_uint256(proposer_address);
+        let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
 
         // Metadata URI
         let metadata_uri_string_len = calldata[1];
@@ -270,12 +269,12 @@ namespace EIP712 {
         let proposer_address = calldata[0];
 
         let (auth_strategy_address) = get_contract_address();
-        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address);
+        let (auth_address_u256) = MathUtils.felt_to_uint256(auth_strategy_address);
 
         // Ensure proposer has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(proposer_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
@@ -284,10 +283,10 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = FeltUtils.felt_to_uint256(target);
+        let (house_strategy) = MathUtils.felt_to_uint256(target);
 
-        let (proposer_address_u256) = FeltUtils.felt_to_uint256(proposer_address);
-        let (proposal_id) = FeltUtils.felt_to_uint256(calldata[1]);
+        let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
+        let (proposal_id) = MathUtils.felt_to_uint256(calldata[1]);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
@@ -353,12 +352,12 @@ namespace EIP712 {
         let round_initiator_address = calldata[0];
 
         let (auth_strategy_address) = get_contract_address();
-        let (auth_address_u256) = FeltUtils.felt_to_uint256(auth_strategy_address);
+        let (auth_address_u256) = MathUtils.felt_to_uint256(auth_strategy_address);
 
         // Ensure round initiator has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(round_initiator_address, salt);
 
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
@@ -367,9 +366,9 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = FeltUtils.felt_to_uint256(target);
+        let (house_strategy) = MathUtils.felt_to_uint256(target);
 
-        let (round_initiator_address_u256) = FeltUtils.felt_to_uint256(round_initiator_address);
+        let (round_initiator_address_u256) = MathUtils.felt_to_uint256(round_initiator_address);
 
         // Now construct the data hash (hashStruct)
         let (data: Uint256*) = alloc();
@@ -414,7 +413,15 @@ namespace EIP712 {
         return ();
     }
 
-    func verify_session_key_init_sig{
+    // @dev Asserts that a signature to authorize a session key is valid
+    // @param r Signature parameter
+    // @param s Signature parameter
+    // @param v Signature parameter
+    // @param salt Signature salt
+    // @param eth_address Owner's Ethereum Address that was used to create the signature
+    // @param session_public_key The StarkNet session public key that should be registered
+    // @param session_duration The number of seconds that the session key is valid
+    func verify_session_key_auth_sig{
         syscall_ptr: felt*,
         pedersen_ptr: HashBuiltin*,
         bitwise_ptr: BitwiseBuiltin*,
@@ -430,19 +437,23 @@ namespace EIP712 {
     ) -> () {
         alloc_locals;
 
+        MathUtils.assert_valid_uint256(r);
+        MathUtils.assert_valid_uint256(s);
+        MathUtils.assert_valid_uint256(salt);
+
         // Ensure user has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(eth_address, salt);
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
         // Encode data
-        let (eth_address_u256) = FeltUtils.felt_to_uint256(eth_address);
+        let (eth_address_u256) = MathUtils.felt_to_uint256(eth_address);
 
-        let (session_public_key_u256) = FeltUtils.felt_to_uint256(session_public_key);
+        let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
         let (padded_session_public_key) = _pad_right(session_public_key_u256);
 
-        let (session_duration_u256) = FeltUtils.felt_to_uint256(session_duration);
+        let (session_duration_u256) = MathUtils.felt_to_uint256(session_duration);
 
         // Now construct the data array
         let (data: Uint256*) = alloc();
@@ -489,6 +500,13 @@ namespace EIP712 {
         return ();
     }
 
+    // @dev Asserts that a signature to revoke a session key is valid
+    // @param r Signature parameter
+    // @param s Signature parameter
+    // @param v Signature parameter
+    // @param salt Signature salt
+    // @param eth_address Owner's Ethereum Address that was used to create the signature
+    // @param session_public_key The StarkNet session public key that should be revoked
     func verify_session_key_revoke_sig{
         syscall_ptr: felt*,
         pedersen_ptr: HashBuiltin*,
@@ -499,14 +517,18 @@ namespace EIP712 {
     ) -> () {
         alloc_locals;
 
+        MathUtils.assert_valid_uint256(r);
+        MathUtils.assert_valid_uint256(s);
+        MathUtils.assert_valid_uint256(salt);
+
         // Ensure user has not already used this salt in a previous action
         let (already_used) = EIP712_salts.read(eth_address, salt);
-        with_attr error_message("Salt already used") {
+        with_attr error_message("EIP712: Salt already used") {
             assert already_used = 0;
         }
 
         // Encode data
-        let (session_public_key_u256) = FeltUtils.felt_to_uint256(session_public_key);
+        let (session_public_key_u256) = MathUtils.felt_to_uint256(session_public_key);
         let (padded_session_public_key) = _pad_right(session_public_key_u256);
 
         // Now construct the data array
@@ -552,6 +574,10 @@ namespace EIP712 {
         return ();
     }
 }
+
+//
+//  Private Functions
+//
 
 // Adds a 2 bytes (16 bits) `prefix` to a 16 bytes (128 bits) `value`.
 func _add_prefix128{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(value: felt, prefix: felt) -> (
@@ -637,12 +663,12 @@ func _u256_pow{range_check_ptr}(base: felt, exp: felt) -> (res: Uint256) {
         // Compute `base ** exp - 1`
         let (recursion) = _u256_pow(base, exp - 1);
 
-        let (uint256_base) = FeltUtils.felt_to_uint256(base);
+        let (uint256_base) = MathUtils.felt_to_uint256(base);
 
         // Multiply the result by `base`
         let (res, overflow) = uint256_mul(recursion, uint256_base);
 
-        with_attr error_message("Overflow happened") {
+        with_attr error_message("EIP712: Overflow happened") {
             let (no_overflow) = uint256_eq(overflow, Uint256(0, 0));
             assert no_overflow = 1;
         }
@@ -673,7 +699,7 @@ func _pad_right{range_check_ptr}(num: Uint256) -> (res: Uint256) {
     // Left shift
     let (low, high) = uint256_mul(num, power_16);
 
-    with_attr error_message("overflow?") {
+    with_attr error_message("EIP712: Overflow happened") {
         assert high.low = 0;
         assert high.high = 0;
     }
@@ -693,7 +719,7 @@ func _get_padded_hash{range_check_ptr, pedersen_ptr: HashBuiltin*}(
     alloc_locals;
 
     let (hash) = ArrayUtils.hash(input_len, input);
-    let (hash_u256) = FeltUtils.felt_to_uint256(hash);
+    let (hash_u256) = MathUtils.felt_to_uint256(hash);
     let (padded_hash) = _pad_right(hash_u256);
 
     return (res=padded_hash);

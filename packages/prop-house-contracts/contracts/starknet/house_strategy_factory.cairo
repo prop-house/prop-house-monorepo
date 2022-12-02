@@ -46,7 +46,8 @@ func only_starknet_messenger{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
     from_address_: felt
 ) {
     let (expected_from_address) = get_starknet_messenger();
-    with_attr error_message("Expected call from starknet_messenger: {expected_from_address}") {
+    with_attr error_message(
+            "HouseStrategyFactory: Expected call from starknet_messenger: {expected_from_address}") {
         assert from_address_ = expected_from_address;
     }
     return ();

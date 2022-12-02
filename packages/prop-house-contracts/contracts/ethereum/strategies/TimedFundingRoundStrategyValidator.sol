@@ -62,6 +62,7 @@ contract TimedFundingRoundStrategyValidator is IStrategyValidator {
     /// array of awards equal in length to the number of winners, which can include varying assets and amounts.
     /// @param data The timed funding round config
     function getStrategyParams(bytes calldata data) external view returns (uint256[] memory params) {
+        // prettier-ignore
         (address initiator, uint256 roundId, bytes32 awardHash, bytes memory config, IFundingHouse.Award[] memory awards) = abi.decode(
             data,
             (address, uint256, bytes32, bytes, IFundingHouse.Award[])

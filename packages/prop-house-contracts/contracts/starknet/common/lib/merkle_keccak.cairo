@@ -8,7 +8,7 @@ from starkware.cairo.common.uint256 import Uint256, uint256_le
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s, keccak_uint256s_bigend
 
-from contracts.starknet.common.lib.felt_utils import FeltUtils
+from contracts.starknet.common.lib.math_utils import MathUtils
 
 namespace MerkleKeccak {
     // Generate an array of uint256 leaves from the provided felt input
@@ -23,7 +23,7 @@ namespace MerkleKeccak {
         }
 
         let (hash_input_arr: Uint256*) = alloc();
-        let (item_uint256) = FeltUtils.felt_to_uint256(input[current_index]);
+        let (item_uint256) = MathUtils.felt_to_uint256(input[current_index]);
 
         assert hash_input_arr[0] = item_uint256;
 

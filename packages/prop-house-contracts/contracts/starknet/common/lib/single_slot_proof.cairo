@@ -3,11 +3,11 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
-from starkware.cairo.common.uint256 import Uint256, uint256_add
+from starkware.cairo.common.uint256 import Uint256, uint256_add, uint256_eq
 from starkware.cairo.common.math import unsigned_div_rem, assert_nn_le
 
 from contracts.starknet.common.lib.general_address import Address
-from contracts.starknet.common.lib.felt_utils import FeltUtils
+from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.timestamp import Timestamp
 from contracts.starknet.common.lib.slot_key import SlotKey
 
@@ -83,36 +83,42 @@ namespace SingleSlotProof {
             proofs_concat,
         ) = decode_param_array(user_params_len, user_params);
 
-        // Checking that the parameters array is valid and then extracting the individual parameters
-        // For the single slot proof strategy, the parameters array is length 2 where the first element is the
-        // contract address where the desired slot resides, and the section element is the index of the slot in that contract.
-        assert params_len = 2;
+        // Extracting individual parameters from parameter array
+        with_attr error_message("SingleSlotProof: Invalid size parameters array") {
+            assert params_len = 2;
+        }
+        // Contract address where the desired slot resides
         let contract_address = params[0];
+        // Index of the desired slot
         let slot_index = params[1];
 
         // Checking slot proof is for the correct slot
         let (valid_slot) = SlotKey.get_slot_key(slot_index, voter_address.value);
-        let (slot_uint256) = FeltUtils.words_to_uint256(
+        let (slot_uint256) = MathUtils.words_to_uint256(
             slot.word_1, slot.word_2, slot.word_3, slot.word_4
         );
-        with_attr error_message("Invalid slot proof provided") {
+        with_attr error_message("SingleSlotProof: Invalid slot proof provided") {
+            // Checking that the slot proof corresponds to the correct slot
             assert valid_slot = slot_uint256;
+            // Calling Fossil Fact Registry to verify the storage proof of the slot value
+            let (storage_slot) = IFactsRegistry.get_storage_uint(
+                fact_registry_addr,
+                eth_block_number,
+                contract_address,
+                slot,
+                proof_sizes_bytes_len,
+                proof_sizes_bytes,
+                proof_sizes_words_len,
+                proof_sizes_words,
+                proofs_concat_len,
+                proofs_concat,
+            );
         }
 
-        // Calling Fossil Fact Registry to verify the storage proof of the slot value
-
-        let (storage_slot) = IFactsRegistry.get_storage_uint(
-            fact_registry_addr,
-            eth_block_number,
-            contract_address,
-            slot,
-            proof_sizes_bytes_len,
-            proof_sizes_bytes,
-            proof_sizes_words_len,
-            proof_sizes_words,
-            proofs_concat_len,
-            proofs_concat,
-        );
+        let (is_zero) = uint256_eq(Uint256(0, 0), storage_slot);
+        with_attr error_message("SingleSlotProof: Slot is zero") {
+            is_zero = 0;
+        }
 
         // If any part of the voting strategy calculation is invalid, the storage value returned should be zero
         return (storage_slot,);

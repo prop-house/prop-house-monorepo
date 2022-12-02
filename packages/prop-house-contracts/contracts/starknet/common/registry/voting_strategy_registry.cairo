@@ -65,7 +65,7 @@ func register_voting_strategy{
 
     // Check L1 message origin is equal to the L1 messenger
     let (origin) = starknet_messenger_store.read();
-    with_attr error_message("Invalid message origin address") {
+    with_attr error_message("VotingStrategyRegistry: Invalid message origin address") {
         assert from_address = origin;
     }
 

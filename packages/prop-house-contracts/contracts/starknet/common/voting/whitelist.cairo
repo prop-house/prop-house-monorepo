@@ -3,6 +3,7 @@
 from starkware.cairo.common.uint256 import Uint256, uint256_check
 from starkware.cairo.common.cairo_builtins import HashBuiltin
 
+from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.general_address import Address
 
 @storage_var
@@ -17,7 +18,7 @@ func whitelisted(address: Address, voting_power: Uint256) {
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     _whitelist_len: felt, _whitelist: felt*
 ) {
-    register_whitelist(_whitelist_len, _whitelist);
+    _register_whitelist(_whitelist_len, _whitelist);
     return ();
 }
 
@@ -36,7 +37,7 @@ func get_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_chec
     return (power,);
 }
 
-func register_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
+func _register_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     _whitelist_len: felt, _whitelist: felt*
 ) {
     if (_whitelist_len == 0) {
@@ -46,16 +47,11 @@ func register_whitelist{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_ch
         // Add it to the whitelist
         let voting_power = Uint256(_whitelist[1], _whitelist[2]);
 
-        with_attr error_message("Invalid uin256") {
-            uint256_check(voting_power);
-        }
+        MathUtils.assert_valid_uint256(voting_power);
 
         whitelist.write(address, voting_power);
-
-        // Emit event
         whitelisted.emit(address, voting_power);
-
-        register_whitelist(_whitelist_len - 3, &_whitelist[3]);
+        _register_whitelist(_whitelist_len - 3, &_whitelist[3]);
         return ();
     }
 }

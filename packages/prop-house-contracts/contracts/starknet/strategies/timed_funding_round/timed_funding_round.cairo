@@ -38,7 +38,6 @@ from contracts.starknet.strategies.timed_funding_round.lib.round_state import Ro
 
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
-from contracts.starknet.common.lib.felt_utils import FeltUtils
 from contracts.starknet.common.lib.merkle_keccak import MerkleKeccak
 from contracts.starknet.common.lib.array_utils import ArrayUtils, Immutable2DArray
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_utils import ProposalUtils
@@ -178,7 +177,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     // Sanity checks. Message cancellation is required on error.
     // Note that it is possible for the proposal period to be active upon creation,
     // however it is unlikely due to the scheduling checks on L1.
-    with_attr error_message("Invalid constructor parameters") {
+    with_attr error_message("TimedFundingRound: Invalid constructor parameters") {
         assert_not_zero(round_id);
         assert_not_zero(round_initiator);
         assert_not_zero(award_hash_low);
@@ -241,12 +240,12 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
     let (current_timestamp) = get_block_timestamp();
 
     // Ensure the round is still open for voting
-    with_attr error_message("Vote period has ended") {
+    with_attr error_message("TimedFundingRound: Vote period has ended") {
         assert_lt(current_timestamp, vote_period_end_timestamp);
     }
 
     // Ensure the vote period has started
-    with_attr error_message("Vote period has not started yet") {
+    with_attr error_message("TimedFundingRound: Vote period has not started yet") {
         assert_le(vote_period_start_timestamp, current_timestamp);
     }
 
@@ -265,7 +264,7 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
     );
     let (no_voting_power) = uint256_eq(Uint256(0, 0), user_voting_power);
 
-    with_attr error_message("No voting power for user") {
+    with_attr error_message("TimedFundingRound: No voting power for user") {
         assert no_voting_power = FALSE;
     }
 
@@ -304,21 +303,21 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     let proposal_vote = proposal_votes[current_index];
 
     let (proposer_address) = proposer_address_registry_store.read(proposal_votes.proposal_id);
-    with_attr error_message("Proposal does not exist") {
+    with_attr error_message("TimedFundingRound: Proposal does not exist") {
         assert_not_zero(proposer_address.value);
     }
 
     let (has_been_cancelled) = cancelled_proposals_store.read(proposal_vote.proposal_id);
 
     // Make sure proposal has not been cancelled
-    with_attr error_message("Proposal has been cancelled") {
+    with_attr error_message("TimedFundingRound: Proposal has been cancelled") {
         assert has_been_cancelled = FALSE;
     }
 
     let (no_proposal_voting_power) = uint256_eq(Uint256(0, 0), proposal_vote.voting_power);
 
     // Make sure provided voting power is greater than zero
-    with_attr error_message("Voting power must be greater than zero") {
+    with_attr error_message("TimedFundingRound: Voting power must be greater than zero") {
         assert no_proposal_voting_power = FALSE;
     }
 
@@ -326,7 +325,7 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
         proposal_vote.voting_power, user_voting_power_remaining
     );
 
-    with_attr error_message("Not enough voting power remaining for user") {
+    with_attr error_message("TimedFundingRound: Not enough voting power remaining for user") {
         assert has_enough_voting_power = TRUE;
     }
 
@@ -383,12 +382,12 @@ func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: fe
     let (proposal_period_end_timestamp) = proposal_period_end_timestamp_store.read();
 
     // Ensure the proposal period period is still open
-    with_attr error_message("Proposal period has ended") {
+    with_attr error_message("TimedFundingRound: Proposal period has ended") {
         assert_lt(current_timestamp, proposal_period_end_timestamp);
     }
 
     // Ensure the proposal period has started
-    with_attr error_message("Proposal period has not started yet") {
+    with_attr error_message("TimedFundingRound: Proposal period has not started yet") {
         assert_le(proposal_period_start_timestamp, current_timestamp);
     }
 
@@ -424,7 +423,7 @@ func finalize_round{
     let (vote_period_end_timestamp) = vote_period_end_timestamp_store.read();
 
     // Ensure that voting is complete
-    with_attr error_message("Vote period has not ended") {
+    with_attr error_message("TimedFundingRound: Vote period has not ended") {
         assert_lt(vote_period_end_timestamp, current_timestamp);
     }
 
@@ -455,7 +454,7 @@ func finalize_round{
         awards_flat_len, awards_flat
     );
     let (award_hashes_match) = uint256_eq(award_hash, recovered_award_hash);
-    with_attr error_message("Invalid award array") {
+    with_attr error_message("TimedFundingRound: Invalid award array") {
         assert_not_zero(award_hashes_match);
     }
 
@@ -467,7 +466,7 @@ func finalize_round{
     // If awards length is 4, then there is only one award in the array. Split the award between winners.
     // Format: [offset, length, asset_id, amount]
     if (awards_flat_len == 4) {
-        let (winners_len_uint256) = FeltUtils.felt_to_uint256(winners_len);
+        let (winners_len_uint256) = MathUtils.felt_to_uint256(winners_len);
         let (split_award_amount, _) = uint256_unsigned_div_rem(awards_flat[3], winners_len_uint256);
         ProposalUtils.generate_leaves_for_split_award{keccak_ptr=keccak_ptr}(
             winners_len, winners, awards_flat[2], split_award_amount, leaves, 0
@@ -525,7 +524,7 @@ func cancel_round{
     assert_round_active();
 
     let (stored_round_initiator_address) = round_initiator_address_store.read();
-    with_attr error_message("Caller is not round initiator") {
+    with_attr error_message("TimedFundingRound: Caller is not round initiator") {
         assert_not_zero(stored_round_initiator_address.value);
         assert round_initiator_address.value = stored_round_initiator_address.value;
     }
@@ -572,12 +571,12 @@ func cancel_proposal{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     let (has_been_cancelled) = cancelled_proposals_store.read(proposal_id);
 
     // Make sure proposal has not already been cancelled
-    with_attr error_message("Proposal already cancelled") {
+    with_attr error_message("TimedFundingRound: Proposal already cancelled") {
         assert has_been_cancelled = 0;
     }
 
     let (stored_proposer_address) = proposer_address_registry_store.read(proposal_id);
-    with_attr error_message("Invalid proposal id") {
+    with_attr error_message("TimedFundingRound: Invalid proposal id") {
         assert_not_zero(stored_proposer_address.value);
         assert proposer_address.value = stored_proposer_address.value;
     }
@@ -672,7 +671,7 @@ func assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
 
     let (caller_address) = get_caller_address();
     let (is_valid) = is_valid_auth_strategy(caller_address, 0, 2);
-    with_attr error_message("Invalid auth strategy") {
+    with_attr error_message("TimedFundingRound: Invalid auth strategy") {
         assert_not_zero(is_valid);
     }
     return ();
@@ -683,7 +682,7 @@ func assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     let (round_state) = round_state_store.read();
 
     // Ensure the round is active
-    with_attr error_message("Round not active") {
+    with_attr error_message("TimedFundingRound: Round not active") {
         assert round_state = RoundState.ACTIVE;
     }
 
@@ -752,7 +751,7 @@ func unchecked_get_cumulative_voting_power{
         contract_address=voting_strategy_registry, strategy_hash=voting_strategy_hash
     );
 
-    with_attr error_message("Invalid voting strategy") {
+    with_attr error_message("TimedFundingRound: Invalid voting strategy") {
         assert_not_zero(voting_strategy_address);
     }
 

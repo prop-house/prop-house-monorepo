@@ -12,7 +12,6 @@ from starkware.cairo.common.cairo_keccak.keccak import (
 )
 
 from contracts.starknet.common.lib.execute import execute
-from contracts.starknet.common.lib.felt_utils import FeltUtils
 from contracts.starknet.strategies.timed_funding_round.lib.eip712 import EIP712
 
 // print(get_selector_from_name("propose"))

@@ -11,7 +11,7 @@ from openzeppelin.security.safemath.library import SafeUint256
 
 from contracts.starknet.common.lib.general_address import Address
 from contracts.starknet.common.lib.single_slot_proof import SingleSlotProof
-from contracts.starknet.common.lib.felt_utils import FeltUtils
+from contracts.starknet.common.lib.math_utils import MathUtils
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -53,7 +53,7 @@ func get_voting_power{
         user_params_len,
         user_params,
     );
-    let (voting_power_multiplier_uint256) = FeltUtils.felt_to_uint256(voting_power_multiplier);
+    let (voting_power_multiplier_uint256) = MathUtils.felt_to_uint256(voting_power_multiplier);
     let (voting_power) = SafeUint256.mul(raw_voting_power, voting_power_multiplier_uint256);
 
     return (voting_power,);
