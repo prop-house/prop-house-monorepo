@@ -191,3 +191,32 @@ body {
   transform: translate(-50%, -50%) !important;
   max-height: max-content !important;
 }
+
+.proposalSearchBarDesktop input,
+.proposalSearchBarMobile input {
+  margin: 0.75rem 0rem 1.25rem 0rem !important;
+  border-radius: 14px !important;
+  box-shadow: var(--shadow-low) !important;
+  width: 100% !important;
+  min-width: 100% !important;
+}
+@media (min-width: 1201px) {
+  .proposalSearchBarMobile {
+    display: none;
+  }
+}
+@media (max-width: 1200px) {
+  .proposalSearchBarMobile {
+    margin-bottom: 0.5rem;
+    margin-top: -15px;
+  }
+  .proposalSearchBarDesktop {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .proposalSearchBarMobile {
+    margin-bottom: 1.5rem;
+    margin-top: -20px;
+  }
+}

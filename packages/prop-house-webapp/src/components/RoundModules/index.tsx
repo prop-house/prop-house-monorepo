@@ -21,13 +21,16 @@ import RoundOverModule from '../RoundOverModule';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+import SearchBar from '../SeachBar';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
+  input: string;
+  handleProposalSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = props => {
-  const { auction, community, setShowVotingModal } = props;
+  const { auction, community, setShowVotingModal, input, handleProposalSearch } = props;
 
   const { account } = useEthers();
   const connect = useWeb3Modal();
@@ -76,6 +79,15 @@ const RoundModules: React.FC<{
           winningIds={winningIds && winningIds}
         />
       )}
+
+      <div className="proposalSearchBarDesktop">
+        <SearchBar
+          input={input}
+          handleSeachInputChange={handleProposalSearch}
+          placeholder="Search for proposals"
+          disabled={proposals && proposals.length === 0}
+        />
+      </div>
 
       <Card
         bgColor={CardBgColor.White}

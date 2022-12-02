@@ -60,3 +60,7 @@
     padding-right: 0px;
   }
 }
+.searchBar input:disabled {
+  pointer-events: none !important;
+  border: 1px solid var(--border-light) !important;
+}

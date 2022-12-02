@@ -33,6 +33,7 @@ import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
+import SearchBar from '../SeachBar';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
@@ -161,6 +162,31 @@ const RoundContent: React.FC<{
     }
   };
 
+  const [input, setInput] = useState('');
+
+  const handleProposalSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const [filteredProps, setFilteredProps] = useState<StoredProposalWithVotes[]>([]);
+
+  useEffect(() => {
+    if (!proposals || proposals.length === 0) return;
+    if (input.length === 0) setFilteredProps(proposals);
+
+    setFilteredProps(
+      proposals.filter(c => {
+        const query = input.toLowerCase();
+
+        return (
+          c.title.toLowerCase().indexOf(query) >= 0 ||
+          c.tldr.toString().toLowerCase().indexOf(query) >= 0 ||
+          c.what.toString().toLowerCase().indexOf(query) >= 0
+        );
+      }),
+    );
+  }, [proposals, input]);
+
   return (
     <>
       {showVoteConfirmationModal && (
@@ -199,28 +225,41 @@ const RoundContent: React.FC<{
           {community && (
             <Row className={classes.propCardsRow}>
               <Col xl={8} className={classes.propCardsCol}>
-                {proposals &&
-                  (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProps')} />
-                  ) : (
-                    proposals.map((proposal, index) => {
-                      return (
-                        <Col key={index}>
-                          <ProposalCard
-                            proposal={proposal}
-                            auctionStatus={auctionStatus(auction)}
-                            cardStatus={cardStatus(votingPower > 0, auction)}
-                            winner={winningIds && isWinner(winningIds, proposal.id)}
-                          />
-                        </Col>
-                      );
-                    })
-                  ))}
+                {filteredProps && filteredProps.length > 0 ? (
+                  filteredProps.map((proposal, index) => {
+                    return (
+                      <Col key={index}>
+                        <ProposalCard
+                          proposal={proposal}
+                          auctionStatus={auctionStatus(auction)}
+                          cardStatus={cardStatus(votingPower > 0, auction)}
+                          winner={winningIds && isWinner(winningIds, proposal.id)}
+                        />
+                      </Col>
+                    );
+                  })
+                ) : input === '' ? (
+                  <ErrorMessageCard message={t('submittedProps')} />
+                ) : (
+                  <ErrorMessageCard message={'No proposals found'} />
+                )}
               </Col>
+
+              <div className="proposalSearchBarMobile">
+                <SearchBar
+                  input={input}
+                  handleSeachInputChange={handleProposalSearch}
+                  placeholder="Search for proposals"
+                  disabled={proposals && proposals.length === 0}
+                />
+              </div>
+
               <RoundModules
                 auction={auction}
                 community={community}
                 setShowVotingModal={setShowVoteConfirmationModal}
+                input={input}
+                handleProposalSearch={handleProposalSearch}
               />
             </Row>
           )}
