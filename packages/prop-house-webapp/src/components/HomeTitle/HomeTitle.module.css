@@ -30,12 +30,28 @@
     width: 120px !important;
   }
 }
+@media (max-width: 615px) {
+  .jpTitle span,
+  .jpTitle h1 {
+    font-size: 35px !important;
+  }
+}
 @media (max-width: 575px) {
   .title h1 {
     font-size: 35px !important;
   }
   .build img {
     width: 100px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .jpTitle span,
+  .jpTitle h1 {
+    font-size: 24px !important;
+  }
+  .jpTitle img {
+    width: 70px !important;
   }
 }
 
