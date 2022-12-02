@@ -56,11 +56,13 @@ contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHous
         super._initialize(creator);
 
         // prettier-ignore
-        (address[] memory houseStrategies, address[] memory initiators, VotingStrategy[] memory votingStrategies) = abi.decode(data, (
+        (string memory houseURI, address[] memory houseStrategies, address[] memory initiators, VotingStrategy[] memory votingStrategies) = abi.decode(data, (
+            string,
             address[],
             address[],
             VotingStrategy[]
         ));
+        _updateHouseURI(houseURI);
         _enableManyStrategies(houseStrategies);
         _addManyRoundInitiatorsToWhitelist(initiators);
         _addManyVotingStrategiesToWhitelist(votingStrategies);

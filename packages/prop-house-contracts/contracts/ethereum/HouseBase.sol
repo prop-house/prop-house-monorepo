@@ -31,6 +31,9 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     /// @notice The L2 Strategy Factory contract address
     uint256 internal immutable _strategyFactory;
 
+    /// @notice A URI that returns house-level metadata
+    string public houseURI;
+
     /// @notice Determine if a house strategy is enabled
     mapping(address => bool) public isStrategyEnabled;
 
@@ -49,6 +52,13 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
         _strategyManager = IStrategyManager(strategyManager_);
         _messenger = IStarknetMessenger(messenger_);
         _strategyFactory = strategyFactory_;
+    }
+
+    /// @notice Update the house URI
+    /// @param newHouseURI The new house URI
+    /// @dev This function is only callable by the house owner
+    function updateHouseURI(string calldata newHouseURI) external onlyOwner {
+        _updateHouseURI(newHouseURI);
     }
 
     /// @notice Enable a house strategy
@@ -98,7 +108,15 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
         transferOwnership(_creator);
     }
 
+    /// @notice Update the house URI
+    /// @param newHouseURI The new house URI
+    function _updateHouseURI(string memory newHouseURI) internal {
+        houseURI = newHouseURI;
+        emit HouseURIUpdated(newHouseURI);
+    }
+
     /// @notice Enable a house strategy
+    /// @param strategy The address of the strategy to enable
     function _enableStrategy(address strategy) internal {
         if (!_strategyManager.isValidStrategy(id, version, strategy)) {
             revert IStrategyManager.StrategyNotRegistered();
@@ -109,6 +127,7 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     /// @notice Disable a house strategy
+    /// @param strategy The address of the strategy to disable
     function _disableStrategy(address strategy) internal {
         _requireStrategyEnabled(strategy);
         isStrategyEnabled[strategy] = false;
@@ -117,6 +136,7 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     /// @notice Enable many house strategies
+    /// @param strategies The addresses of the strategies to enable
     function _enableManyStrategies(address[] memory strategies) internal {
         unchecked {
             uint256 numStrategies = strategies.length;
@@ -136,6 +156,7 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     }
 
     /// @notice Revert is the strategy is not enabled on the house
+    /// @param strategy The strategy address
     function _requireStrategyEnabled(address strategy) internal view {
         if (!isStrategyEnabled[strategy]) {
             revert StrategyNotEnabled();

@@ -17,6 +17,10 @@ interface IHouse {
     /// @param strategy The address of the disabled strategy
     event StrategyDisabled(address strategy);
 
+    /// @notice Emitted when the house URI is updated
+    /// @param houseURI The new house URI
+    event HouseURIUpdated(string houseURI);
+
     /// @notice The string representation of the unique identifier
     function name() external view returns (string memory);
 
