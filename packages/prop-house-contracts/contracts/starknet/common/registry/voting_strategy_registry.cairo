@@ -44,7 +44,7 @@ func get_voting_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     }
 
     let (voting_strategy_params_len) = voting_strategy_params_store.read(strategy_hash, 0);
-    let (voting_strategy_params_len, voting_strategy_params) = get_voting_strategy_params(
+    let (voting_strategy_params_len, voting_strategy_params) = _get_voting_strategy_params(
         strategy_hash, voting_strategy_params_len, voting_strategy_params, 1
     );
     return (voting_strategy, voting_strategy_params_len, voting_strategy_params);
@@ -78,14 +78,18 @@ func register_voting_strategy{
 
     // The length of the voting strategy params array is stored at index 0
     voting_strategy_params_store.write(strategy_hash, 0, strategy_params_len);
-    write_voting_strategy_params(strategy_hash, 1, strategy_params_len, strategy_params);
+    _write_voting_strategy_params(strategy_hash, 1, strategy_params_len, strategy_params);
 
     voting_strategy_registered.emit(strategy_hash);
     return ();
 }
 
+//
+//  Internal Functions
+//
+
 // Writes the voting strategy params to storage for the provided strategy hash
-func write_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func _write_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     strategy_hash: felt, param_index: felt, params_len: felt, params: felt*
 ) {
     if (params_len == 0) {
@@ -95,13 +99,13 @@ func write_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*
         // Store voting parameter
         voting_strategy_params_store.write(strategy_hash, param_index, params[0]);
 
-        write_voting_strategy_params(strategy_hash, param_index + 1, params_len - 1, &params[1]);
+        _write_voting_strategy_params(strategy_hash, param_index + 1, params_len - 1, &params[1]);
         return ();
     }
 }
 
 // Reconstructs the voting strategy param array for the provided strategy hash
-func get_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func _get_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     strategy_hash: felt, params_len: felt, params: felt*, index: felt
 ) -> (params_len: felt, params: felt*) {
     // The are no parameters so we just return an empty array
@@ -117,7 +121,7 @@ func get_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
         return (params_len, params);
     }
 
-    let (params_len, params) = get_voting_strategy_params(
+    let (params_len, params) = _get_voting_strategy_params(
         strategy_hash, params_len, params, index + 1
     );
     return (params_len, params);

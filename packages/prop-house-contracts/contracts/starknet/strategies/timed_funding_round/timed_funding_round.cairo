@@ -172,7 +172,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         proposal_period_duration,
         vote_period_duration,
         winner_count,
-    ) = decode_param_array(house_strategy_params_len, house_strategy_params);
+    ) = _decode_param_array(house_strategy_params_len, house_strategy_params);
 
     // Sanity checks. Message cancellation is required on error.
     // Note that it is possible for the proposal period to be active upon creation,
@@ -201,7 +201,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     vote_period_end_timestamp_store.write(vote_period_end_timestamp);
     winner_count_store.write(winner_count);
 
-    unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len, voting_strategy_hashes, 0);
+    _unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len, voting_strategy_hashes, 0);
 
     // The first proposal in a round will have a proposal ID of 1.
     next_proposal_nonce_store.write(1);
@@ -227,10 +227,10 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy();
+    _assert_valid_auth_strategy();
 
     // Verify that the funding round is active
-    assert_round_active();
+    _assert_round_active();
 
     // The snapshot timestamp is the end of the proposal submission period
     let (snapshot_timestamp) = proposal_period_end_timestamp_store.read();
@@ -254,7 +254,7 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
         user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
     );
 
-    let (user_voting_power) = get_cumulative_voting_power(
+    let (user_voting_power) = _get_cumulative_voting_power(
         snapshot_timestamp,
         voter_address,
         used_voting_strategy_hash_indexes_len,
@@ -372,10 +372,10 @@ func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: fe
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy();
+    _assert_valid_auth_strategy();
 
     // Verify that the funding round is active
-    assert_round_active();
+    _assert_round_active();
 
     let (current_timestamp) = get_block_timestamp();
     let (proposal_period_start_timestamp) = proposal_period_start_timestamp_store.read();
@@ -417,7 +417,7 @@ func finalize_round{
     alloc_locals;
 
     // Verify that the funding round is active
-    assert_round_active();
+    _assert_round_active();
 
     let (current_timestamp) = get_block_timestamp();
     let (vote_period_end_timestamp) = vote_period_end_timestamp_store.read();
@@ -437,7 +437,7 @@ func finalize_round{
     }
 
     let (active_submissions: ProposalInfo*) = alloc();
-    let (active_submissions_len) = populate_proposal_info_arr(
+    let (active_submissions_len) = _populate_proposal_info_arr(
         next_unused_proposal_nonce, 1, 0, active_submissions
     );
 
@@ -518,10 +518,10 @@ func cancel_round{
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy();
+    _assert_valid_auth_strategy();
 
     // Verify that the funding round is active
-    assert_round_active();
+    _assert_round_active();
 
     let (stored_round_initiator_address) = round_initiator_address_store.read();
     with_attr error_message("TimedFundingRound: Caller is not round initiator") {
@@ -563,10 +563,10 @@ func cancel_proposal{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
-    assert_valid_auth_strategy();
+    _assert_valid_auth_strategy();
 
     // Verify that the funding round is active
-    assert_round_active();
+    _assert_round_active();
 
     let (has_been_cancelled) = cancelled_proposals_store.read(proposal_id);
 
@@ -623,7 +623,7 @@ func get_proposal_info{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 //
 
 // Inserts voting strategy hashes to storage
-func unchecked_add_voting_strategy_hashes{
+func _unchecked_add_voting_strategy_hashes{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }(voting_strategy_hashes_len: felt, voting_strategy_hashes: felt*, index: felt) {
     if (voting_strategy_hashes_len == 0) {
@@ -633,7 +633,7 @@ func unchecked_add_voting_strategy_hashes{
         // Store voting parameter
         voting_strategy_hashes_store.write(index, voting_strategy_hashes[0]);
 
-        unchecked_add_voting_strategy_hashes(
+        _unchecked_add_voting_strategy_hashes(
             voting_strategy_hashes_len - 1, &voting_strategy_hashes[1], index + 1
         );
         return ();
@@ -641,7 +641,7 @@ func unchecked_add_voting_strategy_hashes{
 }
 
 // Fetches the auth strategy at the provided index
-func get_auth_strategy(index: felt) -> (strategy_addr: felt) {
+func _get_auth_strategy(index: felt) -> (strategy_addr: felt) {
     let (data_address) = get_label_location(strategies);
     return ([data_address + index],);
 
@@ -651,26 +651,26 @@ func get_auth_strategy(index: felt) -> (strategy_addr: felt) {
 }
 
 // Determines whether the provided address is a valid auth strategy
-func is_valid_auth_strategy(addr: felt, curr_index: felt, num_strategies: felt) -> (
+func _is_valid_auth_strategy(addr: felt, curr_index: felt, num_strategies: felt) -> (
     is_valid: felt
 ) {
     if (num_strategies == curr_index) {
         return (FALSE,);
     }
 
-    let (strategy_addr) = get_auth_strategy(curr_index);
+    let (strategy_addr) = _get_auth_strategy(curr_index);
     if (addr == strategy_addr) {
         return (TRUE,);
     }
-    return is_valid_auth_strategy(addr, curr_index + 1, num_strategies);
+    return _is_valid_auth_strategy(addr, curr_index + 1, num_strategies);
 }
 
 // Throws if the caller address is not a member of the set of whitelisted auth strategies
-func assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+func _assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
     alloc_locals;
 
     let (caller_address) = get_caller_address();
-    let (is_valid) = is_valid_auth_strategy(caller_address, 0, 2);
+    let (is_valid) = _is_valid_auth_strategy(caller_address, 0, 2);
     with_attr error_message("TimedFundingRound: Invalid auth strategy") {
         assert_not_zero(is_valid);
     }
@@ -678,7 +678,7 @@ func assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
 }
 
 // Throws if the round is not in an active state
-func assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+func _assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
     let (round_state) = round_state_store.read();
 
     // Ensure the round is active
@@ -689,21 +689,8 @@ func assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     return ();
 }
 
-// Tries to find `to_find` in `array`. Returns `TRUE` if it finds it, else returns `FALSE`.
-func find{}(to_find: felt, array_len: felt, array: felt*) -> (found: felt) {
-    if (array_len == 0) {
-        return (FALSE,);
-    } else {
-        if (to_find == array[0]) {
-            return (TRUE,);
-        } else {
-            return find(to_find, array_len - 1, array + 1);
-        }
-    }
-}
-
 // Computes the cumulated voting power of a user by iterating over the voting strategies of `used_voting_strategy_hash_indexes`.
-func get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func _get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     current_timestamp: felt,
     voter_address: Address,
     used_voting_strategy_hash_indexes_len: felt,
@@ -714,7 +701,7 @@ func get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
     // Make sure there are no duplicates to avoid an attack where people double count a voting strategy
     ArrayUtils.assert_no_duplicates(used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes);
 
-    return unchecked_get_cumulative_voting_power(
+    return _unchecked_get_cumulative_voting_power(
         current_timestamp,
         voter_address,
         used_voting_strategy_hash_indexes_len,
@@ -725,7 +712,7 @@ func get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
 }
 
 // Actual computation of voting power. Duplicates are checked in `get_cumulative_voting_power`.
-func unchecked_get_cumulative_voting_power{
+func _unchecked_get_cumulative_voting_power{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }(
     current_timestamp: felt,
@@ -770,7 +757,7 @@ func unchecked_get_cumulative_voting_power{
         user_params=user_voting_strategy_params,
     );
 
-    let (additional_voting_power) = get_cumulative_voting_power(
+    let (additional_voting_power) = _get_cumulative_voting_power(
         current_timestamp,
         voter_address,
         used_voting_strategy_hash_indexes_len - 1,
@@ -784,7 +771,7 @@ func unchecked_get_cumulative_voting_power{
 }
 
 // Decodes the array of house strategy params
-func decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_params: felt*) -> (
+func _decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_params: felt*) -> (
     round_id: felt,
     round_initiator: felt,
     award_hash_low: felt,
@@ -808,7 +795,7 @@ func decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_par
 }
 
 // Slices the provided proposal info array, returning the portion of it from `start` to `start + size`
-func populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+func _populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     next_unused_proposal_nonce: felt,
     current_proposal_id: felt,
     current_index: felt,
@@ -820,7 +807,7 @@ func populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
 
     let (has_been_cancelled) = cancelled_proposals_store.read(current_proposal_id);
     if (has_been_cancelled == TRUE) {
-        return populate_proposal_info_arr(
+        return _populate_proposal_info_arr(
             next_unused_proposal_nonce, current_proposal_id + 1, current_index, acc
         );
     }
@@ -830,7 +817,7 @@ func populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, 
 
     assert acc[current_index] = ProposalInfo(proposal_id=current_proposal_id, proposer_address=proposer_address, voting_power=voting_power);
 
-    return populate_proposal_info_arr(
+    return _populate_proposal_info_arr(
         next_unused_proposal_nonce, current_proposal_id + 1, current_index + 1, acc
     );
 }

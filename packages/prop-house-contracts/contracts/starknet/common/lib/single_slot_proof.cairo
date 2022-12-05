@@ -81,7 +81,7 @@ namespace SingleSlotProof {
             proof_sizes_words,
             proofs_concat_len,
             proofs_concat,
-        ) = decode_param_array(user_params_len, user_params);
+        ) = _decode_param_array(user_params_len, user_params);
 
         // Extracting individual parameters from parameter array
         with_attr error_message("SingleSlotProof: Invalid size parameters array") {
@@ -125,7 +125,11 @@ namespace SingleSlotProof {
     }
 }
 
-func decode_param_array{range_check_ptr}(param_array_len: felt, param_array: felt*) -> (
+//
+//  Internal Functions
+//
+
+func _decode_param_array{range_check_ptr}(param_array_len: felt, param_array: felt*) -> (
     slot: StorageSlot,
     proof_sizes_bytes_len: felt,
     proof_sizes_bytes: felt*,

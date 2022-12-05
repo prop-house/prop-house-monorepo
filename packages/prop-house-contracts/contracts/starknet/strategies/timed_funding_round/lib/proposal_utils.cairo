@@ -158,92 +158,90 @@ namespace ProposalUtils {
         );
         return (sorted_sliced_proposal_arr,);
     }
+}
 
-    // Merge left and right arrays, slicing the array to contain no more than `max_sorted_arr_len` proposals by descending voting power.
-    func _merge_and_slice{range_check_ptr}(
-        max_sorted_arr_len: felt,
-        left_arr_len: felt,
-        left_arr: ProposalInfo*,
-        right_arr_len: felt,
-        right_arr: ProposalInfo*,
-        sorted_arr: ProposalInfo*,
-        current_index: felt,
-        left_arr_index: felt,
-        right_arr_index: felt,
-    ) -> (sorted_arr: ProposalInfo*) {
-        alloc_locals;
+//
+//  Internal Functions
+//
 
-        if ((current_index) == (left_arr_len + right_arr_len)) {
-            return (sorted_arr,);
-        }
-
-        // Exit early if the max length has been reached
-        if ((current_index) == (max_sorted_arr_len)) {
-            return (sorted_arr,);
-        }
-
-        if (left_arr_len == left_arr_index) {
-            let right_v = right_arr[right_arr_index].voting_power;
-            assert sorted_arr[current_index] = right_arr[right_arr_index];
-            return _merge_and_slice(
-                max_sorted_arr_len,
-                left_arr_len,
-                left_arr,
-                right_arr_len,
-                right_arr,
-                sorted_arr,
-                current_index + 1,
-                left_arr_index,
-                right_arr_index + 1,
-            );
-        }
-
-        if (right_arr_len == right_arr_index) {
-            let left_v = left_arr[left_arr_index].voting_power;
-            assert sorted_arr[current_index] = left_arr[left_arr_index];
-            return _merge_and_slice(
-                max_sorted_arr_len,
-                left_arr_len,
-                left_arr,
-                right_arr_len,
-                right_arr,
-                sorted_arr,
-                current_index + 1,
-                left_arr_index + 1,
-                right_arr_index,
-            );
-        }
-
-        let left_val = left_arr[left_arr_index].voting_power;
-        let right_val = right_arr[right_arr_index].voting_power;
-        let (is_left) = uint256_le(right_val, left_val);
-
-        if (is_left == TRUE) {
-            assert sorted_arr[current_index] = left_arr[left_arr_index];
-            return _merge_and_slice(
-                max_sorted_arr_len,
-                left_arr_len,
-                left_arr,
-                right_arr_len,
-                right_arr,
-                sorted_arr,
-                current_index + 1,
-                left_arr_index + 1,
-                right_arr_index,
-            );
-        } else {
-            assert sorted_arr[current_index] = right_arr[right_arr_index];
-            return _merge_and_slice(
-                max_sorted_arr_len,
-                left_arr_len,
-                left_arr,
-                right_arr_len,
-                right_arr,
-                sorted_arr,
-                current_index + 1,
-                left_arr_index,
-                right_arr_index + 1,
-            );
-        }
+// Merge left and right arrays, slicing the array to contain no more than `max_sorted_arr_len` proposals by descending voting power.
+func _merge_and_slice{range_check_ptr}(
+    max_sorted_arr_len: felt,
+    left_arr_len: felt,
+    left_arr: ProposalInfo*,
+    right_arr_len: felt,
+    right_arr: ProposalInfo*,
+    sorted_arr: ProposalInfo*,
+    current_index: felt,
+    left_arr_index: felt,
+    right_arr_index: felt,
+) -> (sorted_arr: ProposalInfo*) {
+    alloc_locals;
+    if ((current_index) == (left_arr_len + right_arr_len)) {
+        return (sorted_arr,);
+    }
+    // Exit early if the max length has been reached
+    if ((current_index) == (max_sorted_arr_len)) {
+        return (sorted_arr,);
+    }
+    if (left_arr_len == left_arr_index) {
+        let right_v = right_arr[right_arr_index].voting_power;
+        assert sorted_arr[current_index] = right_arr[right_arr_index];
+        return _merge_and_slice(
+            max_sorted_arr_len,
+            left_arr_len,
+            left_arr,
+            right_arr_len,
+            right_arr,
+            sorted_arr,
+            current_index + 1,
+            left_arr_index,
+            right_arr_index + 1,
+        );
+    }
+    if (right_arr_len == right_arr_index) {
+        let left_v = left_arr[left_arr_index].voting_power;
+        assert sorted_arr[current_index] = left_arr[left_arr_index];
+        return _merge_and_slice(
+            max_sorted_arr_len,
+            left_arr_len,
+            left_arr,
+            right_arr_len,
+            right_arr,
+            sorted_arr,
+            current_index + 1,
+            left_arr_index + 1,
+            right_arr_index,
+        );
+    }
+    let left_val = left_arr[left_arr_index].voting_power;
+    let right_val = right_arr[right_arr_index].voting_power;
+    let (is_left) = uint256_le(right_val, left_val);
+    if (is_left == TRUE) {
+        assert sorted_arr[current_index] = left_arr[left_arr_index];
+        return _merge_and_slice(
+            max_sorted_arr_len,
+            left_arr_len,
+            left_arr,
+            right_arr_len,
+            right_arr,
+            sorted_arr,
+            current_index + 1,
+            left_arr_index + 1,
+            right_arr_index,
+        );
+    } else {
+        assert sorted_arr[current_index] = right_arr[right_arr_index];
+        return _merge_and_slice(
+            max_sorted_arr_len,
+            left_arr_len,
+            left_arr,
+            right_arr_len,
+            right_arr,
+            sorted_arr,
+            current_index + 1,
+            left_arr_index,
+            right_arr_index + 1,
+        );
     }
 }
