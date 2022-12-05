@@ -1,6 +1,7 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   fundingHouseTimedFundingRoundSetup,
+  HOUSE_URI,
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
@@ -80,8 +81,9 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const creationResponse = await houseFactory.create(
       config.fundingHouseImpl.address,
       ethers.utils.defaultAbiCoder.encode(
-        ['address[]', 'address[]', 'tuple(uint256,uint256[])[]'],
+        ['string', 'address[]', 'address[]', 'tuple(uint256,uint256[])[]'],
         [
+          HOUSE_URI,
           [config.timedFundingRoundStrategyValidator.address],
           [signer.address],
           [[vanillaVotingStrategy.address, []]],

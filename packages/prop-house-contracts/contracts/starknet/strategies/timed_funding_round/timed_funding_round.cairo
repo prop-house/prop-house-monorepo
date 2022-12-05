@@ -79,19 +79,11 @@ func round_initiator_address_store() -> (address: Address) {
 }
 
 @storage_var
+func round_timestamps_store() -> (packed_timestamps: felt) {
+}
+
+@storage_var
 func award_hash_store() -> (award_hash: Uint256) {
-}
-
-@storage_var
-func proposal_period_start_timestamp_store() -> (timestamp: felt) {
-}
-
-@storage_var
-func proposal_period_end_timestamp_store() -> (timestamp: felt) {
-}
-
-@storage_var
-func vote_period_end_timestamp_store() -> (timestamp: felt) {
 }
 
 @storage_var
@@ -192,13 +184,18 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
     let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration;
 
+    // Pack the timestamps into a single felt to reduce storage usage
+    let (packed_timestamps) = MathUtils.pack_3_40_bit(
+        proposal_period_start_timestamp, 
+        proposal_period_end_timestamp,
+        vote_period_end_timestamp,
+    );
+
     // Initialize the storage variables
     round_id_store.write(round_id);
     round_initiator_address_store.write(Address(value=round_initiator));
+    round_timestamps_store.write(packed_timestamps);
     award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high));
-    proposal_period_start_timestamp_store.write(proposal_period_start_timestamp);
-    proposal_period_end_timestamp_store.write(proposal_period_end_timestamp);
-    vote_period_end_timestamp_store.write(vote_period_end_timestamp);
     winner_count_store.write(winner_count);
 
     _unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len, voting_strategy_hashes, 0);
@@ -215,7 +212,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
 // Casts votes on one or more proposals
 @external
-func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
+func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
     voter_address: Address,
     proposal_votes_len: felt,
     proposal_votes: ProposalVote*,
@@ -232,11 +229,16 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}
     // Verify that the funding round is active
     _assert_round_active();
 
-    // The snapshot timestamp is the end of the proposal submission period
-    let (snapshot_timestamp) = proposal_period_end_timestamp_store.read();
-    let vote_period_start_timestamp = snapshot_timestamp + 1;
-    let (vote_period_end_timestamp) = vote_period_end_timestamp_store.read();
+    // Unpack the the timestamps from the packed value
+    let (round_timestamps) = round_timestamps_store.read();
+    let (
+        _, 
+        snapshot_timestamp,
+        vote_period_end_timestamp,
+    ) = MathUtils.unpack_3_40_bit(round_timestamps);
 
+    // The snapshot timestamp is the end of the proposal submission period
+    let vote_period_start_timestamp = snapshot_timestamp + 1;
     let (current_timestamp) = get_block_timestamp();
 
     // Ensure the round is still open for voting
@@ -363,7 +365,7 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 // Submits a proposal to the funding round
 // TODO: Create an L1 handler as a mechanism to bypass the spam protection filter
 @external
-func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
+func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
     proposer_address: Address,
     metadata_uri_string_len: felt,
     metadata_uri_len: felt,
@@ -377,9 +379,15 @@ func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: fe
     // Verify that the funding round is active
     _assert_round_active();
 
+    // Unpack the the timestamps from the packed value
+    let (round_timestamps) = round_timestamps_store.read();
+    let (
+        proposal_period_start_timestamp, 
+        proposal_period_end_timestamp,
+        _,
+    ) = MathUtils.unpack_3_40_bit(round_timestamps);
+
     let (current_timestamp) = get_block_timestamp();
-    let (proposal_period_start_timestamp) = proposal_period_start_timestamp_store.read();
-    let (proposal_period_end_timestamp) = proposal_period_end_timestamp_store.read();
 
     // Ensure the proposal period period is still open
     with_attr error_message("TimedFundingRound: Proposal period has ended") {
@@ -420,7 +428,13 @@ func finalize_round{
     _assert_round_active();
 
     let (current_timestamp) = get_block_timestamp();
-    let (vote_period_end_timestamp) = vote_period_end_timestamp_store.read();
+    // Unpack the the timestamps from the packed value
+    let (round_timestamps) = round_timestamps_store.read();
+    let (
+        _, 
+        _,
+        vote_period_end_timestamp,
+    ) = MathUtils.unpack_3_40_bit(round_timestamps);
 
     // Ensure that voting is complete
     with_attr error_message("TimedFundingRound: Vote period has not ended") {

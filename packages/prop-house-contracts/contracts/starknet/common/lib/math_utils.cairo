@@ -4,16 +4,15 @@ from starkware.cairo.common.uint256 import Uint256, uint256_check
 from starkware.cairo.common.bitwise import bitwise_and
 from starkware.cairo.common.math_cmp import is_le
 
-const MAX_32 = 2 ** 32 - 1;
+const MAX_40 = 2 ** 40 - 1;
 
-const SHIFT_32 = 2 ** 32;
+const SHIFT_40 = 2 ** 40;
 const SHIFT_64 = 2 ** 64;
-const SHIFT_96 = 2 ** 96;
+const SHIFT_80 = 2 ** 80;
 
-const MASK_4 = 2 ** 32 - 1;
-const MASK_3 = 2 ** 64 - 2 ** 32;
-const MASK_2 = 2 ** 96 - 2 ** 64;
-const MASK_1 = 2 ** 128 - 2 ** 96;
+const MASK_3 = 2 ** 40 - 1;
+const MASK_2 = 2 ** 80 - 2 ** 40;
+const MASK_1 = 2 ** 120 - 2 ** 80;
 
 namespace MathUtils {
     // @dev Returns the smaller of two values
@@ -68,42 +67,37 @@ namespace MathUtils {
         return (Uint256(low=low, high=high),);
     }
 
-    // @dev Packs 4 32 bit numbers into a single felt
+    // @dev Packs 3 40-bit numbers into a single felt
     // @param num1 1st number
     // @param num2 2nd number
     // @param num3 3rd number
-    // @param num4 4th number
     // @return packed_felt The packed felt
-    func pack_4_32_bit{range_check_ptr}(num1: felt, num2: felt, num3: felt, num4: felt) -> (
+    func pack_3_40_bit{range_check_ptr}(num1: felt, num2: felt, num3: felt) -> (
         packed_felt: felt
     ) {
         with_attr error_message("MathUtils: number too big to be packed") {
-            assert_nn_le(num1, MAX_32);
-            assert_nn_le(num2, MAX_32);
-            assert_nn_le(num3, MAX_32);
-            assert_nn_le(num4, MAX_32);
+            assert_nn_le(num1, MAX_40);
+            assert_nn_le(num2, MAX_40);
+            assert_nn_le(num3, MAX_40);
         }
-        let packed_felt = num4 + num3 * SHIFT_32 + num2 * SHIFT_64 + num1 * SHIFT_96;
+        let packed_felt = num3 + num2 * SHIFT_40 + num1 * SHIFT_80;
         return (packed_felt,);
     }
 
-    // @dev Unpacks a felt into 4 32 bit numbers
+    // @dev Unpacks a felt into 3 40-bit numbers
     // @param packed_felt The packed felt
     // @return num1 1st number
     // @return num2 2nd number
     // @return num3 3rd number
-    // @return num4 4th number
-    func unpack_4_32_bit{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(packed_felt: felt) -> (
-        num1: felt, num2: felt, num3: felt, num4: felt
+    func unpack_3_40_bit{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(packed_felt: felt) -> (
+        num1: felt, num2: felt, num3: felt
     ) {
-        let (num4) = bitwise_and(packed_felt, MASK_4);
         let (num3) = bitwise_and(packed_felt, MASK_3);
-        let (num3, _) = unsigned_div_rem(num3, SHIFT_32);
         let (num2) = bitwise_and(packed_felt, MASK_2);
-        let (num2, _) = unsigned_div_rem(num2, SHIFT_64);
+        let (num2, _) = unsigned_div_rem(num2, SHIFT_40);
         let (num1) = bitwise_and(packed_felt, MASK_1);
-        let (num1, _) = unsigned_div_rem(num1, SHIFT_96);
-        return (num1, num2, num3, num4);
+        let (num1, _) = unsigned_div_rem(num1, SHIFT_80);
+        return (num1, num2, num3);
     }
 
     // @dev Asserts that a uint256 is valid
