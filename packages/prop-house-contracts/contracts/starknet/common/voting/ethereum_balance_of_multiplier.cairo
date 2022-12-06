@@ -9,7 +9,6 @@ from starkware.cairo.common.alloc import alloc
 
 from openzeppelin.security.safemath.library import SafeUint256
 
-from contracts.starknet.common.lib.general_address import Address
 from contracts.starknet.common.lib.single_slot_proof import SingleSlotProof
 from contracts.starknet.common.lib.math_utils import MathUtils
 
@@ -26,7 +25,7 @@ func get_voting_power{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*
 }(
     timestamp: felt,
-    voter_address: Address,
+    voter_address: felt,
     params_len: felt,
     params: felt*,
     user_params_len: felt,

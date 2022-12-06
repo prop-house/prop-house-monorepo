@@ -8,7 +8,6 @@ from starkware.cairo.common.memcpy import memcpy
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import assert_nn_le
 
-from contracts.starknet.common.lib.general_address import Address
 from contracts.starknet.common.lib.merkle_pedersen import MerklePedersen
 
 // @dev Returns the voting power for a user obtained from the whitelist
@@ -24,7 +23,7 @@ from contracts.starknet.common.lib.merkle_pedersen import MerklePedersen
 @view
 func get_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     timestamp: felt,
-    voter_address: Address,
+    voter_address: felt,
     params_len: felt,
     params: felt*,
     user_params_len: felt,
@@ -44,7 +43,7 @@ func get_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_chec
     // Checking that the leaf corresponds to the voter's address
     with_attr error_message("MerkleWhitelist: Invalid proof supplied") {
         // The address resides at the beginning of the leaf data array
-        assert leaf[0] = voter_address.value;
+        assert leaf[0] = voter_address;
     }
 
     // Extracting proof from user params array

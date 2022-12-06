@@ -33,7 +33,7 @@ namespace ProposalUtils {
             proposal_info_arr[curr_proposal_index].proposal_id
         );
         let (proposer_address_uint256) = MathUtils.felt_to_uint256(
-            proposal_info_arr[curr_proposal_index].proposer_address.value
+            proposal_info_arr[curr_proposal_index].proposer_address
         );
 
         assert hash_input_arr[0] = proposal_id_uint256;
@@ -79,7 +79,7 @@ namespace ProposalUtils {
             proposal_info_arr[curr_proposal_index].proposal_id
         );
         let (proposer_address_uint256) = MathUtils.felt_to_uint256(
-            proposal_info_arr[curr_proposal_index].proposer_address.value
+            proposal_info_arr[curr_proposal_index].proposer_address
         );
 
         assert hash_input_arr[0] = proposal_id_uint256;

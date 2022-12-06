@@ -6,7 +6,6 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
 from starkware.cairo.common.uint256 import Uint256, uint256_add, uint256_eq
 from starkware.cairo.common.math import unsigned_div_rem, assert_nn_le
 
-from contracts.starknet.common.lib.general_address import Address
 from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.timestamp import Timestamp
 from contracts.starknet.common.lib.slot_key import SlotKey
@@ -59,7 +58,7 @@ namespace SingleSlotProof {
         bitwise_ptr: BitwiseBuiltin*,
     }(
         timestamp: felt,
-        voter_address: Address,
+        voter_address: felt,
         params_len: felt,
         params: felt*,
         user_params_len: felt,
@@ -93,7 +92,7 @@ namespace SingleSlotProof {
         let slot_index = params[1];
 
         // Checking slot proof is for the correct slot
-        let (valid_slot) = SlotKey.get_slot_key(slot_index, voter_address.value);
+        let (valid_slot) = SlotKey.get_slot_key(slot_index, voter_address);
         let (slot_uint256) = MathUtils.words_to_uint256(
             slot.word_1, slot.word_2, slot.word_3, slot.word_4
         );
