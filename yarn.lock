@@ -1456,6 +1456,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.19.4", "@babel/runtime@^7.20.6":
+  version "7.20.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.6.tgz#facf4879bfed9b5326326273a64220f099b0fce3"
+  integrity sha512-Q+8MqP7TiHMWzSfwiJwXCjyf4GYA4Dgw3emg/7xmwsdLJOZUp+nMqcOwOzzYheuM1rhDu8FSj2l0aoMygEuXuA==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
 "@babel/template@^7.10.4", "@babel/template@^7.16.0", "@babel/template@^7.3.3":
   version "7.16.0"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.16.0.tgz#d16a35ebf4cd74e202083356fab21dd89363ddd6"
@@ -10552,6 +10559,13 @@ i18next-browser-languagedetector@^6.1.4:
   dependencies:
     "@babel/runtime" "^7.14.6"
 
+i18next-browser-languagedetector@^7.0.0:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-7.0.1.tgz#ead34592edc96c6c3a618a51cb57ad027c5b5d87"
+  integrity sha512-Pa5kFwaczXJAeHE56CHG2aWzFBMJNUNghf0Pm4SwSrEMps/PTKqW90EYWlIvhuYStf3Sn1K0vw+gH3+TLdkH1g==
+  dependencies:
+    "@babel/runtime" "^7.19.4"
+
 i18next-chained-backend@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/i18next-chained-backend/-/i18next-chained-backend-3.0.2.tgz#8968c9e12412d24fd23eec109f0340386154384a"
@@ -10579,6 +10593,13 @@ i18next@^21.8.11:
   integrity sha512-+s8N6kQShwNK+Ua/+VsS/Sji24NUJJLBk9QIucygj1f97f4hPNDWmLP9fQCI4d5+XLfXJ3JctX4g+zJla967Vw==
   dependencies:
     "@babel/runtime" "^7.17.2"
+
+i18next@^22.0.3:
+  version "22.0.8"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-22.0.8.tgz#0ab088d60cb83495c85422bb2e035a8a1e3756ef"
+  integrity sha512-cQUVZ3KUHtua4E9/9naB7oH5ymun0jAYKopXFgmSRXog0nrWFajAErz9eJ/A/dSj69YxmA8xOR4m5dY1OrKG5g==
+  dependencies:
+    "@babel/runtime" "^7.20.6"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
@@ -15945,6 +15966,14 @@ react-i18next@^11.17.3:
     html-escaper "^2.0.2"
     html-parse-stringify "^3.0.1"
 
+react-i18next@^12.0.0:
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-12.0.0.tgz#634015a2c035779c5736ae4c2e5c34c1659753b1"
+  integrity sha512-/O7N6aIEAl1FaWZBNvhdIo9itvF/MO/nRKr9pYqRc9LhuC1u21SlfwpiYQqvaeNSEW3g3qUXLREOWMt+gxrWbg==
+  dependencies:
+    "@babel/runtime" "^7.14.5"
+    html-parse-stringify "^3.0.1"
+
 react-icons@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"
@@ -16299,6 +16328,11 @@ regenerator-runtime@^0.11.0:
   version "0.11.1"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
+
+regenerator-runtime@^0.13.11:
+  version "0.13.11"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
+  integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
 
 regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.9"
@@ -18795,10 +18829,10 @@ vendors@^1.0.0:
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.4.tgz#e2b800a53e7a29b93506c3cf41100d16c4c4ad8e"
   integrity sha512-/juG65kTL4Cy2su4P8HjtkTxk6VmJDiOPBufWniqQ6wknac6jNiXS9vU+hO3wgusiyqWlzTbVHi0dyJqRONg3w==
 
-verbum@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/verbum/-/verbum-0.4.0.tgz#65d74a464169472155054dd6bab9560c4bc68a76"
-  integrity sha512-bMo2EnRIudWMHqpCs2ScDpr+P9vqeK/UpOTMRmTzYKsJES/+R+KNKxjSSCdEVnNDjjXoQ9A1MMwwAW2cdALBBg==
+verbum@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/verbum/-/verbum-0.4.1.tgz#8a5d2cc0b319ff29148992bebacbde5e4549c252"
+  integrity sha512-PoA2W6HxN6Y6aQqzizLnRDTnwdIomaOpBw1mxPTNSsdTbgjrY+AJoeM8kRvZjJMhTob2WS8Rra9GSvSlmUHssg==
   dependencies:
     "@excalidraw/excalidraw" "0.11.0"
     "@lexical/clipboard" "^0.5.0"
@@ -18815,8 +18849,11 @@ verbum@^0.4.0:
     "@lexical/selection" "^0.5.0"
     "@lexical/table" "^0.5.0"
     "@lexical/utils" "^0.5.0"
+    i18next "^22.0.3"
+    i18next-browser-languagedetector "^7.0.0"
     katex "^0.15.2"
     lexical "^0.5.0"
+    react-i18next "^12.0.0"
     use-child "^1.0.0"
     utility-types "^3.10.0"
     y-websocket ">=1.3.x"

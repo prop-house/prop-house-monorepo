@@ -32,14 +32,13 @@ const Create: React.FC<{}> = () => {
 
   const [showPreview, setShowPreview] = useState(false);
   const [propId, setPropId] = useState<null | number>(null);
-  const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
+
   const dispatch = useAppDispatch();
   const connect = useWeb3Modal();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
   useEffect(() => {
