@@ -1,13 +1,12 @@
 %lang starknet
 
 from starkware.cairo.common.uint256 import Uint256
-from contracts.starknet.common.lib.general_address import Address
 
 @contract_interface
 namespace IVotingStrategy {
     func get_voting_power(
         timestamp: felt,
-        voter_address: Address,
+        voter_address: felt,
         params_len: felt,
         params: felt*,
         user_params_len: felt,

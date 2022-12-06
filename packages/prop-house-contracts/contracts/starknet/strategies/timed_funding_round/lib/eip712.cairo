@@ -418,7 +418,7 @@ namespace EIP712 {
     // @param s Signature parameter
     // @param v Signature parameter
     // @param salt Signature salt
-    // @param eth_address Owner's Ethereum Address that was used to create the signature
+    // @param eth_address Owner's Ethereum address that was used to create the signature
     // @param session_public_key The StarkNet session public key that should be registered
     // @param session_duration The number of seconds that the session key is valid
     func verify_session_key_auth_sig{
@@ -505,7 +505,7 @@ namespace EIP712 {
     // @param s Signature parameter
     // @param v Signature parameter
     // @param salt Signature salt
-    // @param eth_address Owner's Ethereum Address that was used to create the signature
+    // @param eth_address Owner's Ethereum address that was used to create the signature
     // @param session_public_key The StarkNet session public key that should be revoked
     func verify_session_key_revoke_sig{
         syscall_ptr: felt*,

@@ -30,7 +30,6 @@ from contracts.starknet.common.interfaces.voting_strategy_registry_interface imp
 )
 
 // Types
-from contracts.starknet.common.lib.general_address import Address
 from contracts.starknet.common.lib.execution_type import ExecutionType
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
@@ -75,7 +74,7 @@ func round_state_store() -> (state: felt) {
 }
 
 @storage_var
-func round_initiator_address_store() -> (address: Address) {
+func round_initiator_address_store() -> (address: felt) {
 }
 
 @storage_var
@@ -99,11 +98,11 @@ func proposal_vote_power_store(proposal_id: felt) -> (power: Uint256) {
 }
 
 @storage_var
-func spent_voting_power_store(voter_address: Address) -> (power: Uint256) {
+func spent_voting_power_store(voter_address: felt) -> (power: Uint256) {
 }
 
 @storage_var
-func proposer_address_registry_store(proposal_id: felt) -> (proposer_address: Address) {
+func proposer_address_registry_store(proposal_id: felt) -> (proposer_address: felt) {
 }
 
 @storage_var
@@ -120,7 +119,7 @@ func voting_strategy_hashes_store(index: felt) -> (strategy_hash: felt) {
 
 @event
 func proposal_created(
-    proposal_id: felt, proposer_address: Address, metadata_uri_len: felt, metadata_uri: felt*
+    proposal_id: felt, proposer_address: felt, metadata_uri_len: felt, metadata_uri: felt*
 ) {
 }
 
@@ -129,7 +128,7 @@ func proposal_cancelled(proposal_id: felt) {
 }
 
 @event
-func vote_created(proposal_id: felt, voter_address: Address, voting_power: Uint256) {
+func vote_created(proposal_id: felt, voter_address: felt, voting_power: Uint256) {
 }
 
 @event
@@ -193,7 +192,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
     // Initialize the storage variables
     round_id_store.write(round_id);
-    round_initiator_address_store.write(Address(value=round_initiator));
+    round_initiator_address_store.write(round_initiator);
     round_timestamps_store.write(packed_timestamps);
     award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high));
     winner_count_store.write(winner_count);
@@ -213,7 +212,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 // Casts votes on one or more proposals
 @external
 func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
-    voter_address: Address,
+    voter_address: felt,
     proposal_votes_len: felt,
     proposal_votes: ProposalVote*,
     used_voting_strategy_hash_indexes_len: felt,
@@ -288,7 +287,7 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBu
 
 // Recursively casts votes on each proposal in the `proposal_votes` array
 func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
-    voter_address: Address,
+    voter_address: felt,
     snapshot_timestamp: felt,
     current_index: felt,
     proposal_votes_len: felt,
@@ -306,7 +305,7 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
     let (proposer_address) = proposer_address_registry_store.read(proposal_votes.proposal_id);
     with_attr error_message("TimedFundingRound: Proposal does not exist") {
-        assert_not_zero(proposer_address.value);
+        assert_not_zero(proposer_address);
     }
 
     let (has_been_cancelled) = cancelled_proposals_store.read(proposal_vote.proposal_id);
@@ -366,7 +365,7 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 // TODO: Create an L1 handler as a mechanism to bypass the spam protection filter
 @external
 func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
-    proposer_address: Address,
+    proposer_address: felt,
     metadata_uri_string_len: felt,
     metadata_uri_len: felt,
     metadata_uri: felt*,
@@ -528,7 +527,7 @@ func cancel_round{
     range_check_ptr,
     ecdsa_ptr: SignatureBuiltin*,
     bitwise_ptr: BitwiseBuiltin*,
-}(round_initiator_address: Address) {
+}(round_initiator_address: felt) {
     alloc_locals;
 
     // Verify that the caller is the auth strategy contract
@@ -539,8 +538,8 @@ func cancel_round{
 
     let (stored_round_initiator_address) = round_initiator_address_store.read();
     with_attr error_message("TimedFundingRound: Caller is not round initiator") {
-        assert_not_zero(stored_round_initiator_address.value);
-        assert round_initiator_address.value = stored_round_initiator_address.value;
+        assert_not_zero(stored_round_initiator_address);
+        assert round_initiator_address = stored_round_initiator_address;
     }
 
     let (round_id) = round_id_store.read();
@@ -572,7 +571,7 @@ func cancel_round{
 // Cancels a proposal. Only callable by the proposal creator.
 @external
 func cancel_proposal{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
-    proposer_address: Address, proposal_id: felt
+    proposer_address: felt, proposal_id: felt
 ) {
     alloc_locals;
 
@@ -591,8 +590,8 @@ func cancel_proposal{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check
 
     let (stored_proposer_address) = proposer_address_registry_store.read(proposal_id);
     with_attr error_message("TimedFundingRound: Invalid proposal id") {
-        assert_not_zero(stored_proposer_address.value);
-        assert proposer_address.value = stored_proposer_address.value;
+        assert_not_zero(stored_proposer_address);
+        assert proposer_address = stored_proposer_address;
     }
 
     // Flag this proposal as cancelled
@@ -706,7 +705,7 @@ func _assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_
 // Computes the cumulated voting power of a user by iterating over the voting strategies of `used_voting_strategy_hash_indexes`.
 func _get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     current_timestamp: felt,
-    voter_address: Address,
+    voter_address: felt,
     used_voting_strategy_hash_indexes_len: felt,
     used_voting_strategy_hash_indexes: felt*,
     user_voting_strategy_params_all: Immutable2DArray,
@@ -730,7 +729,7 @@ func _unchecked_get_cumulative_voting_power{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }(
     current_timestamp: felt,
-    voter_address: Address,
+    voter_address: felt,
     used_voting_strategy_hash_indexes_len: felt,
     used_voting_strategy_hash_indexes: felt*,
     user_voting_strategy_params_all: Immutable2DArray,
