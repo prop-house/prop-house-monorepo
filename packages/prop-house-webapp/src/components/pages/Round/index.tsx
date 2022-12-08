@@ -21,6 +21,7 @@ import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
 
 const Round = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ const Round = () => {
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -107,7 +109,7 @@ const Round = () => {
             {round && proposals ? (
               <RoundContent auction={round} proposals={proposals} />
             ) : (
-              <ErrorMessageCard message="No rounds available" />
+              <ErrorMessageCard message={t('noRoundsAvailable')} />
             )}
           </div>
         </Container>

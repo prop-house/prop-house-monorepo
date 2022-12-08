@@ -4,6 +4,7 @@ import { AuctionStatus } from '../../utils/auctionStatus';
 import Button, { ButtonColor } from '../Button';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Dispatch, SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const UserCardHeader: React.FC<{
   status: AuctionStatus;
@@ -14,6 +15,7 @@ const UserCardHeader: React.FC<{
   winningIds?: number[];
 }> = props => {
   const { status, amountOfPropsWon, userProps, winningIds, cardIndex, setCardIndex } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -22,9 +24,11 @@ const UserCardHeader: React.FC<{
           <p className={classes.subtitle}>
             {status === AuctionStatus.AuctionEnded
               ? amountOfPropsWon > 0 && winningIds && isWinner(winningIds, userProps[cardIndex].id)
-                ? `Your ${amountOfPropsWon > 1 ? 'proposal' : 'proposals'} won!`
-                : `Your ${userProps.length === 1 ? 'proposal' : 'proposals'}`
-              : `Your ${userProps.length === 1 ? 'proposal' : 'proposals'}`}
+                ? `${t('your')} ${amountOfPropsWon > 1 ? t('proposal') : t('proposals')} ${t(
+                    'won',
+                  )}!`
+                : `${t('your')} ${userProps.length === 1 ? t('proposal') : t('proposals')}`
+              : `${t('your')} ${userProps.length === 1 ? t('proposal') : t('proposals')}`}
           </p>
 
           <div className={classes.titleAndVoteBtns}>

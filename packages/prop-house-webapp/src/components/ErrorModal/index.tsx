@@ -3,6 +3,7 @@ import classes from './ErrorModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
+import { useTranslation } from 'react-i18next';
 
 const ErrorModal: React.FC<{
   showErrorModal: boolean;
@@ -12,6 +13,7 @@ const ErrorModal: React.FC<{
   image: string;
 }> = props => {
   const { showErrorModal, setShowErrorModal, title, message, image } = props;
+  const { t } = useTranslation();
 
   function closeModal() {
     setShowErrorModal(false);
@@ -34,7 +36,7 @@ const ErrorModal: React.FC<{
 
       <div className={classes.buttonContainer}>
         <Button
-          text="Close"
+          text={t('close')}
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowErrorModal(false);

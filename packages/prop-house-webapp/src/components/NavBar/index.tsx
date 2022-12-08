@@ -18,9 +18,7 @@ const NavBar = () => {
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>
             <div className={classes.navbarBrand}>{t('propHouse')}</div>
-            <div className={classes.poweredByNouns}>
-              {t('powered')} {t('nounsdao')}
-            </div>
+            <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
           </Navbar.Brand>
         </Link>
 
