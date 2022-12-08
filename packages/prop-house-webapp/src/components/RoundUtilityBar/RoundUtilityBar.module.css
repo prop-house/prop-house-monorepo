@@ -37,6 +37,13 @@
   .sortToggles {
     display: none;
   }
+  .item:nth-child(3),
+  .item:nth-child(4) {
+    display: none;
+  }
+  .item:nth-child(2) {
+    border-right: none !important;
+  }
 }
 
 .propHouseDataRow {
@@ -116,9 +123,6 @@
 }
 
 @media (max-width: 700px) {
-  .proposalCountItem {
-    display: none;
-  }
   .item:first-child {
     padding-right: 6px !important;
   }
@@ -126,7 +130,7 @@
     justify-content: flex-end;
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 550px) {
   .roundUtilityBar {
     flex-direction: column-reverse;
     height: auto;
@@ -136,5 +140,14 @@
   }
   .propHouseDataRow {
     justify-content: inherit;
+  }
+  .item:nth-child(3) {
+    display: block;
+  }
+  .item:nth-child(2) {
+    border-right: 1px solid var(--border-light) !important;
+  }
+  .item:nth-child(3) {
+    border-right: none !important;
   }
 }

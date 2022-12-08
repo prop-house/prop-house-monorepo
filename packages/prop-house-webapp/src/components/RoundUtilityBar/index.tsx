@@ -98,7 +98,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             </div>
           </div>
 
-          <div className={clsx(classes.item, classes.proposalCountItem)}>
+          <div className={classes.item}>
             <div className={classes.itemTitle}>
               {proposals && proposals.length === 1 ? 'Proposal' : 'Proposals'}
             </div>
