@@ -73,14 +73,18 @@ const ProposalModalFooter: React.FC<{
     fetchVotes();
   }, [account, library, dispatch, community, round]);
 
-  const saveProposal = async () => {
-    console.log('saved!');
-    setEditProposalMode(false);
-  };
-  const deleteProposal = () => {
-    console.log('deleted!');
-    setEditProposalMode(false);
-  };
+  // const saveProposal = async () => {
+  //   console.log('saved!');
+  //   setEditProposalMode(false);
+  // };
+  // const cancelSavingProposal = async () => {
+  //   console.log('not saved!');
+  //   setEditProposalMode(false);
+  // };
+  // const deleteProposal = () => {
+  //   console.log('deleted!');
+  //   setEditProposalMode(false);
+  // };
 
   return (
     <>

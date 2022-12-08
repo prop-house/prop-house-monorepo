@@ -32,7 +32,10 @@
     padding: 10px 0px 0px 0px;
   }
   .fullWidthButton {
-    width: 100%;
+    width: 100% !important;
+  }
+  .editModeButtons button {
+    white-space: pre !important;
   }
   .voteCount {
     display: none !important;
@@ -54,12 +57,17 @@
   align-items: center;
   justify-content: space-between;
 }
+
 .proposalWindowButtons {
   display: flex;
   align-items: center;
-  gap: 15px;
-  justify-content: space-between;
   width: 100%;
+  justify-content: space-between;
+}
+.editModeButtons {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
 }
 /* .editModeButtons {
   display: flex;
