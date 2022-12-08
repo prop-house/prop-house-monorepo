@@ -141,4 +141,13 @@
   .propHouseDataRow {
     justify-content: inherit;
   }
+  .item:nth-child(3) {
+    display: block;
+  }
+  .item:nth-child(2) {
+    border-right: 1px solid var(--border-light) !important;
+  }
+  .item:nth-child(3) {
+    border-right: none !important;
+  }
 }
