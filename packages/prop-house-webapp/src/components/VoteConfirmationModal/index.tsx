@@ -3,7 +3,6 @@ import classes from './VoteConfirmationModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { VoteAllotment } from '../../types/VoteAllotment';
@@ -13,10 +12,9 @@ const VoteConfirmationModal: React.FC<{
   showNewModal: boolean;
   setShowNewModal: Dispatch<SetStateAction<boolean>>;
   secondBtn?: boolean;
-  votingEndTime: Date;
   submitVote: () => Promise<void>;
 }> = props => {
-  const { showNewModal, setShowNewModal, votingEndTime, submitVote, secondBtn } = props;
+  const { showNewModal, setShowNewModal, submitVote, secondBtn } = props;
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);

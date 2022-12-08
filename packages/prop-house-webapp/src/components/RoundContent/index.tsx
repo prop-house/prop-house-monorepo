@@ -167,7 +167,6 @@ const RoundContent: React.FC<{
         <VoteConfirmationModal
           showNewModal={showVoteConfirmationModal}
           setShowNewModal={setShowVoteConfirmationModal}
-          votingEndTime={auction.votingEndTime}
           submitVote={handleSubmitVote}
           secondBtn
         />
