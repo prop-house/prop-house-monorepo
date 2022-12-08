@@ -119,7 +119,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
                 </>
               }
-              tooltipContent={`A ${community?.name} NFT must have been in this wallet before this block to vote.`}
+              tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
             />
           </div>
         </Col>
