@@ -244,7 +244,6 @@ const ProposalModal = () => {
         <VoteConfirmationModal
           showNewModal={showVoteConfirmationModal}
           setShowNewModal={setShowVoteConfirmationModal}
-          votingEndTime={round.votingEndTime}
           submitVote={handleSubmitVote}
           secondBtn
         />
