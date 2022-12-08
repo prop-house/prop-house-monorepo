@@ -92,7 +92,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
           <b>{t('voters')}:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>{t('connectToVoteOnProps')}.</p>
+              <p>{t('connectToVoteOnProps')}</p>
             </div>
           </div>
         </p>

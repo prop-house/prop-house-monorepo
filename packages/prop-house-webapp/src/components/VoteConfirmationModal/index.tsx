@@ -36,8 +36,7 @@ const VoteConfirmationModal: React.FC<{
           {t('votes')}?
         </p>
         <p className={classes.modalSubtitle}>
-          {t('youllHave')} {votesLeft} {t('remainingToCastOverTheNext')}{' '}
-          {dayjs(votingEndTime).fromNow(true)}
+          {t('youllHave')} {votesLeft} {t('votesRemaining')}{' '}
         </p>
       </div>
 
@@ -65,7 +64,7 @@ const VoteConfirmationModal: React.FC<{
         />
 
         {secondBtn && (
-          <Button text={t('signSubmit')} bgColor={ButtonColor.Purple} onClick={submitVote} />
+          <Button text={t('signAndSubmit')} bgColor={ButtonColor.Purple} onClick={submitVote} />
         )}
       </div>
     </Modal>
