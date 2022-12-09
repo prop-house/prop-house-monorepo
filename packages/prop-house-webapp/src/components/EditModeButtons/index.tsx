@@ -8,21 +8,24 @@ import removeTags from '../../utils/removeTags';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useEthers } from '@usedapp/core';
 
+import { useState } from 'react';
+import DeleteProposalModal from '../DeleteProposalModal';
+import SaveProposalModal from '../SaveProposalModal';
+
 const EditModeButtons: React.FC<{
   proposal: StoredProposalWithVotes;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
 }> = props => {
   const { proposal, editProposalMode, setEditProposalMode } = props;
+  const [showSavePropModal, setShowSavePropModal] = useState(false);
+  const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
   const { account } = useEthers();
-
+  const navigate = useNavigate();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
-
-  const navigate = useNavigate();
 
   const isValidPropData = (data: ProposalFields) =>
     data.title.length > 4 &&
@@ -30,81 +33,81 @@ const EditModeButtons: React.FC<{
     data.tldr.length > 9 &&
     data.tldr.length < 121;
 
-  const saveProposal = async () => {
-    console.log('saved!');
-    setEditProposalMode(false);
-  };
-  const cancelSavingProposal = async () => {
-    console.log('not saved!');
-    setEditProposalMode(false);
-  };
-  const deleteProposal = () => {
-    console.log('deleted!');
-    setEditProposalMode(false);
-  };
+  // const saveProposal = () => setEditProposalMode(false);
+  // const deleteProposal = () => setEditProposalMode(false);
+  const cancelSavingProposal = () => setEditProposalMode(false);
 
   return (
     <>
-      <>
-        {/* MY PROP */}
-        {account && isSameAddress(proposal.address, account) ? (
-          <div className={classes.proposalWindowButtons}>
-            {editProposalMode ? (
-              <>
-                <div></div>
-                <div className={classes.editModeButtons}>
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={'Cancel'}
-                    bgColor={ButtonColor.Gray}
-                    onClick={cancelSavingProposal}
-                  />
+      {showSavePropModal && (
+        <SaveProposalModal showModal={showSavePropModal} setShowModal={setShowSavePropModal} />
+      )}
 
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={'Save'}
-                    bgColor={ButtonColor.Purple}
-                    onClick={saveProposal}
-                    disabled={!isValidPropData(proposalEditorData)}
-                  />
-                </div>
-              </>
-            ) : (
-              <>
+      {showDeletePropModal && (
+        <DeleteProposalModal
+          showModal={showDeletePropModal}
+          setShowModal={setShowDeletePropModal}
+        />
+      )}
+
+      {/* MY PROP */}
+      {account && isSameAddress(proposal.address, account) ? (
+        <div className={classes.proposalWindowButtons}>
+          {editProposalMode ? (
+            <>
+              <div></div>
+              <div className={classes.editModeButtons}>
                 <Button
-                  text={'+ New Prop'}
-                  bgColor={ButtonColor.PurpleLight}
-                  onClick={() => navigate('/create', { state: { auction: round, community } })}
+                  classNames={classes.fullWidthButton}
+                  text={'Cancel'}
+                  bgColor={ButtonColor.Gray}
+                  onClick={cancelSavingProposal}
                 />
 
-                <div className={classes.editModeButtons}>
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={'Delete'}
-                    bgColor={ButtonColor.Red}
-                    onClick={deleteProposal}
-                  />
+                <Button
+                  classNames={classes.fullWidthButton}
+                  text={'Save'}
+                  bgColor={ButtonColor.Purple}
+                  onClick={() => setShowSavePropModal(true)}
+                  disabled={!isValidPropData(proposalEditorData)}
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <Button
+                text={'+ New Prop'}
+                bgColor={ButtonColor.PurpleLight}
+                onClick={() => navigate('/create', { state: { auction: round, community } })}
+              />
 
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={'Edit Prop'}
-                    bgColor={ButtonColor.Purple}
-                    onClick={() => setEditProposalMode(true)}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          // NOT MY PROP
-          <Button
-            classNames={classes.fullWidthButton}
-            text={'+ New Prop'}
-            bgColor={ButtonColor.PurpleLight}
-            onClick={() => navigate('/create', { state: { auction: round, community } })}
-          />
-        )}
-      </>
+              <div className={classes.editModeButtons}>
+                <Button
+                  classNames={classes.fullWidthButton}
+                  text={'Delete'}
+                  bgColor={ButtonColor.Red}
+                  onClick={() => setShowDeletePropModal(true)}
+                />
+
+                <Button
+                  classNames={classes.fullWidthButton}
+                  text={'Edit Prop'}
+                  bgColor={ButtonColor.Purple}
+                  onClick={() => setEditProposalMode(true)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        // NOT MY PROP
+        <Button
+          classNames={classes.fullWidthButton}
+          text={'+ New Prop'}
+          bgColor={ButtonColor.PurpleLight}
+          onClick={() => navigate('/create', { state: { auction: round, community } })}
+        />
+      )}
     </>
   );
 };
