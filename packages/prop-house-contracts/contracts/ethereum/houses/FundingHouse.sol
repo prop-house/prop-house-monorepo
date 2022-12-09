@@ -318,7 +318,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHous
         isAwardClaimed[roundId][proposalId] = true;
 
         _withdrawTo(assetData, amount, recipient);
-        emit AwardPaid(roundId, proposalId, winner, assetId, amount, recipient);
+        emit AwardClaimed(roundId, proposalId, winner, assetId, amount, recipient);
     }
 
     /// @notice Claim a round award to the caller's address
@@ -352,7 +352,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHous
         bytes32 assetId,
         bytes32[] calldata proof
     ) internal view {
-        bytes32 leaf = keccak256(abi.encodePacked(proposalId, winner, assetId, amount));
+        bytes32 leaf = keccak256(abi.encode(proposalId, winner, assetId, amount));
         if (!MerkleProof.verify(proof, rounds[roundId].merkleRoot, leaf)) {
             revert InvalidMerkleProof();
         }

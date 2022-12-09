@@ -6,6 +6,7 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_eq, uint256_unsigned_div_rem
 
 from contracts.starknet.common.lib.math_utils import MathUtils
+from contracts.starknet.strategies.timed_funding_round.lib.award import Award
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
 
 namespace ProposalUtils {
@@ -16,43 +17,41 @@ namespace ProposalUtils {
     func generate_leaves_for_assigned_awards{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
-        awards_flat_len: felt,
-        awards_flat: Uint256*,
-        curr_award_index: felt,
+        awards_len: felt,
+        awards: Award*,
         acc: Uint256*,
-        curr_proposal_index: felt,
+        curr_index: felt,
     ) -> (leaves_ptr: Uint256*) {
         alloc_locals;
 
-        if (curr_proposal_index == proposal_info_arr_len) {
+        if (curr_index == proposal_info_arr_len) {
             return (acc,);
         }
 
         let (hash_input_arr: Uint256*) = alloc();
         let (proposal_id_uint256) = MathUtils.felt_to_uint256(
-            proposal_info_arr[curr_proposal_index].proposal_id
+            proposal_info_arr[curr_index].proposal_id
         );
         let (proposer_address_uint256) = MathUtils.felt_to_uint256(
-            proposal_info_arr[curr_proposal_index].proposer_address
+            proposal_info_arr[curr_index].proposer_address
         );
 
         assert hash_input_arr[0] = proposal_id_uint256;
         assert hash_input_arr[1] = proposer_address_uint256;
-        assert hash_input_arr[2] = awards_flat[curr_award_index];
-        assert hash_input_arr[3] = awards_flat[curr_award_index + 1];
+        assert hash_input_arr[2] = awards[curr_index].asset_id;
+        assert hash_input_arr[3] = awards[curr_index].amount;
 
-        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr);
+        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(4, hash_input_arr);
 
-        assert acc[curr_proposal_index] = hash;
+        assert acc[curr_index] = hash;
 
         return generate_leaves_for_assigned_awards(
             proposal_info_arr_len,
             proposal_info_arr,
-            awards_flat_len,
-            awards_flat,
-            curr_award_index + 2,
+            awards_len,
+            awards,
             acc,
-            curr_proposal_index + 1,
+            curr_index + 1,
         );
     }
 
@@ -64,7 +63,7 @@ namespace ProposalUtils {
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
         award_asset_id: Uint256,
-        award_asset_amount: Uint256,
+        split_award_asset_amount: Uint256,
         acc: Uint256*,
         curr_proposal_index: felt,
     ) -> (leaves_ptr: Uint256*) {
@@ -85,16 +84,16 @@ namespace ProposalUtils {
         assert hash_input_arr[0] = proposal_id_uint256;
         assert hash_input_arr[1] = proposer_address_uint256;
         assert hash_input_arr[2] = award_asset_id;
-        assert hash_input_arr[3] = award_asset_amount;
+        assert hash_input_arr[3] = split_award_asset_amount;
 
-        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(2, hash_input_arr);
+        let (hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(4, hash_input_arr);
         assert acc[curr_proposal_index] = hash;
 
         return generate_leaves_for_split_award(
             proposal_info_arr_len,
             proposal_info_arr,
             award_asset_id,
-            award_asset_amount,
+            split_award_asset_amount,
             acc,
             curr_proposal_index + 1,
         );

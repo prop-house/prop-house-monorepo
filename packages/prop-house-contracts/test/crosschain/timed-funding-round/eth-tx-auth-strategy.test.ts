@@ -2,6 +2,8 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   CANCEL_PROPOSAL_SELECTOR,
   fundingHouseTimedFundingRoundSetup,
+  generateClaimLeaf,
+  generateClaimMerkleTree,
   HOUSE_URI,
   METADATA_URI,
   ONE_DAY_SEC,
@@ -114,7 +116,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
           proposalPeriodStartTimestamp: start,
           proposalPeriodDuration: ONE_DAY_SEC,
           votePeriodDuration: ONE_DAY_SEC,
-          winnerCount: 5,
+          winnerCount: 2,
         },
         validator: config.timedFundingRoundStrategyValidator.address,
       },
@@ -331,13 +333,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(parseInt(votingPower, 16)).to.equal(1);
   });
 
-  it('should finalize a round', async () => {
+  it('should finalize a round and allow the winners to claim their awards', async () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
 
     await starknet.devnet.createBlock();
-
-    const WORD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(32));
-    const AWARD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(1));
 
     // Finalize the round
     const assetId = utils.splitUint256.SplitUint256.fromUint(
@@ -346,7 +345,12 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
     const txHash = await starknetSigner.invoke(timedFundingRoundContract, 'finalize_round', {
-      awards_flat: [WORD_LENGTH, AWARD_LENGTH, assetId, amount],
+      awards: [
+        {
+          asset_id: assetId,
+          amount,
+        },
+      ],
     });
     const { events } = await starknet.getTransactionReceipt(txHash);
     const [roundId, merkleRootLow, merkleRootHigh, winnersLen, ...winners] = events[0].data;
@@ -387,5 +391,59 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const finalizeTx = fundingHouse.finalizeRound(roundId, merkleRootLow, merkleRootHigh);
 
     await expect(finalizeTx).to.emit(fundingHouse, 'RoundFinalized').withArgs(roundId);
+
+    const splitAmount = ONE_ETHER.div(2);
+    const leaf1 = generateClaimLeaf({
+      proposalId: winner1.proposalId,
+      proposerAddress: signer.address,
+      assetId: assetId.toHex(),
+      assetAmount: splitAmount,
+    });
+    const leaf2 = generateClaimLeaf({
+      proposalId: winner2.proposalId,
+      proposerAddress: signer.address,
+      assetId: assetId.toHex(),
+      assetAmount: splitAmount,
+    });
+    const tree = generateClaimMerkleTree([leaf1, leaf2]);
+    const proof1 = tree.getHexProof(leaf1);
+    const proof2 = tree.getHexProof(leaf2);
+
+    const claimTx1 = fundingHouse.claimAward(
+      roundId,
+      winner1.proposalId,
+      splitAmount,
+      utils.encoding.encodeETHAssetData(),
+      proof1,
+    );
+    const claimTx2 = fundingHouse.claimAward(
+      roundId,
+      winner2.proposalId,
+      splitAmount,
+      utils.encoding.encodeETHAssetData(),
+      proof2,
+    );
+    await Promise.all([
+      expect(claimTx1)
+        .to.emit(fundingHouse, 'AwardClaimed')
+        .withArgs(
+          roundId,
+          winner1.proposalId,
+          signer.address,
+          assetId.toHex(),
+          splitAmount,
+          signer.address,
+        ),
+      expect(claimTx2)
+        .to.emit(fundingHouse, 'AwardClaimed')
+        .withArgs(
+          roundId,
+          winner2.proposalId,
+          signer.address,
+          assetId.toHex(),
+          splitAmount,
+          signer.address,
+        ),
+    ]);
   });
 });
