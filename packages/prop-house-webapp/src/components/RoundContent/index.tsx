@@ -13,8 +13,6 @@ import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
-import { setActiveProposals } from '../../state/slices/propHouse';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
@@ -65,28 +63,6 @@ const RoundContent: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
-
-  // fetch proposals
-  useEffect(() => {
-    const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(auction.id);
-      dispatch(setActiveProposals(proposals));
-
-      // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(
-        dispatch,
-        auctionStatus(auction) === AuctionStatus.AuctionEnded ||
-          auctionStatus(auction) === AuctionStatus.AuctionVoting
-          ? SortType.VoteCount
-          : SortType.CreatedAt,
-        false,
-      );
-    };
-    fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
-  }, [auction.id, dispatch, account, auction]);
 
   // fetch voting power for user
   useEffect(() => {
