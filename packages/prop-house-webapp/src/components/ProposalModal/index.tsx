@@ -15,8 +15,21 @@ import {
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
+<<<<<<< HEAD
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
+=======
+import {
+  setActiveCommunity,
+  setActiveProposal,
+  setActiveProposals,
+  setActiveRound,
+} from '../../state/slices/propHouse';
+import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
+import LoadingIndicator from '../LoadingIndicator';
+import NotFound from '../NotFound';
+
+>>>>>>> 2f40c463 (add component for edit mode buttons)
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
