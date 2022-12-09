@@ -77,7 +77,7 @@ const Round = () => {
             auctionStatus(round) === AuctionStatus.AuctionEnded ||
               auctionStatus(round) === AuctionStatus.AuctionVoting
               ? SortType.VoteCount
-              : SortType.Random,
+              : SortType.CreatedAt,
             false,
           );
     };

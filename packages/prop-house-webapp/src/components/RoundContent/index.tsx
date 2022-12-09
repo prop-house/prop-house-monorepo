@@ -78,7 +78,7 @@ const RoundContent: React.FC<{
         auctionStatus(auction) === AuctionStatus.AuctionEnded ||
           auctionStatus(auction) === AuctionStatus.AuctionVoting
           ? SortType.VoteCount
-          : SortType.Random,
+          : SortType.CreatedAt,
         false,
       );
     };
