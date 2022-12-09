@@ -6,6 +6,7 @@
 }
 .headerPropInfo {
   flex-direction: column;
+  max-width: 75%;
 }
 
 .creditDash {
@@ -151,9 +152,16 @@ hr {
 .propTitle {
   font-size: 22px !important;
   margin-bottom: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
 }
 @media (max-width: 575px) {
   .propNavigationButtons {
     display: none;
+  }
+  .headerPropInfo {
+    max-width: 90%;
   }
 }
