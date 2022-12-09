@@ -15,6 +15,8 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
+import { useDispatch } from 'react-redux';
+import { setActiveProposal } from '../../state/slices/propHouse';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -28,6 +30,7 @@ const ProposalCard: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const dispatch = useDispatch();
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
@@ -46,6 +49,7 @@ const ProposalCard: React.FC<{
             return;
           }
           navigate(`${proposal.id}`);
+          dispatch(setActiveProposal(proposal));
         }}
       >
         <Card

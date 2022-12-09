@@ -82,9 +82,6 @@ const Round = () => {
           );
     };
     fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
   }, [dispatch, fromProposalPage, isRoundOver, round]);
 
   return (
