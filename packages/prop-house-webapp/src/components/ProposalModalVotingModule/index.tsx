@@ -16,7 +16,7 @@ import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
 
-const ProposalModalFooter: React.FC<{
+const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
   setShowVoteAllotmentModal: Dispatch<SetStateAction<boolean>>;
@@ -79,11 +79,10 @@ const ProposalModalFooter: React.FC<{
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${
-                  votesLeftToAllot > 0
-                    ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                    : 'no votes left'
-                }`}
+                {`${votesLeftToAllot > 0
+                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
+                  : 'no votes left'
+                  }`}
               </span>
             </div>
 
@@ -132,4 +131,4 @@ const ProposalModalFooter: React.FC<{
   );
 };
 
-export default ProposalModalFooter;
+export default ProposalModalVotingModule;
