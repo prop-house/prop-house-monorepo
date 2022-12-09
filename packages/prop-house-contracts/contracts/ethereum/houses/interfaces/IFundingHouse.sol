@@ -106,7 +106,7 @@ interface IFundingHouse is IHouse, IVault {
 
     event RoundCancelled(uint256 indexed roundId);
 
-    event AwardPaid(
+    event AwardClaimed(
         uint256 indexed roundId,
         uint256 proposalId,
         address winner,

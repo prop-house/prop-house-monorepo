@@ -10,6 +10,7 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
 from starkware.cairo.common.registers import get_label_location
 from starkware.cairo.common.bool import TRUE, FALSE
+from starkware.cairo.common.memcpy import memcpy
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.math import (
     assert_lt,
@@ -34,6 +35,7 @@ from contracts.starknet.common.lib.execution_type import ExecutionType
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
 from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
 from contracts.starknet.strategies.timed_funding_round.lib.round_state import RoundState
+from contracts.starknet.strategies.timed_funding_round.lib.award import Award
 
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
@@ -362,7 +364,6 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 }
 
 // Submits a proposal to the funding round
-// TODO: Create an L1 handler as a mechanism to bypass the spam protection filter
 @external
 func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
     proposer_address: felt,
@@ -420,7 +421,7 @@ func finalize_round{
     range_check_ptr,
     ecdsa_ptr: SignatureBuiltin*,
     bitwise_ptr: BitwiseBuiltin*,
-}(awards_flat_len: felt, awards_flat: Uint256*) {
+}(awards_len: felt, awards: Award*) {
     alloc_locals;
 
     // Verify that the funding round is active
@@ -462,6 +463,8 @@ func finalize_round{
     let (keccak_ptr: felt*) = alloc();
     let keccak_ptr_start = keccak_ptr;
 
+    let (awards_flat_len, awards_flat) = _flatten_and_abi_encode_award_array(awards_len, awards);
+
     let (award_hash) = award_hash_store.read();
     let (recovered_award_hash) = keccak_uint256s_bigend{keccak_ptr=keccak_ptr}(
         awards_flat_len, awards_flat
@@ -471,22 +474,18 @@ func finalize_round{
         assert_not_zero(award_hashes_match);
     }
 
-    // First two indexes of the flattened awards array contain the offset and array length
-    let offset = 2;
-
     let (leaves: Uint256*) = alloc();
 
-    // If awards length is 4, then there is only one award in the array. Split the award between winners.
-    // Format: [offset, length, asset_id, amount]
-    if (awards_flat_len == 4) {
+    // If only one award exists in the array, then split it between the winners.
+    if (awards_len == 1) {
         let (winners_len_uint256) = MathUtils.felt_to_uint256(winners_len);
-        let (split_award_amount, _) = uint256_unsigned_div_rem(awards_flat[3], winners_len_uint256);
+        let (split_award_amount, _) = uint256_unsigned_div_rem(awards[0].amount, winners_len_uint256);
         ProposalUtils.generate_leaves_for_split_award{keccak_ptr=keccak_ptr}(
-            winners_len, winners, awards_flat[2], split_award_amount, leaves, 0
+            winners_len, winners, awards[0].asset_id, split_award_amount, leaves, 0
         );
     } else {
         ProposalUtils.generate_leaves_for_assigned_awards{keccak_ptr=keccak_ptr}(
-            winners_len, winners, awards_flat_len, awards_flat, offset, leaves, 0
+            winners_len, winners, awards_len, awards, leaves, 0
         );
     }
 
@@ -833,4 +832,20 @@ func _populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
     return _populate_proposal_info_arr(
         next_unused_proposal_nonce, current_proposal_id + 1, current_index + 1, acc
     );
+}
+
+// Flattens and ABI-encodes (adds data offset + array length prefix) an array of award assets.
+func _flatten_and_abi_encode_award_array{range_check_ptr}(awards_len: felt, awards: Award*) -> (awards_flat_len: felt, awards_flat: Uint256*) {
+    alloc_locals;
+
+    let (data_offset) = MathUtils.felt_to_uint256(0x20);
+    let (array_langth) = MathUtils.felt_to_uint256(awards_len);
+
+    let (awards_flat: Uint256*) = alloc();
+    assert awards_flat[0] = data_offset;
+    assert awards_flat[1] = array_langth;
+    memcpy(4 + awards_flat, awards, Award.SIZE * awards_len);
+
+    // length = (data_offset + array_length) + (num_uint256_in_award * awards_len)
+    return (2 + (2 * awards_len), awards_flat,);
 }

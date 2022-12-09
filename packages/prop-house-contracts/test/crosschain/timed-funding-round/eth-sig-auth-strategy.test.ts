@@ -1,6 +1,8 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   fundingHouseTimedFundingRoundSetup,
+  generateClaimLeaf,
+  generateClaimMerkleTree,
   HOUSE_URI,
   METADATA_URI,
   ONE_DAY_SEC,
@@ -117,7 +119,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
           proposalPeriodStartTimestamp: start,
           proposalPeriodDuration: ONE_DAY_SEC,
           votePeriodDuration: ONE_DAY_SEC,
-          winnerCount: 5,
+          winnerCount: 1,
         },
         validator: config.timedFundingRoundStrategyValidator.address,
       },
@@ -289,13 +291,10 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     expect(parseInt(votingPower, 16)).to.equal(1);
   });
 
-  it('should finalize a round', async () => {
+  it('should finalize a round and allow a winner to claim their award', async () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
 
     await starknet.devnet.createBlock();
-
-    const WORD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(32));
-    const AWARD_LENGTH = utils.splitUint256.SplitUint256.fromUint(BigInt(1));
 
     // Finalize the round
     const assetId = utils.splitUint256.SplitUint256.fromUint(
@@ -304,7 +303,12 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
     const txHash = await starknetSigner.invoke(timedFundingRoundContract, 'finalize_round', {
-      awards_flat: [WORD_LENGTH, AWARD_LENGTH, assetId, amount],
+      awards: [
+        {
+          asset_id: assetId,
+          amount,
+        },
+      ],
     });
     const { events } = await starknet.getTransactionReceipt(txHash);
     const [roundId, merkleRootLow, merkleRootHigh, winnersLen, ...winners] = events[0].data;
@@ -333,5 +337,32 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const finalizeTx = fundingHouse.finalizeRound(roundId, merkleRootLow, merkleRootHigh);
 
     await expect(finalizeTx).to.emit(fundingHouse, 'RoundFinalized').withArgs(roundId);
+
+    const leaf = generateClaimLeaf({
+      proposalId: winner.proposalId,
+      proposerAddress: signer.address,
+      assetId: assetId.toHex(),
+      assetAmount: amount.toHex(),
+    });
+    const tree = generateClaimMerkleTree([leaf]);
+    const proof = tree.getHexProof(leaf);
+
+    const claimTx = fundingHouse.claimAward(
+      roundId,
+      winner.proposalId,
+      ONE_ETHER,
+      utils.encoding.encodeETHAssetData(),
+      proof,
+    );
+    await expect(claimTx)
+      .to.emit(fundingHouse, 'AwardClaimed')
+      .withArgs(
+        roundId,
+        winner.proposalId,
+        signer.address,
+        assetId.toHex(),
+        amount.toHex(),
+        signer.address,
+      );
   });
 });
