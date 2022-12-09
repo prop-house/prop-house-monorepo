@@ -149,9 +149,9 @@
 /* RED BG */
 
 .btnRedBg {
-  background-color: var(--brand-red) !important;
+  background-color: var(--brand-red-hint) !important;
+  color: var(--brand-red) !important;
   border: none;
-  color: white;
 }
 .btnRedBg:hover {
   color: rgba(255, 255, 255, 0.8) !important;
