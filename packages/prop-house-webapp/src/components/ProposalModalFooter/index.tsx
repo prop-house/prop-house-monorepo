@@ -156,8 +156,7 @@ const ProposalModalFooter: React.FC<{
                     </div>
 
                     <div className="mobileTooltipContainer">
-                      <PropCardVotingModule />
-
+                      <PropCardVotingModule proposal={proposal} />
                       <VoteAllotmentTooltip />
                     </div>
 
