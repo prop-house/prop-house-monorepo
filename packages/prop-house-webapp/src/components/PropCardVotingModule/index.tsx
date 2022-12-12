@@ -34,6 +34,7 @@ const PropCardVotingModule: React.FC<{
   const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
 
   useEffect(() => {
+    // set initial vote count displayed
     setVoteCountDisplayed(allottedVotesForProp);
   });
 
