@@ -27,27 +27,27 @@ contract UpgradeManager is IUpgradeManager {
     }
 
     /// @notice If an upgraded implementation has been registered for its original implementation
-    /// @param _prevImpl The address of the original implementation
-    /// @param _newImpl The address of the upgraded implementation
-    function isValidUpgrade(address _prevImpl, address _newImpl) external view returns (bool) {
-        return upgrades[_prevImpl][_newImpl];
+    /// @param prevImpl The address of the original implementation
+    /// @param newImpl The address of the upgraded implementation
+    function isValidUpgrade(address prevImpl, address newImpl) external view returns (bool) {
+        return upgrades[prevImpl][newImpl];
     }
 
     /// @notice Registers an implementation as a valid upgrade
-    /// @param _prevImpl The address of the original implementation
-    /// @param _newImpl The address of the implementation valid to upgrade to
-    function registerUpgrade(address _prevImpl, address _newImpl) external onlyRegistrar {
-        upgrades[_prevImpl][_newImpl] = true;
+    /// @param prevImpl The address of the original implementation
+    /// @param newImpl The address of the implementation valid to upgrade to
+    function registerUpgrade(address prevImpl, address newImpl) external onlyRegistrar {
+        upgrades[prevImpl][newImpl] = true;
 
-        emit UpgradeRegistered(_prevImpl, _newImpl);
+        emit UpgradeRegistered(prevImpl, newImpl);
     }
 
     /// @notice Unregisters an implementation
-    /// @param _prevImpl The address of the implementation to revert back to
-    /// @param _newImpl The address of the implementation to unregister
-    function unregisterUpgrade(address _prevImpl, address _newImpl) external onlyRegistrar {
-        delete upgrades[_prevImpl][_newImpl];
+    /// @param prevImpl The address of the implementation to revert back to
+    /// @param newImpl The address of the implementation to unregister
+    function unregisterUpgrade(address prevImpl, address newImpl) external onlyRegistrar {
+        delete upgrades[prevImpl][newImpl];
 
-        emit UpgradeUnregistered(_prevImpl, _newImpl);
+        emit UpgradeUnregistered(prevImpl, newImpl);
     }
 }

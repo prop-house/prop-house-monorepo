@@ -12,10 +12,10 @@ import { ERC1967Upgrade } from './ERC1967Upgrade.sol';
 /// - Inherits a modern, minimal ERC1967Upgrade
 contract ERC1967Proxy is IERC1967Upgrade, Proxy, ERC1967Upgrade {
     /// @dev Initializes the proxy with an implementation contract and encoded function call
-    /// @param _logic The implementation address
-    /// @param _data The encoded function call
-    constructor(address _logic, bytes memory _data) payable {
-        _upgradeToAndCall(_logic, _data, false);
+    /// @param logic The implementation address
+    /// @param data The encoded function call
+    constructor(address logic, bytes memory data) payable {
+        _upgradeToAndCall(logic, data, false);
     }
 
     /// @dev The address of the current implementation

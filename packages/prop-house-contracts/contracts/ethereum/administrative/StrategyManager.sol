@@ -36,22 +36,22 @@ contract StrategyManager is IStrategyManager {
     }
 
     /// @notice If an upgraded implementation has been registered for its original implementation
-    /// @param _houseImplId The house implementation ID
-    /// @param _houseImplVersion The house implementation version
-    /// @param _strategy The address of the upgraded implementation
+    /// @param houseImplId The house implementation ID
+    /// @param houseImplVersion The house implementation version
+    /// @param strategy The address of the upgraded implementation
     function isValidStrategy(
-        bytes32 _houseImplId,
-        uint256 _houseImplVersion,
-        address _strategy
+        bytes32 houseImplId,
+        uint256 houseImplVersion,
+        address strategy
     ) external view returns (bool) {
-        StrategySettings memory settings = strategies[_houseImplId][_strategy];
+        StrategySettings memory settings = strategies[houseImplId][strategy];
         if (!settings.enabled) {
             return false;
         }
-        if (_houseImplVersion < settings.minVersion) {
+        if (houseImplVersion < settings.minVersion) {
             return false;
         }
-        if (settings.maxVersion != 0 && _houseImplVersion > settings.maxVersion) {
+        if (settings.maxVersion != 0 && houseImplVersion > settings.maxVersion) {
             return false;
         }
         return true;
@@ -59,86 +59,87 @@ contract StrategyManager is IStrategyManager {
 
     /// @notice Registers an strategy
     /// @dev Only callable by the registrar
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation valid to upgrade to
-    /// @param _minVersion Min compatible house implementation version. Disabled if 0.
-    /// @param _maxVersion Max compatible house implementation version. None if 0.
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation valid to upgrade to
+    /// @param minVersion Min compatible house implementation version. Disabled if 0.
+    /// @param maxVersion Max compatible house implementation version. None if 0.
     function registerStrategy(
-        bytes32 _houseImplId,
-        address _strategy,
-        uint120 _minVersion,
-        uint120 _maxVersion
+        bytes32 houseImplId,
+        address strategy,
+        uint120 minVersion,
+        uint120 maxVersion
     ) external onlyRegistrar {
-        _registerStrategy(_houseImplId, _strategy, _minVersion, _maxVersion);
+        _registerStrategy(houseImplId, strategy, minVersion, maxVersion);
     }
 
     /// @notice Registers an strategy with no versioning restrictions
     /// @dev Only callable by the registrar
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation valid to upgrade to
-    function registerStrategy(bytes32 _houseImplId, address _strategy) external onlyRegistrar {
-        _registerStrategy(_houseImplId, _strategy, 0, 0);
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation valid to upgrade to
+    function registerStrategy(bytes32 houseImplId, address strategy) external onlyRegistrar {
+        _registerStrategy(houseImplId, strategy, 0, 0);
     }
 
     /// @notice Set the min house implementation version that's compatible with an strategy
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation valid to upgrade to
-    /// @param _minVersion Min compatible house implementation version. Disabled if 0.
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation valid to upgrade to
+    /// @param minVersion Min compatible house implementation version. Disabled if 0.
     function setMinVersion(
-        bytes32 _houseImplId,
-        address _strategy,
-        uint120 _minVersion
+        bytes32 houseImplId,
+        address strategy,
+        uint120 minVersion
     ) external onlyRegistrar {
-        if (!strategies[_houseImplId][_strategy].enabled) {
+        if (!strategies[houseImplId][strategy].enabled) {
             revert StrategyNotRegistered();
         }
-        strategies[_houseImplId][_strategy].minVersion = _minVersion;
+        strategies[houseImplId][strategy].minVersion = minVersion;
 
-        emit MinCompatibleVersionSet(_houseImplId, _strategy, _minVersion);
+        emit MinCompatibleVersionSet(houseImplId, strategy, minVersion);
     }
 
     /// @notice Set the max house implementation version that's compatible with an strategy
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation valid to upgrade to
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation valid to upgrade to
+    /// @param maxVersion Max compatible house implementation version. None if 0.
     function setMaxVersion(
-        bytes32 _houseImplId,
-        address _strategy,
-        uint120 _maxVersion
+        bytes32 houseImplId,
+        address strategy,
+        uint120 maxVersion
     ) external onlyRegistrar {
-        if (!strategies[_houseImplId][_strategy].enabled) {
+        if (!strategies[houseImplId][strategy].enabled) {
             revert StrategyNotRegistered();
         }
-        strategies[_houseImplId][_strategy].maxVersion = _maxVersion;
+        strategies[houseImplId][strategy].maxVersion = maxVersion;
 
-        emit MaxCompatibleVersionSet(_houseImplId, _strategy, _maxVersion);
+        emit MaxCompatibleVersionSet(houseImplId, strategy, maxVersion);
     }
 
     /// @notice Unregisters an strategy
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation to unregister
-    function unregisterStrategy(bytes32 _houseImplId, address _strategy) external onlyRegistrar {
-        delete strategies[_houseImplId][_strategy];
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation to unregister
+    function unregisterStrategy(bytes32 houseImplId, address strategy) external onlyRegistrar {
+        delete strategies[houseImplId][strategy];
 
-        emit StrategyUnregistered(_houseImplId, _strategy);
+        emit StrategyUnregistered(houseImplId, strategy);
     }
 
     /// @notice Registers an strategy
-    /// @param _houseImplId The house implementation ID
-    /// @param _strategy The address of the implementation valid to upgrade to
-    /// @param _minVersion Min compatible house implementation version. Disabled if 0.
-    /// @param _maxVersion Max compatible house implementation version. None if 0.
+    /// @param houseImplId The house implementation ID
+    /// @param strategy The address of the implementation valid to upgrade to
+    /// @param minVersion Min compatible house implementation version. Disabled if 0.
+    /// @param maxVersion Max compatible house implementation version. None if 0.
     function _registerStrategy(
-        bytes32 _houseImplId,
-        address _strategy,
-        uint120 _minVersion,
-        uint120 _maxVersion
+        bytes32 houseImplId,
+        address strategy,
+        uint120 minVersion,
+        uint120 maxVersion
     ) internal {
-        strategies[_houseImplId][_strategy] = StrategySettings({
-            minVersion: _minVersion,
-            maxVersion: _maxVersion,
+        strategies[houseImplId][strategy] = StrategySettings({
+            minVersion: minVersion,
+            maxVersion: maxVersion,
             enabled: true
         });
 
-        emit StrategyRegistered(_houseImplId, _strategy, _minVersion, _maxVersion);
+        emit StrategyRegistered(houseImplId, strategy, minVersion, maxVersion);
     }
 }

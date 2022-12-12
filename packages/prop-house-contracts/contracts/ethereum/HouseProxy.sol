@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import { ERC1967Proxy } from '@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol';
+import { ERC1967Proxy } from './lib/proxy/ERC1967Proxy.sol';
 
-// TODO: Trim down proxy to save gas
 contract HouseProxy is ERC1967Proxy {
-    constructor(address _logic, bytes memory _data) payable ERC1967Proxy(_logic, _data) {}
+    constructor(address logic, bytes memory data) payable ERC1967Proxy(logic, data) {}
 }

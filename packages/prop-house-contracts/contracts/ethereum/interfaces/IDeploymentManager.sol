@@ -12,6 +12,6 @@ interface IDeploymentManager {
     event DeploymentTargetUnregistered(address impl);
 
     /// @notice Determine if a deployment target is valid
-    /// @param _impl The address of the target implementation
-    function isValidDeploymentTarget(address _impl) external returns (bool);
+    /// @param impl The address of the target implementation
+    function isValidDeploymentTarget(address impl) external returns (bool);
 }

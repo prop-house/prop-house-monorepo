@@ -60,34 +60,62 @@ interface IFundingHouse is IHouse, IVault {
     /// @notice Thrown when no voting strategies are provided
     error NoVotingStrategiesProvided();
 
+    /// @notice Thrown when the same voting strategy is included multiple times in an array
     error DuplicateVotingStrategy();
 
+    /// @notice Thrown when attempting to use an unregistered voting strategy
     error VotingStrategyNotWhitelisted();
 
+    /// @notice Thrown when the address attempting to initiate a round is not whitelisted
     error RoundInitiatorNotWhitelisted();
 
+    /// @notice Thrown when a funding round is not active
     error RoundNotActive();
 
+    /// @notice Thrown when a funding round is not finalized
     error RoundNotFinalized();
 
+    /// @notice Thrown when award reclamation is not available
     error ReclamationNotAvailable();
 
+    /// @notice Thrown when an award has already been claimed
     error AwardAlreadyClaimed();
 
+    /// @notice Thrown when the address attempting to reclaim an award is not the round initiator
     error OnlyRoundInitiatorCanReclaim();
 
+    /// @notice Thrown when the address attempting to cancel a round is not the round initiator
     error OnlyRoundInitiatorCanCancel();
 
+    /// @notice Thrown when the provided merkle proof is invalid
     error InvalidMerkleProof();
 
+    /// @notice Emitted when a round initiator is added to the whitelist
+    /// @param initiator The address of the round initiator
     event RoundInitiatorAddedToWhitelist(address initiator);
 
+    /// @notice Emitted when a round initiator is removed from the whitelist
+    /// @param initiator The address of the round initiator
     event RoundInitiatorRemovedFromWhitelist(address initiator);
 
+    /// @notice Emitted when a voting strategy is added to the whitelist
+    /// @param strategyHash The keccak256 hash of the added strategy address and params
+    /// @param strategy The Starknet voting strategy contract address
+    /// @param params The voting strategy parameters
     event VotingStrategyAddedToWhitelist(uint256 strategyHash, uint256 strategy, uint256[] params);
 
+    /// @notice Emitted when a voting strategy is removed from the whitelist
+    /// @param strategyHash The keccak256 hash of the removed strategy address and params
     event VotingStrategyRemovedFromWhitelist(uint256 strategyHash);
 
+    /// @notice Emitted when a funding round is initiated
+    /// @param roundId The ID of the funding round
+    /// @param initiator The round initiator (caller)
+    /// @param title The round title
+    /// @param description The round description
+    /// @param tags The round tag metadata
+    /// @param strategy The house strategy used by the round
+    /// @param awards The awards offered in the round
     event RoundInitiated(
         uint256 indexed roundId,
         address initiator,
@@ -98,14 +126,29 @@ interface IFundingHouse is IHouse, IVault {
         Award[] awards
     );
 
+    /// @notice Emitted when a funding round is finalized
+    /// @param roundId The ID of the funding round
     event RoundFinalized(uint256 indexed roundId);
 
+    /// @notice Emitted when a round initiation message cancellation is requested
+    /// @param roundId The ID of the funding round
     event RoundInitiationCancellationRequested(uint256 indexed roundId);
 
+    /// @notice Emitted when a round initiation message cancellation is completed
+    /// @param roundId The ID of the funding round
     event RoundInitiationCancellationCompleted(uint256 indexed roundId);
 
+    /// @notice Emitted when a round is cancelled by the round initiator
+    /// @param roundId The ID of the funding round
     event RoundCancelled(uint256 indexed roundId);
 
+    /// @notice Emitted when a funding round award is claimed
+    /// @param roundId The ID of the funding round
+    /// @param proposalId The ID of the winning proposal
+    /// @param winner The address of the winner
+    /// @param assetId The ID of the asset being claimed
+    /// @param amount The amount of `asset` being claimed
+    /// @param recipient The recipient of the award
     event AwardClaimed(
         uint256 indexed roundId,
         uint256 proposalId,
@@ -115,6 +158,13 @@ interface IFundingHouse is IHouse, IVault {
         address recipient
     );
 
+    /// @notice Emitted when a funding round award is reclaimed by the initiator
+    /// @param roundId The ID of the funding round
+    /// @param proposalId The ID of the winning proposal
+    /// @param winner The address of the winner
+    /// @param assetId The ID of the asset being reclaimed
+    /// @param amount The amount of `asset` being reclaimed
+    /// @param recipient The asset recipient
     event AwardReclaimed(
         uint256 indexed roundId,
         uint256 proposalId,

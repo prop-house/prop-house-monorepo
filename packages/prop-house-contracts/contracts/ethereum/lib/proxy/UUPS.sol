@@ -27,22 +27,22 @@ abstract contract UUPS is IUUPS, ERC1967Upgrade {
     }
 
     /// @dev Hook to authorize an implementation upgrade
-    /// @param _newImpl The new implementation address
-    function _authorizeUpgrade(address _newImpl) internal virtual;
+    /// @param newImpl The new implementation address
+    function _authorizeUpgrade(address newImpl) internal virtual;
 
     /// @notice Upgrades to an implementation
-    /// @param _newImpl The new implementation address
-    function upgradeTo(address _newImpl) external onlyProxy {
-        _authorizeUpgrade(_newImpl);
-        _upgradeToAndCallUUPS(_newImpl, '', false);
+    /// @param newImpl The new implementation address
+    function upgradeTo(address newImpl) external onlyProxy {
+        _authorizeUpgrade(newImpl);
+        _upgradeToAndCallUUPS(newImpl, '', false);
     }
 
     /// @notice Upgrades to an implementation with an additional function call
-    /// @param _newImpl The new implementation address
-    /// @param _data The encoded function call
-    function upgradeToAndCall(address _newImpl, bytes memory _data) external payable onlyProxy {
-        _authorizeUpgrade(_newImpl);
-        _upgradeToAndCallUUPS(_newImpl, _data, true);
+    /// @param newImpl The new implementation address
+    /// @param data The encoded function call
+    function upgradeToAndCall(address newImpl, bytes memory data) external payable onlyProxy {
+        _authorizeUpgrade(newImpl);
+        _upgradeToAndCallUUPS(newImpl, data, true);
     }
 
     /// @notice The storage slot of the implementation address

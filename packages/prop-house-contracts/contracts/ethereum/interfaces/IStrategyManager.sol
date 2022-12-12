@@ -31,12 +31,12 @@ interface IStrategyManager {
     event MaxCompatibleVersionSet(bytes32 houseImplId, address strategy, uint120 maxVersion);
 
     /// @notice Determine if an strategy is valid for a given house implementation
-    /// @param _houseImplId The ID of the house implementation
-    /// @param _houseImplVersion The house implementation version
-    /// @param _strategy The address of the strategy contract
+    /// @param houseImplId The ID of the house implementation
+    /// @param houseImplVersion The house implementation version
+    /// @param strategy The address of the strategy contract
     function isValidStrategy(
-        bytes32 _houseImplId,
-        uint256 _houseImplVersion,
-        address _strategy
+        bytes32 houseImplId,
+        uint256 houseImplVersion,
+        address strategy
     ) external returns (bool);
 }

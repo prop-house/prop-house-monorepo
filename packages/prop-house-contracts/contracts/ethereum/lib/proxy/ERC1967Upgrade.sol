@@ -20,55 +20,57 @@ abstract contract ERC1967Upgrade is IERC1967Upgrade {
     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
     /// @dev Upgrades to an implementation with security checks for UUPS proxies and an additional function call
-    /// @param _newImpl The new implementation address
-    /// @param _data The encoded function call
+    /// @param newImpl The new implementation address
+    /// @param data The encoded function call
+    /// @param forceCall Whether or not the call should be made if `data` is empty
     function _upgradeToAndCallUUPS(
-        address _newImpl,
-        bytes memory _data,
-        bool _forceCall
+        address newImpl,
+        bytes memory data,
+        bool forceCall
     ) internal {
         if (StorageSlot.getBooleanSlot(_ROLLBACK_SLOT).value) {
-            _setImplementation(_newImpl);
+            _setImplementation(newImpl);
         } else {
-            try IERC1822Proxiable(_newImpl).proxiableUUID() returns (bytes32 slot) {
+            try IERC1822Proxiable(newImpl).proxiableUUID() returns (bytes32 slot) {
                 if (slot != _IMPLEMENTATION_SLOT) revert UnsupportedUUID();
             } catch {
                 revert OnlyUUPS();
             }
 
-            _upgradeToAndCall(_newImpl, _data, _forceCall);
+            _upgradeToAndCall(newImpl, data, forceCall);
         }
     }
 
     /// @dev Upgrades to an implementation with an additional function call
-    /// @param _newImpl The new implementation address
-    /// @param _data The encoded function call
+    /// @param newImpl The new implementation address
+    /// @param data The encoded function call
+    /// @param forceCall Whether or not the call should be made if `data` is empty
     function _upgradeToAndCall(
-        address _newImpl,
-        bytes memory _data,
-        bool _forceCall
+        address newImpl,
+        bytes memory data,
+        bool forceCall
     ) internal {
-        _upgradeTo(_newImpl);
+        _upgradeTo(newImpl);
 
-        if (_data.length > 0 || _forceCall) {
-            Address.functionDelegateCall(_newImpl, _data);
+        if (data.length > 0 || forceCall) {
+            Address.functionDelegateCall(newImpl, data);
         }
     }
 
     /// @dev Performs an implementation upgrade
-    /// @param _newImpl The new implementation address
-    function _upgradeTo(address _newImpl) internal {
-        _setImplementation(_newImpl);
+    /// @param newImpl The new implementation address
+    function _upgradeTo(address newImpl) internal {
+        _setImplementation(newImpl);
 
-        emit Upgraded(_newImpl);
+        emit Upgraded(newImpl);
     }
 
     /// @dev Stores the address of an implementation
-    /// @param _impl The implementation address
-    function _setImplementation(address _impl) private {
-        if (!Address.isContract(_impl)) revert InvalidUpgrade(_impl);
+    /// @param impl The implementation address
+    function _setImplementation(address impl) private {
+        if (!Address.isContract(impl)) revert InvalidUpgrade(impl);
 
-        StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = _impl;
+        StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = impl;
     }
 
     /// @dev The address of the current implementation

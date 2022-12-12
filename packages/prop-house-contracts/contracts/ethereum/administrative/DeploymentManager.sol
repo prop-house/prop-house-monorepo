@@ -26,24 +26,24 @@ contract DeploymentManager is IDeploymentManager {
     }
 
     /// @notice If target deployment implementation is valid
-    /// @param _impl The address of the implementation
-    function isValidDeploymentTarget(address _impl) external view returns (bool) {
-        return deployments[_impl];
+    /// @param impl The address of the implementation
+    function isValidDeploymentTarget(address impl) external view returns (bool) {
+        return deployments[impl];
     }
 
     /// @notice Registers an implementation as a valid deployment target
-    /// @param _impl The address of the valid target implementation
-    function registerDeployment(address _impl) external onlyRegistrar {
-        deployments[_impl] = true;
+    /// @param impl The address of the valid target implementation
+    function registerDeployment(address impl) external onlyRegistrar {
+        deployments[impl] = true;
 
-        emit DeploymentTargetRegistered(_impl);
+        emit DeploymentTargetRegistered(impl);
     }
 
     /// @notice Unregisters an implementation
-    /// @param _impl The address of the implementation to unregister
-    function unregisterDeployment(address _impl) external onlyRegistrar {
-        delete deployments[_impl];
+    /// @param impl The address of the implementation to unregister
+    function unregisterDeployment(address impl) external onlyRegistrar {
+        delete deployments[impl];
 
-        emit DeploymentTargetUnregistered(_impl);
+        emit DeploymentTargetUnregistered(impl);
     }
 }

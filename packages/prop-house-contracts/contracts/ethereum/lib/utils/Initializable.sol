@@ -44,11 +44,11 @@ abstract contract Initializable is IInitializable {
     }
 
     /// @dev Enables initializer versioning
-    /// @param _version The version to set
-    modifier reinitializer(uint8 _version) {
-        if (_initializing || _initialized >= _version) revert AlreadyInitialized();
+    /// @param version The version to set
+    modifier reinitializer(uint8 version) {
+        if (_initializing || _initialized >= version) revert AlreadyInitialized();
 
-        _initialized = _version;
+        _initialized = version;
 
         _initializing = true;
 
@@ -56,7 +56,7 @@ abstract contract Initializable is IInitializable {
 
         _initializing = false;
 
-        emit Initialized(_version);
+        emit Initialized(version);
     }
 
     /// @dev Prevents future initialization

@@ -100,10 +100,10 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     }
 
     /// @notice Initialize the house
-    /// @param _creator The house creator
-    function _initialize(address _creator) internal {
+    /// @param creator The house creator
+    function _initialize(address creator) internal {
         // Transfer ownership to the DAO creator
-        __Ownable_init(_creator);
+        __Ownable_init(creator);
     }
 
     /// @notice Update the house URI
@@ -146,10 +146,10 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
 
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation
     /// @dev This function is called in UUPS `upgradeTo` & `upgradeToAndCall`
-    /// @param _newImpl The address of the new implementation
-    function _authorizeUpgrade(address _newImpl) internal override onlyOwner {
-        if (!_upgradeManager.isValidUpgrade(_getImplementation(), _newImpl)) {
-            revert InvalidUpgrade(_newImpl);
+    /// @param newImpl The address of the new implementation
+    function _authorizeUpgrade(address newImpl) internal override onlyOwner {
+        if (!_upgradeManager.isValidUpgrade(_getImplementation(), newImpl)) {
+            revert InvalidUpgrade(newImpl);
         }
     }
 

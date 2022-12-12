@@ -29,11 +29,11 @@ abstract contract Ownable is IOwnable, Initializable {
     }
 
     /// @dev Initializes contract ownership
-    /// @param _initialOwner The initial owner address
-    function __Ownable_init(address _initialOwner) internal onlyInitializing {
-        _owner = _initialOwner;
+    /// @param initialOwner The initial owner address
+    function __Ownable_init(address initialOwner) internal onlyInitializing {
+        _owner = initialOwner;
 
-        emit OwnerUpdated(address(0), _initialOwner);
+        emit OwnerUpdated(address(0), initialOwner);
     }
 
     /// @notice The address of the owner
@@ -47,28 +47,28 @@ abstract contract Ownable is IOwnable, Initializable {
     }
 
     /// @notice Forces an ownership transfer from the last owner
-    /// @param _newOwner The new owner address
-    function transferOwnership(address _newOwner) public onlyOwner {
-        _transferOwnership(_newOwner);
+    /// @param newOwner The new owner address
+    function transferOwnership(address newOwner) public onlyOwner {
+        _transferOwnership(newOwner);
     }
 
     /// @notice Forces an ownership transfer from any sender
-    /// @param _newOwner New owner to transfer contract to
+    /// @param newOwner New owner to transfer contract to
     /// @dev Ensure is called only from trusted internal code, no access control checks.
-    function _transferOwnership(address _newOwner) internal {
-        emit OwnerUpdated(_owner, _newOwner);
+    function _transferOwnership(address newOwner) internal {
+        emit OwnerUpdated(_owner, newOwner);
 
-        _owner = _newOwner;
+        _owner = newOwner;
 
         if (_pendingOwner != address(0)) delete _pendingOwner;
     }
 
     /// @notice Initiates a two-step ownership transfer
-    /// @param _newOwner The new owner address
-    function safeTransferOwnership(address _newOwner) public onlyOwner {
-        _pendingOwner = _newOwner;
+    /// @param newOwner The new owner address
+    function safeTransferOwnership(address newOwner) public onlyOwner {
+        _pendingOwner = newOwner;
 
-        emit OwnerPending(_owner, _newOwner);
+        emit OwnerPending(_owner, newOwner);
     }
 
     /// @notice Accepts an ownership transfer
