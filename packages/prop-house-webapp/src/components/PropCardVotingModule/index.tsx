@@ -38,11 +38,6 @@ const PropCardVotingModule: React.FC<{
     setVoteCountDisplayed(allottedVotesForProp);
   }, [allottedVotesForProp]);
 
-  useEffect(() => {
-    // clear input on successful vote
-    setVoteCountDisplayed(0);
-  }, [submittedVotes]);
-
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
     e.stopPropagation();
