@@ -20,9 +20,9 @@ const SaveProposalModal: React.FC<{
   return (
     <Modal isOpen={showModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
-        <p className={classes.modalTitle}>Save your prop?</p>
+        <p className={classes.modalTitle}>Save this verison?</p>
         <p className={classes.modalSubtitle}>
-          Are you sure you want to delete your proposal? This action cannot be undone.
+          By confirming, these changes will be saved and your proposal will be updated.
         </p>
       </div>
 
