@@ -1,29 +1,24 @@
 import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import classes from './PropCardVotingModule.module.css';
-import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
-import { Direction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import React, { useEffect, useState } from 'react';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import React, { useCallback, useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
 import { useTranslation } from 'react-i18next';
 
-const PropCardVotingModule: React.FC<{
-  proposal: StoredProposal;
-  cardStatus: ProposalCardStatus;
-}> = props => {
-  const { proposal } = props;
-
+const PropCardVotingModule: React.FC<{}> = () => {
+  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
+  const allottedVotesForProp = activeProposal && votesForProp(voteAllotments, activeProposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
@@ -31,21 +26,22 @@ const PropCardVotingModule: React.FC<{
   const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
   const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
 
-  const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
+  const isAllotting = () => (allottedVotesForProp && allottedVotesForProp > 0) || inputIsInFocus;
 
   useEffect(() => {
-    // set initial vote count displayed
+    if (allottedVotesForProp === undefined) return;
     setVoteCountDisplayed(allottedVotesForProp);
   }, [allottedVotesForProp]);
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
+    if (!activeProposal) return;
     e.stopPropagation();
     setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
     dispatch(
       allotVotes({
-        proposalId: proposal.id,
-        proposalTitle: proposal.title,
+        proposalId: activeProposal.id,
+        proposalTitle: activeProposal.title,
         direction: direction,
         weight: 1,
       }),
@@ -54,6 +50,7 @@ const PropCardVotingModule: React.FC<{
 
   // handle votes by text input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!activeProposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
 
@@ -72,8 +69,8 @@ const PropCardVotingModule: React.FC<{
     // reset prev allotment (reduce to 0)
     dispatch(
       allotVotes({
-        proposalTitle: proposal.title,
-        proposalId: proposal.id,
+        proposalTitle: activeProposal.title,
+        proposalId: activeProposal.id,
         direction: Direction.Down,
         weight: voteCountDisplayed,
       }),
@@ -82,8 +79,8 @@ const PropCardVotingModule: React.FC<{
     // handle allottment
     dispatch(
       allotVotes({
-        proposalTitle: proposal.title,
-        proposalId: proposal.id,
+        proposalTitle: activeProposal.title,
+        proposalId: activeProposal.id,
         direction: Direction.Up,
         weight: inputVotes,
       }),
@@ -91,6 +88,42 @@ const PropCardVotingModule: React.FC<{
 
     setVoteCountDisplayed(inputVotes);
   };
+
+  // handle votes by up/down keyboard press
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      const direction =
+        event.key === 'ArrowUp'
+          ? Direction.Up
+          : event.key === 'ArrowDown'
+          ? Direction.Down
+          : undefined;
+
+      if (direction === undefined || !activeProposal) return;
+      if (direction === Direction.Up && !_canAllotVotes) return;
+      if (direction === Direction.Down && allottedVotesForProp === 0) return;
+
+      event.preventDefault();
+      setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+
+      dispatch(
+        allotVotes({
+          proposalId: activeProposal.id,
+          proposalTitle: activeProposal.title,
+          direction: direction,
+          weight: 1,
+        }),
+      );
+    },
+    [activeProposal, allottedVotesForProp, _canAllotVotes, dispatch],
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   return (
     <Row>
