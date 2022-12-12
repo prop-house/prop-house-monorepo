@@ -5,20 +5,22 @@ import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
-import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
 import { useTranslation } from 'react-i18next';
 
-const PropCardVotingModule: React.FC<{}> = () => {
-  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
+const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
+  const { proposal } = props;
+
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const allottedVotesForProp = activeProposal && votesForProp(voteAllotments, activeProposal.id);
+  const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
@@ -35,13 +37,13 @@ const PropCardVotingModule: React.FC<{}> = () => {
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
-    if (!activeProposal) return;
+    if (!proposal) return;
     e.stopPropagation();
     setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
     dispatch(
       allotVotes({
-        proposalId: activeProposal.id,
-        proposalTitle: activeProposal.title,
+        proposalId: proposal.id,
+        proposalTitle: proposal.title,
         direction: direction,
         weight: 1,
       }),
@@ -50,7 +52,7 @@ const PropCardVotingModule: React.FC<{}> = () => {
 
   // handle votes by text input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!activeProposal) return;
+    if (!proposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
 
@@ -69,8 +71,8 @@ const PropCardVotingModule: React.FC<{}> = () => {
     // reset prev allotment (reduce to 0)
     dispatch(
       allotVotes({
-        proposalTitle: activeProposal.title,
-        proposalId: activeProposal.id,
+        proposalTitle: proposal.title,
+        proposalId: proposal.id,
         direction: Direction.Down,
         weight: voteCountDisplayed,
       }),
@@ -79,8 +81,8 @@ const PropCardVotingModule: React.FC<{}> = () => {
     // handle allottment
     dispatch(
       allotVotes({
-        proposalTitle: activeProposal.title,
-        proposalId: activeProposal.id,
+        proposalTitle: proposal.title,
+        proposalId: proposal.id,
         direction: Direction.Up,
         weight: inputVotes,
       }),
@@ -99,7 +101,7 @@ const PropCardVotingModule: React.FC<{}> = () => {
           ? Direction.Down
           : undefined;
 
-      if (direction === undefined || !activeProposal) return;
+      if (direction === undefined || !proposal) return;
       if (direction === Direction.Up && !_canAllotVotes) return;
       if (direction === Direction.Down && allottedVotesForProp === 0) return;
 
@@ -108,14 +110,14 @@ const PropCardVotingModule: React.FC<{}> = () => {
 
       dispatch(
         allotVotes({
-          proposalId: activeProposal.id,
-          proposalTitle: activeProposal.title,
+          proposalId: proposal.id,
+          proposalTitle: proposal.title,
           direction: direction,
           weight: 1,
         }),
       );
     },
-    [activeProposal, allottedVotesForProp, _canAllotVotes, dispatch],
+    [proposal, allottedVotesForProp, _canAllotVotes, dispatch, modalActive],
   );
 
   useEffect(() => {
