@@ -29,7 +29,7 @@ import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
-import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
@@ -166,7 +166,7 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
-    if (!provider) return;
+    if (!provider || !activeProposal) return;
 
     try {
       const blockHeight = await provider.getBlockNumber();
@@ -191,6 +191,7 @@ const ProposalModal = () => {
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
+      refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
