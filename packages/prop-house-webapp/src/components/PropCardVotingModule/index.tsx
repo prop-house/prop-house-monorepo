@@ -36,7 +36,7 @@ const PropCardVotingModule: React.FC<{
   useEffect(() => {
     // set initial vote count displayed
     setVoteCountDisplayed(allottedVotesForProp);
-  });
+  }, [allottedVotesForProp]);
 
   useEffect(() => {
     // clear input on successful vote
