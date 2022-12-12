@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import { MASK_250 } from '../Constants.sol';
+import { MASK_250 } from '../../Constants.sol';
 
-library Uint256Utils {
+library Uint256 {
     /// @notice Split a uint256 into a high and low value
     /// @param value The uint256 value to split
     /// @dev This is useful for passing uint256 values to Starknet, whose felt

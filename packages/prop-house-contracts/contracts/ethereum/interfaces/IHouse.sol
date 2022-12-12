@@ -3,9 +3,6 @@ pragma solidity ^0.8.13;
 
 /// @notice Common interface for a house
 interface IHouse {
-    /// @notice Thrown when an upgrade has not been registered for an implementation contract
-    error InvalidUpgrade();
-
     /// @notice Thrown when a strategy is not enabled in the house instance
     error StrategyNotEnabled();
 

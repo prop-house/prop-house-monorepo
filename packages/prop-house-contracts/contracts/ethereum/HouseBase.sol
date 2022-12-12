@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import { UUPSUpgradeable } from '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
-import { OwnableUpgradeable } from '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import { IStrategyManager } from './interfaces/IStrategyManager.sol';
 import { IUpgradeManager } from './interfaces/IUpgradeManager.sol';
 import { IStarknetMessenger } from './interfaces/IStarknetMessenger.sol';
+import { Ownable } from './lib/utils/Ownable.sol';
 import { IHouse } from './interfaces/IHouse.sol';
+import { UUPS } from './lib/proxy/UUPS.sol';
 
-abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
+abstract contract HouseBase is IHouse, UUPS, Ownable {
     // prettier-ignore
     // print(get_selector_from_name("create_house_strategy"))
     uint256 constant CREATE_STRATEGY_SELECTOR = 0x30b7e460d06ee4b7bb5f97430a8881944e86a98a4d7916a524d07c761ac4219;
@@ -102,10 +102,8 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     /// @notice Initialize the house
     /// @param _creator The house creator
     function _initialize(address _creator) internal {
-        __Ownable_init();
-
         // Transfer ownership to the DAO creator
-        transferOwnership(_creator);
+        __Ownable_init(_creator);
     }
 
     /// @notice Update the house URI
@@ -151,7 +149,7 @@ abstract contract HouseBase is IHouse, UUPSUpgradeable, OwnableUpgradeable {
     /// @param _newImpl The address of the new implementation
     function _authorizeUpgrade(address _newImpl) internal override onlyOwner {
         if (!_upgradeManager.isValidUpgrade(_getImplementation(), _newImpl)) {
-            revert InvalidUpgrade();
+            revert InvalidUpgrade(_newImpl);
         }
     }
 

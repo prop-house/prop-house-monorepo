@@ -7,18 +7,18 @@ import { IFundingHouse } from './interfaces/IFundingHouse.sol';
 import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
 import { IStrategyValidator } from '../strategies/interfaces/IStrategyValidator.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
-import { AssetDataUtils } from '../utils/AssetDataUtils.sol';
-import { Uint256Utils } from '../utils/Uint256Utils.sol';
+import { MerkleProof } from '../lib/utils/MerkleProof.sol';
 import { IAssetData } from '../interfaces/IAssetData.sol';
-import { MerkleProof } from '../utils/MerkleProof.sol';
-import { Batchable } from '../utils/Batchable.sol';
+import { Batchable } from '../lib/utils/Batchable.sol';
+import { AssetData } from '../lib/utils/AssetData.sol';
+import { Uint256 } from '../lib/utils/Uint256.sol';
+import { Vault } from '../lib/utils/Vault.sol';
 import { ETH_ADDRESS } from '../Constants.sol';
-import { Vault } from '../utils/Vault.sol';
 
 contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHouseStorageV1 {
-    using { Uint256Utils.split } for uint256;
-    using { Uint256Utils.mask250 } for bytes32;
-    using { Uint256Utils.toUint256 } for address;
+    using { Uint256.split } for uint256;
+    using { Uint256.mask250 } for bytes32;
+    using { Uint256.toUint256 } for address;
 
     // prettier-ignore
     /// @notice The L2 selector used to register voting strategies
@@ -284,7 +284,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHous
         if (isAwardClaimed[roundId][proposalId]) {
             revert AwardAlreadyClaimed();
         }
-        (, , bytes32 assetId) = AssetDataUtils.decodeAssetData(assetData);
+        (, , bytes32 assetId) = AssetData.decodeAssetData(assetData);
 
         _computeLeafAndVerify(roundId, proposalId, winner, amount, assetId, proof);
         isAwardClaimed[roundId][proposalId] = true;
@@ -312,7 +312,7 @@ contract FundingHouse is IFundingHouse, HouseBase, Batchable, Vault, FundingHous
         if (isAwardClaimed[roundId][proposalId]) {
             revert AwardAlreadyClaimed();
         }
-        (, , bytes32 assetId) = AssetDataUtils.decodeAssetData(assetData);
+        (, , bytes32 assetId) = AssetData.decodeAssetData(assetData);
 
         _computeLeafAndVerify(roundId, proposalId, winner, amount, assetId, proof);
         isAwardClaimed[roundId][proposalId] = true;

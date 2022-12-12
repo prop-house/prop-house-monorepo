@@ -3,11 +3,11 @@ pragma solidity ^0.8.13;
 
 import { IStrategyValidator } from './interfaces/IStrategyValidator.sol';
 import { IFundingHouse } from '../houses/interfaces/IFundingHouse.sol';
-import { Uint256Utils } from '../utils/Uint256Utils.sol';
+import { Uint256 } from '../lib/utils/Uint256.sol';
 
 contract TimedFundingRoundStrategyValidator is IStrategyValidator {
-    using { Uint256Utils.split } for uint256;
-    using { Uint256Utils.toUint256 } for address;
+    using { Uint256.split } for uint256;
+    using { Uint256.toUint256 } for address;
 
     /// @notice Thrown when the proposal period start timestamp is not far enough in the future
     error ProposalPeriodStartTimestampTooSoon();

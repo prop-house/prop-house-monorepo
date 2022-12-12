@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.13;
 
-import { IAssetData } from '../interfaces/IAssetData.sol';
-import { ETH_ADDRESS } from '../Constants.sol';
+import { IAssetData } from '../../interfaces/IAssetData.sol';
+import { ETH_ADDRESS } from '../../Constants.sol';
 
-library AssetDataUtils {
+library AssetData {
     /// @notice Thrown when an asset data has an unknown asset type
     error InvalidAssetType();
 

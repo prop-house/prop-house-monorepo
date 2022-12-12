@@ -6,9 +6,6 @@ import { IVault } from '../../interfaces/IVault.sol';
 
 /// @notice Interface for the Funding House
 interface IFundingHouse is IHouse, IVault {
-    /// @notice Thrown when no voting strategies are provided
-    error NoVotingStrategiesProvided();
-
     /// @notice Supported funding house execution types
     enum ExecutionType {
         MerkleProof,
@@ -59,6 +56,9 @@ interface IFundingHouse is IHouse, IVault {
         bytes32 awardHash; // A hash of the locked asset ids and amounts
         bytes32 merkleRoot; // Merkle root used to claim awards
     }
+
+    /// @notice Thrown when no voting strategies are provided
+    error NoVotingStrategiesProvided();
 
     error DuplicateVotingStrategy();
 
