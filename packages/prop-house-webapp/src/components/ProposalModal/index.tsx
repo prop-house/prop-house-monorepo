@@ -89,16 +89,17 @@ const ProposalModal = () => {
     backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
   }, [provider, backendHost]);
 
-  // tab title
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
     dispatch(setModalActive(true));
+
     return () => {
       document.title = `Prop House`;
       dispatch(setModalActive(false));
     };
   }, [activeProposal, dispatch]);
 
+  // set initial prop index
   useEffect(() => {
     if (!proposals) return;
     setCurrentPropIndex(
