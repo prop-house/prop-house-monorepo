@@ -26,7 +26,9 @@ export interface RoundUtilityBarProps {
 const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
+
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
 
   const allowSortByVotes = auctionVoting || auctionEnded;
 
@@ -96,16 +98,29 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             </div>
           </div>
 
-          <div className={clsx(classes.item, classes.proposalCountItem)}>
+          <div className={classes.item}>
             <div className={classes.itemTitle}>
-              {proposals && proposals.length === 1 ? 'Proposal' : 'Proposals'}
+              {proposals && proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
             </div>
             <div className={classes.itemData}>{proposals && proposals.length}</div>
           </div>
 
           <div className={classes.item}>
-            <div className={classes.itemTitle}>{t('Snapshot')}</div>
-            <div className={classes.itemData}>{auction.balanceBlockTag}</div>
+            <Tooltip
+              content={
+                <>
+                  <div className={classes.itemTitle}>
+                    {t('Snapshot')}
+                    <span className="infoSymbol">
+                      <MdInfoOutline />
+                    </span>
+                  </div>
+
+                  <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
+                </>
+              }
+              tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
+            />
           </div>
         </Col>
       </div>

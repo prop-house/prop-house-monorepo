@@ -2,6 +2,7 @@ import { Auction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 import classes from './AcceptingPropsModule.module.css';
 
@@ -13,6 +14,7 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
   props: AcceptingPropsModuleProps,
 ) => {
   const { auction, communityName } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -21,7 +23,7 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
           <BulbIcon />
         </div>
         <div className={classes.textContainer}>
-          <p className={classes.title}>{`Accepting proposals`}</p>
+          <p className={classes.title}>{t('acceptingProposals')}</p>
           <p className={classes.subtitle}>
             Until {dayjs(auction.proposalEndTime).format('MMMM D')}
           </p>
@@ -31,30 +33,30 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
       <hr className={classes.divider} />
 
       <p className={classes.sideCardBody}>
-        <b>How proposing works:</b>
+        <b>{t('howProposingWorks')}:</b>
 
         <div className={classes.bulletList}>
           <div className={classes.bulletItem}>
             <hr className={classes.bullet} />
-            <p>Anyone can submit a proposal to get funded.</p>
+            <p>{t('anyoneCanSubmit')}.</p>
           </div>
 
           <div className={classes.bulletItem}>
             <hr className={classes.bullet} />
             <p>
-              Owners of the <b>{communityName}</b> token will vote on the best proposals.
+              {t('ownersOfThe')} <b>{communityName}</b> {t('tokenWillVote')}.
             </p>
           </div>
 
           <div className={classes.bulletItem}>
             <hr className={classes.bullet} />
             <p>
-              The top <b>{auction.numWinners}</b>{' '}
-              {auction.numWinners === 1 ? 'proposal' : 'proposals'} will get funded{' '}
+              {t('theTop')} <b>{auction.numWinners}</b>{' '}
+              {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
               <b>
                 {auction.fundingAmount} {auction.currencyType}{' '}
               </b>
-              each.
+              {t('each')}.
             </p>
           </div>
         </div>

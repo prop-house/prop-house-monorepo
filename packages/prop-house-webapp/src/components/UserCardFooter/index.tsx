@@ -5,6 +5,7 @@ import { AuctionStatus } from '../../utils/auctionStatus';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { useTranslation } from 'react-i18next';
 
 const UserCardFooter: React.FC<{
   status: AuctionStatus;
@@ -14,6 +15,7 @@ const UserCardFooter: React.FC<{
   cardIndex: number;
 }> = props => {
   const { status, amountOfPropsWon, userProps, winningIds, cardIndex } = props;
+  const { t } = useTranslation();
 
   let navigate = useNavigate();
 
@@ -25,15 +27,12 @@ const UserCardFooter: React.FC<{
       isWinner(winningIds, userProps[cardIndex].id) ? (
         <>
           <p className={classes.sideCardBody}>
-            <b>What's next:</b>
+            <b>{t('whatsNext')}:</b>
 
             <div className={classes.bulletList}>
               <div className={classes.bulletItem}>
                 <hr className={classes.bullet} />
-                <p>
-                  Funds will be sent from the corresponding community treasury to the addresses that
-                  submitted the proposal.
-                </p>
+                <p>{t('fundsWillBeSent')}.</p>
               </div>
             </div>
           </p>
@@ -49,7 +48,7 @@ const UserCardFooter: React.FC<{
           }}
           className={classes.viewProposal}
         >
-          View
+          {t('view')}
         </div>
       )}
     </>

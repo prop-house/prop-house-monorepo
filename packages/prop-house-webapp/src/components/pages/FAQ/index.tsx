@@ -32,6 +32,7 @@ const content: ContentItem[] = [
   { title: 'faq17title', content: 'faq17answer' },
   { title: 'faq18title', content: 'faq18answer' },
   { title: 'faq19title', content: 'faq19answer' },
+  { title: 'faq20title', content: 'faq20answer' },
 ];
 
 const FAQ = () => {
@@ -50,8 +51,13 @@ const FAQ = () => {
     setfFilteredFAQs(
       content.filter(c => {
         const query = input.toLowerCase();
+        const question = c.title;
+        const answer = c.content as string;
 
-        return t(c.title.toLowerCase()).indexOf(query) >= 0;
+        return (
+          t(question.toLowerCase()).indexOf(query) >= 0 ||
+          t(answer.toLowerCase()).indexOf(query) >= 0
+        );
       }),
     );
   }, [input, t]);
@@ -67,7 +73,7 @@ const FAQ = () => {
             <SearchBar
               input={input}
               handleSeachInputChange={handleFAQInputChange}
-              placeholder="Search for questions"
+              placeholder={t('searchForQuestions')}
             />
           </div>
         </Container>
@@ -75,7 +81,7 @@ const FAQ = () => {
 
       <Container className={classes.faqBackground}>
         {filteredFAQs.length === 0 ? (
-          <ErrorMessageCard message="No FAQs found" />
+          <ErrorMessageCard message={t('noFaqsFound')} />
         ) : (
           <Accordion className={classes.accordion}>
             {filteredFAQs.map((item, i) => (

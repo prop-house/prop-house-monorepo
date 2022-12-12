@@ -59,9 +59,6 @@ const Create: React.FC<{}> = () => {
   const submitProposal = async () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
-    console.log(typeof proposalEditorData.tldr);
-    console.log(typeof activeAuction.id);
-
     const proposal = await backendClient.current.createProposal(
       new Proposal(
         proposalEditorData.title,
@@ -152,7 +149,7 @@ const Create: React.FC<{}> = () => {
                 (account ? (
                   <Button
                     classNames={classes.actionBtn}
-                    text={t('signSubmit')}
+                    text={t('signAndSubmit')}
                     bgColor={ButtonColor.Pink}
                     onClick={submitProposal}
                     disabled={!isValidPropData(proposalEditorData)}

@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { Dispatch, Fragment, SetStateAction } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
 import classes from './StatusFilters.module.css';
 
@@ -22,12 +23,12 @@ export interface Status {
 const statuses: Status[] = [
   {
     status: RoundStatus.Active,
-    title: 'Active',
+    title: 'active',
     bgColor: classes.pink,
   },
   {
     status: RoundStatus.AllRounds,
-    title: 'All rounds',
+    title: 'allRounds',
     bgColor: classes.black,
   },
 ];
@@ -39,6 +40,8 @@ const StatusFilters: React.FC<{
   setInput: (value: string) => void;
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
+
+  const { t } = useTranslation();
 
   const handleClick = (status: RoundStatus) => {
     setInput('');
@@ -61,7 +64,7 @@ const StatusFilters: React.FC<{
                 )}
               >
                 <div className={classes.filterText}>
-                  <span className={classes.filterName}>{s.title}</span>
+                  <span className={classes.filterName}>{t(s.title)}</span>
                   <span className={classes.filterNumber}>{numberOfRoundsPerStatus[index]}</span>
                 </div>
               </div>

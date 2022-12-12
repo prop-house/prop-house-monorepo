@@ -2,6 +2,7 @@ import classes from './PropStats.module.css';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus } from '../../utils/auctionStatus';
 import getNumberWithOrdinal from '../../utils/getNumberWithOrdinal';
+import { useTranslation } from 'react-i18next';
 
 const PropStats: React.FC<{
   status: AuctionStatus;
@@ -11,6 +12,7 @@ const PropStats: React.FC<{
   numOfWinners: number;
 }> = props => {
   const { userProps, proposals, status, numOfWinners, cardIndex } = props;
+  const { t } = useTranslation();
 
   const isVotingWindow = status === AuctionStatus.AuctionVoting;
   const isRoundOver = status === AuctionStatus.AuctionEnded;
@@ -46,7 +48,7 @@ const PropStats: React.FC<{
             <img src="/heads/calculator.png" alt="calculator" />
           </div>
           <div className={classes.userPropText}>
-            <div>Total Votes</div>
+            <div>{t('totalVotes')}</div>
             <div className={classes.userPropTextValue}>{userProps[cardIndex].voteCount}</div>
           </div>
         </div>
@@ -59,7 +61,7 @@ const PropStats: React.FC<{
               </div>
 
               <div className={classes.userPropText}>
-                <div>Position</div>
+                <div>{t('position')}</div>
                 <div className={classes.userPropTextValue}>
                   {proposals &&
                     getNumberWithOrdinal(
@@ -77,7 +79,7 @@ const PropStats: React.FC<{
                 <img src="/heads/wallet.png" alt="wallet" />
               </div>
               <div className={classes.userPropText}>
-                <div>{isVotingWindow ? 'Votes Needed' : 'Votes from funding'}</div>
+                <div>{isVotingWindow ? t('votesNeeded') : t('votesFromFunding')}</div>
                 <div className={classes.userPropTextValue}>
                   {votesNeededToWin(userProps[cardIndex])}
                 </div>

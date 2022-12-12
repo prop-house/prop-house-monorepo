@@ -9,6 +9,7 @@ import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
+import { useTranslation } from 'react-i18next';
 
 const PropCardVotingModule: React.FC<{
   proposal: StoredProposal;
@@ -20,6 +21,7 @@ const PropCardVotingModule: React.FC<{
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
@@ -99,9 +101,9 @@ const PropCardVotingModule: React.FC<{
             placement="top"
             overlay={
               <Tooltip className={classes.tooltip}>
-                <span
-                  className={classes.tooltipTitle}
-                >{`You don't have ${attemptedInputVotes} votes available`}</span>
+                <span className={classes.tooltipTitle}>
+                  {t('youDontHave')} {attemptedInputVotes} {t('votesAvailable')}
+                </span>
               </Tooltip>
             }
           >

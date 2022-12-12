@@ -41,7 +41,7 @@ const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) =
         <SearchBar
           input={input}
           handleSeachInputChange={handleSeachInputChange}
-          placeholder="Search community houses"
+          placeholder={t('searchCommunityHouses')}
         />
       </Container>
     </Row>

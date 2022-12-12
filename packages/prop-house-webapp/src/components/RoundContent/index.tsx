@@ -75,7 +75,8 @@ const RoundContent: React.FC<{
       // default sorting method is random, unless the auction is over, in which case its by votes
       dispatchSortProposals(
         dispatch,
-        auctionStatus(auction) === AuctionStatus.AuctionEnded
+        auctionStatus(auction) === AuctionStatus.AuctionEnded ||
+          auctionStatus(auction) === AuctionStatus.AuctionVoting
           ? SortType.VoteCount
           : SortType.Random,
         false,
@@ -152,8 +153,8 @@ const RoundContent: React.FC<{
       setShowVoteConfirmationModal(false);
     } catch (e) {
       setErrorModalMessage({
-        title: 'Failed to submit votes',
-        message: 'Please go back and try again.',
+        title: t('errorModalTitle'),
+        message: t('errorModalMessage'),
         image: 'banana.png',
       });
       setShowErrorModal(true);
@@ -166,7 +167,6 @@ const RoundContent: React.FC<{
         <VoteConfirmationModal
           showNewModal={showVoteConfirmationModal}
           setShowNewModal={setShowVoteConfirmationModal}
-          votingEndTime={auction.votingEndTime}
           submitVote={handleSubmitVote}
           secondBtn
         />
@@ -192,7 +192,7 @@ const RoundContent: React.FC<{
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <ErrorMessageCard message="Funding round starting soon" date={auction.startTime} />
+        <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
       ) : (
         <>
           {community && (
@@ -200,7 +200,7 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProps')} />
+                    <ErrorMessageCard message={t('submittedProposals')} />
                   ) : (
                     proposals.map((proposal, index) => {
                       return (

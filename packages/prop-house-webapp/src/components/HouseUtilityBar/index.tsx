@@ -2,6 +2,7 @@ import classes from './HouseUtilityBar.module.css';
 import { RiSearchLine as SearchIcon } from 'react-icons/ri';
 import StatusFilters, { RoundStatus } from '../StatusFilters';
 import { Dispatch, SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const HouseUtilityBar: React.FC<{
   numberOfRoundsPerStatus: number[];
@@ -12,6 +13,8 @@ const HouseUtilityBar: React.FC<{
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput, input } =
     props;
+
+  const { t } = useTranslation();
 
   const handleSearchInputChange = (e: any) => {
     if (currentRoundStatus !== RoundStatus.AllRounds) setCurrentRoundStatus(RoundStatus.AllRounds);
@@ -38,7 +41,7 @@ const HouseUtilityBar: React.FC<{
             type="text"
             value={input}
             onChange={e => handleSearchInputChange(e)}
-            placeholder="Search rounds"
+            placeholder={t('searchRounds')}
           />
         </div>
       </div>
