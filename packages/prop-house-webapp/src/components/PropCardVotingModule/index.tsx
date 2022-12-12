@@ -26,7 +26,7 @@ const PropCardVotingModule: React.FC<{
   const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
 
-  const [voteCount, setVoteCount] = useState(0);
+  const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
   const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
   const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
@@ -34,18 +34,18 @@ const PropCardVotingModule: React.FC<{
   const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
 
   useEffect(() => {
-    setVoteCount(allottedVotesForProp);
+    setVoteCountDisplayed(allottedVotesForProp);
   });
 
   useEffect(() => {
     // clear input on successful vote
-    setVoteCount(0);
+    setVoteCountDisplayed(0);
   }, [submittedVotes]);
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
     e.stopPropagation();
-    setVoteCount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+    setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
     dispatch(
       allotVotes({
         proposalId: proposal.id,
@@ -79,7 +79,7 @@ const PropCardVotingModule: React.FC<{
         proposalTitle: proposal.title,
         proposalId: proposal.id,
         direction: Direction.Down,
-        weight: voteCount,
+        weight: voteCountDisplayed,
       }),
     );
 
@@ -93,7 +93,7 @@ const PropCardVotingModule: React.FC<{
       }),
     );
 
-    setVoteCount(inputVotes);
+    setVoteCountDisplayed(inputVotes);
   };
 
   return (
@@ -113,7 +113,7 @@ const PropCardVotingModule: React.FC<{
           >
             <input
               type="text"
-              value={displayWarningTooltip ? attemptedInputVotes : voteCount}
+              value={displayWarningTooltip ? attemptedInputVotes : voteCountDisplayed}
               className={clsx(classes.votesAllottedInput, 'voteInput')}
               onChange={e => handleInputChange(e)}
               onFocus={() => setInputIsInFocus(true)}
