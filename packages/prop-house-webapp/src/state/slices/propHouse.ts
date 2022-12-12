@@ -11,9 +11,10 @@ export interface PropHouseSlice {
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
+  modalActive: boolean;
 }
 
-const initialState: PropHouseSlice = {};
+const initialState: PropHouseSlice = { modalActive: false };
 
 export const propHouseSlice = createSlice({
   name: 'propHouse',
@@ -41,6 +42,9 @@ export const propHouseSlice = createSlice({
     setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
       state.activeCommunity = action.payload;
     },
+    setModalActive: (state, action: PayloadAction<boolean>) => {
+      state.modalActive = action.payload;
+    },
   },
 });
 
@@ -52,6 +56,7 @@ export const {
   appendProposal,
   sortProposals,
   setActiveCommunity,
+  setModalActive,
 } = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;
