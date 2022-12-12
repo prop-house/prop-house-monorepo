@@ -94,6 +94,8 @@ const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = pr
   // handle votes by up/down keyboard press
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
+      if (!modalActive) return; // only use keyboard voting in modal
+
       const direction =
         event.key === 'ArrowUp'
           ? Direction.Up

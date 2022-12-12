@@ -20,6 +20,7 @@ import {
   setActiveProposal,
   setActiveProposals,
   setActiveRound,
+  setModalActive,
 } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
@@ -91,12 +92,13 @@ const ProposalModal = () => {
   // tab title
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
+    dispatch(setModalActive(true));
     return () => {
       document.title = `Prop House`;
+      dispatch(setModalActive(false));
     };
-  }, [activeProposal]);
+  }, [activeProposal, dispatch]);
 
-  // set initial prop index
   useEffect(() => {
     if (!proposals) return;
     setCurrentPropIndex(
