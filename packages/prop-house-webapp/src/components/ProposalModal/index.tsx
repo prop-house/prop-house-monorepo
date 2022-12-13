@@ -20,6 +20,7 @@ import {
   setActiveProposal,
   setActiveProposals,
   setActiveRound,
+  setModalActive,
 } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import LoadingIndicator from '../LoadingIndicator';
@@ -29,7 +30,7 @@ import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorModal from '../ErrorModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
-import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
@@ -42,22 +43,21 @@ const ProposalModal = () => {
   const { id } = params;
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const proposal = useAppSelector(state => state.propHouse.activeProposal);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const { account, library: provider } = useEthers();
 
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
   const [failedFetch, setFailedFetch] = useState(false);
-  const [currentProposal, setCurrentProposal] = useState<StoredProposalWithVotes | any>();
-  const [currentPropIndex, setCurrentPropIndex] = useState<number>();
-
-  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
 
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -73,6 +73,7 @@ const ProposalModal = () => {
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+  const winningIds = round && getWinningIds(proposals, round);
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -83,74 +84,56 @@ const ProposalModal = () => {
     });
   };
 
+  // provider
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
   }, [provider, backendHost]);
 
-  // fetch proposal
   useEffect(() => {
-    if (!id) return;
+    if (activeProposal) document.title = `${activeProposal.title}`;
+    dispatch(setModalActive(true));
 
-    const fetch = async () => {
+    return () => {
+      document.title = `Prop House`;
+      dispatch(setModalActive(false));
+    };
+  }, [activeProposal, dispatch]);
+
+  useEffect(() => {
+    if (!proposals) return;
+
+    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === Number(id));
+    setCurrentPropIndex(index + 1);
+    dispatch(setActiveProposal(proposals[index]));
+  }, [proposals, id, dispatch]);
+
+  // when prop modal is entry point to app, all state needs to be fetched
+  useEffect(() => {
+    if (activeProposal) return; // active prop in store already
+    if (!id) return; // id in url param not found
+
+    const fetchAll = async () => {
       try {
-        const proposal = (await backendClient.current.getProposal(
-          Number(id),
-        )) as StoredProposalWithVotes;
-        document.title = `${proposal.title}`;
-        setCurrentProposal(proposal);
+        const proposal = await backendClient.current.getProposal(Number(id));
+        const proposals = await backendClient.current.getAuctionProposals(proposal.auctionId);
+        const round = await backendClient.current.getAuction(proposal.auctionId);
+        const community = await backendClient.current.getCommunityWithId(round.community);
 
         dispatch(setActiveProposal(proposal));
-      } catch (e) {
+        dispatch(setActiveProposals(proposals));
+        dispatch(setActiveCommunity(community));
+        dispatch(setActiveRound(round));
+
+        isRoundOver
+          ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
+          : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+      } catch {
         setFailedFetch(true);
       }
     };
 
-    fetch();
-
-    return () => {
-      document.title = 'Prop House';
-    };
-  }, [id, dispatch, failedFetch]);
-
-  /**
-   * when page is entry point, community and round are not yet
-   * avail for back button so it has to be fetched.
-   */
-  useEffect(() => {
-    if (!proposal) return;
-    const fetchCommunity = async () => {
-      const round = await backendClient.current.getAuction(proposal.auctionId);
-      const community = await backendClient.current.getCommunityWithId(round.community);
-      dispatch(setActiveCommunity(community));
-      dispatch(setActiveRound(round));
-    };
-
-    fetchCommunity();
-  }, [id, dispatch, proposal]);
-
-  // fetch proposals
-  useEffect(() => {
-    if (!round) return;
-
-    const fetchAuctionProposals = async () => {
-      const proposals = await backendClient.current.getAuctionProposals(round.id);
-      dispatch(setActiveProposals(proposals));
-
-      isRoundOver
-        ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
-        : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
-
-      currentProposal &&
-        setCurrentPropIndex(
-          proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) + 1,
-        );
-    };
-
-    fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
-  }, [currentProposal, dispatch, isRoundOver, round]);
+    fetchAll();
+  }, [id, dispatch, failedFetch, activeProposal, isRoundOver]);
 
   // calculate if modal content is scrollable in order to show 'More' button
   const modal = document.querySelector('#propModal');
@@ -167,25 +150,12 @@ const ProposalModal = () => {
   }, [modal]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (
-      proposals &&
-      proposals.length > 0 &&
-      currentProposal.id &&
-      direction &&
-      proposals[
-        proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) + direction
-      ].id
-    ) {
-      navigate(
-        `${pathname.replace(
-          /[^/]*$/,
-          proposals[
-            proposals.findIndex((p: StoredProposalWithVotes) => p.id === currentProposal.id) +
-              direction
-          ].id.toString(),
-        )}`,
-      );
-    }
+    if (!activeProposal || !proposals || proposals.length === 0) return;
+
+    const newPropIndex =
+      proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
+    dispatch(setActiveProposal(proposals[newPropIndex]));
+    navigate(`${pathname.replace(/[^/]*$/, proposals[newPropIndex].id.toString())}`);
   };
 
   const _signerIsContract = async () => {
@@ -199,7 +169,7 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
-    if (!provider) return;
+    if (!provider || !activeProposal) return;
 
     try {
       const blockHeight = await provider.getBlockNumber();
@@ -224,6 +194,7 @@ const ProposalModal = () => {
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
+      refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
@@ -235,8 +206,6 @@ const ProposalModal = () => {
       setShowErrorModal(true);
     }
   };
-
-  const winningIds = round && getWinningIds(proposals, round);
 
   return (
     <>
@@ -274,10 +243,10 @@ const ProposalModal = () => {
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
-        {proposal && proposals && proposals.length > 0 && currentPropIndex && currentProposal ? (
+        {activeProposal && proposals && proposals.length > 0 && currentPropIndex ? (
           <>
             <ProposalHeaderAndBody
-              currentProposal={currentProposal}
+              currentProposal={activeProposal}
               currentPropIndex={currentPropIndex}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               handleClosePropModal={handleClosePropModal}
@@ -290,7 +259,7 @@ const ProposalModal = () => {
               propIndex={currentPropIndex}
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
-              isWinner={winningIds && isWinner(winningIds, proposal.id)}
+              isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
             />
           </>
         ) : failedFetch ? (

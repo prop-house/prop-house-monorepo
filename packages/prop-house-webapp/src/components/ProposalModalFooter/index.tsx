@@ -2,7 +2,6 @@ import { ProgressBar } from 'react-bootstrap';
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import PropCardVotingModule from '../PropCardVotingModule';
-import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import TruncateThousands from '../TruncateThousands';
@@ -157,11 +156,7 @@ const ProposalModalFooter: React.FC<{
                     </div>
 
                     <div className="mobileTooltipContainer">
-                      <PropCardVotingModule
-                        proposal={proposal}
-                        cardStatus={ProposalCardStatus.Voting}
-                      />
-
+                      <PropCardVotingModule proposal={proposal} />
                       <VoteAllotmentTooltip />
                     </div>
 

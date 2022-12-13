@@ -77,14 +77,11 @@ const Round = () => {
             auctionStatus(round) === AuctionStatus.AuctionEnded ||
               auctionStatus(round) === AuctionStatus.AuctionVoting
               ? SortType.VoteCount
-              : SortType.Random,
+              : SortType.CreatedAt,
             false,
           );
     };
     fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
   }, [dispatch, fromProposalPage, isRoundOver, round]);
 
   return (

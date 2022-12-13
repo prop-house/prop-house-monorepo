@@ -31,25 +31,18 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
 
   const handleKeyPress = useCallback(
     event => {
-      if (event.key === 'ArrowLeft') {
-        if (!isFirstProp) {
-          handleDirectionalArrowClick(Direction.Down);
-        }
+      if (event.key === 'ArrowLeft' && !isFirstProp) {
+        handleDirectionalArrowClick(Direction.Down);
       }
-      if (event.key === 'ArrowRight') {
-        if (!isLastProp) {
-          handleDirectionalArrowClick(Direction.Up);
-        }
+      if (event.key === 'ArrowRight' && !isLastProp) {
+        handleDirectionalArrowClick(Direction.Up);
       }
     },
     [handleDirectionalArrowClick, isFirstProp, isLastProp],
   );
 
   useEffect(() => {
-    // attach the event listener
     document.addEventListener('keydown', handleKeyPress);
-
-    // remove the event listener
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
