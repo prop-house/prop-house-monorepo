@@ -99,7 +99,6 @@ const ProposalModal = () => {
     };
   }, [activeProposal, dispatch]);
 
-  // set initial prop index
   useEffect(() => {
     if (!proposals) return;
 
