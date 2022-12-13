@@ -7,7 +7,6 @@ import React from 'react';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useNavigate, useParams } from 'react-router-dom';
 import { openInNewTab } from '../../utils/openInNewTab';
-
 import { buildRoundPath } from '../../utils/buildRoundPath';
 
 const VoteAllotmentTooltip: React.FC<{}> = () => {
