@@ -102,10 +102,11 @@ const ProposalModal = () => {
   // set initial prop index
   useEffect(() => {
     if (!proposals) return;
-    setCurrentPropIndex(
-      proposals.findIndex((p: StoredProposalWithVotes) => p.id === Number(id)) + 1,
-    );
-  }, [proposals, id]);
+
+    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === Number(id));
+    setCurrentPropIndex(index + 1);
+    dispatch(setActiveProposal(proposals[index]));
+  }, [proposals, id, dispatch]);
 
   // when prop modal is entry point to app, all state needs to be fetched
   useEffect(() => {
