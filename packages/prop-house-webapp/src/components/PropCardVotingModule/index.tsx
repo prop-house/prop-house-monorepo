@@ -8,6 +8,7 @@ import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
+import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
 
 const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
@@ -22,6 +23,7 @@ const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = pr
 
   const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
+  const _votesRemaining = votesRemaining(votingPower, submittedVotes, voteAllotments);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
@@ -55,11 +57,12 @@ const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = pr
     if (!proposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
+    const numVotesAllotting = inputVotes - allottedVotesForProp;
 
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (inputVotes > votingPower - submittedVotes) {
+    if (numVotesAllotting > votingPower - submittedVotes || numVotesAllotting > _votesRemaining) {
       setAttemptedInputVotes(inputVotes);
       setDisplayWarningTooltip(true);
       setTimeout(() => {
