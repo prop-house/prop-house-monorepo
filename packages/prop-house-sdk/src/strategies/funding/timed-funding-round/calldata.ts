@@ -103,7 +103,7 @@ export const getTimedFundingRoundCancelProposalCalldata = (
 
 /**
  * Generates a calldata array for casting a vote through an authenticator
- * @param voterAddress The address of the proposal creator
+ * @param voterAddress The address of the voter
  * @param proposalVotes The proposal IDs and voting power
  * @param usedVotingStrategies The array of the used voting strategy indexes
  * @param usedVotingStrategyParams The array of arrays containing the parameters corresponding to the used voting strategies
