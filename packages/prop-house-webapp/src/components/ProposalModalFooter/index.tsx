@@ -24,13 +24,22 @@ import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
+  showVoteAllotmentModal: boolean;
+  setShowVoteAllotmentModal: Dispatch<SetStateAction<boolean>>;
   propIndex: number | undefined;
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
   isWinner?: boolean;
 }> = props => {
-  const { setShowVotingModal, propIndex, numberOfProps, handleDirectionalArrowClick, isWinner } =
-    props;
+  const {
+    setShowVotingModal,
+    showVoteAllotmentModal,
+    setShowVoteAllotmentModal,
+    propIndex,
+    numberOfProps,
+    handleDirectionalArrowClick,
+    isWinner,
+  } = props;
 
   const { account, library } = useEthers();
   const connect = useWeb3Modal();

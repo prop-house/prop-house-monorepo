@@ -19,6 +19,7 @@ interface ProposalHeaderAndBodyProps {
   handleClosePropModal: () => void;
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
+  showVoteAllotmentModal: boolean;
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -31,6 +32,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     handleClosePropModal,
     hideScrollButton,
     setHideScrollButton,
+    showVoteAllotmentModal,
   } = props;
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -86,6 +88,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                   handleDirectionalArrowClick={handleDirectionalArrowClick}
                   isFirstProp={isFirstProp}
                   isLastProp={isLastProp && isLastProp}
+                  showVoteAllotmentModal={showVoteAllotmentModal}
                 />
 
                 <Divider />

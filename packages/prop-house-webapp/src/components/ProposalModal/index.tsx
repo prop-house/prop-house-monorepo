@@ -266,10 +266,13 @@ const ProposalModal = () => {
               handleClosePropModal={handleClosePropModal}
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
+              showVoteAllotmentModal={showVoteAllotmentModal}
             />
 
             <ProposalModalFooter
               setShowVotingModal={setShowVoteConfirmationModal}
+              showVoteAllotmentModal={showVoteAllotmentModal}
+              setShowVoteAllotmentModal={setShowVoteAllotmentModal}
               propIndex={currentPropIndex}
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
