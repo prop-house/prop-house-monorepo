@@ -198,7 +198,8 @@ body {
 
 .proposalModalContainer {
   max-height: 100% !important;
-  overflow-y: auto !important;
+  overflow-y: scroll !important;
+  overflow-y: overlay !important;
 }
 .proposalModalContainer .container {
   min-width: 100%;
@@ -244,7 +245,7 @@ body {
   font-size: 16px !important;
   line-height: 21px !important;
   max-width: 375px;
-  overflow-y: overlay !important;
+  overflow-y: scroll !important;
 }
 .__react_component_tooltip.show {
   opacity: 1 !important;
