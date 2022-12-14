@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
@@ -137,17 +137,31 @@ const ProposalModal = () => {
 
   // calculate if modal content is scrollable in order to show 'More' button
   const modal = document.querySelector('#propModal');
+
+  const handleScroll = useCallback(event => {
+    setHideScrollButton(true);
+  }, []);
+
   useEffect(() => {
     if (modal) {
-      modal.addEventListener(
-        'scroll',
-        function () {
-          setHideScrollButton(true);
-        },
-        false,
-      );
+      if (modal.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
+
+      modal.addEventListener('scroll', handleScroll, false);
     }
-  }, [modal]);
+  }, [handleScroll, hideScrollButton, modal]);
+
+  const handleKeyPress = useCallback(event => {
+    if (event.key === 'ArrowDown') {
+      setHideScrollButton(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
     if (!activeProposal || !proposals || proposals.length === 0) return;
