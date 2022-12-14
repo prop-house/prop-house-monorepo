@@ -130,7 +130,9 @@ const ProposalModalFooter: React.FC<{
                         <span>Cast your votes</span>
 
                         <span className={classes.totalVotes}>
-                          <VoteAllotmentTooltip />
+                          <VoteAllotmentTooltip
+                            setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                          />
 
                           {`${
                             votesLeftToAllot > 0
@@ -165,8 +167,11 @@ const ProposalModalFooter: React.FC<{
                     </div>
 
                     <div className="mobileTooltipContainer">
-                      <PropCardVotingModule proposal={proposal} />
-                      <VoteAllotmentTooltip />
+                      <PropCardVotingModule
+                        proposal={proposal}
+                        showVoteAllotmentModal={showVoteAllotmentModal}
+                      />
+                      <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
                     </div>
 
                     <Button
