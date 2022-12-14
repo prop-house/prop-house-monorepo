@@ -35,6 +35,7 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import VoteAllotmentModal from '../VoteAllotmentModal';
 
 const ProposalModal = () => {
   const [showProposalModal, setShowProposalModal] = useState(true);
@@ -63,6 +64,7 @@ const ProposalModal = () => {
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
   const [errorModalMessage, setErrorModalMessage] = useState({
@@ -248,6 +250,13 @@ const ProposalModal = () => {
           title={errorModalMessage.title}
           message={errorModalMessage.message}
           image={errorModalMessage.image}
+        />
+      )}
+
+      {showVoteAllotmentModal && (
+        <VoteAllotmentModal
+          showModal={showVoteAllotmentModal}
+          setShowModal={setShowVoteAllotmentModal}
         />
       )}
 
