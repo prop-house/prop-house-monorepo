@@ -244,7 +244,7 @@ body {
   font-size: 16px !important;
   line-height: 21px !important;
   max-width: 375px;
-  overflow-y: scroll;
+  overflow-y: overlay !important;
 }
 .__react_component_tooltip.show {
   opacity: 1 !important;
