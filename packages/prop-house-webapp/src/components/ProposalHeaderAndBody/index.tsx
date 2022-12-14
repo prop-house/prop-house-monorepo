@@ -54,7 +54,8 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     ) {
       setHideScrollButton(true);
     }
-  }, [setHideScrollButton]);
+    // watch for proposal change to reset scroll button
+  }, [proposal, setHideScrollButton]);
 
   return (
     <>
