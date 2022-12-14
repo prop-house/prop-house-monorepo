@@ -14,6 +14,7 @@ export interface ProposalModalHeaderProps {
   handleDirectionalArrowClick: (e: any) => void;
   isFirstProp: boolean;
   isLastProp: boolean | undefined;
+  showVoteAllotmentModal: boolean;
 }
 
 const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
@@ -27,18 +28,19 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
     handleDirectionalArrowClick,
     isFirstProp,
     isLastProp,
+    showVoteAllotmentModal,
   } = props;
 
   const handleKeyPress = useCallback(
     event => {
-      if (event.key === 'ArrowLeft' && !isFirstProp) {
+      if (event.key === 'ArrowLeft' && !isFirstProp && !showVoteAllotmentModal) {
         handleDirectionalArrowClick(Direction.Down);
       }
-      if (event.key === 'ArrowRight' && !isLastProp) {
+      if (event.key === 'ArrowRight' && !isLastProp && !showVoteAllotmentModal) {
         handleDirectionalArrowClick(Direction.Up);
       }
     },
-    [handleDirectionalArrowClick, isFirstProp, isLastProp],
+    [handleDirectionalArrowClick, isFirstProp, isLastProp, showVoteAllotmentModal],
   );
 
   useEffect(() => {

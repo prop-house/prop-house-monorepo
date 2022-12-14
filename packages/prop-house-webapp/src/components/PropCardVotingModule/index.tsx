@@ -11,8 +11,11 @@ import { votesForProp } from '../../utils/voteAllotment';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
 
-const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
-  const { proposal } = props;
+const PropCardVotingModule: React.FC<{
+  proposal: StoredProposalWithVotes;
+  showVoteAllotmentModal?: boolean;
+}> = props => {
+  const { proposal, showVoteAllotmentModal } = props;
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
@@ -97,7 +100,7 @@ const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = pr
   // handle votes by up/down keyboard press
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
-      if (!modalActive) return; // only use keyboard voting in modal
+      if (!modalActive || showVoteAllotmentModal) return; // only use keyboard voting in modal
 
       const direction =
         event.key === 'ArrowUp'
@@ -122,7 +125,7 @@ const PropCardVotingModule: React.FC<{ proposal: StoredProposalWithVotes }> = pr
         }),
       );
     },
-    [proposal, allottedVotesForProp, _canAllotVotes, dispatch, modalActive],
+    [modalActive, showVoteAllotmentModal, proposal, _canAllotVotes, allottedVotesForProp, dispatch],
   );
 
   useEffect(() => {
