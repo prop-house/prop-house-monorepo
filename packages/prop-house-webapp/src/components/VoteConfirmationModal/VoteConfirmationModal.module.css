@@ -32,6 +32,7 @@
   transform: translate(-50%, -50%);
   max-width: 420px;
   min-height: 200px;
+  min-width: 350px !important;
 }
 
 .titleContainer p {
