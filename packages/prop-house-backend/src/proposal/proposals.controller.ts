@@ -13,6 +13,7 @@ import {
 import { AuctionsService } from 'src/auction/auctions.service';
 import { ECDSASignedPayloadValidationPipe } from 'src/entities/ecdsa-signed.pipe';
 import { Proposal } from 'src/proposal/proposal.entity';
+import { canSubmitProposals } from 'src/utils';
 import {
   CreateProposalDto,
   DeleteProposalDto,
@@ -55,6 +56,12 @@ export class ProposalsController {
         HttpStatus.NOT_FOUND,
       );
 
+    if (!canSubmitProposals(await foundProposal.auction))
+      throw new HttpException(
+        'You cannot delete proposals for this round at this time',
+        HttpStatus.BAD_REQUEST,
+      );
+
     // Check that signed payload and body have same proposal ID
     const signedPayload = JSON.parse(
       Buffer.from(deleteProposalDto.signedData.message, 'base64').toString(),
@@ -63,6 +70,12 @@ export class ProposalsController {
     if (signedPayload.id !== deleteProposalDto.id)
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (signedPayload.address !== foundProposal.address)
+      throw new HttpException(
+        "Found proposal does not match signed payload's address",
         HttpStatus.BAD_REQUEST,
       );
 
@@ -83,6 +96,12 @@ export class ProposalsController {
         HttpStatus.NOT_FOUND,
       );
 
+    if (!canSubmitProposals(await foundProposal.auction))
+      throw new HttpException(
+        'You cannot edit proposals for this round at this time',
+        HttpStatus.BAD_REQUEST,
+      );
+
     // Verify that signed data equals this payload
     const signedPayload = JSON.parse(
       Buffer.from(updateProposalDto.signedData.message, 'base64').toString(),
@@ -99,6 +118,12 @@ export class ProposalsController {
     )
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if (signedPayload.address !== foundProposal.address)
+      throw new HttpException(
+        "Found proposal does not match signed payload's address",
         HttpStatus.BAD_REQUEST,
       );
 
