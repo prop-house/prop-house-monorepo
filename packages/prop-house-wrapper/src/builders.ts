@@ -149,6 +149,25 @@ export class Proposal extends Signable {
   }
 }
 
+export class UpdatedProposal extends Proposal {
+  constructor(
+    public readonly id: number,
+    public readonly title: string,
+    public readonly what: string,
+    public readonly tldr: string,
+    public readonly auctionId: number,
+  ) {
+    super(title, what, tldr, auctionId);
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+      ...super.toPayload(),
+    };
+  }
+}
+
 export interface StoredProposal extends Proposal {
   id: number;
   address: string;
@@ -158,6 +177,18 @@ export interface StoredProposal extends Proposal {
 
 export interface StoredProposalWithVotes extends StoredProposal {
   votes: StoredVote[];
+}
+
+export class DeleteProposal extends Signable {
+  constructor(public readonly id: number) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+    };
+  }
 }
 
 export enum Direction {

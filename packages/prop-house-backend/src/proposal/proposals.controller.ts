@@ -1,17 +1,24 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { ECDSASignedPayloadValidationPipe } from 'src/entities/ecdsa-signed.pipe';
 import { Proposal } from 'src/proposal/proposal.entity';
-import { CreateProposalDto, GetProposalsDto } from './proposal.types';
+import {
+  CreateProposalDto,
+  DeleteProposalDto,
+  GetProposalsDto,
+  UpdateProposalDto,
+} from './proposal.types';
 import { ProposalsService } from './proposals.service';
 
 @Controller('proposals')
@@ -32,6 +39,76 @@ export class ProposalsController {
     if (!foundProposal)
       throw new HttpException('Proposal not found', HttpStatus.NOT_FOUND);
     return foundProposal;
+  }
+
+  @Delete()
+  async delete(
+    @Body(ECDSASignedPayloadValidationPipe)
+    deleteProposalDto: DeleteProposalDto,
+  ) {
+    const foundProposal = await this.proposalsService.findOne(
+      deleteProposalDto.id,
+    );
+    if (!foundProposal)
+      throw new HttpException(
+        'No proposal with that ID exists',
+        HttpStatus.NOT_FOUND,
+      );
+
+    // Check that signed payload and body have same proposal ID
+    const signedPayload = JSON.parse(
+      Buffer.from(deleteProposalDto.signedData.message, 'base64').toString(),
+    );
+
+    if (signedPayload.id !== deleteProposalDto.id)
+      throw new HttpException(
+        "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    return await this.proposalsService.remove(deleteProposalDto.id);
+  }
+
+  @Patch()
+  async update(
+    @Body(ECDSASignedPayloadValidationPipe)
+    updateProposalDto: UpdateProposalDto,
+  ): Promise<Proposal> {
+    const foundProposal = await this.proposalsService.findOne(
+      updateProposalDto.id,
+    );
+    if (!foundProposal)
+      throw new HttpException(
+        'No proposal with that ID exists',
+        HttpStatus.NOT_FOUND,
+      );
+
+    // Verify that signed data equals this payload
+    const signedPayload = JSON.parse(
+      Buffer.from(updateProposalDto.signedData.message, 'base64').toString(),
+    );
+
+    if (
+      !(
+        signedPayload.what === updateProposalDto.what &&
+        signedPayload.tldr === updateProposalDto.tldr &&
+        signedPayload.title === updateProposalDto.title &&
+        signedPayload.parentAuctionId === updateProposalDto.parentAuctionId &&
+        signedPayload.id === updateProposalDto.id
+      )
+    )
+      throw new HttpException(
+        "Signed payload and supplied data doesn't match",
+        HttpStatus.BAD_REQUEST,
+      );
+
+    foundProposal.address = updateProposalDto.address;
+    foundProposal.signatureState = updateProposalDto.signatureState;
+    foundProposal.what = updateProposalDto.what;
+    foundProposal.tldr = updateProposalDto.tldr;
+    foundProposal.title = updateProposalDto.title;
+    foundProposal.signedData = updateProposalDto.signedData;
+    return this.proposalsService.store(foundProposal);
   }
 
   @Post()
