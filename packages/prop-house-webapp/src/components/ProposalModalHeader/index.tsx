@@ -1,8 +1,9 @@
 import classes from './ProposalModalHeader.module.css';
 import EthAddress from '../EthAddress';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
-import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useCallback, useEffect } from 'react';
+import VotesDisplay from '../VotesDisplay';
 
 export interface ProposalModalHeaderProps {
   fieldTitle: string;
@@ -15,6 +16,7 @@ export interface ProposalModalHeaderProps {
   isFirstProp: boolean;
   isLastProp: boolean | undefined;
   showVoteAllotmentModal: boolean;
+  proposal: StoredProposalWithVotes;
 }
 
 const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
@@ -29,6 +31,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
     isFirstProp,
     isLastProp,
     showVoteAllotmentModal,
+    proposal
   } = props;
 
   const handleKeyPress = useCallback(
@@ -57,13 +60,15 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
           <div className={classes.subinfo}>
             <div className={classes.communityAndPropNumber}>
               <span className={classes.propNumber}>
-                Prop {propIndex} of {numberOfProps}
+                Prop {propIndex} of {numberOfProps} by
               </span>{' '}
-              <span className={classes.creditDash}>—</span>
-              <span className={classes.propCredit}>#{proposalId} by</span>
               <div className={classes.submittedBy}>
                 <EthAddress address={address} hideDavatar={true} className={classes.submittedBy} />
               </div>
+              <span className={classes.creditDash}>
+                —
+              </span>
+              <VotesDisplay proposal={proposal} />
             </div>
           </div>
         )}
