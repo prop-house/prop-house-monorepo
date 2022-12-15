@@ -75,15 +75,13 @@ const ProposalModal = () => {
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const winningIds = round && getWinningIds(proposals, round);
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
     setShowProposalModal(false);
-    navigate(buildRoundPath(community, round), {
-      state: { fromProposalPage: true },
-      replace: false,
-    });
+    navigate(buildRoundPath(community, round), { replace: false });
   };
 
   // provider
@@ -126,7 +124,7 @@ const ProposalModal = () => {
         dispatch(setActiveCommunity(community));
         dispatch(setActiveRound(round));
 
-        isRoundOver
+        isVotingWindow || isRoundOver
           ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
           : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
       } catch {
@@ -135,7 +133,7 @@ const ProposalModal = () => {
     };
 
     fetchAll();
-  }, [id, dispatch, failedFetch, activeProposal, isRoundOver]);
+  }, [id, dispatch, failedFetch, activeProposal, isVotingWindow, isRoundOver]);
 
   // calculate if modal content is scrollable in order to show 'More' button
   const modal = document.querySelector('#propModal');
