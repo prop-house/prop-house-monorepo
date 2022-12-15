@@ -1,0 +1,97 @@
+.votingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.votingBarAndTooltip {
+  display: flex;
+  width: 65%;
+  gap: 20px;
+  justify-content: space-between;
+}
+.votingProgressBar,
+.voteAllotmentSection {
+  width: 100%;
+}
+.voteAllotmentSection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+.icon {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand-gray);
+}
+.icon span {
+  color: var(--brand-gray-transparent) !important;
+}
+.votingInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+.totalVotes {
+  color: var(--brand-gray);
+  display: flex;
+  gap: 5px;
+}
+.totalVotes svg {
+  color: var(--brand-gray-transparent);
+}
+.submitVotesButton {
+  font-size: 14px !important;
+  padding: 4px 12px !important;
+  line-height: 18px !important;
+}
+.crownNoun {
+  display: flex;
+}
+.crownNoun img {
+  height: 14px;
+}
+@media (max-width: 992px) {
+  .voteAllotmentSection {
+    width: 66%;
+  }
+}
+@media (max-width: 767px) {
+  .votingProgressBar,
+  .voteAllotmentSection {
+    width: 50%;
+  }
+}
+@media (max-width: 700px) {
+  .icon,
+  .crownNoun {
+    display: none !important;
+  }
+}
+@media (max-width: 767px) {
+  .votingProgressBar {
+    width: 40%;
+    width: 100%;
+  }
+  .votingBarAndTooltip {
+    width: 50%;
+  }
+}
+
+@media (max-width: 575px) {
+  .votingProgressBar,
+  .votingBarAndTooltip,
+  .icon {
+    display: none !important;
+  }
+  .voteAllotmentSection {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .submitVotesButton {
+    height: 38px;
+  }
+}

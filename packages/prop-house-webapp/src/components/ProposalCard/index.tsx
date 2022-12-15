@@ -55,7 +55,7 @@ const ProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, isWinner && classes.winner)}
+          classNames={clsx(classes.proposalCard, isWinner && auctionStatus === AuctionStatus.AuctionEnded && classes.winner)}
         >
           <div className={classes.textContainter}>
             <div className={classes.titleContainer}>
