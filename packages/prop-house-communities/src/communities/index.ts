@@ -55,5 +55,16 @@ export const communities = new CaseInsensitiveMap(
     '0xdf9B7D26c8Fc806b1Ae6273684556761FF02d422': balanceOfErc721(10),
     // NSFW
     '0xa0aaf3b8a71dcb51fb61845899ab6df3e2c81ae3': balanceOfErc721(10),
+    // Shark DAO
+    '0x8277aCa3Aa9eCf15cB224346575C4130CF36dE00': balanceOfErc721(),
+    // Tiny Dinos
+    '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4': balanceOfErc721Multiple(
+      [
+        '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4',
+        '0x5a1190759c9e7cf42da401639016f8f60affd465',
+        '0xc1dcc70e27b187457709e0c72db3df941034ec6f',
+      ],
+      [1, 1, 1],
+    ),
   }),
 );
