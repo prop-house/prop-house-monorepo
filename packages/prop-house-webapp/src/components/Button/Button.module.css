@@ -1,6 +1,7 @@
 .btn {
   border-radius: 10px;
   padding: 0.575rem 0.65rem 0.525rem;
+  padding: 6px 12px !important;
   white-space: normal;
   text-align: center;
   font-size: 16px !important;
