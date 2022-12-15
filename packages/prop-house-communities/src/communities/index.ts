@@ -51,5 +51,14 @@ export const communities = new CaseInsensitiveMap(
     '0x38930aae699c4cd99d1d794df9db41111b13092b': balanceOfErc721(),
     // Anata
     '0xf729f878F95548BC7F14B127c96089cf121505F8': balanceOfErc721(),
+    // Tiny Dinos
+    '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4': balanceOfErc721Multiple(
+      [
+        '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4',
+        '0x5a1190759c9e7cf42da401639016f8f60affd465',
+        '0xc1dcc70e27b187457709e0c72db3df941034ec6f',
+      ],
+      [1, 1, 1],
+    ),
   }),
 );
