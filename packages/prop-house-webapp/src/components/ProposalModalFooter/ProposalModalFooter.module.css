@@ -175,7 +175,7 @@
     min-height: auto;
   }
   .btnContainer {
-    padding: 0px 12px;
+    padding: 0px 12px 12px 12px;
   }
   .footerPadding .btnContainer {
     padding: 10px 0px 0px 0px;

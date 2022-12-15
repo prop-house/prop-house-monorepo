@@ -96,120 +96,122 @@ const ProposalModalFooter: React.FC<{
   return (
     <>
       <div className={clsx(classes.footerContainer, 'footer')}>
-        {isRoundOver && proposal && isWinner ? (
-          <WinningProposalBanner numOfVotes={proposal.voteCount} />
-        ) : (
-          <div className={classes.footerPadding}>
-            {/* VOTING WINDOW, NOT CONNECTED */}
-            {!isRoundOver && !account && (
-              <Button
-                classNames={classes.fullWidthButton}
-                text={isVotingWindow ? 'Connect to vote' : 'Connect to submit a prop'}
-                bgColor={ButtonColor.Pink}
-                onClick={connect}
-              />
-            )}
-            {account && round && community && isProposingWindow ? (
-              <Button
-                classNames={classes.fullWidthButton}
-                text={'Create your proposal'}
-                bgColor={ButtonColor.Green}
-                onClick={() => navigate('/create', { state: { auction: round, community } })}
-              />
-            ) : (
-              <></>
-            )}
+        <>
+          {isRoundOver && proposal && isWinner ? (
+            <WinningProposalBanner numOfVotes={proposal.voteCount} />
+          ) : (
+            <div className={classes.footerPadding}>
+              {/* VOTING WINDOW, NOT CONNECTED */}
+              {!isRoundOver && !account && (
+                <Button
+                  classNames={classes.fullWidthButton}
+                  text={isVotingWindow ? 'Connect to vote' : 'Connect to submit a prop'}
+                  bgColor={ButtonColor.Pink}
+                  onClick={connect}
+                />
+              )}
+              {account && round && community && isProposingWindow ? (
+                <Button
+                  classNames={classes.fullWidthButton}
+                  text={'Create your proposal'}
+                  bgColor={ButtonColor.Green}
+                  onClick={() => navigate('/create', { state: { auction: round, community } })}
+                />
+              ) : (
+                <></>
+              )}
 
-            {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-            {account && proposal && isVotingWindow && votingPower ? (
-              <>
-                <div className={classes.votingContainer}>
-                  <div className={classes.votingBarAndTooltip}>
-                    <div className={classes.votingProgressBar}>
-                      <div className={classes.votingInfo}>
-                        <span>Cast your votes</span>
+              {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
+              {account && proposal && isVotingWindow && votingPower ? (
+                <>
+                  <div className={classes.votingContainer}>
+                    <div className={classes.votingBarAndTooltip}>
+                      <div className={classes.votingProgressBar}>
+                        <div className={classes.votingInfo}>
+                          <span>Cast your votes</span>
 
-                        <span className={classes.totalVotes}>
-                          <VoteAllotmentTooltip
-                            setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                          />
+                          <span className={classes.totalVotes}>
+                            <VoteAllotmentTooltip
+                              setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                            />
 
-                          {`${
-                            votesLeftToAllot > 0
+                            {`${votesLeftToAllot > 0
                               ? `${votingPower - submittedVotes - numAllotedVotes} left`
                               : 'no votes left'
-                          }`}
-                        </span>
-                      </div>
-
-                      <ProgressBar
-                        className={clsx(
-                          classes.votingBar,
-                          submittedVotes > 0 &&
-                            votingPower !== submittedVotes &&
-                            'roundAllotmentBar',
-                        )}
-                      >
-                        <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
+                              }`}
+                          </span>
+                        </div>
 
                         <ProgressBar
-                          variant="warning"
-                          now={(numAllotedVotes / votingPower) * 100}
-                          key={2}
+                          className={clsx(
+                            classes.votingBar,
+                            submittedVotes > 0 &&
+                            votingPower !== submittedVotes &&
+                            'roundAllotmentBar',
+                          )}
+                        >
+                          <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
+
+                          <ProgressBar
+                            variant="warning"
+                            now={(numAllotedVotes / votingPower) * 100}
+                            key={2}
+                          />
+                        </ProgressBar>
+                      </div>
+                    </div>
+
+                    <div className={classes.voteAllotmentSection}>
+                      <div className={classes.icon}>
+                        <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
+                      </div>
+
+                      <div className="mobileTooltipContainer">
+                        <PropCardVotingModule
+                          proposal={proposal}
+                          showVoteAllotmentModal={showVoteAllotmentModal}
                         />
-                      </ProgressBar>
-                    </div>
-                  </div>
+                        <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+                      </div>
 
-                  <div className={classes.voteAllotmentSection}>
-                    <div className={classes.icon}>
-                      <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
-                    </div>
-
-                    <div className="mobileTooltipContainer">
-                      <PropCardVotingModule
-                        proposal={proposal}
-                        showVoteAllotmentModal={showVoteAllotmentModal}
+                      <Button
+                        classNames={classes.submitVotesButton}
+                        text={'Submit votes'}
+                        bgColor={ButtonColor.Purple}
+                        disabled={
+                          voteWeightForAllottedVotes(voteAllotments) === 0 ||
+                          submittedVotes === votingPower
+                        }
+                        onClick={() => setShowVotingModal(true)}
                       />
-                      <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
                     </div>
-
-                    <Button
-                      classNames={classes.submitVotesButton}
-                      text={'Submit votes'}
-                      bgColor={ButtonColor.Purple}
-                      disabled={
-                        voteWeightForAllottedVotes(voteAllotments) === 0 ||
-                        submittedVotes === votingPower
-                      }
-                      onClick={() => setShowVotingModal(true)}
-                    />
                   </div>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
-            <div className={classes.btnContainer}>
-              <div className={classes.propNavigationButtons}>
-                <button
-                  disabled={propIndex === 1}
-                  onClick={() => handleDirectionalArrowClick(Direction.Down)}
-                >
-                  <ImArrowLeft2 size={'1.5rem'} />
-                  <span>Back</span>
-                </button>
-
-                <button
-                  onClick={() => handleDirectionalArrowClick(Direction.Up)}
-                  disabled={propIndex === numberOfProps}
-                >
-                  <span>Next</span> <ImArrowRight2 size={'1.5rem'} />
-                </button>
-              </div>
+                </>
+              ) : (
+                <></>
+              )}
             </div>
+          )}
+        </>
+
+        <div className={classes.btnContainer}>
+          <div className={classes.propNavigationButtons}>
+            <button
+              disabled={propIndex === 1}
+              onClick={() => handleDirectionalArrowClick(Direction.Down)}
+            >
+              <ImArrowLeft2 size={'1.5rem'} />
+              <span>Back</span>
+            </button>
+
+            <button
+              onClick={() => handleDirectionalArrowClick(Direction.Up)}
+              disabled={propIndex === numberOfProps}
+            >
+              <span>Next</span> <ImArrowRight2 size={'1.5rem'} />
+            </button>
           </div>
-        )}
+        </div>
       </div>
     </>
   );
