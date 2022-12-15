@@ -85,7 +85,7 @@ const PropCardsAndModules: React.FC<{
                     proposal={proposal}
                     auctionStatus={auctionStatus(auction)}
                     cardStatus={cardStatus(votingPower > 0, auction)}
-                    winner={winningIds && isWinner(winningIds, proposal.id)}
+                    isWinner={winningIds && isWinner(winningIds, proposal.id)}
                   />
                 </Col>
               );

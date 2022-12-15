@@ -8,7 +8,12 @@
   flex-direction: column;
   max-width: 75%;
 }
-
+.crownNoun {
+  display: flex;
+}
+.crownNoun img {
+  height: 14px;
+}
 .creditDash {
   font-weight: 500;
   color: var(--brand-black-semi-transparent);

@@ -3,8 +3,6 @@ import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import PropCardVotingModule from '../PropCardVotingModule';
 import Button, { ButtonColor } from '../Button';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
-import TruncateThousands from '../TruncateThousands';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
@@ -21,6 +19,7 @@ import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { useNavigate } from 'react-router-dom';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
+import VotesDisplay from '../VotesDisplay';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -162,8 +161,12 @@ const ProposalModalFooter: React.FC<{
                     </div>
 
                     <div className={classes.voteAllotmentSection}>
+                      {isWinner && <div className={classes.crownNoun}>
+                        <img src="/heads/crown.png" alt="crown" />
+                      </div>}
+
                       <div className={classes.icon}>
-                        <VoteIcon /> <TruncateThousands amount={proposal.voteCount} /> <span>+</span>
+                        <VotesDisplay proposal={proposal} /> <span>+</span>
                       </div>
 
                       <div className="mobileTooltipContainer">
