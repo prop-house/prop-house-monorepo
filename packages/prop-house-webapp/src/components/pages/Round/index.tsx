@@ -27,7 +27,6 @@ const Round = () => {
   const location = useLocation();
   const communityName = location.pathname.substring(1).split('/')[0];
   const roundName = location.pathname.substring(1).split('/')[1];
-  const fromProposalPage = location.state && location.state.fromProposalPage;
 
   const dispatch = useAppDispatch();
   const { library } = useEthers();
@@ -40,6 +39,7 @@ const Round = () => {
   const { t } = useTranslation();
 
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -69,20 +69,13 @@ const Round = () => {
 
       dispatch(setActiveProposals(proposals));
 
-      // default sorting method is random, but if user is navigating back from the proposal page we sort by date (which is the order the user is viewing the props in the modal), however if the auction is over we sort by votes
-      fromProposalPage && !isRoundOver
-        ? dispatchSortProposals(dispatch, SortType.CreatedAt, false)
-        : dispatchSortProposals(
-            dispatch,
-            auctionStatus(round) === AuctionStatus.AuctionEnded ||
-              auctionStatus(round) === AuctionStatus.AuctionVoting
-              ? SortType.VoteCount
-              : SortType.CreatedAt,
-            false,
-          );
+      // if the round is in voting state or over we sort by votes, otherwise we sort by created date
+      isVotingWindow || isRoundOver
+        ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
+        : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
     };
     fetchAuctionProposals();
-  }, [dispatch, fromProposalPage, isRoundOver, round]);
+  }, [dispatch, isVotingWindow, isRoundOver, round]);
 
   return (
     <>
