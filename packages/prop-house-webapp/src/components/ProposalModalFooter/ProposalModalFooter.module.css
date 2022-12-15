@@ -78,9 +78,10 @@
     width: 50%;
   }
 }
-@media (max-width: 650px) {
-  .icon {
-    display: none;
+@media (max-width: 700px) {
+  .icon,
+  .crownNoun {
+    display: none !important;
   }
 }
 @media (max-width: 767px) {
@@ -154,7 +155,12 @@
   padding: 10px;
   height: 38px;
 }
-
+.crownNoun {
+  display: flex;
+}
+.crownNoun img {
+  height: 14px;
+}
 @media (max-width: 575px) {
   .votingProgressBar,
   .votingBarAndTooltip,

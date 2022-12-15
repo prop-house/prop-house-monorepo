@@ -5,7 +5,11 @@ const getWinningIds = (
   proposals: StoredProposalWithVotes[] | undefined,
   auction: StoredAuction,
 ) => {
-  if (auctionStatus(auction) !== AuctionStatus.AuctionEnded) return;
+  if (
+    auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps ||
+    auctionStatus(auction) === AuctionStatus.AuctionNotStarted
+  )
+    return;
 
   // empty array to store
   const winningIds: number[] = [];

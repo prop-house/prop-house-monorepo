@@ -22,9 +22,9 @@ const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  winner?: boolean;
+  isWinner?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, winner } = props;
+  const { proposal, auctionStatus, cardStatus, isWinner } = props;
 
   let navigate = useNavigate();
 
@@ -55,10 +55,13 @@ const ProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, winner && classes.winner)}
+          classNames={clsx(classes.proposalCard, isWinner && classes.winner)}
         >
           <div className={classes.textContainter}>
             <div className={classes.titleContainer}>
+              {isWinner && <div className={classes.crownNoun}>
+                <img src="/heads/crown.png" alt="crown" />
+              </div>}
               <div className={classes.authorContainer}>{proposal.title}</div>
             </div>
 

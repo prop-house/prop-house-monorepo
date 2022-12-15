@@ -78,6 +78,7 @@ const ProposalModal = () => {
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const winningIds = round && getWinningIds(proposals, round);
 
+
   const handleClosePropModal = () => {
     if (!community || !round) return;
     setShowProposalModal(false);
