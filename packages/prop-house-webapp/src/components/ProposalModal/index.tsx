@@ -3,7 +3,7 @@ import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import { useParams } from 'react-router';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
@@ -38,12 +38,9 @@ import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 
 const ProposalModal = () => {
-  const [showProposalModal, setShowProposalModal] = useState(true);
-
   const params = useParams();
   const { id } = params;
   const navigate = useNavigate();
-  const { pathname } = useLocation();
 
   const { account, library: provider } = useEthers();
 
@@ -80,7 +77,7 @@ const ProposalModal = () => {
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
-    setShowProposalModal(false);
+    dispatch(setModalActive(false));
     navigate(buildRoundPath(community, round), { replace: false });
   };
 
@@ -91,21 +88,18 @@ const ProposalModal = () => {
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
-    dispatch(setModalActive(true));
-
     return () => {
       document.title = `Prop House`;
-      dispatch(setModalActive(false));
     };
   }, [activeProposal, dispatch]);
 
   useEffect(() => {
-    if (!proposals) return;
+    if (!proposals || !activeProposal) return;
 
-    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === Number(id));
+    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id);
     setCurrentPropIndex(index + 1);
     dispatch(setActiveProposal(proposals[index]));
-  }, [proposals, id, dispatch]);
+  }, [proposals, id, dispatch, activeProposal]);
 
   // when prop modal is entry point to app, all state needs to be fetched
   useEffect(() => {
@@ -169,7 +163,6 @@ const ProposalModal = () => {
     const newPropIndex =
       proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
     dispatch(setActiveProposal(proposals[newPropIndex]));
-    navigate(`${pathname.replace(/[^/]*$/, proposals[newPropIndex].id.toString())}`);
   };
 
   const _signerIsContract = async () => {
@@ -259,7 +252,7 @@ const ProposalModal = () => {
       )}
 
       <Modal
-        isOpen={showProposalModal}
+        isOpen={true}
         onRequestClose={() => handleClosePropModal()}
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
