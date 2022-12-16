@@ -19,7 +19,7 @@ import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
-import ProposalModal from './components/ProposalModal';
+import Proposal from './components/pages/Proposal';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -68,10 +68,10 @@ function App() {
             />
 
             <Route path="/faq" element={<FAQ />} />
-            <Route path="/proposal/:id" element={<ProposalModal />} />
+            <Route path="/proposal/:id" element={<Proposal />} />
             <Route path="/:house" element={<House />} />
             <Route path="/:house/:title" element={<Round />} />
-            <Route path="/:house/:title/:id" element={<ProposalModal />} />
+            <Route path="/:house/:title/:id" element={<Proposal />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
