@@ -14,6 +14,7 @@ import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanne
 import ProposalModalVotingModule from '../ProposalModalVotingModule';
 import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
+import { useTranslation } from 'react-i18next';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -36,6 +37,7 @@ const ProposalModalFooter: React.FC<{
   const { account, library } = useEthers();
   const connect = useWeb3Modal();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
@@ -111,14 +113,23 @@ const ProposalModalFooter: React.FC<{
                 )}
 
                 {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                {account && isVotingWindow && votingPower
-                  ? <ProposalModalVotingModule
-                    proposal={proposal}
-                    setShowVotingModal={setShowVotingModal}
-                    setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                    isWinner={isWinner && isWinner}
-                  />
-                  : <></>}
+                {account &&
+                  (isVotingWindow && votingPower > 0 ?
+                    <ProposalModalVotingModule
+                      proposal={proposal}
+                      setShowVotingModal={setShowVotingModal}
+                      setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                      isWinner={isWinner && isWinner}
+                    />
+                    :
+                    <>
+                      <p className={classes.noVotesMessage}>
+                        <b>
+                          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
+                        </b>
+                      </p>
+                    </>)
+                }
               </div>
             )}
           </>
