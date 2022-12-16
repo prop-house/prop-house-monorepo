@@ -11,6 +11,11 @@
 .footerPadding {
   padding: 13px 20px 13px 18px;
 }
+.noVotesContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .noVotesMessage {
   text-align: center;
   margin-bottom: 0px;

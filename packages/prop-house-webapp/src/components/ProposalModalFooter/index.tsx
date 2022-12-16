@@ -96,7 +96,8 @@ const ProposalModalFooter: React.FC<{
                       {!isProposingWindow && <div className={classes.icon}>
                         <VotesDisplay proposal={proposal} />
                       </div>}
-                    </div></div>
+                    </div>
+                  </div>
                 )}
 
 
@@ -123,11 +124,23 @@ const ProposalModalFooter: React.FC<{
                     />
                     :
                     <>
-                      <p className={classes.noVotesMessage}>
-                        <b>
-                          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
-                        </b>
-                      </p>
+                      <div className={classes.noVotesContainer}>
+                        <p className={classes.noVotesMessage}>
+                          <b>
+                            {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
+                          </b>
+                        </p>
+
+                        <div className={classes.voteCount}>
+                          {isWinner && <div className={classes.crownNoun}>
+                            <img src="/heads/crown.png" alt="crown" />
+                          </div>}
+
+                          <div className={classes.icon}>
+                            <VotesDisplay proposal={proposal} />
+                          </div>
+                        </div>
+                      </div>
                     </>)
                 }
               </div>
