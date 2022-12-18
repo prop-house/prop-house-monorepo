@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { Dispatch, Fragment, SetStateAction } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-
+import ReactHtmlParser from 'react-html-parser';
 import classes from './StatusFilters.module.css';
 
 // We aren't using AuctionStatus enum becuase AuctionStatus[0] is 'not started' and we don't filter by 'not started', rather RoundStatus[0] is the default 'all rounds'
@@ -78,14 +78,14 @@ const StatusFilters: React.FC<{
       <div className={clsx(classes.dropdown, 'houseDropdown')}>
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {statuses[currentRoundStatus].title}
+            {ReactHtmlParser(t(`${statuses[currentRoundStatus].title}`))}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
             {statuses.map((s, index) => (
               <Fragment key={index}>
                 <Dropdown.Item key={index} onClick={() => handleClick(s.status)}>
-                  <span>{s.title}</span>
+                  <span>{ReactHtmlParser(t(`${s.title}`))}</span>
                   <span className={classes.count}>{numberOfRoundsPerStatus[index]}</span>
                 </Dropdown.Item>
               </Fragment>
