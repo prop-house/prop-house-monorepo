@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import classes from "./QuillEditorModal.module.css";
-import xIcon from "../../assets/icons/x-icon.png";
-import clsx from "clsx";
-import Modal from "react-modal";
-import Button, { ButtonColor } from "../Button";
-import httpsChecker from "../../utils/httpsChecker";
-import { useTranslation } from "react-i18next";
+import React, { useState } from 'react';
+import classes from './QuillEditorModal.module.css';
+import xIcon from '../../assets/icons/x-icon.png';
+import clsx from 'clsx';
+import Modal from 'react-modal';
+import Button, { ButtonColor } from '../Button';
+import httpsChecker from '../../utils/httpsChecker';
+import { useTranslation } from 'react-i18next';
 
 const QuillEditorModal: React.FC<{
   quill: any;
@@ -16,19 +16,11 @@ const QuillEditorModal: React.FC<{
   setShowModal: any;
   placeholder: string;
   quillModule: string;
-}> = (props) => {
-  const {
-    quill,
-    Quill,
-    title,
-    subtitle,
-    showModal,
-    setShowModal,
-    placeholder,
-    quillModule,
-  } = props;
+}> = props => {
+  const { quill, Quill, title, subtitle, showModal, setShowModal, placeholder, quillModule } =
+    props;
 
-  const [imageLink, setImageLink] = useState("https://");
+  const [imageLink, setImageLink] = useState('https://');
   const { t } = useTranslation();
 
   function closeModal() {
@@ -36,11 +28,7 @@ const QuillEditorModal: React.FC<{
   }
 
   return (
-    <Modal
-      isOpen={showModal}
-      onRequestClose={closeModal}
-      className={clsx(classes.modal)}
-    >
+    <Modal isOpen={showModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.imageLinkInfo}>
         <button className={classes.closeButton} onClick={closeModal}>
           <img src={xIcon} alt="Button to close modal" />
@@ -54,33 +42,33 @@ const QuillEditorModal: React.FC<{
           placeholder={placeholder}
           className={classes.imageLinkInput}
           value={imageLink}
-          onChange={(e) => {
+          onChange={e => {
             setImageLink(e.target.value);
           }}
         />
       </div>
 
       <Button
-        text={t("submit")}
+        text={t('submit')}
         bgColor={ButtonColor.Green}
-        disabled={imageLink === ""}
+        disabled={imageLink === ''}
         onClick={() => {
-          if (quillModule === "image") {
+          if (quillModule === 'image') {
             quill.setSelection(quill.getLength(), 0);
             quill.insertEmbed(
               quill.getSelection().index,
-              "image",
+              'image',
               httpsChecker(imageLink),
-              Quill.sources.USER
+              Quill.sources.USER,
             );
-          } else if (quillModule === "link") {
+          } else if (quillModule === 'link') {
             quill.setSelection();
-            console.log("ran");
-            quill.format("link", imageLink, Quill.sources.USER);
+
+            quill.format('link', imageLink, Quill.sources.USER);
           } else return;
 
           setShowModal(false);
-          setImageLink("https://");
+          setImageLink('https://');
         }}
       />
     </Modal>

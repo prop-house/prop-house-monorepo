@@ -23,6 +23,7 @@ import OpenGraphElements from '../../OpenGraphElements';
 import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import { useTranslation } from 'react-i18next';
 
 const House = () => {
   const location = useLocation();
@@ -39,6 +40,7 @@ const House = () => {
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
@@ -160,7 +162,7 @@ const House = () => {
                     ))
                   ) : input === '' ? (
                     <Col>
-                      <ErrorMessageCard message="No rounds available" />
+                      <ErrorMessageCard message={t('noRoundsAvailable')} />
                     </Col>
                   ) : (
                     <NoSearchResults />

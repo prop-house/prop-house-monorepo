@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction } from 'react';
 interface Languages {
   en: Language;
   jp: Language;
+  es: Language;
 }
 
 interface Language {
@@ -23,6 +24,9 @@ const LocalSwitcher: React.FC<{ setIsNavExpanded: Dispatch<SetStateAction<boolea
     },
     jp: {
       nativeName: '日本語',
+    },
+    es: {
+      nativeName: 'Español',
     },
   };
 

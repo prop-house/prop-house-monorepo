@@ -50,7 +50,7 @@ const SortToggles: React.FC<{
               disabled() && classes.disabled,
             )}
           >
-            <div className={classes.sortLabel}>{t('votes')}</div>
+            <div className={classes.sortLabel}>{t('votesCap')}</div>
             {votesAscending ? <IoArrowDown size={'1.5rem'} /> : <IoArrowUp size={'1.5rem'} />}
           </div>
         )}
