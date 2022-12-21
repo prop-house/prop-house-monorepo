@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
+import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { setActiveProposals } from '../../state/slices/propHouse';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
@@ -112,7 +112,7 @@ const RoundContent: React.FC<{
   // update submitted votes on proposal changes
   useEffect(() => {
     if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggVoteWeightForProps(proposals, account)));
+      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {
