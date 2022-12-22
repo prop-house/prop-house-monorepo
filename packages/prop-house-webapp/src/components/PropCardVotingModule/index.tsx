@@ -129,6 +129,8 @@ const PropCardVotingModule: React.FC<{
   );
 
   useEffect(() => {
+    if (!modalActive) return;
+
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
