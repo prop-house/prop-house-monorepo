@@ -9,7 +9,7 @@ import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByV
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { openInNewTab } from '../../utils/openInNewTab';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { FaLink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { setActiveProposal } from '../../state/slices/propHouse';
@@ -20,7 +20,6 @@ const VoteAllotmentModal: React.FC<{
 }> = props => {
   const { showModal, setShowModal } = props;
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const params = useParams();
