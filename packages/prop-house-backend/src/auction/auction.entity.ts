@@ -12,6 +12,7 @@ import {
   ManyToOne,
   RelationId,
 } from 'typeorm';
+import { EventStatus } from './types';
 
 @Entity()
 @ObjectType()
@@ -95,6 +96,10 @@ export class Auction {
   @Field(() => String)
   balanceBlockTag: number;
 
+  @Column({ default: null })
+  @Field(() => String)
+  eventStatus: EventStatus;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
@@ -103,6 +108,44 @@ export class Auction {
   @BeforeUpdate()
   setUpdatedDate() {
     this.lastUpdatedDate = new Date();
+  }
+
+  withinVotingWindow(): boolean {
+    const now = new Date();
+    return this.proposalEndTime < now && this.votingEndTime > now;
+  }
+
+  withinProposalWindow(): boolean {
+    const now = new Date();
+    return this.startTime < now && this.proposalEndTime > now;
+  }
+
+  beforeStart(): boolean {
+    const now = new Date();
+    return this.startTime > now;
+  }
+
+  complete(): boolean {
+    const now = new Date();
+    return this.votingEndTime < now;
+  }
+
+  finalized(): boolean {
+    return (
+      this.votingEndTime < new Date() &&
+      // Already processed
+      (this.eventStatus === 'auctionClosed' ||
+        // Never processed but was also never discovered
+        this.eventStatus === null)
+    );
+  }
+
+  url(): string {
+    const nameToSlug = (name: string) =>
+      name.replaceAll(' ', '-').toLowerCase();
+    return `https://prop.house/${nameToSlug(this.community.name)}/${nameToSlug(
+      this.title,
+    )}`;
   }
 }
 

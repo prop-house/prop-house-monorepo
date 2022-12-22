@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
@@ -6,6 +8,8 @@ import { Auction } from './auction.entity';
 
 @Injectable()
 export class AuctionsService {
+  private readonly logger = new Logger(AuctionsService.name);
+
   constructor(
     @InjectRepository(Auction)
     private auctionsRepository: Repository<Auction>,
@@ -16,6 +20,15 @@ export class AuctionsService {
       loadRelationIds: {
         relations: ['proposals.auction', 'community'],
       },
+      where: {
+        visible: true,
+      },
+    });
+  }
+
+  findAllWithCommunity(): Promise<Auction[]> {
+    return this.auctionsRepository.find({
+      relations: ['community'],
       where: {
         visible: true,
       },

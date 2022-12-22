@@ -9,12 +9,18 @@ import { FileModule } from './file/file.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { TwitterModule } from './twitter/twitter.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { AuctionWatcherModule } from './auction-watcher/auction-watcher.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       load: [configuration],
     }),
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     PostgresDatabaseProviderModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -22,8 +28,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
     }),
     IpfsModule,
     FileModule,
+    TwitterModule,
+    AuctionWatcherModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

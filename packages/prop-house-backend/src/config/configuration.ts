@@ -10,11 +10,22 @@ export interface FileConfig {
   basePath: string;
 }
 
+export interface TwitterConfig {
+  enabled: boolean;
+  appKey: string;
+  appSecret: string;
+  accessToken: string;
+  accessSecret: string;
+}
+
 export interface Config {
   database: DbConfig;
   env: string;
   JSONRPC: string;
   file: FileConfig;
+  social: {
+    twitter: TwitterConfig;
+  };
 }
 
 const config = (): Config => ({
@@ -25,11 +36,20 @@ const config = (): Config => ({
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
   },
+  social: {
+    twitter: {
+      enabled: process.env.TWITTER_ENABLED === 'true' || false,
+      appKey: process.env.TWITTER_APP_KEY,
+      appSecret: process.env.TWITTER_APP_SECRET,
+      accessToken: process.env.TWITTER_ACCESS_TOKEN,
+      accessSecret: process.env.TWITTER_ACCESS_SECRET,
+    },
+  },
   env: process.env.NODE_ENV ?? 'development',
   JSONRPC: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   file: {
-    basePath: process.env.FILE_BASE_PATH ?? '/data'
-  }
+    basePath: process.env.FILE_BASE_PATH ?? '/data',
+  },
 });
 
 export const subgraphApiUri =

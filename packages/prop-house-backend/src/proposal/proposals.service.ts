@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ProposalCreatedEvent } from './events/proposal-created.event';
 import { Proposal } from './proposal.entity';
 import { GetProposalsDto } from './proposal.types';
 
@@ -9,6 +11,7 @@ export class ProposalsService {
   constructor(
     @InjectRepository(Proposal)
     private proposalsRepository: Repository<Proposal>,
+    private readonly events: EventEmitter2,
   ) {}
 
   findAll(dto: GetProposalsDto): Promise<Proposal[]> {
@@ -50,8 +53,17 @@ export class ProposalsService {
     this.proposalsRepository.save(foundProposal);
   }
 
-  async store(proposal: Proposal): Promise<Proposal> {
+  private async _store(proposal: Proposal): Promise<Proposal> {
     return await this.proposalsRepository.save(proposal);
+  }
+
+  async createProposal(proposal: Proposal): Promise<Proposal> {
+    const storedProposal = await this._store(proposal);
+    this.events.emit(
+      ProposalCreatedEvent.name,
+      new ProposalCreatedEvent(storedProposal),
+    );
+    return storedProposal;
   }
 
   async voteCountById(id: number): Promise<number> {
