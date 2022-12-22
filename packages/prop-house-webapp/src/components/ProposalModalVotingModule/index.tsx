@@ -11,7 +11,7 @@ import { votesRemaining } from '../../utils/votesRemaining';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setNumSubmittedVotes, setVotingPower } from '../../state/slices/voting';
-import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
+import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
@@ -60,7 +60,7 @@ const ProposalModalFooter: React.FC<{
   // update submitted votes on proposal changes
   useEffect(() => {
     if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggVoteWeightForProps(proposals, account)));
+      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
   }, [proposals, account, dispatch]);
 
   useEffect(() => {
@@ -77,14 +77,13 @@ const ProposalModalFooter: React.FC<{
               <span>Cast your votes</span>
 
               <span className={classes.totalVotes}>
-                <VoteAllotmentTooltip
-                  setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                />
+                <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                  : 'no votes left'
-                  }`}
+                {`${
+                  votesLeftToAllot > 0
+                    ? `${votingPower - submittedVotes - numAllotedVotes} left`
+                    : 'no votes left'
+                }`}
               </span>
             </div>
 
@@ -102,9 +101,11 @@ const ProposalModalFooter: React.FC<{
         </div>
 
         <div className={classes.voteAllotmentSection}>
-          {isWinner && <div className={classes.crownNoun}>
-            <img src="/heads/crown.png" alt="crown" />
-          </div>}
+          {isWinner && (
+            <div className={classes.crownNoun}>
+              <img src="/heads/crown.png" alt="crown" />
+            </div>
+          )}
 
           <div className={classes.icon}>
             <VotesDisplay proposal={proposal} /> <span>+</span>
@@ -113,9 +114,7 @@ const ProposalModalFooter: React.FC<{
           <div className="mobileTooltipContainer">
             <PropCardVotingModule proposal={proposal} />
 
-            <VoteAllotmentTooltip
-              setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-            />
+            <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
           </div>
 
           <Button
