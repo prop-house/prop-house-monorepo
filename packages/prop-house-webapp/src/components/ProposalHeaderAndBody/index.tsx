@@ -89,6 +89,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                   isFirstProp={isFirstProp}
                   isLastProp={isLastProp && isLastProp}
                   showVoteAllotmentModal={showVoteAllotmentModal}
+                  proposal={currentProposal}
                 />
 
                 <Divider />
