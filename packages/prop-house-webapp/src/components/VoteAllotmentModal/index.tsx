@@ -11,6 +11,8 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaLink } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { setActiveProposal } from '../../state/slices/propHouse';
 
 const VoteAllotmentModal: React.FC<{
   showModal: boolean;
@@ -19,6 +21,8 @@ const VoteAllotmentModal: React.FC<{
   const { showModal, setShowModal } = props;
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const params = useParams();
   const { id } = params;
 
@@ -46,7 +50,9 @@ const VoteAllotmentModal: React.FC<{
                 setShowModal(false);
                 return;
               }
-              navigate(`${buildRoundPath(community, round)}/${v.proposalId}`);
+
+              const p = proposals && proposals.find(p => p.id === v.proposalId);
+              p && dispatch(setActiveProposal(p));
               setShowModal(false);
             }}
           >
