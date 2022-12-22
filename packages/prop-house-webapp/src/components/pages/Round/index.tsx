@@ -22,6 +22,7 @@ import OpenGraphElements from '../../OpenGraphElements';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
+import ProposalModal from '../../ProposalModal';
 
 const Round = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ const Round = () => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const client = useRef(new PropHouseWrapper(host));
   const { t } = useTranslation();
 
@@ -75,10 +77,18 @@ const Round = () => {
         : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
     };
     fetchAuctionProposals();
+
+    return () => {
+      dispatch(setActiveCommunity());
+      dispatch(setActiveRound());
+      dispatch(setActiveProposals([]));
+    };
   }, [dispatch, isVotingWindow, isRoundOver, round]);
 
   return (
     <>
+      {modalActive && <ProposalModal />}
+
       {round && (
         <OpenGraphElements
           title={round.title}

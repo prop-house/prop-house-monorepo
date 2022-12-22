@@ -7,7 +7,6 @@ import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
-import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
@@ -16,7 +15,7 @@ import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
 import { useDispatch } from 'react-redux';
-import { setActiveProposal } from '../../state/slices/propHouse';
+import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -25,8 +24,6 @@ const ProposalCard: React.FC<{
   winner?: boolean;
 }> = props => {
   const { proposal, auctionStatus, cardStatus, winner } = props;
-
-  let navigate = useNavigate();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
@@ -48,7 +45,8 @@ const ProposalCard: React.FC<{
             openInNewTab(`${nameToSlug(round.title)}/${proposal.id}`);
             return;
           }
-          navigate(`${proposal.id}`);
+
+          dispatch(setModalActive(true));
           dispatch(setActiveProposal(proposal));
         }}
       >
