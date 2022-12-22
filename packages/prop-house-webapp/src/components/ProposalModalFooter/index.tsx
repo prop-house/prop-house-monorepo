@@ -44,7 +44,6 @@ const ProposalModalFooter: React.FC<{
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-
   const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
@@ -86,20 +85,24 @@ const ProposalModalFooter: React.FC<{
                       classNames={classes.fullWidthButton}
                       text={isVotingWindow ? 'Connect to vote' : 'Connect to submit'}
                       bgColor={ButtonColor.Purple}
-                      onClick={connect} />
+                      onClick={connect}
+                    />
 
                     <div className={classes.voteCount}>
-                      {isWinner && <div className={classes.crownNoun}>
-                        <img src="/heads/crown.png" alt="crown" />
-                      </div>}
+                      {isWinner && (
+                        <div className={classes.crownNoun}>
+                          <img src="/heads/crown.png" alt="crown" />
+                        </div>
+                      )}
 
-                      {!isProposingWindow && <div className={classes.icon}>
-                        <VotesDisplay proposal={proposal} />
-                      </div>}
+                      {!isProposingWindow && (
+                        <div className={classes.icon}>
+                          <VotesDisplay proposal={proposal} />
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
-
 
                 {/* PROPOSING WINDOW, CONNECTED  */}
                 {account && isProposingWindow ? (
@@ -110,39 +113,42 @@ const ProposalModalFooter: React.FC<{
                     onClick={() => navigate('/create', { state: { auction: round, community } })}
                   />
                 ) : (
-                  <></>
-                )}
+                  <>
+                    {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
+                    {account &&
+                      (isVotingWindow && votingPower > 0 ? (
+                        <ProposalModalVotingModule
+                          proposal={proposal}
+                          setShowVotingModal={setShowVotingModal}
+                          setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                          isWinner={isWinner && isWinner}
+                        />
+                      ) : (
+                        <>
+                          <div className={classes.noVotesContainer}>
+                            <p className={classes.noVotesMessage}>
+                              <b>
+                                {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
+                                {t('requiredToVote')}.
+                              </b>
+                            </p>
 
-                {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                {account &&
-                  (isVotingWindow && votingPower > 0 ?
-                    <ProposalModalVotingModule
-                      proposal={proposal}
-                      setShowVotingModal={setShowVotingModal}
-                      setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                      isWinner={isWinner && isWinner}
-                    />
-                    :
-                    <>
-                      <div className={classes.noVotesContainer}>
-                        <p className={classes.noVotesMessage}>
-                          <b>
-                            {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
-                          </b>
-                        </p>
+                            <div className={classes.voteCount}>
+                              {isWinner && (
+                                <div className={classes.crownNoun}>
+                                  <img src="/heads/crown.png" alt="crown" />
+                                </div>
+                              )}
 
-                        <div className={classes.voteCount}>
-                          {isWinner && <div className={classes.crownNoun}>
-                            <img src="/heads/crown.png" alt="crown" />
-                          </div>}
-
-                          <div className={classes.icon}>
-                            <VotesDisplay proposal={proposal} />
+                              <div className={classes.icon}>
+                                <VotesDisplay proposal={proposal} />
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </>)
-                }
+                        </>
+                      ))}
+                  </>
+                )}
               </div>
             )}
           </>
@@ -153,8 +159,7 @@ const ProposalModalFooter: React.FC<{
             handleDirectionalArrowClick={handleDirectionalArrowClick}
           />
         </div>
-      )
-      }
+      )}
     </>
   );
 };
