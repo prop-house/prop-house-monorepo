@@ -8,6 +8,7 @@ import {
   setActiveCommunity,
   setActiveProposals,
   setActiveRound,
+  setModalActive,
 } from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
@@ -79,6 +80,7 @@ const Round = () => {
     fetchAuctionProposals();
 
     return () => {
+      dispatch(setModalActive(false));
       dispatch(setActiveCommunity());
       dispatch(setActiveRound());
       dispatch(setActiveProposals([]));
