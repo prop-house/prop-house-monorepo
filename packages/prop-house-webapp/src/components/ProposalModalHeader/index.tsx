@@ -55,7 +55,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
       title: fieldTitle,
       url: propURL,
     };
-    if (navigator.canShare()) navigator.share(shareData);
+    if (navigator.canShare(shareData)) navigator.share(shareData);
   };
 
   const shareTooltip = (
