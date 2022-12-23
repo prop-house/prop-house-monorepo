@@ -13,8 +13,6 @@ import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
-import { setActiveProposals } from '../../state/slices/propHouse';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
@@ -57,6 +55,7 @@ const RoundContent: React.FC<{
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -65,28 +64,6 @@ const RoundContent: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
-
-  // fetch proposals
-  useEffect(() => {
-    const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(auction.id);
-      dispatch(setActiveProposals(proposals));
-
-      // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(
-        dispatch,
-        auctionStatus(auction) === AuctionStatus.AuctionEnded ||
-          auctionStatus(auction) === AuctionStatus.AuctionVoting
-          ? SortType.VoteCount
-          : SortType.Random,
-        false,
-      );
-    };
-    fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
-  }, [auction.id, dispatch, account, auction]);
 
   // fetch voting power for user
   useEffect(() => {
@@ -195,7 +172,7 @@ const RoundContent: React.FC<{
         <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
       ) : (
         <>
-          {community && (
+          {community && !modalActive && (
             <Row className={classes.propCardsRow}>
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
@@ -209,7 +186,7 @@ const RoundContent: React.FC<{
                             proposal={proposal}
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
-                            winner={winningIds && isWinner(winningIds, proposal.id)}
+                            isWinner={winningIds && isWinner(winningIds, proposal.id)}
                           />
                         </Col>
                       );
