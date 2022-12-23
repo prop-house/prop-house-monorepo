@@ -112,6 +112,21 @@ hr {
   align-items: center;
   gap: 12px;
 }
+.shareButton {
+  border: 1.5px solid rgba(102, 102, 102, 0.25);
+  padding: 0;
+  background-color: white;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+  width: 34px;
+  height: 34px;
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  border-radius: 10px;
+}
 .propNavigationButtons {
   display: flex;
   gap: 2px;
@@ -167,6 +182,6 @@ hr {
     display: none;
   }
   .headerPropInfo {
-    max-width: 90%;
+    max-width: 75%;
   }
 }
