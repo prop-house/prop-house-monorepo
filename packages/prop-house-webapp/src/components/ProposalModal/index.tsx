@@ -44,8 +44,8 @@ const ProposalModal = () => {
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
+  const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
-
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -88,26 +88,26 @@ const ProposalModal = () => {
     dispatch(setActiveProposal(proposals[index]));
   }, [proposals, id, dispatch, activeProposal]);
 
-  // calculate if modal content is scrollable in order to show 'More' button
-  const modal = document.querySelector('#propModal');
-
-  const handleScroll = useCallback(event => {
-    setHideScrollButton(true);
-  }, []);
-
+  // eslint-disable-next-line
   useEffect(() => {
-    if (modal) {
-      if (modal.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
-
-      modal.addEventListener('scroll', handleScroll, false);
-    }
-  }, [handleScroll, hideScrollButton, modal]);
+    setPropModalEl(document.querySelector('#propModal'));
+  });
 
   const handleKeyPress = useCallback(event => {
     if (event.key === 'ArrowDown') {
       setHideScrollButton(true);
     }
   }, []);
+
+  const handleScroll = useCallback(event => {
+    setHideScrollButton(true);
+  }, []);
+
+  useEffect(() => {
+    if (!propModalEl) return;
+    if (propModalEl.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
+    propModalEl.addEventListener('scroll', handleScroll, false);
+  }, [handleScroll, hideScrollButton, propModalEl]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
