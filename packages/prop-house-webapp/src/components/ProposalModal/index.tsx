@@ -15,16 +15,7 @@ import {
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
-import {
-  setActiveCommunity,
-  setActiveProposal,
-  setActiveProposals,
-  setActiveRound,
-  setModalActive,
-} from '../../state/slices/propHouse';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
-import LoadingIndicator from '../LoadingIndicator';
-import NotFound from '../NotFound';
+import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorModal from '../ErrorModal';
@@ -34,7 +25,6 @@ import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refre
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 
 const ProposalModal = () => {
@@ -54,9 +44,8 @@ const ProposalModal = () => {
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
-  const [failedFetch, setFailedFetch] = useState(false);
+  const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
-
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -71,10 +60,7 @@ const ProposalModal = () => {
   });
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const winningIds = round && getWinningIds(proposals, round);
-
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -102,54 +88,26 @@ const ProposalModal = () => {
     dispatch(setActiveProposal(proposals[index]));
   }, [proposals, id, dispatch, activeProposal]);
 
-  // when prop modal is entry point to app, all state needs to be fetched
+  // eslint-disable-next-line
   useEffect(() => {
-    if (activeProposal) return; // active prop in store already
-    if (!id) return; // id in url param not found
-
-    const fetchAll = async () => {
-      try {
-        const proposal = await backendClient.current.getProposal(Number(id));
-        const proposals = await backendClient.current.getAuctionProposals(proposal.auctionId);
-        const round = await backendClient.current.getAuction(proposal.auctionId);
-        const community = await backendClient.current.getCommunityWithId(round.community);
-
-        dispatch(setActiveProposal(proposal));
-        dispatch(setActiveProposals(proposals));
-        dispatch(setActiveCommunity(community));
-        dispatch(setActiveRound(round));
-
-        isVotingWindow || isRoundOver
-          ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
-          : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
-      } catch {
-        setFailedFetch(true);
-      }
-    };
-
-    fetchAll();
-  }, [id, dispatch, failedFetch, activeProposal, isVotingWindow, isRoundOver]);
-
-  // calculate if modal content is scrollable in order to show 'More' button
-  const modal = document.querySelector('#propModal');
-
-  const handleScroll = useCallback(event => {
-    setHideScrollButton(true);
-  }, []);
-
-  useEffect(() => {
-    if (modal) {
-      if (modal.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
-
-      modal.addEventListener('scroll', handleScroll, false);
-    }
-  }, [handleScroll, hideScrollButton, modal]);
+    setPropModalEl(document.querySelector('#propModal'));
+  });
 
   const handleKeyPress = useCallback(event => {
     if (event.key === 'ArrowDown') {
       setHideScrollButton(true);
     }
   }, []);
+
+  const handleScroll = useCallback(event => {
+    setHideScrollButton(true);
+  }, []);
+
+  useEffect(() => {
+    if (!propModalEl) return;
+    if (propModalEl.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
+    propModalEl.addEventListener('scroll', handleScroll, false);
+  }, [handleScroll, hideScrollButton, propModalEl]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
@@ -258,7 +216,7 @@ const ProposalModal = () => {
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
-        {activeProposal && proposals && proposals.length > 0 && currentPropIndex ? (
+        {activeProposal && proposals && proposals.length > 0 && currentPropIndex && (
           <>
             <ProposalHeaderAndBody
               currentProposal={activeProposal}
@@ -280,10 +238,6 @@ const ProposalModal = () => {
               isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
             />
           </>
-        ) : failedFetch ? (
-          <NotFound />
-        ) : (
-          <LoadingIndicator />
         )}
       </Modal>
     </>

@@ -19,7 +19,7 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
         <span className={classes.proposalBody}>
           {fields.tldr && (
             <>
-              <h2>{t('tldr2')}</h2>
+              <h2>{t('tldr')}</h2>
               <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
             </>
           )}
