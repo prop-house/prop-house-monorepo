@@ -63,8 +63,9 @@ export const communities = new CaseInsensitiveMap(
         '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4',
         '0x5a1190759c9e7cf42da401639016f8f60affd465',
         '0xc1dcc70e27b187457709e0c72db3df941034ec6f',
+        '0x89e83F99Bc48B9229EA7F2B9509a995e89C8472F',
       ],
-      [1, 1, 1],
+      [1, 1, 1, 1],
     ),
   }),
 );

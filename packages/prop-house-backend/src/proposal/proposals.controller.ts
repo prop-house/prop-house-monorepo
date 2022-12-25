@@ -74,6 +74,8 @@ export class ProposalsController {
     proposal.title = createProposalDto.title;
     proposal.signedData = createProposalDto.signedData;
     proposal.auction = foundAuction;
+    proposal.messageTypes = createProposalDto.messageTypes;
+    proposal.domainSeparator = createProposalDto.domainSeparator;
     return this.proposalsService.store(proposal);
   }
 }

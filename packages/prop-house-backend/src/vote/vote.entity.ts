@@ -59,6 +59,8 @@ export class Vote extends SignedEntity {
       this.auctionId = opts.auctionId;
       this.weight = opts.weight;
       this.blockHeight = opts.blockHeight;
+      this.domainSeparator = opts.domainSeparator;
+      this.messageTypes = opts.messageTypes;
     }
   }
 }

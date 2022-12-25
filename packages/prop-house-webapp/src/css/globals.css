@@ -19,6 +19,9 @@
 body {
   background-color: rgb(250, 250, 250);
 }
+.tooltip-inner {
+  min-width: min-content;
+}
 .tooltip.bs-tooltip-top .tooltip-arrow::before {
   border-top-color: var(--brand-gray);
 }
@@ -96,6 +99,7 @@ body {
 /* set react tooltip bg opacity */
 .tooltip.show {
   opacity: 1;
+  white-space: pre;
 }
 
 @media (max-width: 993px) {
@@ -147,7 +151,7 @@ body {
 .houseDropdown .dropdown-item:active,
 .houseDropdown .dropdown-item:focus,
 .houseDropdown .dropdown-item:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--border-light);
   border-radius: 10px;
 }
 
@@ -190,4 +194,53 @@ body {
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   max-height: max-content !important;
+}
+
+.proposalModalContainer {
+  max-height: 100% !important;
+  overflow-y: scroll !important;
+  overflow-y: overlay !important;
+}
+.proposalModalContainer .container {
+  min-width: 100%;
+}
+
+@media (max-width: 475px) {
+  .footer .voteInput,
+  .footer .votingBtns button {
+    height: 38px;
+    width: 38px;
+  }
+}
+.web3modal-modal-lightbox {
+  z-index: 9999999 !important;
+}
+
+.scrollMoreContainer:before {
+  content: '';
+  position: absolute;
+  display: flex;
+  left: 0;
+  right: 0;
+  top: 300px;
+  bottom: 0px;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+@media (max-width: 575px) {
+  .scrollMoreContainer {
+    display: none;
+  }
+}
+
+@media (min-width: 576px) {
+  .mobileTooltipContainer .voteAllotmentModal {
+    display: none;
+  }
+}
+@media (max-width: 575px) {
+  .mobileTooltipContainer {
+    display: flex !important;
+    align-items: center;
+    gap: 20px;
+  }
 }
