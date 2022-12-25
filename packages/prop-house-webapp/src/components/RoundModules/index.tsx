@@ -21,6 +21,7 @@ import RoundOverModule from '../RoundOverModule';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+import { useTranslation } from 'react-i18next';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
@@ -40,6 +41,7 @@ const RoundModules: React.FC<{
 
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
+  const { t } = useTranslation();
 
   // auction statuses
   const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
@@ -109,23 +111,23 @@ const RoundModules: React.FC<{
           {isProposingWindow &&
             (account ? (
               <Button
-                text={'Create your proposal'}
+                text={t('createYourProposal')}
                 bgColor={ButtonColor.Green}
                 onClick={() => navigate('/create', { state: { auction, community } })}
               />
             ) : (
-              <Button text={'Connect to submit'} bgColor={ButtonColor.Pink} onClick={connect} />
+              <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
             ))}
 
           {/* VOTING WINDOW, NOT CONNECTED */}
           {isVotingWindow && !account && (
-            <Button text={'Connect to vote'} bgColor={ButtonColor.Pink} onClick={connect} />
+            <Button text={t('connectToVote')} bgColor={ButtonColor.Pink} onClick={connect} />
           )}
 
           {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
           {isVotingWindow && account && votingPower ? (
             <Button
-              text={'Submit votes'}
+              text={t('submitVotes')}
               bgColor={ButtonColor.Purple}
               onClick={() => setShowVotingModal(true)}
               disabled={

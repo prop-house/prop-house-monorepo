@@ -6,12 +6,14 @@ import { SignatureState, StoredProposalWithVotes } from '@nouns/prop-house-wrapp
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
 import { MdOutlinePendingActions } from 'react-icons/md';
+import { useTranslation } from 'react-i18next';
 
 const VotesVerificationModal: React.FC<{
   setDisplay: Dispatch<SetStateAction<boolean>>;
   proposal: StoredProposalWithVotes;
 }> = props => {
   const { proposal, setDisplay } = props;
+  const { t } = useTranslation();
 
   return (
     <div onClick={e => e.stopPropagation()}>
@@ -25,8 +27,8 @@ const VotesVerificationModal: React.FC<{
           <div className={classes.headerContainer}>
             <div className={classes.propTitle}>{proposal.title}</div>
             <div className={classes.votesSubtitle}>{`${proposal.voteCount} ${
-              Number(proposal.voteCount) === 1 ? 'vote' : 'votes'
-            } have been cast`}</div>
+              Number(proposal.voteCount) === 1 ? t('vote') : t('votes')
+            } ${t('haveBeenCast')}`}</div>
           </div>
 
           <div className={classes.votesContainer}>
@@ -35,7 +37,7 @@ const VotesVerificationModal: React.FC<{
               .map((vote, index) => (
                 <div key={index} className={classes.votesRow}>
                   <div className={classes.voteRowTitle}>
-                    {`${vote.weight}  ${vote.weight === 1 ? 'vote' : 'votes'} ${'by'}`}
+                    {`${vote.weight}  ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
                     <EthAddress
                       address={vote.address}
                       hideDavatar={true}
@@ -45,7 +47,7 @@ const VotesVerificationModal: React.FC<{
 
                   {vote.signatureState === SignatureState.PENDING_VALIDATION && (
                     <button className={classes.verifyVoteBtn} disabled={true}>
-                      Pending <MdOutlinePendingActions />
+                      {t('pending')} <MdOutlinePendingActions />
                     </button>
                   )}
                 </div>
@@ -54,7 +56,7 @@ const VotesVerificationModal: React.FC<{
         </div>
 
         <div className={classes.buttonContainer}>
-          <Button text="Close" bgColor={ButtonColor.White} onClick={() => setDisplay(false)} />
+          <Button text={t('close')} bgColor={ButtonColor.White} onClick={() => setDisplay(false)} />
         </div>
       </Modal>
     </div>

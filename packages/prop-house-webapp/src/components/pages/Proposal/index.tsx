@@ -12,7 +12,7 @@ import {
   setActiveProposal,
   setActiveRound,
 } from '../../../state/slices/propHouse';
-import RenderedProposalFields from '../../RenderedProposalFields';
+
 import proposalFields from '../../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../LoadingIndicator';
@@ -21,6 +21,7 @@ import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
+import RenderedProposalFields from '../../RenderedProposalFields';
 
 const Proposal = () => {
   const params = useParams();

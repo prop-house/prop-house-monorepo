@@ -243,7 +243,7 @@
   display: flex;
   justify-content: space-between;
   background: linear-gradient(180deg, #fcfcfc 0%, #ffffff 100%);
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-top: 1px solid var(--border-light);
   padding: 1.125rem 1.5rem 1.375rem 1.5rem;
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
@@ -255,7 +255,7 @@
 }
 
 .divider {
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-light);
   border-radius: 1px;
 }
 

@@ -1,0 +1,21 @@
+.winnerBanner {
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.winnerBanner p {
+  margin-bottom: 0px;
+  position: absolute;
+}
+.winnerBanner img {
+  height: 68px;
+  object-fit: cover;
+  align-self: stretch;
+  width: 100%;
+}
+@media (max-width: 575px) {
+  .winnerBanner {
+    padding-bottom: 12px;
+  }
+}

@@ -35,7 +35,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                   to={`/${nameToSlug(community.name)}`}
                   className={classes.communityProfImgContainer}
                 >
-                  {community.name.charAt(0).toUpperCase() + community.name.slice(1)} House:{' '}
+                  {community.name.charAt(0).toUpperCase() + community.name.slice(1)} {t('house')}:{' '}
                   {roundName}
                 </Link>
               )}
@@ -45,8 +45,10 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
               {address && proposalId && (
                 <div className={classes.subinfo}>
                   <div className={classes.communityAndPropNumber}>
-                    <span className={classes.propNumber}>Prop #{proposalId} </span>
-                    by
+                    <span className={classes.propNumber}>
+                      {t('propCap')} #{proposalId}{' '}
+                    </span>
+                    {t('by')}
                     <div className={classes.submittedBy}>
                       <EthAddress
                         address={address}
@@ -66,7 +68,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
             {fields.tldr && (
               <>
                 <hr></hr>
-                <h2>{t('tldr2')}</h2>
+                <h2>{t('tldr')}</h2>
                 <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
               </>
             )}

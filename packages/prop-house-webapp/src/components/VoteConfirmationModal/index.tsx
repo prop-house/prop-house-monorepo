@@ -3,45 +3,53 @@ import classes from './VoteConfirmationModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { VoteAllotment } from '../../types/VoteAllotment';
+import { useTranslation } from 'react-i18next';
+import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByVotes';
 
 const VoteConfirmationModal: React.FC<{
   showNewModal: boolean;
   setShowNewModal: Dispatch<SetStateAction<boolean>>;
   secondBtn?: boolean;
-  votingEndTime: Date;
   submitVote: () => Promise<void>;
 }> = props => {
-  const { showNewModal, setShowNewModal, votingEndTime, submitVote, secondBtn } = props;
+  const { showNewModal, setShowNewModal, submitVote, secondBtn } = props;
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
   const votesLeft = votesRemaining(votingPower, submittedVotes, voteAllotments);
+  const { t } = useTranslation();
 
   function closeModal() {
     setShowNewModal(false);
   }
 
+  const totalVotesBeingSubmitted = voteAllotments.reduce(
+    (total, prop) => (total = total + prop.votes),
+    0,
+  );
+
+  const allottedVotes = removeZeroVotesAndSortByVotes(voteAllotments);
+
   return (
     <Modal isOpen={showNewModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.titleContainer}>
         <p className={classes.modalTitle}>
-          Cast {voteAllotments.reduce((total, prop) => (total = total + prop.votes), 0)} votes?
+          {t('cast')} {totalVotesBeingSubmitted} {totalVotesBeingSubmitted === 1 ? 'vote' : 'votes'}
+          ?
         </p>
         <p className={classes.modalSubtitle}>
-          You'll have {votesLeft} remaining to cast over the next{' '}
-          {dayjs(votingEndTime).fromNow(true)}
+          {t('youllHave')} {votesLeft} {t('votesRemaining')}{' '}
         </p>
       </div>
 
       <hr className={classes.divider} />
 
       <div className={classes.props}>
-        {voteAllotments.map((prop: VoteAllotment) => (
+        {allottedVotes.map((prop: VoteAllotment) => (
           <div key={prop.proposalId} className={classes.propCopy}>
             <p className={classes.voteCount}>{prop.votes}</p>
             <hr className={classes.line} />
@@ -54,7 +62,7 @@ const VoteConfirmationModal: React.FC<{
 
       <div className={classes.buttonContainer}>
         <Button
-          text="Nope"
+          text={t('nope')}
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowNewModal(false);
@@ -62,7 +70,7 @@ const VoteConfirmationModal: React.FC<{
         />
 
         {secondBtn && (
-          <Button text="Sign &amp; Submit" bgColor={ButtonColor.Purple} onClick={submitVote} />
+          <Button text={t('signAndSubmit')} bgColor={ButtonColor.Purple} onClick={submitVote} />
         )}
       </div>
     </Modal>

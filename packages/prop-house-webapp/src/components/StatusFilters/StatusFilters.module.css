@@ -98,7 +98,7 @@
 }
 
 .count {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--border-light);
   border-radius: 6px;
   color: var(--brand-gray);
   padding: 0px 4px;

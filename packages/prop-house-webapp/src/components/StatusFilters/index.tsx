@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Dispatch, Fragment, SetStateAction } from 'react';
 import { Dropdown } from 'react-bootstrap';
-
+import { useTranslation } from 'react-i18next';
 import classes from './StatusFilters.module.css';
 
 // We aren't using AuctionStatus enum becuase AuctionStatus[0] is 'not started' and we don't filter by 'not started', rather RoundStatus[0] is the default 'all rounds'
@@ -22,12 +22,12 @@ export interface Status {
 const statuses: Status[] = [
   {
     status: RoundStatus.Active,
-    title: 'Active',
+    title: 'active',
     bgColor: classes.pink,
   },
   {
     status: RoundStatus.AllRounds,
-    title: 'All rounds',
+    title: 'allRounds',
     bgColor: classes.black,
   },
 ];
@@ -39,6 +39,8 @@ const StatusFilters: React.FC<{
   setInput: (value: string) => void;
 }> = props => {
   const { numberOfRoundsPerStatus, currentRoundStatus, setCurrentRoundStatus, setInput } = props;
+
+  const { t } = useTranslation();
 
   const handleClick = (status: RoundStatus) => {
     setInput('');
@@ -61,7 +63,7 @@ const StatusFilters: React.FC<{
                 )}
               >
                 <div className={classes.filterText}>
-                  <span className={classes.filterName}>{s.title}</span>
+                  <span className={classes.filterName}>{t(s.title)}</span>
                   <span className={classes.filterNumber}>{numberOfRoundsPerStatus[index]}</span>
                 </div>
               </div>
@@ -75,14 +77,14 @@ const StatusFilters: React.FC<{
       <div className={clsx(classes.dropdown, 'houseDropdown')}>
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            {statuses[currentRoundStatus].title}
+            {t(`${statuses[currentRoundStatus].title}`)}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
             {statuses.map((s, index) => (
               <Fragment key={index}>
                 <Dropdown.Item key={index} onClick={() => handleClick(s.status)}>
-                  <span>{s.title}</span>
+                  <span>{t(`${s.title}`)}</span>
                   <span className={classes.count}>{numberOfRoundsPerStatus[index]}</span>
                 </Dropdown.Item>
               </Fragment>

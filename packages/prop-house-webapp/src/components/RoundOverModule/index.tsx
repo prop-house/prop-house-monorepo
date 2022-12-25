@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import classes from './RoundOverModule.module.css';
 
@@ -9,6 +10,7 @@ export interface RoundOverModuleProps {
 
 const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleProps) => {
   const { numOfProposals, totalVotes } = props;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -17,19 +19,20 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
           <VoteIcon />
         </div>
         <div className={classes.textContainer}>
-          <p className={classes.title}>Voting ended</p>
-
-          <p className={classes.subtitle}>
-            {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? 'vote' : 'votes'} cast
-            for {numOfProposals} props!
-          </p>
+          <p className={classes.title}>{t('votingEnded')}</p>
+          {numOfProposals ? (
+            <p className={classes.subtitle}>
+              {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? t('vote') : t('votes')}{' '}
+              {t('castFor')} {numOfProposals} {numOfProposals === 1 ? t('prop') : t('props')}!
+            </p>
+          ) : <></>}
         </div>
       </div>
 
       <hr className={classes.divider} />
 
       <p className={clsx(classes.sideCardBody, classes.winnersText)}>
-        Winners are highlighted in <span className={classes.greenText}>green</span>.
+        {t('winnersAreHighlightedIn')} <span className={classes.greenText}>{t('green')}</span>.
       </p>
     </>
   );

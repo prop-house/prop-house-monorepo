@@ -8,6 +8,7 @@ import {
   setActiveCommunity,
   setActiveProposals,
   setActiveRound,
+  setModalActive,
 } from '../../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
@@ -21,6 +22,8 @@ import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
 import OpenGraphElements from '../../OpenGraphElements';
 import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
+import ProposalModal from '../../ProposalModal';
 
 const Round = () => {
   const location = useLocation();
@@ -34,7 +37,12 @@ const Round = () => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const client = useRef(new PropHouseWrapper(host));
+  const { t } = useTranslation();
+
+  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -61,23 +69,28 @@ const Round = () => {
 
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(round.id);
+
       dispatch(setActiveProposals(proposals));
 
-      // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(
-        dispatch,
-        auctionStatus(round) === AuctionStatus.AuctionEnded ? SortType.VoteCount : SortType.Random,
-        false,
-      );
+      // if the round is in voting state or over we sort by votes, otherwise we sort by created date
+      isVotingWindow || isRoundOver
+        ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
+        : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
     };
     fetchAuctionProposals();
+
     return () => {
+      dispatch(setModalActive(false));
+      dispatch(setActiveCommunity());
+      dispatch(setActiveRound());
       dispatch(setActiveProposals([]));
     };
-  }, [dispatch, round]);
+  }, [dispatch, isVotingWindow, isRoundOver, round]);
 
   return (
     <>
+      {modalActive && <ProposalModal />}
+
       {round && (
         <OpenGraphElements
           title={round.title}
@@ -104,7 +117,7 @@ const Round = () => {
             {round && proposals ? (
               <RoundContent auction={round} proposals={proposals} />
             ) : (
-              <ErrorMessageCard message="No rounds available" />
+              <ErrorMessageCard message={t('noRoundsAvailable')} />
             )}
           </div>
         </Container>

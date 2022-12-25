@@ -5,9 +5,10 @@ import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
-// import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
+import { isMobile } from 'web3modal';
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -24,7 +25,33 @@ const HouseHeader: React.FC<{
   const { community } = props;
 
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
-  // const { t } = useTranslation();
+
+  const communityDescription = (
+    <div className={classes.communityDescriptionRow}>
+      {/* support both markdown & html links in community's description.  */}
+      <Markdown
+        options={{
+          overrides: {
+            a: {
+              component: OpenInNewTab,
+              props: {
+                target: '_blank',
+                rel: 'noreferrer',
+              },
+            },
+          },
+        }}
+      >
+        {sanitizeHtml(community.description as any, {
+          allowedAttributes: {
+            a: ['href', 'target'],
+          },
+        })}
+      </Markdown>
+    </div>
+  );
+
+  const { t } = useTranslation();
 
   return (
     <div className={classes.profileHeaderRow}>
@@ -40,9 +67,9 @@ const HouseHeader: React.FC<{
               content={
                 <div
                   className={classes.contractAddressPill}
-                  onMouseEnter={() => setAddressTooltipCopy('Click to copy')}
+                  onMouseEnter={() => setAddressTooltipCopy(t('clickToCopy'))}
                   onClick={() => {
-                    setAddressTooltipCopy('Copied!');
+                    setAddressTooltipCopy(t('copied'));
                     navigator.clipboard.writeText(
                       community
                         ? community.contractAddress
@@ -64,42 +91,19 @@ const HouseHeader: React.FC<{
           <div className={classes.propHouseDataRow}>
             <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
             <div className={classes.itemTitle}>
-              {community.numAuctions === 1 ? 'Round' : 'Rounds'}
+              {Number(community?.numAuctions) === 1 ? t('roundCap') : t('roundsCap')}
             </div>
             <span className={classes.bullet}>{' • '}</span>
 
             <div className={classes.itemData}>{community.numProposals ?? 0}</div>
             <div className={classes.itemTitle}>
-              {community.numProposals === 1 ? 'Proposal' : 'Proposals'}
+              {community.numProposals === 1 ? t('proposalCap') : t('proposalsCap')}
             </div>
           </div>
         </div>
-
-        {community?.description && (
-          <div className={classes.communityDescriptionRow}>
-            {/* support both markdown & html links in community's description.  */}
-            <Markdown
-              options={{
-                overrides: {
-                  a: {
-                    component: OpenInNewTab,
-                    props: {
-                      target: '_blank',
-                      rel: 'noreferrer',
-                    },
-                  },
-                },
-              }}
-            >
-              {sanitizeHtml(community?.description as any, {
-                allowedAttributes: {
-                  a: ['href', 'target'],
-                },
-              })}
-            </Markdown>
-          </div>
-        )}
+        {!isMobile() && communityDescription}
       </div>
+      {isMobile() && communityDescription}
     </div>
   );
 };

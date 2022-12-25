@@ -5,6 +5,7 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 
 import ErrorMessageCard from '../ErrorMessageCard';
 import LoadingIndicator from '../LoadingIndicator';
+import { useTranslation } from 'react-i18next';
 
 interface CommunityCardGridProps {
   input: string;
@@ -14,6 +15,7 @@ interface CommunityCardGridProps {
 
 const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridProps) => {
   const [filteredHouses, setFilteredHouses] = useState<Community[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!communities || communities.length === 0) return;
@@ -39,7 +41,7 @@ const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridP
         filteredHouses && filteredHouses.length > 0 ? (
           <div className={classes.cardGrid}>{cards}</div>
         ) : (
-          <ErrorMessageCard message="No houses found" />
+          <ErrorMessageCard message={t('noHousesFound')} />
         )
       ) : (
         <LoadingIndicator />

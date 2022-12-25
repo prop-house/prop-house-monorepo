@@ -12,9 +12,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { aggVoteWeightForProps } from '../../utils/aggVoteWeight';
-import { setActiveProposals } from '../../state/slices/propHouse';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
+import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
@@ -32,6 +30,7 @@ import getWinningIds from '../../utils/getWinningIds';
 import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
+import { InfuraProvider } from '@ethersproject/providers';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
@@ -56,6 +55,7 @@ const RoundContent: React.FC<{
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -65,37 +65,17 @@ const RoundContent: React.FC<{
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
 
-  // fetch proposals
-  useEffect(() => {
-    const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(auction.id);
-      dispatch(setActiveProposals(proposals));
-
-      // default sorting method is random, unless the auction is over, in which case its by votes
-      dispatchSortProposals(
-        dispatch,
-        auctionStatus(auction) === AuctionStatus.AuctionEnded
-          ? SortType.VoteCount
-          : SortType.Random,
-        false,
-      );
-    };
-    fetchAuctionProposals();
-    return () => {
-      dispatch(setActiveProposals([]));
-    };
-  }, [auction.id, dispatch, account, auction]);
-
   // fetch voting power for user
   useEffect(() => {
     if (!account || !library || !community) return;
 
     const fetchVotes = async () => {
       try {
+        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          provider,
           auction.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
@@ -109,7 +89,7 @@ const RoundContent: React.FC<{
   // update submitted votes on proposal changes
   useEffect(() => {
     if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggVoteWeightForProps(proposals, account)));
+      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {
@@ -150,8 +130,8 @@ const RoundContent: React.FC<{
       setShowVoteConfirmationModal(false);
     } catch (e) {
       setErrorModalMessage({
-        title: 'Failed to submit votes',
-        message: 'Please go back and try again.',
+        title: t('errorModalTitle'),
+        message: t('errorModalMessage'),
         image: 'banana.png',
       });
       setShowErrorModal(true);
@@ -164,7 +144,6 @@ const RoundContent: React.FC<{
         <VoteConfirmationModal
           showNewModal={showVoteConfirmationModal}
           setShowNewModal={setShowVoteConfirmationModal}
-          votingEndTime={auction.votingEndTime}
           submitVote={handleSubmitVote}
           secondBtn
         />
@@ -190,15 +169,15 @@ const RoundContent: React.FC<{
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <ErrorMessageCard message="Funding round starting soon" date={auction.startTime} />
+        <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
       ) : (
         <>
-          {community && (
+          {community && !modalActive && (
             <Row className={classes.propCardsRow}>
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProps')} />
+                    <ErrorMessageCard message={t('submittedProposals')} />
                   ) : (
                     proposals.map((proposal, index) => {
                       return (
@@ -207,7 +186,7 @@ const RoundContent: React.FC<{
                             proposal={proposal}
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
-                            winner={winningIds && isWinner(winningIds, proposal.id)}
+                            isWinner={winningIds && isWinner(winningIds, proposal.id)}
                           />
                         </Col>
                       );

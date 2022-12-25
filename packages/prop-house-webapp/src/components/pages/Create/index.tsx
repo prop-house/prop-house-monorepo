@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
 import { nameToSlug } from '../../../utils/communitySlugs';
 import LoadingIndicator from '../../LoadingIndicator';
+import Divider from '../../Divider';
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -126,6 +127,8 @@ const Create: React.FC<{}> = () => {
             </Col>
           </Row>
 
+          <Divider />
+
           <Row>
             <Col xl={12}>
               {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
@@ -149,7 +152,7 @@ const Create: React.FC<{}> = () => {
                 (account ? (
                   <Button
                     classNames={classes.actionBtn}
-                    text={t('signSubmit')}
+                    text={t('signAndSubmit')}
                     bgColor={ButtonColor.Pink}
                     onClick={submitProposal}
                     disabled={!isValidPropData(proposalEditorData)}

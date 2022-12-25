@@ -17,15 +17,19 @@ const SortToggles: React.FC<{
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
+
+  const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
   const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const auctionNotStarted = auction && auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const allowSortByVotes = auctionVoting || auctionEnded;
 
-  const [datesSorted, setDatesSorted] = useState(false);
-  const [dateAscending, setDateAscending] = useState(false);
-  const [votesSorted, setVotesSorted] = useState(auctionEnded ? true : false);
-  const [votesAscending, setVotesAscending] = useState(auctionEnded ? true : false);
+  const [datesSorted, setDatesSorted] = useState(isProposingWindow ? true : false);
+  const [dateAscending, setDateAscending] = useState(isProposingWindow ? true : false);
+  const [votesSorted, setVotesSorted] = useState(auctionEnded || auctionVoting ? true : false);
+  const [votesAscending, setVotesAscending] = useState(
+    auctionEnded || auctionVoting ? true : false,
+  );
 
   const dispatch = useDispatch();
 
@@ -48,7 +52,7 @@ const SortToggles: React.FC<{
               disabled() && classes.disabled,
             )}
           >
-            <div className={classes.sortLabel}>{t('votes')}</div>
+            <div className={classes.sortLabel}>{t('votesCap')}</div>
             {votesAscending ? <IoArrowDown size={'1.5rem'} /> : <IoArrowUp size={'1.5rem'} />}
           </div>
         )}
@@ -64,7 +68,7 @@ const SortToggles: React.FC<{
             classes.sortItem,
             datesSorted && classes.active,
             (!auction || auctionNotStarted || (proposals && proposals.length <= 1)) &&
-              classes.disabled,
+            classes.disabled,
           )}
         >
           <div className={classes.sortLabel}>{t('created')}</div>

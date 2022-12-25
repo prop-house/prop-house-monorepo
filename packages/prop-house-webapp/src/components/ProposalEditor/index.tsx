@@ -37,7 +37,7 @@ const ProposalEditor: React.FC<{
       error: t('titleError'),
     },
     {
-      title: t('tldr2'),
+      title: t('tldr'),
       type: 'input',
       fieldValue: data.tldr,
       fieldName: 'tldr',
