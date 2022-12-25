@@ -5,18 +5,13 @@ import { ButtonColor } from '../Button';
 import { SignatureState, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
-import { openInNewTab } from '../../utils/openInNewTab';
-import { BsArrowRightShort } from 'react-icons/bs';
 import { MdOutlinePendingActions } from 'react-icons/md';
-import { buildMyCryptoVerificationLink } from '../../utils/buildMyCryptoVerificationLink';
 
 const VotesVerificationModal: React.FC<{
   setDisplay: Dispatch<SetStateAction<boolean>>;
   proposal: StoredProposalWithVotes;
 }> = props => {
   const { proposal, setDisplay } = props;
-
-  const decodeBase64 = (base64: string) => Buffer.from(base64, 'base64').toString('ascii');
 
   return (
     <div onClick={e => e.stopPropagation()}>
@@ -48,24 +43,9 @@ const VotesVerificationModal: React.FC<{
                     />
                   </div>
 
-                  {vote.signatureState === SignatureState.PENDING_VALIDATION ? (
+                  {vote.signatureState === SignatureState.PENDING_VALIDATION && (
                     <button className={classes.verifyVoteBtn} disabled={true}>
                       Pending <MdOutlinePendingActions />
-                    </button>
-                  ) : (
-                    <button
-                      className={classes.verifyVoteBtn}
-                      onClick={() =>
-                        openInNewTab(
-                          buildMyCryptoVerificationLink(
-                            Object(vote.signedData).signer,
-                            decodeBase64(Object(vote.signedData).message),
-                            Object(vote.signedData).signature,
-                          ),
-                        )
-                      }
-                    >
-                      Verify <BsArrowRightShort />
                     </button>
                   )}
                 </div>
