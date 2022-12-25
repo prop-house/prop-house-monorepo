@@ -113,11 +113,12 @@ export class EIP1271SignatureValidationTaskService {
   private async hasEnoughVotingPower(vote: Vote) {
     const proposal = await this._proposalService.findOne(vote.proposalId);
 
-    const signedPayload: CreateVoteDto = JSON.parse(
+    const signedPayload: CreateVoteDto[] = JSON.parse(
       Buffer.from(vote.signedData.message, 'base64').toString(),
+    ).votes;
+    const voteFromPayload = signedPayload.find(
+      (dto) => dto.proposalId === proposal.id,
     );
-    const arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
-    const voteFromPayload = arr.find((v) => v.proposalId === proposal.id);
 
     const votingPower = await this._votesService.getNumVotes(
       {
