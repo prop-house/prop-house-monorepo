@@ -32,6 +32,7 @@ const HouseHeader: React.FC<{
       lines={5}
       more="Read more"
       less="Read less"
+      className="readMoreContainer"
       anchorClass="readMoreLessDescription"
       expanded={false}
       truncatedEndingComponent={"... "}
