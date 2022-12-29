@@ -244,3 +244,11 @@ body {
     gap: 20px;
   }
 }
+.readMoreLessDescription {
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.readMoreLessDescription:hover {
+  cursor: pointer;
+}

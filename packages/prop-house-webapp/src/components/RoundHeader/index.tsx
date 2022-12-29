@@ -8,6 +8,7 @@ import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
+import ShowMoreText from "react-show-more-text";
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -52,28 +53,37 @@ const RoundHeader: React.FC<{
           </Col>
 
           {community?.description && (
-            <Col className={classes.communityDescriptionRow}>
-              {/* support both markdown & html links in community's description.  */}
-              <Markdown
-                options={{
-                  overrides: {
-                    a: {
-                      component: OpenInNewTab,
-                      props: {
-                        target: '_blank',
-                        rel: 'noreferrer',
+            <ShowMoreText
+              lines={5}
+              more="Read more"
+              less="Read less"
+              anchorClass="readMoreLessDescription"
+              expanded={false}
+              truncatedEndingComponent={"... "}
+            >
+              <Col className={classes.communityDescriptionRow}>
+                {/* support both markdown & html links in community's description.  */}
+                <Markdown
+                  options={{
+                    overrides: {
+                      a: {
+                        component: OpenInNewTab,
+                        props: {
+                          target: '_blank',
+                          rel: 'noreferrer',
+                        },
                       },
                     },
-                  },
-                }}
-              >
-                {sanitizeHtml(auction?.description as any, {
-                  allowedAttributes: {
-                    a: ['href', 'target'],
-                  },
-                })}
-              </Markdown>
-            </Col>
+                  }}
+                >
+                  {sanitizeHtml(auction?.description as any, {
+                    allowedAttributes: {
+                      a: ['href', 'target'],
+                    },
+                  })}
+                </Markdown>
+              </Col>
+            </ShowMoreText>
           )}
         </Col>
       </Col>

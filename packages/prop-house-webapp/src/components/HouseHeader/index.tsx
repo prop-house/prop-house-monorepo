@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { isMobile } from 'web3modal';
+import ShowMoreText from "react-show-more-text";
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -27,28 +28,37 @@ const HouseHeader: React.FC<{
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
 
   const communityDescription = (
-    <div className={classes.communityDescriptionRow}>
-      {/* support both markdown & html links in community's description.  */}
-      <Markdown
-        options={{
-          overrides: {
-            a: {
-              component: OpenInNewTab,
-              props: {
-                target: '_blank',
-                rel: 'noreferrer',
+    <ShowMoreText
+      lines={5}
+      more="Read more"
+      less="Read less"
+      anchorClass="readMoreLessDescription"
+      expanded={false}
+      truncatedEndingComponent={"... "}
+    >
+      <div className={classes.communityDescriptionRow}>
+        {/* support both markdown & html links in community's description.  */}
+        <Markdown
+          options={{
+            overrides: {
+              a: {
+                component: OpenInNewTab,
+                props: {
+                  target: '_blank',
+                  rel: 'noreferrer',
+                },
               },
             },
-          },
-        }}
-      >
-        {sanitizeHtml(community.description as any, {
-          allowedAttributes: {
-            a: ['href', 'target'],
-          },
-        })}
-      </Markdown>
-    </div>
+          }}
+        >
+          {sanitizeHtml(community.description as any, {
+            allowedAttributes: {
+              a: ['href', 'target'],
+            },
+          })}
+        </Markdown>
+      </div>
+    </ShowMoreText>
   );
 
   const { t } = useTranslation();
