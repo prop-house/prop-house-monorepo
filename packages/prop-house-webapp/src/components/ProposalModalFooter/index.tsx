@@ -7,7 +7,6 @@ import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { getNumVotes } from 'prop-house-communities';
 import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
@@ -53,8 +52,6 @@ const ProposalModalFooter: React.FC<{
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (!account || !library || !community) return;
 
@@ -96,7 +93,7 @@ const ProposalModalFooter: React.FC<{
               <WinningProposalBanner numOfVotes={proposal.voteCount} />
             ) : (
               <div className={classes.footerPadding}>
-                {/* VOTING WINDOW, NOT CONNECTED */}
+                {/* ACTIVE ROUND, NOT CONNECTED */}
                 {!isRoundOver && !account && (
                   <div className={classes.connectContainer}>
                     <Button
@@ -122,60 +119,57 @@ const ProposalModalFooter: React.FC<{
                   </div>
                 )}
 
-                {/* PROPOSING WINDOW, CONNECTED  */}
-                {account && isProposingWindow ? (
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={'Create your proposal'}
-                    bgColor={ButtonColor.Green}
-                    onClick={() => navigate('/create', { state: { auction: round, community } })}
+                {/* PROPOSING WINDOW */}
+                {isProposingWindow &&
+                  <ProposalWindowButtons
+                    proposal={proposal}
+                    editProposalMode={editProposalMode}
+                    setEditProposalMode={setEditProposalMode}
                   />
-                ) : (
-                  <>
-                    {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                    {account &&
-                      (isVotingWindow && votingPower > 0 ? (
-                        <ProposalModalVotingModule
-                          proposal={proposal}
-                          setShowVotingModal={setShowVotingModal}
-                          setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                          isWinner={isWinner && isWinner}
-                        />
-                      ) : (
-                        <>
-                          <div className={classes.noVotesContainer}>
-                            <p className={classes.noVotesMessage}>
-                              <b>
-                                {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
-                                {t('requiredToVote')}.
-                              </b>
-                            </p>
+                }
 
-                            <div className={classes.voteCount}>
-                              {isWinner && (
-                                <div className={classes.crownNoun}>
-                                  <img src="/heads/crown.png" alt="crown" />
-                                </div>
-                              )}
+                <>
+                  {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
+                  {(account && isVotingWindow) &&
+                    (votingPower > 0 ? (
+                      <ProposalModalVotingModule
+                        proposal={proposal}
+                        setShowVotingModal={setShowVotingModal}
+                        setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                        isWinner={isWinner && isWinner}
+                      />
+                    ) : (
+                      // VOTING PERIOD, CONNECTED, NO VOTES
+                      <>
+                        <div className={classes.noVotesContainer}>
+                          <p className={classes.noVotesMessage}>
+                            <b>
+                              {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
+                              {t('requiredToVote')}.
+                            </b>
+                          </p>
 
-                              <div className={classes.icon}>
-                                <VotesDisplay proposal={proposal} />
+                          <div className={classes.voteCount}>
+                            {isWinner && (
+                              <div className={classes.crownNoun}>
+                                <img src="/heads/crown.png" alt="crown" />
                               </div>
+                            )}
+
+                            <div className={classes.icon}>
+                              <VotesDisplay proposal={proposal} />
                             </div>
                           </div>
-                        </>
-                      ))}
-                  </>
-                )}
+                        </div>
+                      </>
+                    ))}
+                </>
               </div>
             )}
           </>
 
-          {/* 
-          
-           */}
-
           <ProposalModalNavButtons
+            editProposalMode={editProposalMode}
             propIndex={propIndex}
             numberOfProps={numberOfProps}
             handleDirectionalArrowClick={handleDirectionalArrowClick}
