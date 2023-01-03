@@ -229,7 +229,6 @@ const ProposalModal = () => {
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               handleClosePropModal={handleClosePropModal}
               hideScrollButton={hideScrollButton}
-              isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}
               editProposalMode={editProposalMode}

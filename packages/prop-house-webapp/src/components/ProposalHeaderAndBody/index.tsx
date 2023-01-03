@@ -12,7 +12,6 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import ScrollButton from '../ScrollButton/ScrollButton';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalEditor from '../ProposalEditor';
-import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import { patchProposal } from '../../state/slices/editor';
 
 interface ProposalHeaderAndBodyProps {
@@ -20,7 +19,6 @@ interface ProposalHeaderAndBodyProps {
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
   handleClosePropModal: () => void;
-  isWinner?: boolean;
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
   showVoteAllotmentModal: boolean;
@@ -36,7 +34,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentPropIndex,
     handleDirectionalArrowClick,
     handleClosePropModal,
-    isWinner,
     hideScrollButton,
     setHideScrollButton,
     showVoteAllotmentModal,
@@ -117,8 +114,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
 
                 <Divider />
               </div>
-
-              {isWinner && <WinningProposalBanner numOfVotes={currentProposal.voteCount} />}
 
               {!hideScrollButton && !editProposalMode && (
                 <div className="scrollMoreContainer">
