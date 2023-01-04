@@ -29,12 +29,13 @@ const HouseHeader: React.FC<{
 
   const communityDescription = (
     <ShowMoreText
-      lines={5}
+      lines={3}
       more="Read more"
       less="Read less"
       className="readMoreContainer"
       anchorClass="readMoreLessDescription"
       expanded={false}
+      width={700}
       truncatedEndingComponent={"... "}
     >
       <div className={classes.communityDescriptionRow}>
