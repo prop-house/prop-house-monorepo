@@ -54,16 +54,16 @@ const RoundHeader: React.FC<{
           </Col>
 
           {community?.description && (
-            <ShowMoreText
-              lines={3}
-              more="Read more"
-              less="Read less"
-              className="readMoreContainer"
-              anchorClass="readMoreLessDescription"
-              expanded={false}
-              truncatedEndingComponent={"... "}
-            >
-              <Col className={classes.communityDescriptionRow}>
+            <Col className={classes.communityDescriptionRow}>
+              <ShowMoreText
+                lines={3}
+                more="Read more"
+                less="Read less"
+                className="readMoreContainer"
+                anchorClass="readMoreLessDescription"
+                expanded={false}
+                truncatedEndingComponent={"... "}
+              >
                 {/* support both markdown & html links in community's description.  */}
                 <Markdown
                   options={{
@@ -87,8 +87,8 @@ const RoundHeader: React.FC<{
                     },
                   })}
                 </Markdown>
-              </Col>
-            </ShowMoreText>
+              </ShowMoreText>
+            </Col>
           )}
         </Col>
       </Col>

@@ -19,7 +19,6 @@ interface OpenInNewTabProps {
 
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
-
 const RemoveBreak = ({ children }: OpenInNewTabProps) => <>{children}</>;
 
 const HouseHeader: React.FC<{
@@ -30,17 +29,17 @@ const HouseHeader: React.FC<{
   const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
 
   const communityDescription = (
-    <ShowMoreText
-      lines={3}
-      more="Read more"
-      less="Read less"
-      className="readMoreContainer"
-      anchorClass="readMoreLessDescription"
-      expanded={false}
-      width={700}
-      truncatedEndingComponent={"... "}
-    >
-      <div className={classes.communityDescriptionRow}>
+    <div className={classes.communityDescriptionRow}>
+      <ShowMoreText
+        lines={3}
+        more="Read more"
+        less="Read less"
+        className="readMoreContainer"
+        anchorClass="readMoreLessDescription"
+        expanded={false}
+        width={700}
+        truncatedEndingComponent={"... "}
+      >
         {/* support both markdown & html links in community's description.  */}
         <Markdown
           options={{
@@ -65,8 +64,8 @@ const HouseHeader: React.FC<{
 
           })}
         </Markdown>
-      </div>
-    </ShowMoreText >
+      </ShowMoreText >
+    </div>
   );
 
 
