@@ -31,12 +31,11 @@ const HouseHeader: React.FC<{
   const communityDescription = (
     <div className={classes.communityDescriptionRow}>
       <ShowMoreText
-        lines={3}
+        lines={5}
         more="Read more"
         less="Read less"
         className="readMoreContainer"
         anchorClass="readMoreLessDescription"
-        expanded={false}
         width={700}
         truncatedEndingComponent={"... "}
       >
@@ -64,7 +63,7 @@ const HouseHeader: React.FC<{
 
           })}
         </Markdown>
-      </ShowMoreText >
+      </ShowMoreText>
     </div>
   );
 

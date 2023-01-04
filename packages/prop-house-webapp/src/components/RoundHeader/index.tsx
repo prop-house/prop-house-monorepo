@@ -61,7 +61,7 @@ const RoundHeader: React.FC<{
                 less="Read less"
                 className="readMoreContainer"
                 anchorClass="readMoreLessDescription"
-                expanded={false}
+                width={1000}
                 truncatedEndingComponent={"... "}
               >
                 {/* support both markdown & html links in community's description.  */}
