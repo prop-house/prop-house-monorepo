@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { isMobile } from 'web3modal';
-import ShowMoreText from "react-show-more-text";
+import ReadMore from '../ReadMore';
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -30,40 +30,30 @@ const HouseHeader: React.FC<{
 
   const communityDescription = (
     <div className={classes.communityDescriptionRow}>
-      <ShowMoreText
-        lines={5}
-        more="Read more"
-        less="Read less"
-        className="readMoreContainer"
-        anchorClass="readMoreLessDescription"
-        width={700}
-        truncatedEndingComponent={"... "}
+      {/* support both markdown & html links in community's description.  */}
+      <Markdown
+        options={{
+          overrides: {
+            a: {
+              component: OpenInNewTab,
+              props: {
+                target: '_blank',
+                rel: 'noreferrer',
+              },
+            },
+            br: {
+              component: RemoveBreak,
+            },
+          },
+        }}
       >
-        {/* support both markdown & html links in community's description.  */}
-        <Markdown
-          options={{
-            overrides: {
-              a: {
-                component: OpenInNewTab,
-                props: {
-                  target: '_blank',
-                  rel: 'noreferrer',
-                },
-              },
-              br: {
-                component: RemoveBreak,
-              },
-            },
-          }}
-        >
-          {sanitizeHtml(community.description as any, {
-            allowedAttributes: {
-              a: ['href', 'target'],
-            },
+        {sanitizeHtml(community.description as any, {
+          allowedAttributes: {
+            a: ['href', 'target'],
+          },
 
-          })}
-        </Markdown>
-      </ShowMoreText>
+        })}
+      </Markdown>
     </div>
   );
 
@@ -118,9 +108,9 @@ const HouseHeader: React.FC<{
             </div>
           </div>
         </div>
-        {!isMobile() && communityDescription}
+        {!isMobile() && <ReadMore description={communityDescription} />}
       </div>
-      {isMobile() && communityDescription}
+      {isMobile() && <ReadMore description={communityDescription} />}
     </div>
   );
 };

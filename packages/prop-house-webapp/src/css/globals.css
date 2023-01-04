@@ -244,15 +244,3 @@ body {
     gap: 20px;
   }
 }
-.readMoreContainer {
-  padding-bottom: 15px;
-}
-.readMoreLessDescription {
-  display: block;
-  color: var(--brand-pink) !important;
-  text-decoration: underline;
-  font-weight: 600;
-}
-.readMoreLessDescription:hover {
-  cursor: pointer;
-}
