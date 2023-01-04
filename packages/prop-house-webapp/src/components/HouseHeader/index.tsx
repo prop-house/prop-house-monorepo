@@ -20,6 +20,8 @@ interface OpenInNewTabProps {
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
 
+const RemoveBreak = ({ children }: OpenInNewTabProps) => <>{children}</>;
+
 const HouseHeader: React.FC<{
   community: Community;
 }> = props => {
@@ -50,6 +52,9 @@ const HouseHeader: React.FC<{
                   rel: 'noreferrer',
                 },
               },
+              br: {
+                component: RemoveBreak,
+              },
             },
           }}
         >
@@ -57,11 +62,13 @@ const HouseHeader: React.FC<{
             allowedAttributes: {
               a: ['href', 'target'],
             },
+
           })}
         </Markdown>
       </div>
-    </ShowMoreText>
+    </ShowMoreText >
   );
+
 
   const { t } = useTranslation();
 
