@@ -119,20 +119,20 @@ export class PropHouseWrapper {
     }
   }
 
-  async updateProposal(updatedProposal: UpdatedProposal) {
+  async updateProposal(updatedProposal: UpdatedProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await updatedProposal.signedPayload(this.signer);
+      const signedPayload = await updatedProposal.signedPayload(this.signer, isContract);
       return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
   }
 
-  async deleteProposal(deleteProposal: DeleteProposal) {
+  async deleteProposal(deleteProposal: DeleteProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await deleteProposal.signedPayload(this.signer);
+      const signedPayload = await deleteProposal.signedPayload(this.signer, isContract);
       return (await axios.delete(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
