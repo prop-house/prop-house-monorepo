@@ -29,6 +29,16 @@ export class CreateProposalDto extends SignedEntity {
   parentAuctionId: number;
 }
 
+export class UpdateProposalDto extends CreateProposalDto {
+  @IsNumber()
+  id: number;
+}
+
+export class DeleteProposalDto extends SignedEntity {
+  @IsNumber()
+  id: number;
+}
+
 export class GetProposalsDto {
   @IsOptional()
   @IsInt()
