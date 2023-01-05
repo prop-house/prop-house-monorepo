@@ -122,7 +122,7 @@ export class PropHouseWrapper {
   async updateProposal(updatedProposal: UpdatedProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await updatedProposal.signedPayload(this.signer, isContract);
+      const signedPayload = await updatedProposal.signedPayload(this.signer, isContract, ProposalMessageTypes);
       return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
@@ -132,7 +132,7 @@ export class PropHouseWrapper {
   async deleteProposal(deleteProposal: DeleteProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await deleteProposal.signedPayload(this.signer, isContract);
+      const signedPayload = await deleteProposal.signedPayload(this.signer, isContract, ProposalMessageTypes);
       return (await axios.delete(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
