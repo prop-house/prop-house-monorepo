@@ -128,7 +128,7 @@ html {
     );
 }
 
-.faqGradientBg {
+.gradientBg {
   background: linear-gradient(180deg, rgba(245, 245, 245, 0) 78.1%, #f5f5f5 100%),
     radial-gradient(
         19.94% 82.15% at 100% 0%,
