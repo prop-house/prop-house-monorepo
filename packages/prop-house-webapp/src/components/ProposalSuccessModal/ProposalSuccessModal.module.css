@@ -55,6 +55,15 @@
   justify-content: center;
   padding-bottom: 5px;
 }
+.modalTitle div {
+  max-width: 70%;
+}
+.modalTitle span {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
+}
 .address {
   font-weight: 700;
   font-size: 22px;
