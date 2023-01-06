@@ -1,19 +1,32 @@
 import classes from './ReadMore.module.css';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 
 const ReadMore: React.FC<{
   description: JSX.Element;
 }> = props => {
   const { description } = props;
 
-  const [readMore, setReadMore] = useState(false);
+  const ref = useRef(null);
+  const [open, setOpen] = useState(false);
+  const [showLink, setShowLink] = useState(false);
+
+  useLayoutEffect(() => {
+    // @ts-ignore
+    if (ref.current && ref.current.clientHeight < ref.current.scrollHeight) {
+      setShowLink(true)
+    }
+  }, [ref])
+
   return (
     <div className={classes.readMoreContainer}>
-      <div className={readMore ? '' : classes.clampLine}>
-        {description}
-      </div>
+      <div className={clsx(classes.readMoreText, open && classes.clampLine)} ref={ref}> {description} </div>
 
-      <div className={classes.readMoreLessButton} onClick={() => setReadMore(!readMore)}>{readMore ? 'Read less' : 'Read more'}</div>
+      {showLink &&
+        <div className={classes.readMoreLessButton} onClick={() => setOpen(!open)} >
+          {open ? 'Read less' : 'Read more'}
+        </div>
+      }
     </div>
 
   );

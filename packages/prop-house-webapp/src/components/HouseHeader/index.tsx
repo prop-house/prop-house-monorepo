@@ -19,7 +19,6 @@ interface OpenInNewTabProps {
 
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
-const RemoveBreak = ({ children }: OpenInNewTabProps) => <>{children}</>;
 
 const HouseHeader: React.FC<{
   community: Community;
@@ -39,11 +38,8 @@ const HouseHeader: React.FC<{
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
-              },
-            },
-            br: {
-              component: RemoveBreak,
-            },
+              }
+            }
           },
         }}
       >
