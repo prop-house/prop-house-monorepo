@@ -137,7 +137,7 @@ const Create: React.FC<{}> = () => {
                   (account ? (
                     <Button
                       classNames={classes.actionBtn}
-                      text={t('signSubmit')}
+                      text={t('signAndSubmit')}
                       bgColor={ButtonColor.Pink}
                       onClick={submitProposal}
                       disabled={!isValidPropData(proposalEditorData)}
