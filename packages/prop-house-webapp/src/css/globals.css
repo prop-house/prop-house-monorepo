@@ -188,6 +188,10 @@ body {
 }
 
 /* modals */
+.ReactModal__Overlay--after-open {
+  backdrop-filter: blur(5px) !important;
+  z-index: 3;
+}
 .ReactModal__Content {
   position: absolute !important;
   top: 50% !important;
