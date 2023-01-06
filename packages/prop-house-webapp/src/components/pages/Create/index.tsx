@@ -18,8 +18,9 @@ import removeTags from '../../../utils/removeTags';
 import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
 import LoadingIndicator from '../../LoadingIndicator';
-import Divider from '../../Divider';
 import ProposalSuccessModal from '../../ProposalSuccessModal';
+import NavBar from '../../NavBar';
+
 
 const isValidPropData = (data: ProposalFields) =>
   data.title.length > 4 &&
@@ -75,7 +76,7 @@ const Create: React.FC<{}> = () => {
   };
 
   return (
-    <Container>
+    <>
       {activeAuction ? (
         <>
           {showProposalSuccessModal && propId && (
@@ -87,68 +88,76 @@ const Create: React.FC<{}> = () => {
               round={activeAuction.title}
             />
           )}
-          <Row>
-            <Col xl={12} className={classes.proposalHelperWrapper}>
-              <h1 className={classes.proposalHelper}>
-                {t('creatingProp')}{' '}
-                <span>
-                  {` ${activeCommunity.name}: ${activeAuction.title}`}
-                  {' ('}
+
+          <div className="gradientBg">
+            <NavBar />
+            <Container>
+              <h1 className={classes.title}>Creating your proposal for</h1>
+
+              <h1 className={classes.proposalTitle}>
+                <span className={classes.boldLabel}>{activeAuction.title}</span> in the{' '}
+                <span className={classes.boldLabel}>{activeCommunity.name}</span> house
+              </h1>
+
+              <span className={classes.fundingCopy}>
+                <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners will
+                be selected to receive{' '}
+                <span className={classes.boldLabel}>
+                  {' '}
                   <FundingAmount
                     amount={activeAuction.fundingAmount}
                     currencyType={activeAuction.currencyType}
                   />
-                  {')'}
                 </span>
-              </h1>
-            </Col>
-          </Row>
+              </span>
+            </Container>
+          </div>
 
-          <Divider />
+          <Container>
+            <Row>
+              <Col xl={12}>
+                {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
+              </Col>
+            </Row>
 
-          <Row>
-            <Col xl={12}>
-              {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
-            </Col>
-          </Row>
+            <Row>
+              <Col xl={12} className={classes.btnContainer}>
+                <Button
+                  text={showPreview ? t('backToEditor') : t('preview')}
+                  bgColor={ButtonColor.Pink}
+                  onClick={() =>
+                    setShowPreview(prev => {
+                      return !prev;
+                    })
+                  }
+                  disabled={!isValidPropData(proposalEditorData)}
+                />
 
-          <Row>
-            <Col xl={12} className={classes.btnContainer}>
-              <Button
-                text={showPreview ? t('backToEditor') : t('preview')}
-                bgColor={ButtonColor.Pink}
-                onClick={() =>
-                  setShowPreview(prev => {
-                    return !prev;
-                  })
-                }
-                disabled={!isValidPropData(proposalEditorData)}
-              />
-
-              {showPreview &&
-                (account ? (
-                  <Button
-                    classNames={classes.actionBtn}
-                    text={t('signAndSubmit')}
-                    bgColor={ButtonColor.Pink}
-                    onClick={submitProposal}
-                    disabled={!isValidPropData(proposalEditorData)}
-                  />
-                ) : (
-                  <Button
-                    classNames={classes.actionBtn}
-                    bgColor={ButtonColor.Pink}
-                    text={t('connectWallet')}
-                    onClick={connect}
-                  />
-                ))}
-            </Col>
-          </Row>
+                {showPreview &&
+                  (account ? (
+                    <Button
+                      classNames={classes.actionBtn}
+                      text={t('signSubmit')}
+                      bgColor={ButtonColor.Pink}
+                      onClick={submitProposal}
+                      disabled={!isValidPropData(proposalEditorData)}
+                    />
+                  ) : (
+                    <Button
+                      classNames={classes.actionBtn}
+                      bgColor={ButtonColor.Pink}
+                      text={t('connectWallet')}
+                      onClick={connect}
+                    />
+                  ))}
+              </Col>
+            </Row>
+          </Container>
         </>
       ) : (
         <LoadingIndicator />
       )}
-    </Container>
+    </>
   );
 };
 
