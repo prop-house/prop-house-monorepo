@@ -1,5 +1,6 @@
 import classes from './ReadMore.module.css';
 import { useLayoutEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 
 const ReadMore: React.FC<{
   description: JSX.Element;
@@ -17,14 +18,9 @@ const ReadMore: React.FC<{
     }
   }, [ref])
 
-  let classNames = classes.readMoreText;
-  if (open) {
-    classNames += classes.clampLine;
-  }
-
   return (
     <div className={classes.readMoreContainer}>
-      <div className={classNames} ref={ref}> {description} </div>
+      <div className={clsx(classes.readMoreText, open && classes.clampLine)} ref={ref}> {description} </div>
 
       {showLink &&
         <div className={classes.readMoreLessButton} onClick={() => setOpen(!open)} >
