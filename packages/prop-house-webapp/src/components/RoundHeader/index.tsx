@@ -8,6 +8,7 @@ import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
+import ReadMore from '../ReadMore';
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -17,6 +18,7 @@ interface OpenInNewTabProps {
 
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
+const RemoveBreak = ({ children }: OpenInNewTabProps) => <>{children}</>;
 
 const RoundHeader: React.FC<{
   community: Community;
@@ -24,6 +26,32 @@ const RoundHeader: React.FC<{
 }> = props => {
   const { community, auction } = props;
   const navigate = useNavigate();
+
+  const roundDescription =
+    <>
+      {/* support both markdown & html links in community's description.  */}
+      <Markdown
+        options={{
+          overrides: {
+            a: {
+              component: OpenInNewTab,
+              props: {
+                target: '_blank',
+                rel: 'noreferrer',
+              },
+            },
+            br: {
+              component: RemoveBreak,
+            },
+          },
+        }}
+      >
+        {sanitizeHtml(auction?.description as any, {
+          allowedAttributes: {
+            a: ['href', 'target'],
+          },
+        })}
+      </Markdown></>
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -51,30 +79,9 @@ const RoundHeader: React.FC<{
             <div className={classes.title}>{auction && `${auction.title}`}</div>
           </Col>
 
-          {community?.description && (
-            <Col className={classes.communityDescriptionRow}>
-              {/* support both markdown & html links in community's description.  */}
-              <Markdown
-                options={{
-                  overrides: {
-                    a: {
-                      component: OpenInNewTab,
-                      props: {
-                        target: '_blank',
-                        rel: 'noreferrer',
-                      },
-                    },
-                  },
-                }}
-              >
-                {sanitizeHtml(auction?.description as any, {
-                  allowedAttributes: {
-                    a: ['href', 'target'],
-                  },
-                })}
-              </Markdown>
-            </Col>
-          )}
+          <Col className={classes.communityDescriptionRow}>
+            <ReadMore description={roundDescription} />
+          </Col>
         </Col>
       </Col>
     </Row>

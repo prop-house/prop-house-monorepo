@@ -1,0 +1,19 @@
+.readMoreContainer {
+  padding-bottom: 15px;
+}
+.readMoreLessButton {
+  display: block !important;
+  color: var(--brand-pink) !important;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.readMoreLessButton:hover {
+  cursor: pointer;
+}
+.clampLine {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
