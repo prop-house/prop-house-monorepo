@@ -1,5 +1,5 @@
 .langBtn {
-  padding-top: 0.4rem;
+  padding-top: 0.2rem;
 }
 
 @media (max-width: 991px) {
@@ -14,7 +14,7 @@
 
 .langBtn button {
   border-radius: 10px !important;
-  padding: 0.575rem 0.75rem 0.525rem;
+  padding: 0.575rem 0.75rem;
   white-space: normal;
   line-height: 140% !important;
   background-color: white;
