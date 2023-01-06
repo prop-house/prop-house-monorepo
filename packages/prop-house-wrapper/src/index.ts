@@ -10,6 +10,8 @@ import {
   Vote,
   Community,
   CommunityWithAuctions,
+  UpdatedProposal,
+  DeleteProposal,
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
@@ -112,6 +114,26 @@ export class PropHouseWrapper {
         ProposalMessageTypes,
       );
       return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async updateProposal(updatedProposal: UpdatedProposal, isContract = false) {
+    if (!this.signer) return;
+    try {
+      const signedPayload = await updatedProposal.signedPayload(this.signer, isContract);
+      return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async deleteProposal(deleteProposal: DeleteProposal, isContract = false) {
+    if (!this.signer) return;
+    try {
+      const signedPayload = await deleteProposal.signedPayload(this.signer, isContract);
+      return (await axios.delete(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }

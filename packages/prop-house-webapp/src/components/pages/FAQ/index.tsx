@@ -64,7 +64,7 @@ const FAQ = () => {
 
   return (
     <>
-      <div className="faqGradientBg">
+      <div className="gradientBg">
         <NavBar />
         <Container>
           <div className={classes.searchWrapper}>

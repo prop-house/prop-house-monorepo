@@ -1,9 +1,8 @@
 const bgColorForFooter = (path: string) => {
   const isHousePath = new RegExp('.*/.+').test(path);
   const isProposalPath = new RegExp('.*/.*/.*/.+').test(path);
-  const pages = ['/create'];
 
-  if (pages.includes(path) || isProposalPath) return 'bgWhite';
+  if (isProposalPath) return 'bgWhite';
   if (isHousePath || '/') return 'bgGray';
 
   return 'bgWhite';

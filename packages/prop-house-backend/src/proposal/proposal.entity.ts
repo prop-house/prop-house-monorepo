@@ -13,6 +13,7 @@ import {
   BeforeUpdate,
   BeforeInsert,
   RelationId,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -81,4 +82,7 @@ export class Proposal extends SignedEntity {
   setUpdatedDate() {
     this.lastUpdatedDate = new Date();
   }
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

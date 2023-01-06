@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { isMobile } from 'web3modal';
+import ReadMore from '../ReadMore';
 
 const isLongName = (name: string) => name.length > 9;
 
@@ -18,6 +19,7 @@ interface OpenInNewTabProps {
 
 // overrides an <a> tag that doesn't have target="_blank" and adds it
 const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
+const RemoveBreak = ({ children }: OpenInNewTabProps) => <>{children}</>;
 
 const HouseHeader: React.FC<{
   community: Community;
@@ -39,6 +41,9 @@ const HouseHeader: React.FC<{
                 rel: 'noreferrer',
               },
             },
+            br: {
+              component: RemoveBreak,
+            },
           },
         }}
       >
@@ -46,10 +51,12 @@ const HouseHeader: React.FC<{
           allowedAttributes: {
             a: ['href', 'target'],
           },
+
         })}
       </Markdown>
     </div>
   );
+
 
   const { t } = useTranslation();
 
@@ -101,9 +108,9 @@ const HouseHeader: React.FC<{
             </div>
           </div>
         </div>
-        {!isMobile() && communityDescription}
+        {!isMobile() && <ReadMore description={communityDescription} />}
       </div>
-      {isMobile() && communityDescription}
+      {isMobile() && <ReadMore description={communityDescription} />}
     </div>
   );
 };

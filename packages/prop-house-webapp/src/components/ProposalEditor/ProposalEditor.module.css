@@ -1,7 +1,7 @@
 .inputLabel {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--brand-gray);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--brand-black-transparent);
 }
 .inputGroup {
   margin-top: 2rem;
@@ -12,7 +12,6 @@
 
 .inputInfo {
   display: flex;
-  margin: 0rem 1rem;
   justify-content: space-between;
   align-items: center;
 }
@@ -23,7 +22,6 @@
 .inputError {
   color: red;
   font-weight: 600;
-  margin-left: 1rem;
   padding: 0.5rem 0rem;
   margin-bottom: 0rem;
 }
@@ -33,22 +31,28 @@
   color: var(--brand-black);
   margin-bottom: 1.75rem;
   white-space: pre-line;
-  border-radius: 20px;
-  border: 1px rgba(0, 0, 0, 0.1) solid;
-  padding: 1.5rem;
   margin-bottom: 0rem;
+  border-radius: 12px;
+  border: 1px solid #ccc !important;
+  padding: 0.75rem !important;
+  font-size: 16px !important;
 }
 .input:focus {
   box-shadow: none;
   border: 1px rgba(0, 0, 0, 0.1) solid;
 }
-
 .input::placeholder {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--brand-black-transparent);
+  color: var(--brand-gray-transparent) !important;
+  font-size: 16px !important;
+  font-style: italic;
+}
+.input:focus::-webkit-input-placeholder {
+  opacity: 0 !important;
 }
 
+.descriptionLabel {
+  margin-bottom: 0;
+}
 .descriptionInput {
   height: 15rem;
 }

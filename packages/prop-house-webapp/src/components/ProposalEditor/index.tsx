@@ -168,7 +168,7 @@ const ProposalEditor: React.FC<{
 
               <>
                 <div className={classes.inputInfo}>
-                  <Form.Label className={classes.inputLabel}>{descriptionData.title}</Form.Label>
+                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>{descriptionData.title}</Form.Label>
 
                   <Form.Label className={classes.inputChars}>
                     {quill && quill.getText().length - 1}
