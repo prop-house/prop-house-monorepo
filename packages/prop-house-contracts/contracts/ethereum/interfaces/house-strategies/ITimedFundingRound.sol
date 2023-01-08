@@ -2,6 +2,7 @@
 pragma solidity >=0.8.17;
 
 import { IHouseStrategy } from '../../interfaces/IHouseStrategy.sol';
+import { Award } from '../../lib/types/Common.sol';
 
 /// @notice Interface implemented by the timed funding round house strategy
 interface ITimedFundingRound is IHouseStrategy {
@@ -21,15 +22,6 @@ interface ITimedFundingRound is IHouseStrategy {
         uint16 winnerCount;
         Award[] awards;
         // address parent; // TODO: Won't work if multiple awards...
-    }
-
-    // TODO: Move and rename `Award`. Maybe to `DepositAsset`, `OfferedAsset`, `LockedAsset`. locked asset is probably best.
-    // This may be another round, so should generalize.
-
-    /// @notice An award asset offered to one or more round winners
-    struct Award {
-        uint256 assetId;
-        uint256 amount;
     }
 
     /// @notice Thrown when an award has already been claimed
@@ -129,4 +121,25 @@ interface ITimedFundingRound is IHouseStrategy {
 
     /// @notice Emitted when a round is cancelled by the round manager
     event RoundCancelled();
+
+    /// @notice The current state of the timed funding round
+    function state() external view returns (RoundState);
+
+    /// @notice The timestamp at which the round was finalized. `0` if not finalized.
+    function roundFinalizedAt() external view returns (uint40);
+
+    /// @notice The timestamp at which the proposal period starts. `0` when in pending state.
+    function proposalPeriodStartTimestamp() external view returns (uint40);
+
+    /// @notice The proposal period duration in seconds. `0` when in pending state.
+    function proposalPeriodDuration() external view returns (uint40);
+
+    /// @notice The vote period duration in seconds. `0` when in pending state.
+    function votePeriodDuration() external view returns (uint40);
+
+    /// @notice The number of possible winners. `0` when in pending state.
+    function winnerCount() external view returns (uint16);
+
+    /// @notice The merkle root that allows winners to claim their awards. `bytes32(0)` if not finalized.
+    function winnerMerkleRoot() external view returns (bytes32);
 }

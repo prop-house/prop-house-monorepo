@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { ITimedFundingRound } from '../../interfaces/house-strategies/ITimedFundingRound.sol';
+import { Award } from '../types/Common.sol';
 
 library Sort {
     /// @notice Quicksort an array of awards from smallest to largest asset ID
@@ -9,7 +9,7 @@ library Sort {
     /// @param left The left index (starting index: `0`)
     /// @param right The right index (starting index: `awards.length - 1`)
     function sort(
-        ITimedFundingRound.Award[] memory awards,
+        Award[] memory awards,
         int256 left,
         int256 right
     ) internal view {
@@ -17,7 +17,7 @@ library Sort {
             int256 i = left;
             int256 j = right;
             if (i == j) return;
-            ITimedFundingRound.Award memory pivot = awards[uint256(left + (right - left) / 2)];
+            Award memory pivot = awards[uint256(left + (right - left) / 2)];
             while (i <= j) {
                 while (awards[uint256(i)].assetId < pivot.assetId) i++;
                 while (pivot.assetId < awards[uint256(j)].assetId) j--;

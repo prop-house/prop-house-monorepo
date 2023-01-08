@@ -10,8 +10,8 @@ import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
 import { ERC1155Supply } from '../lib/token/ERC1155Supply.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
+import { Asset, Award } from '../lib/types/Common.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
-import { Asset } from '../lib/types/Common.sol';
 import { Sort } from '../lib/utils/Sort.sol';
 
 // If we had a idea round, the nft to win is the mandated round ownership nft.
@@ -78,7 +78,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     }
 
     /// @notice The current state of the timed funding round
-    RoundState state;
+    RoundState public state;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
     uint40 public roundFinalizedAt;
