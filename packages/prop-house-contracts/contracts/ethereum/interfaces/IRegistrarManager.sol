@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 /// @notice Interface for the Registrar Manager
 interface IRegistrarManager {
     /// @notice Thrown when the caller of a guarded function is not the nominated registrar
-    error OnlyNominatedRegistrar();
+    error ONLY_NOMINATED_REGISTRAR();
 
     /// @notice Thrown when the caller of a guarded function is not the active registrar
-    error OnlyRegistrar();
+    error ONLY_REGISTRAR();
 
     /// @notice Emitted when the nominated registrar is updated
     /// @param nominatedRegistrar The address of the nominated registrar

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IUpgradeManager } from '../interfaces/IUpgradeManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
@@ -16,7 +16,7 @@ contract UpgradeManager is IUpgradeManager {
     /// @notice Require that the sender is the registrar
     modifier onlyRegistrar() {
         if (msg.sender != RegistrarManager.registrar()) {
-            revert IRegistrarManager.OnlyRegistrar();
+            revert IRegistrarManager.ONLY_REGISTRAR();
         }
         _;
     }

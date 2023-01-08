@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 /// @notice Common interface for a house
 interface IHouse {
     /// @notice Thrown when a strategy is not enabled in the house instance
-    error StrategyNotEnabled();
+    error STRATEGY_NOT_ENABLED();
+
+    /// @notice Thrown when the caller of a guarded function is not a valid house strategy
+    error ONLY_HOUSE_STRATEGY();
+
+    /// @notice Emitted when the contract URI is updated
+    /// @param contractURI The new contract URI
+    event ContractURIUpdated(string contractURI);
 
     /// @notice Emitted when a house strategy is enabled
     /// @param strategy The address of the enabled strategy
@@ -14,14 +21,7 @@ interface IHouse {
     /// @param strategy The address of the disabled strategy
     event StrategyDisabled(address strategy);
 
-    /// @notice Emitted when the house URI is updated
-    /// @param houseURI The new house URI
-    event HouseURIUpdated(string houseURI);
-
-    /// @notice The string representation of the unique identifier
-    function name() external view returns (string memory);
-
-    /// @notice A unique identifier
+    /// @notice The house implementation contract identifier
     function id() external view returns (bytes32);
 
     /// @notice The house implementation contract version
@@ -30,7 +30,7 @@ interface IHouse {
     /// @notice Initialize the house
     /// @param creator The creator of the house
     /// @param data Initialization data
-    function initialize(address creator, bytes calldata data) external payable;
+    function initialize(address creator, bytes calldata data) external;
 
     /// @notice Enable a house strategy
     function enableStrategy(address strategy) external;
@@ -43,4 +43,15 @@ interface IHouse {
 
     /// @notice Disable many house strategies
     function disableManyStrategies(address[] calldata strategies) external;
+
+    /// @notice Forwards a cross-chain message from a house strategy to the Starknet messenger contract
+    /// and returns the hash of the message
+    /// @param toAddress The callee address
+    /// @param selector The function selector
+    /// @param payload The message payload
+    function forwardMessageToL2(
+        uint256 toAddress,
+        uint256 selector,
+        uint256[] calldata payload
+    ) external returns (bytes32);
 }

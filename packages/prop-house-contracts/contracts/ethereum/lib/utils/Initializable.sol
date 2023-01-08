@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IInitializable } from '../../interfaces/IInitializable.sol';
 import { Address } from './Address.sol';
@@ -17,7 +17,7 @@ abstract contract Initializable is IInitializable {
 
     /// @dev Ensures an initialization function is only called within an `initializer` or `reinitializer` function
     modifier onlyInitializing() {
-        if (!_initializing) revert NotInitializing();
+        if (!_initializing) revert NOT_INITIALIZING();
         _;
     }
 
@@ -25,8 +25,9 @@ abstract contract Initializable is IInitializable {
     modifier initializer() {
         bool isTopLevelCall = !_initializing;
 
-        if ((!isTopLevelCall || _initialized != 0) && (Address.isContract(address(this)) || _initialized != 1))
-            revert AlreadyInitialized();
+        if ((!isTopLevelCall || _initialized != 0) && (Address.isContract(address(this)) || _initialized != 1)) {
+            revert ALREADY_INITIALIZED();
+        }
 
         _initialized = 1;
 
@@ -46,7 +47,7 @@ abstract contract Initializable is IInitializable {
     /// @dev Enables initializer versioning
     /// @param version The version to set
     modifier reinitializer(uint8 version) {
-        if (_initializing || _initialized >= version) revert AlreadyInitialized();
+        if (_initializing || _initialized >= version) revert ALREADY_INITIALIZED();
 
         _initialized = version;
 
@@ -61,7 +62,7 @@ abstract contract Initializable is IInitializable {
 
     /// @dev Prevents future initialization
     function _disableInitializers() internal virtual {
-        if (_initializing) revert Initializing();
+        if (_initializing) revert INITIALIZING();
 
         if (_initialized < type(uint8).max) {
             _initialized = type(uint8).max;

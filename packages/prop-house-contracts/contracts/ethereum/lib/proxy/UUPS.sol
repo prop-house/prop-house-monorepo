@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IUUPS } from '../../interfaces/IUUPS.sol';
 import { ERC1967Upgrade } from './ERC1967Upgrade.sol';
@@ -15,14 +15,14 @@ abstract contract UUPS is IUUPS, ERC1967Upgrade {
 
     /// @dev Ensures that execution is via proxy delegatecall with the correct implementation
     modifier onlyProxy() {
-        if (address(this) == __self) revert OnlyDelegateCall();
-        if (_getImplementation() != __self) revert OnlyProxy();
+        if (address(this) == __self) revert ONLY_DELEGATE_CALL();
+        if (_getImplementation() != __self) revert ONLY_PROXY();
         _;
     }
 
     /// @dev Ensures that execution is via direct call
     modifier notDelegated() {
-        if (address(this) != __self) revert OnlyCall();
+        if (address(this) != __self) revert ONLY_CALL();
         _;
     }
 
@@ -47,7 +47,7 @@ abstract contract UUPS is IUUPS, ERC1967Upgrade {
 
     /// @notice The storage slot of the implementation address
     function proxiableUUID() external view notDelegated returns (bytes32) {
-        if (address(this) != __self) revert OnlyCall();
+        if (address(this) != __self) revert ONLY_CALL();
         return _IMPLEMENTATION_SLOT;
     }
 }

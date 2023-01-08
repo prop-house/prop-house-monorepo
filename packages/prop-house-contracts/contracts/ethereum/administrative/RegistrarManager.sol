@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
+
+// TODO: Swap 'nominated' language for 'pending'
 
 /// @title RegistrarManager
 /// @notice This contract is the source of truth for the active registrar
@@ -15,7 +17,7 @@ contract RegistrarManager is IRegistrarManager {
     /// @notice Require that the sender is the nominated registrar
     modifier onlyNominatedRegistrar() {
         if (msg.sender != nominatedRegistrar) {
-            revert OnlyNominatedRegistrar();
+            revert ONLY_NOMINATED_REGISTRAR();
         }
         _;
     }
@@ -23,7 +25,7 @@ contract RegistrarManager is IRegistrarManager {
     /// @notice Require that the sender is the active registrar
     modifier onlyRegistrar() {
         if (msg.sender != registrar) {
-            revert OnlyRegistrar();
+            revert ONLY_REGISTRAR();
         }
         _;
     }

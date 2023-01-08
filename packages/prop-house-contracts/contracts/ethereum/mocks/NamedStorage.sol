@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 // Library to provide basic storage, in storage location out of the low linear address space.
 // New types of storage variables should be added here upon need.
 library NamedStorage {
-    error AlreadySet();
+    error ALREADY_SET();
 
     function bytes32ToUint256Mapping(string memory tag_)
         internal
@@ -55,7 +55,7 @@ library NamedStorage {
 
     function setUintValueOnce(string memory tag_, uint256 value) internal {
         if (getUintValue(tag_) != 0) {
-            revert AlreadySet();
+            revert ALREADY_SET();
         }
         setUintValue(tag_, value);
     }
@@ -76,7 +76,7 @@ library NamedStorage {
 
     function setAddressValueOnce(string memory tag_, address value) internal {
         if (getAddressValue(tag_) != address(0x0)) {
-            revert AlreadySet();
+            revert ALREADY_SET();
         }
         setAddressValue(tag_, value);
     }

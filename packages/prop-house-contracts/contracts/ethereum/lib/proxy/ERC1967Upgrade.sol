@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IERC1822Proxiable } from '@openzeppelin/contracts/interfaces/draft-IERC1822.sol';
 import { StorageSlot } from '@openzeppelin/contracts/utils/StorageSlot.sol';
@@ -32,9 +32,9 @@ abstract contract ERC1967Upgrade is IERC1967Upgrade {
             _setImplementation(newImpl);
         } else {
             try IERC1822Proxiable(newImpl).proxiableUUID() returns (bytes32 slot) {
-                if (slot != _IMPLEMENTATION_SLOT) revert UnsupportedUUID();
+                if (slot != _IMPLEMENTATION_SLOT) revert UNSUPPORTED_UUID();
             } catch {
-                revert OnlyUUPS();
+                revert ONLY_UUPS();
             }
 
             _upgradeToAndCall(newImpl, data, forceCall);
@@ -68,7 +68,7 @@ abstract contract ERC1967Upgrade is IERC1967Upgrade {
     /// @dev Stores the address of an implementation
     /// @param impl The implementation address
     function _setImplementation(address impl) private {
-        if (!Address.isContract(impl)) revert InvalidUpgrade(impl);
+        if (!Address.isContract(impl)) revert INVALID_UPGRADE(impl);
 
         StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = impl;
     }

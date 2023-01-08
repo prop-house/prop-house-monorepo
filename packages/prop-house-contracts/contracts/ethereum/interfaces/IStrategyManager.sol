@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 /// @notice Interface for the Strategy Manager
 interface IStrategyManager {
     /// @notice Thrown when an operation is attempted on an unregistered strategy
-    error StrategyNotRegistered();
+    error STRATEGY_NOT_REGISTERED();
 
     /// @notice Emitted when an strategy is registered
     /// @param houseImplId The ID of the house implementation

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IStrategyManager } from '../interfaces/IStrategyManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
+
+// TODO: Allow registrar to set an optional metadata renderer for each strategy.
 
 /// @title StrategyManager
 /// @notice This contract allows the registrar to manage house strategies, the building blocks of houses
@@ -25,7 +27,7 @@ contract StrategyManager is IStrategyManager {
     /// @notice Require that the sender is the registrar
     modifier onlyRegistrar() {
         if (msg.sender != RegistrarManager.registrar()) {
-            revert IRegistrarManager.OnlyRegistrar();
+            revert IRegistrarManager.ONLY_REGISTRAR();
         }
         _;
     }
@@ -90,7 +92,7 @@ contract StrategyManager is IStrategyManager {
         uint120 minVersion
     ) external onlyRegistrar {
         if (!strategies[houseImplId][strategy].enabled) {
-            revert StrategyNotRegistered();
+            revert STRATEGY_NOT_REGISTERED();
         }
         strategies[houseImplId][strategy].minVersion = minVersion;
 
@@ -107,7 +109,7 @@ contract StrategyManager is IStrategyManager {
         uint120 maxVersion
     ) external onlyRegistrar {
         if (!strategies[houseImplId][strategy].enabled) {
-            revert StrategyNotRegistered();
+            revert STRATEGY_NOT_REGISTERED();
         }
         strategies[houseImplId][strategy].maxVersion = maxVersion;
 

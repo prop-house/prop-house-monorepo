@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IDeploymentManager } from '../interfaces/IDeploymentManager.sol';
 import { IRegistrarManager } from '../interfaces/IRegistrarManager.sol';
@@ -15,7 +15,7 @@ contract DeploymentManager is IDeploymentManager {
     /// @notice Require that the sender is the registrar
     modifier onlyRegistrar() {
         if (msg.sender != RegistrarManager.registrar()) {
-            revert IRegistrarManager.OnlyRegistrar();
+            revert IRegistrarManager.ONLY_REGISTRAR();
         }
         _;
     }

@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IStarknetCore } from './interfaces/IStarknetCore.sol';
 import { IHouseFactory } from './interfaces/IHouseFactory.sol';
+import { IHouseStrategy } from './interfaces/IHouseStrategy.sol';
 import { IStarknetMessenger } from './interfaces/IStarknetMessenger.sol';
 
 contract StarknetMessenger is IStarknetMessenger {
@@ -12,17 +13,17 @@ contract StarknetMessenger is IStarknetMessenger {
     /// @notice The House Factory contract
     IHouseFactory public immutable factory;
 
-    constructor(IStarknetCore _starknet, IHouseFactory _factory) {
-        starknet = _starknet;
-        factory = _factory;
-    }
-
     /// @notice Require that the sender is a valid house
     modifier onlyHouse() {
         if (!factory.isHouse(msg.sender)) {
-            revert OnlyHouse();
+            revert ONLY_HOUSE();
         }
         _;
+    }
+
+    constructor(IStarknetCore _starknet, IHouseFactory _factory) {
+        starknet = _starknet;
+        factory = _factory;
     }
 
     /// @notice Send a message to an L2 contract and return the hash of the message

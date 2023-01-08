@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
@@ -7,7 +7,6 @@ import { MockWETH, MockWETHBS } from './blacksmith/MockWETH.bs.sol';
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
 import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
 import { MockERC1155, MockERC1155BS } from './blacksmith/MockERC1155.bs.sol';
-import { BatchableVault, BatchableVaultBS } from './blacksmith/BatchableVault.bs.sol';
 
 contract TestUtil is Test {
     struct User {
@@ -18,7 +17,6 @@ contract TestUtil is Test {
         MockERC20BS erc20;
         MockERC721BS erc721;
         MockERC1155BS erc1155;
-        BatchableVaultBS vault;
     }
 
     User alice;
@@ -28,7 +26,6 @@ contract TestUtil is Test {
     address erc20;
     address erc721;
     address erc1155;
-    address vault;
 
     uint256 constant INITIAL_BALANCE = 100 ether;
 
@@ -38,18 +35,13 @@ contract TestUtil is Test {
         MockERC20BS _erc20 = new MockERC20BS(_addr, _privateKey, erc20);
         MockERC721BS _erc721 = new MockERC721BS(_addr, _privateKey, erc721);
         MockERC1155BS _erc1155 = new MockERC1155BS(_addr, _privateKey, erc1155);
-        BatchableVaultBS _vault = new BatchableVaultBS(_addr, _privateKey, vault);
 
         base.deal(INITIAL_BALANCE);
-        return User(base.addr(), base.pkey(), base, _weth, _erc20, _erc721, _erc1155, _vault);
+        return User(base.addr(), base.pkey(), base, _weth, _erc20, _erc721, _erc1155);
     }
 
     function setUpUser(uint256 privateKey, uint256 tokenId) public returns (User memory user) {
         user = createUser(address(0), privateKey);
-
-        user.erc20.approve(vault, type(uint256).max);
-        user.erc721.setApprovalForAll(vault, true);
-        user.erc1155.setApprovalForAll(vault, true);
 
         user.erc20.mint(user.addr, INITIAL_BALANCE);
         user.erc721.mint(user.addr, tokenId);
@@ -61,12 +53,10 @@ contract TestUtil is Test {
         erc20 = address(new MockERC20());
         erc721 = address(new MockERC721());
         erc1155 = address(new MockERC1155());
-        vault = address(new BatchableVault(weth));
 
         vm.label(weth, 'WETH');
         vm.label(erc20, 'ERC20');
         vm.label(erc721, 'ERC721');
         vm.label(erc1155, 'ERC1155');
-        vm.label(vault, 'Vault');
     }
 }

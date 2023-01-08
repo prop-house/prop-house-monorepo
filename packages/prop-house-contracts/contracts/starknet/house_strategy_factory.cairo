@@ -60,7 +60,7 @@ func house_strategy_initialized(
 }
 
 @l1_handler
-func create_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
+func register_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     from_address: felt,
     house_address: felt,
     house_strategy_class_hash: felt,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IStrategyManager } from './interfaces/IStrategyManager.sol';
 import { IUpgradeManager } from './interfaces/IUpgradeManager.sol';
@@ -9,11 +9,7 @@ import { IHouse } from './interfaces/IHouse.sol';
 import { UUPS } from './lib/proxy/UUPS.sol';
 
 abstract contract HouseBase is IHouse, UUPS, Ownable {
-    // prettier-ignore
-    // print(get_selector_from_name("create_house_strategy"))
-    uint256 constant CREATE_STRATEGY_SELECTOR = 0x30b7e460d06ee4b7bb5f97430a8881944e86a98a4d7916a524d07c761ac4219;
-
-    /// @notice A unique identifier
+    /// @notice The house implementation contract identifier
     bytes32 public immutable id;
 
     /// @notice The house implementation contract version
@@ -28,37 +24,40 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     /// @notice The Starknet Messenger contract
     IStarknetMessenger internal immutable _messenger;
 
-    /// @notice The L2 Strategy Factory contract address
-    uint256 internal immutable _strategyFactory;
-
     /// @notice A URI that returns house-level metadata
-    string public houseURI;
+    string public contractURI;
 
     /// @notice Determine if a house strategy is enabled
     mapping(address => bool) public isStrategyEnabled;
+
+    /// @notice Require that the sender is a valid strategy for this house
+    modifier onlyHouseStrategy() {
+        if (!isValidHouseStrategy(msg.sender)) {
+            revert ONLY_HOUSE_STRATEGY();
+        }
+        _;
+    }
 
     constructor(
         string memory name_,
         uint256 version_,
         address upgradeManager_,
         address strategyManager_,
-        address messenger_,
-        uint256 strategyFactory_
-    ) payable initializer {
+        address messenger_
+    ) initializer {
         id = bytes32(bytes(name_));
         version = version_;
 
         _upgradeManager = IUpgradeManager(upgradeManager_);
         _strategyManager = IStrategyManager(strategyManager_);
         _messenger = IStarknetMessenger(messenger_);
-        _strategyFactory = strategyFactory_;
     }
 
-    /// @notice Update the house URI
-    /// @param newHouseURI The new house URI
+    /// @notice Update the contract URI
+    /// @param newContractURI The new contract URI
     /// @dev This function is only callable by the house owner
-    function updateHouseURI(string calldata newHouseURI) external onlyOwner {
-        _updateHouseURI(newHouseURI);
+    function updateContractURI(string calldata newContractURI) external onlyOwner {
+        _updateContractURI(newContractURI);
     }
 
     /// @notice Enable a house strategy
@@ -99,25 +98,32 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
         }
     }
 
+    /// @notice Returns `true` if the provided address is a valid house strategy
+    /// @param strategy The house strategy to validate
+    function isValidHouseStrategy(address strategy) public view virtual returns (bool);
+
     /// @notice Initialize the house
     /// @param creator The house creator
     function _initialize(address creator) internal {
-        // Transfer ownership to the DAO creator
+        // Transfer ownership to the house creator
         __Ownable_init(creator);
     }
 
-    /// @notice Update the house URI
-    /// @param newHouseURI The new house URI
-    function _updateHouseURI(string memory newHouseURI) internal {
-        houseURI = newHouseURI;
-        emit HouseURIUpdated(newHouseURI);
+    // TODO: Can we do this 100% onchain. i.e. read the name, round count, etc and render nft as html page?
+    // In which case, there would be no function to set or update. Should you be able to update the house name and description?
+
+    /// @notice Update the contract URI
+    /// @param newContractURI The new contract URI
+    function _updateContractURI(string memory newContractURI) internal {
+        contractURI = newContractURI;
+        emit ContractURIUpdated(newContractURI);
     }
 
     /// @notice Enable a house strategy
     /// @param strategy The address of the strategy to enable
     function _enableStrategy(address strategy) internal {
         if (!_strategyManager.isValidStrategy(id, version, strategy)) {
-            revert IStrategyManager.StrategyNotRegistered();
+            revert IStrategyManager.STRATEGY_NOT_REGISTERED();
         }
         isStrategyEnabled[strategy] = true;
 
@@ -149,7 +155,7 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     /// @param newImpl The address of the new implementation
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {
         if (!_upgradeManager.isValidUpgrade(_getImplementation(), newImpl)) {
-            revert InvalidUpgrade(newImpl);
+            revert INVALID_UPGRADE(newImpl);
         }
     }
 
@@ -157,7 +163,7 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     /// @param strategy The strategy address
     function _requireStrategyEnabled(address strategy) internal view {
         if (!isStrategyEnabled[strategy]) {
-            revert StrategyNotEnabled();
+            revert STRATEGY_NOT_ENABLED();
         }
     }
 }

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IStarknetCore } from './IStarknetCore.sol';
 
 interface IStarknetMessenger {
     /// @notice Thrown when the caller of a guarded function is not a valid house
-    error OnlyHouse();
+    error ONLY_HOUSE();
 
     /// @notice Returns the Starknet core contract instance
     function starknet() external view returns (IStarknetCore);

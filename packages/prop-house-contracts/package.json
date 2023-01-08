@@ -25,6 +25,8 @@
     "prettier": "^2.7.0",
     "prettier-plugin-solidity": "^1.0.0-beta.22",
     "rimraf": "^3.0.2",
+    "solady": "^0.0.62",
+    "solmate": "^6.6.1",
     "starknet": "^4.9.0",
     "starknet-hardhat-plugin-extended": "0.6.8",
     "ts-node": "^10.9.1",

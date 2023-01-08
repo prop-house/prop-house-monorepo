@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import './StarknetMessaging.sol';
 
 contract MockStarknetMessaging is StarknetMessaging {
-    error InvalidMessageToConsume();
+    error INVALID_MESSAGE_TO_CONSUME();
 
     /// @notice Mocks a message from L2 to L1
     function mockSendMessageFromL2(
@@ -29,7 +29,7 @@ contract MockStarknetMessaging is StarknetMessaging {
         );
 
         if (l1ToL2Messages()[msgHash] == 0) {
-            revert InvalidMessageToConsume();
+            revert INVALID_MESSAGE_TO_CONSUME();
         }
         l1ToL2Messages()[msgHash] -= 1;
     }
