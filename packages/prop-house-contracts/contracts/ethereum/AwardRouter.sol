@@ -6,6 +6,7 @@ import { AssetController } from './lib/utils/AssetController.sol';
 import { IHouseStrategy } from './interfaces/IHouseStrategy.sol';
 import { IHouseFactory } from './interfaces/IHouseFactory.sol';
 import { IAwardRouter } from './interfaces/IAwardRouter.sol';
+import { AssetType, Asset } from './lib/types/Common.sol';
 import { IHouse } from './interfaces/IHouse.sol';
 
 /// @notice A contract used to route ETH, ERC20, ERC721, & ERC1155 tokens to house strategies.
@@ -31,7 +32,7 @@ contract AwardRouter is IAwardRouter, AssetController {
     /// @param strategy The house strategy address
     /// @param asset The asset to transfer to the strategy
     /// @dev For safety, this function validates the house strategy before the transfer
-    function depositTo(address payable strategy, IHouseStrategy.Asset calldata asset) external payable {
+    function depositTo(address payable strategy, Asset calldata asset) external payable {
         if (!_isValidHouseStrategy(strategy)) {
             revert INVALID_HOUSE_STRATEGY();
         }
@@ -42,7 +43,7 @@ contract AwardRouter is IAwardRouter, AssetController {
     /// @param strategy The house strategy address
     /// @param assets The assets to transfer to the strategy
     /// @dev For safety, this function validates the house strategy before the transfer
-    function batchDepositTo(address payable strategy, IHouseStrategy.Asset[] calldata assets) external payable {
+    function batchDepositTo(address payable strategy, Asset[] calldata assets) external payable {
         if (!_isValidHouseStrategy(strategy)) {
             revert INVALID_HOUSE_STRATEGY();
         }
@@ -57,7 +58,7 @@ contract AwardRouter is IAwardRouter, AssetController {
     function pullTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset calldata asset
+        Asset calldata asset
     ) external payable onlyApprovedHouse(user) {
         _depositTo(user, strategy, asset);
     }
@@ -70,7 +71,7 @@ contract AwardRouter is IAwardRouter, AssetController {
     function batchPullTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset[] calldata assets
+        Asset[] calldata assets
     ) external payable onlyApprovedHouse(user) {
         _batchDepositTo(user, strategy, assets);
     }
@@ -82,12 +83,12 @@ contract AwardRouter is IAwardRouter, AssetController {
     function _depositTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset memory asset
+        Asset memory asset
     ) internal {
         uint256 etherRemaining = msg.value;
 
         // Reduce amount of remaining ether, if necessary
-        if (asset.assetType == IHouseStrategy.AssetType.Native) {
+        if (asset.assetType == AssetType.Native) {
             // Ensure that sufficient native tokens are still available.
             if (asset.amount > etherRemaining) {
                 revert INSUFFICIENT_ETHER_SUPPLIED();
@@ -117,7 +118,7 @@ contract AwardRouter is IAwardRouter, AssetController {
     function _batchDepositTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset[] memory assets
+        Asset[] memory assets
     ) internal {
         uint256 assetCount = assets.length;
 
@@ -133,7 +134,7 @@ contract AwardRouter is IAwardRouter, AssetController {
             assetAmounts[i] = assets[i].amount;
 
             // Reduce amount of remaining ether, if necessary
-            if (assets[i].assetType == IHouseStrategy.AssetType.Native) {
+            if (assets[i].assetType == AssetType.Native) {
                 // Ensure that sufficient native tokens are still available.
                 if (assets[i].amount > etherRemaining) {
                     revert INSUFFICIENT_ETHER_SUPPLIED();

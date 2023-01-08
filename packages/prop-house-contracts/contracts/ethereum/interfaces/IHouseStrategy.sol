@@ -3,24 +3,6 @@ pragma solidity >=0.8.17;
 
 /// @notice Interface that must be implemented by all house strategies
 interface IHouseStrategy {
-    // TODO: Where to put these?
-
-    // TODO: Not all house strategies should be able to receive assets
-
-    enum AssetType {
-        Native,
-        ERC20,
-        ERC721,
-        ERC1155
-    }
-
-    struct Asset {
-        AssetType assetType;
-        address token;
-        uint256 identifier;
-        uint256 amount;
-    }
-
     /// @notice Initialize the round
     /// @param data The optional round data. If empty, round creation is deferred.
     function initialize(bytes calldata data) external;

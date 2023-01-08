@@ -8,9 +8,10 @@ import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
 import { REGISTER_VOTING_STRATEGY_SELECTOR } from '../Constants.sol';
 import { IHouseStrategy } from '../interfaces/IHouseStrategy.sol';
 import { IAwardRouter } from '../interfaces/IAwardRouter.sol';
-import { LibClone } from 'solady/src/utils/LibClone.sol'; // TODO: Remember, this takes ETH. Should disable that behavior
+import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
+import { Asset } from '../lib/types/Common.sol';
 
 // TODO: on after transfer hook:
 // - Callback to house if it supports whatever interface? Is that how we hook?
@@ -49,7 +50,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
             VotingStrategy[] memory initialVotingStrategies
         ) = abi.decode(data, (string, string, string, address[], address[], VotingStrategy[]));
 
-        super._initialize(creator);
+        __Ownable_init(creator);
         __ERC721_init(name, symbol);
 
         _updateContractURI(contractURI);
@@ -138,7 +139,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         string calldata title,
         string calldata description,
         string[] calldata tags,
-        IHouseStrategy.Asset[] calldata assets
+        Asset[] calldata assets
     ) external payable returns (address) {
         address round = _createRound(strategy, voting, title, description, tags);
 

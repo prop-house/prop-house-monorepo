@@ -11,9 +11,10 @@ import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
 import { ERC1155Supply } from '../lib/token/ERC1155Supply.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
+import { Asset } from '../lib/types/Common.sol';
 import { Sort } from '../lib/utils/Sort.sol';
 
-// So, if we had a idea round, the nft to win is the mandated round ownership nft.
+// If we had a idea round, the nft to win is the mandated round ownership nft.
 // You have an idea round, which is backed by a mandated round.
 
 // TODO: Support partial config so depositor can have some assurances
@@ -301,6 +302,28 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         uint256 isBitSet = (_claimedBitmap[proposalId >> 8] >> (proposalId & 0xff)) & 1;
         assembly {
             isClaimed := isBitSet
+        }
+    }
+
+    /// @notice Rescue assets that were accidentally deposited directly to this contract
+    /// @param recipient The recipient of the rescued assets
+    /// @param assets The assets to rescue
+    /// @dev This function is only callable by the round manager
+    function rescueAssets(address recipient, Asset[] calldata assets) external onlyRoundManager {
+        uint256 assetCount = assets.length;
+
+        for (uint256 i = 0; i < assetCount; ) {
+            uint256 assetId = _getAssetID(assets[i]);
+            uint256 balanceOf = _balanceOf(assets[i], address(this));
+
+            if (balanceOf - assets[i].amount < totalSupply(assetId)) {
+                revert NO_EXCESS_BALANCE();
+            }
+
+            // Transfer the excess amount to the recipient
+            _transfer(assets[i], address(this), payable(recipient));
+
+            emit AssetRescued(recipient, assetId, assets[i].amount);
         }
     }
 

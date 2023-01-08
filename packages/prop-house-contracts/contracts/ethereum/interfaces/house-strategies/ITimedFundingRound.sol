@@ -83,6 +83,9 @@ interface ITimedFundingRound is IHouseStrategy {
     /// @notice Thrown when the round has not received sufficient funding for the selected awards
     error INSUFFICIENT_ASSET_FUNDING();
 
+    /// @notice Thrown when an asset rescue is attempted, but there is no excess balance in the contract
+    error NO_EXCESS_BALANCE();
+
     // TODO: `AwardClaimed` may be too specialized if the asset for one round is execution of another.
 
     /// @notice Emitted when an award is claimed
@@ -98,6 +101,14 @@ interface ITimedFundingRound is IHouseStrategy {
     /// @param assetId The ID of the asset being reclaimed
     /// @param amount The amount of the asset being reclaimed
     event AssetReclaimed(address recipient, uint256 assetId, uint256 amount);
+
+    /// @notice Emitted when an asset is rescued by the round manager
+    /// This protects against the edge case in which tokens are sent directly
+    /// to this contract, rather than passed through the award router.
+    /// @param recipient The asset recipient
+    /// @param assetId The ID of the asset being rescued
+    /// @param amount The amount of the asset being rescued
+    event AssetRescued(address recipient, uint256 assetId, uint256 amount);
 
     /// @notice Emitted when the round registration is submitted to L2
     /// @param proposalPeriodStartTimestamp The timestamp at which the proposal period starts

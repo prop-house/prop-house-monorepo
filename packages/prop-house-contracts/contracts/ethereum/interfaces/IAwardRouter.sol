@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { IHouseStrategy } from './IHouseStrategy.sol';
+import { Asset } from '../lib/types/Common.sol';
 
 /// @notice Interface implemented by the award router
 interface IAwardRouter {
@@ -25,7 +25,7 @@ interface IAwardRouter {
     function pullTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset calldata asset
+        Asset calldata asset
     ) external payable;
 
     /// @notice Pull many assets from a user to the provided house strategy
@@ -36,6 +36,6 @@ interface IAwardRouter {
     function batchPullTo(
         address user,
         address payable strategy,
-        IHouseStrategy.Asset[] calldata assets
+        Asset[] calldata assets
     ) external payable;
 }

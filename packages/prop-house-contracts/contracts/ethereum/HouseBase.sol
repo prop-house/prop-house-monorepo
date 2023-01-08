@@ -102,13 +102,6 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     /// @param strategy The house strategy to validate
     function isValidHouseStrategy(address strategy) public view virtual returns (bool);
 
-    /// @notice Initialize the house
-    /// @param creator The house creator
-    function _initialize(address creator) internal {
-        // Transfer ownership to the house creator
-        __Ownable_init(creator);
-    }
-
     // TODO: Can we do this 100% onchain. i.e. read the name, round count, etc and render nft as html page?
     // In which case, there would be no function to set or update. Should you be able to update the house name and description?
 
