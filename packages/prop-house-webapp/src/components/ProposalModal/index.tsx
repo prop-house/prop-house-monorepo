@@ -18,7 +18,7 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
-import ErrorModal from '../ErrorModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
@@ -49,13 +49,17 @@ const ProposalModal = () => {
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
   const [signerIsContract, setSignerIsContract] = useState(false);
-  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
-  const [errorModalMessage, setErrorModalMessage] = useState({
+  // modals
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
+  const [showSavePropModal, setShowSavePropModal] = useState(false);
+  const [showDeletePropModal, setShowDeletePropModal] = useState(false);
+
+  const [errorVotingMessage, setErrorVotingMessage] = useState({
     title: '',
     message: '',
     image: '',
@@ -166,12 +170,12 @@ const ProposalModal = () => {
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
+      setErrorVotingMessage({
         title: 'Failed to submit votes',
         message: 'Please go back and try again.',
         image: 'banana.png',
       });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -195,13 +199,13 @@ const ProposalModal = () => {
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
+      {showErrorVotingModal && (
+        <ErrorVotingModal
+          showErrorVotingModal={showErrorVotingModal}
+          setShowErrorVotingModal={setShowErrorVotingModal}
+          title={errorVotingMessage.title}
+          message={errorVotingMessage.message}
+          image={errorVotingMessage.image}
         />
       )}
 

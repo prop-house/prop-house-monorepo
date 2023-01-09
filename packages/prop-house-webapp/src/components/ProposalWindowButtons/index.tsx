@@ -7,7 +7,6 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import removeTags from '../../utils/removeTags';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useEthers } from '@usedapp/core';
-
 import { useState } from 'react';
 import DeleteProposalModal from '../DeleteProposalModal';
 import SaveProposalModal from '../SaveProposalModal';

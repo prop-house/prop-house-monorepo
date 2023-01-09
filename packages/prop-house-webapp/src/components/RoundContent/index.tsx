@@ -17,7 +17,7 @@ import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessModal from '../SuccessModal';
-import ErrorModal from '../ErrorModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
   setNumSubmittedVotes,
@@ -43,8 +43,8 @@ const RoundContent: React.FC<{
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState({
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [errorVotingMessage, setErrorVotingMessage] = useState({
     title: '',
     message: '',
     image: '',
@@ -129,12 +129,12 @@ const RoundContent: React.FC<{
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
+      setErrorVotingMessage({
         title: t('errorModalTitle'),
         message: t('errorModalMessage'),
         image: 'banana.png',
       });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -158,13 +158,13 @@ const RoundContent: React.FC<{
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
+      {showErrorVotingModal && (
+        <ErrorVotingModal
+          showErrorVotingModal={showErrorVotingModal}
+          setShowErrorVotingModal={setShowErrorVotingModal}
+          title={errorVotingMessage.title}
+          message={errorVotingMessage.message}
+          image={errorVotingMessage.image}
         />
       )}
 
