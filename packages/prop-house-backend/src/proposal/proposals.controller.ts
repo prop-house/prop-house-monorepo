@@ -73,7 +73,7 @@ export class ProposalsController {
         HttpStatus.BAD_REQUEST,
       );
 
-    if (signedPayload.address !== foundProposal.address)
+    if (deleteProposalDto.address !== foundProposal.address)
       throw new HttpException(
         "Found proposal does not match signed payload's address",
         HttpStatus.BAD_REQUEST,
@@ -120,8 +120,8 @@ export class ProposalsController {
         "Signed payload and supplied data doesn't match",
         HttpStatus.BAD_REQUEST,
       );
-
-    if (signedPayload.address !== foundProposal.address)
+    
+    if (updateProposalDto.address !== foundProposal.address)
       throw new HttpException(
         "Found proposal does not match signed payload's address",
         HttpStatus.BAD_REQUEST,
