@@ -204,7 +204,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
 
         uint256[] memory payload = new uint256[](3);
-        // payload[0] = uint256(ExecutionType.MerkleProof); // TODO: Requires different handling for linked rounds.
+        payload[0] = uint256(ExecutionType.MerkleProof);
         payload[1] = merkleRootLow;
         payload[2] = merkleRootHigh;
 

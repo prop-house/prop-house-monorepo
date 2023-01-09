@@ -14,6 +14,11 @@ interface ITimedFundingRound is IHouseStrategy {
         Cancelled
     }
 
+    /// @notice Supported round execution types
+    enum ExecutionType {
+        MerkleProof
+    }
+
     /// @notice The timed funding round house strategy configuration
     struct RoundConfig {
         uint40 proposalPeriodStartTimestamp;
@@ -21,7 +26,6 @@ interface ITimedFundingRound is IHouseStrategy {
         uint40 votePeriodDuration;
         uint16 winnerCount;
         Award[] awards;
-        // address parent; // TODO: Won't work if multiple awards...
     }
 
     /// @notice Thrown when an award has already been claimed
@@ -77,8 +81,6 @@ interface ITimedFundingRound is IHouseStrategy {
 
     /// @notice Thrown when an asset rescue is attempted, but there is no excess balance in the contract
     error NO_EXCESS_BALANCE();
-
-    // TODO: `AwardClaimed` may be too specialized if the asset for one round is execution of another.
 
     /// @notice Emitted when an award is claimed
     /// @param proposalId The ID of the winning proposal
