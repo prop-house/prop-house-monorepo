@@ -285,6 +285,10 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
             _transfer(assets[i], address(this), payable(recipient));
 
             emit AssetReclaimed(recipient, assetId, assets[i].amount);
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
@@ -320,6 +324,10 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
             _transfer(assets[i], address(this), payable(recipient));
 
             emit AssetRescued(recipient, assetId, assets[i].amount);
+
+            unchecked {
+                ++i;
+            }
         }
     }
 
