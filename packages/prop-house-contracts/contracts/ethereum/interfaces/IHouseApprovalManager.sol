@@ -21,4 +21,27 @@ interface IHouseApprovalManager {
     /// @param user The user who is initiating the action
     /// @param house The house that is attempting to pull assets
     function isHouseApproved(address user, address house) external view returns (bool);
+
+    /// @notice Updates a house approval for the caller
+    /// @param house The house address
+    /// @param approved Whether the user is adding or removing approval
+    function setApprovalForHouse(address house, bool approved) external;
+
+    /// @notice Sets approval for a house given an EIP-712 signature
+    /// @param user The user to approve the house for
+    /// @param house The house to approve
+    /// @param approved A boolean, whether or not to approve a house
+    /// @param deadline The deadline at which point the given signature expires
+    /// @param v The 129th byte and chain ID of the signature
+    /// @param r The first 64 bytes of the signature
+    /// @param s Bytes 64-128 of the signature
+    function setApprovalForHouseBySig(
+        address user,
+        address house,
+        bool approved,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
 }

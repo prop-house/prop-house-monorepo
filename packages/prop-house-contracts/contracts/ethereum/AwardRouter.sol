@@ -12,10 +12,10 @@ import { IHouse } from './interfaces/IHouse.sol';
 /// @notice A contract used to route ETH, ERC20, ERC721, & ERC1155 tokens to house strategies.
 /// @dev This contract does NOT support yield bearing tokens.
 contract AwardRouter is IAwardRouter, AssetController {
-    /// @notice The House Factory contract
+    /// @notice The house factory contract
     IHouseFactory public immutable factory;
 
-    /// @notice The House Factory contract
+    /// @notice The house award approval management contract
     IHouseApprovalManager public immutable manager;
 
     /// @notice Require that the user has approved the sender to pull assets
