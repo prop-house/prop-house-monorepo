@@ -42,43 +42,43 @@ abstract contract ERC721 is IERC721, Initializable {
     }
 
     /// @notice The token URI
-    /// @param _tokenId The ERC-721 token id
-    function tokenURI(uint256 _tokenId) public view virtual returns (string memory) {}
+    /// @param tokenId The ERC-721 token id
+    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {}
 
     /// @notice If the contract implements an interface
-    /// @param _interfaceId The interface id
-    function supportsInterface(bytes4 _interfaceId) external pure returns (bool) {
+    /// @param interfaceId The interface id
+    function supportsInterface(bytes4 interfaceId) external pure returns (bool) {
         return
-            _interfaceId == 0x01ffc9a7 || // ERC165 Interface ID
-            _interfaceId == 0x80ac58cd || // ERC721 Interface ID
-            _interfaceId == 0x5b5e139f; // ERC721Metadata Interface ID
+            interfaceId == 0x01ffc9a7 || // ERC165 Interface ID
+            interfaceId == 0x80ac58cd || // ERC721 Interface ID
+            interfaceId == 0x5b5e139f; // ERC721Metadata Interface ID
     }
 
     /// @notice The account approved to manage a token
-    /// @param _tokenId The ERC-721 token id
-    function getApproved(uint256 _tokenId) external view returns (address) {
-        return tokenApprovals[_tokenId];
+    /// @param tokenId The ERC-721 token id
+    function getApproved(uint256 tokenId) external view returns (address) {
+        return tokenApprovals[tokenId];
     }
 
     /// @notice If an operator is authorized to manage all of an owner's tokens
-    /// @param _owner The owner address
-    /// @param _operator The operator address
-    function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
-        return operatorApprovals[_owner][_operator];
+    /// @param owner The owner address
+    /// @param operator The operator address
+    function isApprovedForAll(address owner, address operator) external view returns (bool) {
+        return operatorApprovals[owner][operator];
     }
 
     /// @notice The number of tokens owned
-    /// @param _owner The owner address
-    function balanceOf(address _owner) public view returns (uint256) {
-        if (_owner == address(0)) revert ADDRESS_ZERO();
+    /// @param owner The owner address
+    function balanceOf(address owner) public view returns (uint256) {
+        if (owner == address(0)) revert ADDRESS_ZERO();
 
-        return balances[_owner];
+        return balances[owner];
     }
 
     /// @notice The owner of a token
-    /// @param _tokenId The ERC-721 token id
-    function ownerOf(uint256 _tokenId) public view returns (address) {
-        address owner = owners[_tokenId];
+    /// @param tokenId The ERC-721 token id
+    function ownerOf(uint256 tokenId) public view returns (address) {
+        address owner = owners[tokenId];
 
         if (owner == address(0)) revert INVALID_OWNER();
 
@@ -86,157 +86,157 @@ abstract contract ERC721 is IERC721, Initializable {
     }
 
     /// @notice Authorizes an account to manage a token
-    /// @param _to The account address
-    /// @param _tokenId The ERC-721 token id
-    function approve(address _to, uint256 _tokenId) external {
-        address owner = owners[_tokenId];
+    /// @param to The account address
+    /// @param tokenId The ERC-721 token id
+    function approve(address to, uint256 tokenId) external {
+        address owner = owners[tokenId];
 
         if (msg.sender != owner && !operatorApprovals[owner][msg.sender]) revert INVALID_APPROVAL();
 
-        tokenApprovals[_tokenId] = _to;
+        tokenApprovals[tokenId] = to;
 
-        emit Approval(owner, _to, _tokenId);
+        emit Approval(owner, to, tokenId);
     }
 
     /// @notice Authorizes an account to manage all tokens
-    /// @param _operator The account address
-    /// @param _approved If permission is being given or removed
-    function setApprovalForAll(address _operator, bool _approved) external {
-        operatorApprovals[msg.sender][_operator] = _approved;
+    /// @param operator The account address
+    /// @param approved If permission is being given or removed
+    function setApprovalForAll(address operator, bool approved) external {
+        operatorApprovals[msg.sender][operator] = approved;
 
-        emit ApprovalForAll(msg.sender, _operator, _approved);
+        emit ApprovalForAll(msg.sender, operator, approved);
     }
 
     /// @notice Transfers a token from sender to recipient
-    /// @param _from The sender address
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
     function transferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address from,
+        address to,
+        uint256 tokenId
     ) public {
-        if (_from != owners[_tokenId]) revert INVALID_OWNER();
+        if (from != owners[tokenId]) revert INVALID_OWNER();
 
-        if (_to == address(0)) revert ADDRESS_ZERO();
+        if (to == address(0)) revert ADDRESS_ZERO();
 
-        if (msg.sender != _from && !operatorApprovals[_from][msg.sender] && msg.sender != tokenApprovals[_tokenId])
+        if (msg.sender != from && !operatorApprovals[from][msg.sender] && msg.sender != tokenApprovals[tokenId])
             revert INVALID_APPROVAL();
 
-        _beforeTokenTransfer(_from, _to, _tokenId);
+        _beforeTokenTransfer(from, to, tokenId);
 
         unchecked {
-            --balances[_from];
+            --balances[from];
 
-            ++balances[_to];
+            ++balances[to];
         }
 
-        owners[_tokenId] = _to;
+        owners[tokenId] = to;
 
-        delete tokenApprovals[_tokenId];
+        delete tokenApprovals[tokenId];
 
-        emit Transfer(_from, _to, _tokenId);
+        emit Transfer(from, to, tokenId);
 
-        _afterTokenTransfer(_from, _to, _tokenId);
+        _afterTokenTransfer(from, to, tokenId);
     }
 
     /// @notice Safe transfers a token from sender to recipient
-    /// @param _from The sender address
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
     function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address from,
+        address to,
+        uint256 tokenId
     ) external {
-        transferFrom(_from, _to, _tokenId);
+        transferFrom(from, to, tokenId);
 
         if (
-            Address.isContract(_to) &&
-            ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, '') !=
+            Address.isContract(to) &&
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, from, tokenId, '') !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert INVALID_RECIPIENT();
     }
 
     /// @notice Safe transfers a token from sender to recipient with additional data
-    /// @param _from The sender address
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
     function safeTransferFrom(
-        address _from,
-        address _to,
-        uint256 _tokenId,
-        bytes calldata _data
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes calldata data
     ) external {
-        transferFrom(_from, _to, _tokenId);
+        transferFrom(from, to, tokenId);
 
         if (
-            Address.isContract(_to) &&
-            ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, _data) !=
+            Address.isContract(to) &&
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, from, tokenId, data) !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert INVALID_RECIPIENT();
     }
 
     /// @dev Mints a token to a recipient
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
-    function _mint(address _to, uint256 _tokenId) internal virtual {
-        if (_to == address(0)) revert ADDRESS_ZERO();
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
+    function _mint(address to, uint256 tokenId) internal virtual {
+        if (to == address(0)) revert ADDRESS_ZERO();
 
-        if (owners[_tokenId] != address(0)) revert ALREADY_MINTED();
+        if (owners[tokenId] != address(0)) revert ALREADY_MINTED();
 
-        _beforeTokenTransfer(address(0), _to, _tokenId);
+        _beforeTokenTransfer(address(0), to, tokenId);
 
         unchecked {
-            ++balances[_to];
+            ++balances[to];
         }
 
-        owners[_tokenId] = _to;
+        owners[tokenId] = to;
 
-        emit Transfer(address(0), _to, _tokenId);
+        emit Transfer(address(0), to, tokenId);
 
-        _afterTokenTransfer(address(0), _to, _tokenId);
+        _afterTokenTransfer(address(0), to, tokenId);
     }
 
     /// @dev Burns a token to a recipient
-    /// @param _tokenId The ERC-721 token id
-    function _burn(uint256 _tokenId) internal virtual {
-        address owner = owners[_tokenId];
+    /// @param tokenId The ERC-721 token id
+    function _burn(uint256 tokenId) internal virtual {
+        address owner = owners[tokenId];
 
         if (owner == address(0)) revert NOT_MINTED();
 
-        _beforeTokenTransfer(owner, address(0), _tokenId);
+        _beforeTokenTransfer(owner, address(0), tokenId);
 
         unchecked {
             --balances[owner];
         }
 
-        delete owners[_tokenId];
+        delete owners[tokenId];
 
-        delete tokenApprovals[_tokenId];
+        delete tokenApprovals[tokenId];
 
-        emit Transfer(owner, address(0), _tokenId);
+        emit Transfer(owner, address(0), tokenId);
 
-        _afterTokenTransfer(owner, address(0), _tokenId);
+        _afterTokenTransfer(owner, address(0), tokenId);
     }
 
     /// @dev Hook called before a token transfer
-    /// @param _from The sender address
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
     function _beforeTokenTransfer(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address from,
+        address to,
+        uint256 tokenId
     ) internal virtual {}
 
     /// @dev Hook called after a token transfer
-    /// @param _from The sender address
-    /// @param _to The recipient address
-    /// @param _tokenId The ERC-721 token id
+    /// @param from The sender address
+    /// @param to The recipient address
+    /// @param tokenId The ERC-721 token id
     function _afterTokenTransfer(
-        address _from,
-        address _to,
-        uint256 _tokenId
+        address from,
+        address to,
+        uint256 tokenId
     ) internal virtual {}
 }

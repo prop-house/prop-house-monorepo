@@ -11,5 +11,5 @@ interface IHouseFactory {
 
     /// @notice Determine if the passed address is a valid house
     /// @param addr The address to check
-    function isHouse(address addr) external returns (bool);
+    function isHouse(address addr) external view returns (bool);
 }

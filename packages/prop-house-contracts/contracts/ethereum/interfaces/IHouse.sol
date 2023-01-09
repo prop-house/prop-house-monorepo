@@ -44,6 +44,10 @@ interface IHouse {
     /// @notice Disable many house strategies
     function disableManyStrategies(address[] calldata strategies) external;
 
+    /// @notice Returns `true` if the provided address is a valid house strategy
+    /// @param strategy The house strategy to validate
+    function isValidHouseStrategy(address strategy) external view returns (bool);
+
     /// @notice Forwards a cross-chain message from a house strategy to the Starknet messenger contract
     /// and returns the hash of the message
     /// @param toAddress The callee address

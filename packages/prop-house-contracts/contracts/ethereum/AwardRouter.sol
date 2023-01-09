@@ -13,6 +13,9 @@ import { IHouse } from './interfaces/IHouse.sol';
 /// @dev This contract does NOT support yield bearing tokens.
 contract AwardRouter is IAwardRouter, AssetController {
     /// @notice The House Factory contract
+    IHouseFactory public immutable factory;
+
+    /// @notice The House Factory contract
     IHouseApprovalManager public immutable manager;
 
     /// @notice Require that the user has approved the sender to pull assets
@@ -24,7 +27,8 @@ contract AwardRouter is IAwardRouter, AssetController {
         _;
     }
 
-    constructor(address _manager) {
+    constructor(address _factory, address _manager) {
+        factory = IHouseFactory(_factory);
         manager = IHouseApprovalManager(_manager);
     }
 
@@ -161,15 +165,13 @@ contract AwardRouter is IAwardRouter, AssetController {
         }
     }
 
-    // TODO: Consider whether this is necessary...
-
     /// @notice Returns `true` if the provided address is a valid house strategy
     /// @param strategy The house strategy to validate
     function _isValidHouseStrategy(address strategy) internal view returns (bool) {
-        // address house = IHouseStrategy(strategy).house();
-        // if (!factory.isHouse(house) || !IHouse(house).isValidHouseStrategy(strategy)) {
-        //     return false;
-        // }
+        address house = IHouseStrategy(strategy).house();
+        if (!factory.isHouse(house) || !IHouse(house).isValidHouseStrategy(strategy)) {
+            return false;
+        }
         return true;
     }
 }

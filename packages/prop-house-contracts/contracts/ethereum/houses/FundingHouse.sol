@@ -161,9 +161,9 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         return _messenger.sendMessageToL2(toAddress, selector, payload);
     }
 
-    /// @notice Returns `true` if the provided address is a valid strategy for this houser
+    /// @notice Returns `true` if the provided address is a valid strategy for this house
     /// @param strategy The house strategy to validate
-    function isValidHouseStrategy(address strategy) public view override returns (bool) {
+    function isValidHouseStrategy(address strategy) public view override(IHouse, HouseBase) returns (bool) {
         address expectedStrategy = getHouseStrategyAddress(_codeHash(strategy), IHouseStrategy(strategy).roundId());
         return strategy == expectedStrategy;
     }
