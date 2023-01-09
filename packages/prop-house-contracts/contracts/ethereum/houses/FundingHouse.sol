@@ -5,6 +5,7 @@ import { HouseBase } from '../HouseBase.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IFundingHouse } from '../interfaces/houses/IFundingHouse.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
+import { IFundingHouseStrategy } from '../interfaces/IFundingHouseStrategy.sol';
 import { REGISTER_VOTING_STRATEGY_SELECTOR } from '../Constants.sol';
 import { IHouseStrategy } from '../interfaces/IHouseStrategy.sol';
 import { IAwardRouter } from '../interfaces/IAwardRouter.sol';
@@ -159,7 +160,10 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @notice Returns `true` if the provided address is a valid strategy for this house
     /// @param strategy The house strategy to validate
     function isValidHouseStrategy(address strategy) public view override(IHouse, HouseBase) returns (bool) {
-        address expectedStrategy = getHouseStrategyAddress(_codeHash(strategy), IHouseStrategy(strategy).roundId());
+        address expectedStrategy = getHouseStrategyAddress(
+            _codeHash(strategy),
+            IFundingHouseStrategy(strategy).roundId()
+        );
         return strategy == expectedStrategy;
     }
 

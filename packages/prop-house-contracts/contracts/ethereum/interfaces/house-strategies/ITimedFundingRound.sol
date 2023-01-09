@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { IHouseStrategy } from '../../interfaces/IHouseStrategy.sol';
+import { IFundingHouseStrategy } from '../../interfaces/IFundingHouseStrategy.sol';
 import { Award } from '../../lib/types/Common.sol';
 
 /// @notice Interface implemented by the timed funding round house strategy
-interface ITimedFundingRound is IHouseStrategy {
+interface ITimedFundingRound is IFundingHouseStrategy {
     /// @notice All possible round states
     enum RoundState {
         Pending,

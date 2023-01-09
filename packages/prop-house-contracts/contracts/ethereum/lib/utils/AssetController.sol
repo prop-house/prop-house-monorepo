@@ -32,7 +32,7 @@ abstract contract AssetController {
             return uint256(asset.assetType);
         }
         if (asset.assetType == AssetType.ERC20) {
-            return uint256(bytes32(abi.encodePacked(asset.assetType, asset.token))); // TODO: Better to use bytes4, right?
+            return uint256(bytes32(abi.encodePacked(asset.assetType, asset.token)));
         }
         // prettier-ignore
         return uint256(

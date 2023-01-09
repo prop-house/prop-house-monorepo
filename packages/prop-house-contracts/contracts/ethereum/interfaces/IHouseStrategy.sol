@@ -21,8 +21,6 @@ interface IHouseStrategy {
         uint256[] calldata amounts
     ) external;
 
+    /// @notice The house that created this strategy
     function house() external view returns (address);
-
-    // TODO: Move to IFundingHouseStrategy
-    function roundId() external view returns (uint256);
 }
