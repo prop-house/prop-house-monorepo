@@ -14,11 +14,8 @@ import { Asset, Award } from '../lib/types/Common.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { Sort } from '../lib/utils/Sort.sol';
 
-// If we had a idea round, the nft to win is the mandated round ownership nft.
-// You have an idea round, which is backed by a mandated round.
-
-// TODO: Support partial config so depositor can have some assurances
-// TODO: Add some protections for depositors
+// TODO: Support pre-configuration so depositor can have some assurances
+// TODO: Add griefing protections for depositors
 
 contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, Clone {
     using Sort for Award[];
@@ -178,23 +175,22 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _batchMint(to, ids, amounts, new bytes(0));
     }
 
-    // Need to figure out how nested rounds work.
+    /// @notice Register the round's configuration and change the round state to active
+    /// @param config The round configuration
+    /// @dev This function is only callable by the round manager
     function registerRound(RoundConfig calldata config) external onlyRoundManager {
-        // TODO: Can emit event to forcefully update the metadata. Probably needs to be on the house.
         _registerRound(config);
     }
 
-    // Might be a different function, but also need to provide a way for the manager
-    // to cancel if L2 has not been notified yet.
+    /// @notice Cancel the timed funding round
+    /// @dev This function is only callable by the round manager
     function cancel() external onlyRoundManager {
-        // TODO: Should this burn the NFT?
         if (state != RoundState.Pending && state != RoundState.Active) {
             revert CANCELLATION_NOT_AVAILABLE();
         }
         state = RoundState.Cancelled;
 
-        // Should cancel the round on L2 using a state proof if needed.
-        // Want to prevent people from submitting.
+        // TODO: Cancel the round on L2 using a state proof (if necessary)
 
         emit RoundCancelled();
     }
@@ -208,7 +204,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
 
         uint256[] memory payload = new uint256[](3);
-        // payload[0] = uint256(ExecutionType.MerkleProof); // TODO: Pass in MerkleRoot or LinkedRound ?
+        // payload[0] = uint256(ExecutionType.MerkleProof); // TODO: Requires different handling for linked rounds.
         payload[1] = merkleRootLow;
         payload[2] = merkleRootHigh;
 
@@ -327,19 +323,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
     }
 
-    // Purpose: Should allow round config to be defined before people deposit
-    // so they have some assurances.
-    // function _setConfig(RoundConfig memory config) internal {
-    //     // CAN:
-    //     /*
-    //         Validate everything except for the awards.
-    //         Store hash for to validate awards later or what?
+    // TODO: Consider the ability for round managers to 'lock' configuration prior round deposits.
+    // This would give depositors more assurances.
 
-    //      */
-    // }
-
-    // TODO: Separate config definition and funding validation? `_setRoundConfig`
     // prettier-ignore
+    /// @notice Register the round's configuration and change the round state to active
+    /// @param config The round configuration
     function _registerRound(RoundConfig memory config) internal {
         // Ensure round has not yet been registered on L2
         if (state != RoundState.Pending) {
@@ -440,9 +429,6 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         payload[6] = config.proposalPeriodDuration;
         payload[7] = config.votePeriodDuration;
         payload[8] = config.winnerCount;
-        // TODO: Could pass parent, which results in a different type of execution.
-        // Problem with parent is that there can only be one a round. What if we
-        // wanted to do 3 winning ideas -> 3 rounds?
 
         unchecked {
             // L2 voting strategies
