@@ -13,9 +13,6 @@ import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
 import { Asset } from '../lib/types/Common.sol';
 
-// TODO: on after transfer hook:
-// - Callback to house if it supports whatever interface? Is that how we hook?
-
 contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1 {
     using LibClone for address;
     using { Uint256.mask250 } for bytes32;
@@ -193,7 +190,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         // Validate strategy, voting information, and creator
         _requireStrategyEnabled(strategy);
         _requireVotingStrategiesWhitelisted(voting);
-        _requireRoundCreatorWhitelisted(msg.sender); // TODO: Use separate ERC1155 for this? Make optional?
+        _requireRoundCreatorWhitelisted(msg.sender);
 
         uint256 _roundId = ++roundId;
 
