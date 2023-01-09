@@ -20,12 +20,14 @@ import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
+import SuccessVotingModal from '../SuccessVotingModal';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
+import DeleteProposalModal from '../DeleteProposalModal';
+import SaveProposalModal from '../SaveProposalModal';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -53,12 +55,11 @@ const ProposalModal = () => {
 
   // modals
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
   const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [showSavePropModal, setShowSavePropModal] = useState(false);
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
-
   const [errorVotingMessage, setErrorVotingMessage] = useState({
     title: '',
     message: '',
@@ -164,7 +165,7 @@ const ProposalModal = () => {
       await backendClient.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
@@ -190,10 +191,10 @@ const ProposalModal = () => {
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          showSuccessVotingModal={showSuccessVotingModal}
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />

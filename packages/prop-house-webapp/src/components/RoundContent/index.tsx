@@ -16,7 +16,7 @@ import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
+import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
@@ -40,7 +40,7 @@ const RoundContent: React.FC<{
   const { account, library } = useEthers();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
@@ -124,7 +124,7 @@ const RoundContent: React.FC<{
       await client.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(client.current, auction.id, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
@@ -149,10 +149,10 @@ const RoundContent: React.FC<{
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          showSuccessVotingModal={showSuccessVotingModal}
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />
