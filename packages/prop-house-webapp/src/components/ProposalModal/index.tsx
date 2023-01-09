@@ -217,6 +217,24 @@ const ProposalModal = () => {
         />
       )}
 
+      {showSavePropModal && (
+        <SaveProposalModal
+          showModal={showSavePropModal}
+          setShowModal={setShowSavePropModal}
+          setEditProposalMode={setEditProposalMode} />
+      )}
+
+      {activeProposal && showDeletePropModal && (
+        <DeleteProposalModal
+          id={activeProposal.id}
+          handleClosePropModal={handleClosePropModal}
+          showModal={showDeletePropModal}
+          setShowModal={setShowDeletePropModal}
+          setEditProposalMode={setEditProposalMode}
+
+        />
+      )}
+
       <Modal
         isOpen={true}
         onRequestClose={() => {
@@ -250,6 +268,8 @@ const ProposalModal = () => {
               isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
               editProposalMode={editProposalMode}
               setEditProposalMode={setEditProposalMode}
+              setShowSavePropModal={setShowSavePropModal}
+              setShowDeletePropModal={setShowDeletePropModal}
             />
           </>
         )}

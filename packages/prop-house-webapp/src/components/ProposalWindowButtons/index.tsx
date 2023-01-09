@@ -7,18 +7,16 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import removeTags from '../../utils/removeTags';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useEthers } from '@usedapp/core';
-import { useState } from 'react';
-import DeleteProposalModal from '../DeleteProposalModal';
-import SaveProposalModal from '../SaveProposalModal';
 
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
+  setShowSavePropModal: (e: any) => void;
+  setShowDeletePropModal: (e: any) => void;
 }> = props => {
-  const { proposal, editProposalMode, setEditProposalMode } = props;
-  const [showSavePropModal, setShowSavePropModal] = useState(false);
-  const [showDeletePropModal, setShowDeletePropModal] = useState(false);
+  const { proposal, editProposalMode, setEditProposalMode, setShowSavePropModal, setShowDeletePropModal } = props;
+
 
   const { account } = useEthers();
   const navigate = useNavigate();
@@ -32,23 +30,12 @@ const ProposalWindowButtons: React.FC<{
     data.tldr.length > 9 &&
     data.tldr.length < 121;
 
-  // const saveProposal = () => setEditProposalMode(false);
-  // const deleteProposal = () => setEditProposalMode(false);
-  const cancelSavingProposal = () => setEditProposalMode(false);
+  const cancelSavingProposal = async () => {
+    setEditProposalMode(false);
+  };
 
   return (
     <>
-      {showSavePropModal && (
-        <SaveProposalModal showModal={showSavePropModal} setShowModal={setShowSavePropModal} />
-      )}
-
-      {showDeletePropModal && (
-        <DeleteProposalModal
-          showModal={showDeletePropModal}
-          setShowModal={setShowDeletePropModal}
-        />
-      )}
-
       {/* MY PROP */}
       {account &&
         (isSameAddress(proposal.address, account) ? (

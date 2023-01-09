@@ -26,6 +26,8 @@ const ProposalModalFooter: React.FC<{
   isWinner?: boolean;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
+  setShowSavePropModal: (e: any) => void;
+  setShowDeletePropModal: (e: any) => void;
 }> = props => {
   const {
     setShowVotingModal,
@@ -36,6 +38,8 @@ const ProposalModalFooter: React.FC<{
     isWinner,
     editProposalMode,
     setEditProposalMode,
+    setShowSavePropModal,
+    setShowDeletePropModal,
   } = props;
 
   const { account, library } = useEthers();
@@ -125,6 +129,8 @@ const ProposalModalFooter: React.FC<{
                     proposal={proposal}
                     editProposalMode={editProposalMode}
                     setEditProposalMode={setEditProposalMode}
+                    setShowSavePropModal={setShowSavePropModal}
+                    setShowDeletePropModal={setShowDeletePropModal}
                   />
                 }
 
