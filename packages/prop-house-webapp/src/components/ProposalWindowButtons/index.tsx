@@ -30,10 +30,6 @@ const ProposalWindowButtons: React.FC<{
     data.tldr.length > 9 &&
     data.tldr.length < 121;
 
-  const cancelSavingProposal = async () => {
-    setEditProposalMode(false);
-  };
-
   return (
     <>
       {/* MY PROP */}
@@ -48,7 +44,7 @@ const ProposalWindowButtons: React.FC<{
                     classNames={classes.fullWidthButton}
                     text={'Cancel'}
                     bgColor={ButtonColor.Gray}
-                    onClick={cancelSavingProposal}
+                    onClick={() => setEditProposalMode(false)}
                   />
 
                   <Button

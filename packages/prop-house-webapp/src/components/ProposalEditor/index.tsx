@@ -74,12 +74,8 @@ const ProposalEditor: React.FC<{
     'image',
   ];
 
-  const imageHandler = () => {
-    setShowImageModal(true);
-  };
-  const linkHandler = () => {
-    setShowLinkModal(true);
-  };
+  const imageHandler = () => setShowImageModal(true);
+  const linkHandler = () => setShowLinkModal(true);
 
   const modules = {
     toolbar: {

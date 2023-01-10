@@ -17,7 +17,6 @@ const SaveProposalModal: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
-
 }> = props => {
   const { propId, roundId, showModal, setShowModal, setEditProposalMode, handleClosePropModal } = props;
   const { t } = useTranslation();
