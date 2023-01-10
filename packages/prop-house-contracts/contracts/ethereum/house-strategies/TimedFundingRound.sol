@@ -14,8 +14,7 @@ import { Asset, Award } from '../lib/types/Common.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { Sort } from '../lib/utils/Sort.sol';
 
-// TODO: Support pre-configuration so depositor can have some assurances
-// TODO: Add griefing protections for depositors
+// TODO: Add depositor griefing protection (pre-deposit configuration locking)
 
 contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, Clone {
     using Sort for Award[];
@@ -137,8 +136,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         executionRelayer = _executionRelayer;
     }
 
+    /// @notice Returns the deposit token URI
     function uri(uint256) public pure override returns (string memory) {
-        return ''; // TODO: We can detect if ETH, ERC20, ERC721, or ERC1155. Return image for asset.
+        return ''; // TODO: Detect if ETH, ERC20, ERC721, or ERC1155 using asset type, return image for asset.
     }
 
     /// @notice Initialize the strategy by optionally registering the round's configuration
@@ -298,13 +298,6 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         reclaimToRecipient(msg.sender, assets);
     }
 
-    function isAwardClaimed(uint256 proposalId) public view returns (bool isClaimed) {
-        uint256 isBitSet = (_claimedBitmap[proposalId >> 8] >> (proposalId & 0xff)) & 1;
-        assembly {
-            isClaimed := isBitSet
-        }
-    }
-
     /// @notice Rescue assets that were accidentally deposited directly to this contract
     /// @param recipient The recipient of the rescued assets
     /// @param assets The assets to rescue
@@ -331,8 +324,14 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
     }
 
-    // TODO: Consider the ability for round managers to 'lock' configuration prior round deposits.
-    // This would give depositors more assurances.
+    /// @notice Determine whether an award has been claimed for a specific proposal ID
+    /// @param proposalId The proposal ID
+    function isAwardClaimed(uint256 proposalId) public view returns (bool isClaimed) {
+        uint256 isBitSet = (_claimedBitmap[proposalId >> 8] >> (proposalId & 0xff)) & 1;
+        assembly {
+            isClaimed := isBitSet
+        }
+    }
 
     // prettier-ignore
     /// @notice Register the round's configuration and change the round state to active
@@ -420,6 +419,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         return true;
     }
 
+    /// @notice Generate the payload required to register the round on L2
+    /// @param config The round configuration
     function _getL2Payload(RoundConfig memory config) internal view returns (uint256[] memory payload) {
         uint8 _numVotingStrategies = numVotingStrategies();
         uint256[] memory _votingStrategies = votingStrategies();

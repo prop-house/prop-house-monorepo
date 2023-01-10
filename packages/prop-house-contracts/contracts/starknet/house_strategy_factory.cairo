@@ -15,7 +15,7 @@ func starknet_messenger_store() -> (res: felt) {
 }
 
 @storage_var
-func l1_house_store(strategy_address: felt) -> (house_address: felt) {
+func l1_strategy_store(l2_strategy_address: felt) -> (l1_strategy_address: felt) {
 }
 
 @constructor
@@ -27,10 +27,10 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 }
 
 @view
-func get_l1_house{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    strategy_address: felt
+func get_l1_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    l2_strategy_address: felt
 ) -> (res: felt) {
-    let (res) = l1_house_store.read(strategy_address);
+    let (res) = l1_strategy_store.read(l2_strategy_address);
     return (res,);
 }
 
@@ -55,14 +55,14 @@ func only_starknet_messenger{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
 
 @event
 func house_strategy_initialized(
-    house_address: felt, strategy_address: felt, strategy_class_hash: felt
+    l1_strategy_address: felt, l2_strategy_address: felt, strategy_class_hash: felt
 ) {
 }
 
 @l1_handler
 func register_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
     from_address: felt,
-    house_address: felt,
+    l1_strategy_address: felt,
     house_strategy_class_hash: felt,
     house_strategy_params_len: felt,
     house_strategy_params: felt*,
@@ -84,16 +84,18 @@ func register_house_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, ran
     let calldata_len = 2 + house_strategy_params_len + voting_strategy_hashes_len;
     let (current_salt) = salt_store.read();
 
-    let (strategy_address) = deploy(
+    let (l2_strategy_address) = deploy(
         class_hash=house_strategy_class_hash,
         contract_address_salt=current_salt,
         constructor_calldata_size=calldata_len,
         constructor_calldata=calldata,
         deploy_from_zero=0,
     );
-    l1_house_store.write(strategy_address, house_address);
+    l1_strategy_store.write(l2_strategy_address, l1_strategy_address);
     salt_store.write(value=current_salt + 1);
 
-    house_strategy_initialized.emit(house_address, strategy_address, house_strategy_class_hash);
+    house_strategy_initialized.emit(
+        l1_strategy_address, l2_strategy_address, house_strategy_class_hash
+    );
     return ();
 }

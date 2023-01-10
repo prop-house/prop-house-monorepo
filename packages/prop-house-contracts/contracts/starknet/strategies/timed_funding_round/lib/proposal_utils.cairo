@@ -14,7 +14,9 @@ namespace ProposalUtils {
     // of building a merkle tree. This function should only be used when each winner has been assigned
     // a specific award. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
-    func generate_leaves_for_assigned_awards{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+    func generate_leaves_for_assigned_awards{
+        range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*
+    }(
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
         awards_len: felt,
@@ -46,12 +48,7 @@ namespace ProposalUtils {
         assert acc[curr_index] = hash;
 
         return generate_leaves_for_assigned_awards(
-            proposal_info_arr_len,
-            proposal_info_arr,
-            awards_len,
-            awards,
-            acc,
-            curr_index + 1,
+            proposal_info_arr_len, proposal_info_arr, awards_len, awards, acc, curr_index + 1
         );
     }
 
@@ -59,7 +56,9 @@ namespace ProposalUtils {
     // a merkle tree. This function should only be used for a single award asset that is equally split
     // between winners. Format: keccak256(proposal_id, uint256(uint160(proposer_address)), asset_id, amount)
     // Note: The caller MUST call `finalize_keccak` on the `keccak_ptr`
-    func generate_leaves_for_split_award{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
+    func generate_leaves_for_split_award{
+        range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*
+    }(
         proposal_info_arr_len: felt,
         proposal_info_arr: ProposalInfo*,
         award_asset_id: Uint256,

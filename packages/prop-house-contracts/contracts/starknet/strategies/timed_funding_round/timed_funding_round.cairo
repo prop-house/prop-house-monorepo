@@ -68,15 +68,7 @@ const eth_sig_auth_strategy = 0xDEAD0004;
 //
 
 @storage_var
-func round_id_store() -> (id: felt) {
-}
-
-@storage_var
 func round_state_store() -> (state: felt) {
-}
-
-@storage_var
-func round_initiator_address_store() -> (address: felt) {
 }
 
 @storage_var
@@ -135,12 +127,8 @@ func vote_created(proposal_id: felt, voter_address: felt, voting_power: Uint256)
 
 @event
 func round_finalized(
-    round_id: felt, merkle_root: Uint256, winners_len: felt, winners: ProposalInfo*
+    merkle_root: Uint256, winners_len: felt, winners: ProposalInfo*
 ) {
-}
-
-@event
-func round_cancelled(round_id: felt) {
 }
 
 //
@@ -157,8 +145,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     alloc_locals;
 
     let (
-        round_id,
-        round_initiator,
         award_hash_low,
         award_hash_high,
         proposal_period_start_timestamp,
@@ -171,8 +157,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     // Note that it is possible for the proposal period to be active upon creation,
     // however it is unlikely due to the scheduling checks on L1.
     with_attr error_message("TimedFundingRound: Invalid constructor parameters") {
-        assert_not_zero(round_id);
-        assert_not_zero(round_initiator);
         assert_not_zero(award_hash_low);
         assert_not_zero(award_hash_high);
         assert_not_zero(proposal_period_start_timestamp);
@@ -193,8 +177,6 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     );
 
     // Initialize the storage variables
-    round_id_store.write(round_id);
-    round_initiator_address_store.write(round_initiator);
     round_timestamps_store.write(packed_timestamps);
     award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high));
     winner_count_store.write(winner_count);
@@ -494,13 +476,10 @@ func finalize_round{
     );
     finalize_keccak(keccak_ptr_start, keccak_ptr);
 
-    let (round_id) = round_id_store.read();
-
     let (execution_params: felt*) = alloc();
     assert execution_params[0] = ExecutionType.MERKLE_PROOF;
-    assert execution_params[1] = round_id;
-    assert execution_params[2] = merkle_root.low;
-    assert execution_params[3] = merkle_root.high;
+    assert execution_params[1] = merkle_root.low;
+    assert execution_params[2] = merkle_root.high;
 
     let execution_params_len = 4;
 
@@ -513,56 +492,7 @@ func finalize_round{
     // Flag the round as having been finalized
     round_state_store.write(RoundState.FINALIZED);
 
-    round_finalized.emit(round_id, merkle_root, winners_len, winners);
-
-    return ();
-}
-
-// Cancels the funding round. Only callable by the round initiator.
-@external
-func cancel_round{
-    syscall_ptr: felt*,
-    pedersen_ptr: HashBuiltin*,
-    range_check_ptr,
-    ecdsa_ptr: SignatureBuiltin*,
-    bitwise_ptr: BitwiseBuiltin*,
-}(round_initiator_address: felt) {
-    alloc_locals;
-
-    // Verify that the caller is the auth strategy contract
-    _assert_valid_auth_strategy();
-
-    // Verify that the funding round is active
-    _assert_round_active();
-
-    let (stored_round_initiator_address) = round_initiator_address_store.read();
-    with_attr error_message("TimedFundingRound: Caller is not round initiator") {
-        assert_not_zero(stored_round_initiator_address);
-        assert round_initiator_address = stored_round_initiator_address;
-    }
-
-    let (round_id) = round_id_store.read();
-    let (award_hash) = award_hash_store.read();
-
-    let (cancellation_params: felt*) = alloc();
-    assert cancellation_params[0] = ExecutionType.CANCELLATION;
-    assert cancellation_params[1] = round_id;
-    assert cancellation_params[2] = award_hash.low;
-    assert cancellation_params[3] = award_hash.high;
-
-    let cancellation_params_len = 4;
-
-    IExecutionStrategy.execute(
-        contract_address=eth_execution_strategy,
-        execution_params_len=cancellation_params_len,
-        execution_params=cancellation_params,
-    );
-
-    // Flag the round as having been cancelled
-    round_state_store.write(RoundState.CANCELLED);
-
-    // Emit event
-    round_cancelled.emit(round_id);
+    round_finalized.emit(merkle_root, winners_len, winners);
 
     return ();
 }
@@ -784,8 +714,6 @@ func _unchecked_get_cumulative_voting_power{
 
 // Decodes the array of house strategy params
 func _decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_params: felt*) -> (
-    round_id: felt,
-    round_initiator: felt,
     award_hash_low: felt,
     award_hash_high: felt,
     proposal_period_start_timestamp: felt,
@@ -793,7 +721,7 @@ func _decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_pa
     vote_period_duration: felt,
     winner_count: felt,
 ) {
-    assert_nn_le(8, strategy_params_len);
+    assert_nn_le(6, strategy_params_len);
     return (
         strategy_params[0],
         strategy_params[1],
@@ -801,8 +729,6 @@ func _decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_pa
         strategy_params[3],
         strategy_params[4],
         strategy_params[5],
-        strategy_params[6],
-        strategy_params[7],
     );
 }
 

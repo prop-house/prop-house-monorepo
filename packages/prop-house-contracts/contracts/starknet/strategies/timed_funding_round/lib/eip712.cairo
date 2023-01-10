@@ -402,7 +402,9 @@ namespace EIP712 {
 
         // `v` is supposed to be `yParity` and not the `v` usually used in the Ethereum world (pre-EIP155).
         // We substract `27` because `v` = `{0, 1} + 27`
-        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(hash, r, s, v - 27, round_initiator_address);
+        verify_eth_signature_uint256{keccak_ptr=keccak_ptr}(
+            hash, r, s, v - 27, round_initiator_address
+        );
 
         // Verify that all the previous keccaks are correct
         finalize_keccak(keccak_ptr_start, keccak_ptr);
