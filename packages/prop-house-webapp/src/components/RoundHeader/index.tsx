@@ -9,15 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
-
-const isLongName = (name: string) => name.length > 9;
-
-interface OpenInNewTabProps {
-  children: React.ReactNode;
-}
-
-// overrides an <a> tag that doesn't have target="_blank" and adds it
-const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
+import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
+import { isLongName } from '../../utils/isLongName';
 
 const RoundHeader: React.FC<{
   community: Community;
@@ -33,7 +26,7 @@ const RoundHeader: React.FC<{
         options={{
           overrides: {
             a: {
-              component: OpenInNewTab,
+              component: ForceOpenInNewTab,
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
