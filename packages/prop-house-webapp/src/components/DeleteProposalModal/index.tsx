@@ -27,10 +27,10 @@ const DeleteProposalModal: React.FC<{
 
   const dispatch = useDispatch();
   const { library } = useEthers();
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -47,6 +47,61 @@ const DeleteProposalModal: React.FC<{
       console.log(error);
     }
   };
+
+  const successfullyDeletedContent = (
+    <>
+      <div className={classes.container}>
+        <div className={classes.imgContainer}>
+          <img src="/heads/trashcan.png" alt="thumbsup" />
+        </div>
+
+        <div className={classes.titleContainer}>
+          <p className={classes.modalTitle}>Successfully Deleted!</p>
+
+          <p className={classes.modalSubtitle}>Proposal <b>#{id}</b> has been deleted.</p>
+        </div>
+      </div>
+
+      <Divider />
+
+      <Button
+        text={t('Close')}
+        bgColor={ButtonColor.White}
+        onClick={() => {
+          setShowModal(false);
+          refreshActiveProposals(client.current, round!.id, dispatch);
+          refreshActiveProposal(client.current, activeProposal!, dispatch);
+          setEditProposalMode(false);
+          handleClosePropModal();
+        }} />
+    </>
+  );
+
+  const errorDeletingContent = (
+    <>
+      <div className={classes.container}>
+        <div className={classes.imgContainer}>
+          <img src="/heads/laptop.png" alt="thumbsup" />
+        </div>
+
+        <div className={classes.titleContainer}>
+          <p className={classes.modalTitle}>Error Deleting</p>
+
+          <p className={classes.modalSubtitle}> Your proposal could not be deleted. Please try again.</p>
+        </div>
+      </div>
+
+      <Divider />
+
+      <Button
+        text={t('Close')}
+        bgColor={ButtonColor.White}
+        onClick={() => {
+          setShowModal(false);
+          setEditProposalMode(false);
+        }} />
+    </>
+  );
 
   return (
     <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={clsx(classes.modal)}>
@@ -74,48 +129,9 @@ const DeleteProposalModal: React.FC<{
                 onClick={handleDeleteProposal} />
             </div>
           </>
-        ) : !errorDeleting ? (
-          <>
-            <div className={classes.titleContainer}>
-              <p className={classes.modalTitle}>{"Successfully Deleted!"}</p>
-              <p className={classes.modalSubtitle}>
-                {`Proposal #${id} has been deleted.`}
-              </p>
-            </div>
-            <Divider />
-            <div className={classes.buttonContainer}>
-              <Button
-                text={t('Close')}
-                bgColor={ButtonColor.White}
-                onClick={() => {
-                  setShowModal(false);
-                  refreshActiveProposals(client.current, round!.id, dispatch)
-                  refreshActiveProposal(client.current, activeProposal!, dispatch);
-                  setEditProposalMode(false);
-                  handleClosePropModal();
-                }} />
-            </div>
-          </>
-        ) : (
-          <>
-            <div className={classes.titleContainer}>
-              <p className={classes.modalTitle}>{"Error Deleting"}</p>
-              <p className={classes.modalSubtitle}>
-                {"Your proposal could not be deleted. Please try again."}
-              </p>
-            </div>
-            <Divider />
-            <div className={classes.buttonContainer}>
-              <Button
-                text={t('Close')}
-                bgColor={ButtonColor.White}
-                onClick={() => {
-                  setShowModal(false);
-                  setEditProposalMode(false);
-                }} />
-            </div>
-          </>
-        )
+        ) : !errorDeleting
+          ? successfullyDeletedContent
+          : errorDeletingContent
       }
     </Modal>
   );

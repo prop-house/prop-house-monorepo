@@ -26,8 +26,9 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
-import DeleteProposalModal from '../DeleteProposalModal';
 import SaveProposalModal from '../SaveProposalModal';
+import DeleteProposalModal from '../DeleteProposalModal';
+
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -217,21 +218,24 @@ const ProposalModal = () => {
         />
       )}
 
-      {showSavePropModal && (
+      {showSavePropModal && activeProposal && round && (
         <SaveProposalModal
+          propId={activeProposal.id}
+          roundId={round.id}
           showModal={showSavePropModal}
           setShowModal={setShowSavePropModal}
-          setEditProposalMode={setEditProposalMode} />
+          setEditProposalMode={setEditProposalMode}
+          handleClosePropModal={handleClosePropModal}
+        />
       )}
 
-      {activeProposal && showDeletePropModal && (
+      {showDeletePropModal && activeProposal && (
         <DeleteProposalModal
           id={activeProposal.id}
           handleClosePropModal={handleClosePropModal}
           showModal={showDeletePropModal}
           setShowModal={setShowDeletePropModal}
           setEditProposalMode={setEditProposalMode}
-
         />
       )}
 

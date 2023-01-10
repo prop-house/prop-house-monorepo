@@ -1,48 +1,149 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import classes from './SaveProposalModal.module.css';
-import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useEthers } from '@usedapp/core';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 
 const SaveProposalModal: React.FC<{
+  propId: number;
+  roundId: number;
   showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  setEditProposalMode: (e: any) => void;
+  handleClosePropModal: () => void;
+
 }> = props => {
-  const { showModal, setShowModal } = props;
+  const { propId, roundId, showModal, setShowModal, setEditProposalMode, handleClosePropModal } = props;
   const { t } = useTranslation();
 
-  function closeModal() {
-    setShowModal(false);
-  }
+  const { library } = useEthers();
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
 
-  return (
-    <Modal isOpen={showModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
-      <div className={classes.titleContainer}>
-        <p className={classes.modalTitle}>Save this verison?</p>
-        <p className={classes.modalSubtitle}>
-          By confirming, these changes will be saved and your proposal will be updated.
-        </p>
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, library?.getSigner());
+  }, [library, host]);
+
+  const [hasBeenSaved, setHasBeenSaved] = useState(false);
+  const [errorSaving, setErrorSaving] = useState(false);
+  const updatedProposal = useAppSelector(state => state.editor.proposal);
+
+  const dispatch = useAppDispatch();
+  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
+
+  const handleSaveProposal = async () => {
+    try {
+      if (!propId || !roundId) return;
+
+      await client.current.updateProposal(
+        new UpdatedProposal(
+          propId,
+          updatedProposal.title,
+          updatedProposal.what,
+          updatedProposal.tldr,
+          roundId,
+        ),
+      );
+      setHasBeenSaved(true);
+    } catch (error) {
+      setErrorSaving(true);
+      console.log(error);
+    }
+  };
+
+  const successfullySavedContent = (
+    <>
+      <div className={classes.container}>
+        <div className={classes.imgContainer}>
+          <img src="/heads/thumbsup.png" alt="thumbsup" />
+        </div>
+
+        <div className={classes.titleContainer}>
+          <p className={classes.modalTitle}>Saved Successfully!</p>
+
+          <p className={classes.modalSubtitle}>Proposal <b>#{propId}</b> has been updated.</p>
+        </div>
       </div>
 
       <Divider />
 
-      <div className={classes.buttonContainer}>
-        <Button
-          text={t('Cancel')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            setShowModal(false);
-          }}
-        />
+      <Button
+        text={t('Close')}
+        bgColor={ButtonColor.White}
+        onClick={() => {
+          setShowModal(false);
+          refreshActiveProposals(client.current, roundId, dispatch);
+          refreshActiveProposal(client.current, activeProposal!, dispatch);
+          setEditProposalMode(false);
+          handleClosePropModal();
+        }} />
+    </>
+  );
 
-        <Button
-          text={'Save Prop'}
-          bgColor={ButtonColor.Purple}
-          onClick={() => setShowModal(false)}
-        />
+  const errorSavingContent = (
+    <>
+      <div className={classes.container}>
+        <div className={classes.imgContainer}>
+          <img src="/heads/laptop.png" alt="thumbsup" />
+        </div>
+
+        <div className={classes.titleContainer}>
+          <p className={classes.modalTitle}>Error Saving</p>
+
+          <p className={classes.modalSubtitle}>Your proposal could not be saved. Please try again.</p>
+        </div>
       </div>
+
+      <Divider />
+
+      <Button
+        text={t('Close')}
+        bgColor={ButtonColor.White}
+        onClick={() => {
+          setShowModal(false);
+          setEditProposalMode(false);
+        }}
+      />
+    </>
+  );
+
+  return (
+    <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={classes.modal}>
+      {!hasBeenSaved ? (
+        <>
+          <div className={classes.titleContainer}>
+            <p className={classes.modalTitle}>
+              Save this verison?
+
+            </p>
+            <p className={classes.modalSubtitle}>
+              By confirming, these changes will be saved and your proposal will be updated.
+            </p>
+          </div>
+          <Divider />
+          <div className={classes.buttonContainer}>
+            <Button
+              text={t('Cancel')}
+              bgColor={ButtonColor.White}
+              onClick={() => setShowModal(false)} />
+
+            <Button
+              text={'Save Prop'}
+              bgColor={ButtonColor.Purple}
+              onClick={handleSaveProposal} />
+          </div>
+        </>
+      ) :
+        !errorSaving
+          ? successfullySavedContent
+          : errorSavingContent
+      }
     </Modal>
   );
 };
