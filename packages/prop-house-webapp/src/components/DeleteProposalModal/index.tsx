@@ -52,7 +52,7 @@ const DeleteProposalModal: React.FC<{
     <>
       <div className={classes.container}>
         <div className={classes.imgContainer}>
-          <img src="/heads/trashcan.png" alt="thumbsup" />
+          <img src="/heads/trashcan.png" alt="trashcan" />
         </div>
 
         <div className={classes.titleContainer}>
@@ -81,7 +81,7 @@ const DeleteProposalModal: React.FC<{
     <>
       <div className={classes.container}>
         <div className={classes.imgContainer}>
-          <img src="/heads/laptop.png" alt="thumbsup" />
+          <img src="/heads/computer.png" alt="computer" />
         </div>
 
         <div className={classes.titleContainer}>

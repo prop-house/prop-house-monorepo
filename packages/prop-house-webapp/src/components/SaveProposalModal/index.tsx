@@ -89,7 +89,7 @@ const SaveProposalModal: React.FC<{
     <>
       <div className={classes.container}>
         <div className={classes.imgContainer}>
-          <img src="/heads/laptop.png" alt="thumbsup" />
+          <img src="/heads/laptop.png" alt="laptop" />
         </div>
 
         <div className={classes.titleContainer}>
