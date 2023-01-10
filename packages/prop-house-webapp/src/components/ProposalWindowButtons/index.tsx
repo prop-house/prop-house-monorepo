@@ -1,12 +1,13 @@
 import classes from './ProposalWindowButtons.module.css';
 import Button, { ButtonColor } from '../Button';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
 import removeTags from '../../utils/removeTags';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useEthers } from '@usedapp/core';
+import { clearProposal } from '../../state/slices/editor';
 
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -23,6 +24,7 @@ const ProposalWindowButtons: React.FC<{
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
+  const dispatch = useAppDispatch();
 
   const isValidPropData = (data: ProposalFields) =>
     data.title.length > 4 &&
@@ -61,7 +63,10 @@ const ProposalWindowButtons: React.FC<{
                 <Button
                   text={'+ New Prop'}
                   bgColor={ButtonColor.PurpleLight}
-                  onClick={() => navigate('/create', { state: { auction: round, community } })}
+                  onClick={() => {
+                    dispatch(clearProposal());
+                    navigate('/create', { state: { auction: round, community } })
+                  }}
                 />
 
                 <div className={classes.editModeButtons}>
@@ -88,7 +93,11 @@ const ProposalWindowButtons: React.FC<{
             classNames={classes.fullWidthButton}
             text={'+ New Prop'}
             bgColor={ButtonColor.PurpleLight}
-            onClick={() => navigate('/create', { state: { auction: round, community } })}
+            onClick={() => {
+              dispatch(clearProposal());
+              navigate('/create', { state: { auction: round, community } })
+            }
+            }
           />
         ))}
     </>
