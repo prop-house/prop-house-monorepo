@@ -126,10 +126,12 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
               )}
 
               {editProposalMode ? (
-                <ProposalEditor
-                  fields={proposalFields(currentProposal)}
-                  onDataChange={onDataChange}
-                />
+                <span className='editPropContainer'>
+                  <ProposalEditor
+                    fields={proposalFields(currentProposal)}
+                    onDataChange={onDataChange}
+                  />
+                </span>
               ) : (
                 <ProposalContent fields={proposalFields(currentProposal)} />
               )}
