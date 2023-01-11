@@ -100,7 +100,7 @@ const ProposalCard: React.FC<{
                       </span>
                     </div>
                   }
-                  tooltipContent={`updated ${diffTime(proposal.lastUpdatedDate)}`}
+                  tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}
                 />
                 :
                 <div

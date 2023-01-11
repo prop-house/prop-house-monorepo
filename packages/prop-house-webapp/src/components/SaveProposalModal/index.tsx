@@ -101,14 +101,26 @@ const SaveProposalModal: React.FC<{
 
       <Divider />
 
-      <Button
-        text={t('Close')}
-        bgColor={ButtonColor.White}
-        onClick={() => {
-          setShowModal(false);
-          setEditProposalMode(false);
-        }}
-      />
+      <div className={classes.buttonContainer}>
+
+        <Button
+          text={t('Close')}
+          bgColor={ButtonColor.White}
+          onClick={() => {
+            setShowModal(false);
+            setEditProposalMode(false);
+          }}
+        />
+
+        <Button
+          text={'Retry'}
+          bgColor={ButtonColor.Purple}
+          onClick={() => {
+            setErrorSaving(false);
+            handleSaveProposal();
+          }}
+        />
+      </div>
     </>
   );
 
