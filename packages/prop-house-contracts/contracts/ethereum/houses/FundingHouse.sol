@@ -161,6 +161,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param description A desciption that adds context about the round
     /// @param tags Tags used to improve searchability and filtering
     /// @param assets Assets to deposit to the funding round
+    /// @param signature The house approval signature for the caller
     function createAndFundRoundWithHouseApproval(
         address strategy,
         bytes calldata config,
