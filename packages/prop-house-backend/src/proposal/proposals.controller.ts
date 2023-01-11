@@ -133,7 +133,7 @@ export class ProposalsController {
     foundProposal.tldr = updateProposalDto.tldr;
     foundProposal.title = updateProposalDto.title;
     foundProposal.signedData = updateProposalDto.signedData;
-    return this.proposalsService.store(foundProposal);
+    return this.proposalsService.updateProposal(foundProposal);
   }
 
   @Post()

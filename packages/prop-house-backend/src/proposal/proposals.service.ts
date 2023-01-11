@@ -3,6 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProposalCreatedEvent } from './events/proposal-created.event';
+import { ProposalUpdatedEvent } from './events/proposal-updated.event';
 import { Proposal } from './proposal.entity';
 import { GetProposalsDto } from './proposal.types';
 
@@ -55,6 +56,15 @@ export class ProposalsService {
 
   private async _store(proposal: Proposal): Promise<Proposal> {
     return await this.proposalsRepository.save(proposal);
+  }
+
+  async updateProposal(proposal: Proposal): Promise<Proposal> {
+    const updatedProposal = await this._store(proposal)
+    this.events.emit(
+      ProposalUpdatedEvent.name,
+      new ProposalUpdatedEvent(updatedProposal)
+    )
+    return updatedProposal
   }
 
   async createProposal(proposal: Proposal): Promise<Proposal> {
