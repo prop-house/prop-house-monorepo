@@ -26,6 +26,15 @@ export class AuctionsService {
     });
   }
 
+  findAllExtended(): Promise<Auction[]> {
+    return this.auctionsRepository.find({
+      relations: ['community', 'proposals'],
+      where: {
+        visible: true,
+      },
+    });
+  }
+
   findAllWithCommunity(): Promise<Auction[]> {
     return this.auctionsRepository.find({
       relations: ['community'],

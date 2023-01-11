@@ -1,4 +1,5 @@
 import { Tweetable, TweetableContents } from 'src/twitter/types';
+import { tweetDate } from 'src/utils';
 import { SendTweetV2Params } from 'twitter-api-v2';
 import { Auction } from '../auction.entity';
 import { EventStatus } from '../types';
@@ -10,13 +11,12 @@ export class AuctionCreatedEvent implements Tweetable {
 
   async tweetContents(): Promise<TweetableContents> {
     return [
-      `New Prop House Round discovered!
+`New round has been discovered for ${this.auction.community.name} House: ${this.auction.title}
 
-Name: ${this.auction.title}
-Begins: ${this.auction.startTime.toLocaleString()}
-House: ${(await this.auction.community).name}
+- ${this.auction.numWinners} winners will be awarded ${this.auction.fundingAmount} ${this.auction.currencyType ?? "ETH"}. 
+- Proposing starts ${tweetDate(this.auction.startTime)}
 
-${this.auction.url()}`,
+Learn more: ${this.auction.url()}`,
       undefined,
     ];
   }

@@ -4,20 +4,20 @@ import { SendTweetV2Params } from 'twitter-api-v2';
 import { Auction } from '../auction.entity';
 import { EventStatus } from '../types';
 
-export class AuctionOpenEvent implements Tweetable {
-  public static EventStatus: EventStatus = 'auctionOpen';
+export class AuctionVotingEndingSoonEvent implements Tweetable {
+  public static EventStatus: EventStatus = 'auctionVotingEndingSoon';
 
   constructor(private readonly auction: Auction) {}
 
   async tweetContents(): Promise<TweetableContents> {
     return [
-      `${this.auction.community.name} ${this.auction.title} is now open for proposals:
+      `${this.auction.community.name} ${this.auction.title} voting is ending soon: 
 
+- Voting window closes at ${tweetDate(this.auction.votingEndTime)}
+- ${this.auction.proposals.reduce((acc, prop) => acc + Number(prop.voteCount), 0)} votes were cast
 - ${this.auction.numWinners} winners will be awarded ${this.auction.fundingAmount} ${this.auction.currencyType ?? "ETH"}. 
-- Proposing ends ${tweetDate(this.auction.proposalEndTime)}
 
-Learn more: ${this.auction.url()}`,
-      undefined,
+Learn more: ${this.auction.url()}`,undefined,
     ];
   }
 }

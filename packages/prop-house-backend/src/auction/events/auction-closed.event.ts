@@ -10,9 +10,12 @@ export class AuctionClosedEvent implements Tweetable {
 
   async tweetContents(): Promise<TweetableContents> {
     return [
-      `Prop House Round ${this.auction.title} has finished!
-    
-${this.auction.url()}`,
+      `${this.auction.community.name} ${this.auction.title} has now ended: 
+
+- ${this.auction.proposals.reduce((acc, prop) => acc + Number(prop.voteCount), 0)} votes were cast
+- ${this.auction.numWinners} winners will be awarded ${this.auction.fundingAmount} ${this.auction.currencyType ?? "ETH"}. 
+
+Learn more: ${this.auction.url()}`,
       undefined,
     ];
   }

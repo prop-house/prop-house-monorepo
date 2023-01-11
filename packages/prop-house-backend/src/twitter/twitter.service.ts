@@ -5,6 +5,8 @@ import { PinataClient, PinataPinOptions } from '@pinata/sdk';
 import { AuctionClosedEvent } from 'src/auction/events/auction-closed.event';
 import { AuctionCreatedEvent } from 'src/auction/events/auction-created.event';
 import { AuctionOpenEvent } from 'src/auction/events/auction-open.event';
+import { AuctionProposalEndingSoonEvent } from 'src/auction/events/auction-proposal-end-soon.event';
+import { AuctionVotingEndingSoonEvent } from 'src/auction/events/auction-vote-end-soon.event';
 import { AuctionVotingEvent } from 'src/auction/events/auction-voting.event';
 import { ProposalCreatedEvent } from 'src/proposal/events/proposal-created.event';
 import { SendTweetV2Params, TwitterApi } from 'twitter-api-v2';
@@ -62,6 +64,20 @@ export class TwitterService {
         await this._tweetFromTweetable(await event.tweetContents());
       },
     );
+
+    this.events.on(
+      AuctionProposalEndingSoonEvent.name,
+      async (event: AuctionProposalEndingSoonEvent) => {
+        await this._tweetFromTweetable(await event.tweetContents())
+      }
+    )
+
+    this.events.on(
+      AuctionVotingEndingSoonEvent.name,
+      async (event: AuctionVotingEndingSoonEvent) => {
+        await this._tweetFromTweetable(await event.tweetContents())
+      }
+    )
   }
 
   private _tweetFromTweetable(contents: TweetableContents) {
@@ -70,6 +86,6 @@ export class TwitterService {
 
   private _tweet(status: string, payload?: SendTweetV2Params) {
     this.logger.verbose('Would tweet', status, payload);
-    // this.twitter.v2.tweet(status, payload)
+    this.twitter.v2.tweet(status, payload)
   }
 }

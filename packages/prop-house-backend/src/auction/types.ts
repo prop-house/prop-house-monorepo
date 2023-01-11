@@ -5,7 +5,11 @@ export type EventStatus =
   | 'auctionCreated'
   // The auction is now available for proposals
   | 'auctionOpen'
+  // The auction proposal window is closing soon
+  | 'auctionProposalEndingSoon'
   // The proposal period has ended, and is now open for voting
   | 'auctionVoting'
+  // The auction voting window is closing soon
+  | 'auctionVotingEndingSoon'
   // The auction/round has now closed, no further votes are allowed
   | 'auctionClosed';

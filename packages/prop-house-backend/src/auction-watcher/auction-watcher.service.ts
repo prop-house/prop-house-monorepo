@@ -6,6 +6,8 @@ import { AuctionsService } from 'src/auction/auctions.service';
 import { AuctionClosedEvent } from 'src/auction/events/auction-closed.event';
 import { AuctionCreatedEvent } from 'src/auction/events/auction-created.event';
 import { AuctionOpenEvent } from 'src/auction/events/auction-open.event';
+import { AuctionProposalEndingSoonEvent } from 'src/auction/events/auction-proposal-end-soon.event';
+import { AuctionVotingEndingSoonEvent } from 'src/auction/events/auction-vote-end-soon.event';
 import { AuctionVotingEvent } from 'src/auction/events/auction-voting.event';
 
 @Injectable()
@@ -20,7 +22,7 @@ export class AuctionWatcherService {
   async handleCron() {
     this.logger.debug('Checking for Auction status changes');
     const allAuctions = (
-      await this.auctionService.findAllWithCommunity()
+      await this.auctionService.findAllExtended()
     ).filter((auction: Auction) => !this.auctionFinalized(auction));
 
     for (const auction of allAuctions) {
@@ -48,6 +50,18 @@ export class AuctionWatcherService {
           auction.eventStatus = AuctionOpenEvent.EventStatus;
           break;
         case 'auctionOpen':
+          if (!auction.proposalWindowEndingSoon()) {
+            // Proposal is open but not yet in the proposal closing soon window
+            continue;
+          }
+          this.logger.debug(`Auction moving to proposal closing soon state ${auction.id}`);
+          this.events.emit(
+            AuctionProposalEndingSoonEvent.name,
+            new AuctionProposalEndingSoonEvent(auction),
+          );
+          auction.eventStatus = AuctionProposalEndingSoonEvent.EventStatus;
+          break;
+        case 'auctionProposalEndingSoon':
           if (!auction.withinVotingWindow()) {
             // Proposal is open but not yet in the proposal window
             continue;
@@ -60,6 +74,18 @@ export class AuctionWatcherService {
           auction.eventStatus = AuctionVotingEvent.EventStatus;
           break;
         case 'auctionVoting':
+          if (!auction.proposalVotingEndingSoon()) {
+            // Auction in voting state but is not yet in closing soon window
+            continue;
+          }
+          this.logger.debug(`Auction moving into closing soon state ${auction.id}`);
+          this.events.emit(
+            AuctionVotingEndingSoonEvent.name,
+            new AuctionVotingEndingSoonEvent(auction),
+          );
+          auction.eventStatus = AuctionVotingEndingSoonEvent.EventStatus;
+          break;
+        case 'auctionVotingEndingSoon':
           if (!auction.complete()) {
             // Auction in voting state but is not yet complete
             continue;
