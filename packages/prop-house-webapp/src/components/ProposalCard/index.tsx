@@ -23,7 +23,7 @@ const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  isWinner?: boolean;
+  isWinner: boolean;
 }> = props => {
   const { proposal, auctionStatus, cardStatus, isWinner } = props;
 

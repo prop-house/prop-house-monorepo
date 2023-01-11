@@ -6,14 +6,15 @@ const getWinningIds = (
   proposals: StoredProposalWithVotes[] | undefined,
   auction: StoredAuction,
 ) => {
+  // empty array to store winning ids
+  const winningIds: number[] = [];
+
+  // return empty array if auction is accepting proposals or has not started
   if (
     auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus(auction) === AuctionStatus.AuctionNotStarted
   )
-    return;
-
-  // empty array to store winning ids
-  const winningIds: number[] = [];
+    return winningIds;
 
   // sort the proposals by votes and handle ties
   const sortedProposals = proposals && sortByVotesAndHandleTies(proposals.slice(), false);

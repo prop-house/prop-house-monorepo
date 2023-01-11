@@ -14,7 +14,7 @@ const UserPropCard: React.FC<{
   status: AuctionStatus;
   proposals: StoredProposalWithVotes[] | undefined;
   numOfWinners: number;
-  winningIds: number[] | undefined;
+  winningIds: number[];
 }> = props => {
   const { userProps, winningIds, proposals, status, numOfWinners } = props;
   const [cardIndex, setCardIndex] = useState(0);
@@ -38,7 +38,7 @@ const UserPropCard: React.FC<{
         userProps={userProps}
         cardIndex={cardIndex}
         setCardIndex={setCardIndex}
-        winningIds={winningIds && winningIds}
+        winningIds={winningIds}
       />
 
       {status !== AuctionStatus.AuctionAcceptingProps && proposals && (
@@ -54,7 +54,7 @@ const UserPropCard: React.FC<{
       <CardFooter
         status={status}
         amountOfPropsWon={amountOfPropsWon}
-        winningIds={winningIds && winningIds}
+        winningIds={winningIds}
         userProps={userProps}
         cardIndex={cardIndex}
       />
