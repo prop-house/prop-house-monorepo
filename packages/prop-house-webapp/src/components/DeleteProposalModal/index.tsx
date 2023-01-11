@@ -137,7 +137,9 @@ const DeleteProposalModal: React.FC<{
   );
 
   return (
-    <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={clsx(classes.modal)}>
+    <Modal isOpen={showModal}
+      onRequestClose={hasBeenDeleted ? handleClosePropModal : () => setShowModal(false)}
+      className={clsx(classes.modal)}>
       {errorDeleting
         ? errorDeletingContent
         : hasBeenDeleted
