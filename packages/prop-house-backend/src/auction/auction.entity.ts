@@ -149,23 +149,26 @@ export class Auction {
   }
 
   minutesUntilProposalWindowEnds(): number {
-    return ((this.proposalEndTime.getTime() / 1000) - (new Date().getTime())/ 1000) / 60
+    return (
+      (this.proposalEndTime.getTime() / 1000 - new Date().getTime() / 1000) / 60
+    );
   }
 
   proposalWindowEndingSoon(hoursDiff: number = 24): boolean {
-    const minutesDiff = this.minutesUntilProposalWindowEnds()
-    return minutesDiff < hoursDiff * 60
+    const minutesDiff = this.minutesUntilProposalWindowEnds();
+    return minutesDiff < hoursDiff * 60;
   }
 
   minutesUntilVotingWindowEnds(): number {
-    return ((this.votingEndTime.getTime() / 1000) - (new Date().getTime())/ 1000) / 60
+    return (
+      (this.votingEndTime.getTime() / 1000 - new Date().getTime() / 1000) / 60
+    );
   }
 
   proposalVotingEndingSoon(hoursDiff: number = 24): boolean {
-    const minutesDiff = this.minutesUntilVotingWindowEnds()
-    return minutesDiff < hoursDiff * 60
+    const minutesDiff = this.minutesUntilVotingWindowEnds();
+    return minutesDiff < hoursDiff * 60;
   }
-
 }
 
 @InputType()

@@ -21,9 +21,9 @@ export class AuctionWatcherService {
   @Cron('*/15 * * * * *')
   async handleCron() {
     this.logger.debug('Checking for Auction status changes');
-    const allAuctions = (
-      await this.auctionService.findAllExtended()
-    ).filter((auction: Auction) => !this.auctionFinalized(auction));
+    const allAuctions = (await this.auctionService.findAllExtended()).filter(
+      (auction: Auction) => !auction.finalized(),
+    );
 
     for (const auction of allAuctions) {
       switch (auction.eventStatus) {
@@ -54,7 +54,9 @@ export class AuctionWatcherService {
             // Proposal is open but not yet in the proposal closing soon window
             continue;
           }
-          this.logger.debug(`Auction moving to proposal closing soon state ${auction.id}`);
+          this.logger.debug(
+            `Auction moving to proposal closing soon state ${auction.id}`,
+          );
           this.events.emit(
             AuctionProposalEndingSoonEvent.name,
             new AuctionProposalEndingSoonEvent(auction),
@@ -78,7 +80,9 @@ export class AuctionWatcherService {
             // Auction in voting state but is not yet in closing soon window
             continue;
           }
-          this.logger.debug(`Auction moving into closing soon state ${auction.id}`);
+          this.logger.debug(
+            `Auction moving into closing soon state ${auction.id}`,
+          );
           this.events.emit(
             AuctionVotingEndingSoonEvent.name,
             new AuctionVotingEndingSoonEvent(auction),
@@ -109,19 +113,5 @@ export class AuctionWatcherService {
       this.logger.debug(`Saving updated auction (${auction.id})`);
       await this.auctionService.store(auction);
     }
-  }
-
-  /**
-   * Test if auction is finalized (final event has already been
-   * emitted)
-   */
-  private auctionFinalized(auction: Auction): boolean {
-    return (
-      auction.votingEndTime < new Date() &&
-      // Already processed
-      (auction.eventStatus === 'auctionClosed' ||
-        // Never processed but was also never discovered
-        auction.eventStatus === null)
-    );
   }
 }
