@@ -160,6 +160,9 @@
 .winner .authorContainer {
   color: var(--brand-green);
 }
+.hideDate {
+  font-size: 14px;
+}
 
 @media (max-width: 767px) {
   .hideDate {
