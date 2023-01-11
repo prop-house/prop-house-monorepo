@@ -41,6 +41,7 @@ const DeleteProposalModal: React.FC<{
 
     try {
       await client.current.deleteProposal(new DeleteProposal(id));
+      setErrorDeleting(false);
       setHasBeenDeleted(true);
     } catch (error) {
       setErrorDeleting(true);
@@ -48,6 +49,30 @@ const DeleteProposalModal: React.FC<{
     }
   };
 
+  const deleteConfirmationContent = (
+    <>
+      <div className={classes.titleContainer}>
+        <p className={classes.modalTitle}>Delete your prop?</p>
+        <p className={classes.modalSubtitle}>
+          Are you sure you want to delete your proposal? This action cannot be undone.
+        </p>
+      </div>
+      <Divider />
+      <div className={classes.buttonContainer}>
+        <Button
+          text={t('Cancel')}
+          bgColor={ButtonColor.White}
+          onClick={() => {
+            setShowModal(false);
+          }} />
+
+        <Button
+          text={'Delete Prop'}
+          bgColor={ButtonColor.Red}
+          onClick={handleDeleteProposal} />
+      </div>
+    </>
+  )
   const successfullyDeletedContent = (
     <>
       <div className={classes.container}>
@@ -76,7 +101,6 @@ const DeleteProposalModal: React.FC<{
         }} />
     </>
   );
-
   const errorDeletingContent = (
     <>
       <div className={classes.container}>
@@ -99,14 +123,12 @@ const DeleteProposalModal: React.FC<{
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowModal(false);
-            setEditProposalMode(false);
           }} />
 
         <Button
           text={'Retry'}
           bgColor={ButtonColor.Purple}
           onClick={() => {
-            setErrorDeleting(false);
             handleDeleteProposal();
           }}
         />
@@ -116,34 +138,11 @@ const DeleteProposalModal: React.FC<{
 
   return (
     <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={clsx(classes.modal)}>
-      {!hasBeenDeleted ?
-        (
-          <>
-            <div className={classes.titleContainer}>
-              <p className={classes.modalTitle}>Delete your prop?</p>
-              <p className={classes.modalSubtitle}>
-                Are you sure you want to delete your proposal? This action cannot be undone.
-              </p>
-            </div>
-            <Divider />
-            <div className={classes.buttonContainer}>
-              <Button
-                text={t('Cancel')}
-                bgColor={ButtonColor.White}
-                onClick={() => {
-                  setShowModal(false);
-                }} />
-
-              <Button
-                text={'Delete Prop'}
-                bgColor={ButtonColor.Red}
-                onClick={handleDeleteProposal} />
-            </div>
-          </>
-        ) : !errorDeleting
+      {errorDeleting
+        ? errorDeletingContent
+        : hasBeenDeleted
           ? successfullyDeletedContent
-          : errorDeletingContent
-      }
+          : deleteConfirmationContent}
     </Modal>
   );
 };

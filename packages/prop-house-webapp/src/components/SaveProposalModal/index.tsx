@@ -49,6 +49,7 @@ const SaveProposalModal: React.FC<{
           roundId,
         ),
       );
+      setErrorSaving(false);
       setHasBeenSaved(true);
     } catch (error) {
       setErrorSaving(true);
@@ -56,6 +57,31 @@ const SaveProposalModal: React.FC<{
     }
   };
 
+  const saveConfirmationContent = (
+    <>
+      <div className={classes.titleContainer}>
+        <p className={classes.modalTitle}>
+          Save this verison?
+
+        </p>
+        <p className={classes.modalSubtitle}>
+          By confirming, these changes will be saved and your proposal will be updated.
+        </p>
+      </div>
+      <Divider />
+      <div className={classes.buttonContainer}>
+        <Button
+          text={t('Cancel')}
+          bgColor={ButtonColor.White}
+          onClick={() => setShowModal(false)} />
+
+        <Button
+          text={'Save Prop'}
+          bgColor={ButtonColor.Purple}
+          onClick={handleSaveProposal} />
+      </div>
+    </>
+  );
   const successfullySavedContent = (
     <>
       <div className={classes.container}>
@@ -84,7 +110,6 @@ const SaveProposalModal: React.FC<{
         }} />
     </>
   );
-
   const errorSavingContent = (
     <>
       <div className={classes.container}>
@@ -108,7 +133,6 @@ const SaveProposalModal: React.FC<{
           bgColor={ButtonColor.White}
           onClick={() => {
             setShowModal(false);
-            setEditProposalMode(false);
           }}
         />
 
@@ -116,7 +140,6 @@ const SaveProposalModal: React.FC<{
           text={'Retry'}
           bgColor={ButtonColor.Purple}
           onClick={() => {
-            setErrorSaving(false);
             handleSaveProposal();
           }}
         />
@@ -126,35 +149,11 @@ const SaveProposalModal: React.FC<{
 
   return (
     <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={classes.modal}>
-      {!hasBeenSaved ? (
-        <>
-          <div className={classes.titleContainer}>
-            <p className={classes.modalTitle}>
-              Save this verison?
-
-            </p>
-            <p className={classes.modalSubtitle}>
-              By confirming, these changes will be saved and your proposal will be updated.
-            </p>
-          </div>
-          <Divider />
-          <div className={classes.buttonContainer}>
-            <Button
-              text={t('Cancel')}
-              bgColor={ButtonColor.White}
-              onClick={() => setShowModal(false)} />
-
-            <Button
-              text={'Save Prop'}
-              bgColor={ButtonColor.Purple}
-              onClick={handleSaveProposal} />
-          </div>
-        </>
-      ) :
-        !errorSaving
+      {errorSaving
+        ? errorSavingContent
+        : hasBeenSaved
           ? successfullySavedContent
-          : errorSavingContent
-      }
+          : saveConfirmationContent}
     </Modal>
   );
 };
