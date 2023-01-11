@@ -1,11 +1,11 @@
 import { useAppSelector } from '../../../hooks';
-import RenderedProposalFields from '../../RenderedProposalFields';
+import ProposalContent from '../../ProposalContent';
 
-const Preview: React.FC<{}> = (props) => {
-  const proposalEditorData = useAppSelector((state) => state.editor.proposal);
+const Preview: React.FC<{}> = props => {
+  const proposalEditorData = useAppSelector(state => state.editor.proposal);
   return (
     <>
-      <RenderedProposalFields fields={proposalEditorData} />
+      <ProposalContent fields={proposalEditorData} />
     </>
   );
 };

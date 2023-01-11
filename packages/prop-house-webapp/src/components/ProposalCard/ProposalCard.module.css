@@ -34,7 +34,7 @@
   display: flex;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
@@ -43,6 +43,12 @@
   font-weight: normal;
   color: var(--brand-black-transparent);
   display: inline;
+}
+.crownNoun {
+  display: flex;
+}
+.crownNoun img {
+  height: 14px;
 }
 
 .date {
@@ -128,8 +134,7 @@
 .titleContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 15px;
+  gap: 5px;
 }
 
 .address {

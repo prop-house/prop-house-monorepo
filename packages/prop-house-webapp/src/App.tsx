@@ -6,7 +6,6 @@ import NavBar from './components/NavBar';
 import Home from './components/pages/Home';
 import Create from './components/pages/Create';
 import House from './components/pages/House';
-import Proposal from './components/pages/Proposal';
 import Footer from './components/Footer';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
@@ -20,6 +19,7 @@ import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
+import Proposal from './components/pages/Proposal';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -42,7 +42,8 @@ function App() {
   }, [noActiveCommunity, location.state]);
 
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
-  const noNavPath = location.pathname === '/' || location.pathname === '/faq';
+  const noNavPath =
+    location.pathname === '/' || location.pathname === '/faq' || location.pathname === '/create';
 
   return openGraphCardPath ? (
     <Routes>

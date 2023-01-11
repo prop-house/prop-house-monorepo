@@ -1,4 +1,4 @@
-import { verifyMessage } from '@ethersproject/wallet';
+import { verifyTypedData } from '@ethersproject/wallet';
 import { SignedEntity } from 'src/entities/signed';
 
 /**
@@ -12,7 +12,12 @@ export const verifyAccountSignature = (
 ) => {
   let actualSigner: string | undefined;
   try {
-    actualSigner = verifyMessage(message, value.signedData.signature);
+    actualSigner = verifyTypedData(
+      value.domainSeparator,
+      value.messageTypes,
+      JSON.parse(message),
+      value.signedData.signature,
+    );
   } catch (error) {
     return {
       isValidAccountSig: false,

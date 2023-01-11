@@ -9,15 +9,9 @@ import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { isMobile } from 'web3modal';
-
-const isLongName = (name: string) => name.length > 9;
-
-interface OpenInNewTabProps {
-  children: React.ReactNode;
-}
-
-// overrides an <a> tag that doesn't have target="_blank" and adds it
-const OpenInNewTab = ({ children, ...props }: OpenInNewTabProps) => <a {...props}>{children}</a>;
+import ReadMore from '../ReadMore';
+import { isLongName } from '../../utils/isLongName';
+import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 
 const HouseHeader: React.FC<{
   community: Community;
@@ -33,12 +27,12 @@ const HouseHeader: React.FC<{
         options={{
           overrides: {
             a: {
-              component: OpenInNewTab,
+              component: ForceOpenInNewTab,
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
-              },
-            },
+              }
+            }
           },
         }}
       >
@@ -46,6 +40,7 @@ const HouseHeader: React.FC<{
           allowedAttributes: {
             a: ['href', 'target'],
           },
+
         })}
       </Markdown>
     </div>
@@ -101,9 +96,9 @@ const HouseHeader: React.FC<{
             </div>
           </div>
         </div>
-        {!isMobile() && communityDescription}
+        {!isMobile() && <ReadMore description={communityDescription} />}
       </div>
-      {isMobile() && communityDescription}
+      {isMobile() && <ReadMore description={communityDescription} />}
     </div>
   );
 };

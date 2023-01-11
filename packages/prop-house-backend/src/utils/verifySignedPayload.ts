@@ -11,11 +11,12 @@ export const verifySignedPayload = (
   proposal: Proposal,
 ) => {
   // Get corresponding vote from signed payload (bulk voting payloads may have multiple votes)
-  const signedPayload: CreateVoteDto = JSON.parse(
+  const signedPayload = JSON.parse(
     Buffer.from(createVoteDto.signedData.message, 'base64').toString(),
   );
-  var arr = Object.keys(signedPayload).map((key) => signedPayload[key]);
-  const voteFromPayload = arr.find((v) => v.proposalId === proposal.id);
+
+  const voteDtos: CreateVoteDto[] = signedPayload.votes;
+  const voteFromPayload = voteDtos.find((v) => v.proposalId === proposal.id);
 
   if (!voteFromPayload)
     throw new HttpException(

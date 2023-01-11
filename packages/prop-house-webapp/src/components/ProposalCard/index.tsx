@@ -7,7 +7,6 @@ import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
-import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import PropCardVotingModule from '../PropCardVotingModule';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
@@ -15,19 +14,20 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
+import { useDispatch } from 'react-redux';
+import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  winner?: boolean;
+  isWinner?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, winner } = props;
-
-  let navigate = useNavigate();
+  const { proposal, auctionStatus, cardStatus, isWinner } = props;
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const dispatch = useDispatch();
 
   const roundIsVotingOrOver = () =>
     auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
@@ -45,16 +45,21 @@ const ProposalCard: React.FC<{
             openInNewTab(`${nameToSlug(round.title)}/${proposal.id}`);
             return;
           }
-          navigate(`${proposal.id}`);
+
+          dispatch(setModalActive(true));
+          dispatch(setActiveProposal(proposal));
         }}
       >
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, winner && classes.winner)}
+          classNames={clsx(classes.proposalCard, isWinner && auctionStatus === AuctionStatus.AuctionEnded && classes.winner)}
         >
           <div className={classes.textContainter}>
             <div className={classes.titleContainer}>
+              {isWinner && <div className={classes.crownNoun}>
+                <img src="/heads/crown.png" alt="crown" />
+              </div>}
               <div className={classes.authorContainer}>{proposal.title}</div>
             </div>
 
@@ -98,7 +103,7 @@ const ProposalCard: React.FC<{
                 {cardStatus === ProposalCardStatus.Voting && (
                   <div className={classes.votingArrows}>
                     <span className={classes.plusArrow}>+</span>
-                    <PropCardVotingModule proposal={proposal} cardStatus={cardStatus} />
+                    <PropCardVotingModule proposal={proposal} />
                   </div>
                 )}
               </div>
