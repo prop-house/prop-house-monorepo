@@ -7,21 +7,22 @@ export const sortByVotesAndHandleTies = (
   ascending: boolean,
 ) =>
   proposals.sort((a, b) => {
-    if (ascending) {
-      if (Number(a.voteCount) > Number(b.voteCount)) {
-        return 1;
-      } else if (Number(a.voteCount) < Number(b.voteCount)) {
-        return -1;
-      } else {
-        return (dayjs(getLastUpdatedDate(b)) as any) - (dayjs(getLastUpdatedDate(a)) as any);
-      }
-    } else {
-      if (Number(a.voteCount) > Number(b.voteCount)) {
-        return -1;
-      } else if (Number(a.voteCount) < Number(b.voteCount)) {
-        return 1;
-      } else {
-        return (dayjs(getLastUpdatedDate(a)) as any) - (dayjs(getLastUpdatedDate(b)) as any);
-      }
-    }
+    const gt = Number(a.voteCount) > Number(b.voteCount);
+    const eq = Number(a.voteCount) === Number(b.voteCount);
+    const sortedByUpdatedAsc =
+      (dayjs(getLastUpdatedDate(b)) as any) - (dayjs(getLastUpdatedDate(a)) as any);
+    const sortedByUpdatedDes =
+      (dayjs(getLastUpdatedDate(a)) as any) - (dayjs(getLastUpdatedDate(b)) as any);
+
+    return eq
+      ? ascending
+        ? sortedByUpdatedAsc
+        : sortedByUpdatedDes
+      : gt
+      ? ascending
+        ? 1
+        : -1
+      : ascending
+      ? -1
+      : 1;
   });
