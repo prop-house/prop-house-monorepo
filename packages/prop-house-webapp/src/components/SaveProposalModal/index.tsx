@@ -148,7 +148,7 @@ const SaveProposalModal: React.FC<{
   );
 
   return (
-    <Modal isOpen={showModal} onRequestClose={() => setShowModal(false)} className={classes.modal}>
+    <Modal isOpen={showModal} onRequestClose={hasBeenSaved ? handleClosePropModal : () => setShowModal(false)} className={classes.modal}>
       {errorSaving
         ? errorSavingContent
         : hasBeenSaved
