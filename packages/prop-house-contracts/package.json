@@ -19,7 +19,7 @@
     "concurrently": "^7.3.0",
     "dotenv": "^16.0.3",
     "ethereum-waffle": "^3.4.4",
-    "hardhat": "^2.10.2",
+    "hardhat": "^2.12.6",
     "hardhat-preprocessor": "^0.1.4",
     "merkletreejs": "^0.3.9",
     "prettier": "^2.7.0",

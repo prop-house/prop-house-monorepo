@@ -7,7 +7,7 @@ interface SolidityContract {
   source: string;
 }
 
-const whitelistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'MockWETH', 'AwardRouter'];
+const whitelistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'AwardRouter'];
 const test = 'test/ethereum';
 
 const runBlacksmith = () => {

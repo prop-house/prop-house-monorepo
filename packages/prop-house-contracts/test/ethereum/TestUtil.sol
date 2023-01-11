@@ -3,7 +3,6 @@ pragma solidity >=0.8.17;
 
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
-import { MockWETH, MockWETHBS } from './blacksmith/MockWETH.bs.sol';
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
 import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
 import { MockERC1155, MockERC1155BS } from './blacksmith/MockERC1155.bs.sol';
@@ -13,7 +12,6 @@ contract TestUtil is Test {
         address addr;
         uint256 pkey;
         Blacksmith base;
-        MockWETHBS weth;
         MockERC20BS erc20;
         MockERC721BS erc721;
         MockERC1155BS erc1155;
@@ -22,7 +20,6 @@ contract TestUtil is Test {
     User alice;
     User bob;
     User carol;
-    address weth;
     address erc20;
     address erc721;
     address erc1155;
@@ -31,13 +28,12 @@ contract TestUtil is Test {
 
     function createUser(address _addr, uint256 _privateKey) public returns (User memory) {
         Blacksmith base = new Blacksmith(_addr, _privateKey);
-        MockWETHBS _weth = new MockWETHBS(_addr, _privateKey, weth);
         MockERC20BS _erc20 = new MockERC20BS(_addr, _privateKey, erc20);
         MockERC721BS _erc721 = new MockERC721BS(_addr, _privateKey, erc721);
         MockERC1155BS _erc1155 = new MockERC1155BS(_addr, _privateKey, erc1155);
 
         base.deal(INITIAL_BALANCE);
-        return User(base.addr(), base.pkey(), base, _weth, _erc20, _erc721, _erc1155);
+        return User(base.addr(), base.pkey(), base, _erc20, _erc721, _erc1155);
     }
 
     function setUpUser(uint256 privateKey, uint256 tokenId) public returns (User memory user) {
@@ -49,12 +45,10 @@ contract TestUtil is Test {
     }
 
     function setUpContract() public {
-        weth = address(new MockWETH());
         erc20 = address(new MockERC20());
         erc721 = address(new MockERC721());
         erc1155 = address(new MockERC1155());
 
-        vm.label(weth, 'WETH');
         vm.label(erc20, 'ERC20');
         vm.label(erc721, 'ERC721');
         vm.label(erc1155, 'ERC1155');

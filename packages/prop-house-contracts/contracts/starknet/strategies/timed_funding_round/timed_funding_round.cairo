@@ -5,7 +5,13 @@
 // Standard Library
 from starkware.starknet.common.syscalls import get_caller_address, get_block_timestamp
 from starkware.cairo.common.cairo_builtins import HashBuiltin, SignatureBuiltin, BitwiseBuiltin
-from starkware.cairo.common.uint256 import Uint256, uint256_lt, uint256_le, uint256_eq, uint256_unsigned_div_rem
+from starkware.cairo.common.uint256 import (
+    Uint256,
+    uint256_lt,
+    uint256_le,
+    uint256_eq,
+    uint256_unsigned_div_rem,
+)
 from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.cairo_keccak.keccak import finalize_keccak
 from starkware.cairo.common.registers import get_label_location
@@ -126,9 +132,7 @@ func vote_created(proposal_id: felt, voter_address: felt, voting_power: Uint256)
 }
 
 @event
-func round_finalized(
-    merkle_root: Uint256, winners_len: felt, winners: ProposalInfo*
-) {
+func round_finalized(merkle_root: Uint256, winners_len: felt, winners: ProposalInfo*) {
 }
 
 //
@@ -171,9 +175,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
     // Pack the timestamps into a single felt to reduce storage usage
     let (packed_timestamps) = MathUtils.pack_3_40_bit(
-        proposal_period_start_timestamp, 
-        proposal_period_end_timestamp,
-        vote_period_end_timestamp,
+        proposal_period_start_timestamp, proposal_period_end_timestamp, vote_period_end_timestamp
     );
 
     // Initialize the storage variables
@@ -195,7 +197,12 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
 
 // Casts votes on one or more proposals
 @external
-func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
+func vote{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    bitwise_ptr: BitwiseBuiltin*,
+    range_check_ptr: felt,
+}(
     voter_address: felt,
     proposal_votes_len: felt,
     proposal_votes: ProposalVote*,
@@ -214,11 +221,9 @@ func vote{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBu
 
     // Unpack the the timestamps from the packed value
     let (round_timestamps) = round_timestamps_store.read();
-    let (
-        _, 
-        snapshot_timestamp,
-        vote_period_end_timestamp,
-    ) = MathUtils.unpack_3_40_bit(round_timestamps);
+    let (_, snapshot_timestamp, vote_period_end_timestamp) = MathUtils.unpack_3_40_bit(
+        round_timestamps
+    );
 
     // The snapshot timestamp is the end of the proposal submission period
     let vote_period_start_timestamp = snapshot_timestamp + 1;
@@ -347,7 +352,12 @@ func cast_proposal_votes{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
 
 // Submits a proposal to the funding round
 @external
-func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr: felt}(
+func propose{
+    syscall_ptr: felt*,
+    pedersen_ptr: HashBuiltin*,
+    bitwise_ptr: BitwiseBuiltin*,
+    range_check_ptr: felt,
+}(
     proposer_address: felt,
     metadata_uri_string_len: felt,
     metadata_uri_len: felt,
@@ -364,9 +374,7 @@ func propose{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: Bitwis
     // Unpack the the timestamps from the packed value
     let (round_timestamps) = round_timestamps_store.read();
     let (
-        proposal_period_start_timestamp, 
-        proposal_period_end_timestamp,
-        _,
+        proposal_period_start_timestamp, proposal_period_end_timestamp, _
     ) = MathUtils.unpack_3_40_bit(round_timestamps);
 
     let (current_timestamp) = get_block_timestamp();
@@ -412,11 +420,7 @@ func finalize_round{
     let (current_timestamp) = get_block_timestamp();
     // Unpack the the timestamps from the packed value
     let (round_timestamps) = round_timestamps_store.read();
-    let (
-        _, 
-        _,
-        vote_period_end_timestamp,
-    ) = MathUtils.unpack_3_40_bit(round_timestamps);
+    let (_, _, vote_period_end_timestamp) = MathUtils.unpack_3_40_bit(round_timestamps);
 
     // Ensure that voting is complete
     with_attr error_message("TimedFundingRound: Vote period has not ended") {
@@ -461,7 +465,9 @@ func finalize_round{
     // If only one award exists in the array, then split it between the winners.
     if (awards_len == 1) {
         let (winners_len_uint256) = MathUtils.felt_to_uint256(winners_len);
-        let (split_award_amount, _) = uint256_unsigned_div_rem(awards[0].amount, winners_len_uint256);
+        let (split_award_amount, _) = uint256_unsigned_div_rem(
+            awards[0].amount, winners_len_uint256
+        );
         ProposalUtils.generate_leaves_for_split_award{keccak_ptr=keccak_ptr}(
             winners_len, winners, awards[0].asset_id, split_award_amount, leaves, 0
         );
@@ -608,7 +614,8 @@ func _is_valid_auth_strategy(addr: felt, curr_index: felt, num_strategies: felt)
 }
 
 // Throws if the caller address is not a member of the set of whitelisted auth strategies
-func _assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() {
+func _assert_valid_auth_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ) {
     alloc_locals;
 
     let (caller_address) = get_caller_address();
@@ -641,7 +648,9 @@ func _get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*
     index: felt,
 ) -> (voting_power: Uint256) {
     // Make sure there are no duplicates to avoid an attack where people double count a voting strategy
-    ArrayUtils.assert_no_duplicates(used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes);
+    ArrayUtils.assert_no_duplicates(
+        used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
+    );
 
     return _unchecked_get_cumulative_voting_power(
         current_timestamp,
@@ -761,7 +770,9 @@ func _populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
 }
 
 // Flattens and ABI-encodes (adds data offset + array length prefix) an array of award assets.
-func _flatten_and_abi_encode_award_array{range_check_ptr}(awards_len: felt, awards: Award*) -> (awards_flat_len: felt, awards_flat: Uint256*) {
+func _flatten_and_abi_encode_award_array{range_check_ptr}(awards_len: felt, awards: Award*) -> (
+    awards_flat_len: felt, awards_flat: Uint256*
+) {
     alloc_locals;
 
     let (data_offset) = MathUtils.felt_to_uint256(0x20);

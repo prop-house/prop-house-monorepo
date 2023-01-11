@@ -3,6 +3,13 @@ pragma solidity >=0.8.17;
 
 /// @notice Common interface for a house
 interface IHouse {
+    /// @notice ECDSA signature values
+    struct Signature {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
+
     /// @notice Thrown when a strategy is not enabled in the house instance
     error STRATEGY_NOT_ENABLED();
 

@@ -1,9 +1,9 @@
+export { AwardRouter__factory } from '../typechain/factories/AwardRouter__factory';
 export { HouseFactory__factory } from '../typechain/factories/HouseFactory__factory';
 export { FundingHouse__factory } from '../typechain/factories/FundingHouse__factory';
-export { IAssetData__factory } from '../typechain/factories/IAssetData__factory';
-export { TimedFundingRoundStrategyValidator__factory } from '../typechain/factories/TimedFundingRoundStrategyValidator__factory';
+export { TimedFundingRound__factory } from '../typechain/factories/TimedFundingRound__factory';
 
+export { AwardRouter as AwardRouterContract } from '../typechain/AwardRouter';
 export { HouseFactory as HouseFactoryContract } from '../typechain/HouseFactory';
 export { FundingHouse as FundingHouseContract } from '../typechain/FundingHouse';
-export { IAssetData as IAssetDataContract } from '../typechain/IAssetData';
-export { TimedFundingRoundStrategyValidator as TimedFundingRoundStrategyValidatorContract } from '../typechain/TimedFundingRoundStrategyValidator';
+export { TimedFundingRound as TimedFundingRoundContract } from '../typechain/TimedFundingRound';

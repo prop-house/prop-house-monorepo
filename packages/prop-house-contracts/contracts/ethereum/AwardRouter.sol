@@ -18,15 +18,6 @@ contract AwardRouter is IAwardRouter, AssetController {
     /// @notice The house award approval management contract
     IHouseApprovalManager public immutable manager;
 
-    /// @notice Require that the user has approved the sender to pull assets
-    /// @param user The user who initiated the house action
-    modifier onlyApprovedHouse(address user) {
-        if (!manager.isHouseApproved(user, msg.sender)) {
-            revert HOUSE_NOT_APPROVED_BY_USER();
-        }
-        _;
-    }
-
     constructor(address _factory, address _manager) {
         factory = IHouseFactory(_factory);
         manager = IHouseApprovalManager(_manager);
@@ -58,12 +49,15 @@ contract AwardRouter is IAwardRouter, AssetController {
     /// @param user The user to pull from
     /// @param strategy The receiving house strategy address
     /// @param asset The asset to transfer to the strategy
-    /// @dev This function is only callable by a user-approved house
+    /// @dev This function is only callable by a user-approved house when dealing with non-native assets
     function pullTo(
         address user,
         address payable strategy,
         Asset calldata asset
-    ) external payable onlyApprovedHouse(user) {
+    ) external payable {
+        if (asset.assetType != AssetType.Native && !manager.isHouseApproved(user, msg.sender)) {
+            revert HOUSE_NOT_APPROVED_BY_USER();
+        }
         _depositTo(user, strategy, asset);
     }
 
@@ -71,12 +65,17 @@ contract AwardRouter is IAwardRouter, AssetController {
     /// @param user The user to pull from
     /// @param strategy The receiving house strategy address
     /// @param assets The assets to transfer to the strategy
-    /// @dev This function is only callable by a user-approved house
+    /// @dev This function is only callable by a user-approved house when dealing with non-native assets
     function batchPullTo(
         address user,
         address payable strategy,
         Asset[] calldata assets
-    ) external payable onlyApprovedHouse(user) {
+    ) external payable {
+        if (assets.length != 1 || assets[0].assetType != AssetType.Native) {
+            if (!manager.isHouseApproved(user, msg.sender)) {
+                revert HOUSE_NOT_APPROVED_BY_USER();
+            }
+        }
         _batchDepositTo(user, strategy, assets);
     }
 

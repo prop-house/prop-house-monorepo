@@ -6,10 +6,12 @@ import { IHouse } from '../interfaces/IHouse.sol';
 import { IFundingHouse } from '../interfaces/houses/IFundingHouse.sol';
 import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
 import { IFundingHouseStrategy } from '../interfaces/IFundingHouseStrategy.sol';
+import { IHouseApprovalManager } from '../interfaces/IHouseApprovalManager.sol';
 import { REGISTER_VOTING_STRATEGY_SELECTOR } from '../Constants.sol';
 import { IHouseStrategy } from '../interfaces/IHouseStrategy.sol';
 import { IAwardRouter } from '../interfaces/IAwardRouter.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
+import { LibRLP } from 'solady/src/utils/LibRLP.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
 import { Asset } from '../lib/types/Common.sol';
@@ -21,17 +23,22 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @notice The contract used to route ETH, ERC20, ERC721, & ERC1155 tokens
     IAwardRouter private immutable _awardRouter;
 
+    /// @notice The contract used to control which houses can pull assets
+    IHouseApprovalManager private immutable _approvalManager;
+
     /// @notice The voting strategy registry contract on Starknet
     uint256 private immutable _votingStrategyRegistry;
 
     constructor(
         address awardRouter_,
+        address approvalManager_,
         uint256 votingStrategyRegistry_,
         address upgradeManager_,
         address strategyManager_,
         address messenger_
     ) HouseBase('FUNDING_HOUSE', 1, upgradeManager_, strategyManager_, messenger_) {
         _awardRouter = IAwardRouter(awardRouter_);
+        _approvalManager = IHouseApprovalManager(approvalManager_);
         _votingStrategyRegistry = votingStrategyRegistry_;
     }
 
@@ -145,6 +152,42 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         return round;
     }
 
+    /// @notice Approve the house to pull assets, create a new funding round,
+    /// partially or fully fund it, and mint the round manager NFT to the caller.
+    /// @param strategy The house strategy implementation contract address
+    /// @param config The house strategy configuration data
+    /// @param voting The selected voting strategy IDs
+    /// @param title A short title for the round
+    /// @param description A desciption that adds context about the round
+    /// @param tags Tags used to improve searchability and filtering
+    /// @param assets Assets to deposit to the funding round
+    function createAndFundRoundWithHouseApproval(
+        address strategy,
+        bytes calldata config,
+        uint256[] calldata voting,
+        string calldata title,
+        string calldata description,
+        string[] calldata tags,
+        Asset[] calldata assets,
+        Signature calldata signature
+    ) external payable returns (address) {
+        address round = _createRound(strategy, voting, title, description, tags);
+
+        _approvalManager.setApprovalForHouseBySig(
+            msg.sender,
+            address(this),
+            true,
+            0,
+            signature.v,
+            signature.r,
+            signature.s
+        );
+        _awardRouter.batchPullTo{ value: msg.value }(msg.sender, payable(round), assets);
+        IHouseStrategy(round).initialize(config);
+
+        return round;
+    }
+
     /// @notice Forwards a cross-chain message from a house strategy to the Starknet messenger contract
     /// @param toAddress The callee address
     /// @param selector The function selector
@@ -160,18 +203,14 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @notice Returns `true` if the provided address is a valid strategy for this house
     /// @param strategy The house strategy to validate
     function isValidHouseStrategy(address strategy) public view override(IHouse, HouseBase) returns (bool) {
-        address expectedStrategy = getHouseStrategyAddress(
-            _codeHash(strategy),
-            IFundingHouseStrategy(strategy).roundId()
-        );
+        address expectedStrategy = getHouseStrategyAddress(IFundingHouseStrategy(strategy).roundId());
         return strategy == expectedStrategy;
     }
 
-    /// @notice Get the house strategy address for a given code hash and token ID
-    /// @param codeHash The code hash
+    /// @notice Get the house strategy address for a given token ID
     /// @param tokenId The token ID
-    function getHouseStrategyAddress(bytes32 codeHash, uint256 tokenId) public view returns (address) {
-        return LibClone.predictDeterministicAddress(codeHash, _salt(tokenId), address(this));
+    function getHouseStrategyAddress(uint256 tokenId) public view returns (address) {
+        return LibRLP.computeAddress(address(this), tokenId);
     }
 
     /// @notice Create a new funding round and mint the round manager NFT to the caller
@@ -197,7 +236,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         // Mint the management token to the round creator
         _mint(msg.sender, _roundId);
 
-        address round = strategy.cloneDeterministic(_encodeData(_roundId, voting), _salt(_roundId));
+        address round = strategy.clone(_encodeData(_roundId, voting));
 
         emit RoundCreated(_roundId, voting, title, description, tags, strategy, round);
         return round;
@@ -218,20 +257,6 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param roundId The round ID
     function _encodeData(uint256 roundId, uint256[] memory voting) internal view returns (bytes memory) {
         return abi.encodePacked(address(this), roundId, _toUint8(voting.length), voting);
-    }
-
-    /// @notice Given a round ID, return the house strategy salt.
-    /// @param roundId The round ID
-    function _salt(uint256 roundId) internal pure returns (bytes32) {
-        return keccak256(abi.encodePacked(roundId));
-    }
-
-    /// @notice Get the initialization code hash of the provided address
-    /// @param a The address
-    function _codeHash(address a) public view returns (bytes32 hash) {
-        assembly {
-            hash := extcodehash(a)
-        }
     }
 
     /// @notice Add a voting strategy to the whitelist

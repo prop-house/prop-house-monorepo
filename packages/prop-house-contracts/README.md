@@ -38,6 +38,21 @@ yarn build
     yarn test
     ```
 
+#### Troubleshooting
+
+If on an M1 mac, you may receive the following error when running `starknet-devnet`:
+
+
+```
++[__NSCFConstantString initialize] may have been in progress in another thread when fork() was called.
+```
+
+If so, please add the following to `~/.bash_profile`:
+
+```
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+```
+
 ### Format Code
 
 ```sh
