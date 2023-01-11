@@ -10,7 +10,7 @@ import { AuctionVotingEndingSoonEvent } from 'src/auction/events/auction-vote-en
 import { AuctionVotingEvent } from 'src/auction/events/auction-voting.event';
 import { ProposalCreatedEvent } from 'src/proposal/events/proposal-created.event';
 import { SendTweetV2Params, TwitterApi } from 'twitter-api-v2';
-import { TweetableContents } from './types';
+import { Tweetable, TweetableContents } from './types';
 
 @Injectable()
 export class TwitterService {
@@ -33,52 +33,46 @@ export class TwitterService {
       });
     }
 
-    this.events.on(
-      ProposalCreatedEvent.name,
-      async (event: ProposalCreatedEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents());
-      },
-    );
+    // Not enabling Proposal tweeting at this time
+    // this.events.on(
+    //   ProposalCreatedEvent.name,
+    //   this._tweetEventHandler<ProposalCreatedEvent>
+    // );
 
     this.events.on(
       AuctionCreatedEvent.name,
-      async (event: AuctionCreatedEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents());
-      },
+      this._tweetEvent
     );
 
-    this.events.on(AuctionOpenEvent.name, async (event: AuctionOpenEvent) => {
-      await this._tweetFromTweetable(await event.tweetContents());
-    });
+    this.events.on(
+      AuctionOpenEvent.name, 
+      this._tweetEvent
+    );
 
     this.events.on(
       AuctionVotingEvent.name,
-      async (event: AuctionVotingEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents());
-      },
+      this._tweetEvent
     );
 
     this.events.on(
       AuctionClosedEvent.name,
-      async (event: AuctionClosedEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents());
-      },
+      this._tweetEvent
     );
 
     this.events.on(
       AuctionProposalEndingSoonEvent.name,
-      async (event: AuctionProposalEndingSoonEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents())
-      }
-    )
+      this._tweetEvent
+    );
 
     this.events.on(
       AuctionVotingEndingSoonEvent.name,
-      async (event: AuctionVotingEndingSoonEvent) => {
-        await this._tweetFromTweetable(await event.tweetContents())
-      }
-    )
+      this._tweetEvent
+    );
   }
+
+  private _tweetEvent = async <T extends Tweetable>(event: T) => {
+      await this._tweetFromTweetable(await event.tweetContents());
+    };
 
   private _tweetFromTweetable(contents: TweetableContents) {
     return this._tweet(contents[0], contents[1]);
@@ -86,6 +80,6 @@ export class TwitterService {
 
   private _tweet(status: string, payload?: SendTweetV2Params) {
     this.logger.verbose('Would tweet', status, payload);
-    this.twitter.v2.tweet(status, payload)
+    this.twitter.v2.tweet(status, payload);
   }
 }
