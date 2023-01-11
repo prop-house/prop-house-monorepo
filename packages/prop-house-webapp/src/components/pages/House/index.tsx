@@ -52,7 +52,7 @@ const House = () => {
   useEffect(() => {
     const fetchCommunity = async () => {
       setIsLoading(true);
-      const community = await client.current.getCommunityWithName(slugToName(slug));
+      const community = await client.current.getCommunityWithName(slugToName('nouns'));
       dispatch(setActiveCommunity(community));
       setIsLoading(false);
     };
