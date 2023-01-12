@@ -50,6 +50,8 @@ const DeleteProposalModal: React.FC<{
     }
   };
 
+  const closeModal = () => () => setShowModal(false);
+
   const deleteConfirmationContent = (
     <>
       <div className={classes.titleContainer}>
@@ -139,8 +141,8 @@ const DeleteProposalModal: React.FC<{
 
   return (
     <Modal isOpen={showModal}
-      onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : () => setShowModal(false)}
-      className={clsx(classes.modal)}>
+      onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : closeModal}
+      className={classes.modal}>
       {errorDeleting
         ? errorDeletingContent
         : hasBeenDeleted

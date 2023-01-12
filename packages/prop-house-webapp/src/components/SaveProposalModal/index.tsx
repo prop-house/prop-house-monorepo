@@ -58,6 +58,8 @@ const SaveProposalModal: React.FC<{
     }
   };
 
+  const closeModal = () => () => setShowModal(false);
+
   const saveConfirmationContent = (
     <>
       <div className={classes.titleContainer}>
@@ -149,7 +151,9 @@ const SaveProposalModal: React.FC<{
   );
 
   return (
-    <Modal isOpen={showModal} onRequestClose={hasBeenSaved ? dismissModalAndRefreshProps : () => setShowModal(false)} className={classes.modal}>
+    <Modal isOpen={showModal}
+      onRequestClose={hasBeenSaved ? dismissModalAndRefreshProps : closeModal}
+      className={classes.modal}>
       {errorSaving
         ? errorSavingContent
         : hasBeenSaved
