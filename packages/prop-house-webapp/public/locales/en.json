@@ -124,7 +124,7 @@
   "faq19title": "What's the story behind Prop House?",
   "faq19answer": "Prop House was born inside Nouns DAO. Over the course of three proposals to the DAO, nounish builders have been pushing the idea forward to become what it is today &mdash; public infrastructure for all communities to build up their ecosystems.&nbsp;",
   "faq20title": "Can I edit or delete my proposal(s)?",
-  "faq20answer": "Yes, you can edit or delete a proposal you've submitted only when the round is in the \"Accepting Proposals\" stage. However, once voting begins the proposals are locked. Both updating & deleting a proposal will require a wallet signature for confirmation.",
+  "faq20answer": "Yes, you can edit or delete a proposal you've submitted during the \"Accepting Proposals\" stage of a round. You can find the edit and delete button at the bottom-right of your prop (make sure you are connected).<br><br>Once voting begins the proposals are locked. Both updating & deleting a proposal will require a wallet signature for confirmation.",
   "faq21title": "More questions?",
   "faq21answer": "See you in <a href=\"https://discord.gg/SKPzM8GHts\" target=\"_blank\">discord!</a>",
   "noRoundsAvailable": "No rounds available",
