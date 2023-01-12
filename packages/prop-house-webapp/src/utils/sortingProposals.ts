@@ -2,6 +2,7 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import dayjs from 'dayjs';
 import { sortProposals } from '../state/slices/propHouse';
 import { Dispatch } from 'redux';
+import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
 export interface SortProps {
   sortType: SortType;
@@ -17,9 +18,7 @@ export enum SortType {
 export const _sortProps = (proposals: StoredProposalWithVotes[], props: SortProps) => {
   switch (props.sortType) {
     case SortType.VoteCount:
-      return proposals.sort((a, b) =>
-        sortHelper(Number(a.voteCount), Number(b.voteCount), props.ascending),
-      );
+      return sortByVotesAndHandleTies(proposals, props.ascending);
     case SortType.Random:
       return proposals.sort(() => Math.random() - 0.5);
     case SortType.CreatedAt:

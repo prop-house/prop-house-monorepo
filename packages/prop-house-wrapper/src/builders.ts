@@ -173,6 +173,8 @@ export interface StoredProposal extends Proposal {
   address: string;
   createdDate: Date;
   voteCount: number;
+  lastUpdatedDate: Date;
+  deletedAt: Date;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {

@@ -22,6 +22,7 @@ export interface ProposalModalHeaderProps {
   isLastProp: boolean | undefined;
   showVoteAllotmentModal: boolean;
   proposal: StoredProposalWithVotes;
+  editProposalMode: boolean;
 }
 
 const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
@@ -36,6 +37,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
     isFirstProp,
     isLastProp,
     showVoteAllotmentModal,
+    editProposalMode,
   } = props;
 
   const { t } = useTranslation();
@@ -118,13 +120,16 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
         {isMobile() ? shareBtn(mobileShare) : shareTooltip}
         <div className={classes.propNavigationButtons}>
           <button
-            disabled={isFirstProp}
+            disabled={isFirstProp || editProposalMode}
             onClick={() => handleDirectionalArrowClick(Direction.Down)}
           >
             <ImArrowLeft2 size={'1.5rem'} />
           </button>
 
-          <button onClick={() => handleDirectionalArrowClick(Direction.Up)} disabled={isLastProp}>
+          <button
+            onClick={() => handleDirectionalArrowClick(Direction.Up)}
+            disabled={isLastProp || editProposalMode}
+          >
             <ImArrowRight2 size={'1.5rem'} />
           </button>
         </div>

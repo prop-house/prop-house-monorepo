@@ -16,12 +16,14 @@ import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
 import { useDispatch } from 'react-redux';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
+import Tooltip from '../Tooltip';
+import { MdInfoOutline } from 'react-icons/md';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
-  isWinner?: boolean;
+  isWinner: boolean;
 }> = props => {
   const { proposal, auctionStatus, cardStatus, isWinner } = props;
 
@@ -84,12 +86,29 @@ const ProposalCard: React.FC<{
               <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
                 {' • '}
               </span>
-              <div
-                className={clsx(classes.date, roundIsActive() && classes.hideDate)}
-                title={detailedTime(proposal.createdDate)}
-              >
-                {diffTime(proposal.createdDate)}
-              </div>
+              {proposal.lastUpdatedDate !== null
+                ? <Tooltip
+                  content={
+                    <div
+                      className={clsx(classes.date, roundIsActive() && classes.hideDate)}
+                      title={detailedTime(proposal.createdDate)}
+                    >
+                      {diffTime(proposal.createdDate)}
+
+                      <span className="infoSymbol">
+                        <MdInfoOutline />
+                      </span>
+                    </div>
+                  }
+                  tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}
+                />
+                :
+                <div
+                  className={clsx(classes.date, roundIsActive() && classes.hideDate)}
+                  title={detailedTime(proposal.createdDate)}
+                >
+                  {diffTime(proposal.createdDate)}
+                </div>}
             </div>
 
             <div

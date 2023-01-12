@@ -1,26 +1,26 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import classes from './ErrorModal.module.css';
+import classes from './ErrorVotingModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 
-const ErrorModal: React.FC<{
-  showErrorModal: boolean;
-  setShowErrorModal: Dispatch<SetStateAction<boolean>>;
+const ErrorVotingModal: React.FC<{
+  showErrorVotingModal: boolean;
+  setShowErrorVotingModal: Dispatch<SetStateAction<boolean>>;
   title: string;
   message: string;
   image: string;
 }> = props => {
-  const { showErrorModal, setShowErrorModal, title, message, image } = props;
+  const { showErrorVotingModal, setShowErrorVotingModal, title, message, image } = props;
   const { t } = useTranslation();
 
   function closeModal() {
-    setShowErrorModal(false);
+    setShowErrorVotingModal(false);
   }
 
   return (
-    <Modal isOpen={showErrorModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
+    <Modal isOpen={showErrorVotingModal} onRequestClose={closeModal} className={clsx(classes.modal)}>
       <div className={classes.container}>
         <div className={classes.imgContainer}>
           <img src={`/${image}`} alt={image} />
@@ -39,7 +39,7 @@ const ErrorModal: React.FC<{
           text={t('close')}
           bgColor={ButtonColor.White}
           onClick={() => {
-            setShowErrorModal(false);
+            setShowErrorVotingModal(false);
           }}
         />
       </div>
@@ -47,4 +47,4 @@ const ErrorModal: React.FC<{
   );
 };
 
-export default ErrorModal;
+export default ErrorVotingModal;

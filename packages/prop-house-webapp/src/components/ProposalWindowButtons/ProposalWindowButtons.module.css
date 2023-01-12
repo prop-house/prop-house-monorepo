@@ -1,0 +1,26 @@
+@media (max-width: 575px) {
+  .fullWidthButton {
+    width: 100% !important;
+  }
+  .editModeButtons button {
+    white-space: pre !important;
+  }
+}
+
+.proposalWindowButtons {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+.editModeButtons {
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 575px) {
+  .proposalWindowButtons {
+    padding-bottom: 5px;
+  }
+}

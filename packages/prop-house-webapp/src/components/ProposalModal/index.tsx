@@ -18,16 +18,21 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
-import ErrorModal from '../ErrorModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
+import SuccessVotingModal from '../SuccessVotingModal';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
+import SaveProposalModal from '../SaveProposalModal';
+import DeleteProposalModal from '../DeleteProposalModal';
+
 
 const ProposalModal = () => {
+  const [editProposalMode, setEditProposalMode] = useState(false);
+
   const params = useParams();
   const { id } = params;
   const navigate = useNavigate();
@@ -47,13 +52,16 @@ const ProposalModal = () => {
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
   const [signerIsContract, setSignerIsContract] = useState(false);
-  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
-  const [errorModalMessage, setErrorModalMessage] = useState({
+  // modals
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
+  const [showSavePropModal, setShowSavePropModal] = useState(false);
+  const [showDeletePropModal, setShowDeletePropModal] = useState(false);
+  const [errorVotingMessage, setErrorVotingMessage] = useState({
     title: '',
     message: '',
     image: '',
@@ -67,6 +75,12 @@ const ProposalModal = () => {
     dispatch(setModalActive(false));
     navigate(buildRoundPath(community, round), { replace: false });
   };
+
+  const dismissModalAndRefreshProps = () => {
+    refreshActiveProposals(backendClient.current, round!.id, dispatch);
+    refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
+    handleClosePropModal();
+  }
 
   // provider
   useEffect(() => {
@@ -117,7 +131,7 @@ const ProposalModal = () => {
   }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (!activeProposal || !proposals || proposals.length === 0) return;
+    if (!activeProposal || !proposals || proposals.length === 0 || editProposalMode || showDeletePropModal) return;
 
     const newPropIndex =
       proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
@@ -158,18 +172,18 @@ const ProposalModal = () => {
       await backendClient.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
+      setErrorVotingMessage({
         title: 'Failed to submit votes',
         message: 'Please go back and try again.',
         image: 'banana.png',
       });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -184,22 +198,22 @@ const ProposalModal = () => {
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          showSuccessVotingModal={showSuccessVotingModal}
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
+      {showErrorVotingModal && (
+        <ErrorVotingModal
+          showErrorVotingModal={showErrorVotingModal}
+          setShowErrorVotingModal={setShowErrorVotingModal}
+          title={errorVotingMessage.title}
+          message={errorVotingMessage.message}
+          image={errorVotingMessage.image}
         />
       )}
 
@@ -210,9 +224,35 @@ const ProposalModal = () => {
         />
       )}
 
+      {showSavePropModal && activeProposal && round && (
+        <SaveProposalModal
+          propId={activeProposal.id}
+          roundId={round.id}
+          showModal={showSavePropModal}
+          setShowModal={setShowSavePropModal}
+          setEditProposalMode={setEditProposalMode}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
+          handleClosePropModal={handleClosePropModal}
+        />
+      )}
+
+      {showDeletePropModal && activeProposal && (
+        <DeleteProposalModal
+          id={activeProposal.id}
+          showModal={showDeletePropModal}
+          setShowModal={setShowDeletePropModal}
+          setEditProposalMode={setEditProposalMode}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
+          handleClosePropModal={handleClosePropModal}
+        />
+      )}
+
       <Modal
         isOpen={true}
-        onRequestClose={() => handleClosePropModal()}
+        onRequestClose={() => {
+          setEditProposalMode(false);
+          handleClosePropModal();
+        }}
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
@@ -226,6 +266,8 @@ const ProposalModal = () => {
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
             />
 
             <ProposalModalFooter
@@ -236,6 +278,10 @@ const ProposalModal = () => {
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
+              setShowSavePropModal={setShowSavePropModal}
+              setShowDeletePropModal={setShowDeletePropModal}
             />
           </>
         )}

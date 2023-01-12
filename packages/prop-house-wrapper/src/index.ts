@@ -146,9 +146,9 @@ export class PropHouseWrapper {
         isContract,
         DeleteProposalMessageTypes,
       );
-      return (await axios.delete(`${this.host}/proposals`, {data: signedPayload})).data;
+      return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e;
     }
   }
 
