@@ -33,6 +33,7 @@ const content: ContentItem[] = [
   { title: 'faq18title', content: 'faq18answer' },
   { title: 'faq19title', content: 'faq19answer' },
   { title: 'faq20title', content: 'faq20answer' },
+  { title: 'faq21title', content: 'faq21answer' },
 ];
 
 const FAQ = () => {
