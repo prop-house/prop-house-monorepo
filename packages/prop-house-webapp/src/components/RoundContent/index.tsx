@@ -16,8 +16,8 @@ import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
-import ErrorModal from '../ErrorModal';
+import SuccessVotingModal from '../SuccessVotingModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
   setNumSubmittedVotes,
@@ -40,11 +40,11 @@ const RoundContent: React.FC<{
   const { account, library } = useEthers();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState({
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [errorVotingMessage, setErrorVotingMessage] = useState({
     title: '',
     message: '',
     image: '',
@@ -124,17 +124,17 @@ const RoundContent: React.FC<{
       await client.current.logVotes(votes, isContract);
 
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(client.current, auction.id, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
+      setErrorVotingMessage({
         title: t('errorModalTitle'),
         message: t('errorModalMessage'),
         image: 'banana.png',
       });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -149,22 +149,22 @@ const RoundContent: React.FC<{
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          showSuccessVotingModal={showSuccessVotingModal}
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
+      {showErrorVotingModal && (
+        <ErrorVotingModal
+          showErrorVotingModal={showErrorVotingModal}
+          setShowErrorVotingModal={setShowErrorVotingModal}
+          title={errorVotingMessage.title}
+          message={errorVotingMessage.message}
+          image={errorVotingMessage.image}
         />
       )}
 
@@ -186,7 +186,7 @@ const RoundContent: React.FC<{
                             proposal={proposal}
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={winningIds && isWinner(winningIds, proposal.id)}
+                            isWinner={isWinner(winningIds, proposal.id)}
                           />
                         </Col>
                       );
@@ -195,6 +195,7 @@ const RoundContent: React.FC<{
               </Col>
               <RoundModules
                 auction={auction}
+                proposals={proposals}
                 community={community}
                 setShowVotingModal={setShowVoteConfirmationModal}
               />

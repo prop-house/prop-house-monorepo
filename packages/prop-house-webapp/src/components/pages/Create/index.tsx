@@ -14,19 +14,12 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../../utils/isAuctionActive';
 import { ProposalFields } from '../../../utils/proposalFields';
 import useWeb3Modal from '../../../hooks/useWeb3Modal';
-import removeTags from '../../../utils/removeTags';
 import { useTranslation } from 'react-i18next';
 import FundingAmount from '../../FundingAmount';
 import LoadingIndicator from '../../LoadingIndicator';
 import ProposalSuccessModal from '../../ProposalSuccessModal';
 import NavBar from '../../NavBar';
-
-
-const isValidPropData = (data: ProposalFields) =>
-  data.title.length > 4 &&
-  removeTags(data.what).length > 49 &&
-  data.tldr.length > 9 &&
-  data.tldr.length < 121;
+import { isValidPropData } from '../../../utils/isValidPropData';
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();

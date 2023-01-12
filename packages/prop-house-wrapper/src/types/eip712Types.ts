@@ -23,3 +23,19 @@ export const ProposalMessageTypes: Record<string, TypedDataField[]> = {
     { name: 'parentAuctionId', type: 'uint256' },
   ],
 };
+
+export const EditProposalMessageTypes: Record<string, TypedDataField[]> = {
+  Proposal: [
+    { name: 'id', type: 'uint256' },
+    { name: 'title', type: 'string' },
+    { name: 'tldr', type: 'string' },
+    { name: 'what', type: 'string' },
+    { name: 'parentAuctionId', type: 'uint256' },
+  ],
+};
+
+export const DeleteProposalMessageTypes: Record<string, TypedDataField[]> = {
+  Proposal: [
+    { name: 'id', type: 'uint256' }
+  ]
+}

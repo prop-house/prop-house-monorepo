@@ -1,0 +1,89 @@
+.modal {
+  font-family: 'PT Root UI', sans-serif;
+  font-weight: bold;
+  position: fixed;
+  top: 30vh;
+  left: 10%;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  background: #ffffff;
+  border: var(--border-light);
+  box-shadow: 0px 2px 14px rgba(0, 0, 0, 0.08), 0px 6px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  padding: 18px;
+  left: calc(50% - 17.5rem);
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  max-width: 420px;
+  min-height: 20px;
+  min-width: 420px;
+}
+
+.titleContainer {
+  text-align: center;
+}
+.titleContainer p {
+  margin-bottom: 0;
+}
+.modalTitle {
+  font-weight: 700;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+
+.modalSubtitle {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.modal button {
+  width: 100%;
+  border-radius: 50px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 8px;
+}
+
+.modal:focus-within {
+  outline: none !important;
+}
+
+.modal button img {
+  margin-top: -2px;
+  width: 1.5rem;
+  height: auto;
+}
+
+.imgContainer {
+  text-align: center;
+  padding: 35px 0px 25px 0px;
+}
+.imgContainer img {
+  height: 80px;
+}
+
+@media (max-width: 992px) {
+  .modal {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    max-height: 100%;
+  }
+}
+
+@media (max-width: 450px) {
+  .modal {
+    width: 90%;
+    min-width: 300px;
+  }
+}

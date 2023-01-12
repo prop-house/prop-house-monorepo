@@ -12,7 +12,7 @@ const UserCardHeader: React.FC<{
   userProps: StoredProposalWithVotes[];
   cardIndex: number;
   setCardIndex: Dispatch<SetStateAction<number>>;
-  winningIds?: number[];
+  winningIds: number[];
 }> = props => {
   const { status, amountOfPropsWon, userProps, winningIds, cardIndex, setCardIndex } = props;
   const { t } = useTranslation();
@@ -23,10 +23,10 @@ const UserCardHeader: React.FC<{
         <div className={classes.textContainer}>
           <p className={classes.subtitle}>
             {status === AuctionStatus.AuctionEnded
-              ? amountOfPropsWon > 0 && winningIds && isWinner(winningIds, userProps[cardIndex].id)
+              ? amountOfPropsWon > 0 && isWinner(winningIds, userProps[cardIndex].id)
                 ? `${t('your')} ${amountOfPropsWon > 1 ? t('proposal') : t('proposals')} ${t(
-                    'won',
-                  )}!`
+                  'won',
+                )}!`
                 : `${t('your')} ${userProps.length === 1 ? t('proposal') : t('proposals')}`
               : `${t('your')} ${userProps.length === 1 ? t('proposal') : t('proposals')}`}
           </p>

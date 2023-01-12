@@ -15,7 +15,12 @@ import {
 } from './builders';
 import FormData from 'form-data';
 import fs from 'fs';
-import { ProposalMessageTypes, VoteMessageTypes } from './types/eip712Types';
+import {
+  DeleteProposalMessageTypes,
+  EditProposalMessageTypes,
+  ProposalMessageTypes,
+  VoteMessageTypes,
+} from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
 
@@ -122,7 +127,11 @@ export class PropHouseWrapper {
   async updateProposal(updatedProposal: UpdatedProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await updatedProposal.signedPayload(this.signer, isContract);
+      const signedPayload = await updatedProposal.signedPayload(
+        this.signer,
+        isContract,
+        EditProposalMessageTypes,
+      );
       return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
@@ -132,10 +141,14 @@ export class PropHouseWrapper {
   async deleteProposal(deleteProposal: DeleteProposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await deleteProposal.signedPayload(this.signer, isContract);
-      return (await axios.delete(`${this.host}/proposals`, signedPayload)).data;
+      const signedPayload = await deleteProposal.signedPayload(
+        this.signer,
+        isContract,
+        DeleteProposalMessageTypes,
+      );
+      return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e;
     }
   }
 

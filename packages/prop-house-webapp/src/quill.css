@@ -54,6 +54,9 @@
   z-index: 1;
   height: 10px;
 }
+.editPropContainer .hideBorderBox {
+  background: white;
+}
 
 .quill {
   margin-top: -20px;

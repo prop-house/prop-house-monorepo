@@ -35,7 +35,7 @@
 .stickyContainer {
   position: sticky !important;
   top: 0;
-  z-index: 1;
+  z-index: 10 !important;
   background: white !important;
   margin: 0 !important;
   padding-top: 18px !important;

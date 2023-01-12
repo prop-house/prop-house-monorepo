@@ -1,30 +1,28 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import classes from './SuccessModal.module.css';
+import classes from './SuccessVotingModal.module.css';
 import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 
-const SuccessModal: React.FC<{
-  showSuccessModal: boolean;
+const SuccessVotingModal: React.FC<{
+  showSuccessVotingModal: boolean;
   numPropsVotedFor: number;
-  setShowSuccessModal: Dispatch<SetStateAction<boolean>>;
+  setShowSuccessVotingModal: Dispatch<SetStateAction<boolean>>;
   signerIsContract: boolean;
 }> = props => {
-  const { showSuccessModal, setShowSuccessModal, numPropsVotedFor, signerIsContract } = props;
+  const { showSuccessVotingModal, setShowSuccessVotingModal, numPropsVotedFor, signerIsContract } = props;
   const { t } = useTranslation();
 
-  const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
-    numPropsVotedFor === 1 ? t('prop') : t('props')
-  }!`;
-  const contractSignerMsg = `${t('youveSubmittedVotesFor')} ${
-    numPropsVotedFor === 1 ? t('prop') : t('props')
-  }. ${t('theyWillBeCounted')}.`;
+  const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${numPropsVotedFor === 1 ? t('prop') : t('props')
+    }!`;
+  const contractSignerMsg = `${t('youveSubmittedVotesFor')} ${numPropsVotedFor === 1 ? t('prop') : t('props')
+    }. ${t('theyWillBeCounted')}.`;
 
   return (
     <Modal
-      isOpen={showSuccessModal}
-      onRequestClose={() => setShowSuccessModal(false)}
+      isOpen={showSuccessVotingModal}
+      onRequestClose={() => setShowSuccessVotingModal(false)}
       className={clsx(classes.modal)}
     >
       <div className={classes.container}>
@@ -47,7 +45,7 @@ const SuccessModal: React.FC<{
           text={t('close')}
           bgColor={ButtonColor.White}
           onClick={() => {
-            setShowSuccessModal(false);
+            setShowSuccessVotingModal(false);
           }}
         />
       </div>
@@ -55,4 +53,4 @@ const SuccessModal: React.FC<{
   );
 };
 
-export default SuccessModal;
+export default SuccessVotingModal;
