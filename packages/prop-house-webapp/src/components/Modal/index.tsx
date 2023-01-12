@@ -7,8 +7,8 @@ import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 
 const Modal: React.FC<{
-  title: string;
-  subtitle: string;
+  title: string | JSX.Element;
+  subtitle: string | JSX.Element;
   image?: { src: string; alt: string };
   button?: any;
   secondButton?: any;
