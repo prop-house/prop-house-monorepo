@@ -44,11 +44,6 @@ const RoundContent: React.FC<{
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
-  const [errorVotingMessage, setErrorVotingMessage] = useState({
-    title: '',
-    message: '',
-    image: '',
-  });
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -123,17 +118,13 @@ const RoundContent: React.FC<{
 
       await client.current.logVotes(votes, isContract);
 
+      setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
       refreshActiveProposals(client.current, auction.id, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorVotingMessage({
-        title: t('errorModalTitle'),
-        message: t('errorModalMessage'),
-        image: 'banana.png',
-      });
       setShowErrorVotingModal(true);
     }
   };
@@ -161,9 +152,6 @@ const RoundContent: React.FC<{
         <ErrorVotingModal
           showErrorVotingModal={showErrorVotingModal}
           setShowErrorVotingModal={setShowErrorVotingModal}
-          title={errorVotingMessage.title}
-          message={errorVotingMessage.message}
-          image={errorVotingMessage.image}
         />
       )}
 

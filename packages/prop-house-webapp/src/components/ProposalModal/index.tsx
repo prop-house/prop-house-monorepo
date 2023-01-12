@@ -60,11 +60,7 @@ const ProposalModal = () => {
   const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [showSavePropModal, setShowSavePropModal] = useState(false);
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
-  const [errorVotingMessage, setErrorVotingMessage] = useState({
-    title: '',
-    message: '',
-    image: '',
-  });
+
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
   const winningIds = round && getWinningIds(proposals, round);
@@ -170,6 +166,7 @@ const ProposalModal = () => {
 
       await backendClient.current.logVotes(votes, isContract);
 
+      setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
@@ -177,11 +174,6 @@ const ProposalModal = () => {
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorVotingMessage({
-        title: 'Failed to submit votes',
-        message: 'Please go back and try again.',
-        image: 'banana.png',
-      });
       setShowErrorVotingModal(true);
     }
   };
@@ -209,9 +201,6 @@ const ProposalModal = () => {
         <ErrorVotingModal
           showErrorVotingModal={showErrorVotingModal}
           setShowErrorVotingModal={setShowErrorVotingModal}
-          title={errorVotingMessage.title}
-          message={errorVotingMessage.message}
-          image={errorVotingMessage.image}
         />
       )}
 
