@@ -11,13 +11,13 @@ import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 
 const ProposalSuccessModal: React.FC<{
-  showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  showProposalSuccessModal: boolean;
+  setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
   proposalId?: number;
   house: string;
   round: string;
 }> = props => {
-  const { showModal, setShowModal, proposalId, house, round } = props;
+  const { showProposalSuccessModal, setShowProposalSuccessModal, proposalId, house, round } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -26,8 +26,8 @@ const ProposalSuccessModal: React.FC<{
 
   return (
     <Modal
-      showModal={showModal}
-      setShowModal={setShowModal}
+      showModal={showProposalSuccessModal}
+      setShowModal={setShowProposalSuccessModal}
       title={
         <>
           {t('congrats')} {account && <EthAddress className={classes.address} address={account} />}!
@@ -46,7 +46,7 @@ const ProposalSuccessModal: React.FC<{
           bgColor={ButtonColor.White}
           onClick={() => {
             navigate(`/${nameToSlug(house)}/${nameToSlug(round)}`);
-            setShowModal(false);
+            setShowProposalSuccessModal(false);
           }}
         />
       }
