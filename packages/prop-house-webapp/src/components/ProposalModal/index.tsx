@@ -76,6 +76,12 @@ const ProposalModal = () => {
     navigate(buildRoundPath(community, round), { replace: false });
   };
 
+  const dismissModalAndRefreshProps = () => {
+    refreshActiveProposals(backendClient.current, round!.id, dispatch);
+    refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
+    handleClosePropModal();
+  }
+
   // provider
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
@@ -225,6 +231,7 @@ const ProposalModal = () => {
           showModal={showSavePropModal}
           setShowModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
           handleClosePropModal={handleClosePropModal}
         />
       )}
@@ -232,10 +239,11 @@ const ProposalModal = () => {
       {showDeletePropModal && activeProposal && (
         <DeleteProposalModal
           id={activeProposal.id}
-          handleClosePropModal={handleClosePropModal}
           showModal={showDeletePropModal}
           setShowModal={setShowDeletePropModal}
           setEditProposalMode={setEditProposalMode}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
+          handleClosePropModal={handleClosePropModal}
         />
       )}
 

@@ -17,8 +17,9 @@ const SaveProposalModal: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
+  dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { propId, roundId, showModal, setShowModal, setEditProposalMode, handleClosePropModal } = props;
+  const { propId, roundId, showModal, setShowModal, setEditProposalMode, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
 
   const { library } = useEthers();
@@ -148,7 +149,7 @@ const SaveProposalModal: React.FC<{
   );
 
   return (
-    <Modal isOpen={showModal} onRequestClose={hasBeenSaved ? handleClosePropModal : () => setShowModal(false)} className={classes.modal}>
+    <Modal isOpen={showModal} onRequestClose={hasBeenSaved ? dismissModalAndRefreshProps : () => setShowModal(false)} className={classes.modal}>
       {errorSaving
         ? errorSavingContent
         : hasBeenSaved

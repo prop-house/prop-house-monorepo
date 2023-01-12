@@ -18,8 +18,9 @@ const DeleteProposalModal: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
+  dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { id, showModal, setShowModal, setEditProposalMode, handleClosePropModal } = props;
+  const { id, showModal, setShowModal, setEditProposalMode, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
@@ -138,7 +139,7 @@ const DeleteProposalModal: React.FC<{
 
   return (
     <Modal isOpen={showModal}
-      onRequestClose={hasBeenDeleted ? handleClosePropModal : () => setShowModal(false)}
+      onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : () => setShowModal(false)}
       className={clsx(classes.modal)}>
       {errorDeleting
         ? errorDeletingContent
