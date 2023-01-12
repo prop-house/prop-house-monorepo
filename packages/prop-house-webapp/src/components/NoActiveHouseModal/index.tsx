@@ -1,10 +1,9 @@
 import React from 'react';
+import Modal from '../Modal';
 import { useNavigate } from 'react-router-dom';
-import classes from './NoActiveHouseModal.module.css';
-import clsx from 'clsx';
-import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
+import { NounImage } from '../../utils/getNounImage';
 
 const NoActiveHouseModal: React.FC<{}> = () => {
   const navigate = useNavigate();
@@ -12,26 +11,15 @@ const NoActiveHouseModal: React.FC<{}> = () => {
 
   return (
     <Modal
-      isOpen={true}
+      showModal={true}
+      setShowModal={() => {}}
       onRequestClose={() => {
         navigate(`/`);
       }}
-      className={clsx(classes.modal)}
-    >
-      <div className={classes.container}>
-        <div className={classes.imgContainer}>
-          <img src="/rednoggles.png" alt="noggles" />
-        </div>
-
-        <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>{t('noRoundSelected')}</p>
-          <p className={classes.modalSubtitle}>{t('proposalCreation')}</p>
-        </div>
-      </div>
-
-      <hr className={classes.divider} />
-
-      <div className={classes.buttonContainer}>
+      title={t('noRoundSelected')}
+      subtitle={t('proposalCreation')}
+      image={NounImage.Glasses}
+      button={
         <Button
           text={t('goHome')}
           bgColor={ButtonColor.White}
@@ -39,8 +27,8 @@ const NoActiveHouseModal: React.FC<{}> = () => {
             navigate(`/`);
           }}
         />
-      </div>
-    </Modal>
+      }
+    />
   );
 };
 
