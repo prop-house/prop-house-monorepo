@@ -226,8 +226,8 @@ const ProposalModal = () => {
         <SaveProposalModal
           propId={activeProposal.id}
           roundId={round.id}
-          showModal={showSavePropModal}
-          setShowModal={setShowSavePropModal}
+          showSavePropModal={showSavePropModal}
+          setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}
           handleClosePropModal={handleClosePropModal}
