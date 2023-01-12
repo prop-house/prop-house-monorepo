@@ -45,7 +45,7 @@ const ProposalSuccessModal: React.FC<{
           text={t('backToRound')}
           bgColor={ButtonColor.White}
           onClick={() => {
-            navigate(`/ ${nameToSlug(house)} /${nameToSlug(round)} `);
+            navigate(`/${nameToSlug(house)}/${nameToSlug(round)}`);
             setShowModal(false);
           }}
         />
