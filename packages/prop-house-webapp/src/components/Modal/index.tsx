@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const Modal: React.FC<{
   title: string | JSX.Element;
   subtitle: string | JSX.Element;
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string } | null;
   body?: string | JSX.Element;
   button?: any;
   secondButton?: any;

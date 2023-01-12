@@ -1,8 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import classes from './DeleteProposalModal.module.css';
-import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
@@ -10,16 +7,25 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { useDispatch } from 'react-redux';
+import Modal from '../Modal';
+import { NounImage } from '../../utils/getNounImage';
 
 const DeleteProposalModal: React.FC<{
   id: number;
-  showModal: boolean;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
+  showDeletePropModal: boolean;
+  setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { id, showModal, setShowModal, setEditProposalMode, handleClosePropModal, dismissModalAndRefreshProps } = props;
+  const {
+    id,
+    showDeletePropModal,
+    setShowDeletePropModal,
+    setEditProposalMode,
+    handleClosePropModal,
+    dismissModalAndRefreshProps,
+  } = props;
   const { t } = useTranslation();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
@@ -49,105 +55,77 @@ const DeleteProposalModal: React.FC<{
     }
   };
 
-  const closeModal = () => () => setShowModal(false);
-
-  const deleteConfirmationContent = (
-    <>
-      <div className={classes.titleContainer}>
-        <p className={classes.modalTitle}>Delete your prop?</p>
-        <p className={classes.modalSubtitle}>
-          Are you sure you want to delete your proposal? This action cannot be undone.
-        </p>
-      </div>
-      <Divider />
-      <div className={classes.buttonContainer}>
-        <Button
-          text={t('Cancel')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            setShowModal(false);
-          }} />
-
-        <Button
-          text={'Delete Prop'}
-          bgColor={ButtonColor.Red}
-          onClick={handleDeleteProposal} />
-      </div>
-    </>
-  )
-  const successfullyDeletedContent = (
-    <>
-      <div className={classes.container}>
-        <div className={classes.imgContainer}>
-          <img src="/heads/trashcan.png" alt="trashcan" />
-        </div>
-
-        <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>Successfully Deleted!</p>
-
-          <p className={classes.modalSubtitle}>Proposal <b>#{id}</b> has been deleted.</p>
-        </div>
-      </div>
-
-      <Divider />
-
-      <Button
-        text={t('Close')}
-        bgColor={ButtonColor.White}
-        onClick={() => {
-          setShowModal(false);
-          refreshActiveProposals(client.current, round!.id, dispatch);
-          refreshActiveProposal(client.current, activeProposal!, dispatch);
-          setEditProposalMode(false);
-          handleClosePropModal();
-        }} />
-    </>
-  );
-  const errorDeletingContent = (
-    <>
-      <div className={classes.container}>
-        <div className={classes.imgContainer}>
-          <img src="/heads/computer.png" alt="computer" />
-        </div>
-
-        <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>Error Deleting</p>
-
-          <p className={classes.modalSubtitle}> Your proposal could not be deleted. Please try again.</p>
-        </div>
-      </div>
-
-      <Divider />
-
-      <div className={classes.buttonContainer}>
-        <Button
-          text={t('Close')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            setShowModal(false);
-          }} />
-
-        <Button
-          text={'Retry'}
-          bgColor={ButtonColor.Purple}
-          onClick={() => {
-            handleDeleteProposal();
-          }}
-        />
-      </div>
-    </>
-  );
+  const closeModal = () => () => setShowDeletePropModal(false);
 
   return (
-    <Modal isOpen={showModal}
+    <Modal
+      title={
+        errorDeleting
+          ? 'Error Deleting'
+          : hasBeenDeleted
+          ? 'Successfully Deleted!'
+          : 'Delete your prop?'
+      }
+      subtitle={
+        errorDeleting ? (
+          'Your proposal could not be deleted. Please try again.'
+        ) : hasBeenDeleted ? (
+          <>
+            Proposal <b>#{id}</b> has been deleted.
+          </>
+        ) : (
+          'Are you sure you want to delete your proposal? This action cannot be undone.'
+        )
+      }
+      image={errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null}
+      showModal={showDeletePropModal}
+      setShowModal={setShowDeletePropModal}
       onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : closeModal}
-      className={classes.modal}>
-      {errorDeleting
-        ? errorDeletingContent
-        : hasBeenDeleted
-          ? successfullyDeletedContent
-          : deleteConfirmationContent}
-    </Modal>
+      button={
+        errorDeleting ? (
+          <Button
+            text={t('Close')}
+            bgColor={ButtonColor.White}
+            onClick={() => {
+              setShowDeletePropModal(false);
+            }}
+          />
+        ) : hasBeenDeleted ? (
+          <Button
+            text={t('Close')}
+            bgColor={ButtonColor.White}
+            onClick={() => {
+              setShowDeletePropModal(false);
+              refreshActiveProposals(client.current, round!.id, dispatch);
+              refreshActiveProposal(client.current, activeProposal!, dispatch);
+              setEditProposalMode(false);
+              handleClosePropModal();
+            }}
+          />
+        ) : (
+          <Button
+            text={t('Cancel')}
+            bgColor={ButtonColor.White}
+            onClick={() => {
+              setShowDeletePropModal(false);
+            }}
+          />
+        )
+      }
+      secondButton={
+        errorDeleting ? (
+          <Button
+            text={'Retry'}
+            bgColor={ButtonColor.Purple}
+            onClick={() => {
+              handleDeleteProposal();
+            }}
+          />
+        ) : hasBeenDeleted ? null : (
+          <Button text={'Delete Prop'} bgColor={ButtonColor.Red} onClick={handleDeleteProposal} />
+        )
+      }
+    />
   );
 };
 

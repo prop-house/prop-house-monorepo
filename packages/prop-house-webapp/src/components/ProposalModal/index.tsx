@@ -237,8 +237,8 @@ const ProposalModal = () => {
       {showDeletePropModal && activeProposal && (
         <DeleteProposalModal
           id={activeProposal.id}
-          showModal={showDeletePropModal}
-          setShowModal={setShowDeletePropModal}
+          showDeletePropModal={showDeletePropModal}
+          setShowDeletePropModal={setShowDeletePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}
           handleClosePropModal={handleClosePropModal}
