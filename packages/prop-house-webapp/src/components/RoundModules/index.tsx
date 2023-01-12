@@ -25,16 +25,16 @@ import { useTranslation } from 'react-i18next';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
+  proposals: StoredProposalWithVotes[];
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { auction, community, setShowVotingModal } = props;
+  const { auction, proposals, community, setShowVotingModal } = props;
 
   const { account } = useEthers();
   const connect = useWeb3Modal();
   const navigate = useNavigate();
 
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
@@ -49,21 +49,18 @@ const RoundModules: React.FC<{
   const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
-  const getVoteTotal = () =>
-    proposals && proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
+  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
 
   useEffect(() => {
     if (!account || !proposals) return;
 
     // set user props
     if (proposals.some(p => isSameAddress(p.address, account))) {
-      return setUserProposals(
-        proposals
-          .filter(p => isSameAddress(p.address, account))
-          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-            Number(a.voteCount) < Number(b.voteCount) ? 1 : -1,
-          ),
-      );
+
+      setUserProposals(proposals
+        .filter(p => isSameAddress(p.address, account))
+        .sort((a: { voteCount: any }, b: { voteCount: any }) =>
+          Number(a.voteCount) < Number(b.voteCount) ? 1 : -1));
     }
   }, [account, proposals]);
 
@@ -99,7 +96,7 @@ const RoundModules: React.FC<{
           {/* ROUND ENDED */}
           {isRoundOver && (
             <RoundOverModule
-              numOfProposals={proposals && proposals.length}
+              numOfProposals={proposals.length}
               totalVotes={getVoteTotal()}
             />
           )}
