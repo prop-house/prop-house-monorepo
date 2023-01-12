@@ -50,23 +50,26 @@ const RoundModules: React.FC<{
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
   const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
-
+  const [fetchedUserProps, setFetchedUserProps] = useState(false);
   useEffect(() => {
     if (!account || !proposals) return;
+    setFetchedUserProps(false);
 
     // set user props
     if (proposals.some(p => isSameAddress(p.address, account))) {
-
       setUserProposals(proposals
         .filter(p => isSameAddress(p.address, account))
         .sort((a: { voteCount: any }, b: { voteCount: any }) =>
           Number(a.voteCount) < Number(b.voteCount) ? 1 : -1));
+
+      setFetchedUserProps(true);
     }
+
   }, [account, proposals]);
 
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-      {!auctionNotStarted && account && userProposals && userProposals.length > 0 && (
+      {!auctionNotStarted && account && userProposals && userProposals.length > 0 && fetchedUserProps && (
         <UserPropCard
           userProps={userProposals}
           proposals={proposals}
