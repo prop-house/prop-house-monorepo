@@ -29,7 +29,6 @@ import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
 
-
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
 
@@ -80,7 +79,7 @@ const ProposalModal = () => {
     refreshActiveProposals(backendClient.current, round!.id, dispatch);
     refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
     handleClosePropModal();
-  }
+  };
 
   // provider
   useEffect(() => {
@@ -191,10 +190,9 @@ const ProposalModal = () => {
     <>
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
-          showNewModal={showVoteConfirmationModal}
-          setShowNewModal={setShowVoteConfirmationModal}
+          showVoteConfirmationModal={showVoteConfirmationModal}
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
-          secondBtn
         />
       )}
 

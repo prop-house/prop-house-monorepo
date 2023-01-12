@@ -142,10 +142,9 @@ const RoundContent: React.FC<{
     <>
       {showVoteConfirmationModal && (
         <VoteConfirmationModal
-          showNewModal={showVoteConfirmationModal}
-          setShowNewModal={setShowVoteConfirmationModal}
+          showVoteConfirmationModal={showVoteConfirmationModal}
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
-          secondBtn
         />
       )}
 
