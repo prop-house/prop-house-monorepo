@@ -1,6 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import classes from './DeleteProposalModal.module.css';
-import clsx from 'clsx';
 import Modal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
