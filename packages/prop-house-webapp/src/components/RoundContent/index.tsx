@@ -195,6 +195,7 @@ const RoundContent: React.FC<{
               </Col>
               <RoundModules
                 auction={auction}
+                proposals={proposals}
                 community={community}
                 setShowVotingModal={setShowVoteConfirmationModal}
               />
