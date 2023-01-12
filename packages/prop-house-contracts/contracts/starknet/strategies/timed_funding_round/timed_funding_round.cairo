@@ -487,7 +487,7 @@ func finalize_round{
     assert execution_params[1] = merkle_root.low;
     assert execution_params[2] = merkle_root.high;
 
-    let execution_params_len = 4;
+    let execution_params_len = 3;
 
     IExecutionStrategy.execute(
         contract_address=eth_execution_strategy,
