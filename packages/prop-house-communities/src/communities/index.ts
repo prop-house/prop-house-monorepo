@@ -67,5 +67,7 @@ export const communities = new CaseInsensitiveMap(
       ],
       [1, 1, 1, 1],
     ),
+    // Nouns DAO Amigos
+    '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
   }),
 );
