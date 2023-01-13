@@ -1,13 +1,13 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import classes from './NavBar.module.css';
-import Web3ModalButton from '../Web3ModalButton.tsx';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import AdminTool from '../AdminTool';
 import DevEnvDropDown from '../DevEnvDropdown';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -41,7 +41,7 @@ const NavBar = () => {
               <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
               <Nav.Link as="div">
-                <Web3ModalButton classNames={classes.link} />
+                <ConnectButton label="Connect" />
               </Nav.Link>
 
               <AdminTool>

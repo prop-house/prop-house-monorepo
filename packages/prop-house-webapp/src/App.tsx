@@ -19,7 +19,29 @@ import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
-import Proposal from './pages/Proposal';
+import Proposal from './components/pages/Proposal';
+import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { infuraProvider } from 'wagmi/providers/infura';
+import { publicProvider } from 'wagmi/providers/public';
+import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+
+import '@rainbow-me/rainbowkit/styles.css';
+
+const { chains, provider } = configureChains(
+  [mainnet],
+  [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
+);
+
+const { connectors } = getDefaultWallets({
+  appName: 'My RainbowKit App',
+  chains,
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,
@@ -52,35 +74,44 @@ function App() {
       <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
     </Routes>
   ) : (
-    <DAppProvider config={config}>
-      <Suspense fallback={<LoadingIndicator />}>
-        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-          {!noNavPath && <NavBar />}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider
+        chains={chains}
+        theme={lightTheme({
+          accentColor: 'var(--brand-purple)',
+        })}
+      >
+        <DAppProvider config={config}>
+          <Suspense fallback={<LoadingIndicator />}>
+            <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+              {!noNavPath && <NavBar />}
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                  <Create />
-                </ProtectedRoute>
-              }
-            />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route
+                  path="/create"
+                  element={
+                    <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                      <Create />
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
-            <Route path="/:house" element={<House />} />
-            <Route path="/:house/:title" element={<Round />} />
-            <Route path="/:house/:title/:id" element={<Proposal />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/proposal/:id" element={<Proposal />} />
+                <Route path="/:house" element={<House />} />
+                <Route path="/:house/:title" element={<Round />} />
+                <Route path="/:house/:title/:id" element={<Proposal />} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
 
-          <Footer />
-        </div>
-      </Suspense>
-    </DAppProvider>
+              <Footer />
+            </div>
+          </Suspense>
+        </DAppProvider>
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 }
 
