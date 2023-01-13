@@ -18,7 +18,11 @@ const VotesDisplay: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
   return (
     <>
       {displayVotesVerifModal && (
-        <VotesVerificationModal setDisplay={setDisplayVotesVerifModal} proposal={proposal} />
+        <VotesVerificationModal
+          displayVotesVerifModal={displayVotesVerifModal}
+          setDisplayVotesVerifModal={setDisplayVotesVerifModal}
+          proposal={proposal}
+        />
       )}
       <div onClick={e => handleClick(e)}>
         <div className={classes.scoreAndIcon}>
