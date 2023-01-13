@@ -126,7 +126,14 @@ const ProposalModal = () => {
   }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (!activeProposal || !proposals || proposals.length === 0 || editProposalMode || showDeletePropModal) return;
+    if (
+      !activeProposal ||
+      !proposals ||
+      proposals.length === 0 ||
+      editProposalMode ||
+      showDeletePropModal
+    )
+      return;
 
     const newPropIndex =
       proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;

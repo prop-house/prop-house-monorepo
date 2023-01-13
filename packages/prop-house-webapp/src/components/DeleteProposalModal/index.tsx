@@ -114,13 +114,7 @@ const DeleteProposalModal: React.FC<{
       }
       secondButton={
         errorDeleting ? (
-          <Button
-            text={'Retry'}
-            bgColor={ButtonColor.Purple}
-            onClick={() => {
-              handleDeleteProposal();
-            }}
-          />
+          <Button text={'Retry'} bgColor={ButtonColor.Purple} onClick={handleDeleteProposal} />
         ) : hasBeenDeleted ? null : (
           <Button text={'Delete Prop'} bgColor={ButtonColor.Red} onClick={handleDeleteProposal} />
         )
