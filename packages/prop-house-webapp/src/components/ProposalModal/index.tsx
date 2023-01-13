@@ -204,8 +204,9 @@ const ProposalModal = () => {
         />
       )}
 
-      {showVoteAllotmentModal && (
+      {showVoteAllotmentModal && activeProposal && (
         <VoteAllotmentModal
+          propId={activeProposal.id}
           showModal={showVoteAllotmentModal}
           setShowModal={setShowVoteAllotmentModal}
         />

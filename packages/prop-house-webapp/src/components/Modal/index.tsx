@@ -6,10 +6,10 @@ import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 
 const Modal: React.FC<{
-  title: string | JSX.Element;
-  subtitle: string | JSX.Element;
-  image?: { src: string; alt: string } | null;
-  body?: string | JSX.Element;
+  title: string | JSX.Element | boolean;
+  subtitle: string | JSX.Element | boolean;
+  image?: { src: string; alt: string } | any;
+  body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;
   onRequestClose?: () => void;
@@ -48,8 +48,8 @@ const Modal: React.FC<{
             )}
 
             <div className={classes.titleContainer}>
-              <p className={classes.modalTitle}>{title}</p>
-              <p className={classes.modalSubtitle}>{subtitle}</p>
+              {title && <p className={classes.modalTitle}>{title}</p>}
+              {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
             </div>
           </div>
 
