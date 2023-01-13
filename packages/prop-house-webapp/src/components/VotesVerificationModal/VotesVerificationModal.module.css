@@ -7,6 +7,8 @@
   display: flex;
   justify-content: space-between;
   padding: 0.8rem 0;
+}
+.votesRow:not(:last-child) {
   border-bottom: 1px var(--bg-dark) solid;
 }
 .voteRowTitle {
