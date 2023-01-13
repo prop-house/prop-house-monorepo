@@ -276,6 +276,7 @@ body {
     align-items: center;
     gap: 20px;
   }
+}
 /* rich text editor */
 .editor-shell {
   margin: 0 !important;

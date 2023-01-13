@@ -5,7 +5,6 @@ import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
 import Tooltip from '../Tooltip';
-<<<<<<< HEAD
 import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
@@ -14,15 +13,6 @@ import ReadMore from '../ReadMore';
 import { isLongName } from '../../utils/isLongName';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 
-=======
-import sanitizeHtml from 'sanitize-html';
-import Markdown from 'markdown-to-jsx';
-import { isMobile } from 'web3modal';
-import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
-
-const isLongName = (name: string) => name.length > 9;
-
->>>>>>> 05275f79 (abstract component to force open link in new tab)
 const HouseHeader: React.FC<{
   community: Community;
 }> = props => {
@@ -41,8 +31,8 @@ const HouseHeader: React.FC<{
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
-              }
-            }
+              },
+            },
           },
         }}
       >
@@ -50,7 +40,6 @@ const HouseHeader: React.FC<{
           allowedAttributes: {
             a: ['href', 'target'],
           },
-
         })}
       </Markdown>
     </div>
