@@ -3,7 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
-import { Repository } from 'typeorm';
+import { LessThan, MoreThan, Not, Repository } from 'typeorm';
 import { Auction } from './auction.entity';
 
 @Injectable()
@@ -25,6 +25,24 @@ export class AuctionsService {
       },
     });
   }
+
+  findAllActive(): Promise<Auction[]> {
+    return this.auctionsRepository.find({
+      relations: ['community', 'proposals'],
+      where: [
+        {
+          visible: true,
+          votingEndTime: MoreThan(new Date()),
+        },
+        {
+          visible: true,
+          votingEndTime: LessThan(new Date()),
+          eventStatus: Not('auctionClosed'),
+        },
+      ],
+    });
+  }
+
 
   findAllExtended(): Promise<Auction[]> {
     return this.auctionsRepository.find({

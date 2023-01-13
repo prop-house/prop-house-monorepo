@@ -18,28 +18,19 @@ import {
 } from 'twitter-api-v2';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
+import { TwitterClientService } from './twitter-client.service';
 import { AuctionTweetable, Tweetable, TweetableContents } from './types';
 
 @Injectable()
 export class TwitterService {
-  private twitter: TwitterApi;
   private readonly logger = new Logger(TwitterService.name);
 
   constructor(
-    private readonly config: ConfigService,
     private readonly events: EventEmitter2,
+    private readonly twitterClient: TwitterClientService,
     @InjectRepository(Tweet)
     private readonly tweetRepository: Repository<Tweet>,
   ) {
-    if (this.config.get<boolean>('social.twitter.enabled')) {
-      this.logger.verbose('Creating TwitterAPI Client');
-      this.twitter = new TwitterApi({
-        appKey: this.config.get<string>('social.twitter.appKey'),
-        appSecret: this.config.get<string>('social.twitter.appSecret'),
-        accessToken: this.config.get<string>('social.twitter.accessToken'),
-        accessSecret: this.config.get<string>('social.twitter.accessSecret'),
-      });
-    }
 
     // Not enabling Proposal tweeting at this time
     // this.events.on(
@@ -109,8 +100,7 @@ export class TwitterService {
   }
 
   private async _tweet(status: string, payload?: SendTweetV2Params) {
-    this.logger.verbose('Would tweet', status, payload);
-    const twitterResponse = await this.twitter.v2.tweet(status, payload);
+    const twitterResponse = await this.twitterClient.tweet(status, payload);
     return twitterResponse;
   }
 }

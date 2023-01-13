@@ -21,11 +21,9 @@ export class AuctionWatcherService {
   @Cron('*/15 * * * * *')
   async handleCron() {
     this.logger.debug('Checking for Auction status changes');
-    const allAuctions = (await this.auctionService.findAllExtended()).filter(
-      (auction: Auction) => !auction.finalized(),
-    );
+    const allActiveAuctions = await this.auctionService.findAllActive()
 
-    for (const auction of allAuctions) {
+    for (const auction of allActiveAuctions) {
       switch (auction.eventStatus) {
         case null:
           // Discover the auction in all cases
