@@ -168,12 +168,15 @@ const ProposalEditor: React.FC<{
 
       Quill.register('modules/blotFormatter', BlotFormatter);
 
+      // paste the content back into the editor when going from Preview back to Editor
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
-      quill.on('text-change', () => {
+      quill.on('text-change', (delta: any, oldDelta: any, source: any) => {
         setEditorBlurred(false);
-
-        onDataChange({ what: quill.root.innerHTML });
+        if (source === 'user') {
+          const html = quill.root.innerHTML;
+          onDataChange({ what: html });
+        }
       });
     }
 
