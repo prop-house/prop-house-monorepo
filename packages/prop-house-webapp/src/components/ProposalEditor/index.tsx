@@ -3,12 +3,17 @@ import { Row, Col, Form } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { ProposalFields } from '../../utils/proposalFields';
 import 'react-quill/dist/quill.snow.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuill } from 'react-quilljs';
 import clsx from 'clsx';
 import QuillEditorModal from '../QuillEditorModal';
 import '../../quill.css';
 import { useTranslation } from 'react-i18next';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useEthers } from '@usedapp/core';
+import NewModal from '../NewModal';
+import Button, { ButtonColor } from '../Button';
+import DropFileInput from '../DropFileInput';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -21,6 +26,20 @@ const ProposalEditor: React.FC<{
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const { t } = useTranslation();
+
+  const { library } = useEthers();
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
+
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, library?.getSigner());
+  }, [library, host]);
+  const signerless = new PropHouseWrapper('https://prod.backend.prop.house');
+
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [successfulUpload, setSuccessfulUpload] = useState<boolean>(false);
+  const [uploadError, setUploadError] = useState<boolean>(false);
 
   const validateInput = (min: number, count: number) => 0 < count && count < min;
 
@@ -61,6 +80,25 @@ const ProposalEditor: React.FC<{
     error: t('descriptionError'),
   };
 
+  const handleImageUpload = async () => {
+    try {
+      setSuccessfulUpload(false);
+
+      await Promise.all(
+        files.map(async (file: File) => {
+          return await signerless.postFile(file, file.name);
+        }),
+      );
+
+      setSuccessfulUpload(true);
+      setFiles([]);
+    } catch (e) {
+      setUploadError(true);
+      console.log(uploadError);
+      console.log(e);
+    }
+  };
+
   const formats = [
     'header',
     'bold',
@@ -74,7 +112,8 @@ const ProposalEditor: React.FC<{
     'image',
   ];
 
-  const imageHandler = () => setShowImageModal(true);
+  const imageHandler = () => setShowImageUploadModal(true);
+  // const imageHandler = () => setShowImageModal(true);
   const linkHandler = () => setShowLinkModal(true);
 
   const modules = {
@@ -124,6 +163,14 @@ const ProposalEditor: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+<<<<<<< HEAD
+=======
+  const handleDismiss = () => {
+    setShowImageUploadModal(false);
+    setSuccessfulUpload(false);
+  };
+
+>>>>>>> d5a19d71 (WIP: file upload)
   return (
     <>
       <Row>
@@ -224,6 +271,27 @@ const ProposalEditor: React.FC<{
         setShowModal={setShowImageModal}
         placeholder="ex. https://noun.pics/1.jpg"
         quillModule="image"
+      />
+
+      <NewModal
+        title={successfulUpload ? `Upload Successful` : ''}
+        subtitle={
+          successfulUpload
+            ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
+            : ''
+        }
+        showModal={showImageUploadModal}
+        image={successfulUpload}
+        setShowModal={setShowImageUploadModal}
+        onRequestClose={handleDismiss}
+        secondButton={
+          successfulUpload ? (
+            <Button text={'Back to Editor'} bgColor={ButtonColor.Purple} onClick={handleDismiss} />
+          ) : (
+            <Button text={t('Upload')} bgColor={ButtonColor.Green} onClick={handleImageUpload} />
+          )
+        }
+        body={!successfulUpload && <DropFileInput files={files} setFiles={setFiles} />}
       />
     </>
   );
