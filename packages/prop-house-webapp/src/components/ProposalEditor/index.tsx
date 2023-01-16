@@ -14,6 +14,7 @@ import { useEthers } from '@usedapp/core';
 import NewModal from '../NewModal';
 import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
+import LoadingIndicator from '../LoadingIndicator';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -40,6 +41,7 @@ const ProposalEditor: React.FC<{
   const [files, setFiles] = useState<File[]>([]);
   const [successfulUpload, setSuccessfulUpload] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const validateInput = (min: number, count: number) => 0 < count && count < min;
 
@@ -81,24 +83,37 @@ const ProposalEditor: React.FC<{
   };
 
   const handleImageUpload = async () => {
+    if (!quill) return;
+    setLoading(true);
+
     try {
       setSuccessfulUpload(false);
 
-      await Promise.all(
+      const res = await Promise.all(
         files.map(async (file: File) => {
           return await signerless.postFile(file, file.name);
         }),
       );
 
+      res.map((r, i) => {
+        quill.setSelection(quill.getLength(), 0);
+        quill.insertEmbed(
+          quill.getSelection()!.index,
+          'image',
+          `https://prod.backend.prop.house/file/local/hash/${r.data.ipfsHash}`,
+          Quill.sources.USER,
+        );
+
+        return null;
+      });
       setSuccessfulUpload(true);
-      setFiles([]);
     } catch (e) {
       setUploadError(true);
       console.log(uploadError);
       console.log(e);
     }
+    setLoading(false);
   };
-
   const formats = [
     'header',
     'bold',
@@ -113,7 +128,6 @@ const ProposalEditor: React.FC<{
   ];
 
   const imageHandler = () => setShowImageUploadModal(true);
-  // const imageHandler = () => setShowImageModal(true);
   const linkHandler = () => setShowLinkModal(true);
 
   const modules = {
@@ -168,6 +182,7 @@ const ProposalEditor: React.FC<{
   const handleDismiss = () => {
     setShowImageUploadModal(false);
     setSuccessfulUpload(false);
+    setFiles([]);
   };
 
 >>>>>>> d5a19d71 (WIP: file upload)
@@ -284,14 +299,38 @@ const ProposalEditor: React.FC<{
         image={successfulUpload}
         setShowModal={setShowImageUploadModal}
         onRequestClose={handleDismiss}
+        button={
+          <Button
+            text={t('Close')}
+            disabled={loading}
+            bgColor={ButtonColor.White}
+            onClick={handleDismiss}
+          />
+        }
         secondButton={
           successfulUpload ? (
-            <Button text={'Back to Editor'} bgColor={ButtonColor.Purple} onClick={handleDismiss} />
+            <Button
+              disabled={loading}
+              text={'Back to Editor'}
+              bgColor={ButtonColor.Purple}
+              onClick={handleDismiss}
+            />
           ) : (
-            <Button text={t('Upload')} bgColor={ButtonColor.Green} onClick={handleImageUpload} />
+            <Button
+              disabled={loading || files.length === 0}
+              text={t('Upload')}
+              bgColor={ButtonColor.Green}
+              onClick={handleImageUpload}
+            />
           )
         }
-        body={!successfulUpload && <DropFileInput files={files} setFiles={setFiles} />}
+        body={
+          loading ? (
+            <LoadingIndicator />
+          ) : (
+            !successfulUpload && <DropFileInput files={files} setFiles={setFiles} />
+          )
+        }
       />
     </>
   );
