@@ -22,6 +22,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { useTranslation } from 'react-i18next';
+import { clearProposal } from '../../state/slices/editor';
+import { useDispatch } from 'react-redux';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
@@ -49,35 +51,44 @@ const RoundModules: React.FC<{
   const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
-  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
+  const getVoteTotal = () =>
+    proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (!account || !proposals) return;
     setFetchedUserProps(false);
 
     // set user props
     if (proposals.some(p => isSameAddress(p.address, account))) {
-      setUserProposals(proposals
-        .filter(p => isSameAddress(p.address, account))
-        .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-          Number(a.voteCount) < Number(b.voteCount) ? 1 : -1));
+      setUserProposals(
+        proposals
+          .filter(p => isSameAddress(p.address, account))
+          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
+            Number(a.voteCount) < Number(b.voteCount) ? 1 : -1,
+          ),
+      );
 
       setFetchedUserProps(true);
     }
-
   }, [account, proposals]);
 
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-      {!auctionNotStarted && account && userProposals && userProposals.length > 0 && fetchedUserProps && (
-        <UserPropCard
-          userProps={userProposals}
-          proposals={proposals}
-          numOfWinners={auction.numWinners}
-          status={auctionStatus(auction)}
-          winningIds={winningIds && winningIds}
-        />
-      )}
+      {!auctionNotStarted &&
+        account &&
+        userProposals &&
+        userProposals.length > 0 &&
+        fetchedUserProps && (
+          <UserPropCard
+            userProps={userProposals}
+            proposals={proposals}
+            numOfWinners={auction.numWinners}
+            status={auctionStatus(auction)}
+            winningIds={winningIds && winningIds}
+          />
+        )}
 
       <Card
         bgColor={CardBgColor.White}
@@ -98,10 +109,7 @@ const RoundModules: React.FC<{
 
           {/* ROUND ENDED */}
           {isRoundOver && (
-            <RoundOverModule
-              numOfProposals={proposals.length}
-              totalVotes={getVoteTotal()}
-            />
+            <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
           )}
         </div>
 
@@ -113,7 +121,10 @@ const RoundModules: React.FC<{
               <Button
                 text={t('createYourProposal')}
                 bgColor={ButtonColor.Green}
-                onClick={() => navigate('/create', { state: { auction, community } })}
+                onClick={() => {
+                  dispatch(clearProposal());
+                  navigate('/create', { state: { auction, community } });
+                }}
               />
             ) : (
               <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
