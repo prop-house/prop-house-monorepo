@@ -1,0 +1,60 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.modal {
+  font-family: 'PT Root UI', sans-serif;
+  background: white;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-light);
+  border-radius: 24px;
+  padding: 18px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 420px;
+}
+.titleContainer {
+  text-align: center;
+}
+.titleContainer p {
+  margin-bottom: 0;
+}
+.modalTitle {
+  font-weight: 700;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+.modalSubtitle {
+  font-weight: 500;
+  font-size: 16px;
+}
+.modal button {
+  width: 100%;
+  border-radius: 50px;
+}
+.buttonContainer {
+  display: flex;
+  gap: 8px;
+}
+.modal:focus-within {
+  outline: none !important;
+}
+.imgContainer {
+  text-align: center;
+  padding: 35px 0px 25px 0px;
+}
+.imgContainer img {
+  height: 80px;
+}
+@media (max-width: 575px) {
+  .modal {
+    width: 90%;
+    min-width: 300px;
+  }
+}
