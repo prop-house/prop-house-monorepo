@@ -87,10 +87,8 @@
 }
 
 .dropFilePreviewItemDel {
-  background-color: white;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -98,13 +96,15 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  box-shadow: var(--box-shadow);
-  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  font-weight: 600;
+  font-size: 18px;
 }
 
-.dropFilePreviewItem:hover .dropFilePreviewItemDel {
-  opacity: 1;
+.dropFilePreviewItemDel:hover {
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: var(--box-shadow);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: opacity 0.3s ease;
 }
