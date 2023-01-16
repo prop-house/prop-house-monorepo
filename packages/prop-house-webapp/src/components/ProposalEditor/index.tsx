@@ -15,6 +15,7 @@ import NewModal from '../NewModal';
 import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
 import LoadingIndicator from '../LoadingIndicator';
+import BlotFormatter from 'quill-blot-formatter';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -140,6 +141,7 @@ const ProposalEditor: React.FC<{
         ['image'],
       ],
     },
+    blotFormatter: {},
     clipboard: {
       matchVisual: false,
     },
@@ -154,11 +156,17 @@ const ProposalEditor: React.FC<{
     placeholder,
   });
 
+  if (Quill && !quill) {
+    Quill.register('modules/blotFormatter', BlotFormatter);
+  }
+
   useEffect(() => {
     if (quill) {
       var toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', imageHandler);
       toolbar.addHandler('link', linkHandler);
+
+      Quill.register('modules/blotFormatter', BlotFormatter);
 
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
