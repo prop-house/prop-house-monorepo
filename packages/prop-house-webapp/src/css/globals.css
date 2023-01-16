@@ -254,3 +254,7 @@ body {
     gap: 20px;
   }
 }
+/* blot formatter rich text editor */
+.blot-formatter__toolbar {
+  display: none;
+}
