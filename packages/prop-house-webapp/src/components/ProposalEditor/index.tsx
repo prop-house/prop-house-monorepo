@@ -259,6 +259,10 @@ const ProposalEditor: React.FC<{
                   <div className="hideBorderBox"></div>
                   <div
                     ref={quillRef}
+                    onDrop={e => {
+                      e.preventDefault();
+                      setShowImageUploadModal(true);
+                    }}
                     placeholder={descriptionData.placeholder}
                     onBlur={() => {
                       setEditorBlurred(true);
