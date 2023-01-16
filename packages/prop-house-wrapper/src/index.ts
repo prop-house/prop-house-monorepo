@@ -231,7 +231,7 @@ export class PropHouseWrapper {
         },
       });
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e.response;
     }
   }
 
