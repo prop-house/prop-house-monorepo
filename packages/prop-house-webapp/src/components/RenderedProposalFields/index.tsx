@@ -84,7 +84,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
                 allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
                 allowedAttributes: {
-                  img: ['src', 'alt'],
+                  img: ['src', 'alt', 'height', 'width'],
                   a: ['href', 'target'],
                 },
                 allowedClasses: {
