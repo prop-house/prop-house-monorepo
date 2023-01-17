@@ -14,7 +14,6 @@ const DeleteProposalModal: React.FC<{
   id: number;
   showDeletePropModal: boolean;
   setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
-  setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
@@ -22,7 +21,6 @@ const DeleteProposalModal: React.FC<{
     id,
     showDeletePropModal,
     setShowDeletePropModal,
-    setEditProposalMode,
     handleClosePropModal,
     dismissModalAndRefreshProps,
   } = props;
@@ -98,7 +96,6 @@ const DeleteProposalModal: React.FC<{
               setShowDeletePropModal(false);
               refreshActiveProposals(client.current, round!.id, dispatch);
               refreshActiveProposal(client.current, activeProposal!, dispatch);
-              setEditProposalMode(false);
               handleClosePropModal();
             }}
           />
