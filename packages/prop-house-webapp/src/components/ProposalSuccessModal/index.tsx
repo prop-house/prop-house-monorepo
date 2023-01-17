@@ -2,19 +2,20 @@ import React, { Dispatch, SetStateAction } from 'react';
 import classes from './ProposalSuccessModal.module.css';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
-import { nameToSlug } from '../../utils/communitySlugs';
 import { useTranslation } from 'react-i18next';
 import { useEthers } from '@usedapp/core';
 import EthAddress from '../EthAddress';
 import { openInNewTab } from '../../utils/openInNewTab';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
+import { buildRoundPath } from '../../utils/buildRoundPath';
+import { Auction, Community } from '@nouns/prop-house-wrapper/dist/builders';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
   proposalId?: number;
-  house: string;
-  round: string;
+  house: Community;
+  round: Auction;
 }> = props => {
   const { setShowProposalSuccessModal, proposalId, house, round } = props;
   const navigate = useNavigate();
@@ -23,6 +24,11 @@ const ProposalSuccessModal: React.FC<{
   const { account } = useEthers();
   const twitterContent = `Check out my @NounsPropHouse prop: https://prop.house/proposal/${proposalId}`;
 
+  const backToRound = () => {
+    navigate(buildRoundPath(house, round), { replace: false });
+
+    setShowProposalSuccessModal(false);
+  };
   return (
     <Modal
       setShowModal={setShowProposalSuccessModal}
@@ -34,20 +40,12 @@ const ProposalSuccessModal: React.FC<{
       subtitle={
         <>
           {' '}
-          {t(`successfulSubmission`)} <b>{round}</b> for <b>{house}</b>.
+          {t(`successfulSubmission`)} <b>{round.title}</b> for <b>{house.name}</b>.
         </>
       }
       image={NounImage.Heart}
-      button={
-        <Button
-          text={t('backToRound')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            navigate(`/${nameToSlug(house)}/${nameToSlug(round)}`);
-            setShowProposalSuccessModal(false);
-          }}
-        />
-      }
+      onRequestClose={backToRound}
+      button={<Button text={t('backToRound')} bgColor={ButtonColor.White} onClick={backToRound} />}
       secondButton={
         <Button
           text={'Share on Twitter'}

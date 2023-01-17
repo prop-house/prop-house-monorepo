@@ -76,8 +76,8 @@ const Create: React.FC<{}> = () => {
             <ProposalSuccessModal
               setShowProposalSuccessModal={setShowProposalSuccessModal}
               proposalId={propId}
-              house={activeCommunity.name}
-              round={activeAuction.title}
+              house={activeCommunity}
+              round={activeAuction}
             />
           )}
 
