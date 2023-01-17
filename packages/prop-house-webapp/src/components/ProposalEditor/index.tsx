@@ -110,7 +110,6 @@ const ProposalEditor: React.FC<{
       setSuccessfulUpload(true);
     } catch (e) {
       setUploadError(true);
-      console.log(uploadError);
       console.log(e);
     }
     setLoading(false);
@@ -166,8 +165,6 @@ const ProposalEditor: React.FC<{
       toolbar.addHandler('image', imageHandler);
       toolbar.addHandler('link', linkHandler);
 
-      Quill.register('modules/blotFormatter', BlotFormatter);
-
       // paste the content back into the editor when going from Preview back to Editor
       quill.clipboard.dangerouslyPasteHTML(data.what);
 
@@ -196,7 +193,22 @@ const ProposalEditor: React.FC<{
     setFiles([]);
   };
 
->>>>>>> d5a19d71 (WIP: file upload)
+  useEffect(() => {
+    if (!quillRef.current) return;
+    const quillContainer = quillRef.current;
+
+    quillContainer.addEventListener('drop', (event: any) => {
+      event.preventDefault();
+      if (event.dataTransfer.files.length) {
+        const selectedFiles: File[] = Array.from(event.dataTransfer.files || []);
+        if (selectedFiles) {
+          const updatedList: File[] = [...files, ...selectedFiles];
+          setFiles(updatedList);
+        }
+      }
+    });
+  }, [files, quillRef]);
+
   return (
     <>
       <Row>
