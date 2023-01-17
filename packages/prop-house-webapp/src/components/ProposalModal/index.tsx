@@ -189,7 +189,6 @@ const ProposalModal = () => {
     <>
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
-          showVoteConfirmationModal={showVoteConfirmationModal}
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
         />
@@ -197,7 +196,6 @@ const ProposalModal = () => {
 
       {showSuccessVotingModal && (
         <SuccessVotingModal
-          showSuccessVotingModal={showSuccessVotingModal}
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
@@ -205,25 +203,17 @@ const ProposalModal = () => {
       )}
 
       {showErrorVotingModal && (
-        <ErrorVotingModal
-          showErrorVotingModal={showErrorVotingModal}
-          setShowErrorVotingModal={setShowErrorVotingModal}
-        />
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
       {showVoteAllotmentModal && activeProposal && (
-        <VoteAllotmentModal
-          propId={activeProposal.id}
-          showModal={showVoteAllotmentModal}
-          setShowModal={setShowVoteAllotmentModal}
-        />
+        <VoteAllotmentModal propId={activeProposal.id} setShowModal={setShowVoteAllotmentModal} />
       )}
 
       {showSavePropModal && activeProposal && round && (
         <SaveProposalModal
           propId={activeProposal.id}
           roundId={round.id}
-          showSavePropModal={showSavePropModal}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}

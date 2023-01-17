@@ -12,7 +12,6 @@ import Modal from '../Modal';
 const SaveProposalModal: React.FC<{
   propId: number;
   roundId: number;
-  showSavePropModal: boolean;
   setShowSavePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
@@ -21,7 +20,6 @@ const SaveProposalModal: React.FC<{
   const {
     propId,
     roundId,
-    showSavePropModal,
     setShowSavePropModal,
     setEditProposalMode,
     handleClosePropModal,
@@ -84,7 +82,6 @@ const SaveProposalModal: React.FC<{
         )
       }
       image={errorSaving ? NounImage.Laptop : hasBeenSaved ? NounImage.Thumbsup : null}
-      showModal={showSavePropModal}
       setShowModal={setShowSavePropModal}
       onRequestClose={hasBeenSaved ? dismissModalAndRefreshProps : closeModal}
       button={

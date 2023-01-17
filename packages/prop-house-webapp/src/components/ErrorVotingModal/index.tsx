@@ -4,10 +4,9 @@ import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 
 const ErrorVotingModal: React.FC<{
-  showErrorVotingModal: boolean;
   setShowErrorVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { showErrorVotingModal, setShowErrorVotingModal } = props;
+  const { setShowErrorVotingModal } = props;
   const { t } = useTranslation();
 
   return (
@@ -15,7 +14,6 @@ const ErrorVotingModal: React.FC<{
       title={t('errorModalTitle')}
       subtitle={t('errorModalMessage')}
       image={NounImage.Banana}
-      showModal={showErrorVotingModal}
       setShowModal={setShowErrorVotingModal}
     />
   );

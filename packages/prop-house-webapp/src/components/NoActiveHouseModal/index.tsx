@@ -11,7 +11,6 @@ const NoActiveHouseModal: React.FC<{}> = () => {
 
   return (
     <Modal
-      showModal={true}
       setShowModal={() => {}}
       onRequestClose={() => {
         navigate(`/`);

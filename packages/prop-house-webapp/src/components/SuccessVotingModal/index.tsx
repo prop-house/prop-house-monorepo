@@ -5,13 +5,11 @@ import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 
 const SuccessVotingModal: React.FC<{
-  showSuccessVotingModal: boolean;
   setShowSuccessVotingModal: Dispatch<SetStateAction<boolean>>;
   numPropsVotedFor: number;
   signerIsContract: boolean;
 }> = props => {
-  const { showSuccessVotingModal, setShowSuccessVotingModal, numPropsVotedFor, signerIsContract } =
-    props;
+  const { setShowSuccessVotingModal, numPropsVotedFor, signerIsContract } = props;
   const { t } = useTranslation();
 
   const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
@@ -23,7 +21,6 @@ const SuccessVotingModal: React.FC<{
 
   return (
     <Modal
-      showModal={showSuccessVotingModal}
       setShowModal={setShowSuccessVotingModal}
       title={t('veryNounish')}
       subtitle={signerIsContract ? contractSignerMsg : eoaSignerMsg}

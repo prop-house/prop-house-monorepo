@@ -9,11 +9,10 @@ import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByV
 import Modal from '../Modal';
 
 const VoteConfirmationModal: React.FC<{
-  showVoteConfirmationModal: boolean;
   setShowVoteConfirmationModal: Dispatch<SetStateAction<boolean>>;
   submitVote: () => Promise<void>;
 }> = props => {
-  const { showVoteConfirmationModal, setShowVoteConfirmationModal, submitVote } = props;
+  const { setShowVoteConfirmationModal, submitVote } = props;
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
@@ -30,7 +29,6 @@ const VoteConfirmationModal: React.FC<{
 
   return (
     <Modal
-      showModal={showVoteConfirmationModal}
       setShowModal={setShowVoteConfirmationModal}
       title={
         <>

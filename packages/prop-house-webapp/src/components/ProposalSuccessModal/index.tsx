@@ -11,13 +11,12 @@ import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 
 const ProposalSuccessModal: React.FC<{
-  showProposalSuccessModal: boolean;
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
   proposalId?: number;
   house: string;
   round: string;
 }> = props => {
-  const { showProposalSuccessModal, setShowProposalSuccessModal, proposalId, house, round } = props;
+  const { setShowProposalSuccessModal, proposalId, house, round } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -26,7 +25,6 @@ const ProposalSuccessModal: React.FC<{
 
   return (
     <Modal
-      showModal={showProposalSuccessModal}
       setShowModal={setShowProposalSuccessModal}
       title={
         <>

@@ -13,20 +13,10 @@ const Modal: React.FC<{
   button?: any;
   secondButton?: any;
   onRequestClose?: () => void;
-  showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const {
-    title,
-    subtitle,
-    image,
-    button,
-    secondButton,
-    body,
-    showModal,
-    setShowModal,
-    onRequestClose,
-  } = props;
+  const { title, subtitle, image, button, secondButton, body, setShowModal, onRequestClose } =
+    props;
   const { t } = useTranslation();
 
   const closeModal = () => setShowModal(false);
@@ -34,7 +24,7 @@ const Modal: React.FC<{
 
   return (
     <ReactModal
-      isOpen={showModal}
+      isOpen={true}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
       className={classes.modal}
     >

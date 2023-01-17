@@ -17,13 +17,7 @@ const DeleteProposalModal: React.FC<{
   handleClosePropModal: () => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const {
-    id,
-    showDeletePropModal,
-    setShowDeletePropModal,
-    handleClosePropModal,
-    dismissModalAndRefreshProps,
-  } = props;
+  const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
@@ -76,7 +70,6 @@ const DeleteProposalModal: React.FC<{
         )
       }
       image={errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null}
-      showModal={showDeletePropModal}
       setShowModal={setShowDeletePropModal}
       onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : closeModal}
       button={

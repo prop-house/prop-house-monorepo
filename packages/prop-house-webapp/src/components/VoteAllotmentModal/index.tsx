@@ -13,10 +13,9 @@ import { NounImage } from '../../utils/getNounImage';
 
 const VoteAllotmentModal: React.FC<{
   propId: number;
-  showModal: boolean;
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { propId, showModal, setShowModal } = props;
+  const { propId, setShowModal } = props;
   const dispatch = useDispatch();
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
@@ -64,7 +63,6 @@ const VoteAllotmentModal: React.FC<{
       subtitle={noVotesAllotted ? '' : 'You have allotted votes for the following proposals'}
       body={!noVotesAllotted && <div className={classes.votesContainer}>{voteAllotmentData}</div>}
       image={noVotesAllotted && NounImage.Blackhole}
-      showModal={showModal}
       setShowModal={setShowModal}
     />
   );

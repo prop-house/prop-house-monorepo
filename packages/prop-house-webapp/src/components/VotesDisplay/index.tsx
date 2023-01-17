@@ -19,7 +19,6 @@ const VotesDisplay: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
     <>
       {displayVotesVerifModal && (
         <VotesVerificationModal
-          displayVotesVerifModal={displayVotesVerifModal}
           setDisplayVotesVerifModal={setDisplayVotesVerifModal}
           proposal={proposal}
         />

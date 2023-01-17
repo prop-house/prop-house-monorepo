@@ -7,11 +7,10 @@ import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
 
 const VotesVerificationModal: React.FC<{
-  displayVotesVerifModal: boolean;
   setDisplayVotesVerifModal: Dispatch<SetStateAction<boolean>>;
   proposal: StoredProposalWithVotes;
 }> = props => {
-  const { proposal, displayVotesVerifModal, setDisplayVotesVerifModal } = props;
+  const { proposal, setDisplayVotesVerifModal } = props;
   const { t } = useTranslation();
 
   const verifiedVotes = (
@@ -47,7 +46,6 @@ const VotesVerificationModal: React.FC<{
           Number(proposal.voteCount) === 1 ? t('vote') : t('votes')
         } ${t('haveBeenCast')}`}
         body={verifiedVotes}
-        showModal={displayVotesVerifModal}
         setShowModal={setDisplayVotesVerifModal}
       />
     </div>
