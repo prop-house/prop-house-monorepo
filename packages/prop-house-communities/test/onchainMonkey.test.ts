@@ -3,10 +3,9 @@ import { BigNumber, Contract, providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
 import BalanceOfABI from '../src/abi/BalanceOfABI.json';
 import { strategyForCommunity } from '../src/utils/strategyForCommunity';
-import { getNumVotes } from '../src/actions';
-import { balanceOfErc721, balanceOfErc721Multiple } from '../src/strategies';
+import { onchainMonkey } from '../src/strategies';
 
-describe('balance of erc721 multiple', () => {
+describe('custom OCM', () => {
   let apiKey;
   const onChainMonkeyAddress = '0x960b7a6bcd451c9968473f7bbfd9be826efd549a';
   const karmaAddress = '0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b';
@@ -45,7 +44,9 @@ describe('balance of erc721 multiple', () => {
     expect(numBalanceOf).to.be.gt(0);
   });
 
-  it('custom strategy should return sum of balance from OCM and Karma contracts ', async () => {
+  it('custom strategy should return sum of balance from OCM and Karma contracts + bonus', async () => {
+    // custom logic: X + Y + min(X,Y)
+
     apiKey = process.env.INFURA_PROJECT_ID;
     if (!apiKey) return;
     const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
@@ -54,43 +55,16 @@ describe('balance of erc721 multiple', () => {
     const ocmBalanceOf = await ocmContract.balanceOf(holderAddress);
 
     const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
-    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 16398844 });
+    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 16398781 });
 
     const sum = BigNumber.from(ocmBalanceOf).add(BigNumber.from(karmaBalanceOf)).toNumber();
-
-    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], [1, 1])(
-      holderAddress,
-      onChainMonkeyAddress,
-      16398844,
-      provider,
+    const min = Math.min(
+      BigNumber.from(ocmBalanceOf).toNumber(),
+      BigNumber.from(karmaBalanceOf).toNumber(),
     );
 
-    expect(votes).to.eq(sum);
-  });
+    const votes = await onchainMonkey()(holderAddress, onChainMonkeyAddress, 16398781, provider);
 
-  it('custom strategy should return votes corresponding to diff multipliers across mutiple contracts ', async () => {
-    apiKey = process.env.INFURA_PROJECT_ID;
-    if (!apiKey) return;
-    const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
-    const multipliers = [1, 5];
-
-    const ocmContract = new Contract(onChainMonkeyAddress, BalanceOfABI, provider);
-    const ocmBalanceOf = await ocmContract.balanceOf(holderAddress);
-    const ocmBalanceWMult = BigNumber.from(ocmBalanceOf).mul(multipliers[0]);
-
-    const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
-    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 16398844 });
-    const karmaBalanceWMult = BigNumber.from(karmaBalanceOf).mul(multipliers[1]);
-
-    const sum = BigNumber.from(ocmBalanceWMult).add(BigNumber.from(karmaBalanceWMult)).toNumber();
-
-    const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], multipliers)(
-      holderAddress,
-      onChainMonkeyAddress,
-      16398844,
-      provider,
-    );
-
-    expect(votes).to.eq(sum);
+    expect(votes).to.eq(sum + min);
   });
 });
