@@ -4,7 +4,6 @@ import fileJpeg from '../../assets/files/jpg.png';
 import filePng from '../../assets/files/png.png';
 import fileGif from '../../assets/files/gif.png';
 import fileSvg from '../../assets/files/svg.png';
-// import fileSvgXml from '../../assets/files/svg.png';
 import fileMov from '../../assets/files/mov.png';
 
 interface ImageConfig {
@@ -18,6 +17,6 @@ export const imageConfig: ImageConfig = {
   jpeg: fileJpeg,
   gif: fileGif,
   svg: fileSvg,
-  // svg+xml: fileSvgXml,
-  mov: fileMov,
+  'svg+xml': fileSvg,
+  quicktime: fileMov,
 };
