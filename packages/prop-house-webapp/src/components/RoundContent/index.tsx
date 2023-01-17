@@ -133,7 +133,6 @@ const RoundContent: React.FC<{
     <>
       {showVoteConfirmationModal && (
         <VoteConfirmationModal
-          showVoteConfirmationModal={showVoteConfirmationModal}
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
         />
@@ -141,7 +140,6 @@ const RoundContent: React.FC<{
 
       {showSuccessVotingModal && (
         <SuccessVotingModal
-          showSuccessVotingModal={showSuccessVotingModal}
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
@@ -149,10 +147,7 @@ const RoundContent: React.FC<{
       )}
 
       {showErrorVotingModal && (
-        <ErrorVotingModal
-          showErrorVotingModal={showErrorVotingModal}
-          setShowErrorVotingModal={setShowErrorVotingModal}
-        />
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
