@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 const NewModal: React.FC<{
   title: string | JSX.Element | boolean;
   subtitle: string | JSX.Element | boolean;
-  image?: boolean;
+  image?: { src: string; alt: string } | any;
   body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;

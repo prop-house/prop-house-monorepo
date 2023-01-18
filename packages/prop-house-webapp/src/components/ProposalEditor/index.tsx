@@ -16,6 +16,7 @@ import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
 import LoadingIndicator from '../LoadingIndicator';
 import BlotFormatter from 'quill-blot-formatter';
+import { NounImage } from '../../utils/getNounImage';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -316,16 +317,27 @@ const ProposalEditor: React.FC<{
       />
 
       <NewModal
-        title={successfulUpload ? `Upload Successful` : ''}
+        title={uploadError ? 'Error Uploading' : successfulUpload ? 'Upload Successful' : ''}
         subtitle={
-          successfulUpload
+          uploadError
+            ? `Your ${
+                files.length === 1 ? 'file' : 'files'
+              } could not be deleted. Please try again.`
+            : successfulUpload
             ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
             : ''
         }
+        image={uploadError ? NounImage.Banana : successfulUpload ? NounImage.Camera : null}
         showModal={showImageUploadModal}
-        image={successfulUpload}
         setShowModal={setShowImageUploadModal}
         onRequestClose={handleDismiss}
+        body={
+          uploadError ? null : loading ? (
+            <LoadingIndicator />
+          ) : successfulUpload ? null : (
+            <DropFileInput files={files} setFiles={setFiles} />
+          )
+        }
         button={
           <Button
             text={t('Close')}
@@ -335,12 +347,14 @@ const ProposalEditor: React.FC<{
           />
         }
         secondButton={
-          successfulUpload ? (
+          uploadError ? (
+            <Button text={'Retry'} bgColor={ButtonColor.Purple} onClick={handleImageUpload} />
+          ) : successfulUpload ? (
             <Button
-              disabled={loading}
-              text={'Back to Editor'}
-              bgColor={ButtonColor.Purple}
-              onClick={handleDismiss}
+              disabled={loading || files.length === 0}
+              text={t('Upload More?')}
+              bgColor={ButtonColor.Green}
+              onClick={handleImageUpload}
             />
           ) : (
             <Button
@@ -349,13 +363,6 @@ const ProposalEditor: React.FC<{
               bgColor={ButtonColor.Green}
               onClick={handleImageUpload}
             />
-          )
-        }
-        body={
-          loading ? (
-            <LoadingIndicator />
-          ) : (
-            !successfulUpload && <DropFileInput files={files} setFiles={setFiles} />
           )
         }
       />
