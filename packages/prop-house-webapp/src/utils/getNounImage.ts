@@ -5,6 +5,7 @@ export const NounImage = {
   Camera: { src: '/heads/camera.png', alt: 'camera' },
   Chart: { src: '/heads/chart.png', alt: 'chart' },
   Computer: { src: '/heads/computer.png', alt: 'computer' },
+  Cone: { src: '/heads/cone.png', alt: 'cone' },
   Crown: { src: '/heads/crown.png', alt: 'crown' },
   Glasses: { src: '/heads/glasses.png', alt: 'glasses' },
   Heart: { src: '/heads/heart.png', alt: 'heart' },

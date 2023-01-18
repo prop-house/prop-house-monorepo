@@ -1,6 +1,7 @@
 import classes from './Button.module.css';
 import clsx from 'clsx';
 import { Button as BSButton } from 'react-bootstrap';
+import ReactLoading from 'react-loading';
 
 export enum ButtonColor {
   Pink,
@@ -20,29 +21,31 @@ export interface ButtonProps {
   disabled?: boolean;
   onClick?: (e: any) => void;
   classNames?: string[] | string;
+  loading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = props => {
-  const { text, bgColor, disabled, onClick, classNames } = props;
+const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
+  const { text, bgColor, disabled, onClick, classNames, loading } = props;
+  const loadingSpinner = <ReactLoading type="spin" height={24} width={24} />;
 
   const bgColorClass =
     bgColor === ButtonColor.Pink
       ? classes.btnPinkBg
       : bgColor === ButtonColor.Purple
-        ? classes.btnPurpleBg
-        : bgColor === ButtonColor.PurpleLight
-          ? classes.btnPurpleLightBg
-          : bgColor === ButtonColor.White
-            ? classes.btnWhiteBg
-            : bgColor === ButtonColor.Yellow
-              ? classes.btnYellowBg
-              : bgColor === ButtonColor.Green
-                ? classes.btnGreenBg
-                : bgColor === ButtonColor.Red
-                  ? classes.btnRedBg
-                  : bgColor === ButtonColor.Gray
-                    ? classes.btnGrayBg
-                    : classes.btnWhiteYellowBg;
+      ? classes.btnPurpleBg
+      : bgColor === ButtonColor.PurpleLight
+      ? classes.btnPurpleLightBg
+      : bgColor === ButtonColor.White
+      ? classes.btnWhiteBg
+      : bgColor === ButtonColor.Yellow
+      ? classes.btnYellowBg
+      : bgColor === ButtonColor.Green
+      ? classes.btnGreenBg
+      : bgColor === ButtonColor.Red
+      ? classes.btnRedBg
+      : bgColor === ButtonColor.Gray
+      ? classes.btnGrayBg
+      : classes.btnWhiteYellowBg;
 
   return (
     <BSButton
@@ -50,7 +53,7 @@ const Button: React.FC<ButtonProps> = props => {
       disabled={disabled}
       onClick={onClick}
     >
-      {text}
+      {loading ? loadingSpinner : text}
     </BSButton>
   );
 };

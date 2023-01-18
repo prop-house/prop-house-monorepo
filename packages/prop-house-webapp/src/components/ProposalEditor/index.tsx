@@ -47,6 +47,8 @@ const ProposalEditor: React.FC<{
   const [successfulUpload, setSuccessfulUpload] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [invalidFileError, setInvalidFileError] = useState(false);
+  const [invalidFileMessage, setInvalidFileMessage] = useState('');
 
   const validateInput = (min: number, count: number) => 0 < count && count < min;
 
@@ -90,6 +92,7 @@ const ProposalEditor: React.FC<{
   const handleImageUpload = async () => {
     if (!quill) return;
     setLoading(true);
+    setInvalidFileMessage('');
 
     try {
       setSuccessfulUpload(false);
@@ -189,16 +192,23 @@ const ProposalEditor: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-<<<<<<< HEAD
-=======
-  const handleDismiss = () => {
-    setShowImageUploadModal(false);
+  // image upload state reset
+  const resetImageUploadModal = () => {
     setSuccessfulUpload(false);
+    setUploadError(false);
     setFiles([]);
+    setInvalidFileMessage('');
   };
-
-  const [invalidFileError, setInvalidFileError] = useState(false);
-  const [invalidFileType, setInvalidFileType] = useState('');
+  // when you click outside the modal, reset state & close modal
+  const handleDismiss = () => {
+    resetImageUploadModal();
+    setShowImageUploadModal(false);
+  };
+  // reset state but keep modal open to upload more
+  const handleUploadMore = () => {
+    resetImageUploadModal();
+    setShowImageUploadModal(true);
+  };
 
   const onFileDrop = (
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
@@ -234,8 +244,8 @@ const ProposalEditor: React.FC<{
       // generate error message:
       //   • Array.from(new Set(invalidFileTypes)) remove duplicate file types before generating error message
       //   • getInvalidFileMessage() is a function that generates the error message
-      //   • setInvalidFileType saves the error message to state
-      setInvalidFileType(getInvalidFileMessage(Array.from(new Set(invalidFileTypes))));
+      //   • setInvalidFileMessage saves the error message to state
+      setInvalidFileMessage(getInvalidFileMessage(Array.from(new Set(invalidFileTypes))));
     }
     // filter out invalid files
     const validFiles = Array.from(selectedFiles).filter(file => validFile(file));
@@ -350,17 +360,29 @@ const ProposalEditor: React.FC<{
       />
 
       <NewModal
-        title={uploadError ? 'Error Uploading' : successfulUpload ? 'Upload Successful' : ''}
+        title={
+          uploadError
+            ? 'Error Uploading'
+            : loading
+            ? 'Uploading...'
+            : successfulUpload
+            ? 'Upload Successful'
+            : files.length > 0
+            ? 'Ready to upload'
+            : 'Please upload your file(s)'
+        }
         subtitle={
           uploadError
             ? `Your ${
                 files.length === 1 ? 'file' : 'files'
-              } could not be deleted. Please try again.`
+              } could not be uploaded. Please try again.`
+            : loading
+            ? 'Please wait while your files are uploaded.'
             : successfulUpload
             ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-            : ''
+            : 'Drag & Drop your files below'
         }
-        image={uploadError ? NounImage.Banana : successfulUpload ? NounImage.Camera : null}
+        image={uploadError ? NounImage.Cone : successfulUpload ? NounImage.Camera : null}
         showModal={showImageUploadModal}
         setShowModal={setShowImageUploadModal}
         onRequestClose={handleDismiss}
@@ -372,7 +394,7 @@ const ProposalEditor: React.FC<{
               files={files}
               setFiles={setFiles}
               onFileDrop={onFileDrop}
-              invalidFileType={invalidFileType}
+              invalidFileMessage={invalidFileMessage}
               invalidFileError={invalidFileError}
               setInvalidFileError={setInvalidFileError}
             />
@@ -388,17 +410,24 @@ const ProposalEditor: React.FC<{
         }
         secondButton={
           uploadError ? (
-            <Button text={'Retry'} bgColor={ButtonColor.Purple} onClick={handleImageUpload} />
+            <Button
+              text={'Retry'}
+              loading={loading}
+              disabled={loading}
+              bgColor={ButtonColor.Purple}
+              onClick={handleImageUpload}
+            />
           ) : successfulUpload ? (
             <Button
               disabled={loading || files.length === 0}
               text={t('Upload More?')}
               bgColor={ButtonColor.Green}
-              onClick={handleImageUpload}
+              onClick={handleUploadMore}
             />
           ) : (
             <Button
               disabled={loading || files.length === 0}
+              loading={loading}
               text={t('Upload')}
               bgColor={ButtonColor.Green}
               onClick={handleImageUpload}
