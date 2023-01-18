@@ -1,62 +1,24 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import classes from './DropFileInput.module.css';
 import uploadImg from '../../assets/files/upload.png';
 import { imageConfig } from './imageConfig';
 import { formatBytes } from '../../utils/formatBytes';
-import getInvalidFileMessage from '../../utils/getInvalidFileMessage';
-import validFile from '../../utils/validFile';
-import changeFileExtension from '../../utils/changeFileExtension';
 
 const DropFileInput: React.FC<{
   files: File[];
   setFiles: (files: File[]) => void;
+  onFileDrop: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
+  invalidFileType: string;
+  invalidFileError: boolean;
+  setInvalidFileError: (error: boolean) => void;
 }> = props => {
-  const { files, setFiles } = props;
+  const { files, setFiles, onFileDrop, invalidFileType, invalidFileError, setInvalidFileError } =
+    props;
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [invalidFileError, setInvalidFileError] = useState(false);
-  const [invalidFileType, setInvalidFileType] = useState('');
 
   const onDragEnter = () => wrapperRef.current!.classList.add('dragover');
   const onDragLeave = () => wrapperRef.current!.classList.remove('dragover');
   const onDrop = () => wrapperRef.current!.classList.remove('dragover');
-
-  const onFileDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInvalidFileError(false);
-    const selectedFiles = Array.from(e.target.files || []);
-    const invalidFileTypes: string[] = [];
-
-    // check if any of the files are invalid
-    if (selectedFiles.some(file => !validFile(file))) {
-      setInvalidFileError(true);
-
-      // get the invalid file types
-      selectedFiles.map((file, i) => {
-        if (!validFile(file)) {
-          let fileExtension = file.type.split('/')[1];
-
-          // save the invalid file type to show in error message
-          invalidFileTypes.push(changeFileExtension(fileExtension));
-        }
-        return selectedFiles;
-      });
-      // generate error message
-      // setInvalidFileType(getInvalidFileMessage(invalidFileTypes));
-
-      // Array.from(new Set(invalidFileTypes)) remove duplicate file types before generating error message
-      // getInvalidFileMessage() is a function that generates the error message
-      // setInvalidFileType saves the error message to state
-      setInvalidFileType(getInvalidFileMessage(Array.from(new Set(invalidFileTypes))));
-    }
-
-    // filter out invalid files
-    const validFiles = selectedFiles.filter(file => validFile(file));
-
-    // add the valid files to the list
-    if (validFiles) {
-      const updatedList = [...files, ...validFiles];
-      setFiles(updatedList);
-    }
-  };
 
   const fileRemove = (file: File) => {
     setInvalidFileError(false);
