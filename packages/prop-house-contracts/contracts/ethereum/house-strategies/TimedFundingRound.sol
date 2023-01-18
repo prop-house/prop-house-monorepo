@@ -6,6 +6,7 @@ import { IHouse } from '../interfaces/IHouse.sol';
 import { REGISTER_HOUSE_STRATEGY_SELECTOR } from '../Constants.sol';
 import { IFundingHouse } from '../interfaces/houses/IFundingHouse.sol';
 import { ITimedFundingRound } from '../interfaces/house-strategies/ITimedFundingRound.sol';
+import { ITokenMetadataRenderer } from '../interfaces/renderers/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
 import { ERC1155Supply } from '../lib/token/ERC1155Supply.sol';
@@ -40,6 +41,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
     /// @notice The Starknet Core contract
     IStarknetCore public immutable starknet;
+
+    /// @notice The Asset Metadata Renderer contract
+    ITokenMetadataRenderer public immutable renderer;
 
     /// @notice The Strategy Factory contract address on Starknet
     uint256 internal immutable strategyFactory;
@@ -124,19 +128,22 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         uint256 _classHash,
         address _awardRouter,
         address _starknet,
+        address _renderer,
         uint256 _strategyFactory,
         uint256 _executionRelayer
     ) {
         classHash = _classHash;
         awardRouter = _awardRouter;
         starknet = IStarknetCore(_starknet);
+        renderer = ITokenMetadataRenderer(_renderer);
         strategyFactory = _strategyFactory;
         executionRelayer = _executionRelayer;
     }
 
-    /// @notice Returns the deposit token URI
-    function uri(uint256) public pure override returns (string memory) {
-        return ''; // TODO: Detect if ETH, ERC20, ERC721, or ERC1155 using asset type, return image for asset.
+    /// @notice Returns the deposit token URI for the provided token ID
+    /// @param tokenId The deposit token ID
+    function uri(uint256 tokenId) public view override returns (string memory) {
+        return renderer.tokenURI(tokenId);
     }
 
     /// @notice Initialize the strategy by optionally defining the round's
