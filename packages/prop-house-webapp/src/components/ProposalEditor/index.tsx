@@ -17,6 +17,9 @@ import DropFileInput from '../DropFileInput';
 import LoadingIndicator from '../LoadingIndicator';
 import BlotFormatter from 'quill-blot-formatter';
 import { NounImage } from '../../utils/getNounImage';
+import validFile from '../../utils/validFile';
+import changeFileExtension from '../../utils/changeFileExtension';
+import getInvalidFileMessage from '../../utils/getInvalidFileMessage';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -194,21 +197,54 @@ const ProposalEditor: React.FC<{
     setFiles([]);
   };
 
-  useEffect(() => {
-    if (!quillRef.current) return;
-    const quillContainer = quillRef.current;
+  const [invalidFileError, setInvalidFileError] = useState(false);
+  const [invalidFileType, setInvalidFileType] = useState('');
 
-    quillContainer.addEventListener('drop', (event: any) => {
+  const onFileDrop = (
+    event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
+  ) => {
+    let selectedFiles: File[] = [];
+
+    // check if the event is a drag event or a file input event
+    // dataTransfer === drag images directly on editor
+    if ('dataTransfer' in event) {
+      // default behavior is to open the file in the browser
       event.preventDefault();
-      if (event.dataTransfer.files.length) {
-        const selectedFiles: File[] = Array.from(event.dataTransfer.files || []);
-        if (selectedFiles) {
-          const updatedList: File[] = [...files, ...selectedFiles];
-          setFiles(updatedList);
+
+      selectedFiles = Array.from(event.dataTransfer.files || []);
+      setShowImageUploadModal(true);
+    } else if ('target' in event) {
+      // target === upload when the modal is already open
+      selectedFiles = Array.from(event.target.files || []);
+    }
+
+    const invalidFileTypes: string[] = [];
+    // check if any of the files are invalid
+    if (Array.from(selectedFiles).some(file => !validFile(file))) {
+      setInvalidFileError(true);
+      // get the invalid file types
+      Array.from(selectedFiles).map((file, i) => {
+        if (!validFile(file)) {
+          let fileExtension = file.type.split('/')[1];
+          // save the invalid file type to show in error message
+          invalidFileTypes.push(changeFileExtension(fileExtension));
         }
-      }
-    });
-  }, [files, quillRef]);
+        return selectedFiles;
+      });
+      // generate error message:
+      //   • Array.from(new Set(invalidFileTypes)) remove duplicate file types before generating error message
+      //   • getInvalidFileMessage() is a function that generates the error message
+      //   • setInvalidFileType saves the error message to state
+      setInvalidFileType(getInvalidFileMessage(Array.from(new Set(invalidFileTypes))));
+    }
+    // filter out invalid files
+    const validFiles = Array.from(selectedFiles).filter(file => validFile(file));
+    // add the valid files to the list
+    if (validFiles) {
+      const updatedList = [...files, ...validFiles];
+      setFiles(updatedList);
+    }
+  };
 
   return (
     <>
@@ -272,10 +308,7 @@ const ProposalEditor: React.FC<{
                   <div className="hideBorderBox"></div>
                   <div
                     ref={quillRef}
-                    onDrop={e => {
-                      e.preventDefault();
-                      setShowImageUploadModal(true);
-                    }}
+                    onDrop={onFileDrop}
                     placeholder={descriptionData.placeholder}
                     onBlur={() => {
                       setEditorBlurred(true);
@@ -335,7 +368,14 @@ const ProposalEditor: React.FC<{
           uploadError ? null : loading ? (
             <LoadingIndicator />
           ) : successfulUpload ? null : (
-            <DropFileInput files={files} setFiles={setFiles} />
+            <DropFileInput
+              files={files}
+              setFiles={setFiles}
+              onFileDrop={onFileDrop}
+              invalidFileType={invalidFileType}
+              invalidFileError={invalidFileError}
+              setInvalidFileError={setInvalidFileError}
+            />
           )
         }
         button={
