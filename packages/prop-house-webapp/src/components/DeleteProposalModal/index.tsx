@@ -12,7 +12,6 @@ import { NounImage } from '../../utils/getNounImage';
 
 const DeleteProposalModal: React.FC<{
   id: number;
-  showDeletePropModal: boolean;
   setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
   handleClosePropModal: () => void;
   dismissModalAndRefreshProps: () => void;
