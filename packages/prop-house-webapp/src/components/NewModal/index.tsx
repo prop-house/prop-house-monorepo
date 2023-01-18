@@ -43,7 +43,7 @@ const NewModal: React.FC<{
           <div>
             {image && (
               <div className={classes.imgContainer}>
-                <img src="/heads/camera.png" alt="camera" />
+                <img src={image.src} alt={image.alt} />
               </div>
             )}
 

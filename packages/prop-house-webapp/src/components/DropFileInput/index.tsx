@@ -8,11 +8,11 @@ const DropFileInput: React.FC<{
   files: File[];
   setFiles: (files: File[]) => void;
   onFileDrop: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
-  invalidFileType: string;
+  invalidFileMessage: string;
   invalidFileError: boolean;
   setInvalidFileError: (error: boolean) => void;
 }> = props => {
-  const { files, setFiles, onFileDrop, invalidFileType, invalidFileError, setInvalidFileError } =
+  const { files, setFiles, onFileDrop, invalidFileMessage, invalidFileError, setInvalidFileError } =
     props;
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -42,8 +42,7 @@ const DropFileInput: React.FC<{
       >
         <div className={classes.dropFileInputLabel}>
           <img src={uploadImg} alt="upload" />
-          <p>Drag & Drop your files here</p>
-          <p className={classes.dropFileInputLabelFiles}>ex. JPG/JPEG, PNG, SVG, GIF, MOV</p>
+          <p className={classes.dropFileInputLabelFiles}>ex: JPG/JPEG, PNG, SVG, GIF, MOV</p>
         </div>
 
         <input
@@ -54,13 +53,10 @@ const DropFileInput: React.FC<{
         />
       </div>
 
+      {invalidFileError && <span className={classes.invalidFile}>{invalidFileMessage}</span>}
+
       {
         <div className={classes.dropFilePreview}>
-          <p className={classes.dropFilePreviewTitle}>
-            {files.length > 0 ? 'Ready to upload' : 'Please upload your file(s)'}
-          </p>
-          {invalidFileError && <span className={classes.invalidFile}>{invalidFileType}</span>}
-
           {files.length > 0
             ? files.map((item, index) => {
                 return (
