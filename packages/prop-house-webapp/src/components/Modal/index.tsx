@@ -1,48 +1,65 @@
 import classes from './Modal.module.css';
-import ReactDOM from 'react-dom';
-import xIcon from '../../assets/icons/x-icon.png';
-import React from 'react';
-
-export const Backdrop: React.FC<{ onDismiss: () => void }> = (props) => {
-  return <div className={classes.backdrop} onClick={props.onDismiss} />;
-};
-
-export interface ModalData {
-  title: string;
-  content: React.ReactNode;
-  onDismiss: () => void;
-}
-
-const ModalOverlay: React.FC<{
-  data: ModalData;
-}> = (props) => {
-  const { title, content, onDismiss } = props.data;
-  return (
-    <div className={classes.modal}>
-      <button className={classes.closeButton} onClick={onDismiss}>
-        <img src={xIcon} alt="Button to close modal" />
-      </button>
-      <h3>{title}</h3>
-      <div className={classes.content}>{content}</div>
-    </div>
-  );
-};
+import React, { Dispatch, SetStateAction } from 'react';
+import ReactModal from 'react-modal';
+import Button, { ButtonColor } from '../Button';
+import Divider from '../Divider';
+import { useTranslation } from 'react-i18next';
 
 const Modal: React.FC<{
-  data: ModalData;
-}> = (props) => {
-  const { data } = props;
+  title: string | JSX.Element | boolean;
+  subtitle: string | JSX.Element | boolean;
+  image?: { src: string; alt: string } | any;
+  body?: string | JSX.Element | any;
+  button?: any;
+  secondButton?: any;
+  onRequestClose?: () => void;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
+}> = props => {
+  const { title, subtitle, image, button, secondButton, body, setShowModal, onRequestClose } =
+    props;
+  const { t } = useTranslation();
+
+  const closeModal = () => setShowModal(false);
+  const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
+
   return (
-    <>
-      {ReactDOM.createPortal(
-        <Backdrop onDismiss={data.onDismiss} />,
-        document.getElementById('backdrop-root')!
-      )}
-      {ReactDOM.createPortal(
-        <ModalOverlay data={data} />,
-        document.getElementById('overlay-root')!
-      )}
-    </>
+    <ReactModal
+      isOpen={true}
+      onRequestClose={onRequestClose ? onRequestClose : closeModal}
+      className={classes.modal}
+    >
+      <>
+        <div className={classes.container}>
+          <div>
+            {image && (
+              <div className={classes.imgContainer}>
+                <img src={image.src} alt={image.alt} />
+              </div>
+            )}
+
+            <div className={classes.titleContainer}>
+              {title && <p className={classes.modalTitle}>{title}</p>}
+              {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+            </div>
+          </div>
+
+          {body && (
+            <div>
+              {' '}
+              <Divider /> {body}{' '}
+            </div>
+          )}
+
+          <div>
+            <Divider />
+            <div className={classes.buttonContainer}>
+              {button ? button : closeButton}
+              {secondButton && secondButton}
+            </div>
+          </div>
+        </div>
+      </>
+    </ReactModal>
   );
 };
 
