@@ -2,6 +2,7 @@ export const NounImage = {
   Banana: { src: '/heads/banana.png', alt: 'banana' },
   Blackhole: { src: '/heads/blackhole.png', alt: 'blackhole' },
   Calculator: { src: '/heads/calculator.png', alt: 'calculator' },
+  Camera: { src: '/heads/camera.png', alt: 'camera' },
   Chart: { src: '/heads/chart.png', alt: 'chart' },
   Computer: { src: '/heads/computer.png', alt: 'computer' },
   Crown: { src: '/heads/crown.png', alt: 'crown' },
