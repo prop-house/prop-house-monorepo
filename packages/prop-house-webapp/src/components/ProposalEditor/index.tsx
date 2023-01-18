@@ -11,7 +11,7 @@ import '../../quill.css';
 import { useTranslation } from 'react-i18next';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
-import NewModal from '../NewModal';
+import Modal from '../Modal';
 import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
 import LoadingIndicator from '../LoadingIndicator';
@@ -359,82 +359,83 @@ const ProposalEditor: React.FC<{
         quillModule="image"
       />
 
-      <NewModal
-        title={
-          uploadError
-            ? 'Error Uploading'
-            : loading
-            ? 'Uploading...'
-            : successfulUpload
-            ? 'Upload Successful'
-            : files.length > 0
-            ? 'Ready to upload'
-            : 'Please upload your file(s)'
-        }
-        subtitle={
-          uploadError
-            ? `Your ${
-                files.length === 1 ? 'file' : 'files'
-              } could not be uploaded. Please try again.`
-            : loading
-            ? 'Please wait while your files are uploaded.'
-            : successfulUpload
-            ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-            : 'Drag & Drop your files below'
-        }
-        image={uploadError ? NounImage.Cone : successfulUpload ? NounImage.Camera : null}
-        showModal={showImageUploadModal}
-        setShowModal={setShowImageUploadModal}
-        onRequestClose={handleDismiss}
-        body={
-          uploadError ? null : loading ? (
-            <LoadingIndicator />
-          ) : successfulUpload ? null : (
-            <DropFileInput
-              files={files}
-              setFiles={setFiles}
-              onFileDrop={onFileDrop}
-              invalidFileMessage={invalidFileMessage}
-              invalidFileError={invalidFileError}
-              setInvalidFileError={setInvalidFileError}
-            />
-          )
-        }
-        button={
-          <Button
-            text={t('Close')}
-            disabled={loading}
-            bgColor={ButtonColor.White}
-            onClick={handleDismiss}
-          />
-        }
-        secondButton={
-          uploadError ? (
+      {showImageUploadModal && (
+        <Modal
+          title={
+            uploadError
+              ? 'Error Uploading'
+              : loading
+              ? 'Uploading...'
+              : successfulUpload
+              ? 'Upload Successful'
+              : files.length > 0
+              ? 'Ready to upload'
+              : 'Please upload your file(s)'
+          }
+          subtitle={
+            uploadError
+              ? `Your ${
+                  files.length === 1 ? 'file' : 'files'
+                } could not be uploaded. Please try again.`
+              : loading
+              ? 'Please wait while your files are uploaded.'
+              : successfulUpload
+              ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
+              : 'Drag & Drop your files below'
+          }
+          image={uploadError ? NounImage.Cone : successfulUpload ? NounImage.Camera : null}
+          setShowModal={setShowImageUploadModal}
+          onRequestClose={handleDismiss}
+          body={
+            uploadError ? null : loading ? (
+              <LoadingIndicator />
+            ) : successfulUpload ? null : (
+              <DropFileInput
+                files={files}
+                setFiles={setFiles}
+                onFileDrop={onFileDrop}
+                invalidFileMessage={invalidFileMessage}
+                invalidFileError={invalidFileError}
+                setInvalidFileError={setInvalidFileError}
+              />
+            )
+          }
+          button={
             <Button
-              text={'Retry'}
-              loading={loading}
+              text={t('Close')}
               disabled={loading}
-              bgColor={ButtonColor.Purple}
-              onClick={handleImageUpload}
+              bgColor={ButtonColor.White}
+              onClick={handleDismiss}
             />
-          ) : successfulUpload ? (
-            <Button
-              disabled={loading || files.length === 0}
-              text={t('Upload More?')}
-              bgColor={ButtonColor.Green}
-              onClick={handleUploadMore}
-            />
-          ) : (
-            <Button
-              disabled={loading || files.length === 0}
-              loading={loading}
-              text={t('Upload')}
-              bgColor={ButtonColor.Green}
-              onClick={handleImageUpload}
-            />
-          )
-        }
-      />
+          }
+          secondButton={
+            uploadError ? (
+              <Button
+                text={'Retry'}
+                loading={loading}
+                disabled={loading}
+                bgColor={ButtonColor.Purple}
+                onClick={handleImageUpload}
+              />
+            ) : successfulUpload ? (
+              <Button
+                disabled={loading || files.length === 0}
+                text={t('Upload More?')}
+                bgColor={ButtonColor.Green}
+                onClick={handleUploadMore}
+              />
+            ) : (
+              <Button
+                disabled={loading || files.length === 0}
+                loading={loading}
+                text={t('Upload')}
+                bgColor={ButtonColor.Green}
+                onClick={handleImageUpload}
+              />
+            )
+          }
+        />
+      )}
     </>
   );
 };
