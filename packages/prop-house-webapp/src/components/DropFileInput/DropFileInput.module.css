@@ -22,7 +22,6 @@
 
 .dropFileInput:hover,
 .dropFileInput.dragover {
-  /* opacity: 0.6; */
   background-color: var(--bg-dark) !important;
 }
 
@@ -32,6 +31,14 @@
   color: #ccc;
   font-weight: 600;
   padding: 10px;
+  font-size: 18px;
+}
+.dropFileInputLabel p {
+  margin-bottom: 5px;
+}
+.dropFileInputLabelFiles {
+  font-style: italic;
+  font-size: 14px;
 }
 
 .dropFileInputLabel img {
@@ -43,7 +50,6 @@
 }
 .dropFilePreview {
   overflow-y: auto;
-  /* height: */
   max-height: 200px;
 }
 
@@ -58,10 +64,11 @@
 }
 
 .dropFilePreviewTitle {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 .dropFilePreviewItem {
+  margin-top: 15px;
   position: relative;
   display: flex;
   margin-bottom: 10px;
@@ -107,4 +114,10 @@
   box-shadow: var(--box-shadow);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   transition: opacity 0.3s ease;
+}
+.invalidFile {
+  color: var(--brand-red);
+  font-weight: 600;
+  font-size: 14px;
+  font-style: italic;
 }
