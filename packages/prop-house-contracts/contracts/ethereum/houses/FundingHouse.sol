@@ -110,19 +110,21 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
 
     /// @notice Create a new funding round and mint the round manager NFT to the caller
     /// @param strategy The house strategy implementation contract address
+    /// @param config The house strategy configuration data
     /// @param voting The selected voting strategy IDs
     /// @param title A short title for the round
     /// @param description A desciption that adds context about the round
     /// @param tags Tags used to improve searchability and filtering
     function createRound(
         address strategy,
+        bytes calldata config,
         uint256[] calldata voting,
         string calldata title,
         string calldata description,
         string[] calldata tags
     ) external returns (address) {
         address round = _createRound(strategy, voting, title, description, tags);
-        IHouseStrategy(round).initialize(new bytes(0));
+        IHouseStrategy(round).initialize(config);
 
         return round;
     }

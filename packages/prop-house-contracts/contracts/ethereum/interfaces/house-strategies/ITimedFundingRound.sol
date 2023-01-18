@@ -28,6 +28,12 @@ interface ITimedFundingRound is IFundingHouseStrategy {
         Award[] awards;
     }
 
+    /// @notice Thrown when the round has already been defined
+    error ROUND_ALREADY_DEFINED();
+
+    /// @notice Thrown when the round has not yet been defined
+    error ROUND_NOT_DEFINED();
+
     /// @notice Thrown when an award has already been claimed
     error AWARD_ALREADY_CLAIMED();
 
@@ -104,19 +110,21 @@ interface ITimedFundingRound is IFundingHouseStrategy {
     /// @param amount The amount of the asset being rescued
     event AssetRescued(address recipient, uint256 assetId, uint256 amount);
 
-    /// @notice Emitted when the round registration is submitted to L2
+    /// @notice Emitted when the round configuration is defined
     /// @param proposalPeriodStartTimestamp The timestamp at which the proposal period starts
     /// @param proposalPeriodDuration The proposal period duration in seconds
     /// @param votePeriodDuration The vote period duration in seconds
     /// @param winnerCount The number of possible winners
-    /// @param awards The awards offered to winners
-    event RoundRegistered(
+    event RoundDefined(
         uint40 proposalPeriodStartTimestamp,
         uint40 proposalPeriodDuration,
         uint40 votePeriodDuration,
-        uint16 winnerCount,
-        Award[] awards
+        uint16 winnerCount
     );
+
+    /// @notice Emitted when the round registration is submitted to L2
+    /// @param awards The awards offered to winners
+    event RoundRegistered(Award[] awards);
 
     /// @notice Emitted when the round is finalized
     event RoundFinalized();

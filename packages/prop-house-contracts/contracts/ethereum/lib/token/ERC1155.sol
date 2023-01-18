@@ -8,19 +8,11 @@ import { ERC1155TokenReceiver } from '../utils/TokenReceiver.sol';
 /// - Uses custom errors
 /// - Does not revert on `_mint` & `_batchMint` if the receiver is a contract and does NOT implement the ERC1155TokenReceiver rules
 abstract contract ERC1155 {
-    /*//////////////////////////////////////////////////////////////
-                                 ERRORS
-    //////////////////////////////////////////////////////////////*/
-
     error NOT_AUTHORIZED();
 
     error UNSAFE_RECIPIENT();
 
     error LENGTH_MISMATCH();
-
-    /*//////////////////////////////////////////////////////////////
-                                 EVENTS
-    //////////////////////////////////////////////////////////////*/
 
     event TransferSingle(
         address indexed operator,
@@ -42,23 +34,11 @@ abstract contract ERC1155 {
 
     event URI(string value, uint256 indexed id);
 
-    /*//////////////////////////////////////////////////////////////
-                             ERC1155 STORAGE
-    //////////////////////////////////////////////////////////////*/
-
     mapping(address => mapping(uint256 => uint256)) public balanceOf;
 
     mapping(address => mapping(address => bool)) public isApprovedForAll;
 
-    /*//////////////////////////////////////////////////////////////
-                             METADATA LOGIC
-    //////////////////////////////////////////////////////////////*/
-
     function uri(uint256 id) public view virtual returns (string memory);
-
-    /*//////////////////////////////////////////////////////////////
-                              ERC1155 LOGIC
-    //////////////////////////////////////////////////////////////*/
 
     function setApprovalForAll(address operator, bool approved) public virtual {
         isApprovedForAll[msg.sender][operator] = approved;
@@ -156,20 +136,12 @@ abstract contract ERC1155 {
         }
     }
 
-    /*//////////////////////////////////////////////////////////////
-                              ERC165 LOGIC
-    //////////////////////////////////////////////////////////////*/
-
     function supportsInterface(bytes4 interfaceId) public view virtual returns (bool) {
         return
             interfaceId == 0x01ffc9a7 || // ERC165 Interface ID for ERC165
             interfaceId == 0xd9b67a26 || // ERC165 Interface ID for ERC1155
             interfaceId == 0x0e89341c; // ERC165 Interface ID for ERC1155MetadataURI
     }
-
-    /*//////////////////////////////////////////////////////////////
-                        INTERNAL MINT/BURN LOGIC
-    //////////////////////////////////////////////////////////////*/
 
     function _mint(
         address to,

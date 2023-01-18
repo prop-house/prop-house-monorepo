@@ -14,8 +14,6 @@ import { Asset, Award } from '../lib/types/Common.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { Sort } from '../lib/utils/Sort.sol';
 
-// TODO: Add depositor griefing protection (pre-deposit configuration locking)
-
 contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, Clone {
     using Sort for Award[];
 
@@ -141,11 +139,22 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         return ''; // TODO: Detect if ETH, ERC20, ERC721, or ERC1155 using asset type, return image for asset.
     }
 
-    /// @notice Initialize the strategy by optionally registering the round's configuration
+    /// @notice Initialize the strategy by optionally defining the round's
+    /// configuration and registering the round on L2.
     /// @dev This function is only callable by the house
     function initialize(bytes calldata data) external onlyHouse {
         if (data.length != 0) {
-            _registerRound(abi.decode(data, (RoundConfig)));
+            RoundConfig memory config = abi.decode(data, (RoundConfig));
+
+            _defineRound(
+                config.proposalPeriodStartTimestamp,
+                config.proposalPeriodDuration,
+                config.votePeriodDuration,
+                config.winnerCount
+            );
+            if (config.awards.length != 0) {
+                _registerRound(config.awards);
+            }
         }
     }
 
@@ -175,11 +184,30 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _batchMint(to, ids, amounts, new bytes(0));
     }
 
-    /// @notice Register the round's configuration and change the round state to active
+    /// @notice Define the round's configuration, assign awards, validate balances,
+    /// and register the round on L2. This function should be used if the configuration
+    /// was not defined during round initialization. The round must be fully funded
+    /// before this function is called.
     /// @param config The round configuration
     /// @dev This function is only callable by the round manager
-    function registerRound(RoundConfig calldata config) external onlyRoundManager {
-        _registerRound(config);
+    function defineAndRegisterRound(RoundConfig calldata config) external onlyRoundManager {
+        _defineRound(
+            config.proposalPeriodStartTimestamp,
+            config.proposalPeriodDuration,
+            config.votePeriodDuration,
+            config.winnerCount
+        );
+        _registerRound(config.awards);
+    }
+
+    /// @notice Assign awards, validate balances, and register the round on L2. This function
+    /// should be used if the configuration was defined during round initialization, but the
+    /// awards have not yet been assigned and the round has not been registered. The round
+    /// must be fully funded before this function is called.
+    /// @param awards The round award assets
+    /// @dev This function is only callable by the round manager
+    function registerRound(Award[] calldata awards) external onlyRoundManager {
+        _registerRound(awards);
     }
 
     /// @notice Cancel the timed funding round
@@ -262,13 +290,13 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         claimAwardToRecipient(proposalId, msg.sender, amount, asset, proof);
     }
 
-    /// @notice Reclaim unclaimed assets to a custom recipient
+    /// @notice Reclaim assets to a custom recipient
     /// @param recipient The asset recipient
     /// @param assets The assets to reclaim
     function reclaimToRecipient(address recipient, Asset[] calldata assets) public {
         // prettier-ignore
-        // Reclamation is only available when the round is cancelled OR the round has been finalized and is in the reclamation period
-        if (state != RoundState.Cancelled || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < AWARD_RECLAMATION_AFTER)) {
+        // Reclamation is only available when the round is pending or cancelled OR the round has been finalized and is in the reclamation period
+        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < AWARD_RECLAMATION_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
 
@@ -292,7 +320,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
     }
 
-    /// @notice Reclaim unclaimed assets to the caller
+    /// @notice Reclaim assets to the caller
     /// @param assets The assets to reclaim
     function reclaim(Asset[] calldata assets) external {
         reclaimToRecipient(msg.sender, assets);
@@ -333,59 +361,81 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
     }
 
+    /// @notice Set the round configuration. Once the configuration is set, it cannot be updated.
+    /// @param proposalPeriodStartTimestamp_ The timestamp at which the proposal period starts
+    /// @param proposalPeriodDuration_ The proposal period duration in seconds
+    /// @param votePeriodDuration_ The vote period duration in seconds
+    /// @param winnerCount_ The number of possible winners
+    function _defineRound(
+        uint40 proposalPeriodStartTimestamp_,
+        uint40 proposalPeriodDuration_,
+        uint40 votePeriodDuration_,
+        uint16 winnerCount_
+    ) internal {
+        // To protect depositors, the round can only be defined once
+        if (winnerCount != 0) {
+            revert ROUND_ALREADY_DEFINED();
+        }
+
+        // Ensure the round configuration is valid
+        if (proposalPeriodDuration_ < MIN_PROPOSAL_PERIOD_DURATION) {
+            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (proposalPeriodStartTimestamp_ + proposalPeriodDuration_ < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
+            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (votePeriodDuration_ < MIN_VOTE_PERIOD_DURATION) {
+            revert VOTE_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (winnerCount_ == 0) {
+            revert WINNER_COUNT_CANNOT_BE_ZERO();
+        }
+        if (winnerCount_ > MAX_WINNER_COUNT) {
+            revert WINNER_COUNT_EXCEEDS_MAXIMUM();
+        }
+
+        // Write round metadata to storage. This will be consumed by the token URI later.
+        proposalPeriodStartTimestamp = proposalPeriodStartTimestamp_;
+        proposalPeriodDuration = proposalPeriodDuration_;
+        votePeriodDuration = votePeriodDuration_;
+        winnerCount = winnerCount_;
+
+        emit RoundDefined(proposalPeriodStartTimestamp_, proposalPeriodDuration_, votePeriodDuration_, winnerCount_);
+    }
+
     // prettier-ignore
-    /// @notice Register the round's configuration and change the round state to active
-    /// @param config The round configuration
-    function _registerRound(RoundConfig memory config) internal {
-        // Ensure round has not yet been registered on L2
+    /// @notice Assign round awards, validate balances, and register the round on L2
+    /// @param awards The round award assets
+    function _registerRound(Award[] memory awards) internal {
+        // The configuration must be defined prior to registration
+        if (winnerCount == 0) {
+            revert ROUND_NOT_DEFINED();
+        }
         if (state != RoundState.Pending) {
             revert ROUND_ALREADY_REGISTERED();
         }
 
-        // Ensure all round config values are valid
-        if (config.proposalPeriodDuration < MIN_PROPOSAL_PERIOD_DURATION) {
-            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
+        // Ensure awards are valid and there is enough time remaining in the proposal period
+        if (proposalPeriodStartTimestamp + proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
             revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
         }
-        if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
-            revert VOTE_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (config.awards.length != 1 && config.awards.length != config.winnerCount) {
+        if (awards.length != 1 && awards.length != winnerCount) {
             revert INVALID_AWARD_LENGTH();
         }
-        if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
+        if (awards.length == 1 && winnerCount > 1 && awards[0].amount % winnerCount != 0) {
             revert INVALID_AWARD_AMOUNT();
-        }
-        if (config.winnerCount == 0) {
-            revert WINNER_COUNT_CANNOT_BE_ZERO();
-        }
-        if (config.winnerCount > MAX_WINNER_COUNT) {
-            revert WINNER_COUNT_EXCEEDS_MAXIMUM();
         }
 
         // Ensure the round is sufficiently funded
-        if (!_isFullyFunded(config.awards)) {
+        if (!_isFullyFunded(awards)) {
             revert INSUFFICIENT_ASSET_FUNDING();
         }
 
-        // Write round metadata to storage. This will be consumed by the token URI later.
         state = RoundState.Active;
-        proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
-        proposalPeriodDuration = config.proposalPeriodDuration;
-        votePeriodDuration = config.votePeriodDuration;
-        winnerCount = config.winnerCount;
 
-        IHouse(house()).forwardMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(config));
+        IHouse(house()).forwardMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(awards));
 
-        emit RoundRegistered(
-            config.proposalPeriodStartTimestamp,
-            config.proposalPeriodDuration,
-            config.votePeriodDuration,
-            config.winnerCount,
-            config.awards
-        );
+        emit RoundRegistered(awards);
     }
 
     /// @notice Determine if the round has been sufficiently funded to back the
@@ -420,8 +470,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     }
 
     /// @notice Generate the payload required to register the round on L2
-    /// @param config The round configuration
-    function _getL2Payload(RoundConfig memory config) internal view returns (uint256[] memory payload) {
+    /// @param awards The round award assets
+    function _getL2Payload(Award[] memory awards) internal view returns (uint256[] memory payload) {
         uint8 _numVotingStrategies = numVotingStrategies();
         uint256[] memory _votingStrategies = votingStrategies();
 
@@ -433,11 +483,11 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
         // L2 strategy params
         payload[2] = 6;
-        (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards))).split();
-        payload[5] = config.proposalPeriodStartTimestamp;
-        payload[6] = config.proposalPeriodDuration;
-        payload[7] = config.votePeriodDuration;
-        payload[8] = config.winnerCount;
+        (payload[3], payload[4]) = uint256(keccak256(abi.encode(awards))).split();
+        payload[5] = proposalPeriodStartTimestamp;
+        payload[6] = proposalPeriodDuration;
+        payload[7] = votePeriodDuration;
+        payload[8] = winnerCount;
 
         unchecked {
             // L2 voting strategies
