@@ -215,14 +215,13 @@ const ProposalEditor: React.FC<{
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
   ) => {
     setInvalidFileError(false);
-
     let selectedFiles: File[] = [];
 
-    // check if the event is a drag event or a file input event
-    // dataTransfer === drag images directly on editor
+    // check if the event is a drag event or a file input event:
     if ('dataTransfer' in event) {
-      // default behavior is to open the file in the browser
+      // dataTransfer === drag images directly on editor
       event.preventDefault();
+      // default behavior is to open the file in the browser
 
       selectedFiles = Array.from(event.dataTransfer.files || []);
       setShowImageUploadModal(true);

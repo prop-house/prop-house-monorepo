@@ -1,12 +1,5 @@
 // The file types we allow to be uploaded
-const allowedFileTypes = [
-  'image/jpeg',
-  'image/jpg',
-  'image/png',
-  'image/svg+xml',
-  'image/gif',
-  'video/quicktime',
-];
+const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml', 'image/gif'];
 
 /**
  * Checks if file is valid

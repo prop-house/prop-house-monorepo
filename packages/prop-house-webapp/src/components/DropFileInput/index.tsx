@@ -47,12 +47,7 @@ const DropFileInput: React.FC<{
           <p className={classes.dropFileInputLabelFiles}>or click browse</p>
         </div>
 
-        <input
-          type="file"
-          multiple
-          accept=".jpg, .jpeg, .png, .svg, .gif, .mov"
-          onChange={onFileDrop}
-        />
+        <input type="file" multiple accept=".jpg, .jpeg, .png, .svg, .gif" onChange={onFileDrop} />
       </div>
 
       {(invalidFileError || files.length > 0) && <Divider />}
