@@ -7,6 +7,6 @@ const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml
  * @returns Boolean of whether file is valid
  */
 
-const validFile = (file: File) => allowedFileTypes.includes(file.type);
+const validFileType = (file: File) => allowedFileTypes.includes(file.type);
 
-export default validFile;
+export default validFileType;
