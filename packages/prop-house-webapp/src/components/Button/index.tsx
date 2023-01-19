@@ -1,7 +1,6 @@
 import classes from './Button.module.css';
 import clsx from 'clsx';
 import { Button as BSButton } from 'react-bootstrap';
-import ReactLoading from 'react-loading';
 
 export enum ButtonColor {
   Pink,
