@@ -24,17 +24,25 @@
 .dropFileInput.dragover {
   background-color: var(--bg-dark) !important;
 }
-
+.dropFilePreviewTitle {
+  margin-bottom: 0;
+  color: var(--brand-black);
+  font-weight: 600;
+}
 .dropFileInputLabel {
   text-align: center;
-  color: var(--txt-second-color);
   color: #ccc;
   font-weight: 600;
   padding: 10px;
   font-size: 18px;
 }
-.dropFileInputLabel p {
-  margin-bottom: 5px;
+.uploadImage {
+  width: 150px !important;
+  margin-bottom: 10px;
+}
+.dragYourFiles {
+  color: var(--brand-black);
+  margin-bottom: 0px;
 }
 .dropFileInputLabelFiles {
   font-style: italic;
@@ -46,6 +54,7 @@
 }
 
 .dropFilePreview {
+  margin-top: 20px;
   overflow-y: auto;
   max-height: 200px;
 }
@@ -61,17 +70,22 @@
 }
 
 .dropFilePreviewItem {
-  margin-top: 15px;
+  margin-top: 0;
   position: relative;
   display: flex;
-  margin-bottom: 10px;
-  background-color: var(--bg-med);
-  background-color: #f5f8ff;
+  margin-bottom: 2px;
+  background-color: var(--bg-dark);
   padding: 8px;
   border-radius: 12px;
 }
 .dropFilePreviewItem p {
   margin-bottom: 0;
+}
+.dropFilePreviewItem p:first-child {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
 }
 
 .dropFilePreviewItem img {
@@ -84,6 +98,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  width: 100%;
+  max-width: 75%;
 }
 
 .dropFilePreviewItemDel {

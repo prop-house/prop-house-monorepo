@@ -198,6 +198,7 @@ const ProposalEditor: React.FC<{
     setUploadError(false);
     setFiles([]);
     setInvalidFileMessage('');
+    setInvalidFileError(false);
   };
   // when you click outside the modal, reset state & close modal
   const handleDismiss = () => {
@@ -213,6 +214,8 @@ const ProposalEditor: React.FC<{
   const onFileDrop = (
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
   ) => {
+    setInvalidFileError(false);
+
     let selectedFiles: File[] = [];
 
     // check if the event is a drag event or a file input event
@@ -370,7 +373,7 @@ const ProposalEditor: React.FC<{
               ? 'Upload Successful'
               : files.length > 0
               ? 'Ready to upload'
-              : 'Please upload your file(s)'
+              : 'Upload files'
           }
           subtitle={
             uploadError
@@ -381,7 +384,7 @@ const ProposalEditor: React.FC<{
               ? 'Please wait while your files are uploaded.'
               : successfulUpload
               ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-              : 'Drag & Drop your files below'
+              : 'Example formats: .jpg, .png, .gif, .svg, and .mov'
           }
           image={uploadError ? NounImage.Cone : successfulUpload ? NounImage.Camera : null}
           setShowModal={setShowImageUploadModal}
