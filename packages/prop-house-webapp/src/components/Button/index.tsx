@@ -21,12 +21,10 @@ export interface ButtonProps {
   disabled?: boolean;
   onClick?: (e: any) => void;
   classNames?: string[] | string;
-  loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
-  const { text, bgColor, disabled, onClick, classNames, loading } = props;
-  const loadingSpinner = <ReactLoading type="spin" height={24} width={24} />;
+  const { text, bgColor, disabled, onClick, classNames } = props;
 
   const bgColorClass =
     bgColor === ButtonColor.Pink
@@ -53,7 +51,7 @@ const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
       disabled={disabled}
       onClick={onClick}
     >
-      {loading ? loadingSpinner : text}
+      {text}
     </BSButton>
   );
 };
