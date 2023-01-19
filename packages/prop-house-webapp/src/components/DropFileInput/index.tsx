@@ -3,6 +3,7 @@ import classes from './DropFileInput.module.css';
 import uploadImg from '../../assets/files/upload.png';
 import { imageConfig } from './imageConfig';
 import { formatBytes } from '../../utils/formatBytes';
+import Divider from '../Divider';
 
 const DropFileInput: React.FC<{
   files: File[];
@@ -41,8 +42,9 @@ const DropFileInput: React.FC<{
         onDrop={onDrop}
       >
         <div className={classes.dropFileInputLabel}>
-          <img src={uploadImg} alt="upload" />
-          <p className={classes.dropFileInputLabelFiles}>ex: JPG/JPEG, PNG, SVG, GIF, MOV</p>
+          <img className={classes.uploadImage} src={uploadImg} alt="upload" />
+          <p className={classes.dragYourFiles}>Drag & drop your files here</p>
+          <p className={classes.dropFileInputLabelFiles}>or click browse</p>
         </div>
 
         <input
@@ -53,36 +55,32 @@ const DropFileInput: React.FC<{
         />
       </div>
 
+      {(invalidFileError || files.length > 0) && <Divider />}
+
+      {files.length > 0 && <p className={classes.dropFilePreviewTitle}>Ready to upload</p>}
+
       {invalidFileError && <span className={classes.invalidFile}>{invalidFileMessage}</span>}
 
-      {
+      {files.length > 0 ? (
         <div className={classes.dropFilePreview}>
-          {files.length > 0
-            ? files.map((item, index) => {
-                return (
-                  <div key={index} className={classes.dropFilePreviewItem}>
-                    <img
-                      src={imageConfig[item.type.split('/')[1]] || imageConfig['default']}
-                      alt=""
-                    />
+          {files.map((item, index) => {
+            return (
+              <div key={index} className={classes.dropFilePreviewItem}>
+                <img src={imageConfig[item.type.split('/')[1]] || imageConfig['default']} alt="" />
 
-                    <div className={classes.dropFilePreviewItemInfo}>
-                      <p>{item.name}</p>
-                      <p>{formatBytes(item.size)}</p>
-                    </div>
+                <div className={classes.dropFilePreviewItemInfo}>
+                  <p>{item.name}</p>
+                  <p>{formatBytes(item.size)}</p>
+                </div>
 
-                    <span
-                      className={classes.dropFilePreviewItemDel}
-                      onClick={() => fileRemove(item)}
-                    >
-                      x
-                    </span>
-                  </div>
-                );
-              })
-            : null}
+                <span className={classes.dropFilePreviewItemDel} onClick={() => fileRemove(item)}>
+                  x
+                </span>
+              </div>
+            );
+          })}
         </div>
-      }
+      ) : null}
     </>
   );
 };
