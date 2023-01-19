@@ -91,6 +91,7 @@ const ProposalEditor: React.FC<{
   const handleImageUpload = async () => {
     if (!quill) return;
     setLoading(true);
+    setUploadError(false);
     setInvalidFileMessage('');
 
     try {
@@ -384,13 +385,20 @@ const ProposalEditor: React.FC<{
               ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
               : 'Example formats: .jpg, .png, .gif, .svg, and .mov'
           }
-          image={uploadError ? NounImage.Cone : successfulUpload ? NounImage.Camera : null}
+          image={
+            uploadError
+              ? NounImage.Cone
+              : loading
+              ? null
+              : successfulUpload
+              ? NounImage.Camera
+              : null
+          }
+          loading={loading}
           setShowModal={setShowImageUploadModal}
           onRequestClose={handleDismiss}
           body={
-            uploadError ? null : loading ? (
-              <LoadingIndicator />
-            ) : successfulUpload ? null : (
+            uploadError ? null : loading ? null : successfulUpload ? null : (
               <DropFileInput
                 files={files}
                 setFiles={setFiles}
