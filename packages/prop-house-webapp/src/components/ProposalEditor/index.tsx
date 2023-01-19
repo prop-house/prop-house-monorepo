@@ -16,9 +16,10 @@ import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
 import BlotFormatter from 'quill-blot-formatter';
 import { NounImage } from '../../utils/getNounImage';
-import validFile from '../../utils/validFile';
+import validFileType from '../../utils/validFileType';
 import changeFileExtension from '../../utils/changeFileExtension';
-import getInvalidFileMessage from '../../utils/getInvalidFileMessage';
+import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
+import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -48,6 +49,10 @@ const ProposalEditor: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const [invalidFileError, setInvalidFileError] = useState(false);
   const [invalidFileMessage, setInvalidFileMessage] = useState('');
+  const [duplicateFile, setDuplicateFile] = useState<{ error: boolean; name: string }>({
+    error: false,
+    name: '',
+  });
 
   const validateInput = (min: number, count: number) => 0 < count && count < min;
 
@@ -199,6 +204,7 @@ const ProposalEditor: React.FC<{
     setFiles([]);
     setInvalidFileMessage('');
     setInvalidFileError(false);
+    setDuplicateFile({ error: false, name: '' });
   };
   // when you click outside the modal, reset state & close modal
   const handleDismiss = () => {
@@ -215,6 +221,8 @@ const ProposalEditor: React.FC<{
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
   ) => {
     setInvalidFileError(false);
+    setDuplicateFile({ error: false, name: '' });
+
     let selectedFiles: File[] = [];
 
     // check if the event is a drag event or a file input event:
@@ -231,31 +239,70 @@ const ProposalEditor: React.FC<{
     }
 
     const invalidFileTypes: string[] = [];
+    const duplicateFileNames: string[] = [];
+
     // check if any of the files are invalid
-    if (Array.from(selectedFiles).some(file => !validFile(file))) {
+    if (Array.from(selectedFiles).some(file => !validFileType(file))) {
       setInvalidFileError(true);
       // get the invalid file types
       Array.from(selectedFiles).map((file, i) => {
-        if (!validFile(file)) {
+        if (!validFileType(file)) {
           let fileExtension = file.type.split('/')[1];
           // save the invalid file type to show in error message
           invalidFileTypes.push(changeFileExtension(fileExtension));
         }
         return selectedFiles;
       });
-      // generate error message:
+
+      // generate invalid file type error message:
       //   • Array.from(new Set(invalidFileTypes)) remove duplicate file types before generating error message
-      //   • getInvalidFileMessage() is a function that generates the error message
+      //   • getInvalidFileTypeMessage() is a function that generates the error message
       //   • setInvalidFileMessage saves the error message to state
-      setInvalidFileMessage(getInvalidFileMessage(Array.from(new Set(invalidFileTypes))));
+      setInvalidFileMessage(getInvalidFileTypeMessage(Array.from(new Set(invalidFileTypes))));
     }
-    // filter out invalid files
-    const validFiles = Array.from(selectedFiles).filter(file => validFile(file));
+
+    // check if any of the files are duplicates
+    selectedFiles.forEach(file => {
+      // check if the file name is already in the list of files, if it is, add it to the list of duplicate file names
+      if (files.find(f => f.name === file.name)) duplicateFileNames.push(file.name);
+    });
+
+    // generate duplicate file error message if there are any:
+    //   • Array.from(new Set(duplicateFileNames)) remove duplicate file names before generating error message
+    //  • getDuplicateFileMessage() is a function that generates the error message
+    //  • setDuplicateFile saves the error message to state
+    duplicateFileNames.length > 0 &&
+      setDuplicateFile({
+        error: true,
+        name: getDuplicateFileMessage(Array.from(new Set(duplicateFileNames))),
+      });
+
+    // filter out invalid  & duplicate files
+    const validFiles = Array.from(selectedFiles)
+      // filter out invalid files extensions
+      .filter(
+        file =>
+          validFileType(file) &&
+          // filter out duplicates
+          !files.find(f => f.name === file.name),
+      );
+
     // add the valid files to the list
     if (validFiles) {
       const updatedList = [...files, ...validFiles];
       setFiles(updatedList);
     }
+  };
+
+  const fileRemove = (file: File) => {
+    setInvalidFileError(false);
+
+    const updatedList = [...files];
+
+    // remove the file from the list
+    updatedList.splice(files.indexOf(file), 1);
+    setFiles(updatedList);
+    setDuplicateFile({ error: false, name: '' });
   };
 
   return (
@@ -401,11 +448,11 @@ const ProposalEditor: React.FC<{
             uploadError ? null : loading ? null : successfulUpload ? null : (
               <DropFileInput
                 files={files}
-                setFiles={setFiles}
                 onFileDrop={onFileDrop}
+                fileRemove={fileRemove}
+                duplicateFile={duplicateFile}
                 invalidFileMessage={invalidFileMessage}
                 invalidFileError={invalidFileError}
-                setInvalidFileError={setInvalidFileError}
               />
             )
           }

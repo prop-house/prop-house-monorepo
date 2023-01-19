@@ -7,30 +7,19 @@ import Divider from '../Divider';
 
 const DropFileInput: React.FC<{
   files: File[];
-  setFiles: (files: File[]) => void;
+  duplicateFile: { error: boolean; name: string };
+  fileRemove: (file: File) => void;
   onFileDrop: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
   invalidFileMessage: string;
   invalidFileError: boolean;
-  setInvalidFileError: (error: boolean) => void;
 }> = props => {
-  const { files, setFiles, onFileDrop, invalidFileMessage, invalidFileError, setInvalidFileError } =
+  const { files, duplicateFile, onFileDrop, fileRemove, invalidFileMessage, invalidFileError } =
     props;
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const onDragEnter = () => wrapperRef.current!.classList.add('dragover');
   const onDragLeave = () => wrapperRef.current!.classList.remove('dragover');
   const onDrop = () => wrapperRef.current!.classList.remove('dragover');
-
-  const fileRemove = (file: File) => {
-    setInvalidFileError(false);
-
-    const updatedList = [...files];
-
-    // remove the file from the list
-    updatedList.splice(files.indexOf(file), 1);
-
-    setFiles(updatedList);
-  };
 
   return (
     <>
@@ -54,7 +43,17 @@ const DropFileInput: React.FC<{
 
       {files.length > 0 && <p className={classes.dropFilePreviewTitle}>Ready to upload</p>}
 
-      {invalidFileError && <span className={classes.invalidFile}>{invalidFileMessage}</span>}
+      {(invalidFileError || duplicateFile.error) && (
+        <span className={classes.invalidFile}>
+          {invalidFileError && duplicateFile.error
+            ? invalidFileMessage + ` and ${duplicateFile.name}`
+            : invalidFileError
+            ? invalidFileMessage
+            : duplicateFile.error
+            ? `${duplicateFile.name}`
+            : ''}
+        </span>
+      )}
 
       {files.length > 0 ? (
         <div className={classes.dropFilePreview}>
