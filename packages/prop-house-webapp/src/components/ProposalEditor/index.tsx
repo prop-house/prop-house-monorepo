@@ -14,7 +14,6 @@ import { useEthers } from '@usedapp/core';
 import Modal from '../Modal';
 import Button, { ButtonColor } from '../Button';
 import DropFileInput from '../DropFileInput';
-import LoadingIndicator from '../LoadingIndicator';
 import BlotFormatter from 'quill-blot-formatter';
 import { NounImage } from '../../utils/getNounImage';
 import validFile from '../../utils/validFile';
