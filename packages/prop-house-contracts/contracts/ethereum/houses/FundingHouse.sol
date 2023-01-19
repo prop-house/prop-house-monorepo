@@ -51,15 +51,13 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
             string memory symbol,
             string memory contractURI,
             address[] memory initialCreators,
-            address[] memory initialHouseStrategies,
             VotingStrategy[] memory initialVotingStrategies
-        ) = abi.decode(data, (string, string, string, address[], address[], VotingStrategy[]));
+        ) = abi.decode(data, (string, string, string, address[], VotingStrategy[]));
 
         __Ownable_init(creator);
         __ERC721_init(name, symbol);
 
         _updateContractURI(contractURI);
-        _enableManyStrategies(initialHouseStrategies);
         _addManyRoundCreatorsToWhitelist(initialCreators);
         _addManyVotingStrategiesToWhitelist(initialVotingStrategies);
     }
@@ -230,7 +228,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         string[] memory tags
     ) internal returns (address) {
         // Validate strategy, voting information, and creator
-        _requireStrategyEnabled(strategy);
+        _requireValidStrategy(strategy);
         _requireVotingStrategiesWhitelisted(voting);
         _requireRoundCreatorWhitelisted(msg.sender);
 

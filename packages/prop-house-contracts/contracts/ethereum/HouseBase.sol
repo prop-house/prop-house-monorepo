@@ -27,9 +27,6 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
     /// @notice A URI that returns house-level metadata
     string public contractURI;
 
-    /// @notice Determine if a house strategy is enabled
-    mapping(address => bool) public isStrategyEnabled;
-
     /// @notice Require that the sender is a valid strategy for this house
     modifier onlyHouseStrategy() {
         if (!isValidHouseStrategy(msg.sender)) {
@@ -60,44 +57,6 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
         _updateContractURI(newContractURI);
     }
 
-    /// @notice Enable a house strategy
-    /// @param strategy The strategy to enable
-    /// @dev This function is only callable by the house owner
-    function enableStrategy(address strategy) external onlyOwner {
-        _enableStrategy(strategy);
-    }
-
-    /// @notice Disable a house strategy
-    /// @param strategy The strategy to disable
-    /// @dev This function is only callable by the house owner
-    function disableStrategy(address strategy) external onlyOwner {
-        _disableStrategy(strategy);
-    }
-
-    /// @notice Enable many house strategies
-    /// @param strategies The strategies to enable
-    /// @dev This function is only callable by the house owner
-    function enableManyStrategies(address[] calldata strategies) external onlyOwner {
-        unchecked {
-            uint256 numStrategies = strategies.length;
-            for (uint256 i = 0; i < numStrategies; ++i) {
-                _enableStrategy(strategies[i]);
-            }
-        }
-    }
-
-    /// @notice Disable many house strategies
-    /// @param strategies The strategies to disable
-    /// @dev This function is only callable by the house owner
-    function disableManyStrategies(address[] calldata strategies) external onlyOwner {
-        unchecked {
-            uint256 numStrategies = strategies.length;
-            for (uint256 i = 0; i < numStrategies; ++i) {
-                _disableStrategy(strategies[i]);
-            }
-        }
-    }
-
     /// @notice Returns `true` if the provided address is a valid house strategy
     /// @param strategy The house strategy to validate
     function isValidHouseStrategy(address strategy) public view virtual returns (bool);
@@ -112,51 +71,20 @@ abstract contract HouseBase is IHouse, UUPS, Ownable {
         emit ContractURIUpdated(newContractURI);
     }
 
-    /// @notice Enable a house strategy
-    /// @param strategy The address of the strategy to enable
-    function _enableStrategy(address strategy) internal {
-        if (!_strategyManager.isValidStrategy(id, version, strategy)) {
-            revert IStrategyManager.STRATEGY_NOT_REGISTERED();
-        }
-        isStrategyEnabled[strategy] = true;
-
-        emit StrategyEnabled(strategy);
-    }
-
-    /// @notice Disable a house strategy
-    /// @param strategy The address of the strategy to disable
-    function _disableStrategy(address strategy) internal {
-        _requireStrategyEnabled(strategy);
-        isStrategyEnabled[strategy] = false;
-
-        emit StrategyDisabled(strategy);
-    }
-
-    /// @notice Enable many house strategies
-    /// @param strategies The addresses of the strategies to enable
-    function _enableManyStrategies(address[] memory strategies) internal {
-        unchecked {
-            uint256 numStrategies = strategies.length;
-            for (uint256 i = 0; i < numStrategies; ++i) {
-                _enableStrategy(strategies[i]);
-            }
-        }
-    }
-
     /// @notice Ensures the caller is authorized to upgrade the contract to a valid implementation
     /// @dev This function is called in UUPS `upgradeTo` & `upgradeToAndCall`
     /// @param newImpl The address of the new implementation
-    function _authorizeUpgrade(address newImpl) internal override onlyOwner {
+    function _authorizeUpgrade(address newImpl) internal view override onlyOwner {
         if (!_upgradeManager.isValidUpgrade(_getImplementation(), newImpl)) {
             revert INVALID_UPGRADE(newImpl);
         }
     }
 
-    /// @notice Revert is the strategy is not enabled on the house
+    /// @notice Revert is the strategy is not valid for the house implementation
     /// @param strategy The strategy address
-    function _requireStrategyEnabled(address strategy) internal view {
-        if (!isStrategyEnabled[strategy]) {
-            revert STRATEGY_NOT_ENABLED();
+    function _requireValidStrategy(address strategy) internal view {
+        if (!_strategyManager.isValidStrategy(id, version, strategy)) {
+            revert IStrategyManager.STRATEGY_NOT_REGISTERED();
         }
     }
 }

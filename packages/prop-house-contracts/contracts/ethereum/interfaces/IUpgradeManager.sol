@@ -16,5 +16,5 @@ interface IUpgradeManager {
     /// @notice Determine if an upgraded implementation has been registered for its original implementation
     /// @param prevImpl The address of the original implementation
     /// @param newImpl The address of the upgraded implementation
-    function isValidUpgrade(address prevImpl, address newImpl) external returns (bool);
+    function isValidUpgrade(address prevImpl, address newImpl) external view returns (bool);
 }

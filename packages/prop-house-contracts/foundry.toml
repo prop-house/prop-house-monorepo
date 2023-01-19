@@ -1,5 +1,4 @@
 [profile.default]
-via_ir = true
 src = "contracts"
 libs = ['lib', '../../node_modules']
 auto_detect_solc = true

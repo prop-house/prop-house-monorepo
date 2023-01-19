@@ -38,5 +38,5 @@ interface IStrategyManager {
         bytes32 houseImplId,
         uint256 houseImplVersion,
         address strategy
-    ) external returns (bool);
+    ) external view returns (bool);
 }

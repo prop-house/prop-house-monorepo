@@ -13,5 +13,5 @@ interface IDeploymentManager {
 
     /// @notice Determine if a deployment target is valid
     /// @param impl The address of the target implementation
-    function isValidDeploymentTarget(address impl) external returns (bool);
+    function isValidDeploymentTarget(address impl) external view returns (bool);
 }
