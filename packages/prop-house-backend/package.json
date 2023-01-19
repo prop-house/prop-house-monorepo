@@ -37,7 +37,7 @@
     "@nestjs/schedule": "^2.1.0",
     "@nestjs/throttler": "^3.1.0",
     "@nestjs/typeorm": "^8.0.2",
-    "@pinata/sdk": "^1.1.23",
+    "@pinata/sdk": "^2.1.0",
     "apollo-server-express": "^3.10.2",
     "body-parser": "^1.20.0",
     "class-transformer": "^0.5.1",
