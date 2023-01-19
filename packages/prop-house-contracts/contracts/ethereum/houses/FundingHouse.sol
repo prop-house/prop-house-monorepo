@@ -77,7 +77,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         emit VotingStrategyRemovedFromWhitelist(strategyHash);
     }
 
-    /// @notice Add a voting token to the whitelist
+    /// @notice Add a round creator to the whitelist
     /// @dev This function is only callable by the house owner
     function addRoundCreatorToWhitelist(address creator) external onlyOwner {
         _addRoundCreatorToWhitelist(creator);
@@ -89,7 +89,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         _addManyRoundCreatorsToWhitelist(creators);
     }
 
-    /// @notice Remove a voting token from the whitelist
+    /// @notice Remove a round creator from the whitelist
     /// @dev This function is only callable by the house owner
     function removeRoundCreatorFromWhitelist(address creator) external onlyOwner {
         _removeRoundCreatorFromWhitelist(creator);
@@ -112,16 +112,14 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param voting The selected voting strategy IDs
     /// @param title A short title for the round
     /// @param description A desciption that adds context about the round
-    /// @param tags Tags used to improve searchability and filtering
     function createRound(
         address strategy,
         bytes calldata config,
         uint256[] calldata voting,
         string calldata title,
-        string calldata description,
-        string[] calldata tags
+        string calldata description
     ) external returns (address) {
-        address round = _createRound(strategy, voting, title, description, tags);
+        address round = _createRound(strategy, voting, title, description);
         IHouseStrategy(round).initialize(config);
 
         return round;
@@ -133,7 +131,6 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param voting The selected voting strategy IDs
     /// @param title A short title for the round
     /// @param description A desciption that adds context about the round
-    /// @param tags Tags used to improve searchability and filtering
     /// @param assets Assets to deposit to the funding round
     function createAndFundRound(
         address strategy,
@@ -141,10 +138,9 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         uint256[] calldata voting,
         string calldata title,
         string calldata description,
-        string[] calldata tags,
         Asset[] calldata assets
     ) external payable returns (address) {
-        address round = _createRound(strategy, voting, title, description, tags);
+        address round = _createRound(strategy, voting, title, description);
 
         _awardRouter.batchPullTo{ value: msg.value }(msg.sender, payable(round), assets);
         IHouseStrategy(round).initialize(config);
@@ -159,7 +155,6 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param voting The selected voting strategy IDs
     /// @param title A short title for the round
     /// @param description A desciption that adds context about the round
-    /// @param tags Tags used to improve searchability and filtering
     /// @param assets Assets to deposit to the funding round
     /// @param signature The house approval signature for the caller
     function createAndFundRoundWithHouseApproval(
@@ -168,11 +163,10 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
         uint256[] calldata voting,
         string calldata title,
         string calldata description,
-        string[] calldata tags,
         Asset[] calldata assets,
         Signature calldata signature
     ) external payable returns (address) {
-        address round = _createRound(strategy, voting, title, description, tags);
+        address round = _createRound(strategy, voting, title, description);
 
         _approvalManager.setApprovalForHouseBySig(
             msg.sender,
@@ -219,13 +213,11 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
     /// @param voting The selected voting strategy IDs
     /// @param title A short title for the round
     /// @param description A desciption that adds context about the round
-    /// @param tags Tags used to improve searchability and filtering
     function _createRound(
         address strategy,
         uint256[] memory voting,
         string memory title,
-        string memory description,
-        string[] memory tags
+        string memory description
     ) internal returns (address) {
         // Validate strategy, voting information, and creator
         _requireValidStrategy(strategy);
@@ -239,7 +231,7 @@ contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1
 
         address round = strategy.clone(_encodeData(_roundId, voting));
 
-        emit RoundCreated(_roundId, voting, title, description, tags, strategy, round);
+        emit RoundCreated(_roundId, voting, title, description, strategy, round);
         return round;
     }
 

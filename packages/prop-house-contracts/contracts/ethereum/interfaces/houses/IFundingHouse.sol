@@ -47,7 +47,6 @@ interface IFundingHouse is IHouse, IERC721 {
     /// @param voting The selected voting strategy IDs
     /// @param title The round title
     /// @param description The round description
-    /// @param tags The round tag metadata
     /// @param strategy The house strategy implementation contract used by the round
     /// @param round The round contract address
     event RoundCreated(
@@ -55,7 +54,6 @@ interface IFundingHouse is IHouse, IERC721 {
         uint256[] voting,
         string title,
         string description,
-        string[] tags,
         address strategy,
         address round
     );
