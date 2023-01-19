@@ -44,7 +44,7 @@ const DropFileInput: React.FC<{
         <div className={classes.dropFileInputLabel}>
           <img className={classes.uploadImage} src={uploadImg} alt="upload" />
           <p className={classes.dragYourFiles}>Drag & drop your files here</p>
-          <p className={classes.dropFileInputLabelFiles}>or click browse</p>
+          <p className={classes.dropFileInputLabelFiles}>or click to browse</p>
         </div>
 
         <input type="file" multiple accept=".jpg, .jpeg, .png, .svg, .gif" onChange={onFileDrop} />
