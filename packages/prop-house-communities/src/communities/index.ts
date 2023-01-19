@@ -1,6 +1,7 @@
 import { balanceOfErc721, balanceOfErc721Multiple, erc1155, oneHundredVotes } from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
+import { onchainMonkey } from '../strategies/onchainMonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**
@@ -11,10 +12,7 @@ export const communities = new CaseInsensitiveMap(
     // nouns
     '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(10),
     // onchainmonkey
-    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': balanceOfErc721Multiple(
-      ['0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b', '0x960b7a6bcd451c9968473f7bbfd9be826efd549a'],
-      [1, 1],
-    ),
+    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': onchainMonkey(),
     // cryptoadz
     '0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6': balanceOfErc721(),
     // nouns japan
@@ -67,5 +65,7 @@ export const communities = new CaseInsensitiveMap(
       ],
       [1, 1, 1, 1],
     ),
+    // Nouns DAO Amigos
+    '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
   }),
 );

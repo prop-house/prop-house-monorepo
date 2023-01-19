@@ -1,94 +1,58 @@
-.backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
-
 .modal {
   font-family: 'PT Root UI', sans-serif;
-  font-weight: bold;
-  position: fixed;
-  top: 30vh;
-  left: 10%;
+  background: white;
   z-index: 100;
-  background-color: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
-  padding: 3rem 2rem;
+  border: 1px solid var(--border-dark);
+  box-shadow: var(--shadow-light);
+  border-radius: 24px;
+  padding: 18px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 420px;
+}
+.titleContainer {
   text-align: center;
-  border-radius: 15px;
-  left: calc(50% - 17.5rem);
-  width: 35rem;
 }
-
+.titleContainer p {
+  margin-bottom: 0;
+}
+.modalTitle {
+  font-weight: 700;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+.modalSubtitle {
+  font-weight: 500;
+  font-size: 16px;
+}
 .modal button {
-  border-radius: 10px;
-  min-height: 44px;
-  padding-top: 7px;
-  background-color: rgba(255, 255, 255, 0.7);
+  width: 100%;
+  border-radius: 50px;
 }
-
-.modal button:hover {
-  color: black;
-  background-color: rgba(255, 255, 255, 1);
+.buttonContainer {
+  display: flex;
+  gap: 8px;
 }
-
-.modal h3 {
-  font-size: xx-large;
-  font-weight: bold;
+.modal:focus-within {
+  outline: none !important;
 }
-
-.content {
-  padding: 1rem;
-  max-height: 50vh;
-  overflow-y: auto;
-  color: var(--brand-gray);
-  white-space: pre-line;
+.imgContainer {
+  text-align: center;
+  padding: 35px 0px 25px 0px;
 }
-
-.modal .closeButton {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  border: 0 none;
-  background-color: transparent;
-  width: 40px;
-  height: 40px;
-  padding-top: 2px;
+.imgContainer img {
+  height: 80px;
 }
-
-.modal .closeButton img {
-  height: 1rem;
-  width: 1rem;
-  opacity: 0.5;
-  transition: all 0.125s ease-in-out;
-  margin-top: -4px;
-}
-
-.modal .closeButton img:hover {
-  opacity: 1;
-}
-
-.modal button img {
-  margin-top: -2px;
-  width: 1.5rem;
-  height: auto;
-}
-
-@media (max-width: 992px) {
-  .modal {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-    max-height: 100%;
-  }
-}
-
-@media (max-width: 450px) {
+@media (max-width: 575px) {
   .modal {
     width: 90%;
     min-width: 300px;
