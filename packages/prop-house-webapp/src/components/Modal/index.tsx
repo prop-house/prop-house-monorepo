@@ -25,6 +25,7 @@ const Modal: React.FC<{
   return (
     <ReactModal
       isOpen={true}
+      appElement={document.getElementById('root')!}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
       className={classes.modal}
     >
