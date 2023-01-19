@@ -268,8 +268,8 @@ const ProposalEditor: React.FC<{
 
     // generate duplicate file error message if there are any:
     //   • Array.from(new Set(duplicateFileNames)) remove duplicate file names before generating error message
-    //  • getDuplicateFileMessage() is a function that generates the error message
-    //  • setDuplicateFile saves the error message to state
+    //   • getDuplicateFileMessage() is a function that generates the error message
+    //   • setDuplicateFile saves the error message to state
     duplicateFileNames.length > 0 &&
       setDuplicateFile({
         error: true,
