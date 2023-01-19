@@ -20,6 +20,7 @@ import validFileType from '../../utils/validFileType';
 import changeFileExtension from '../../utils/changeFileExtension';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
+import validateInput from '../../utils/validateInput';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -53,8 +54,6 @@ const ProposalEditor: React.FC<{
     error: false,
     name: '',
   });
-
-  const validateInput = (min: number, count: number) => 0 < count && count < min;
 
   const formData = [
     {
