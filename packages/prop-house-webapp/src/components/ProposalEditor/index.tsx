@@ -414,7 +414,6 @@ const ProposalEditor: React.FC<{
             uploadError ? (
               <Button
                 text={'Retry'}
-                loading={loading}
                 disabled={loading}
                 bgColor={ButtonColor.Purple}
                 onClick={handleImageUpload}
@@ -429,7 +428,6 @@ const ProposalEditor: React.FC<{
             ) : (
               <Button
                 disabled={loading || files.length === 0}
-                loading={loading}
                 text={t('Upload')}
                 bgColor={ButtonColor.Green}
                 onClick={handleImageUpload}
