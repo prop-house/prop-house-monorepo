@@ -6,11 +6,15 @@
 const changeFileExtension = (fileName: string): string => {
   switch (fileName) {
     case 'mpeg':
-      return 'MP3';
+      return 'Audio';
+    case 'quicktime':
+    case 'mp4':
+    case 'avi':
+      return 'Video';
+    case 'vnd.adobe.photoshop':
+      return 'Photoshop';
     case 'vnd.openxmlformats-officedocument.spreadsheetml.sheet':
       return 'Spreadsheet';
-    case 'vnd.adobe.photoshop':
-      return 'PSD';
     case undefined:
       return 'Unknown';
     default:
