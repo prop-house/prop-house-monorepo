@@ -31,6 +31,7 @@ import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
+import removePropsWithZeroVotes from '../../utils/removePropsWithZeroVotes';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
@@ -119,7 +120,7 @@ const RoundContent: React.FC<{
       await client.current.logVotes(votes, isContract);
 
       setShowErrorVotingModal(false);
-      setNumPropsVotedFor(voteAllotments.length);
+      setNumPropsVotedFor(removePropsWithZeroVotes(voteAllotments).length);
       setShowSuccessVotingModal(true);
       refreshActiveProposals(client.current, auction.id, dispatch);
       dispatch(clearVoteAllotments());
