@@ -150,6 +150,7 @@ const ProposalEditor: React.FC<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Drag and drop images in the editor or the upload image modal
   const onFileDrop = (
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
   ) => {
@@ -160,27 +161,30 @@ const ProposalEditor: React.FC<{
 
     // check if the event is a drag event or a file input event:
     if ('dataTransfer' in event) {
-      // dataTransfer === drag images directly on editor
+      // default behavior is to open file in new browser tab, so we prevent that
       event.preventDefault();
-      // default behavior is to open the file in the browser
 
+      // event.dataTransfer: images were dragged directly on editor
       selectedFiles = Array.from(event.dataTransfer.files || []);
       setShowImageUploadModal(true);
     } else if ('target' in event) {
-      // target === upload when the modal is already open
+      // event.target: images were dragged or uploaded via the input in the modal
       selectedFiles = Array.from(event.target.files || []);
     }
 
+    // store the invalid file types and duplicate file names
     const invalidFileTypes: string[] = [];
     const duplicateFileNames: string[] = [];
 
     // check if any of the files are invalid
     if (Array.from(selectedFiles).some(file => !validFileType(file))) {
       setInvalidFileError(true);
+
       // get the invalid file types
       Array.from(selectedFiles).map((file, i) => {
         if (!validFileType(file)) {
           let fileExtension = file.type.split('/')[1];
+
           // save the invalid file type to show in error message
           invalidFileTypes.push(changeFileExtension(fileExtension));
         }
