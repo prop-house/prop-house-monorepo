@@ -6,17 +6,17 @@
 const changeFileExtension = (fileName: string): string => {
   switch (fileName) {
     case 'mpeg':
-      return 'Audio';
+      return 'audio';
     case 'quicktime':
     case 'mp4':
     case 'avi':
-      return 'Video';
+      return 'video';
     case 'vnd.adobe.photoshop':
       return 'Photoshop';
     case 'vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-      return 'Spreadsheet';
+      return 'spreadsheet';
     case undefined:
-      return 'Unknown';
+      return 'unknown';
     default:
       return fileName.toUpperCase();
   }

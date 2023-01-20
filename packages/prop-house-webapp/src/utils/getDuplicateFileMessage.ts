@@ -6,7 +6,9 @@
 const getDuplicateFileMessage = (fileName: string[]): string => {
   let lastFileName;
 
-  if (fileName.length > 1) {
+  if (fileName.length > 3) {
+    return 'there were several duplicate files';
+  } else if (fileName.length > 1) {
     lastFileName = fileName.pop();
     return `${fileName.map(t => t).join(', ')}${
       lastFileName ? ` and ${lastFileName}` : ''
