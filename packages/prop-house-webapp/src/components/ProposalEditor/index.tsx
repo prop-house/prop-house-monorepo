@@ -1,26 +1,18 @@
-import classes from './ProposalEditor.module.css';
-import { Row, Col, Form } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { ProposalFields } from '../../utils/proposalFields';
-import 'react-quill/dist/quill.snow.css';
 import { useEffect, useRef, useState } from 'react';
 import { useQuill } from 'react-quilljs';
-import clsx from 'clsx';
 import QuillEditorModal from '../QuillEditorModal';
-import '../../quill.css';
 import { useTranslation } from 'react-i18next';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
-import Modal from '../Modal';
-import Button, { ButtonColor } from '../Button';
-import DropFileInput from '../DropFileInput';
 import BlotFormatter from 'quill-blot-formatter';
-import { NounImage } from '../../utils/getNounImage';
 import validFileType from '../../utils/validFileType';
 import changeFileExtension from '../../utils/changeFileExtension';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
-import validateInput from '../../utils/validateInput';
+import ImageUploadModal from '../ImageUploadModal';
+import ProposalInputs from '../ProposalInputs';
 
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
@@ -28,10 +20,8 @@ const ProposalEditor: React.FC<{
 }> = props => {
   const { fields, onDataChange } = props;
   const data = useAppSelector(state => state.editor.proposal);
-  const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
-  const [showImageModal, setShowImageModal] = useState(false);
   const { t } = useTranslation();
 
   const { library } = useEthers();
@@ -41,13 +31,9 @@ const ProposalEditor: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
   }, [library, host]);
-  const signerless = new PropHouseWrapper('https://prod.backend.prop.house');
 
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
-  const [successfulUpload, setSuccessfulUpload] = useState<boolean>(false);
-  const [uploadError, setUploadError] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [invalidFileError, setInvalidFileError] = useState(false);
   const [invalidFileMessage, setInvalidFileMessage] = useState('');
   const [duplicateFile, setDuplicateFile] = useState<{ error: boolean; name: string }>({
@@ -92,39 +78,6 @@ const ProposalEditor: React.FC<{
     error: t('descriptionError'),
   };
 
-  const handleImageUpload = async () => {
-    if (!quill) return;
-    setLoading(true);
-    setUploadError(false);
-    setInvalidFileMessage('');
-
-    try {
-      setSuccessfulUpload(false);
-
-      const res = await Promise.all(
-        files.map(async (file: File) => {
-          return await signerless.postFile(file, file.name);
-        }),
-      );
-
-      res.map((r, i) => {
-        quill.setSelection(quill.getLength(), 0);
-        quill.insertEmbed(
-          quill.getSelection()!.index,
-          'image',
-          `https://prod.backend.prop.house/file/local/hash/${r.data.ipfsHash}`,
-          Quill.sources.USER,
-        );
-
-        return null;
-      });
-      setSuccessfulUpload(true);
-    } catch (e) {
-      setUploadError(true);
-      console.log(e);
-    }
-    setLoading(false);
-  };
   const formats = [
     'header',
     'bold',
@@ -195,26 +148,6 @@ const ProposalEditor: React.FC<{
     if (fields) onDataChange(fields);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // image upload state reset
-  const resetImageUploadModal = () => {
-    setSuccessfulUpload(false);
-    setUploadError(false);
-    setFiles([]);
-    setInvalidFileMessage('');
-    setInvalidFileError(false);
-    setDuplicateFile({ error: false, name: '' });
-  };
-  // when you click outside the modal, reset state & close modal
-  const handleDismiss = () => {
-    resetImageUploadModal();
-    setShowImageUploadModal(false);
-  };
-  // reset state but keep modal open to upload more
-  const handleUploadMore = () => {
-    resetImageUploadModal();
-    setShowImageUploadModal(true);
-  };
 
   const onFileDrop = (
     event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
@@ -293,200 +226,45 @@ const ProposalEditor: React.FC<{
     }
   };
 
-  const fileRemove = (file: File) => {
-    setInvalidFileError(false);
-
-    const updatedList = [...files];
-
-    // remove the file from the list
-    updatedList.splice(files.indexOf(file), 1);
-    setFiles(updatedList);
-    setDuplicateFile({ error: false, name: '' });
-  };
-
   return (
     <>
-      <Row>
-        <Col xl={12}>
-          <Form>
-            <Form.Group className={classes.inputGroup}>
-              {formData.map(input => {
-                return (
-                  <div className={classes.inputSection} key={input.title}>
-                    <div className={classes.inputInfo}>
-                      <Form.Label className={classes.inputLabel}>{input.title}</Form.Label>
-                      <Form.Label className={classes.inputChars}>
-                        {input.maxCount
-                          ? `${input.fieldValue.length}/${input.maxCount}`
-                          : input.fieldValue.length}
-                      </Form.Label>
-                    </div>
-
-                    <Form.Control
-                      as={input.type as any}
-                      autoFocus={input.focus}
-                      maxLength={input.maxCount && input.maxCount}
-                      placeholder={input.placeholder}
-                      className={clsx(
-                        classes.input,
-                        input.fieldName === 'what' && classes.descriptionInput,
-                      )}
-                      onChange={e => {
-                        setBlurred(false);
-                        onDataChange({ [input.fieldName]: e.target.value });
-                      }}
-                      value={data && input.fieldValue}
-                      onBlur={() => {
-                        setBlurred(true);
-                      }}
-                    />
-
-                    {blurred && validateInput(input.minCount, input.fieldValue.length) && (
-                      <p className={classes.inputError}>{input.error}</p>
-                    )}
-                  </div>
-                );
-              })}
-
-              <>
-                <div className={classes.inputInfo}>
-                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>
-                    {descriptionData.title}
-                  </Form.Label>
-
-                  <Form.Label className={classes.inputChars}>
-                    {quill && quill.getText().length - 1}
-                  </Form.Label>
-                </div>
-
-                <>
-                  {/* 
-                    When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
-                  */}
-                  <div className="hideBorderBox"></div>
-                  <div
-                    ref={quillRef}
-                    onDrop={onFileDrop}
-                    placeholder={descriptionData.placeholder}
-                    onBlur={() => {
-                      setEditorBlurred(true);
-                    }}
-                  />
-
-                  {editorBlurred &&
-                    quill &&
-                    validateInput(descriptionData.minCount, quill.getText().length - 1) && (
-                      <p className={classes.inputError}>{descriptionData.error}</p>
-                    )}
-                </>
-              </>
-            </Form.Group>
-          </Form>
-        </Col>
-      </Row>
-
-      <QuillEditorModal
+      <ProposalInputs
         quill={quill}
-        Quill={Quill}
-        title={t('addLink')}
-        subtitle={t('pasteLink')}
-        showModal={showLinkModal}
-        setShowModal={setShowLinkModal}
-        placeholder="ex. https://nouns.wtf/"
-        quillModule="link"
+        quillRef={quillRef}
+        onDataChange={onDataChange}
+        onFileDrop={onFileDrop}
+        formData={formData}
+        descriptionData={descriptionData}
+        editorBlurred={editorBlurred}
+        setEditorBlurred={setEditorBlurred}
       />
 
-      <QuillEditorModal
-        quill={quill}
-        Quill={Quill}
-        title={t('addImage')}
-        subtitle={t('pasteImage')}
-        showModal={showImageModal}
-        setShowModal={setShowImageModal}
-        placeholder="ex. https://noun.pics/1.jpg"
-        quillModule="image"
-      />
+      {showLinkModal && (
+        <QuillEditorModal
+          quill={quill}
+          Quill={Quill}
+          title={t('addLink')}
+          subtitle={t('pasteLink')}
+          setShowModal={setShowLinkModal}
+          placeholder="ex. https://nouns.wtf/"
+          quillModule="link"
+        />
+      )}
 
       {showImageUploadModal && (
-        <Modal
-          title={
-            uploadError
-              ? 'Error Uploading'
-              : loading
-              ? 'Uploading...'
-              : successfulUpload
-              ? 'Upload Successful'
-              : files.length > 0
-              ? 'Ready to upload'
-              : 'Upload files'
-          }
-          subtitle={
-            uploadError
-              ? `Your ${
-                  files.length === 1 ? 'file' : 'files'
-                } could not be uploaded. Please try again.`
-              : loading
-              ? 'Please wait while your files are uploaded.'
-              : successfulUpload
-              ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-              : 'Example formats: .jpg, .png, .gif, .svg, and .mov'
-          }
-          image={
-            uploadError
-              ? NounImage.Cone
-              : loading
-              ? null
-              : successfulUpload
-              ? NounImage.Camera
-              : null
-          }
-          loading={loading}
-          setShowModal={setShowImageUploadModal}
-          onRequestClose={handleDismiss}
-          body={
-            uploadError ? null : loading ? null : successfulUpload ? null : (
-              <DropFileInput
-                files={files}
-                onFileDrop={onFileDrop}
-                fileRemove={fileRemove}
-                duplicateFile={duplicateFile}
-                invalidFileMessage={invalidFileMessage}
-                invalidFileError={invalidFileError}
-              />
-            )
-          }
-          button={
-            <Button
-              text={t('Close')}
-              disabled={loading}
-              bgColor={ButtonColor.White}
-              onClick={handleDismiss}
-            />
-          }
-          secondButton={
-            uploadError ? (
-              <Button
-                text={'Retry'}
-                disabled={loading}
-                bgColor={ButtonColor.Purple}
-                onClick={handleImageUpload}
-              />
-            ) : successfulUpload ? (
-              <Button
-                disabled={loading || files.length === 0}
-                text={t('Upload More?')}
-                bgColor={ButtonColor.Green}
-                onClick={handleUploadMore}
-              />
-            ) : (
-              <Button
-                disabled={loading || files.length === 0}
-                text={t('Upload')}
-                bgColor={ButtonColor.Green}
-                onClick={handleImageUpload}
-              />
-            )
-          }
+        <ImageUploadModal
+          files={files}
+          setFiles={setFiles}
+          onFileDrop={onFileDrop}
+          quill={quill}
+          Quill={Quill}
+          invalidFileError={invalidFileError}
+          setInvalidFileError={setInvalidFileError}
+          invalidFileMessage={invalidFileMessage}
+          setInvalidFileMessage={setInvalidFileMessage}
+          duplicateFile={duplicateFile}
+          setDuplicateFile={setDuplicateFile}
+          setShowImageUploadModal={setShowImageUploadModal}
         />
       )}
     </>
