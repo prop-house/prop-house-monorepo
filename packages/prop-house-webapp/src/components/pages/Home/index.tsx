@@ -8,7 +8,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../../hooks';
 import NavBar from '../../NavBar';
-import filterNonEthFunds from '../../../utils/filterNonEthFunds';
+import getTotalEthFunded from '../../../utils/filterNonEthFunds';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -43,10 +43,10 @@ const Home = () => {
     const getCommunities = async () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
-
+      const rounds = await client.current.getAuctions();
       setCommunities(communities.sort((a, b) => (a.ethFunded < b.ethFunded ? 1 : -1)));
 
-      const accEthFunded = filterNonEthFunds(communities);
+      const accEthFunded = getTotalEthFunded(rounds);
       const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
       const accProps = communities.reduce((prev, current) => prev + current.numProposals, 0);
       setStats({
