@@ -28,7 +28,6 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import removePropsWithZeroVotes from '../../utils/removePropsWithZeroVotes';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -175,7 +174,7 @@ const ProposalModal = () => {
       await backendClient.current.logVotes(votes, isContract);
 
       setShowErrorVotingModal(false);
-      setNumPropsVotedFor(removePropsWithZeroVotes(voteAllotments).length);
+      setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);

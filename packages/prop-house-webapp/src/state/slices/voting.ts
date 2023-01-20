@@ -73,11 +73,13 @@ export const votingSlice = createSlice({
       }
 
       // if already allotted to a specific proposal, add one vote to allotment
-      const updated = state.voteAllotments.map(a =>
-        a.proposalId === preexistingVoteAllotment.proposalId
-          ? updateVoteAllotment(a, direction, weight)
-          : a,
-      );
+      const updated = state.voteAllotments
+        .map(a =>
+          a.proposalId === preexistingVoteAllotment.proposalId
+            ? updateVoteAllotment(a, direction, weight)
+            : a,
+        )
+        .filter(allotment => allotment.votes > 0);
 
       state.voteAllotments = updated;
     },

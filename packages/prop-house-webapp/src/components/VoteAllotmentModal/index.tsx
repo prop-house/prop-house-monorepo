@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import classes from './VoteAllotmentModal.module.css';
 import { useAppSelector } from '../../hooks';
-import removeZeroVotesAndSortByVotes from '../../utils/removeZeroVotesAndSortByVotes';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { openInNewTab } from '../../utils/openInNewTab';
@@ -10,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveProposal } from '../../state/slices/propHouse';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
+import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
 
 const VoteAllotmentModal: React.FC<{
   propId: number;
@@ -23,7 +23,7 @@ const VoteAllotmentModal: React.FC<{
   const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
-  const voteAllotmentData = removeZeroVotesAndSortByVotes(voteAllotments).map((v, idx) => (
+  const voteAllotmentData = sortVoteAllotmentsByVotes(voteAllotments).map((v, idx) => (
     <div key={idx} className={classes.votesRow}>
       <div className={classes.voteRowTitle}>
         <span className={classes.votesAndTitle}>
