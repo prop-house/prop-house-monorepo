@@ -6,6 +6,6 @@ import { VoteAllotment } from '../types/VoteAllotment';
  * @returns sorted allotment array
  */
 const sortVoteAllotmentsByVotes = (voteAllotments: VoteAllotment[]) =>
-  voteAllotments.sort((a, b) => (a.votes < b.votes ? 1 : -1));
+  voteAllotments.slice().sort((a, b) => (a.votes < b.votes ? 1 : -1));
 
 export default sortVoteAllotmentsByVotes;
