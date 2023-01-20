@@ -83,7 +83,6 @@ const ProposalEditor: React.FC<{
     'strike',
     'blockquote',
     'code-block',
-    'link',
     'list',
     'bullet',
     'link',
@@ -125,6 +124,11 @@ const ProposalEditor: React.FC<{
     if (quill) {
       var toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', imageHandler);
+
+      // set the placeholder for the link input
+      const input = document.querySelector('input[data-link]') as HTMLInputElement;
+      input.dataset.link = 'https://prop.house';
+      input.placeholder = 'https://prop.house';
 
       // paste the content back into the editor when going from Preview back to Editor
       quill.clipboard.dangerouslyPasteHTML(data.what);

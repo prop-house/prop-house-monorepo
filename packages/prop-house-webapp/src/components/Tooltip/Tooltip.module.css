@@ -5,7 +5,6 @@
 .tooltip [class$='inner'] {
   padding: 0.5rem;
   text-align: left;
-
   background: var(--bg-light);
   box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
   border-radius: 8px;
