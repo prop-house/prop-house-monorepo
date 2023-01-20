@@ -1,0 +1,65 @@
+.inputLabel {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--brand-black-transparent);
+}
+.inputGroup {
+  margin-top: 2rem;
+}
+.inputSection {
+  margin: 3rem 0rem;
+}
+
+.inputInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.inputChars {
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+.inputError {
+  color: red;
+  font-weight: 600;
+  padding: 0.5rem 0rem;
+  margin-bottom: 0rem;
+}
+.input {
+  border: none;
+  font-size: 20px;
+  color: var(--brand-black);
+  margin-bottom: 1.75rem;
+  white-space: pre-line;
+  margin-bottom: 0rem;
+  border-radius: 12px;
+  border: 1px solid #ccc !important;
+  padding: 0.75rem !important;
+  font-size: 16px !important;
+}
+.input:focus {
+  box-shadow: none;
+  border: 1px rgba(0, 0, 0, 0.1) solid;
+}
+.input::placeholder {
+  color: var(--brand-gray-transparent) !important;
+  font-size: 16px !important;
+  font-style: italic;
+}
+.input:focus::-webkit-input-placeholder {
+  opacity: 0 !important;
+}
+
+.descriptionLabel {
+  margin-bottom: 0;
+}
+.descriptionInput {
+  height: 15rem;
+}
+.quillArea {
+  width: 100%;
+}
+:global(.editPropContainer) .inputGroup,
+:global(.editPropContainer) .inputSection:first-child {
+  margin-top: 0 !important;
+}
