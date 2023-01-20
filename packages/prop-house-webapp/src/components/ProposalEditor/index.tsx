@@ -2,7 +2,6 @@ import { useAppSelector } from '../../hooks';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useEffect, useRef, useState } from 'react';
 import { useQuill } from 'react-quilljs';
-import QuillEditorModal from '../QuillEditorModal';
 import { useTranslation } from 'react-i18next';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
@@ -21,7 +20,6 @@ const ProposalEditor: React.FC<{
   const { fields, onDataChange } = props;
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
   const { t } = useTranslation();
 
   const { library } = useEthers();
@@ -85,6 +83,7 @@ const ProposalEditor: React.FC<{
     'strike',
     'blockquote',
     'code-block',
+    'link',
     'list',
     'bullet',
     'link',
@@ -92,7 +91,6 @@ const ProposalEditor: React.FC<{
   ];
 
   const imageHandler = () => setShowImageUploadModal(true);
-  const linkHandler = () => setShowLinkModal(true);
 
   const modules = {
     toolbar: {
@@ -127,7 +125,6 @@ const ProposalEditor: React.FC<{
     if (quill) {
       var toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', imageHandler);
-      toolbar.addHandler('link', linkHandler);
 
       // paste the content back into the editor when going from Preview back to Editor
       quill.clipboard.dangerouslyPasteHTML(data.what);
@@ -238,18 +235,6 @@ const ProposalEditor: React.FC<{
         editorBlurred={editorBlurred}
         setEditorBlurred={setEditorBlurred}
       />
-
-      {showLinkModal && (
-        <QuillEditorModal
-          quill={quill}
-          Quill={Quill}
-          title={t('addLink')}
-          subtitle={t('pasteLink')}
-          setShowModal={setShowLinkModal}
-          placeholder="ex. https://nouns.wtf/"
-          quillModule="link"
-        />
-      )}
 
       {showImageUploadModal && (
         <ImageUploadModal
