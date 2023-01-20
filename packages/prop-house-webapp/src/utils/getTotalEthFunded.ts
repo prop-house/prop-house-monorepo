@@ -13,8 +13,8 @@ const getTotalEthFunded = (rounds: Auction[]) =>
       if (ct === null || ct === undefined) return false;
 
       // Filter out rounds that don't distribute ETH
-      // g = global match (anywhere in string): 'ETH + AMIGO', 'Ξ & VV, ETH'
-      // i - case-insensitive: 'ETH', 'eth', 'eTh' etc
+      // g = global match (anywhere in string): "ETH + AMIGO", "Ξ & VV", etc
+      // i - case-insensitive: "ETH", "eth", "eTh" etc
       return /\b(ETH|Ξ)\b/gi.test(ct);
     })
 
