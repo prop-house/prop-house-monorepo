@@ -8,7 +8,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../../hooks';
 import NavBar from '../../NavBar';
-import getTotalEthFunded from '../../../utils/filterNonEthFunds';
+import getTotalEthFunded from '../../../utils/getTotalEthFunded';
 
 export interface StatsProps {
   accEthFunded: number;
