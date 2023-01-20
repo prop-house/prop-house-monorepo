@@ -4,6 +4,7 @@ import uploadImg from '../../assets/files/upload.png';
 import { imageConfig } from './imageConfig';
 import { formatBytes } from '../../utils/formatBytes';
 import Divider from '../Divider';
+import { capitalize } from '../../utils/capitalize';
 
 const DropFileInput: React.FC<{
   files: File[];
@@ -38,19 +39,16 @@ const DropFileInput: React.FC<{
 
         <input type="file" multiple accept=".jpg, .jpeg, .png, .svg, .gif" onChange={onFileDrop} />
       </div>
-
       {(invalidFileError || files.length > 0) && <Divider />}
-
       {files.length > 0 && <p className={classes.dropFilePreviewTitle}>Ready to upload</p>}
-
       {(invalidFileError || duplicateFile.error) && (
         <span className={classes.invalidFile}>
           {invalidFileError && duplicateFile.error
-            ? invalidFileMessage + ` and ${duplicateFile.name}`
+            ? capitalize(invalidFileMessage) + ` and ${duplicateFile.name}`
             : invalidFileError
-            ? invalidFileMessage
+            ? capitalize(invalidFileMessage)
             : duplicateFile.error
-            ? `${duplicateFile.name}`
+            ? capitalize(duplicateFile.name)
             : ''}
         </span>
       )}

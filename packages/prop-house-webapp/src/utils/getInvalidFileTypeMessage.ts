@@ -6,7 +6,9 @@
 const getInvalidFileTypeMessage = (fileName: string[]): string => {
   let lastFileType;
 
-  if (fileName.length > 1) {
+  if (fileName.length > 3) {
+    return 'there were several unsupported files';
+  } else if (fileName.length > 1) {
     lastFileType = fileName.pop();
     return `${fileName.map(t => t).join(', ')}${
       lastFileType ? ` or ${lastFileType}` : ''
