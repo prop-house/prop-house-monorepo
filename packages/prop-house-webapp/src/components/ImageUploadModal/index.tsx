@@ -7,6 +7,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
 import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
+import buildIpfsPath from '../../utils/buildIpfsPath';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -71,7 +72,7 @@ const ImageUploadModal: React.FC<{
         quill.insertEmbed(
           quill.getSelection()!.index,
           'image',
-          `https://prod.backend.prop.house/file/local/hash/${r.data.ipfsHash}`,
+          buildIpfsPath(r.data.ipfsHash),
           Quill.sources.USER,
         );
 
