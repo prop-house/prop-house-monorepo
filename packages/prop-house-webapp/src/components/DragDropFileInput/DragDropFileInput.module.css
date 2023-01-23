@@ -85,7 +85,6 @@
 @media (max-width: 450px) {
   .fileName {
     max-width: 85%;
-    border: 1px solid red;
   }
 }
 

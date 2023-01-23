@@ -132,7 +132,6 @@ const ProposalEditor: React.FC<{
   if (Quill && !quill) {
     Quill.register('modules/blotFormatter', BlotFormatter);
   }
-
   useEffect(() => {
     if (quill) {
       var toolbar = quill.getModule('toolbar');
