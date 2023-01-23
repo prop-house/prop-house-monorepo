@@ -9,6 +9,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
 import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
+import { FormDataType } from '../ProposalEditor';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -47,7 +48,7 @@ const ProposalInputs: React.FC<{
         <Col xl={12}>
           <Form>
             <Form.Group className={classes.inputGroup}>
-              {formData.map((input: any) => {
+              {formData.map((input: FormDataType) => {
                 return (
                   <div className={classes.inputSection} key={input.title}>
                     <div className={classes.inputInfo}>
