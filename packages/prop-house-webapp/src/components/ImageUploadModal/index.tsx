@@ -136,7 +136,7 @@ const ImageUploadModal: React.FC<{
           ? 'Please wait while your files are uploaded.'
           : successfulUpload
           ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-          : 'Example formats: .jpg, .png, .gif, .svg, and .mov'
+          : 'Formats: .jpg, .png, .gif, .svg, and .mov'
       }
       image={
         uploadError ? NounImage.Cone : loading ? null : successfulUpload ? NounImage.Camera : null
