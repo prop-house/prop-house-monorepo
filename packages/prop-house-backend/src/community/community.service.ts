@@ -90,6 +90,7 @@ export class CommunitiesService {
       .select('a.id', 'id')
       .addSelect('a.communityId')
       .addSelect('COUNT(a.id)', 'numAuctions')
+      .where('a.currencyType ILIKE :eth', { eth: '%eth%' })
       .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
       .from('auction', 'a')
       .groupBy('a.id');
