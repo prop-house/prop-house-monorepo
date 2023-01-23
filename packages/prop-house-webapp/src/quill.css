@@ -58,7 +58,6 @@
 .editPropContainer .hideBorderBox {
   background: white;
 }
-
 .quill {
   margin-top: -20px;
 }
@@ -73,7 +72,6 @@ pre {
   padding: 22px !important;
   overflow-x: auto;
 }
-
 .ReactModal__Overlay--after-open {
   position: fixed;
   top: 0;
@@ -117,4 +115,9 @@ blockquote {
 .ql-action:hover,
 .ql-remove:hover {
   font-weight: 600 !important;
+}
+@media (max-width: 768px) {
+  .blot-formatter__overlay {
+    display: none !important;
+  }
 }
