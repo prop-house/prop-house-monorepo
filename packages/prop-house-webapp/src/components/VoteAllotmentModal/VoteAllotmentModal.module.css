@@ -37,7 +37,6 @@
 }
 .propLink {
   font-size: 14px;
-  border: 1px solid red;
   font-weight: bold;
   color: var(--brand-black);
   background-color: var(--bg-light);
