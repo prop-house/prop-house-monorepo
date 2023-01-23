@@ -76,12 +76,19 @@
 .uploadedFile p {
   margin-bottom: 0;
 }
-.uploadedFile p:first-child {
+.fileName {
   white-space: nowrap;
   text-overflow: ellipsis;
   display: block;
   overflow: hidden;
 }
+@media (max-width: 450px) {
+  .fileName {
+    max-width: 85%;
+    border: 1px solid red;
+  }
+}
+
 .uploadedFile img {
   width: 40px;
   height: 40px;
