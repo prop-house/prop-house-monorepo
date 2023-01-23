@@ -21,7 +21,7 @@ const CommunityCard: React.FC<{
           <div className={classes.infoWithSymbol}>
             <div className={classes.infoText}>
               <span className={classes.infoAmount}>
-                <TruncateThousands amount={community.ethFunded} />{' '}
+                <TruncateThousands amount={community.totalFunded} />{' '}
                 {getHouseCurrency(community.contractAddress)}
               </span>{' '}
               <span className={classes.infoCopy}>{t('funded')}</span>

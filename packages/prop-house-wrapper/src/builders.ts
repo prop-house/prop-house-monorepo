@@ -255,6 +255,7 @@ export class Community extends Signable {
     public readonly numAuctions: number,
     public readonly numProposals: number,
     public readonly ethFunded: number,
+    public readonly totalFunded: number,
     public readonly description: number,
   ) {
     super();
@@ -269,6 +270,7 @@ export class Community extends Signable {
       numAuctions: this.numAuctions,
       numProposals: this.numProposals,
       ethFunded: this.ethFunded,
+      totalFunded: this.totalFunded,
       description: this.description,
     };
   }
