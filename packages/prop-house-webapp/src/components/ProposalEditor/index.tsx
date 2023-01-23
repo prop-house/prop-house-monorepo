@@ -167,9 +167,17 @@ const ProposalEditor: React.FC<{
       // event.dataTransfer: images were dragged directly on editor
       selectedFiles = Array.from(event.dataTransfer.files || []);
       setShowImageUploadModal(true);
+
+      // clear the input value so that the same file can be uploaded again
+      // only if the file is not already in the queue
+      event.dataTransfer.clearData();
     } else if ('target' in event) {
       // event.target: images were dragged or uploaded via the input in the modal
       selectedFiles = Array.from(event.target.files || []);
+
+      // clear the input value so that the same file can be uploaded again
+      // only if the file is not already in the queue
+      event.target.value = '';
     }
 
     // store the invalid file types and duplicate file names
