@@ -18,6 +18,7 @@ const OpenGraphHouseCard: React.FC = () => {
   const { library } = useEthers();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const houseCurrency = community && getHouseCurrency(community.contractAddress);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -63,8 +64,10 @@ const OpenGraphHouseCard: React.FC = () => {
                 <div className={classes.roundInfo}>
                   <span className={classes.title}>Funded</span>
                   <p className={classes.subtitle}>
-                    <TruncateThousands amount={community.totalFunded ?? 0} />{' '}
-                    {getHouseCurrency(community.contractAddress)}
+                    <TruncateThousands
+                      amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
+                    />{' '}
+                    {houseCurrency}
                   </p>
                 </div>
               </span>
