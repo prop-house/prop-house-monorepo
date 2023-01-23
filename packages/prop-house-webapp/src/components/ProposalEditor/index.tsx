@@ -143,8 +143,8 @@ const ProposalEditor: React.FC<{
       input.dataset.link = 'https://prop.house';
       input.placeholder = 'https://prop.house';
 
-      // paste the content back into the editor when going from Preview back to Editor
-      quill.clipboard.dangerouslyPasteHTML(data.what);
+      // set the editor content to the data from the store
+      quill.root.innerHTML = data.what;
 
       quill.on('text-change', (delta: any, oldDelta: any, source: any) => {
         setEditorBlurred(false);
