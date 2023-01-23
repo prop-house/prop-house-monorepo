@@ -87,7 +87,7 @@ const SaveProposalModal: React.FC<{
       button={
         errorSaving ? (
           <Button
-            text={t('Close')}
+            text={t('close')}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowSavePropModal(false);
@@ -95,7 +95,7 @@ const SaveProposalModal: React.FC<{
           />
         ) : hasBeenSaved ? (
           <Button
-            text={t('Close')}
+            text={t('close')}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowSavePropModal(false);

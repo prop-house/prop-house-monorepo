@@ -31,7 +31,7 @@ const Modal: React.FC<{
   const { t } = useTranslation();
 
   const closeModal = () => setShowModal(false);
-  const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
+  const closeButton = <Button text={t('close')} bgColor={ButtonColor.White} onClick={closeModal} />;
 
   return (
     <ReactModal

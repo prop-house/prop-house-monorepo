@@ -74,7 +74,7 @@ const DeleteProposalModal: React.FC<{
       button={
         errorDeleting ? (
           <Button
-            text={t('Close')}
+            text={t('close')}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowDeletePropModal(false);
@@ -82,7 +82,7 @@ const DeleteProposalModal: React.FC<{
           />
         ) : hasBeenDeleted ? (
           <Button
-            text={t('Close')}
+            text={t('close')}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowDeletePropModal(false);

@@ -121,23 +121,23 @@ const ImageUploadModal: React.FC<{
     <Modal
       title={
         uploadError
-          ? 'Error Uploading'
+          ? t('errorUploading')
           : loading
-          ? 'Uploading...'
+          ? t('uploading')
           : successfulUpload
-          ? 'Upload Successful'
+          ? t('uploadSuccessful')
           : files.length > 0
-          ? 'Ready to upload'
-          : 'Upload files'
+          ? t('readyToUpload')
+          : t('uploadFiles')
       }
       subtitle={
         uploadError
           ? `Your ${files.length === 1 ? 'file' : 'files'} could not be uploaded. Please try again.`
           : loading
-          ? 'Please wait while your files are uploaded.'
+          ? t('pleaseWaitWhileYourFilesAreUploaded')
           : successfulUpload
           ? `You have uploaded ${files.length}  ${files.length === 1 ? 'file' : 'files'}!`
-          : 'Formats: .jpg, .png, .gif, .svg, and .mov'
+          : t('imageFileFormats')
       }
       image={
         uploadError ? NounImage.Cone : loading ? null : successfulUpload ? NounImage.Camera : null
@@ -159,7 +159,7 @@ const ImageUploadModal: React.FC<{
       }
       button={
         <Button
-          text={t('Close')}
+          text={t('close')}
           disabled={loading}
           bgColor={ButtonColor.White}
           onClick={handleDismiss}
@@ -168,7 +168,7 @@ const ImageUploadModal: React.FC<{
       secondButton={
         uploadError ? (
           <Button
-            text={'Retry'}
+            text={t('retry')}
             disabled={loading}
             bgColor={ButtonColor.Purple}
             onClick={handleImageUpload}
@@ -176,14 +176,14 @@ const ImageUploadModal: React.FC<{
         ) : successfulUpload ? (
           <Button
             disabled={loading || files.length === 0}
-            text={t('Upload More?')}
+            text={t('uploadMore')}
             bgColor={ButtonColor.Green}
             onClick={handleUploadMore}
           />
         ) : (
           <Button
             disabled={loading || files.length === 0}
-            text={t('Upload')}
+            text={t('upload')}
             bgColor={ButtonColor.Green}
             onClick={handleImageUpload}
           />
