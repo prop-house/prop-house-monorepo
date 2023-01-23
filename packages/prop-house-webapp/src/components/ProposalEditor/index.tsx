@@ -13,6 +13,19 @@ import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
 
+export interface FormDataType {
+  title: string;
+  focus?: boolean;
+  type: 'input';
+  fieldValue: string;
+  fieldName: string;
+  placeholder: string;
+  value: string;
+  minCount: number;
+  maxCount: number;
+  error: string;
+}
+
 const ProposalEditor: React.FC<{
   fields?: ProposalFields;
   onDataChange: (data: Partial<ProposalFields>) => void;
@@ -39,7 +52,7 @@ const ProposalEditor: React.FC<{
     name: '',
   });
 
-  const formData = [
+  const formData: FormDataType[] = [
     {
       title: t('title'),
       focus: true,
