@@ -43,7 +43,7 @@ const Home = () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
 
-      setCommunities(communities.sort((a, b) => (a.ethFunded < b.ethFunded ? 1 : -1)));
+      setCommunities(communities.sort((a, b) => (a.numProposals < b.numProposals ? 1 : -1)));
 
       const accEthFunded = communities.reduce((prev, current) => prev + current.ethFunded, 0);
       const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
