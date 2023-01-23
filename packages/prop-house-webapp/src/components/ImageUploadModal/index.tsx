@@ -5,9 +5,8 @@ import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
-
 import { useTranslation } from 'react-i18next';
-import DropFileInput from '../DropFileInput';
+import DragDropFileInput from '../DragDropFileInput';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -147,7 +146,7 @@ const ImageUploadModal: React.FC<{
       onRequestClose={handleDismiss}
       body={
         uploadError ? null : loading ? null : successfulUpload ? null : (
-          <DropFileInput
+          <DragDropFileInput
             files={files}
             onFileDrop={onFileDrop}
             fileRemove={fileRemove}

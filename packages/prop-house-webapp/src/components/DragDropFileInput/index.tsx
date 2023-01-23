@@ -1,12 +1,33 @@
 import { useRef } from 'react';
-import classes from './DropFileInput.module.css';
+import classes from './DragDropFileInput.module.css';
 import uploadImg from '../../assets/files/upload.png';
-import { imageConfig } from './imageConfig';
 import { formatBytes } from '../../utils/formatBytes';
 import Divider from '../Divider';
 import { capitalize } from '../../utils/capitalize';
+import fileDefault from '../../assets/files/file-blank.png';
+import fileJpg from '../../assets/files/jpg.png';
+import fileJpeg from '../../assets/files/jpg.png';
+import filePng from '../../assets/files/png.png';
+import fileGif from '../../assets/files/gif.png';
+import fileSvg from '../../assets/files/svg.png';
+import fileMov from '../../assets/files/mov.png';
 
-const DropFileInput: React.FC<{
+interface FileIconProps {
+  [key: string]: string;
+}
+
+export const fileIcons: FileIconProps = {
+  default: fileDefault,
+  png: filePng,
+  jpg: fileJpg,
+  jpeg: fileJpeg,
+  gif: fileGif,
+  svg: fileSvg,
+  'svg+xml': fileSvg,
+  quicktime: fileMov,
+};
+
+const DragDropFileInput: React.FC<{
   files: File[];
   duplicateFile: { error: boolean; name: string };
   fileRemove: (file: File) => void;
@@ -18,6 +39,7 @@ const DropFileInput: React.FC<{
     props;
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // event listeners for drag and drop
   const onDragEnter = () => wrapperRef.current!.classList.add('dragover');
   const onDragLeave = () => wrapperRef.current!.classList.remove('dragover');
   const onDrop = () => wrapperRef.current!.classList.remove('dragover');
@@ -26,23 +48,27 @@ const DropFileInput: React.FC<{
     <>
       <div
         ref={wrapperRef}
-        className={classes.dropFileInput}
+        className={classes.fileInput}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
-        <div className={classes.dropFileInputLabel}>
-          <img className={classes.uploadImage} src={uploadImg} alt="upload" />
-          <p className={classes.dragYourFiles}>Drag & drop your files here</p>
-          <p className={classes.dropFileInputLabelFiles}>or click to browse</p>
+        <div className={classes.inputLabelContainer}>
+          <img className={classes.uploadImagePicture} src={uploadImg} alt="upload" />
+          <p className={classes.inputLabelTitle}>Drag & drop your files here</p>
+          <p className={classes.inputLabelSubtitle}>or click to browse</p>
         </div>
 
+        {/* multiple = multi-file upload */}
         <input type="file" multiple accept=".jpg, .jpeg, .png, .svg, .gif" onChange={onFileDrop} />
       </div>
+
       {(invalidFileError || files.length > 0) && <Divider />}
-      {files.length > 0 && <p className={classes.dropFilePreviewTitle}>Ready to upload</p>}
+
+      {files.length > 0 && <p className={classes.uploadReadyTitle}>Ready to upload</p>}
+
       {(invalidFileError || duplicateFile.error) && (
-        <span className={classes.invalidFile}>
+        <span className={classes.invalidFileMessage}>
           {invalidFileError && duplicateFile.error
             ? capitalize(invalidFileMessage) + ` and ${duplicateFile.name}`
             : invalidFileError
@@ -54,18 +80,18 @@ const DropFileInput: React.FC<{
       )}
 
       {files.length > 0 ? (
-        <div className={classes.dropFilePreview}>
+        <div className={classes.uploadedFilesContainer}>
           {files.map((item, index) => {
             return (
-              <div key={index} className={classes.dropFilePreviewItem}>
-                <img src={imageConfig[item.type.split('/')[1]] || imageConfig['default']} alt="" />
+              <div key={index} className={classes.uploadedFile}>
+                <img src={fileIcons[item.type.split('/')[1]] || fileIcons['default']} alt="" />
 
-                <div className={classes.dropFilePreviewItemInfo}>
-                  <p>{item.name}</p>
-                  <p>{formatBytes(item.size)}</p>
+                <div className={classes.fileInfo}>
+                  <p className={classes.fileName}>{item.name}</p>
+                  <p className={classes.fileSize}>{formatBytes(item.size)}</p>
                 </div>
 
-                <span className={classes.dropFilePreviewItemDel} onClick={() => fileRemove(item)}>
+                <span className={classes.deleteFile} onClick={() => fileRemove(item)}>
                   x
                 </span>
               </div>
@@ -77,4 +103,4 @@ const DropFileInput: React.FC<{
   );
 };
 
-export default DropFileInput;
+export default DragDropFileInput;

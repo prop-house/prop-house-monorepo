@@ -1,4 +1,4 @@
-.dropFileInput {
+.fileInput {
   position: relative;
   min-height: 200px;
   height: auto;
@@ -9,8 +9,7 @@
   justify-content: center;
   background-color: var(--bg-med);
 }
-
-.dropFileInput input {
+.fileInput input {
   opacity: 0;
   position: absolute;
   top: 0;
@@ -19,58 +18,53 @@
   height: 100%;
   cursor: pointer;
 }
-
-.dropFileInput:hover,
-.dropFileInput.dragover {
+.fileInput:hover,
+.fileInput.dragover {
   background-color: var(--bg-dark) !important;
 }
-.dropFilePreviewTitle {
+.uploadReadyTitle {
   margin-bottom: 0;
   margin-top: -8px;
   color: var(--brand-black);
   font-weight: 600;
 }
-.dropFileInputLabel {
+.inputLabelContainer {
   text-align: center;
   color: #ccc;
   font-weight: 600;
   padding: 10px;
   font-size: 18px;
 }
-.uploadImage {
+.uploadImagePicture {
   width: 150px !important;
   margin-bottom: 10px;
 }
-.dragYourFiles {
+.inputLabelTitle {
   color: var(--brand-black);
   margin-bottom: 0px;
 }
-.dropFileInputLabelFiles {
+.inputLabelSubtitle {
   font-style: italic;
   font-size: 14px;
 }
-
-.dropFileInputLabel img {
+.inputLabelContainer img {
   width: 100px;
 }
-
-.dropFilePreview {
+.uploadedFilesContainer {
   margin-top: 10px;
   overflow-y: auto;
   max-height: 200px;
 }
-
-.dropFilePreview p {
+.fileName {
   font-weight: 700;
   font-size: 14px;
 }
-.dropFilePreview p:nth-child(2) {
+.fileSize {
   font-weight: 500;
   font-size: 12px;
   font-style: italic;
 }
-
-.dropFilePreviewItem {
+.uploadedFile {
   margin-top: 0;
   position: relative;
   display: flex;
@@ -79,31 +73,28 @@
   padding: 8px;
   border-radius: 8px;
 }
-.dropFilePreviewItem p {
+.uploadedFile p {
   margin-bottom: 0;
 }
-.dropFilePreviewItem p:first-child {
+.uploadedFile p:first-child {
   white-space: nowrap;
   text-overflow: ellipsis;
   display: block;
   overflow: hidden;
 }
-
-.dropFilePreviewItem img {
+.uploadedFile img {
   width: 40px;
   height: 40px;
   margin-right: 10px;
 }
-
-.dropFilePreviewItemInfo {
+.fileInfo {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
   max-width: 75%;
 }
-
-.dropFilePreviewItemDel {
+.deleteFile {
   width: 40px;
   height: 40px;
   display: flex;
@@ -117,15 +108,14 @@
   font-weight: 600;
   font-size: 18px;
 }
-
-.dropFilePreviewItemDel:hover {
+.deleteFile:hover {
   background-color: white;
   border-radius: 50%;
   box-shadow: var(--box-shadow);
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   transition: opacity 0.3s ease;
 }
-.invalidFile {
+.invalidFileMessage {
   color: var(--brand-red);
   font-weight: 600;
   font-size: 14px;
