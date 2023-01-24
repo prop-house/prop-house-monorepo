@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import RoundHeader from '../../RoundHeader';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useRef } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -9,21 +9,21 @@ import {
   setActiveProposals,
   setActiveRound,
   setModalActive,
-} from '../../../state/slices/propHouse';
+} from '../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import ErrorMessageCard from '../../ErrorMessageCard';
-import RoundUtilityBar from '../../RoundUtilityBar';
-import RoundContent from '../../RoundContent';
-import { nameToSlug, slugToName } from '../../../utils/communitySlugs';
-import { dispatchSortProposals, SortType } from '../../../utils/sortingProposals';
-import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
-import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
-import OpenGraphElements from '../../OpenGraphElements';
-import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import ErrorMessageCard from '../../components/ErrorMessageCard';
+import RoundUtilityBar from '../../components/RoundUtilityBar';
+import RoundContent from '../../components/RoundContent';
+import { nameToSlug, slugToName } from '../../utils/communitySlugs';
+import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
-import ProposalModal from '../../ProposalModal';
+import ProposalModal from '../../components/ProposalModal';
 
 const Round = () => {
   const location = useLocation();

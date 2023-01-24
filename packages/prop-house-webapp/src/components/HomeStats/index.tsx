@@ -1,6 +1,6 @@
 import classes from './HomeStats.module.css';
 import CountUp from 'react-countup';
-import { StatsProps } from '../pages/Home';
+import { StatsProps } from '../../pages/Home';
 import { useState } from 'react';
 import TruncateThousands from '../TruncateThousands';
 import { useTranslation } from 'react-i18next';
