@@ -143,12 +143,14 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  font-weight: 700;
 }
 .addressAndTimestamp {
   display: flex;
   align-items: center;
   font-weight: 700;
   gap: 4px;
+  font-size: 14px !important;
   color: var(--brand-gray);
 }
 .bullet {
