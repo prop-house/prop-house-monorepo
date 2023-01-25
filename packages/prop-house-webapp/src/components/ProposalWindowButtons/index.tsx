@@ -4,10 +4,9 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
-import removeTags from '../../utils/removeTags';
-import { ProposalFields } from '../../utils/proposalFields';
 import { useEthers } from '@usedapp/core';
 import { clearProposal } from '../../state/slices/editor';
+import { isValidPropData } from '../../utils/isValidPropData';
 
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -16,8 +15,13 @@ const ProposalWindowButtons: React.FC<{
   setShowSavePropModal: (e: any) => void;
   setShowDeletePropModal: (e: any) => void;
 }> = props => {
-  const { proposal, editProposalMode, setEditProposalMode, setShowSavePropModal, setShowDeletePropModal } = props;
-
+  const {
+    proposal,
+    editProposalMode,
+    setEditProposalMode,
+    setShowSavePropModal,
+    setShowDeletePropModal,
+  } = props;
 
   const { account } = useEthers();
   const navigate = useNavigate();
@@ -25,12 +29,6 @@ const ProposalWindowButtons: React.FC<{
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
-
-  const isValidPropData = (data: ProposalFields) =>
-    data.title.length > 4 &&
-    removeTags(data.what).length > 49 &&
-    data.tldr.length > 9 &&
-    data.tldr.length < 121;
 
   return (
     <>
@@ -65,7 +63,7 @@ const ProposalWindowButtons: React.FC<{
                   bgColor={ButtonColor.PurpleLight}
                   onClick={() => {
                     dispatch(clearProposal());
-                    navigate('/create', { state: { auction: round, community } })
+                    navigate('/create', { state: { auction: round, community } });
                   }}
                 />
 
@@ -95,9 +93,8 @@ const ProposalWindowButtons: React.FC<{
             bgColor={ButtonColor.PurpleLight}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create', { state: { auction: round, community } })
-            }
-            }
+              navigate('/create', { state: { auction: round, community } });
+            }}
           />
         ))}
     </>

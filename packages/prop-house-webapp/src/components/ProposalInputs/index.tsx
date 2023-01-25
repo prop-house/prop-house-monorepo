@@ -10,6 +10,7 @@ import { useEthers } from '@usedapp/core';
 import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType } from '../ProposalEditor';
+import inputHasImage from '../../utils/inputHasImage';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -113,6 +114,7 @@ const ProposalInputs: React.FC<{
 
                   {editorBlurred &&
                     quill &&
+                    !inputHasImage(descriptionData.fieldValue) &&
                     validateInput(descriptionData.minCount, quill.getText().length - 1) && (
                       <p className={classes.inputError}>{descriptionData.error}</p>
                     )}
