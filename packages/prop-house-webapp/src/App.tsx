@@ -8,7 +8,6 @@ import Create from './pages/Create';
 import House from './pages/House';
 import Footer from './components/Footer';
 import './App.css';
-// import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -42,14 +41,6 @@ const wagmiClient = createClient({
   provider,
 });
 
-// const config: Config = {
-//   readOnlyChainId: Mainnet.chainId,
-//   readOnlyUrls: {
-//     [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
-//   },
-//   autoConnect: false,
-// };
-
 function App() {
   const location = useLocation();
   const [noActiveCommunity, setNoActiveCommunity] = useState(false);
@@ -80,7 +71,6 @@ function App() {
           accentColor: 'var(--brand-purple)',
         })}
       >
-        {/* <DAppProvider config={config}> */}
         <Suspense fallback={<LoadingIndicator />}>
           <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
             {!noNavPath && <NavBar />}
@@ -108,7 +98,6 @@ function App() {
             <Footer />
           </div>
         </Suspense>
-        {/* </DAppProvider> */}
       </RainbowKitProvider>
     </WagmiConfig>
   );
