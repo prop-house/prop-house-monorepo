@@ -148,7 +148,6 @@ const ProposalCard: React.FC<{
                   className={clsx(
                     classes.avatarAndPropNumber,
                     !roundIsVotingOrOver() && classes.hideVoteModule,
-                    // classes.hideVoteModule,
                   )}
                 >
                   <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
