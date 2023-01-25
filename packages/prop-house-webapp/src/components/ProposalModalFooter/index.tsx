@@ -112,7 +112,7 @@ const ProposalModalFooter: React.FC<{
                 )}
 
                 {/* PROPOSING WINDOW */}
-                {isProposingWindow &&
+                {isProposingWindow && (
                   <ProposalWindowButtons
                     proposal={proposal}
                     editProposalMode={editProposalMode}
