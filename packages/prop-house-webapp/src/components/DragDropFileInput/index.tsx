@@ -66,7 +66,7 @@ const DragDropFileInput: React.FC<{
         <div className={classes.inputLabelContainer}>
           <img className={classes.uploadImagePicture} src={uploadImg} alt="upload" />
           <p className={classes.inputLabelTitle}>
-            {isDraggedOver ? 'Drop your files' : 'Drag & drop your files here'}
+            {isDraggedOver ? 'Drop your files!' : 'Drag & drop your files here'}
           </p>
           <p className={classes.inputLabelSubtitle}>or click to browse</p>
         </div>
