@@ -19,12 +19,11 @@ import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
-import Proposal from './components/pages/Proposal';
+import Proposal from './pages/Proposal';
 import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
-
 import '@rainbow-me/rainbowkit/styles.css';
 
 const { chains, provider } = configureChains(
