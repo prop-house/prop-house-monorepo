@@ -13,7 +13,6 @@ import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../utils/isAuctionActive';
 import { ProposalFields } from '../../utils/proposalFields';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useTranslation } from 'react-i18next';
 import DragAndDrop from '../../components/DragAndDrop';
 import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
@@ -25,9 +24,13 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
+import ConnectButton from '../../components/ConnectButton';
+import { useAccount } from 'wagmi';
 
 const Create: React.FC<{}> = () => {
-  const { library: provider, account } = useEthers();
+  const { library: provider } = useEthers();
+  const { address: account } = useAccount();
+
   const { t } = useTranslation();
 
   // auction to submit prop to is passed via react-router from propse btn
@@ -41,7 +44,6 @@ const Create: React.FC<{}> = () => {
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
-  const connect = useWeb3Modal();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));

@@ -31,13 +31,15 @@ import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
+import { useAccount } from 'wagmi';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
   proposals: StoredProposalWithVotes[];
 }> = props => {
   const { auction, proposals } = props;
-  const { account, library } = useEthers();
+  const { library } = useEthers();
+  const { address: account } = useAccount();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);

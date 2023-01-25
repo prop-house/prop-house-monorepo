@@ -1,11 +1,10 @@
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
-import Button, { ButtonColor } from '../Button';
+import { ButtonColor } from '../Button';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setVotingPower } from '../../state/slices/voting';
@@ -15,6 +14,8 @@ import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
+import ConnectButton from '../ConnectButton';
+import { useAccount } from 'wagmi';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -42,8 +43,9 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { account, library } = useEthers();
-  const connect = useWeb3Modal();
+  const { library } = useEthers();
+  const { address: account } = useAccount();
+
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -74,7 +76,6 @@ const ProposalModalFooter: React.FC<{
     };
     fetchVotes();
   }, [account, library, dispatch, community, round]);
-
 
   return (
     <>
@@ -120,11 +121,12 @@ const ProposalModalFooter: React.FC<{
                     setShowSavePropModal={setShowSavePropModal}
                     setShowDeletePropModal={setShowDeletePropModal}
                   />
-                }
+                )}
 
                 <>
                   {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                  {(account && isVotingWindow) &&
+                  {account &&
+                    isVotingWindow &&
                     (votingPower > 0 ? (
                       <ProposalModalVotingModule
                         proposal={proposal}
@@ -168,7 +170,7 @@ const ProposalModalFooter: React.FC<{
             numberOfProps={numberOfProps}
             handleDirectionalArrowClick={handleDirectionalArrowClick}
           />
-        </div >
+        </div>
       )}
     </>
   );

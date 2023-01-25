@@ -15,6 +15,7 @@ import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
+import { useAccount } from 'wagmi';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -24,7 +25,9 @@ const ProposalModalVotingModule: React.FC<{
 }> = props => {
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
 
-  const { account, library } = useEthers();
+  const { library } = useEthers();
+  const { address: account } = useAccount();
+
   const dispatch = useDispatch();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -79,10 +82,11 @@ const ProposalModalVotingModule: React.FC<{
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                  : 'no votes left'
-                  }`}
+                {`${
+                  votesLeftToAllot > 0
+                    ? `${votingPower - submittedVotes - numAllotedVotes} left`
+                    : 'no votes left'
+                }`}
               </span>
             </div>
 

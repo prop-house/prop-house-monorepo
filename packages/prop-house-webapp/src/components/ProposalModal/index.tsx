@@ -28,6 +28,7 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
+import { useAccount } from 'wagmi';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -36,7 +37,8 @@ const ProposalModal = () => {
   const { id } = params;
   const navigate = useNavigate();
 
-  const { account, library: provider } = useEthers();
+  const { library: provider } = useEthers();
+  const { address: account } = useAccount();
 
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);

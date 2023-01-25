@@ -1,19 +1,18 @@
 import React from 'react';
 import { useEthers, shortenAddress, useLookupAddress } from '@usedapp/core';
 import classes from './Web3ModalButton.module.css';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
+
 import clsx from 'clsx';
 import { useAppDispatch } from '../../hooks';
-import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 import { setVotingPower } from '../../state/slices/voting';
+import ConnectButton from '../ConnectButton';
 
 const Web3ModalButton: React.FC<{
   classNames?: string | string[];
 }> = props => {
   const { classNames } = props;
   const { account, deactivate } = useEthers();
-  const connect = useWeb3Modal();
   const ens = useLookupAddress();
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
