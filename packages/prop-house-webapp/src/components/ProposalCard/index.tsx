@@ -20,6 +20,7 @@ import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import Divider from '../Divider';
 import getImageFromDescription from '../../utils/getImageFromDescription';
+import { useEffect, useState } from 'react';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -39,6 +40,14 @@ const ProposalCard: React.FC<{
   const roundIsActive = () =>
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
+
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    getImageFromDescription(proposal)
+      .then(url => setImageUrl(url))
+      .catch(error => console.log(error));
+  }, [proposal]);
 
   return (
     <>
@@ -88,9 +97,9 @@ const ProposalCard: React.FC<{
               </div>
             </div>
 
-            {getImageFromDescription(proposal) !== '' ? (
+            {imageUrl !== '' ? (
               <div className={classes.propImgContainer}>
-                <img src={getImageFromDescription(proposal)} alt="propCardImage" />
+                <img src={imageUrl} alt="propCardImage" />
               </div>
             ) : (
               <></>
