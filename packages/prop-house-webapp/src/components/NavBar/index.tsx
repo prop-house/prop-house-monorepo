@@ -41,7 +41,14 @@ const NavBar = () => {
               <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
               <Nav.Link as="div">
-                <ConnectButton label="Connect" />
+                <ConnectButton
+                  showBalance={false}
+                  label={t('connect')}
+                  accountStatus={{
+                    smallScreen: 'avatar',
+                    largeScreen: 'full',
+                  }}
+                />
               </Nav.Link>
 
               <AdminTool>
