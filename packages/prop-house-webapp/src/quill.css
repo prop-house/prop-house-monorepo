@@ -48,6 +48,13 @@
 .ql-editor strong {
   font-weight: 600 !important;
 }
+.ql-editor img {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+}
 
 .hideBorderBox {
   background: #f5f5f5;
