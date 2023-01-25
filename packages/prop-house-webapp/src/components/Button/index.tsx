@@ -22,27 +22,27 @@ export interface ButtonProps {
   classNames?: string[] | string;
 }
 
-const Button: React.FC<ButtonProps> = props => {
+const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
   const { text, bgColor, disabled, onClick, classNames } = props;
 
   const bgColorClass =
     bgColor === ButtonColor.Pink
       ? classes.btnPinkBg
       : bgColor === ButtonColor.Purple
-        ? classes.btnPurpleBg
-        : bgColor === ButtonColor.PurpleLight
-          ? classes.btnPurpleLightBg
-          : bgColor === ButtonColor.White
-            ? classes.btnWhiteBg
-            : bgColor === ButtonColor.Yellow
-              ? classes.btnYellowBg
-              : bgColor === ButtonColor.Green
-                ? classes.btnGreenBg
-                : bgColor === ButtonColor.Red
-                  ? classes.btnRedBg
-                  : bgColor === ButtonColor.Gray
-                    ? classes.btnGrayBg
-                    : classes.btnWhiteYellowBg;
+      ? classes.btnPurpleBg
+      : bgColor === ButtonColor.PurpleLight
+      ? classes.btnPurpleLightBg
+      : bgColor === ButtonColor.White
+      ? classes.btnWhiteBg
+      : bgColor === ButtonColor.Yellow
+      ? classes.btnYellowBg
+      : bgColor === ButtonColor.Green
+      ? classes.btnGreenBg
+      : bgColor === ButtonColor.Red
+      ? classes.btnRedBg
+      : bgColor === ButtonColor.Gray
+      ? classes.btnGrayBg
+      : classes.btnWhiteYellowBg;
 
   return (
     <BSButton

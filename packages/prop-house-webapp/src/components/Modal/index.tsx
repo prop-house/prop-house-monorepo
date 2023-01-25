@@ -4,19 +4,30 @@ import ReactModal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
+import LoadingIndicator from '../LoadingIndicator';
 
 const Modal: React.FC<{
   title: string | JSX.Element | boolean;
   subtitle: string | JSX.Element | boolean;
   image?: { src: string; alt: string } | any;
+  loading?: boolean;
   body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;
   onRequestClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { title, subtitle, image, button, secondButton, body, setShowModal, onRequestClose } =
-    props;
+  const {
+    title,
+    subtitle,
+    image,
+    loading,
+    button,
+    secondButton,
+    body,
+    setShowModal,
+    onRequestClose,
+  } = props;
   const { t } = useTranslation();
 
   const closeModal = () => setShowModal(false);
@@ -25,16 +36,21 @@ const Modal: React.FC<{
   return (
     <ReactModal
       isOpen={true}
+      appElement={document.getElementById('root')!}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
       className={classes.modal}
     >
       <>
         <div className={classes.container}>
           <div>
-            {image && (
-              <div className={classes.imgContainer}>
-                <img src={image.src} alt={image.alt} />
-              </div>
+            {loading ? (
+              <LoadingIndicator width={150} height={125} />
+            ) : (
+              image && (
+                <div className={classes.imgContainer}>
+                  {<img src={image.src} alt={image.alt} />}
+                </div>
+              )
             )}
 
             <div className={classes.titleContainer}>

@@ -14,7 +14,8 @@ import {
   DeleteProposal,
 } from './builders';
 import FormData from 'form-data';
-import fs from 'fs';
+import * as fs from 'fs';
+
 import {
   DeleteProposalMessageTypes,
   EditProposalMessageTypes,
@@ -196,13 +197,14 @@ export class PropHouseWrapper {
       const form = new FormData();
       form.append('file', file, name);
       form.append('name', name);
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      if (this.signer) {
-        const signature = await this.signer.signMessage(fileBuffer);
-        form.append('signature', signature);
-      }
-      return await axios.post(`${this.host}/file`, form);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+      };
+      return await axios.post(`${this.host}/file`, form, config);
     } catch (e: any) {
+      console.log('error', e);
       throw e.response.data.message;
     }
   }
@@ -229,7 +231,7 @@ export class PropHouseWrapper {
         },
       });
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e.response;
     }
   }
 
