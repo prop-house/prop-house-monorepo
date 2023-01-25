@@ -20,7 +20,7 @@ const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
         // return the image url
         return match[1];
       } else {
-        return '';
+        return undefined;
       }
     } catch (err) {
       return '';
