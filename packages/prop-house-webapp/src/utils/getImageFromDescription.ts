@@ -3,13 +3,13 @@ import isImage from 'is-image-url';
 
 const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
   // proposal description field
-  const what = proposal.what;
+  const proposalDescription = proposal.what;
 
   // regex to find the first image in the description
   const imgRegex = /<img[^>]+src="([^">]+)"/;
 
   // find the first image in the description
-  const match = imgRegex.exec(what);
+  const match = imgRegex.exec(proposalDescription);
 
   // check if there's an image in the description
   if (match) {
