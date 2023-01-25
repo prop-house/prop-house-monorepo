@@ -127,12 +127,12 @@ const RoundModules: React.FC<{
                 }}
               />
             ) : (
-              <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
+              <ConnectButton text={t('connectToSubmit')} color={ButtonColor.Pink} />
             ))}
 
           {/* VOTING WINDOW, NOT CONNECTED */}
           {isVotingWindow && !account && (
-            <Button text={t('connectToVote')} bgColor={ButtonColor.Pink} onClick={connect} />
+            <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
           )}
 
           {/* VOTING PERIOD, CONNECTED, HAS VOTES */}

@@ -261,11 +261,10 @@ const Create: React.FC<{}> = () => {
                         disabled={!isValidPropData(proposalEditorData)}
                       />
                     ) : (
-                      <Button
+                      <ConnectButton
                         classNames={classes.actionBtn}
-                        bgColor={ButtonColor.Pink}
+                        color={ButtonColor.Pink}
                         text={t('connectWallet')}
-                        onClick={connect}
                       />
                     ))}
                 </Col>

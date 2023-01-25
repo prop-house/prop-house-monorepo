@@ -33,12 +33,7 @@ const Web3ModalButton: React.FC<{
           </div>
         </>
       ) : (
-        <Button
-          bgColor={ButtonColor.Purple}
-          text={t('connect')}
-          onClick={connect}
-          classNames={clsx(classes.btn, classes.connectBtn)}
-        />
+        <ConnectButton classNames={clsx(classes.btn, classes.connectBtn)} />
       )}
     </div>
   );

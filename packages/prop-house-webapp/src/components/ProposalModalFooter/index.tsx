@@ -89,11 +89,10 @@ const ProposalModalFooter: React.FC<{
                 {/* ACTIVE ROUND, NOT CONNECTED */}
                 {!isRoundOver && !account && (
                   <div className={classes.connectContainer}>
-                    <Button
+                    <ConnectButton
                       classNames={classes.fullWidthButton}
-                      text={isVotingWindow ? 'Connect to vote' : 'Connect to submit'}
-                      bgColor={ButtonColor.Purple}
-                      onClick={connect}
+                      text={isVotingWindow ? t('connectToVote') : t('connectToSubmit')}
+                      color={ButtonColor.Purple}
                     />
 
                     <div className={classes.voteCount}>
