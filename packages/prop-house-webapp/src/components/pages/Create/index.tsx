@@ -20,6 +20,11 @@ import LoadingIndicator from '../../LoadingIndicator';
 import ProposalSuccessModal from '../../ProposalSuccessModal';
 import NavBar from '../../NavBar';
 import { isValidPropData } from '../../../utils/isValidPropData';
+import DragAndDrop from '../../DragAndDrop';
+import getDuplicateFileMessage from '../../../utils/getDuplicateFileMessage';
+import validFileType from '../../../utils/validFileType';
+import getInvalidFileTypeMessage from '../../../utils/getInvalidFileTypeMessage';
+import changeFileExtension from '../../../utils/changeFileExtension';
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
@@ -39,7 +44,6 @@ const Create: React.FC<{}> = () => {
   const connect = useWeb3Modal();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-
   const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
 
   useEffect(() => {
@@ -68,83 +72,204 @@ const Create: React.FC<{}> = () => {
     setShowProposalSuccessModal(true);
   };
 
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [invalidFileError, setInvalidFileError] = useState(false);
+  const [invalidFileMessage, setInvalidFileMessage] = useState('');
+  const [duplicateFile, setDuplicateFile] = useState<{ error: boolean; name: string }>({
+    error: false,
+    name: '',
+  });
+
+  // Drag and drop images in the editor or the upload image modal
+  const onFileDrop = (
+    event: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>,
+  ) => {
+    setInvalidFileError(false);
+    setDuplicateFile({ error: false, name: '' });
+
+    let selectedFiles: File[] = [];
+
+    // check if the event is a drag event or a file input event:
+    if ('dataTransfer' in event) {
+      // default behavior is to open file in new browser tab, so we prevent that
+      event.preventDefault();
+
+      // event.dataTransfer: images were dragged directly on editor
+      selectedFiles = Array.from(event.dataTransfer.files || []);
+      setShowImageUploadModal(true);
+
+      // clear the input value so that the same file can be uploaded again
+      // only if the file is not already in the queue
+      event.dataTransfer.clearData();
+    } else if ('target' in event) {
+      // event.target: images were dragged or uploaded via the input in the modal
+      selectedFiles = Array.from(event.target.files || []);
+
+      // clear the input value so that the same file can be uploaded again
+      // only if the file is not already in the queue
+      event.target.value = '';
+    }
+
+    // store the invalid file types and duplicate file names
+    const invalidFileTypes: string[] = [];
+    const duplicateFileNames: string[] = [];
+
+    // check if any of the files are invalid
+    if (Array.from(selectedFiles).some(file => !validFileType(file))) {
+      setInvalidFileError(true);
+
+      // get the invalid file types
+      Array.from(selectedFiles).map((file, i) => {
+        if (!validFileType(file)) {
+          let fileExtension = file.type.split('/')[1];
+
+          // save the invalid file type to show in error message
+          invalidFileTypes.push(changeFileExtension(fileExtension));
+        }
+        return selectedFiles;
+      });
+
+      // generate invalid file type error message:
+      //   • Array.from(new Set(invalidFileTypes)) remove duplicate file types before generating error message
+      //   • getInvalidFileTypeMessage() is a function that generates the error message
+      //   • setInvalidFileMessage saves the error message to state
+      setInvalidFileMessage(getInvalidFileTypeMessage(Array.from(new Set(invalidFileTypes))));
+    }
+
+    // check if any of the files are duplicates
+    selectedFiles.forEach(file => {
+      // check if the file name is already in the list of files, if it is, add it to the list of duplicate file names
+      if (files.find(f => f.name === file.name)) duplicateFileNames.push(file.name);
+    });
+
+    // generate duplicate file error message if there are any:
+    //   • Array.from(new Set(duplicateFileNames)) remove duplicate file names before generating error message
+    //   • getDuplicateFileMessage() is a function that generates the error message
+    //   • setDuplicateFile saves the error message to state
+    duplicateFileNames.length > 0 &&
+      setDuplicateFile({
+        error: true,
+        name: getDuplicateFileMessage(Array.from(new Set(duplicateFileNames))),
+      });
+
+    // filter out invalid  & duplicate files
+    const validFiles = Array.from(selectedFiles)
+      // filter out invalid files extensions
+      .filter(
+        file =>
+          validFileType(file) &&
+          // filter out duplicates
+          !files.find(f => f.name === file.name),
+      );
+
+    // add the valid files to the list
+    if (validFiles) {
+      const updatedList = [...files, ...validFiles];
+      setFiles(updatedList);
+    }
+  };
+
   return (
     <>
       {activeAuction ? (
         <>
-          {showProposalSuccessModal && propId && (
-            <ProposalSuccessModal
-              setShowProposalSuccessModal={setShowProposalSuccessModal}
-              proposalId={propId}
-              house={activeCommunity}
-              round={activeAuction}
-            />
-          )}
+          <DragAndDrop
+            onFileDrop={onFileDrop}
+            showImageUploadModal={showImageUploadModal}
+            setShowImageUploadModal={setShowImageUploadModal}
+          >
+            {showProposalSuccessModal && propId && (
+              <ProposalSuccessModal
+                setShowProposalSuccessModal={setShowProposalSuccessModal}
+                proposalId={propId}
+                house={activeCommunity}
+                round={activeAuction}
+              />
+            )}
 
-          <div className="gradientBg">
-            <NavBar />
-            <Container>
-              <h1 className={classes.title}>Creating your proposal for</h1>
+            <div className="gradientBg">
+              <NavBar />
+              <Container>
+                <h1 className={classes.title}>Creating your proposal for</h1>
 
-              <h1 className={classes.proposalTitle}>
-                <span className={classes.boldLabel}>{activeAuction.title}</span> in the{' '}
-                <span className={classes.boldLabel}>{activeCommunity.name}</span> house
-              </h1>
+                <h1 className={classes.proposalTitle}>
+                  <span className={classes.boldLabel}>{activeAuction.title}</span> in the{' '}
+                  <span className={classes.boldLabel}>{activeCommunity.name}</span> house
+                </h1>
 
-              <span className={classes.fundingCopy}>
-                <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners will
-                be selected to receive{' '}
-                <span className={classes.boldLabel}>
-                  {' '}
-                  <FundingAmount
-                    amount={activeAuction.fundingAmount}
-                    currencyType={activeAuction.currencyType}
-                  />
+                <span className={classes.fundingCopy}>
+                  <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners will
+                  be selected to receive{' '}
+                  <span className={classes.boldLabel}>
+                    {' '}
+                    <FundingAmount
+                      amount={activeAuction.fundingAmount}
+                      currencyType={activeAuction.currencyType}
+                    />
+                  </span>
                 </span>
-              </span>
-            </Container>
-          </div>
+              </Container>
+            </div>
 
-          <Container>
-            <Row>
-              <Col xl={12}>
-                {showPreview ? <Preview /> : <ProposalEditor onDataChange={onDataChange} />}
-              </Col>
-            </Row>
-
-            <Row>
-              <Col xl={12} className={classes.btnContainer}>
-                <Button
-                  text={showPreview ? t('backToEditor') : t('preview')}
-                  bgColor={ButtonColor.Pink}
-                  onClick={() =>
-                    setShowPreview(prev => {
-                      return !prev;
-                    })
-                  }
-                  disabled={!isValidPropData(proposalEditorData)}
-                />
-
-                {showPreview &&
-                  (account ? (
-                    <Button
-                      classNames={classes.actionBtn}
-                      text={t('signAndSubmit')}
-                      bgColor={ButtonColor.Pink}
-                      onClick={submitProposal}
-                      disabled={!isValidPropData(proposalEditorData)}
-                    />
+            <Container>
+              <Row>
+                <Col xl={12}>
+                  {showPreview ? (
+                    <Preview />
                   ) : (
-                    <Button
-                      classNames={classes.actionBtn}
-                      bgColor={ButtonColor.Pink}
-                      text={t('connectWallet')}
-                      onClick={connect}
+                    <ProposalEditor
+                      showImageUploadModal={showImageUploadModal}
+                      setShowImageUploadModal={setShowImageUploadModal}
+                      files={files}
+                      setFiles={setFiles}
+                      onFileDrop={onFileDrop}
+                      invalidFileError={invalidFileError}
+                      setInvalidFileError={setInvalidFileError}
+                      invalidFileMessage={invalidFileMessage}
+                      setInvalidFileMessage={setInvalidFileMessage}
+                      duplicateFile={duplicateFile}
+                      setDuplicateFile={setDuplicateFile}
+                      onDataChange={onDataChange}
                     />
-                  ))}
-              </Col>
-            </Row>
-          </Container>
+                  )}
+                </Col>
+              </Row>
+
+              <Row>
+                <Col xl={12} className={classes.btnContainer}>
+                  <Button
+                    text={showPreview ? t('backToEditor') : t('preview')}
+                    bgColor={ButtonColor.Pink}
+                    onClick={() =>
+                      setShowPreview(prev => {
+                        return !prev;
+                      })
+                    }
+                    disabled={!isValidPropData(proposalEditorData)}
+                  />
+
+                  {showPreview &&
+                    (account ? (
+                      <Button
+                        classNames={classes.actionBtn}
+                        text={t('signAndSubmit')}
+                        bgColor={ButtonColor.Pink}
+                        onClick={submitProposal}
+                        disabled={!isValidPropData(proposalEditorData)}
+                      />
+                    ) : (
+                      <Button
+                        classNames={classes.actionBtn}
+                        bgColor={ButtonColor.Pink}
+                        text={t('connectWallet')}
+                        onClick={connect}
+                      />
+                    ))}
+                </Col>
+              </Row>
+            </Container>
+          </DragAndDrop>
         </>
       ) : (
         <LoadingIndicator />
