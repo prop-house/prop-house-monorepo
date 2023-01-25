@@ -1,11 +1,10 @@
 .langBtn {
-  padding-top: 0.2rem;
+  padding-top: 0.4rem;
 }
 
 @media (max-width: 991px) {
   .langBtn {
     margin: 0 !important;
-    padding: 0.5rem 0rem;
   }
   .langBtn button {
     min-width: 80px !important;
