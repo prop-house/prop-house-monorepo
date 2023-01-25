@@ -2,10 +2,10 @@ import { Accordion, Container } from 'react-bootstrap';
 import classes from './FAQ.module.css';
 import { useTranslation } from 'react-i18next';
 import ReactHtmlParser from 'react-html-parser';
-import SearchBar from '../../SeachBar';
+import SearchBar from '../../components/SeachBar';
 import { useEffect, useState } from 'react';
-import ErrorMessageCard from '../../ErrorMessageCard';
-import NavBar from '../../NavBar';
+import ErrorMessageCard from '../../components/ErrorMessageCard';
+import NavBar from '../../components/NavBar';
 
 interface ContentItem {
   title: string;

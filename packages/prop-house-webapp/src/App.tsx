@@ -3,23 +3,23 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
-import Home from './components/pages/Home';
-import Create from './components/pages/Create';
-import House from './components/pages/House';
+import Home from './pages/Home';
+import Create from './pages/Create';
+import House from './pages/House';
 import Footer from './components/Footer';
 import './App.css';
 import { Mainnet, DAppProvider, Config } from '@usedapp/core';
-import FAQ from './components/pages/FAQ';
+import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import NotFound from './components/NotFound';
-import Round from './components/pages/Round';
+import Round from './pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
-import Proposal from './components/pages/Proposal';
+import Proposal from './pages/Proposal';
 
 const config: Config = {
   readOnlyChainId: Mainnet.chainId,

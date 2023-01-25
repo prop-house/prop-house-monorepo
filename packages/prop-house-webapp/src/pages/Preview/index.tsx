@@ -1,5 +1,5 @@
-import { useAppSelector } from '../../../hooks';
-import ProposalContent from '../../ProposalContent';
+import { useAppSelector } from '../../hooks';
+import ProposalContent from '../../components/ProposalContent';
 
 const Preview: React.FC<{}> = props => {
   const proposalEditorData = useAppSelector(state => state.editor.proposal);

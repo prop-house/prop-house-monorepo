@@ -1,28 +1,28 @@
 import classes from './House.module.css';
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
-import HouseHeader from '../../HouseHeader';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useRef, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity } from '../../../state/slices/propHouse';
+import { setActiveCommunity } from '../../state/slices/propHouse';
 
-import { slugToName } from '../../../utils/communitySlugs';
+import { slugToName } from '../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
-import RoundCard from '../../RoundCard';
-import HouseUtilityBar from '../../HouseUtilityBar';
-import { AuctionStatus, auctionStatus } from '../../../utils/auctionStatus';
+import RoundCard from '../../components/RoundCard';
+import HouseUtilityBar from '../../components/HouseUtilityBar';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import LoadingIndicator from '../../LoadingIndicator';
-import ErrorMessageCard from '../../ErrorMessageCard';
-import NoSearchResults from '../../NoSearchResults';
-import NotFound from '../../NotFound';
-import { sortRoundByStatus } from '../../../utils/sortRoundByStatus';
-import { RoundStatus } from '../../StatusFilters';
-import OpenGraphElements from '../../OpenGraphElements';
-import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import ErrorMessageCard from '../../components/ErrorMessageCard';
+import NoSearchResults from '../../components/NoSearchResults';
+import NotFound from '../../components/NotFound';
+import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
+import { RoundStatus } from '../../components/StatusFilters';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
-import { markdownComponentToPlainText } from '../../../utils/markdownToPlainText';
+import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
 
 const House = () => {

@@ -1,13 +1,13 @@
-import HomeHeader from '../../HomeHeader';
+import HomeHeader from '../../components/HomeHeader';
 import classes from './Home.module.css';
 import { Container } from 'react-bootstrap';
-import CommunityCardGrid from '../../CommunityCardGrid';
+import CommunityCardGrid from '../../components/CommunityCardGrid';
 import { useEffect, useState, useRef } from 'react';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
-import { useAppSelector } from '../../../hooks';
-import NavBar from '../../NavBar';
+import { useAppSelector } from '../../hooks';
+import NavBar from '../../components/NavBar';
 
 export interface StatsProps {
   accEthFunded: number;

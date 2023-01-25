@@ -1,8 +1,8 @@
 import classes from './Proposal.module.css';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../../hooks';
-import NotFound from '../../NotFound';
+import { useAppSelector } from '../../hooks';
+import NotFound from '../../components/NotFound';
 import { useEffect, useRef, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useEthers } from '@usedapp/core';
@@ -11,17 +11,17 @@ import {
   setActiveCommunity,
   setActiveProposal,
   setActiveRound,
-} from '../../../state/slices/propHouse';
+} from '../../state/slices/propHouse';
 
-import proposalFields from '../../../utils/proposalFields';
+import proposalFields from '../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
-import LoadingIndicator from '../../LoadingIndicator';
+import LoadingIndicator from '../../components/LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
-import { buildRoundPath } from '../../../utils/buildRoundPath';
-import { cardServiceUrl, CardType } from '../../../utils/cardServiceUrl';
-import OpenGraphElements from '../../OpenGraphElements';
-import RenderedProposalFields from '../../RenderedProposalFields';
+import { buildRoundPath } from '../../utils/buildRoundPath';
+import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import RenderedProposalFields from '../../components/RenderedProposalFields';
 
 const Proposal = () => {
   const params = useParams();
