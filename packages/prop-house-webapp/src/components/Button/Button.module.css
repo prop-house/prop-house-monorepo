@@ -8,6 +8,9 @@
   font-weight: bold;
   line-height: 140%;
 }
+.btn div {
+  margin: auto;
+}
 
 .btn:disabled {
   background-color: var(--brand-gray);
