@@ -258,3 +258,8 @@ body {
 .blot-formatter__toolbar {
   display: none;
 }
+/* styles added to image uploader when a file is dragged on */
+.dragover {
+  background-color: var(--bg-dark) !important;
+  border: 2px dashed var(--brand-green) !important;
+}

@@ -18,8 +18,7 @@
   height: 100%;
   cursor: pointer;
 }
-.fileInput:hover,
-.fileInput.dragover {
+.fileInput:hover {
   background-color: var(--bg-dark) !important;
 }
 .uploadReadyTitle {
