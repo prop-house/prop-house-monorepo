@@ -16,12 +16,7 @@ const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
     try {
       // use is-image-url to check if the image is valid
       const isValid = await isImage(match[1]);
-      if (isValid) {
-        // return the image url
-        return match[1];
-      } else {
-        return undefined;
-      }
+      return isValid ? match[1] : undefined;
     } catch (err) {
       return '';
     }
