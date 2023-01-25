@@ -11,18 +11,10 @@ const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
   // find the first image in the description
   const match = imgRegex.exec(proposalDescription);
 
+  if (!match) return undefined;
+
   // check if there's an image in the description
-  if (match) {
-    try {
-      // use is-image-url to check if the image is valid
-      const isValid = await isImage(match[1]);
-      return isValid ? match[1] : undefined;
-    } catch (err) {
-      return '';
-    }
-  } else {
-    return '';
-  }
+  return (await isImage(match[1])) ? match[1] : undefined;
 };
 
 export default getImageFromDescription;

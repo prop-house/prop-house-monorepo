@@ -41,12 +41,11 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
 
-  const [imageUrl, setImageUrl] = useState<string | undefined>('');
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    getImageFromDescription(proposal)
-      .then(url => setImageUrl(url))
-      .catch(error => console.log(error));
+    const getImg = async () => setImageUrl(await getImageFromDescription(proposal));
+    getImg();
   }, [proposal]);
 
   return (
@@ -97,12 +96,10 @@ const ProposalCard: React.FC<{
               </div>
             </div>
 
-            {imageUrl && imageUrl !== '' ? (
+            {imageUrl && imageUrl && (
               <div className={classes.propImgContainer}>
                 <img src={imageUrl} alt="propCardImage" />
               </div>
-            ) : (
-              <></>
             )}
           </div>
 
