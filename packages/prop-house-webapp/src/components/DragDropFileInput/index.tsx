@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import classes from './DragDropFileInput.module.css';
 import uploadImg from '../../assets/files/upload.png';
 import { formatBytes } from '../../utils/formatBytes';
@@ -40,9 +40,19 @@ const DragDropFileInput: React.FC<{
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // event listeners for drag and drop
-  const onDragEnter = () => wrapperRef.current!.classList.add('dragover');
-  const onDragLeave = () => wrapperRef.current!.classList.remove('dragover');
-  const onDrop = () => wrapperRef.current!.classList.remove('dragover');
+  const [isDraggedOver, setIsDraggedOver] = useState<boolean>(false);
+  const onDragEnter = () => {
+    wrapperRef.current!.classList.add('dragover');
+    setIsDraggedOver(true);
+  };
+  const onDragLeave = () => {
+    wrapperRef.current!.classList.remove('dragover');
+    setIsDraggedOver(false);
+  };
+  const onDrop = () => {
+    wrapperRef.current!.classList.remove('dragover');
+    setIsDraggedOver(false);
+  };
 
   return (
     <>
@@ -55,7 +65,9 @@ const DragDropFileInput: React.FC<{
       >
         <div className={classes.inputLabelContainer}>
           <img className={classes.uploadImagePicture} src={uploadImg} alt="upload" />
-          <p className={classes.inputLabelTitle}>Drag & drop your files here</p>
+          <p className={classes.inputLabelTitle}>
+            {isDraggedOver ? 'Drop your files' : 'Drag & drop your files here'}
+          </p>
           <p className={classes.inputLabelSubtitle}>or click to browse</p>
         </div>
 
