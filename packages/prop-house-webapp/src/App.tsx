@@ -8,7 +8,7 @@ import Create from './pages/Create';
 import House from './pages/House';
 import Footer from './components/Footer';
 import './App.css';
-import { Mainnet, DAppProvider, Config } from '@usedapp/core';
+// import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -42,13 +42,13 @@ const wagmiClient = createClient({
   provider,
 });
 
-const config: Config = {
-  readOnlyChainId: Mainnet.chainId,
-  readOnlyUrls: {
-    [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
-  },
-  autoConnect: false,
-};
+// const config: Config = {
+//   readOnlyChainId: Mainnet.chainId,
+//   readOnlyUrls: {
+//     [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
+//   },
+//   autoConnect: false,
+// };
 
 function App() {
   const location = useLocation();
@@ -80,35 +80,35 @@ function App() {
           accentColor: 'var(--brand-purple)',
         })}
       >
-        <DAppProvider config={config}>
-          <Suspense fallback={<LoadingIndicator />}>
-            <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-              {!noNavPath && <NavBar />}
+        {/* <DAppProvider config={config}> */}
+        <Suspense fallback={<LoadingIndicator />}>
+          <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+            {!noNavPath && <NavBar />}
 
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route
-                  path="/create"
-                  element={
-                    <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                      <Create />
-                    </ProtectedRoute>
-                  }
-                />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/create"
+                element={
+                  <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                    <Create />
+                  </ProtectedRoute>
+                }
+              />
 
-                <Route path="/faq" element={<FAQ />} />
-                <Route path="/proposal/:id" element={<Proposal />} />
-                <Route path="/:house" element={<House />} />
-                <Route path="/:house/:title" element={<Round />} />
-                <Route path="/:house/:title/:id" element={<Proposal />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/proposal/:id" element={<Proposal />} />
+              <Route path="/:house" element={<House />} />
+              <Route path="/:house/:title" element={<Round />} />
+              <Route path="/:house/:title/:id" element={<Proposal />} />
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-              <Footer />
-            </div>
-          </Suspense>
-        </DAppProvider>
+            <Footer />
+          </div>
+        </Suspense>
+        {/* </DAppProvider> */}
       </RainbowKitProvider>
     </WagmiConfig>
   );
