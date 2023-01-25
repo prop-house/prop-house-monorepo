@@ -219,6 +219,7 @@ const Create: React.FC<{}> = () => {
                     <Preview />
                   ) : (
                     <ProposalEditor
+                      onDataChange={onDataChange}
                       showImageUploadModal={showImageUploadModal}
                       setShowImageUploadModal={setShowImageUploadModal}
                       files={files}
@@ -230,7 +231,6 @@ const Create: React.FC<{}> = () => {
                       setInvalidFileMessage={setInvalidFileMessage}
                       duplicateFile={duplicateFile}
                       setDuplicateFile={setDuplicateFile}
-                      onDataChange={onDataChange}
                     />
                   )}
                 </Col>

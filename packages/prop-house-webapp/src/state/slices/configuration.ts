@@ -14,6 +14,7 @@ const initialState: ConfigurationSlice = {
       : process.env.REACT_APP_NODE_ENV === 'development' && process.env.REACT_APP_DEV_BACKEND_URI
       ? process.env.REACT_APP_DEV_BACKEND_URI
       : 'http://localhost:3000',
+  // process.env.REACT_APP_PROD_BACKEND_URI ? process.env.REACT_APP_PROD_BACKEND_URI : '',
   displayAdmin: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
 };
 

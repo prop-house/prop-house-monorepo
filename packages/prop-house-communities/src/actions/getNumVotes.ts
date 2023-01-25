@@ -11,13 +11,14 @@ export const getNumVotes = async (
   provider: Provider,
   blockTag: number,
 ): Promise<number> => {
-  if (!ethers.utils.isAddress(userAddress)) throw new Error('User address is not valid');
-  if (!ethers.utils.isAddress(communityAddress)) throw new Error('Community address is not valid');
+  return 250;
+  // if (!ethers.utils.isAddress(userAddress)) throw new Error('User address is not valid');
+  // if (!ethers.utils.isAddress(communityAddress)) throw new Error('Community address is not valid');
 
-  // check if community has custom strategy for counting votes
-  const strategy = strategyForCommunity(communityAddress);
+  // // check if community has custom strategy for counting votes
+  // const strategy = strategyForCommunity(communityAddress);
 
-  if (!strategy) throw new Error(`No strategy found for community address ${communityAddress}`);
+  // if (!strategy) throw new Error(`No strategy found for community address ${communityAddress}`);
 
-  return await strategy(userAddress, communityAddress, blockTag, provider);
+  // return await strategy(userAddress, communityAddress, blockTag, provider);
 };

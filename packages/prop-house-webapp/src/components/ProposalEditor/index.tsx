@@ -26,16 +26,16 @@ const ProposalEditor: React.FC<{
   fields?: ProposalFields;
   onDataChange: (data: Partial<ProposalFields>) => void;
   showImageUploadModal?: boolean;
-  setShowImageUploadModal?: Dispatch<SetStateAction<boolean>>;
-  files?: File[];
-  setFiles?: Dispatch<SetStateAction<File[]>>;
-  onFileDrop?: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
-  invalidFileError?: boolean;
-  setInvalidFileError?: Dispatch<SetStateAction<boolean>>;
-  invalidFileMessage?: string;
-  setInvalidFileMessage?: Dispatch<SetStateAction<string>>;
-  duplicateFile?: { error: boolean; name: string };
-  setDuplicateFile?: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
+  setShowImageUploadModal: Dispatch<SetStateAction<boolean>>;
+  files: File[];
+  setFiles: Dispatch<SetStateAction<File[]>>;
+  onFileDrop: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
+  invalidFileError: boolean;
+  setInvalidFileError: Dispatch<SetStateAction<boolean>>;
+  invalidFileMessage: string;
+  setInvalidFileMessage: Dispatch<SetStateAction<string>>;
+  duplicateFile: { error: boolean; name: string };
+  setDuplicateFile: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
 }> = props => {
   const {
     fields,
@@ -114,7 +114,7 @@ const ProposalEditor: React.FC<{
     'image',
   ];
 
-  const imageHandler = () => setShowImageUploadModal!(true);
+  const imageHandler = () => setShowImageUploadModal(true);
 
   const modules = {
     toolbar: {
@@ -180,7 +180,7 @@ const ProposalEditor: React.FC<{
         quill={quill}
         quillRef={quillRef}
         onDataChange={onDataChange}
-        onFileDrop={onFileDrop!}
+        onFileDrop={onFileDrop}
         formData={formData}
         descriptionData={descriptionData}
         editorBlurred={editorBlurred}
@@ -189,18 +189,18 @@ const ProposalEditor: React.FC<{
 
       {showImageUploadModal && (
         <ImageUploadModal
-          files={files!}
-          setFiles={setFiles!}
-          onFileDrop={onFileDrop!}
+          files={files}
+          setFiles={setFiles}
+          onFileDrop={onFileDrop}
           quill={quill}
           Quill={Quill}
-          invalidFileError={invalidFileError!}
-          setInvalidFileError={setInvalidFileError!}
-          invalidFileMessage={invalidFileMessage!}
-          setInvalidFileMessage={setInvalidFileMessage!}
-          duplicateFile={duplicateFile!}
-          setDuplicateFile={setDuplicateFile!}
-          setShowImageUploadModal={setShowImageUploadModal!}
+          invalidFileError={invalidFileError}
+          setInvalidFileError={setInvalidFileError}
+          invalidFileMessage={invalidFileMessage}
+          setInvalidFileMessage={setInvalidFileMessage}
+          duplicateFile={duplicateFile}
+          setDuplicateFile={setDuplicateFile}
+          setShowImageUploadModal={setShowImageUploadModal}
         />
       )}
     </>
