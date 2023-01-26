@@ -50,11 +50,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                     </span>
                     {t('by')}
                     <div className={classes.submittedBy}>
-                      <EthAddress
-                        address={address}
-                        hideDavatar={true}
-                        className={classes.submittedBy}
-                      />
+                      <EthAddress address={address} className={classes.submittedBy} />
                     </div>
                   </div>
                 </div>
