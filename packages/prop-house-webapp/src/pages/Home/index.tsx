@@ -5,9 +5,9 @@ import CommunityCardGrid from '../../components/CommunityCardGrid';
 import { useEffect, useState, useRef } from 'react';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import NavBar from '../../components/NavBar';
+import { useSigner } from 'wagmi';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -29,13 +29,14 @@ const Home = () => {
     setInput(e.target.value);
   };
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch communities
   useEffect(() => {

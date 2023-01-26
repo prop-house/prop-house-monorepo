@@ -9,7 +9,6 @@ import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../utils/isAuctionActive';
 import { ProposalFields } from '../../utils/proposalFields';
@@ -25,11 +24,11 @@ import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
-import { useAccount } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
 
 const Create: React.FC<{}> = () => {
-  const { library: provider } = useEthers();
   const { address: account } = useAccount();
+  const { data: signer } = useSigner();
 
   const { t } = useTranslation();
 
@@ -46,11 +45,11 @@ const Create: React.FC<{}> = () => {
   const dispatch = useAppDispatch();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));

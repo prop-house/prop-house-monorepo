@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
@@ -9,6 +8,7 @@ import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refre
 import { useDispatch } from 'react-redux';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
+import { useSigner } from 'wagmi';
 
 const DeleteProposalModal: React.FC<{
   id: number;
@@ -18,20 +18,21 @@ const DeleteProposalModal: React.FC<{
 }> = props => {
   const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
+  const { data: signer } = useSigner();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
 
   const dispatch = useDispatch();
-  const { library } = useEthers();
+
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   const handleDeleteProposal = async () => {
     if (!id) return;

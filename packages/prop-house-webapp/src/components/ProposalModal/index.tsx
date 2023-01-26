@@ -5,7 +5,6 @@ import Modal from 'react-modal';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
 import {
   Direction,
@@ -28,7 +27,8 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useAccount } from 'wagmi';
+import { useAccount, useSigner, useProvider } from 'wagmi';
+import { fetchBlockNumber } from '@wagmi/core';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -37,7 +37,7 @@ const ProposalModal = () => {
   const { id } = params;
   const navigate = useNavigate();
 
-  const { library: provider } = useEthers();
+  const { data: signer } = useSigner();
   const { address: account } = useAccount();
 
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ const ProposalModal = () => {
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -64,8 +64,8 @@ const ProposalModal = () => {
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
-
   const winningIds = round && getWinningIds(proposals, round);
+  const provider = useProvider();
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -81,8 +81,8 @@ const ProposalModal = () => {
 
   // provider
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -143,20 +143,20 @@ const ProposalModal = () => {
   };
 
   const _signerIsContract = async () => {
-    if (!provider || !account) {
+    if (!signer || !provider || !account) {
       return false;
     }
-    const code = await provider?.getCode(account);
+    const code = await provider.getCode(account);
     const isContract = code !== '0x';
     setSignerIsContract(isContract);
     return isContract;
   };
 
   const handleSubmitVote = async () => {
-    if (!provider || !activeProposal) return;
+    if (!activeProposal) return;
 
     try {
-      const blockHeight = await provider.getBlockNumber();
+      const blockHeight = await fetchBlockNumber();
 
       const votes = voteAllotments
         .map(

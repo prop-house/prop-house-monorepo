@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { ButtonColor } from '../Button';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
@@ -15,7 +14,7 @@ import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -43,8 +42,8 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { library } = useEthers();
   const { address: account } = useAccount();
+  const provider = useProvider();
 
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -59,14 +58,14 @@ const ProposalModalFooter: React.FC<{
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
-    if (!account || !library || !community) return;
+    if (!account || !provider || !community) return;
 
     const fetchVotes = async () => {
       try {
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          provider,
           round!.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
@@ -75,7 +74,7 @@ const ProposalModalFooter: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community, round]);
+  }, [account, provider, dispatch, community, round]);
 
   return (
     <>
