@@ -26,7 +26,10 @@ const config = (): Config => ({
     database: process.env.DB_NAME,
   },
   env: process.env.NODE_ENV ?? 'development',
-  JSONRPC: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
+  JSONRPC:
+    process.env.SIMNET === 'true'
+      ? 'http://localhost:8545'
+      : `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   file: {
     basePath: process.env.FILE_BASE_PATH ?? '/data'
   }

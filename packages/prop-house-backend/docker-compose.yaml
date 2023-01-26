@@ -14,6 +14,16 @@ services:
     ports:
       - 8080:8080
 
+  simnet:
+    image: ghcr.io/foundry-rs/foundry:latest
+    entrypoint: anvil --fork-url https://mainnet.infura.io/v3/$REACT_APP_INFURA_PROJECT_ID
+    volumes:
+      - "../../scripts:/scripts"
+    ports:
+      - "8545:8545"
+    env_file:
+      - .env
+
 volumes:
    postgres-data:
      driver: local

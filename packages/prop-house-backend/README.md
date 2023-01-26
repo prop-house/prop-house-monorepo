@@ -204,3 +204,38 @@ INSERT INTO "migrations" ("id", "timestamp", "name") VALUES
 (1,	1650506499501,	'InitialMigration1650506499501'),
 (2,	1651112951360,	'AddTldr1651112951360');
 ```
+
+## Simnet
+
+The Prop House Backend package now includes a simulated network function
+which can be used to experiment with features and perform automated testing
+without requiring mainnet transactions.
+
+### Simnet Startup
+
+Ensure that you have the `REACT_APP_INFURA_PROJECT_ID` environment variable set
+in your `.env` file.
+
+```sh
+# Start simnet container
+docker-compose up -d simnet
+# Transfer tokens from real account to test accounts
+docker exec -it prop-house-backend_simnet_1 /scripts/seed_tokens.sh
+# Start backend with simnet connection
+yarn start:simnet
+```
+
+Once the backend is running, you can connect your wallet to the RPC node at
+`http://localhost:8545` and network ID 1.
+
+You can add the test accounts to your wallet as well, the following keys have
+starting balances:
+
+```
+Private Keys
+==================
+
+(0) 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+(1) 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+(2) 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+```
