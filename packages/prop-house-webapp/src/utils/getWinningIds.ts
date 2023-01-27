@@ -20,7 +20,13 @@ const getWinningIds = (
   const sortedProposals = proposals && sortByVotesAndHandleTies(proposals.slice(), false);
 
   // push the winning ids to the array
-  sortedProposals && sortedProposals.slice(0, auction.numWinners).map(p => winningIds.push(p.id));
+  sortedProposals &&
+    sortedProposals.slice(0, auction.numWinners).map(p =>
+      auctionStatus(auction) === AuctionStatus.AuctionVoting
+        ? // skip proposals with 0 votes if auction is in voting phase
+          Number(p.voteCount) !== 0 && winningIds.push(p.id)
+        : winningIds.push(p.id),
+    );
 
   return winningIds;
 };
