@@ -6,8 +6,12 @@ import classes from './EthAddress.module.css';
 import { useEnsName, useEnsAvatar } from 'wagmi';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
-const EthAddress: React.FC<{ address: string; className?: string }> = props => {
-  const { address, className } = props;
+const EthAddress: React.FC<{
+  address: string;
+  className?: string;
+  addAvatar?: boolean;
+}> = props => {
+  const { address, className, addAvatar } = props;
 
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -23,11 +27,12 @@ const EthAddress: React.FC<{ address: string; className?: string }> = props => {
   return (
     <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        {avatar ? (
-          <img className={classes.avatar} src={avatar} alt="ens-avatar" />
-        ) : (
-          <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
-        )}
+        {addAvatar &&
+          (avatar ? (
+            <img className={classes.avatar} src={avatar} alt="ens-avatar" />
+          ) : (
+            <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+          ))}
         <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
     </div>

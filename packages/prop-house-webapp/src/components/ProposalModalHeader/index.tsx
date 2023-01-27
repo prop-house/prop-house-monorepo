@@ -107,7 +107,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
                 Prop {propIndex} of {numberOfProps} <span className={classes.creditDash}>—</span> by{' '}
               </span>{' '}
               <div className={classes.submittedBy}>
-                <EthAddress address={address} className={classes.submittedBy} />
+                <EthAddress address={address} className={classes.submittedBy} addAvatar />
               </div>
             </div>
           </div>
