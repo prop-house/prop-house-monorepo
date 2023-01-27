@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import AdminTool from '../AdminTool';
+import DevEnvDropDown from '../DevEnvDropdown';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -41,6 +43,10 @@ const NavBar = () => {
               <Nav.Link as="div">
                 <Web3ModalButton classNames={classes.link} />
               </Nav.Link>
+
+              <AdminTool>
+                <DevEnvDropDown />
+              </AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>

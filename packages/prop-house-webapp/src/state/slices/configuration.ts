@@ -6,14 +6,40 @@ export interface ConfigurationSlice {
   displayAdmin: boolean;
 }
 
+export enum BackendHost {
+  Local = 'local',
+  Dev = 'development',
+  Prod = 'production',
+}
+
+const backendHostURI = (b: BackendHost) => {
+  const localhost = 'http://localhost:3000';
+  switch (b) {
+    case BackendHost.Local:
+      return localhost;
+    case BackendHost.Dev:
+      return process.env.REACT_APP_DEV_BACKEND_URI
+        ? process.env.REACT_APP_DEV_BACKEND_URI
+        : localhost;
+    case BackendHost.Prod:
+      return process.env.REACT_APP_PROD_BACKEND_URI
+        ? process.env.REACT_APP_PROD_BACKEND_URI
+        : localhost;
+  }
+};
+
+const envToUri = (env: BackendHost | undefined) => {
+  const devEnv = localStorage.getItem('devEnv');
+
+  if (!env && devEnv) return backendHostURI(devEnv as BackendHost); // localhost && dev set env
+  if (!env) return backendHostURI(BackendHost.Local); // localhost
+
+  return backendHostURI(env as BackendHost); // development | prod environments
+};
+
 const initialState: ConfigurationSlice = {
   etherscanHost: 'https://etherscan.io',
-  backendHost:
-    process.env.REACT_APP_NODE_ENV === 'production' && process.env.REACT_APP_PROD_BACKEND_URI
-      ? process.env.REACT_APP_PROD_BACKEND_URI
-      : process.env.REACT_APP_NODE_ENV === 'development' && process.env.REACT_APP_DEV_BACKEND_URI
-      ? process.env.REACT_APP_DEV_BACKEND_URI
-      : 'http://localhost:3000',
+  backendHost: envToUri(process.env.REACT_APP_NODE_ENV as BackendHost),
   displayAdmin: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
 };
 
