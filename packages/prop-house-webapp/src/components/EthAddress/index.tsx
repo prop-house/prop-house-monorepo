@@ -7,15 +7,15 @@ import { useEnsName, useEnsAvatar } from 'wagmi';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 const EthAddress: React.FC<{ address: string; className?: string }> = props => {
-  const { addressa, className } = props;
-  const address = '0x1234567890abcdef1234567890abcdef12345678';
+  const { address, className } = props;
+
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
   const buildAddressHref = (address: string) => [etherscanHost, 'address', address].join('/');
 
   // wagmi hooks to get ENS name and avatar
-  const { data: ens } = useEnsName({ address: address as any });
-  const { data: avatar } = useEnsAvatar({ address: address as any });
+  const { data: ens } = useEnsName({ address: address as `0x${string}` });
+  const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
 
   // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
   const shortAddress = trimEthAddress(address as string);
