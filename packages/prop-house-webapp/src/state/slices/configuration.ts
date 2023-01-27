@@ -31,7 +31,7 @@ const backendHostURI = (b: BackendHost) => {
 const envToUri = (env: BackendHost | undefined) => {
   const devEnv = localStorage.getItem('devEnv');
 
-  if (!env && devEnv) return backendHostURI(devEnv as BackendHost); // localhost && dev set env
+  if ((!env || env === BackendHost.Dev) && devEnv) return backendHostURI(devEnv as BackendHost); // localhost && dev set env
   if (!env) return backendHostURI(BackendHost.Local); // localhost
 
   return backendHostURI(env as BackendHost); // development | prod environments
@@ -40,9 +40,7 @@ const envToUri = (env: BackendHost | undefined) => {
 const initialState: ConfigurationSlice = {
   etherscanHost: 'https://etherscan.io',
   backendHost: envToUri(process.env.REACT_APP_NODE_ENV as BackendHost),
-  displayAdmin:
-    process.env.REACT_APP_NODE_ENV !== BackendHost.Prod &&
-    process.env.REACT_APP_NODE_ENV !== BackendHost.Dev,
+  displayAdmin: process.env.REACT_APP_NODE_ENV !== BackendHost.Prod,
 };
 
 export const configSlice = createSlice({
