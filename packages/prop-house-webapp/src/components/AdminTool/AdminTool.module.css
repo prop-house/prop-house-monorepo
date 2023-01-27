@@ -1,7 +1,8 @@
 .displayAdminTool {
-
+  display: flex;
+  align-items: center;
 }
 
 .hideAdminTool {
-	display: none;
+  display: none;
 }
