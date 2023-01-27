@@ -40,7 +40,9 @@ const envToUri = (env: BackendHost | undefined) => {
 const initialState: ConfigurationSlice = {
   etherscanHost: 'https://etherscan.io',
   backendHost: envToUri(process.env.REACT_APP_NODE_ENV as BackendHost),
-  displayAdmin: process.env.REACT_APP_NODE_ENV === 'production' ? false : true,
+  displayAdmin:
+    process.env.REACT_APP_NODE_ENV !== BackendHost.Prod &&
+    process.env.REACT_APP_NODE_ENV !== BackendHost.Dev,
 };
 
 export const configSlice = createSlice({
