@@ -24,6 +24,7 @@ import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import ProposalModal from '../../components/ProposalModal';
 import { useSigner } from 'wagmi';
+import { Signer } from 'ethers';
 
 const Round = () => {
   const location = useLocation();
@@ -44,7 +45,7 @@ const Round = () => {
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
+    client.current = new PropHouseWrapper(host, signer as Signer);
   }, [signer, host]);
 
   // if no round is found in store (ie round page is entry point), fetch community and round

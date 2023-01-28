@@ -32,6 +32,7 @@ import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
+import { Signer } from 'ethers';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
@@ -59,7 +60,7 @@ const RoundContent: React.FC<{
   const provider = useProvider();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
+    client.current = new PropHouseWrapper(host, signer as Signer);
   }, [signer, host]);
 
   // fetch voting power for user

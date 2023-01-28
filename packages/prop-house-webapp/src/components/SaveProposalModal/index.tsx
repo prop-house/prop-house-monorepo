@@ -8,6 +8,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
 import { useSigner } from 'wagmi';
 import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { Signer } from 'ethers';
 
 const SaveProposalModal: React.FC<{
   propId: number;
@@ -32,7 +33,7 @@ const SaveProposalModal: React.FC<{
   const { data: signer } = useSigner();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
+    client.current = new PropHouseWrapper(host, signer as Signer);
   }, [signer, host]);
 
   const [hasBeenSaved, setHasBeenSaved] = useState(false);

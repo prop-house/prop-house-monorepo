@@ -10,6 +10,7 @@ import diffTime from '../../utils/diffTime';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useSigner } from 'wagmi';
+import { Signer } from 'ethers';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
@@ -23,7 +24,7 @@ const OpenGraphRoundCard: React.FC = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
+    client.current = new PropHouseWrapper(host, signer as Signer);
   }, [signer, host]);
 
   useEffect(() => {

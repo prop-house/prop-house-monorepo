@@ -8,6 +8,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAppSelector } from '../../hooks';
 import NavBar from '../../components/NavBar';
 import { useSigner } from 'wagmi';
+import { Signer } from 'ethers';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -35,7 +36,7 @@ const Home = () => {
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
+    client.current = new PropHouseWrapper(host, signer as Signer);
   }, [signer, host]);
 
   // fetch communities
