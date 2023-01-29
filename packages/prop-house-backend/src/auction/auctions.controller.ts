@@ -10,7 +10,7 @@ import {
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
 import { CreateAuctionDto } from './auction.types';
-import { AuctionsService } from './auctions.service';
+import { AuctionsService, AuctionWithProposalCount } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
 
@@ -48,7 +48,9 @@ export class AuctionsController {
   }
 
   @Get('/forCommunity/:id')
-  async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
+  async findAllForCommunity(
+    @Param('id') id: number,
+  ): Promise<AuctionWithProposalCount[]> {
     const auctions = await this.auctionsService.findAllForCommunity(id);
     if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);

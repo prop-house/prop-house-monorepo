@@ -4,6 +4,8 @@ import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
 
+export type AuctionWithProposalCount = Auction & { numProposals: number };
+
 @Injectable()
 export class AuctionsService {
   constructor(
@@ -22,15 +24,18 @@ export class AuctionsService {
     });
   }
 
-  findAllForCommunity(id: number): Promise<Auction[]> {
-    return this.auctionsRepository
-      .createQueryBuilder('a')
-      .select('a.*')
-      .where('a.community.id = :id', { id })
-      .addSelect('SUM(p."numProposals")', 'numProposals')
-      .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
-      .groupBy('a.id')
-      .getRawMany();
+  findAllForCommunity(id: number): Promise<AuctionWithProposalCount[]> {
+    return (
+      this.auctionsRepository
+        .createQueryBuilder('a')
+        .select('a.*')
+        .where('a.community.id = :id', { id })
+        // This select adds a new property, reflected in AuctionWithProposalCount
+        .addSelect('SUM(p."proposalIds")', 'numProposals')
+        .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+        .groupBy('a.id')
+        .getRawMany()
+    );
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {

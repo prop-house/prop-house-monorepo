@@ -76,7 +76,7 @@ export class Auction {
   proposals: Proposal[];
 
   @RelationId((auction: Auction) => auction.proposals)
-  numProposals: number;
+  proposalIds: number[];
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()
