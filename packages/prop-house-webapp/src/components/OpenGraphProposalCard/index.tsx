@@ -10,6 +10,7 @@ import { useAppSelector } from '../../hooks';
 import classes from './OpenGraphProposalCard.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { InfuraProvider } from '@ethersproject/providers';
+import getImageFromDescription from '../../utils/getImageFromDescription';
 
 const OpenGraphProposalCard: React.FC = () => {
   const params = useParams();
@@ -19,6 +20,7 @@ const OpenGraphProposalCard: React.FC = () => {
   const [round, setRound] = useState<Auction>();
   const [community, setCommunity] = useState<Community>();
   const [ens, setEns] = useState<null | string>(null);
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(backendHost));
@@ -54,6 +56,14 @@ const OpenGraphProposalCard: React.FC = () => {
     fetch();
   }, [id]);
 
+  useEffect(() => {
+    if (proposal) {
+      const getImg = async () => setImageUrl(await getImageFromDescription(proposal));
+
+      getImg();
+    }
+  }, [proposal]);
+
   return (
     <>
       {community && round && proposal && (
@@ -67,12 +77,20 @@ const OpenGraphProposalCard: React.FC = () => {
             <div className={classes.propName}>{proposal.title}</div>
           </span>
 
-          <div className={classes.userInfo}>
-            <span className={classes.proposedBy}>Proposed by</span>
-            <div className={classes.openGraphAvatar}>
-              {ens ? ens : trimEthAddress(proposal.address)}
+          <span className={classes.infoAndImage}>
+            <div className={classes.userInfo}>
+              <span className={classes.proposedBy}>Proposed by</span>
+              <div className={classes.openGraphAvatar}>
+                {ens ? ens : trimEthAddress(proposal.address)}
+              </div>
             </div>
-          </div>
+
+            {imageUrl && (
+              <div className={classes.propImgContainer}>
+                <img src={imageUrl} alt="propImage" />
+              </div>
+            )}
+          </span>
         </div>
       )}
     </>
