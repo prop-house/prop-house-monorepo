@@ -129,12 +129,15 @@ export class StoredAuction extends Auction {
   }
 }
 
+export type ProposalParent = 'auction' | 'infinite-auction';
+
 export class Proposal extends Signable {
   constructor(
     public readonly title: string,
     public readonly what: string,
     public readonly tldr: string,
     public readonly auctionId: number,
+    public readonly parentType: ProposalParent = 'auction',
   ) {
     super();
   }
@@ -145,6 +148,7 @@ export class Proposal extends Signable {
       what: this.what,
       tldr: this.tldr,
       parentAuctionId: this.auctionId,
+      parentType: this.parentType,
     };
   }
 }
@@ -156,13 +160,33 @@ export class UpdatedProposal extends Proposal {
     public readonly what: string,
     public readonly tldr: string,
     public readonly auctionId: number,
+    public readonly parentType: ProposalParent = 'auction',
   ) {
-    super(title, what, tldr, auctionId);
+    super(title, what, tldr, auctionId, parentType);
   }
 
   toPayload() {
     return {
       id: this.id,
+      ...super.toPayload(),
+    };
+  }
+}
+
+export class InfiniteAuctionProposal extends Proposal {
+  constructor(
+    public readonly title: string,
+    public readonly what: string,
+    public readonly tldr: string,
+    public readonly auctionId: number,
+    public readonly reqAmount: number,
+  ) {
+    super(title, what, tldr, auctionId, 'infinite-auction');
+  }
+
+  toPayload() {
+    return {
+      reqAmount: this.reqAmount,
       ...super.toPayload(),
     };
   }

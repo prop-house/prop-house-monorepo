@@ -12,6 +12,7 @@ import { Proposal } from 'src/proposal/proposal.entity';
 import { ethers } from 'ethers';
 import config from 'src/config/configuration';
 import { getNumVotes } from 'prop-house-communities';
+import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Injectable()
 export class VotesService {
@@ -70,7 +71,10 @@ export class VotesService {
     );
   }
 
-  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
+  async createNewVote(
+    createVoteDto: CreateVoteDto,
+    proposal: Proposal | InfiniteAuctionProposal,
+  ) {
     // Create vote for proposal
     const vote = new Vote({
       address: createVoteDto.address,

@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { SignedEntity } from 'src/entities/signed';
+import { BaseProposal } from 'src/proposal/base-proposal.entity';
 import { Proposal } from 'src/proposal/proposal.entity';
 import {
   Entity,
@@ -23,7 +24,7 @@ export class Vote extends SignedEntity {
 
   @ManyToOne(() => Proposal, (proposal) => proposal.votes)
   @JoinColumn()
-  proposal: Proposal;
+  proposal: BaseProposal; //Proposal | InfiniteAuctionProposal;
 
   @Column()
   @Field(() => Date)

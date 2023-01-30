@@ -9,11 +9,9 @@ import {
   Min,
 } from 'class-validator';
 import { SignedEntity } from 'src/entities/signed';
+import { Order } from 'src/utils/dto-types';
 
-export enum Order {
-  ASC = 'ASC',
-  DESC = 'DESC',
-}
+export type ProposalParent = 'auction' | 'infinite-auction';
 
 export class CreateProposalDto extends SignedEntity {
   @IsString()
@@ -27,6 +25,16 @@ export class CreateProposalDto extends SignedEntity {
 
   @IsNumber()
   parentAuctionId: number;
+
+  @IsString()
+  parentType: ProposalParent;
+}
+
+export class CreateInfiniteAuctionProposalDto extends CreateProposalDto {
+  @IsNumber()
+  reqAmount: number;
+
+  parentType: 'infinite-auction';
 }
 
 export class UpdateProposalDto extends CreateProposalDto {

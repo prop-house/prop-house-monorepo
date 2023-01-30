@@ -1,6 +1,7 @@
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
+import { AuctionBase } from 'src/auction/auction-base.type';
 import { Community } from 'src/community/community.entity';
-import { Proposal } from 'src/proposal/proposal.entity';
+import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 import {
   Entity,
   Column,
@@ -12,14 +13,14 @@ import {
   ManyToOne,
   RelationId,
 } from 'typeorm';
-import { AuctionBase } from './auction-base.type';
+import { isProposalFunded, sumAmountRequested } from './utils';
 
 @Entity()
 @ObjectType()
-export class Auction implements AuctionBase {
+export class InfiniteAuction implements AuctionBase {
   @PrimaryGeneratedColumn()
   @Field(() => Int, {
-    description: 'All auctions are issued a unique ID number',
+    description: 'All infinite auctions are issued a unique ID number',
   })
   id: number;
 
@@ -32,26 +33,13 @@ export class Auction implements AuctionBase {
 
   @Column()
   @Field(() => Date, {
-    description: 'After the Start Time users may submit proposals',
+    description: 'Once the start time has passed, proposals may be submitted',
   })
   startTime: Date;
 
-  @Column()
-  @Field(() => Date, {
-    description: 'Users may submit proposals up until Proposal End Time',
-  })
-  proposalEndTime: Date;
-
-  @Column()
-  @Field(() => Date, {
-    description:
-      'Between Proposal End Time and Voting End Time, users may submit votes for proposals',
-  })
-  votingEndTime: Date;
-
   @Column({ type: 'decimal', scale: 2, default: 0.0 })
   @Field(() => Float, {
-    description: 'The number of currency units paid to each winner',
+    description: 'The number of currency units that will be paid out in total',
   })
   fundingAmount: number;
 
@@ -65,18 +53,18 @@ export class Auction implements AuctionBase {
   @Field(() => String)
   description: string;
 
-  @Column()
-  @Field(() => Int, {
-    description: 'The number of winners that will be paid from the auction',
+  @Column({ type: 'numeric' })
+  @Field(() => Float, {
+    description: 'The minimum score that a proposal must have to be funded',
   })
-  numWinners: number;
+  quorum: number;
 
-  @OneToMany(() => Proposal, (proposal) => proposal.auction)
+  @OneToMany(() => InfiniteAuctionProposal, (proposal) => proposal.auction)
   @JoinColumn()
-  @Field(() => [Proposal])
-  proposals: Proposal[];
+  @Field(() => [InfiniteAuctionProposal])
+  proposals: InfiniteAuctionProposal[];
 
-  @RelationId((auction: Auction) => auction.proposals)
+  @RelationId((infAuction: InfiniteAuction) => infAuction.proposals)
   proposalIds: number[];
 
   @ManyToOne(() => Community, (community) => community.auctions)
@@ -106,9 +94,24 @@ export class Auction implements AuctionBase {
     this.lastUpdatedDate = new Date();
   }
 
-  public isAcceptingProposals = (): boolean =>
-    new Date() > this.startTime && new Date() <= this.proposalEndTime;
+  isAcceptingProposals = () => this.startTime <= new Date();
+
+  /**
+   * Get the proposals that have been funded
+   */
+  fundedProposals = async () =>
+    (await this.proposals).filter(isProposalFunded(this.quorum));
+
+  /**
+   * Get the number of proposals that have been funded
+   */
+  propsFunded = async () => (await this.fundedProposals()).length;
+
+  /**
+   * Calculate the amount of currency that has been funded.
+   */
+  fundingUsed = async () => sumAmountRequested(await this.fundedProposals());
 }
 
 @InputType()
-export class AuctionInput extends Auction {}
+export class InfiniteAuctionInput extends InfiniteAuction {}

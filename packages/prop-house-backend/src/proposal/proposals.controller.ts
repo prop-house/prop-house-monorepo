@@ -12,9 +12,12 @@ import {
 } from '@nestjs/common';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { ECDSASignedPayloadValidationPipe } from 'src/entities/ecdsa-signed.pipe';
-import { Proposal } from 'src/proposal/proposal.entity';
+import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
 import { canSubmitProposals } from 'src/utils';
+import { InfiniteAuctionProposal } from './infauction-proposal.entity';
+import { Proposal } from './proposal.entity';
 import {
+  CreateInfiniteAuctionProposalDto,
   CreateProposalDto,
   DeleteProposalDto,
   GetProposalsDto,
@@ -27,15 +30,20 @@ export class ProposalsController {
   constructor(
     private readonly proposalsService: ProposalsService,
     private readonly auctionsService: AuctionsService,
+    private readonly infiniteAuctionsService: InfiniteAuctionService,
   ) {}
 
   @Get()
-  getProposals(@Query() dto: GetProposalsDto): Promise<Proposal[]> {
+  getProposals(
+    @Query() dto: GetProposalsDto,
+  ): Promise<(Proposal | InfiniteAuctionProposal)[]> {
     return this.proposalsService.findAll(dto);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Proposal> {
+  async findOne(
+    @Param('id') id: number,
+  ): Promise<Proposal | InfiniteAuctionProposal> {
     const foundProposal = await this.proposalsService.findOne(id);
     if (!foundProposal)
       throw new HttpException('Proposal not found', HttpStatus.NOT_FOUND);
@@ -86,7 +94,7 @@ export class ProposalsController {
   async update(
     @Body(ECDSASignedPayloadValidationPipe)
     updateProposalDto: UpdateProposalDto,
-  ): Promise<Proposal> {
+  ): Promise<Proposal | InfiniteAuctionProposal> {
     const foundProposal = await this.proposalsService.findOne(
       updateProposalDto.id,
     );
@@ -120,7 +128,7 @@ export class ProposalsController {
         "Signed payload and supplied data doesn't match",
         HttpStatus.BAD_REQUEST,
       );
-    
+
     if (updateProposalDto.address !== foundProposal.address)
       throw new HttpException(
         "Found proposal does not match signed payload's address",
@@ -139,15 +147,22 @@ export class ProposalsController {
   @Post()
   async create(
     @Body(ECDSASignedPayloadValidationPipe)
-    createProposalDto: CreateProposalDto,
-  ): Promise<Proposal> {
-    const foundAuction = await this.auctionsService.findOne(
-      createProposalDto.parentAuctionId,
-    );
+    createProposalDto: CreateProposalDto | CreateInfiniteAuctionProposalDto,
+  ): Promise<Proposal | InfiniteAuctionProposal> {
+    const foundAuction = await (createProposalDto.parentType === 'auction'
+      ? this.auctionsService
+      : this.infiniteAuctionsService
+    ).findOne(createProposalDto.parentAuctionId);
     if (!foundAuction)
       throw new HttpException(
         'No auction with that ID exists',
         HttpStatus.NOT_FOUND,
+      );
+
+    if (!canSubmitProposals(foundAuction))
+      throw new HttpException(
+        'You cannot edit proposals for this round at this time',
+        HttpStatus.BAD_REQUEST,
       );
 
     // Verify that signed data equals this payload
@@ -161,14 +176,20 @@ export class ProposalsController {
         signedPayload.tldr === createProposalDto.tldr &&
         signedPayload.title === createProposalDto.title &&
         signedPayload.parentAuctionId === createProposalDto.parentAuctionId
-      )
+      ) ||
+      (createProposalDto.parentType === 'infinite-auction' &&
+        signedPayload.reqAmount !==
+          (createProposalDto as CreateInfiniteAuctionProposalDto).reqAmount)
     )
       throw new HttpException(
         "Signed payload and supplied data doesn't match",
         HttpStatus.BAD_REQUEST,
       );
 
-    const proposal = new Proposal();
+    const proposal =
+      createProposalDto.parentType === 'auction'
+        ? new Proposal()
+        : new InfiniteAuctionProposal();
     proposal.address = createProposalDto.address;
     proposal.signatureState = createProposalDto.signatureState;
     proposal.what = createProposalDto.what;
@@ -178,6 +199,15 @@ export class ProposalsController {
     proposal.auction = foundAuction;
     proposal.messageTypes = createProposalDto.messageTypes;
     proposal.domainSeparator = createProposalDto.domainSeparator;
+    proposal.parentType = createProposalDto.parentType;
+    proposal.createdDate = new Date();
+
+    if (createProposalDto.parentType === 'infinite-auction') {
+      proposal.reqAmount = (
+        createProposalDto as CreateInfiniteAuctionProposalDto
+      ).reqAmount;
+    }
+
     return this.proposalsService.store(proposal);
   }
 }

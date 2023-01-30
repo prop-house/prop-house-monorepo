@@ -15,6 +15,7 @@ import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { SignatureState } from 'src/types/signature';
+import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
 
 @Controller('votes')
 export class VotesController {
@@ -22,6 +23,7 @@ export class VotesController {
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
     private readonly auctionService: AuctionsService,
+    private readonly infiniteAuctionService: InfiniteAuctionService,
   ) {}
 
   @Get()
@@ -78,9 +80,10 @@ export class VotesController {
       );
 
     // Verify that prop being voted on matches community address of signed vote
-    const foundProposalAuction = await this.auctionService.findOneWithCommunity(
-      foundProposal.auction.id,
-    );
+    const foundProposalAuction = await (foundProposal.parentType === 'auction'
+      ? this.auctionService
+      : this.infiniteAuctionService
+    ).findOneWithCommunity(foundProposal.auctionId);
     if (
       voteFromPayload.communityAddress !==
       foundProposalAuction.community.contractAddress
@@ -93,7 +96,7 @@ export class VotesController {
     // Verify that signer has voting power
     const votingPower = await this.votesService.getNumVotes(
       createVoteDto,
-      foundProposal.auction.balanceBlockTag,
+      foundProposalAuction.balanceBlockTag,
     );
 
     if (votingPower === 0) {
