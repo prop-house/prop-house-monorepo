@@ -28,7 +28,7 @@ import { Signer } from 'ethers';
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined,
+    private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {

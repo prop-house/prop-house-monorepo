@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
 import buildIpfsPath from '../../utils/buildIpfsPath';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -49,7 +48,7 @@ const ImageUploadModal: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
   const signerless = new PropHouseWrapper('https://prod.backend.prop.house');
 

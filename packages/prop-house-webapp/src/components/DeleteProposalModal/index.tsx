@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const DeleteProposalModal: React.FC<{
   id: number;
@@ -32,7 +31,7 @@ const DeleteProposalModal: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
   const handleDeleteProposal = async () => {

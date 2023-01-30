@@ -8,7 +8,6 @@ import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 export interface FormDataType {
   title: string;
@@ -62,7 +61,7 @@ const ProposalEditor: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
   const formData: FormDataType[] = [

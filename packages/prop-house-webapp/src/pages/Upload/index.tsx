@@ -7,7 +7,6 @@ import buildIpfsPath from '../../utils/buildIpfsPath';
 import classes from './Upload.module.css';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 /** commented out to silence warning (unused)
 function readFileDataAsBase64(e: any, i: number): Promise<string> {
@@ -37,7 +36,7 @@ const Upload = () => {
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const { data: signer } = useSigner();
 
-  let backendClient = new PropHouseWrapper(backendHost, signer as Signer);
+  let backendClient = new PropHouseWrapper(backendHost, signer);
   const { t } = useTranslation();
 
   const onFileChange = (event: any) => {

@@ -29,7 +29,6 @@ import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
-import { Signer } from 'ethers';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -49,7 +48,7 @@ const ProposalModal = () => {
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer as Signer));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -82,7 +81,7 @@ const ProposalModal = () => {
 
   // provider
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer as Signer);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
   }, [signer, backendHost]);
 
   useEffect(() => {

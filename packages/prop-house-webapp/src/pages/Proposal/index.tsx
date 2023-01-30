@@ -22,7 +22,6 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const Proposal = () => {
   const params = useParams();
@@ -38,7 +37,7 @@ const Proposal = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer as Signer));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -46,7 +45,7 @@ const Proposal = () => {
   };
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer as Signer);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
   }, [signer, backendHost]);
 
   // fetch proposal

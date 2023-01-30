@@ -25,7 +25,6 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount, useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
@@ -46,10 +45,10 @@ const Create: React.FC<{}> = () => {
   const dispatch = useAppDispatch();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer as Signer));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer as Signer);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
   }, [signer, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {

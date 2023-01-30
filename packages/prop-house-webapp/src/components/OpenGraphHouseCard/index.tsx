@@ -8,7 +8,6 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import getHouseCurrency from '../../utils/getHouseCurrency';
 import TruncateThousands from '../TruncateThousands';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
@@ -23,7 +22,7 @@ const OpenGraphHouseCard: React.FC = () => {
   const houseCurrency = community && getHouseCurrency(community.contractAddress);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
   useEffect(() => {

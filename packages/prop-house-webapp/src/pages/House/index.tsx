@@ -23,7 +23,6 @@ import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const House = () => {
   const location = useLocation();
@@ -46,7 +45,7 @@ const House = () => {
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
   // fetch community

@@ -11,7 +11,6 @@ import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
 import { useSigner } from 'wagmi';
-import { Signer } from 'ethers';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -41,7 +40,7 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer as Signer);
+    client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
   return (
