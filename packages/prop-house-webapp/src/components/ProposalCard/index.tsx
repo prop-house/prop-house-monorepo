@@ -96,7 +96,7 @@ const ProposalCard: React.FC<{
               </div>
             </div>
 
-            {imageUrl && imageUrl && (
+            {imageUrl && (
               <div className={classes.propImgContainer}>
                 <img src={imageUrl} alt="propCardImage" />
               </div>
