@@ -1,20 +1,31 @@
 import React from 'react';
 import classes from './AddressAvatar.module.css';
 import { useEnsAvatar } from 'wagmi';
-// import { Noun } from '@cloudnouns/kit';
-// const noun = new Noun({ traits: { head: 'n', accessory: 'n', background: 'n' } });
+import type { GlassesParts, GlassesBgColors } from '../../utils/getNoggles';
+import { Factory } from '@cloudnouns/factory';
+import NogglesData from './noggles.json';
+import clsx from 'clsx';
 
-const AddressAvatar: React.FC<{ address: string; size: number }> = props => {
-  const { address, size } = props;
+const AddressAvatar: React.FC<{ address: string; size?: number }> = props => {
+  const { address, size: s = 24 } = props;
+
   const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
 
+  const factory = new Factory<GlassesParts, GlassesBgColors>(NogglesData);
+  const generateGlasses = () => factory.createItem();
+  const glasses = generateGlasses().dataUrl;
+
+  const size = s + 'px';
+
   return (
-    <img
-      style={{ height: size || 100, width: size || 100 }}
-      className={classes.avatar}
-      src={avatar ? avatar : 'noun'}
-      alt="avatar"
-    />
+    <div className={classes.container}>
+      <img
+        style={{ height: size, width: size }}
+        className={clsx(!avatar && classes.glasses)}
+        src={avatar ? avatar : glasses}
+        alt="avatar"
+      />
+    </div>
   );
 };
 
