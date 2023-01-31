@@ -58,11 +58,13 @@ function App() {
     location.pathname === '/' || location.pathname === '/faq' || location.pathname === '/create';
 
   return openGraphCardPath ? (
-    <Routes>
-      <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-      <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
-      <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
-    </Routes>
+    <WagmiConfig client={wagmiClient}>
+      <Routes>
+        <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+        <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+        <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
+      </Routes>
+    </WagmiConfig>
   ) : (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
