@@ -129,6 +129,56 @@ export class StoredTimedAuction extends TimedAuction {
   }
 }
 
+export class InfiniteAuction extends Signable {
+  constructor(
+    public readonly visible: boolean,
+    public readonly title: string,
+    public readonly startTime: Date,
+    public readonly fundingAmount: number,
+    public readonly currencyType: string,
+    public readonly communityId: number,
+    public readonly balanceBlockTag: number,
+    public readonly description: string,
+    public readonly quorum: number,
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      visible: this.visible,
+      title: this.title,
+      startTime: this.startTime.toISOString(),
+      fundingAmount: this.fundingAmount,
+      currencyType: this.currencyType,
+      communityId: this.communityId,
+      balanceBlockTag: this.balanceBlockTag,
+      description: this.description,
+      quorum: this.quorum,
+    };
+  }
+}
+
+export class StoredInfiniteAuction extends TimedAuction {
+  //@ts-ignore
+  public readonly id: number;
+  //@ts-ignore
+  public readonly numProposals: number;
+  //@ts-ignore
+  public readonly createdDate: Date;
+
+  static FromResponse(response: any): StoredTimedAuction {
+    const parsed = {
+      ...response,
+      startTime: new Date(response.startTime),
+    };
+    return parsed;
+  }
+}
+
+export type AuctionBase = TimedAuction | InfiniteAuction;
+export type StoredAuctionBase = StoredTimedAuction | StoredInfiniteAuction;
+
 export type ProposalParent = 'auction' | 'infinite-auction';
 
 export class Proposal extends Signable {
