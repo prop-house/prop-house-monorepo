@@ -9,6 +9,9 @@
 .inputGroup {
   margin-bottom: 2rem;
 }
+.inputSection {
+  margin: 3rem 0rem;
+}
 .inputInfo {
   display: flex;
   justify-content: space-between;
@@ -59,7 +62,6 @@
 .input:focus::-webkit-input-placeholder {
   opacity: 0 !important;
 }
-
 .descriptionLabel {
   margin-bottom: 0;
 }
