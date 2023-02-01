@@ -31,7 +31,7 @@ export class AuctionsService {
         .select('a.*')
         .where('a.community.id = :id', { id })
         // This select adds a new property, reflected in AuctionWithProposalCount
-        .addSelect('SUM(p."proposalIds")', 'numProposals')
+        .addSelect('COUNT(p.*)', 'numProposals')
         .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
         .groupBy('a.id')
         .getRawMany()
