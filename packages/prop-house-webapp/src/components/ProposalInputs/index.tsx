@@ -271,19 +271,23 @@ const ProposalInputs: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
 
   const uploadImageToServer = async (file: File) => {
-    // upload the image to the server
-    const res = await client.current.postFile(file, file.name);
+    try {
+      // upload the image to the server
+      const res = await signerless.postFile(file, file.name);
 
-    // insert the image into the editor
-    quill.setSelection(quill.getLength(), 0);
-    quill.insertEmbed(
-      quill.getSelection()!.index,
-      'image',
-      buildIpfsPath(res.data.ipfsHash),
-      Quill.sources.USER,
-    );
-    // insert a newline after the image
-    quill.insertText(quill.getSelection()!.index + 1, '\n\n', Quill.sources.USER);
+      // insert the image into the editor
+      quill.setSelection(quill.getLength(), 0);
+      quill.insertEmbed(
+        quill.getSelection()!.index,
+        'image',
+        buildIpfsPath(res.data.ipfsHash),
+        Quill.sources.USER,
+      );
+      // insert a newline after the image
+      quill.insertText(quill.getSelection()!.index + 1, '\n\n', Quill.sources.USER);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // handle images being pasted into the editor by uploading them to the server and inserting the new image url into the editor
