@@ -81,10 +81,6 @@ body {
   letter-spacing: -0.2px;
   background-color: #ffffff;
 }
-html {
-  overflow-x: hidden;
-  margin-right: calc(-1 * (100vw - 100%));
-}
 
 .bgGray {
   background-color: #f5f5f5;

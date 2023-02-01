@@ -1,6 +1,5 @@
 import classes from './OpenGraphHouseCard.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
@@ -8,6 +7,7 @@ import CommunityProfImg from '../CommunityProfImg';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import getHouseCurrency from '../../utils/getHouseCurrency';
 import TruncateThousands from '../TruncateThousands';
+import { useSigner } from 'wagmi';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
@@ -15,14 +15,15 @@ const OpenGraphHouseCard: React.FC = () => {
 
   const [community, setCommunity] = useState<Community>();
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
   const houseCurrency = community && getHouseCurrency(community.contractAddress);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   useEffect(() => {
     if (!id) return;

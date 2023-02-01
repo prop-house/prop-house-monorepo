@@ -5,7 +5,6 @@ import PropCardVotingModule from '../PropCardVotingModule';
 import Button, { ButtonColor } from '../Button';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useDispatch } from 'react-redux';
@@ -15,6 +14,7 @@ import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
+import { useAccount, useProvider } from 'wagmi';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -24,7 +24,9 @@ const ProposalModalVotingModule: React.FC<{
 }> = props => {
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
 
-  const { account, library } = useEthers();
+  const provider = useProvider();
+  const { address: account } = useAccount();
+
   const dispatch = useDispatch();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -39,14 +41,14 @@ const ProposalModalVotingModule: React.FC<{
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
 
   useEffect(() => {
-    if (!account || !library || !community) return;
+    if (!account || !provider || !community) return;
 
     const fetchVotes = async () => {
       try {
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          provider,
           round!.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
@@ -55,7 +57,7 @@ const ProposalModalVotingModule: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community, round]);
+  }, [account, provider, dispatch, community, round]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
@@ -79,10 +81,11 @@ const ProposalModalVotingModule: React.FC<{
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                  : 'no votes left'
-                  }`}
+                {`${
+                  votesLeftToAllot > 0
+                    ? `${votingPower - submittedVotes - numAllotedVotes} left`
+                    : 'no votes left'
+                }`}
               </span>
             </div>
 

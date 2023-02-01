@@ -1,41 +1,39 @@
 import clsx from 'clsx';
 import React from 'react';
 import { useAppSelector } from '../../hooks';
-import { useReverseENSLookUp } from '../../utils/ensLookup';
 import trimEthAddress from '../../utils/trimEthAddress';
 import classes from './EthAddress.module.css';
-import Davatar from '@davatar/react';
-import { useEthers } from '@usedapp/core';
+import { useEnsName, useEnsAvatar } from 'wagmi';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 const EthAddress: React.FC<{
   address: string;
-  truncate?: boolean;
   className?: string;
-  hideDavatar?: boolean;
-  imgSize?: number;
+  addAvatar?: boolean;
 }> = props => {
-  const { address, truncate, hideDavatar = true, imgSize } = props;
-  const { library: provider } = useEthers();
+  const { address, className, addAvatar } = props;
 
+  // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
   const buildAddressHref = (address: string) => [etherscanHost, 'address', address].join('/');
 
-  const ens = useReverseENSLookUp(address);
+  // wagmi hooks to get ENS name and avatar
+  const { data: ens } = useEnsName({ address: address as `0x${string}` });
+  const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
+
+  // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
+  const shortAddress = trimEthAddress(address as string);
 
   return (
     <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        {!hideDavatar && (
-          <Davatar
-            size={imgSize ? imgSize : 24}
-            address={address}
-            provider={provider}
-            generatedAvatarType="blockies"
-          />
-        )}
-        <span className={clsx(classes.address, truncate && classes.truncate, props.className)}>
-          {ens ? ens : trimEthAddress(address)}
-        </span>
+        {addAvatar &&
+          (avatar ? (
+            <img className={classes.avatar} src={avatar} alt="ens-avatar" />
+          ) : (
+            <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+          ))}
+        <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
     </div>
   );

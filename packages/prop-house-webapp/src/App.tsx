@@ -8,7 +8,6 @@ import Create from './pages/Create';
 import House from './pages/House';
 import Footer from './components/Footer';
 import './App.css';
-import { Mainnet, DAppProvider, Config } from '@usedapp/core';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -20,14 +19,27 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
+import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { infuraProvider } from 'wagmi/providers/infura';
+import { publicProvider } from 'wagmi/providers/public';
+import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import '@rainbow-me/rainbowkit/styles.css';
 
-const config: Config = {
-  readOnlyChainId: Mainnet.chainId,
-  readOnlyUrls: {
-    [Mainnet.chainId]: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
-  },
-  autoConnect: false,
-};
+const { chains, provider } = configureChains(
+  [mainnet],
+  [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
+);
+
+const { connectors } = getDefaultWallets({
+  appName: 'Prop House',
+  chains,
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
 
 function App() {
   const location = useLocation();
@@ -52,35 +64,42 @@ function App() {
       <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
     </Routes>
   ) : (
-    <DAppProvider config={config}>
-      <Suspense fallback={<LoadingIndicator />}>
-        <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-          {!noNavPath && <NavBar />}
+    <WagmiConfig client={wagmiClient}>
+      <RainbowKitProvider
+        chains={chains}
+        theme={lightTheme({
+          accentColor: 'var(--brand-purple)',
+        })}
+      >
+        <Suspense fallback={<LoadingIndicator />}>
+          <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+            {!noNavPath && <NavBar />}
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/create"
-              element={
-                <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                  <Create />
-                </ProtectedRoute>
-              }
-            />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/create"
+                element={
+                  <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                    <Create />
+                  </ProtectedRoute>
+                }
+              />
 
-            <Route path="/faq" element={<FAQ />} />
-            <Route path="/proposal/:id" element={<Proposal />} />
-            <Route path="/:house" element={<House />} />
-            <Route path="/:house/:title" element={<Round />} />
-            <Route path="/:house/:title/:id" element={<Proposal />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/proposal/:id" element={<Proposal />} />
+              <Route path="/:house" element={<House />} />
+              <Route path="/:house/:title" element={<Round />} />
+              <Route path="/:house/:title/:id" element={<Proposal />} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
 
-          <Footer />
-        </div>
-      </Suspense>
-    </DAppProvider>
+            <Footer />
+          </div>
+        </Suspense>
+      </RainbowKitProvider>
+    </WagmiConfig>
   );
 }
 

@@ -2,7 +2,6 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useRef } from 'react';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   setActiveCommunity,
@@ -24,6 +23,7 @@ import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
 import ProposalModal from '../../components/ProposalModal';
+import { useSigner } from 'wagmi';
 
 const Round = () => {
   const location = useLocation();
@@ -31,8 +31,7 @@ const Round = () => {
   const roundName = location.pathname.substring(1).split('/')[1];
 
   const dispatch = useAppDispatch();
-  const { library } = useEthers();
-
+  const { data: signer } = useSigner();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -45,8 +44,8 @@ const Round = () => {
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // if no round is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {

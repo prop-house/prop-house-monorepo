@@ -4,10 +4,10 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useQuill } from 'react-quilljs';
 import { useTranslation } from 'react-i18next';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
+import { useSigner } from 'wagmi';
 
 export interface FormDataType {
   title: string;
@@ -55,14 +55,14 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const { t } = useTranslation();
+  const { data: signer } = useSigner();
 
-  const { library } = useEthers();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   const formData: FormDataType[] = [
     {

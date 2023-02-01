@@ -222,9 +222,6 @@ body {
     width: 38px;
   }
 }
-.web3modal-modal-lightbox {
-  z-index: 9999999 !important;
-}
 
 .scrollMoreContainer:before {
   content: '';

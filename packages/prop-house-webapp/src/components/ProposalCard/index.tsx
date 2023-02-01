@@ -107,7 +107,7 @@ const ProposalCard: React.FC<{
 
           <div className={classes.submissionInfoContainer}>
             <div className={classes.addressAndTimestamp}>
-              <EthAddress address={proposal.address} truncate />
+              <EthAddress address={proposal.address} className={classes.truncate} addAvatar />
 
               <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
                 {' • '}

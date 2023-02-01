@@ -9,7 +9,12 @@
   "scripts": {
     "build": "yarn workspace prop-house-communities build && yarn workspace @nouns/prop-house-wrapper build"
   },
-  "workspaces": [
-    "packages/**"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/**"
+    ],
+    "nohoist": [
+      "**/@nestjs/**"
+    ]
+  }
 }

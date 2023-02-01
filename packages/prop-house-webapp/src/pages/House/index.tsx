@@ -3,10 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useRef, useState } from 'react';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { setActiveCommunity } from '../../state/slices/propHouse';
-
 import { slugToName } from '../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
 import RoundCard from '../../components/RoundCard';
@@ -24,12 +22,14 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
+import { useSigner } from 'wagmi';
 
 const House = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1, location.pathname.length);
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
+
   const dispatch = useAppDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -45,8 +45,8 @@ const House = () => {
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch community
   useEffect(() => {
