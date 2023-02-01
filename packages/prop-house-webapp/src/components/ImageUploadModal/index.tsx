@@ -75,6 +75,7 @@ const ImageUploadModal: React.FC<{
           buildIpfsPath(r.data.ipfsHash),
           Quill.sources.USER,
         );
+        quill.insertText(quill.getSelection()!.index + 1, '\n\n', Quill.sources.USER);
 
         return null;
       });
