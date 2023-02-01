@@ -12,7 +12,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import RoundCard from '../../components/RoundCard';
 import HouseUtilityBar from '../../components/HouseUtilityBar';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ErrorMessageCard from '../../components/ErrorMessageCard';
 import NoSearchResults from '../../components/NoSearchResults';
@@ -35,7 +35,7 @@ const House = () => {
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  const [rounds, setRounds] = useState<StoredTimedAuction[]>([]);
+  const [rounds, setRounds] = useState<StoredAuctionBase[]>([]);
   const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredTimedAuction[]>([]);
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');

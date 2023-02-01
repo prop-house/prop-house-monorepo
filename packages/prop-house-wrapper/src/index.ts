@@ -12,6 +12,8 @@ import {
   CommunityWithAuctions,
   UpdatedProposal,
   DeleteProposal,
+  StoredInfiniteAuction,
+  StoredAuctionBase,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -57,10 +59,16 @@ export class PropHouseWrapper {
     }
   }
 
-  async getAuctionsForCommunity(id: number): Promise<StoredTimedAuction[]> {
+  async getAuctionsForCommunity(id: number): Promise<StoredAuctionBase[]> {
     try {
-      const rawAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
-      return rawAuctions.map(StoredTimedAuction.FromResponse);
+      const rawTimedAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
+      const rawInfAuctions = (await axios.get(`${this.host}/infinite-auctions/forCommunity/${id}`))
+        .data;
+
+      const timed = rawTimedAuctions.map(StoredInfiniteAuction.FromResponse);
+      const infinite = rawInfAuctions.map(StoredInfiniteAuction.FromResponse);
+
+      return timed.concat(infinite);
     } catch (e: any) {
       throw e.response.data.message;
     }

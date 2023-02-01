@@ -7,7 +7,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { InfiniteAuction } from './infinite-auction.entity';
-import { InfiniteAuctionService } from './infinite-auction.service';
+import {
+  InfiniteAuctionService,
+  InfiniteAuctionWithProposalCount,
+} from './infinite-auction.service';
 import { GetInfiniteAuctionsDto } from './infinite-auction.types';
 
 @Controller('infinite-auctions')
@@ -29,5 +32,16 @@ export class InfiniteAuctionController {
     if (!foundInfiniteAuction)
       throw new HttpException('Infinite round not found', HttpStatus.NOT_FOUND);
     return foundInfiniteAuction;
+  }
+
+  @Get('/forCommunity/:id')
+  async findAllForCommunity(
+    @Param('id') id: number,
+  ): Promise<InfiniteAuctionWithProposalCount[]> {
+    const auctions = await this.infiniteAuctionsService.findAllForCommunity(id);
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    auctions.map((a) => (a.numProposals = Number(a.numProposals) || 0));
+    return auctions;
   }
 }
