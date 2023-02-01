@@ -13,6 +13,7 @@ import inputHasImage from '../../utils/inputHasImage';
 import { useSigner } from 'wagmi';
 import InputFormGroup from '../InputFormGroup';
 import buildIpfsPath from '../../utils/buildIpfsPath';
+import LoadingIndicator from '../LoadingIndicator';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -370,6 +371,11 @@ const ProposalInputs: React.FC<{
                       setEditorBlurred(true);
                     }}
                   />
+                  {loading && (
+                    <div className={classes.loadingOverlay}>
+                      <LoadingIndicator />
+                    </div>
+                  )}
 
                   {editorBlurred &&
                     quill &&
