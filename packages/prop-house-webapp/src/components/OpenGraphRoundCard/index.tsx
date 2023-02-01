@@ -9,13 +9,13 @@ import CommunityProfImg from '../CommunityProfImg';
 import { deadlineTime, deadlineCopy } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import TruncateThousands from '../TruncateThousands';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
   const { id } = params;
 
-  const [round, setRound] = useState<StoredAuction>();
+  const [round, setRound] = useState<StoredTimedAuction>();
   const [community, setCommunity] = useState<Community>();
 
   const { library } = useEthers();

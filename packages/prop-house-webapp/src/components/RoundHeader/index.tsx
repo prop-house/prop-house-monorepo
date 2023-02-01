@@ -1,6 +1,6 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './RoundHeader.module.css';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
@@ -14,12 +14,12 @@ import { isLongName } from '../../utils/isLongName';
 
 const RoundHeader: React.FC<{
   community: Community;
-  auction: StoredAuction;
+  auction: StoredTimedAuction;
 }> = props => {
   const { community, auction } = props;
   const navigate = useNavigate();
 
-  const roundDescription =
+  const roundDescription = (
     <>
       {/* support both markdown & html links in community's description.  */}
       <Markdown
@@ -31,7 +31,7 @@ const RoundHeader: React.FC<{
                 target: '_blank',
                 rel: 'noreferrer',
               },
-            }
+            },
           },
         }}
       >
@@ -40,7 +40,9 @@ const RoundHeader: React.FC<{
             a: ['href', 'target'],
           },
         })}
-      </Markdown></>
+      </Markdown>
+    </>
+  );
 
   return (
     <Row className={classes.profileHeaderRow}>

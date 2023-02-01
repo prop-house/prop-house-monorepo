@@ -1,10 +1,13 @@
-import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredTimedAuction,
+  StoredProposalWithVotes,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from './auctionStatus';
 import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
 const getWinningIds = (
   proposals: StoredProposalWithVotes[] | undefined,
-  auction: StoredAuction,
+  auction: StoredTimedAuction,
 ) => {
   // empty array to store winning ids
   const winningIds: number[] = [];

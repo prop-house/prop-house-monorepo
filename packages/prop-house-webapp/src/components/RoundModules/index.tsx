@@ -1,6 +1,6 @@
 import {
   Community,
-  StoredAuction,
+  StoredTimedAuction,
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundModules.module.css';
@@ -26,7 +26,7 @@ import { clearProposal } from '../../state/slices/editor';
 import { useDispatch } from 'react-redux';
 
 const RoundModules: React.FC<{
-  auction: StoredAuction;
+  auction: StoredTimedAuction;
   proposals: StoredProposalWithVotes[];
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;

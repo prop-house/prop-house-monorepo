@@ -1,4 +1,4 @@
-import { Auction } from '@nouns/prop-house-wrapper/dist/builders';
+import { TimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import classes from './AcceptingPropsModule.module.css';
 
 export interface AcceptingPropsModuleProps {
-  auction: Auction;
+  auction: TimedAuction;
   communityName: string;
 }
 const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (

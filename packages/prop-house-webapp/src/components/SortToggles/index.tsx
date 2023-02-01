@@ -1,5 +1,5 @@
 import classes from './SortToggles.module.css';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useDispatch } from 'react-redux';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
@@ -10,13 +10,12 @@ import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 
 const SortToggles: React.FC<{
-  auction: StoredAuction;
+  auction: StoredTimedAuction;
 }> = props => {
   const { t } = useTranslation();
   const { auction } = props;
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-
 
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
@@ -68,7 +67,7 @@ const SortToggles: React.FC<{
             classes.sortItem,
             datesSorted && classes.active,
             (!auction || auctionNotStarted || (proposals && proposals.length <= 1)) &&
-            classes.disabled,
+              classes.disabled,
           )}
         >
           <div className={classes.sortLabel}>{t('created')}</div>

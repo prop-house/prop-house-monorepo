@@ -1,5 +1,5 @@
 import {
-  StoredAuction,
+  StoredTimedAuction,
   StoredProposalWithVotes,
   Community,
 } from '@nouns/prop-house-wrapper/dist/builders';
@@ -7,7 +7,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { SortProps, SortType, _sortProps } from '../../utils/sortingProposals';
 
 export interface PropHouseSlice {
-  activeRound?: StoredAuction;
+  activeRound?: StoredTimedAuction;
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
@@ -20,7 +20,7 @@ export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
   reducers: {
-    setActiveRound: (state, action: PayloadAction<StoredAuction | undefined>) => {
+    setActiveRound: (state, action: PayloadAction<StoredTimedAuction | undefined>) => {
       state.activeRound = action.payload;
     },
     setActiveProposal: (state, action: PayloadAction<StoredProposalWithVotes>) => {

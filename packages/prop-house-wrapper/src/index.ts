@@ -2,9 +2,9 @@ import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
-  Auction,
+  TimedAuction,
   Proposal,
-  StoredAuction,
+  StoredTimedAuction,
   StoredFile,
   StoredVote,
   Vote,
@@ -31,7 +31,7 @@ export class PropHouseWrapper {
     private readonly signer: Signer | Wallet | undefined = undefined,
   ) {}
 
-  async createAuction(auction: Auction): Promise<StoredAuction[]> {
+  async createAuction(auction: TimedAuction): Promise<StoredTimedAuction[]> {
     try {
       return (await axios.post(`${this.host}/auctions`, auction)).data;
     } catch (e: any) {
@@ -39,28 +39,28 @@ export class PropHouseWrapper {
     }
   }
 
-  async getAuction(id: number): Promise<StoredAuction> {
+  async getAuction(id: number): Promise<StoredTimedAuction> {
     try {
       const rawAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
-      return StoredAuction.FromResponse(rawAuction);
+      return StoredTimedAuction.FromResponse(rawAuction);
     } catch (e: any) {
       throw e.response.data.message;
     }
   }
 
-  async getAuctions(): Promise<StoredAuction[]> {
+  async getAuctions(): Promise<StoredTimedAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
-      return rawAuctions.map(StoredAuction.FromResponse);
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;
     }
   }
 
-  async getAuctionsForCommunity(id: number): Promise<StoredAuction[]> {
+  async getAuctionsForCommunity(id: number): Promise<StoredTimedAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
-      return rawAuctions.map(StoredAuction.FromResponse);
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -69,12 +69,12 @@ export class PropHouseWrapper {
   async getAuctionWithNameForCommunity(
     auctionName: string,
     communityId: number,
-  ): Promise<StoredAuction> {
+  ): Promise<StoredTimedAuction> {
     try {
       const rawAuction = (
         await axios.get(`${this.host}/auctions/${auctionName}/community/${communityId}`)
       ).data;
-      return StoredAuction.FromResponse(rawAuction);
+      return StoredTimedAuction.FromResponse(rawAuction);
     } catch (e: any) {
       throw e.response.data.message;
     }

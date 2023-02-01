@@ -1,6 +1,6 @@
 import classes from './RoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -24,7 +24,7 @@ import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 
 const RoundCard: React.FC<{
-  round: StoredAuction;
+  round: StoredTimedAuction;
 }> = props => {
   const { round } = props;
   const { t } = useTranslation();

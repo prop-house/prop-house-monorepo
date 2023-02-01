@@ -9,7 +9,7 @@ import {
 } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import SortToggles from '../SortToggles';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
 
 export interface RoundUtilityBarProps {
-  auction: StoredAuction;
+  auction: StoredTimedAuction;
 }
 
 const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {

@@ -1,4 +1,4 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from './auctionStatus';
 
 export enum ProposalCardStatus {
@@ -9,11 +9,10 @@ export enum ProposalCardStatus {
 
 export const cardStatus = (
   hasDelegatedVotes: boolean,
-  auction: StoredAuction
+  auction: StoredTimedAuction,
 ): ProposalCardStatus => {
   // if not in voting or not eligible to vote, return default
-  return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
-    !hasDelegatedVotes
+  return auctionStatus(auction) !== AuctionStatus.AuctionVoting || !hasDelegatedVotes
     ? ProposalCardStatus.Default
     : ProposalCardStatus.Voting;
 };

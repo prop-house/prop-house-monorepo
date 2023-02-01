@@ -76,7 +76,7 @@ export abstract class Signable {
   }
 }
 
-export class Auction extends Signable {
+export class TimedAuction extends Signable {
   constructor(
     public readonly visible: boolean,
     public readonly title: string,
@@ -110,7 +110,7 @@ export class Auction extends Signable {
   }
 }
 
-export class StoredAuction extends Auction {
+export class StoredTimedAuction extends TimedAuction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
@@ -118,7 +118,7 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly createdDate: Date;
 
-  static FromResponse(response: any): StoredAuction {
+  static FromResponse(response: any): StoredTimedAuction {
     const parsed = {
       ...response,
       startTime: new Date(response.startTime),
@@ -300,7 +300,7 @@ export class Community extends Signable {
   }
 }
 export interface CommunityWithAuctions extends Community {
-  auctions: StoredAuction[];
+  auctions: StoredTimedAuction[];
 }
 
 export const signPayload = async (signer: Signer | Wallet, payload: string) =>
