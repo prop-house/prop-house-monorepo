@@ -37,18 +37,9 @@ export abstract class BaseProposal extends SignedEntity {
   @Field(() => String)
   tldr: string;
 
-  // @ManyToOne(() => Auction, (auction) => auction.proposals)
-  // @JoinColumn()
-  // @Field(() => Auction)
-  // auction: Auction;
-
   // AuctionID exists on entities with relations
+  @Column()
   auctionId: number;
-
-  // @RelationId((proposal: Proposal) => proposal.auction)
-  // @Column({ type: 'number' })
-  // @Field(() => Int)
-  // auctionIds: number;
 
   @OneToMany(() => Vote, (vote) => vote.proposal)
   @JoinColumn()

@@ -18,10 +18,5 @@ export class Proposal extends BaseProposal {
   @Field(() => Auction)
   auction: Auction;
 
-  // @RelationId((proposal: Proposal) => proposal.auction)
-  // @Column({ type: 'integer', nullable: false })
-  // @Field(() => Int)
-  // auctionId: number;
-
   parentType: 'auction';
 }
