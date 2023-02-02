@@ -1,7 +1,3 @@
-.votesContainer {
-  max-height: 240px;
-  overflow-y: scroll;
-}
 .votesRow {
   display: flex;
   justify-content: space-between;
@@ -63,6 +59,10 @@
   overflow: hidden;
   color: var(--brand-gray) !important;
   width: auto;
+}
+.votesContainer {
+  max-height: 240px;
+  overflow-y: auto;
 }
 .votesContainer::-webkit-scrollbar {
   width: 7px;
