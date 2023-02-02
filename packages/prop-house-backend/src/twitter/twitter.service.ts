@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PinataClient, PinataPinOptions } from '@pinata/sdk';
 import { AuctionClosedEvent } from 'src/auction/events/auction-closed.event';
 import { AuctionCreatedEvent } from 'src/auction/events/auction-created.event';
 import { AuctionOpenEvent } from 'src/auction/events/auction-open.event';
@@ -10,12 +8,7 @@ import { AuctionProposalEndingSoonEvent } from 'src/auction/events/auction-propo
 import { AuctionVotingEndingSoonEvent } from 'src/auction/events/auction-vote-end-soon.event';
 import { AuctionVotingEvent } from 'src/auction/events/auction-voting.event';
 import { EventStatus } from 'src/auction/types';
-import { ProposalCreatedEvent } from 'src/proposal/events/proposal-created.event';
-import {
-  SendTweetV2Params,
-  TweetV2PostTweetResult,
-  TwitterApi,
-} from 'twitter-api-v2';
+import { SendTweetV2Params, TweetV2PostTweetResult } from 'twitter-api-v2';
 import { Repository } from 'typeorm';
 import { Tweet } from './tweet.entity';
 import { TwitterClientService } from './twitter-client.service';
