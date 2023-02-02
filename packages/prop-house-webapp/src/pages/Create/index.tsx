@@ -25,6 +25,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
+import { isTimedAuction } from '../../utils/auctionType';
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
@@ -198,17 +199,19 @@ const Create: React.FC<{}> = () => {
                   <span className={classes.boldLabel}>{activeCommunity.name}</span> house
                 </h1>
 
-                <span className={classes.fundingCopy}>
-                  <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners will
-                  be selected to receive{' '}
-                  <span className={classes.boldLabel}>
-                    {' '}
-                    <FundingAmount
-                      amount={activeAuction.fundingAmount}
-                      currencyType={activeAuction.currencyType}
-                    />
+                {isTimedAuction(activeAuction) && (
+                  <span className={classes.fundingCopy}>
+                    <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners
+                    will be selected to receive{' '}
+                    <span className={classes.boldLabel}>
+                      {' '}
+                      <FundingAmount
+                        amount={activeAuction.fundingAmount}
+                        currencyType={activeAuction.currencyType}
+                      />
+                    </span>
                   </span>
-                </span>
+                )}
               </Container>
             </div>
 
