@@ -23,6 +23,7 @@ import ReactMarkdown from 'react-markdown';
 import ProposalModal from '../../components/ProposalModal';
 import { useSigner } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import NotFound from '../../components/NotFound';
 
 const Round = () => {
   const location = useLocation();
@@ -116,12 +117,14 @@ const Round = () => {
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {!loading && round && proposals ? (
-              <RoundContent auction={round} proposals={proposals} />
-            ) : (
+            {loading ? (
               <div className={classes.loader}>
                 <LoadingIndicator />
               </div>
+            ) : !round ? (
+              <NotFound />
+            ) : (
+              proposals && <RoundContent auction={round} proposals={proposals} />
             )}
           </div>
         </Container>
