@@ -25,27 +25,82 @@
 .previewCol {
   word-break: break-word;
 }
-.previewCol img {
-  max-width: 100%;
-}
 
+.previewCol h1 {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  line-height: 25px !important;
+  letter-spacing: 0.02em !important;
+}
 .previewCol h2 {
-  margin-top: 2rem;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--brand-black);
-}
-
-.previewCol p {
-  font-size: 18px;
-  color: var(--brand-black);
-}
-.proposalBody a {
-  font-weight: 600;
-  color: var(--brand-pink) !important;
-}
-.proposalBody a:hover {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
   text-decoration: underline !important;
+  line-height: 19px !important;
+  margin-top: 15px !important;
+  letter-spacing: 0.02em !important;
+  color: var(--brand-black) !important;
+}
+.previewCol img {
+  max-width: 100% !important;
+}
+.previewCol p {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 0 !important;
+}
+.previewCol blockquote {
+  font-family: 'PT Root UI';
+  color: var(--brand-black) !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin: 0 !important;
+  margin-left: 20px !important;
+  margin-bottom: 10px !important;
+  border-left-color: rgba(102, 102, 102, 0.25) !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  padding-left: 16px !important;
+}
+.previewCol a {
+  color: var(--brand-purple) !important;
+  text-decoration: underline !important;
+}
+.previewCol a:hover {
+  text-decoration: underline !important;
+}
+.previewCol code {
+  color: #d63384 !important;
+  word-wrap: break-word !important;
+  background-color: rgb(240, 242, 245) !important;
+  font-family: Menlo, Consolas, Monaco, monospace !important;
+  display: block !important;
+  padding: 8px 8px 8px 52px !important;
+  line-height: 1.53 !important;
+  font-size: 13px !important;
+  margin: 0 !important;
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
+  tab-size: 2 !important;
+  overflow-x: auto !important;
+  position: relative !important;
+}
+.previewCol ul {
+  margin-bottom: 0 !important;
+}
+.previewCol {
+  padding: 0 !important;
 }
 
 hr {
