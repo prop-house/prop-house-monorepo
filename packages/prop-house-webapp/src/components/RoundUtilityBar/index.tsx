@@ -9,7 +9,7 @@ import {
 } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import SortToggles from '../SortToggles';
-import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
@@ -18,9 +18,10 @@ import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 export interface RoundUtilityBarProps {
-  auction: StoredTimedAuction;
+  auction: StoredAuctionBase;
 }
 
 const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
@@ -66,18 +67,24 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {deadlineCopy(auction)}{' '}
+                        {isInfAuction(auction) ? 'Quorum' : deadlineCopy(auction)}{' '}
                         <span className="infoSymbol">
                           <MdInfoOutline />
                         </span>
                       </div>
 
-                      <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
+                      <div className={classes.itemData}>
+                        {isInfAuction(auction)
+                          ? `${auction.quorum * 100}%`
+                          : diffTime(deadlineTime(auction))}
+                      </div>
                     </>
                   }
-                  tooltipContent={`${dayjs(deadlineTime(auction))
-                    .tz()
-                    .format('MMMM D, YYYY h:mm A z')}`}
+                  tooltipContent={
+                    isInfAuction(auction)
+                      ? 'Percentage of votes required to get funded'
+                      : `${dayjs(deadlineTime(auction)).tz().format('MMMM D, YYYY h:mm A z')}`
+                  }
                 />
               </>
             ) : (
@@ -93,8 +100,12 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
             <div className={classes.itemData}>
               <TruncateThousands amount={auction.fundingAmount} decimals={2} />{' '}
-              {auction.currencyType} <span className={classes.xDivide}>{' × '}</span>{' '}
-              {auction.numWinners}
+              {auction.currencyType} <span className={classes.xDivide} />
+              {isTimedAuction(auction) && (
+                <>
+                  {' × '} {auction.numWinners}
+                </>
+              )}
             </div>
           </div>
 
@@ -105,23 +116,25 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemData}>{proposals && proposals.length}</div>
           </div>
 
-          <div className={classes.item}>
-            <Tooltip
-              content={
-                <>
-                  <div className={classes.itemTitle}>
-                    {t('Snapshot')}
-                    <span className="infoSymbol">
-                      <MdInfoOutline />
-                    </span>
-                  </div>
+          {auction.balanceBlockTag !== 0 && (
+            <div className={classes.item}>
+              <Tooltip
+                content={
+                  <>
+                    <div className={classes.itemTitle}>
+                      {t('Snapshot')}
+                      <span className="infoSymbol">
+                        <MdInfoOutline />
+                      </span>
+                    </div>
 
-                  <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
-                </>
-              }
-              tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
-            />
-          </div>
+                    <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
+                  </>
+                }
+                tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
+              />
+            </div>
+          )}
         </Col>
       </div>
     </div>

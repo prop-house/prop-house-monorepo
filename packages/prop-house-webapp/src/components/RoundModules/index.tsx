@@ -1,7 +1,7 @@
 import {
   Community,
-  StoredTimedAuction,
   StoredProposalWithVotes,
+  StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
@@ -24,9 +24,10 @@ import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVot
 import { useTranslation } from 'react-i18next';
 import { clearProposal } from '../../state/slices/editor';
 import { useDispatch } from 'react-redux';
+import { isInfAuction } from '../../utils/auctionType';
 
 const RoundModules: React.FC<{
-  auction: StoredTimedAuction;
+  auction: StoredAuctionBase;
   proposals: StoredProposalWithVotes[];
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -84,7 +85,7 @@ const RoundModules: React.FC<{
           <UserPropCard
             userProps={userProposals}
             proposals={proposals}
-            numOfWinners={auction.numWinners}
+            numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
             status={auctionStatus(auction)}
             winningIds={winningIds && winningIds}
           />

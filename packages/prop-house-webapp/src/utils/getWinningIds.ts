@@ -1,14 +1,18 @@
 import {
-  StoredTimedAuction,
   StoredProposalWithVotes,
+  StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from './auctionStatus';
+import { isInfAuction } from './auctionType';
 import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
 const getWinningIds = (
   proposals: StoredProposalWithVotes[] | undefined,
-  auction: StoredTimedAuction,
+  auction: StoredAuctionBase,
 ) => {
+  // TODO: ADAPT TO INF ROUNDS
+  if (isInfAuction(auction)) return [];
+
   // empty array to store winning ids
   const winningIds: number[] = [];
 

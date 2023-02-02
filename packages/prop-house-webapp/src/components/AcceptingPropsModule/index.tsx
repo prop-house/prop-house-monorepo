@@ -1,13 +1,14 @@
-import { TimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 
 import classes from './AcceptingPropsModule.module.css';
+import { isInfAuction } from '../../utils/auctionType';
 
 export interface AcceptingPropsModuleProps {
-  auction: TimedAuction;
+  auction: StoredAuctionBase;
   communityName: string;
 }
 const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
@@ -25,7 +26,10 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
         <div className={classes.textContainer}>
           <p className={classes.title}>{t('acceptingProposals')}</p>
           <p className={classes.subtitle}>
-            Until {dayjs(auction.proposalEndTime).format('MMMM D')}
+            Until{' '}
+            {isInfAuction(auction)
+              ? 'funding is depleted'
+              : dayjs(auction.proposalEndTime).format('MMMM D')}
           </p>
         </div>
       </div>
@@ -51,12 +55,19 @@ const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
           <div className={classes.bulletItem}>
             <hr className={classes.bullet} />
             <p>
-              {t('theTop')} <b>{auction.numWinners}</b>{' '}
-              {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
-              <b>
-                {auction.fundingAmount} {auction.currencyType}{' '}
-              </b>
-              {t('each')}.
+              {isInfAuction(auction) ? (
+                'Proposals that meet quorum will get funded.'
+              ) : (
+                <>
+                  {' '}
+                  {t('theTop')} <b>{auction.numWinners}</b>{' '}
+                  {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
+                  <b>
+                    {auction.fundingAmount} {auction.currencyType}{' '}
+                  </b>
+                  {t('each')}.
+                </>
+              )}
             </p>
           </div>
         </div>

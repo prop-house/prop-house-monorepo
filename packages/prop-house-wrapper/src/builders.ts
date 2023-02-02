@@ -159,7 +159,7 @@ export class InfiniteAuction extends Signable {
   }
 }
 
-export class StoredInfiniteAuction extends TimedAuction {
+export class StoredInfiniteAuction extends InfiniteAuction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore

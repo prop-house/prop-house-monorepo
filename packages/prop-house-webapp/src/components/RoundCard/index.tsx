@@ -1,6 +1,6 @@
 import classes from './RoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -22,9 +22,10 @@ import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const RoundCard: React.FC<{
-  round: StoredTimedAuction;
+  round: StoredAuctionBase;
 }> = props => {
   const { round } = props;
   const { t } = useTranslation();
@@ -92,8 +93,12 @@ const RoundCard: React.FC<{
                   <TruncateThousands amount={round.fundingAmount} decimals={2} />
                   {` ${round.currencyType}`}
                 </span>
-                <span className={classes.xDivide}>{' × '}</span>
-                <span className="">{round.numWinners}</span>
+                {isTimedAuction(round) && (
+                  <>
+                    <span className={classes.xDivide}>{' × '}</span>
+                    <span className="">{round.numWinners}</span>
+                  </>
+                )}
               </p>
             </div>
 
@@ -103,15 +108,21 @@ const RoundCard: React.FC<{
               <Tooltip
                 content={
                   <>
-                    <p className={classes.title}>{deadlineCopy(round)}</p>
+                    <p className={classes.title}>
+                      {isInfAuction(round) ? 'Quorum' : deadlineCopy(round)}
+                    </p>
                     <p className={classes.info}>
-                      {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
+                      {isInfAuction(round)
+                        ? `${round.quorum * 100}%`
+                        : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
                   </>
                 }
-                tooltipContent={`${dayjs(deadlineTime(round))
-                  .tz()
-                  .format('MMMM D, YYYY h:mm A z')}`}
+                tooltipContent={
+                  isInfAuction(round)
+                    ? `The % of votes required for a prop to be funded`
+                    : `${dayjs(deadlineTime(round)).tz().format('MMMM D, YYYY h:mm A z')}`
+                }
               />
             </div>
 

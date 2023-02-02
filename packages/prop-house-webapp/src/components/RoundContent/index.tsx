@@ -1,8 +1,8 @@
 import {
   SignatureState,
-  StoredTimedAuction,
   StoredProposalWithVotes,
   Vote,
+  StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
@@ -33,7 +33,7 @@ import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
 
 const RoundContent: React.FC<{
-  auction: StoredTimedAuction;
+  auction: StoredAuctionBase;
   proposals: StoredProposalWithVotes[];
 }> = props => {
   const { auction, proposals } = props;

@@ -1,5 +1,5 @@
 import classes from './SortToggles.module.css';
-import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useDispatch } from 'react-redux';
 import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 
 const SortToggles: React.FC<{
-  auction: StoredTimedAuction;
+  auction: StoredAuctionBase;
 }> = props => {
   const { t } = useTranslation();
   const { auction } = props;
