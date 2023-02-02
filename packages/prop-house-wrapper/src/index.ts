@@ -14,6 +14,7 @@ import {
   DeleteProposal,
   StoredInfiniteAuction,
   StoredAuctionBase,
+  InfiniteAuctionProposal,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -21,7 +22,8 @@ import * as fs from 'fs';
 import {
   DeleteProposalMessageTypes,
   EditProposalMessageTypes,
-  ProposalMessageTypes,
+  InfiniteAuctionProposalMessageTypes,
+  TimedAuctionProposalMessageTypes,
   VoteMessageTypes,
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
@@ -119,13 +121,15 @@ export class PropHouseWrapper {
     }
   }
 
-  async createProposal(proposal: Proposal, isContract = false) {
+  async createProposal(proposal: Proposal | InfiniteAuctionProposal, isContract = false) {
     if (!this.signer) return;
     try {
       const signedPayload = await proposal.signedPayload(
         this.signer,
         isContract,
-        ProposalMessageTypes,
+        proposal instanceof Proposal
+          ? TimedAuctionProposalMessageTypes
+          : InfiniteAuctionProposalMessageTypes,
       );
       return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {

@@ -223,21 +223,26 @@ export class UpdatedProposal extends Proposal {
   }
 }
 
-export class InfiniteAuctionProposal extends Proposal {
+export class InfiniteAuctionProposal extends Signable {
   constructor(
     public readonly title: string,
     public readonly what: string,
     public readonly tldr: string,
     public readonly auctionId: number,
     public readonly reqAmount: number,
+    public readonly parentType: ProposalParent = 'infinite-auction',
   ) {
-    super(title, what, tldr, auctionId, 'infinite-auction');
+    super();
   }
 
   toPayload() {
     return {
+      title: this.title,
+      what: this.what,
+      tldr: this.tldr,
+      parentAuctionId: this.auctionId,
+      parentType: this.parentType,
       reqAmount: this.reqAmount,
-      ...super.toPayload(),
     };
   }
 }

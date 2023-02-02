@@ -7,7 +7,7 @@ import ProposalEditor from '../../components/ProposalEditor';
 import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { Proposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { InfiniteAuctionProposal, Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
 import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -25,7 +25,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
-import { isTimedAuction } from '../../utils/auctionType';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const Create: React.FC<{}> = () => {
   const { library: provider, account } = useEthers();
@@ -58,14 +58,14 @@ const Create: React.FC<{}> = () => {
   const submitProposal = async () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
-    const proposal = await backendClient.current.createProposal(
-      new Proposal(
-        proposalEditorData.title,
-        proposalEditorData.what,
-        proposalEditorData.tldr,
-        activeAuction.id,
-      ),
-    );
+    let newProp: Proposal | InfiniteAuctionProposal;
+    const { title, what, tldr } = proposalEditorData;
+
+    newProp = isInfAuction(activeAuction)
+      ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, 4)
+      : new Proposal(title, what, tldr, activeAuction.id);
+
+    const proposal = await backendClient.current.createProposal(newProp);
 
     setPropId(proposal.id);
     dispatch(appendProposal({ proposal }));

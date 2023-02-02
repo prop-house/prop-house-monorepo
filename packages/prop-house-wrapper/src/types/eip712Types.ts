@@ -15,12 +15,22 @@ export const VoteMessageTypes: Record<string, TypedDataField[]> = {
   ],
 };
 
-export const ProposalMessageTypes: Record<string, TypedDataField[]> = {
+export const TimedAuctionProposalMessageTypes: Record<string, TypedDataField[]> = {
   Proposal: [
     { name: 'title', type: 'string' },
     { name: 'tldr', type: 'string' },
     { name: 'what', type: 'string' },
     { name: 'parentAuctionId', type: 'uint256' },
+  ],
+};
+
+export const InfiniteAuctionProposalMessageTypes: Record<string, TypedDataField[]> = {
+  Proposal: [
+    { name: 'title', type: 'string' },
+    { name: 'tldr', type: 'string' },
+    { name: 'what', type: 'string' },
+    { name: 'parentAuctionId', type: 'uint256' },
+    { name: 'reqAmount', type: 'uint256' },
   ],
 };
 
@@ -35,7 +45,5 @@ export const EditProposalMessageTypes: Record<string, TypedDataField[]> = {
 };
 
 export const DeleteProposalMessageTypes: Record<string, TypedDataField[]> = {
-  Proposal: [
-    { name: 'id', type: 'uint256' }
-  ]
-}
+  Proposal: [{ name: 'id', type: 'uint256' }],
+};
