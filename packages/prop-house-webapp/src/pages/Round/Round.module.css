@@ -31,3 +31,6 @@
   padding-top: 12px;
   border-bottom: 1px solid var(--border-light);
 }
+.loader {
+  width: 100%;
+}

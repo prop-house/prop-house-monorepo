@@ -7,12 +7,10 @@ import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
@@ -24,6 +22,8 @@ import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVot
 import { useTranslation } from 'react-i18next';
 import { clearProposal } from '../../state/slices/editor';
 import { useDispatch } from 'react-redux';
+import ConnectButton from '../ConnectButton';
+import { useAccount } from 'wagmi';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
@@ -33,8 +33,8 @@ const RoundModules: React.FC<{
 }> = props => {
   const { auction, proposals, community, setShowVotingModal } = props;
 
-  const { account } = useEthers();
-  const connect = useWeb3Modal();
+  const { address: account } = useAccount();
+
   const navigate = useNavigate();
 
   const votingPower = useAppSelector(state => state.voting.votingPower);
@@ -127,12 +127,12 @@ const RoundModules: React.FC<{
                 }}
               />
             ) : (
-              <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
+              <ConnectButton text={t('connectToSubmit')} color={ButtonColor.Pink} />
             ))}
 
           {/* VOTING WINDOW, NOT CONNECTED */}
           {isVotingWindow && !account && (
-            <Button text={t('connectToVote')} bgColor={ButtonColor.Pink} onClick={connect} />
+            <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
           )}
 
           {/* VOTING PERIOD, CONNECTED, HAS VOTES */}

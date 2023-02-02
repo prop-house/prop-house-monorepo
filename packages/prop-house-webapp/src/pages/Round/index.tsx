@@ -1,8 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import RoundHeader from '../../components/RoundHeader';
-import { useEffect, useRef } from 'react';
-import { useEthers } from '@usedapp/core';
+import { useEffect, useRef, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   setActiveCommunity,
@@ -12,7 +11,6 @@ import {
 } from '../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import ErrorMessageCard from '../../components/ErrorMessageCard';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import RoundContent from '../../components/RoundContent';
 import { nameToSlug, slugToName } from '../../utils/communitySlugs';
@@ -22,8 +20,10 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
-import { useTranslation } from 'react-i18next';
 import ProposalModal from '../../components/ProposalModal';
+import { useSigner } from 'wagmi';
+import LoadingIndicator from '../../components/LoadingIndicator';
+import NotFound from '../../components/NotFound';
 
 const Round = () => {
   const location = useLocation();
@@ -31,22 +31,22 @@ const Round = () => {
   const roundName = location.pathname.substring(1).split('/')[1];
 
   const dispatch = useAppDispatch();
-  const { library } = useEthers();
-
+  const { data: signer } = useSigner();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const host = useAppSelector(state => state.configuration.backendHost);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const client = useRef(new PropHouseWrapper(host));
-  const { t } = useTranslation();
 
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // if no round is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
@@ -66,6 +66,7 @@ const Round = () => {
   // fetch proposals
   useEffect(() => {
     if (!round) return;
+    setLoading(true);
 
     const fetchAuctionProposals = async () => {
       const proposals = await client.current.getAuctionProposals(round.id);
@@ -76,6 +77,8 @@ const Round = () => {
       isVotingWindow || isRoundOver
         ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
         : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+
+      setLoading(false);
     };
     fetchAuctionProposals();
 
@@ -114,10 +117,14 @@ const Round = () => {
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {round && proposals ? (
-              <RoundContent auction={round} proposals={proposals} />
+            {loading ? (
+              <div className={classes.loader}>
+                <LoadingIndicator />
+              </div>
+            ) : !round ? (
+              <NotFound />
             ) : (
-              <ErrorMessageCard message={t('noRoundsAvailable')} />
+              proposals && <RoundContent auction={round} proposals={proposals} />
             )}
           </div>
         </Container>

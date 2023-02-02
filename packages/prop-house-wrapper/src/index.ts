@@ -1,4 +1,3 @@
-import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
@@ -24,11 +23,12 @@ import {
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
+import { Signer } from 'ethers';
 
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined,
+    private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {

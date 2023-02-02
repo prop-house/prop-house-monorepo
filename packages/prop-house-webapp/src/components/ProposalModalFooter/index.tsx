@@ -1,11 +1,9 @@
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
-import Button, { ButtonColor } from '../Button';
+import { ButtonColor } from '../Button';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setVotingPower } from '../../state/slices/voting';
@@ -15,6 +13,8 @@ import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
+import ConnectButton from '../ConnectButton';
+import { useAccount, useProvider } from 'wagmi';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -42,8 +42,9 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { account, library } = useEthers();
-  const connect = useWeb3Modal();
+  const { address: account } = useAccount();
+  const provider = useProvider();
+
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -57,14 +58,14 @@ const ProposalModalFooter: React.FC<{
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
-    if (!account || !library || !community) return;
+    if (!account || !provider || !community) return;
 
     const fetchVotes = async () => {
       try {
         const votes = await getNumVotes(
           account,
           community.contractAddress,
-          library,
+          provider,
           round!.balanceBlockTag,
         );
         dispatch(setVotingPower(votes));
@@ -73,8 +74,7 @@ const ProposalModalFooter: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community, round]);
-
+  }, [account, provider, dispatch, community, round]);
 
   return (
     <>
@@ -88,11 +88,10 @@ const ProposalModalFooter: React.FC<{
                 {/* ACTIVE ROUND, NOT CONNECTED */}
                 {!isRoundOver && !account && (
                   <div className={classes.connectContainer}>
-                    <Button
+                    <ConnectButton
                       classNames={classes.fullWidthButton}
-                      text={isVotingWindow ? 'Connect to vote' : 'Connect to submit'}
-                      bgColor={ButtonColor.Purple}
-                      onClick={connect}
+                      text={isVotingWindow ? t('connectToVote') : t('connectToSubmit')}
+                      color={ButtonColor.Purple}
                     />
 
                     <div className={classes.voteCount}>
@@ -112,7 +111,7 @@ const ProposalModalFooter: React.FC<{
                 )}
 
                 {/* PROPOSING WINDOW */}
-                {isProposingWindow &&
+                {isProposingWindow && (
                   <ProposalWindowButtons
                     proposal={proposal}
                     editProposalMode={editProposalMode}
@@ -120,11 +119,12 @@ const ProposalModalFooter: React.FC<{
                     setShowSavePropModal={setShowSavePropModal}
                     setShowDeletePropModal={setShowDeletePropModal}
                   />
-                }
+                )}
 
                 <>
                   {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                  {(account && isVotingWindow) &&
+                  {account &&
+                    isVotingWindow &&
                     (votingPower > 0 ? (
                       <ProposalModalVotingModule
                         proposal={proposal}
@@ -168,7 +168,7 @@ const ProposalModalFooter: React.FC<{
             numberOfProps={numberOfProps}
             handleDirectionalArrowClick={handleDirectionalArrowClick}
           />
-        </div >
+        </div>
       )}
     </>
   );

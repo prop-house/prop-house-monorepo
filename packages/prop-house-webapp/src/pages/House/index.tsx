@@ -3,10 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useRef, useState } from 'react';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { setActiveCommunity } from '../../state/slices/propHouse';
-
 import { slugToName } from '../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
 import RoundCard from '../../components/RoundCard';
@@ -24,12 +22,14 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
+import { useSigner } from 'wagmi';
 
 const House = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1, location.pathname.length);
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
+
   const dispatch = useAppDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -39,22 +39,23 @@ const House = () => {
   const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuction[]>([]);
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingCommunity, setLoadingCommunity] = useState(false);
+  const [loadingRounds, setLoadingRounds] = useState(false);
   const { t } = useTranslation();
 
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch community
   useEffect(() => {
     const fetchCommunity = async () => {
-      setIsLoading(true);
+      setLoadingCommunity(true);
       const community = await client.current.getCommunityWithName(slugToName(slug));
       dispatch(setActiveCommunity(community));
-      setIsLoading(false);
+      setLoadingCommunity(false);
     };
     fetchCommunity();
   }, [slug, dispatch]);
@@ -62,7 +63,7 @@ const House = () => {
   // fetch rounds
   useEffect(() => {
     if (!community) return;
-
+    setLoadingRounds(true);
     const fetchRounds = async () => {
       const rounds = await client.current.getAuctionsForCommunity(community.id);
       setRounds(rounds);
@@ -84,6 +85,7 @@ const House = () => {
           auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
           auctionStatus(r) === AuctionStatus.AuctionVoting,
       ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
+      setLoadingRounds(false);
     };
     fetchRounds();
   }, [community]);
@@ -128,7 +130,7 @@ const House = () => {
         />
       )}
 
-      {isLoading ? (
+      {loadingCommunity ? (
         <LoadingIndicator />
       ) : !community ? (
         <NotFound />
@@ -153,22 +155,20 @@ const House = () => {
           <div className={classes.houseContainer}>
             <Container>
               <Row>
-                {roundsOnDisplay ? (
-                  roundsOnDisplay.length > 0 ? (
-                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
-                      <Col key={index} xl={6}>
-                        <RoundCard round={round} />
-                      </Col>
-                    ))
-                  ) : input === '' ? (
-                    <Col>
-                      <ErrorMessageCard message={t('noRoundsAvailable')} />
-                    </Col>
-                  ) : (
-                    <NoSearchResults />
-                  )
-                ) : (
+                {loadingRounds ? (
                   <LoadingIndicator />
+                ) : roundsOnDisplay.length > 0 ? (
+                  sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+                    <Col key={index} xl={6}>
+                      <RoundCard round={round} />
+                    </Col>
+                  ))
+                ) : input === '' ? (
+                  <Col>
+                    <ErrorMessageCard message={t('noRoundsAvailable')} />
+                  </Col>
+                ) : (
+                  <NoSearchResults />
                 )}
               </Row>
             </Container>

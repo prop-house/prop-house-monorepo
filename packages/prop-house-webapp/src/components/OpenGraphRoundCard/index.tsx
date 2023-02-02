@@ -1,6 +1,5 @@
 import classes from './OpenGraphRoundCard.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
@@ -10,6 +9,7 @@ import { deadlineTime, deadlineCopy } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { useSigner } from 'wagmi';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
@@ -18,13 +18,13 @@ const OpenGraphRoundCard: React.FC = () => {
   const [round, setRound] = useState<StoredAuction>();
   const [community, setCommunity] = useState<Community>();
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   useEffect(() => {
     if (!id) return;
