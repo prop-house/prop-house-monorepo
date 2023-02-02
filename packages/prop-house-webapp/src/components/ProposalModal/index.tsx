@@ -5,7 +5,6 @@ import Modal from 'react-modal';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
 import {
   Direction,
@@ -18,21 +17,28 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
-import ErrorModal from '../ErrorModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
+import SuccessVotingModal from '../SuccessVotingModal';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
+import SaveProposalModal from '../SaveProposalModal';
+import DeleteProposalModal from '../DeleteProposalModal';
+import { useAccount, useSigner, useProvider } from 'wagmi';
+import { fetchBlockNumber } from '@wagmi/core';
 
 const ProposalModal = () => {
+  const [editProposalMode, setEditProposalMode] = useState(false);
+
   const params = useParams();
   const { id } = params;
   const navigate = useNavigate();
 
-  const { account, library: provider } = useEthers();
+  const { data: signer } = useSigner();
+  const { address: account } = useAccount();
 
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -42,25 +48,24 @@ const ProposalModal = () => {
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
   const [signerIsContract, setSignerIsContract] = useState(false);
-  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
-  const [errorModalMessage, setErrorModalMessage] = useState({
-    title: '',
-    message: '',
-    image: '',
-  });
-  const [hideScrollButton, setHideScrollButton] = useState(false);
+  // modals
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
+  const [showSavePropModal, setShowSavePropModal] = useState(false);
+  const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
+  const [hideScrollButton, setHideScrollButton] = useState(false);
   const winningIds = round && getWinningIds(proposals, round);
+  const provider = useProvider();
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -68,10 +73,16 @@ const ProposalModal = () => {
     navigate(buildRoundPath(community, round), { replace: false });
   };
 
+  const dismissModalAndRefreshProps = () => {
+    refreshActiveProposals(backendClient.current, round!.id, dispatch);
+    refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
+    handleClosePropModal();
+  };
+
   // provider
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -117,7 +128,14 @@ const ProposalModal = () => {
   }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (!activeProposal || !proposals || proposals.length === 0) return;
+    if (
+      !activeProposal ||
+      !proposals ||
+      proposals.length === 0 ||
+      editProposalMode ||
+      showDeletePropModal
+    )
+      return;
 
     const newPropIndex =
       proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
@@ -125,20 +143,20 @@ const ProposalModal = () => {
   };
 
   const _signerIsContract = async () => {
-    if (!provider || !account) {
+    if (!signer || !provider || !account) {
       return false;
     }
-    const code = await provider?.getCode(account);
+    const code = await provider.getCode(account);
     const isContract = code !== '0x';
     setSignerIsContract(isContract);
     return isContract;
   };
 
   const handleSubmitVote = async () => {
-    if (!provider || !activeProposal) return;
+    if (!activeProposal) return;
 
     try {
-      const blockHeight = await provider.getBlockNumber();
+      const blockHeight = await fetchBlockNumber();
 
       const votes = voteAllotments
         .map(
@@ -157,19 +175,15 @@ const ProposalModal = () => {
 
       await backendClient.current.logVotes(votes, isContract);
 
+      setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round!.id, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
-        title: 'Failed to submit votes',
-        message: 'Please go back and try again.',
-        image: 'banana.png',
-      });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -177,42 +191,53 @@ const ProposalModal = () => {
     <>
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
-          showNewModal={showVoteConfirmationModal}
-          setShowNewModal={setShowVoteConfirmationModal}
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
-          secondBtn
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
+      {showErrorVotingModal && (
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
+      )}
+
+      {showVoteAllotmentModal && activeProposal && (
+        <VoteAllotmentModal propId={activeProposal.id} setShowModal={setShowVoteAllotmentModal} />
+      )}
+
+      {showSavePropModal && activeProposal && round && (
+        <SaveProposalModal
+          propId={activeProposal.id}
+          roundId={round.id}
+          setShowSavePropModal={setShowSavePropModal}
+          setEditProposalMode={setEditProposalMode}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
+          handleClosePropModal={handleClosePropModal}
         />
       )}
 
-      {showVoteAllotmentModal && (
-        <VoteAllotmentModal
-          showModal={showVoteAllotmentModal}
-          setShowModal={setShowVoteAllotmentModal}
+      {showDeletePropModal && activeProposal && (
+        <DeleteProposalModal
+          id={activeProposal.id}
+          setShowDeletePropModal={setShowDeletePropModal}
+          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
+          handleClosePropModal={handleClosePropModal}
         />
       )}
 
       <Modal
         isOpen={true}
-        onRequestClose={() => handleClosePropModal()}
+        onRequestClose={() => {
+          setEditProposalMode(false);
+          handleClosePropModal();
+        }}
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
@@ -226,6 +251,8 @@ const ProposalModal = () => {
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
             />
 
             <ProposalModalFooter
@@ -236,6 +263,10 @@ const ProposalModal = () => {
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
               isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
+              editProposalMode={editProposalMode}
+              setEditProposalMode={setEditProposalMode}
+              setShowSavePropModal={setShowSavePropModal}
+              setShowDeletePropModal={setShowDeletePropModal}
             />
           </>
         )}

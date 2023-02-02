@@ -26,6 +26,8 @@
 .ql-editor {
   font-size: 16px !important;
   padding: 0 !important;
+  min-height: 20em !important;
+  font-weight: 500;
 }
 .ql-editor.ql-blank::before {
   left: auto !important;
@@ -54,7 +56,9 @@
   z-index: 1;
   height: 10px;
 }
-
+.editPropContainer .hideBorderBox {
+  background: white;
+}
 .quill {
   margin-top: -20px;
 }
@@ -69,7 +73,6 @@ pre {
   padding: 22px !important;
   overflow-x: auto;
 }
-
 .ReactModal__Overlay--after-open {
   position: fixed;
   top: 0;
@@ -90,19 +93,32 @@ blockquote {
 }
 
 .ql-tooltip {
-  background: #f5f5f5 !important;
-  border-radius: 15px !important;
-  padding: 0.5rem 1rem !important;
-  font-size: 16px !important;
+  background: var(--bg-light);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
+  border-radius: 8px;
+  color: black;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ql-action,
+.ql-preview,
+.ql-remove {
+  font-weight: 500;
 }
 .ql-preview {
   color: black !important;
   text-decoration: underline !important;
+  color: var(--brand-pink) !important;
 }
 .ql-preview:hover {
-  color: var(--brand-pink) !important;
+  font-weight: 700;
 }
 .ql-action:hover,
 .ql-remove:hover {
   font-weight: 600 !important;
+}
+@media (max-width: 768px) {
+  .blot-formatter__overlay {
+    display: none !important;
+  }
 }

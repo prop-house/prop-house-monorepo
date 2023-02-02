@@ -75,6 +75,7 @@ export class CommunitiesService {
       .select('c.*')
       .addSelect('SUM(a."numAuctions")', 'numAuctions')
       .addSelect('SUM(a."ethFunded")', 'ethFunded')
+      .addSelect('SUM(a."totalFunded")', 'totalFunded')
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(
         this.auctionCountAndFundingSubquery,
@@ -90,7 +91,11 @@ export class CommunitiesService {
       .select('a.id', 'id')
       .addSelect('a.communityId')
       .addSelect('COUNT(a.id)', 'numAuctions')
-      .addSelect('SUM(a.fundingAmount * a.numWinners)', 'ethFunded')
+      .addSelect(
+        `CASE WHEN a.currencyType ILIKE '%eth%' then SUM(a.fundingAmount * a.numWinners) else 0 end`,
+        'ethFunded',
+      )
+      .addSelect('SUM(a.fundingAmount * a.numWinners)', 'totalFunded')
       .from('auction', 'a')
       .groupBy('a.id');
   }

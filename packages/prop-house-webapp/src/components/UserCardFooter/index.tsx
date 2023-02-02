@@ -11,7 +11,7 @@ const UserCardFooter: React.FC<{
   status: AuctionStatus;
   amountOfPropsWon: number;
   userProps: StoredProposalWithVotes[];
-  winningIds?: number[];
+  winningIds: number[];
   cardIndex: number;
 }> = props => {
   const { status, amountOfPropsWon, userProps, winningIds, cardIndex } = props;
@@ -22,9 +22,9 @@ const UserCardFooter: React.FC<{
   return (
     <>
       {status === AuctionStatus.AuctionEnded &&
-      amountOfPropsWon > 0 &&
-      winningIds &&
-      isWinner(winningIds, userProps[cardIndex].id) ? (
+        amountOfPropsWon > 0 &&
+        winningIds &&
+        isWinner(winningIds, userProps[cardIndex].id) ? (
         <>
           <p className={classes.sideCardBody}>
             <b>{t('whatsNext')}:</b>

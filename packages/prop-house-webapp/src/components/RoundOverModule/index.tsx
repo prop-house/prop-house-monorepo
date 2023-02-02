@@ -5,7 +5,7 @@ import classes from './RoundOverModule.module.css';
 
 export interface RoundOverModuleProps {
   totalVotes: number | undefined;
-  numOfProposals: number | undefined;
+  numOfProposals: number;
 }
 
 const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleProps) => {

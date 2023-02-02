@@ -125,6 +125,10 @@ export class FileService {
     return this.fileRepository.findOne(id);
   }
 
+  findByHash(ipfsHash: string): Promise<File[]> {
+    return this.fileRepository.find({ ipfsHash });
+  }
+
   async remove(id: string): Promise<void> {
     await this.fileRepository.delete(id);
   }

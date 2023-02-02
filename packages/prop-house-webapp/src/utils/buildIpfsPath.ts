@@ -1,4 +1,3 @@
-const buildIpfsPath = (ipfsHash: string) =>
-  `https://cloudflare-ipfs.com/ipfs/${ipfsHash}`;
+const buildIpfsPath = (ipfsHash: string) => `https://prophouse.mypinata.cloud/ipfs/${ipfsHash}`;
 
 export default buildIpfsPath;

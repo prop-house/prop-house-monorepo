@@ -173,6 +173,8 @@ export interface StoredProposal extends Proposal {
   address: string;
   createdDate: Date;
   voteCount: number;
+  lastUpdatedDate: Date;
+  deletedAt: Date;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {
@@ -253,6 +255,7 @@ export class Community extends Signable {
     public readonly numAuctions: number,
     public readonly numProposals: number,
     public readonly ethFunded: number,
+    public readonly totalFunded: number,
     public readonly description: number,
   ) {
     super();
@@ -267,6 +270,7 @@ export class Community extends Signable {
       numAuctions: this.numAuctions,
       numProposals: this.numProposals,
       ethFunded: this.ethFunded,
+      totalFunded: this.totalFunded,
       description: this.description,
     };
   }

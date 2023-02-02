@@ -41,11 +41,18 @@ export class FileController {
    * from disk and does not require that a file record exist
    * in the database for the provided file.
    */
-  @Get('/local/hash/:filename')
-  async getLocal(@Param('filename') filename: string, @Res() res: Response) {
-    const fileBuf = await this.fileService.readFileFromDisk(filename);
+  @Get('/local/hash/:ipfsHash')
+  async getLocal(@Param('ipfsHash') ipfsHash: string, @Res() res: Response) {
+    const fileBuf = await this.fileService.readFileFromDisk(ipfsHash);
     const type = await fromBuffer(fileBuf);
-    res.header('Content-Type', mime.contentType(type.mime));
+    if (type) {
+      res.header('Content-Type', mime.contentType(type.mime));
+    } else {
+      const fileRecords = await this.fileService.findByHash(ipfsHash);
+      if (fileRecords.length) {
+        res.header('Content-Type', fileRecords[0].mimeType);
+      }
+    }
     res.send(fileBuf);
   }
 

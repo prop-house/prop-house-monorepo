@@ -1,29 +1,70 @@
-import classes from './ProposalEditor.module.css';
-import { Row, Col, Form } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { ProposalFields } from '../../utils/proposalFields';
-import 'react-quill/dist/quill.snow.css';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useQuill } from 'react-quilljs';
-import clsx from 'clsx';
-import QuillEditorModal from '../QuillEditorModal';
-import '../../quill.css';
 import { useTranslation } from 'react-i18next';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import BlotFormatter from 'quill-blot-formatter';
+import ImageUploadModal from '../ImageUploadModal';
+import ProposalInputs from '../ProposalInputs';
+import { useSigner } from 'wagmi';
+
+export interface FormDataType {
+  title: string;
+  focus?: boolean;
+  type: 'input';
+  fieldValue: string;
+  fieldName: string;
+  placeholder: string;
+  value: string;
+  minCount: number;
+  maxCount: number;
+  error: string;
+}
 
 const ProposalEditor: React.FC<{
+  fields?: ProposalFields;
   onDataChange: (data: Partial<ProposalFields>) => void;
+  showImageUploadModal?: boolean;
+  setShowImageUploadModal: Dispatch<SetStateAction<boolean>>;
+  files: File[];
+  setFiles: Dispatch<SetStateAction<File[]>>;
+  onFileDrop: (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLDivElement>) => void;
+  invalidFileError: boolean;
+  setInvalidFileError: Dispatch<SetStateAction<boolean>>;
+  invalidFileMessage: string;
+  setInvalidFileMessage: Dispatch<SetStateAction<string>>;
+  duplicateFile: { error: boolean; name: string };
+  setDuplicateFile: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
 }> = props => {
+  const {
+    fields,
+    onDataChange,
+    showImageUploadModal,
+    setShowImageUploadModal,
+    files,
+    setFiles,
+    invalidFileError,
+    setInvalidFileError,
+    invalidFileMessage,
+    setInvalidFileMessage,
+    duplicateFile,
+    setDuplicateFile,
+    onFileDrop,
+  } = props;
   const data = useAppSelector(state => state.editor.proposal);
-  const { onDataChange } = props;
-  const [blurred, setBlurred] = useState(false);
   const [editorBlurred, setEditorBlurred] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
-  const [showImageModal, setShowImageModal] = useState(false);
   const { t } = useTranslation();
+  const { data: signer } = useSigner();
 
-  const validateInput = (min: number, count: number) => 0 < count && count < min;
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
 
-  const formData = [
+  useEffect(() => {
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
+
+  const formData: FormDataType[] = [
     {
       title: t('title'),
       focus: true,
@@ -73,12 +114,7 @@ const ProposalEditor: React.FC<{
     'image',
   ];
 
-  const imageHandler = () => {
-    setShowImageModal(true);
-  };
-  const linkHandler = () => {
-    setShowLinkModal(true);
-  };
+  const imageHandler = () => setShowImageUploadModal(true);
 
   const modules = {
     toolbar: {
@@ -90,6 +126,7 @@ const ProposalEditor: React.FC<{
         ['image'],
       ],
     },
+    blotFormatter: {},
     clipboard: {
       matchVisual: false,
     },
@@ -104,123 +141,68 @@ const ProposalEditor: React.FC<{
     placeholder,
   });
 
+  if (Quill && !quill) {
+    Quill.register('modules/blotFormatter', BlotFormatter);
+  }
   useEffect(() => {
     if (quill) {
       var toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', imageHandler);
-      toolbar.addHandler('link', linkHandler);
 
-      quill.clipboard.dangerouslyPasteHTML(data.what);
+      // set the placeholder for the link input
+      const input = document.querySelector('input[data-link]') as HTMLInputElement;
+      input.dataset.link = 'https://prop.house';
+      input.placeholder = 'https://prop.house';
 
-      quill.on('text-change', () => {
+      // set the editor content to the data from the store
+      quill.root.innerHTML = data.what;
+
+      quill.on('text-change', (delta: any, oldDelta: any, source: any) => {
         setEditorBlurred(false);
-
-        onDataChange({ what: quill.root.innerHTML });
+        if (source === 'user') {
+          const html = quill.root.innerHTML;
+          onDataChange({ what: html });
+        }
       });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quill]);
 
+  useEffect(() => {
+    if (fields) onDataChange(fields);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
-      <Row>
-        <Col xl={12}>
-          <Form>
-            <Form.Group className={classes.inputGroup}>
-              {formData.map(input => {
-                return (
-                  <div className={classes.inputSection} key={input.title}>
-                    <div className={classes.inputInfo}>
-                      <Form.Label className={classes.inputLabel}>{input.title}</Form.Label>
-                      <Form.Label className={classes.inputChars}>
-                        {input.maxCount
-                          ? `${input.fieldValue.length}/${input.maxCount}`
-                          : input.fieldValue.length}
-                      </Form.Label>
-                    </div>
-
-                    <Form.Control
-                      as={input.type as any}
-                      autoFocus={input.focus}
-                      maxLength={input.maxCount && input.maxCount}
-                      placeholder={input.placeholder}
-                      className={clsx(
-                        classes.input,
-                        input.fieldName === 'what' && classes.descriptionInput,
-                      )}
-                      onChange={e => {
-                        setBlurred(false);
-                        onDataChange({ [input.fieldName]: e.target.value });
-                      }}
-                      value={data && input.fieldValue}
-                      onBlur={() => {
-                        setBlurred(true);
-                      }}
-                    />
-
-                    {blurred && validateInput(input.minCount, input.fieldValue.length) && (
-                      <p className={classes.inputError}>{input.error}</p>
-                    )}
-                  </div>
-                );
-              })}
-
-              <>
-                <div className={classes.inputInfo}>
-                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>{descriptionData.title}</Form.Label>
-
-                  <Form.Label className={classes.inputChars}>
-                    {quill && quill.getText().length - 1}
-                  </Form.Label>
-                </div>
-
-                <>
-                  {/* 
-                    When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
-                  */}
-                  <div className="hideBorderBox"></div>
-                  <div
-                    ref={quillRef}
-                    placeholder={descriptionData.placeholder}
-                    onBlur={() => {
-                      setEditorBlurred(true);
-                    }}
-                  />
-
-                  {editorBlurred &&
-                    quill &&
-                    validateInput(descriptionData.minCount, quill.getText().length - 1) && (
-                      <p className={classes.inputError}>{descriptionData.error}</p>
-                    )}
-                </>
-              </>
-            </Form.Group>
-          </Form>
-        </Col>
-      </Row>
-
-      <QuillEditorModal
+      <ProposalInputs
         quill={quill}
-        Quill={Quill}
-        title={t('addLink')}
-        subtitle={t('pasteLink')}
-        showModal={showLinkModal}
-        setShowModal={setShowLinkModal}
-        placeholder="ex. https://nouns.wtf/"
-        quillModule="link"
+        quillRef={quillRef}
+        onDataChange={onDataChange}
+        onFileDrop={onFileDrop}
+        formData={formData}
+        descriptionData={descriptionData}
+        editorBlurred={editorBlurred}
+        setEditorBlurred={setEditorBlurred}
       />
 
-      <QuillEditorModal
-        quill={quill}
-        Quill={Quill}
-        title={t('addImage')}
-        subtitle={t('pasteImage')}
-        showModal={showImageModal}
-        setShowModal={setShowImageModal}
-        placeholder="ex. https://noun.pics/1.jpg"
-        quillModule="image"
-      />
+      {showImageUploadModal && (
+        <ImageUploadModal
+          files={files}
+          setFiles={setFiles}
+          onFileDrop={onFileDrop}
+          quill={quill}
+          Quill={Quill}
+          invalidFileError={invalidFileError}
+          setInvalidFileError={setInvalidFileError}
+          invalidFileMessage={invalidFileMessage}
+          setInvalidFileMessage={setInvalidFileMessage}
+          duplicateFile={duplicateFile}
+          setDuplicateFile={setDuplicateFile}
+          setShowImageUploadModal={setShowImageUploadModal}
+        />
+      )}
     </>
   );
 };

@@ -6,7 +6,6 @@ import {
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
@@ -16,8 +15,8 @@ import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import { getNumVotes } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessModal from '../SuccessModal';
-import ErrorModal from '../ErrorModal';
+import SuccessVotingModal from '../SuccessVotingModal';
+import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
   setNumSubmittedVotes,
@@ -31,24 +30,21 @@ import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
+import { useAccount, useSigner, useProvider } from 'wagmi';
+import { fetchBlockNumber } from '@wagmi/core';
 
 const RoundContent: React.FC<{
   auction: StoredAuction;
   proposals: StoredProposalWithVotes[];
 }> = props => {
   const { auction, proposals } = props;
-  const { account, library } = useEthers();
+  const { address: account } = useAccount();
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
   const [signerIsContract, setSignerIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorModalMessage, setErrorModalMessage] = useState({
-    title: '',
-    message: '',
-    image: '',
-  });
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
@@ -58,16 +54,17 @@ const RoundContent: React.FC<{
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-
   const winningIds = getWinningIds(proposals, auction);
+  const { data: signer } = useSigner();
+  const provider = useProvider();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch voting power for user
   useEffect(() => {
-    if (!account || !library || !community) return;
+    if (!account || !signer || !community) return;
 
     const fetchVotes = async () => {
       try {
@@ -84,7 +81,7 @@ const RoundContent: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, library, dispatch, community, auction.balanceBlockTag]);
+  }, [account, signer, dispatch, community, auction.balanceBlockTag]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
@@ -93,19 +90,19 @@ const RoundContent: React.FC<{
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {
-    if (!library || !account) {
+    if (!provider || !account) {
       return false;
     }
-    const code = await library?.getCode(account);
+    const code = await provider?.getCode(account);
     const isContract = code !== '0x';
     setSignerIsContract(isContract);
     return isContract;
   };
 
   const handleSubmitVote = async () => {
-    if (!library) return;
     try {
-      const blockHeight = await library.getBlockNumber();
+      const blockHeight = await fetchBlockNumber();
+
       const votes = voteAllotments
         .map(
           a =>
@@ -123,18 +120,14 @@ const RoundContent: React.FC<{
 
       await client.current.logVotes(votes, isContract);
 
+      setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessModal(true);
+      setShowSuccessVotingModal(true);
       refreshActiveProposals(client.current, auction.id, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
-      setErrorModalMessage({
-        title: t('errorModalTitle'),
-        message: t('errorModalMessage'),
-        image: 'banana.png',
-      });
-      setShowErrorModal(true);
+      setShowErrorVotingModal(true);
     }
   };
 
@@ -142,30 +135,21 @@ const RoundContent: React.FC<{
     <>
       {showVoteConfirmationModal && (
         <VoteConfirmationModal
-          showNewModal={showVoteConfirmationModal}
-          setShowNewModal={setShowVoteConfirmationModal}
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
-          secondBtn
         />
       )}
 
-      {showSuccessModal && (
-        <SuccessModal
-          showSuccessModal={showSuccessModal}
-          setShowSuccessModal={setShowSuccessModal}
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
           signerIsContract={signerIsContract}
         />
       )}
 
-      {showErrorModal && (
-        <ErrorModal
-          showErrorModal={showErrorModal}
-          setShowErrorModal={setShowErrorModal}
-          title={errorModalMessage.title}
-          message={errorModalMessage.message}
-          image={errorModalMessage.image}
-        />
+      {showErrorVotingModal && (
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
       {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
@@ -186,7 +170,7 @@ const RoundContent: React.FC<{
                             proposal={proposal}
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={winningIds && isWinner(winningIds, proposal.id)}
+                            isWinner={isWinner(winningIds, proposal.id)}
                           />
                         </Col>
                       );
@@ -195,6 +179,7 @@ const RoundContent: React.FC<{
               </Col>
               <RoundModules
                 auction={auction}
+                proposals={proposals}
                 community={community}
                 setShowVotingModal={setShowVoteConfirmationModal}
               />

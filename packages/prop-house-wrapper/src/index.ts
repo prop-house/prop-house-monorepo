@@ -1,4 +1,3 @@
-import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
@@ -14,7 +13,8 @@ import {
   DeleteProposal,
 } from './builders';
 import FormData from 'form-data';
-import fs from 'fs';
+import * as fs from 'fs';
+
 import {
   DeleteProposalMessageTypes,
   EditProposalMessageTypes,
@@ -23,11 +23,12 @@ import {
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
+import { Signer } from 'ethers';
 
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined,
+    private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {
@@ -146,9 +147,9 @@ export class PropHouseWrapper {
         isContract,
         DeleteProposalMessageTypes,
       );
-      return (await axios.delete(`${this.host}/proposals`, {data: signedPayload})).data;
+      return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e;
     }
   }
 
@@ -196,13 +197,14 @@ export class PropHouseWrapper {
       const form = new FormData();
       form.append('file', file, name);
       form.append('name', name);
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      if (this.signer) {
-        const signature = await this.signer.signMessage(fileBuffer);
-        form.append('signature', signature);
-      }
-      return await axios.post(`${this.host}/file`, form);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+      };
+      return await axios.post(`${this.host}/file`, form, config);
     } catch (e: any) {
+      console.log('error', e);
       throw e.response.data.message;
     }
   }
@@ -229,7 +231,7 @@ export class PropHouseWrapper {
         },
       });
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e.response;
     }
   }
 

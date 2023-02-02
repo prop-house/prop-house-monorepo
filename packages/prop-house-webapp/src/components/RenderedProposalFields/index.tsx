@@ -50,11 +50,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                     </span>
                     {t('by')}
                     <div className={classes.submittedBy}>
-                      <EthAddress
-                        address={address}
-                        hideDavatar={true}
-                        className={classes.submittedBy}
-                      />
+                      <EthAddress address={address} className={classes.submittedBy} />
                     </div>
                   </div>
                 </div>
@@ -84,7 +80,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                 allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
                 allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
                 allowedAttributes: {
-                  img: ['src', 'alt'],
+                  img: ['src', 'alt', 'height', 'width'],
                   a: ['href', 'target'],
                 },
                 allowedClasses: {
