@@ -59,11 +59,12 @@ const Create: React.FC<{}> = () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
     let newProp: Proposal | InfiniteAuctionProposal;
-    const { title, what, tldr } = proposalEditorData;
+    const { title, what, tldr, reqAmount } = proposalEditorData;
 
-    newProp = isInfAuction(activeAuction)
-      ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, 4)
-      : new Proposal(title, what, tldr, activeAuction.id);
+    newProp =
+      isInfAuction(activeAuction) && reqAmount
+        ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, reqAmount)
+        : new Proposal(title, what, tldr, activeAuction.id);
 
     const proposal = await backendClient.current.createProposal(newProp);
 
@@ -249,7 +250,7 @@ const Create: React.FC<{}> = () => {
                         return !prev;
                       })
                     }
-                    disabled={!isValidPropData(proposalEditorData)}
+                    disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
                   />
 
                   {showPreview &&
@@ -259,7 +260,7 @@ const Create: React.FC<{}> = () => {
                         text={t('signAndSubmit')}
                         bgColor={ButtonColor.Pink}
                         onClick={submitProposal}
-                        disabled={!isValidPropData(proposalEditorData)}
+                        disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
                       />
                     ) : (
                       <Button

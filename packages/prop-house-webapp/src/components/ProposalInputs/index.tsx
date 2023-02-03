@@ -11,6 +11,8 @@ import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
+import { isInfAuction } from '../../utils/auctionType';
+import { useLocation } from 'react-router-dom';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -32,12 +34,19 @@ const ProposalInputs: React.FC<{
     setEditorBlurred,
     onFileDrop,
   } = props;
-  const data = useAppSelector(state => state.editor.proposal);
-  const [blurred, setBlurred] = useState(false);
+  const location = useLocation();
+  // active round comes from two diff places depending on where inputs are being displayed
+  const roundFromLoc = location.state && location.state.auction; // creating new prop
+  const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
+  const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
 
   const { library } = useEthers();
+  const data = useAppSelector(state => state.editor.proposal);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+
+  const [blurred, setBlurred] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
@@ -46,6 +55,27 @@ const ProposalInputs: React.FC<{
   return (
     <>
       <Row>
+        {isInfRound && (
+          <div>
+            <label>
+              Fund request:
+              <br />
+              <select
+                value={selectedNumber || ''}
+                onChange={e => {
+                  setSelectedNumber(Number(e.target.value));
+                  onDataChange({ reqAmount: Number(e.target.value) });
+                }}
+              >
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
         <Col xl={12}>
           <Form>
             <Form.Group className={classes.inputGroup}>
