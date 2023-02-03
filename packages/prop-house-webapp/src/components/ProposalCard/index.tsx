@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
+import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getImageFromDescription from '../../utils/getImageFromDescription';
 import { useEffect, useState } from 'react';
@@ -135,6 +136,21 @@ const ProposalCard: React.FC<{
                 >
                   {diffTime(proposal.createdDate)}
                 </div>
+              )}
+              {proposal.reqAmount && (
+                <>
+                  {' '}
+                  <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
+                    {' • '}
+                  </span>
+                  <div
+                    className={clsx(classes.date, roundIsActive() && classes.hideDate)}
+                    title={detailedTime(proposal.createdDate)}
+                  >
+                    <BiAward />
+                    {`${proposal.reqAmount} ${round?.currencyType}`}
+                  </div>
+                </>
               )}
             </div>
 
