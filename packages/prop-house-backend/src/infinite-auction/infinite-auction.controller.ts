@@ -44,4 +44,18 @@ export class InfiniteAuctionController {
     auctions.map((a) => (a.numProposals = Number(a.numProposals) || 0));
     return auctions;
   }
+
+  @Get('/:name/community/:id')
+  async findWithNameForCommunity(
+    @Param('id') id: number,
+    @Param('name') name: string,
+  ): Promise<InfiniteAuction> {
+    const auction = await this.infiniteAuctionsService.findWithNameForCommunity(
+      name,
+      id,
+    );
+    if (!auction)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auction;
+  }
 }
