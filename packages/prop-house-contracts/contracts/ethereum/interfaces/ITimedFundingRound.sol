@@ -8,8 +8,8 @@ import { Award } from '../lib/types/Common.sol';
 interface ITimedFundingRound is IRound {
     /// @notice All possible round states
     enum RoundState {
-        Pending,
-        Active,
+        AwaitingRegistration,
+        Registered,
         Finalized,
         Cancelled
     }

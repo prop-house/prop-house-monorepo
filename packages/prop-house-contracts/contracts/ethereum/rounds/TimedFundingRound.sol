@@ -69,16 +69,16 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
     uint40 public roundFinalizedAt;
 
-    /// @notice The timestamp at which the proposal period starts. `0` when in pending state.
+    /// @notice The timestamp at which the proposal period starts. `0` if not registered.
     uint40 public proposalPeriodStartTimestamp;
 
-    /// @notice The proposal period duration in seconds. `0` when in pending state.
+    /// @notice The proposal period duration in seconds. `0` if not registered.
     uint40 public proposalPeriodDuration;
 
-    /// @notice The vote period duration in seconds. `0` when in pending state.
+    /// @notice The vote period duration in seconds. `0` if not registered.
     uint40 public votePeriodDuration;
 
-    /// @notice The number of possible winners. `0` when in pending state.
+    /// @notice The number of possible winners. `0` if not registered.
     uint16 public winnerCount;
 
     /// @notice The merkle root that allows winners to claim their awards. `bytes32(0)` if not finalized.
@@ -173,7 +173,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice Cancel the timed funding round
     /// @dev This function is only callable by the round manager
     function cancel() external onlyRoundManager {
-        if (state != RoundState.Pending && state != RoundState.Active) {
+        if (state != RoundState.AwaitingRegistration && state != RoundState.Registered) {
             revert CANCELLATION_NOT_AVAILABLE();
         }
         state = RoundState.Cancelled;
@@ -187,7 +187,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @param merkleRootLow The lower half of the split merkle root
     /// @param merkleRootHigh The higher half of the split merkle root
     function finalizeRound(uint256 merkleRootLow, uint256 merkleRootHigh) external {
-        if (state != RoundState.Active) {
+        if (state != RoundState.Registered) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
 
@@ -255,8 +255,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @param assets The assets to reclaim
     function reclaimToRecipient(address recipient, Asset[] calldata assets) public {
         // prettier-ignore
-        // Reclamation is only available when the round is pending or cancelled OR the round has been finalized and is in the reclamation period
-        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < AWARD_RECLAMATION_AFTER)) {
+        // Reclamation is only available when the round is awaiting registration or
+        // cancelled OR the round has been finalized and is in the reclamation period
+        if (state == RoundState.Registered || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < AWARD_RECLAMATION_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
 
@@ -325,7 +326,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// For easy duplicate checking, provided strategy hashes MUST be ordered least to greatest.
     /// @param config The round configuration
     function _register(RoundConfig memory config) internal {
-        if (state != RoundState.Pending) { // TODO: Rename to AwaitingRegistration?
+        if (state != RoundState.AwaitingRegistration) {
             revert ROUND_ALREADY_REGISTERED();
         }
         _requireConfigValid(config);
@@ -336,7 +337,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         votePeriodDuration = config.votePeriodDuration;
         winnerCount = config.winnerCount;
 
-        state = RoundState.Active;
+        state = RoundState.Registered;
 
         // Register the round on L2
         messenger.sendMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(config));
