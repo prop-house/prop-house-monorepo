@@ -7,6 +7,7 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import { useEthers } from '@usedapp/core';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
+import { isInfAuction } from '../../utils/auctionType';
 
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -36,7 +37,7 @@ const ProposalWindowButtons: React.FC<{
       {account &&
         (isSameAddress(proposal.address, account) ? (
           <div className={classes.proposalWindowButtons}>
-            {editProposalMode ? (
+            {editProposalMode && round ? (
               <>
                 <div></div>
                 <div className={classes.editModeButtons}>
@@ -52,7 +53,7 @@ const ProposalWindowButtons: React.FC<{
                     text={'Save'}
                     bgColor={ButtonColor.Purple}
                     onClick={() => setShowSavePropModal(true)}
-                    disabled={!isValidPropData(proposalEditorData)}
+                    disabled={!isValidPropData(isInfAuction(round), proposalEditorData)}
                   />
                 </div>
               </>
