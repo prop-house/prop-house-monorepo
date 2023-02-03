@@ -192,9 +192,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         _transfer(asset, user, round);
 
-        // Mint deposit tokens to the caller. These are used to recoup assets in the event
-        // of claim failure or cancellation.
-        IRound(round).mintDepositTokens(user, _getAssetID(asset), asset.amount);
+        // Mint a deposit receipt to the caller, which is used to recoup assets in the event of
+        // claim failure or cancellation.
+        IRound(round).mintReceipt(user, _getAssetID(asset), asset.amount);
 
         // Return any remaining ether to the caller
         if (etherRemaining != 0) {
@@ -242,9 +242,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
             }
         }
 
-        // Batch mint deposit tokens to the caller. These are used to recoup assets in the event
-        // of claim failure or cancellation.
-        IRound(round).batchMintDepositTokens(user, assetIds, assetAmounts);
+        // Mint one or more deposit receipts to the caller, which are used to recoup assets in the
+        // event of claim failure or cancellation.
+        IRound(round).mintReceipts(user, assetIds, assetAmounts);
 
         // Return any remaining ether to the caller
         if (etherRemaining != 0) {

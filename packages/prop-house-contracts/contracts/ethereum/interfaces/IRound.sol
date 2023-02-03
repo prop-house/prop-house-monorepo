@@ -7,15 +7,15 @@ interface IRound {
     /// @param data The optional round data. If empty, round creation is deferred.
     function initialize(bytes calldata data) external;
 
-    /// @notice Mint deposit tokens to the provided `to` address
-    function mintDepositTokens(
+    /// @notice Mint a deposit receipt to the provided `to` address
+    function mintReceipt(
         address to,
         uint256 id,
         uint256 amount
     ) external;
 
-    /// @notice Batch mint deposit tokens to the provided `to` address
-    function batchMintDepositTokens(
+    /// @notice Batch one or more deposit receipts to the provided `to` address
+    function mintReceipts(
         address to,
         uint256[] calldata ids,
         uint256[] calldata amounts

@@ -102,7 +102,7 @@ interface ITimedFundingRound is IRound {
 
     /// @notice Emitted when an asset is rescued by the round manager
     /// This protects against the edge case in which tokens are sent directly
-    /// to this contract, rather than passed through the award router.
+    /// to this contract, rather than passed through the prop house contract.
     /// @param recipient The asset recipient
     /// @param assetId The ID of the asset being rescued
     /// @param amount The amount of the asset being rescued

@@ -41,7 +41,11 @@ contract FundingHouse is IHouse, ERC721 {
     /// @param _propHouse The address of the house and round creation contract
     /// @param _renderer The funding house renderer contract address
     /// @param _creatorPassRegistry The address of the round creator pass registry contract
-    constructor(address _propHouse, address _renderer, address _creatorPassRegistry) {
+    constructor(
+        address _propHouse,
+        address _renderer,
+        address _creatorPassRegistry
+    ) {
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);
         creatorPassRegistry = ICreatorPassRegistry(_creatorPassRegistry);

@@ -144,12 +144,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _register(config);
     }
 
-    /// @notice Mint deposit tokens to the provided address
+    /// @notice Mint a deposit receipt to the provided address
     /// @param to The recipient address
     /// @param identifier The token identifier
     /// @param amount The token amount
-    /// @dev This function is only callable by the award router
-    function mintDepositTokens(
+    /// @dev This function is only callable by the prop house contract
+    function mintReceipt(
         address to,
         uint256 identifier,
         uint256 amount
@@ -157,12 +157,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _mint(to, identifier, amount, new bytes(0));
     }
 
-    /// @notice Batch mint deposit tokens to the provided address
+    /// @notice Mint one or more deposit receipts to the provided address
     /// @param to The recipient address
     /// @param identifiers The token identifiers
     /// @param amounts The token amounts
-    /// @dev This function is only callable by the award router
-    function batchMintDepositTokens(
+    /// @dev This function is only callable by the prop house contract
+    function mintReceipts(
         address to,
         uint256[] memory identifiers,
         uint256[] memory amounts
