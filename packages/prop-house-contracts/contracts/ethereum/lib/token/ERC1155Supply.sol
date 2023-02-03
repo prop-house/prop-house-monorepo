@@ -3,8 +3,6 @@ pragma solidity >=0.8.17;
 
 import { ERC1155 } from './ERC1155.sol';
 
-// Issue if minting on house strategy contracts - This is expensive AF.
-
 /// @notice Extension of ERC1155 that adds tracking of total supply per id.
 abstract contract ERC1155Supply is ERC1155 {
     error BURN_AMOUNT_EXCEEDS_TOTAL_SUPPLY();

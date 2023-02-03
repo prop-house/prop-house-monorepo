@@ -26,10 +26,10 @@ export interface PayableFundingHouseAction {
 export type FundingHouseAction = NonPayableFundingHouseAction | PayableFundingHouseAction;
 
 export enum AssetType {
-  ETH = 'ETH',
-  ERC20 = 'ERC20',
-  ERC721 = 'ERC721',
-  ERC1155 = 'ERC1155',
+  ETH,
+  ERC20,
+  ERC721,
+  ERC1155,
 }
 
 export interface ETH {
@@ -68,3 +68,13 @@ export interface RoundParams {
 }
 
 export type Class<T = any> = new (...args: any[]) => T;
+
+// NEW
+
+export interface RoundConfig {
+  title: string;
+  description: string;
+  tags: string[];
+  votingStrategyIds: string[];
+  strategy: FundingHouseStrategy;
+}

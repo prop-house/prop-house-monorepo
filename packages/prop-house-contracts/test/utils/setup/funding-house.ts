@@ -1,10 +1,6 @@
 import { starknet } from 'hardhat';
 import { commonL1Setup } from './common';
-import {
-  FundingHouse__factory,
-  MockWETH__factory,
-  TimedFundingRoundStrategyValidator__factory,
-} from '../../../typechain';
+import { FundingHouse__factory, TimedFundingRound__factory } from '../../../typechain';
 
 export const fundingHouseSetup = async () => {
   const config = await commonL1Setup();
@@ -14,35 +10,32 @@ export const fundingHouseSetup = async () => {
   const houseStrategyDeployerFactory = await starknet.getContractFactory(
     './contracts/starknet/house_strategy_factory.cairo',
   );
-  const ethHouseExecutionStrategyFactory = await starknet.getContractFactory(
-    './contracts/starknet/common/execution/eth_house.cairo',
+  const ethExecutionStrategyFactory = await starknet.getContractFactory(
+    './contracts/starknet/common/execution/eth_strategy.cairo',
   );
   const votingStrategyRegistryFactory = await starknet.getContractFactory(
     './contracts/starknet/common/registry/voting_strategy_registry.cairo',
   );
 
   const fundingHouseFactory = new FundingHouse__factory(config.registrar);
-  const wethFactory = new MockWETH__factory(config.registrar);
 
   const houseStrategyFactory = await houseStrategyDeployerFactory.deploy({
     starknet_messenger: config.starknetMessenger.address,
   });
-  const ethHouseExecutionStrategy = await ethHouseExecutionStrategyFactory.deploy({
+  const ethExecutionStrategy = await ethExecutionStrategyFactory.deploy({
     house_strategy_factory_address: houseStrategyFactory.address,
   });
   const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy({
     starknet_messenger: config.starknetMessenger.address,
   });
 
-  const weth = await wethFactory.deploy();
   const fundingHouseImpl = await fundingHouseFactory.deploy(
-    ethHouseExecutionStrategy.address,
+    config.awardRouter.address,
+    config.houseApprovalManager.address,
     votingStrategyRegistry.address,
     config.upgradeManager.address,
     config.strategyManager.address,
     config.starknetMessenger.address,
-    houseStrategyFactory.address,
-    weth.address,
   );
 
   await config.deploymentManager.registerDeployment(fundingHouseImpl.address);
@@ -53,16 +46,14 @@ export const fundingHouseSetup = async () => {
     fundingHouseImpl,
     houseStrategyFactory,
     votingStrategyRegistry,
-    ethHouseExecutionStrategy,
+    ethExecutionStrategy,
   };
 };
 
 export const fundingHouseTimedFundingRoundSetup = async () => {
   const config = await fundingHouseSetup();
 
-  const timedFundingRoundStrategyValidatorFactory = new TimedFundingRoundStrategyValidator__factory(
-    config.registrar,
-  );
+  const timedFundingRoundFactory = new TimedFundingRound__factory(config.registrar);
   const timedFundingRoundStrategyL2Factory = await starknet.getContractFactory(
     './contracts/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
   );
@@ -87,24 +78,28 @@ export const fundingHouseTimedFundingRoundSetup = async () => {
     {
       constants: {
         voting_strategy_registry: config.votingStrategyRegistry.address,
-        eth_execution_strategy: config.ethHouseExecutionStrategy.address,
+        eth_execution_strategy: config.ethExecutionStrategy.address,
         eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
         eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
       },
     },
   );
-  const timedFundingRoundStrategyValidator = await timedFundingRoundStrategyValidatorFactory.deploy(
+  const timedFundingRoundImpl = await timedFundingRoundFactory.deploy(
     timedFundingRoundStrategyClassHash,
+    config.awardRouter.address,
+    config.mockStarknetMessaging.address,
+    config.houseStrategyFactory.address,
+    config.ethExecutionStrategy.address,
   );
 
   await config.strategyManager['registerStrategy(bytes32,address)'](
     await config.fundingHouseImpl.id(),
-    timedFundingRoundStrategyValidator.address,
+    timedFundingRoundImpl.address,
   );
 
   return {
     ...config,
-    timedFundingRoundStrategyValidator,
+    timedFundingRoundImpl,
     timedFundingRoundStrategyL2Factory,
     timedFundingRoundStrategyClassHash,
     timedFundingRoundEthTxAuthStrategy,

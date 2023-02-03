@@ -1,358 +1,127 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { HouseBase } from '../HouseBase.sol';
-import { IHouse } from '../interfaces/IHouse.sol';
-import { IFundingHouse } from '../interfaces/houses/IFundingHouse.sol';
-import { FundingHouseStorageV1 } from './storage/FundingHouseStorageV1.sol';
-import { IFundingHouseStrategy } from '../interfaces/IFundingHouseStrategy.sol';
-import { IHouseApprovalManager } from '../interfaces/IHouseApprovalManager.sol';
-import { REGISTER_VOTING_STRATEGY_SELECTOR } from '../Constants.sol';
-import { IHouseStrategy } from '../interfaces/IHouseStrategy.sol';
-import { IAwardRouter } from '../interfaces/IAwardRouter.sol';
+import { IPropHouse } from '../interfaces/IPropHouse.sol';
+import { ICreatorPassRegistry } from '../interfaces/ICreatorPassRegistry.sol';
+import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
-import { LibRLP } from 'solady/src/utils/LibRLP.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
+import { IHouse } from '../interfaces/IHouse.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
-import { Asset } from '../lib/types/Common.sol';
 
-contract FundingHouse is IFundingHouse, HouseBase, ERC721, FundingHouseStorageV1 {
+contract FundingHouse is IHouse, ERC721 {
+    using { Uint256.toUint256 } for address;
     using LibClone for address;
-    using { Uint256.mask250 } for bytes32;
 
-    /// @notice The contract used to route ETH, ERC20, ERC721, & ERC1155 tokens
-    IAwardRouter private immutable _awardRouter;
+    /// @notice The entrypoint for all house and round creation
+    IPropHouse public immutable propHouse;
 
-    /// @notice The contract used to control which houses can pull assets
-    IHouseApprovalManager private immutable _approvalManager;
+    /// @notice The Asset Metadata Renderer contract
+    ITokenMetadataRenderer public immutable renderer;
 
-    /// @notice The voting strategy registry contract on Starknet
-    uint256 private immutable _votingStrategyRegistry;
+    /// @notice The round creator pass registry contract for all houses
+    ICreatorPassRegistry public immutable creatorPassRegistry;
 
-    constructor(
-        address awardRouter_,
-        address approvalManager_,
-        uint256 votingStrategyRegistry_,
-        address upgradeManager_,
-        address strategyManager_,
-        address messenger_
-    ) HouseBase('FUNDING_HOUSE', 1, upgradeManager_, strategyManager_, messenger_) {
-        _awardRouter = IAwardRouter(awardRouter_);
-        _approvalManager = IHouseApprovalManager(approvalManager_);
-        _votingStrategyRegistry = votingStrategyRegistry_;
+    /// @notice Require that the caller is the prop house contract
+    modifier onlyPropHouse() {
+        if (msg.sender != address(propHouse)) {
+            revert ONLY_PROP_HOUSE();
+        }
+        _;
     }
 
-    /// @notice Initialize the funding house implementation
-    /// @param creator The creator of the prop house
+    /// @notice Require that the caller holds the house ownership token
+    modifier onlyHouseOwner() {
+        if (msg.sender != propHouse.ownerOf(id())) {
+            revert ONLY_HOUSE_OWNER();
+        }
+        _;
+    }
+
+    /// @param _propHouse The address of the house and round creation contract
+    /// @param _renderer The funding house renderer contract address
+    /// @param _creatorPassRegistry The address of the round creator pass registry contract
+    constructor(address _propHouse, address _renderer, address _creatorPassRegistry) {
+        propHouse = IPropHouse(_propHouse);
+        renderer = ITokenMetadataRenderer(_renderer);
+        creatorPassRegistry = ICreatorPassRegistry(_creatorPassRegistry);
+    }
+
+    /// @notice Get the house ID
+    function id() public view returns (uint256) {
+        return address(this).toUint256();
+    }
+
+    /// @notice Initialize the house by populating token information
     /// @param data Initialization data
-    function initialize(address creator, bytes calldata data) external initializer {
-        (
-            string memory name,
-            string memory symbol,
-            string memory contractURI,
-            address[] memory initialCreators,
-            VotingStrategy[] memory initialVotingStrategies
-        ) = abi.decode(data, (string, string, string, address[], VotingStrategy[]));
+    function initialize(bytes calldata data) external initializer {
+        if (data.length != 0) {
+            // TODO: Allow these to be changed
+            (string memory name, string memory symbol, string memory contractURI) = abi.decode(
+                data,
+                (string, string, string)
+            );
 
-        __Ownable_init(creator);
-        __ERC721_init(name, symbol);
-
-        _updateContractURI(contractURI);
-        _addManyRoundCreatorsToWhitelist(initialCreators);
-        _addManyVotingStrategiesToWhitelist(initialVotingStrategies);
-    }
-
-    /// @notice Add a voting strategy to the whitelist
-    /// @param strategy The L2 voting strategy information
-    /// @dev This function is only callable by the house owner
-    function addVotingStrategyToWhitelist(VotingStrategy calldata strategy) external onlyOwner returns (uint256) {
-        return _addVotingStrategyToWhitelist(strategy);
-    }
-
-    /// @notice Remove a voting strategy from the whitelist
-    /// @param strategyHash The masked strategy + param hash
-    /// @dev This function is only callable by the house owner
-    function removeVotingStrategyFromWhitelist(uint256 strategyHash) external onlyOwner {
-        isVotingStrategyWhitelisted[strategyHash] = false;
-        emit VotingStrategyRemovedFromWhitelist(strategyHash);
-    }
-
-    /// @notice Add a round creator to the whitelist
-    /// @dev This function is only callable by the house owner
-    function addRoundCreatorToWhitelist(address creator) external onlyOwner {
-        _addRoundCreatorToWhitelist(creator);
-    }
-
-    /// @notice Add many round creators to the whitelist
-    /// @dev This function is only callable by the house owner
-    function addManyRoundCreatorsToWhitelist(address[] calldata creators) external onlyOwner {
-        _addManyRoundCreatorsToWhitelist(creators);
-    }
-
-    /// @notice Remove a round creator from the whitelist
-    /// @dev This function is only callable by the house owner
-    function removeRoundCreatorFromWhitelist(address creator) external onlyOwner {
-        _removeRoundCreatorFromWhitelist(creator);
-    }
-
-    /// @notice Remove many round creators from the whitelist
-    /// @dev This function is only callable by the house owner
-    function removeManyRoundCreatorsFromWhitelist(address[] calldata creators) external onlyOwner {
-        unchecked {
-            uint256 numCreators = creators.length;
-            for (uint256 i = 0; i < numCreators; ++i) {
-                _removeRoundCreatorFromWhitelist(creators[i]);
-            }
+            __ERC721_init(name, symbol, contractURI);
         }
     }
 
-    /// @notice Create a new funding round and mint the round manager NFT to the caller
-    /// @param strategy The house strategy implementation contract address
-    /// @param config The house strategy configuration data
-    /// @param voting The selected voting strategy IDs
-    /// @param title A short title for the round
-    /// @param description A desciption that adds context about the round
-    function createRound(
-        address strategy,
-        bytes calldata config,
-        uint256[] calldata voting,
-        string calldata title,
-        string calldata description
-    ) external returns (address) {
-        address round = _createRound(strategy, voting, title, description);
-        IHouseStrategy(round).initialize(config);
-
-        return round;
-    }
-
-    /// @notice Create a new funding round, partially or fully fund it, and mint the round manager NFT to the caller
-    /// @param strategy The house strategy implementation contract address
-    /// @param config The house strategy configuration data
-    /// @param voting The selected voting strategy IDs
-    /// @param title A short title for the round
-    /// @param description A desciption that adds context about the round
-    /// @param assets Assets to deposit to the funding round
-    function createAndFundRound(
-        address strategy,
-        bytes calldata config,
-        uint256[] calldata voting,
-        string calldata title,
-        string calldata description,
-        Asset[] calldata assets
-    ) external payable returns (address) {
-        address round = _createRound(strategy, voting, title, description);
-
-        _awardRouter.batchPullTo{ value: msg.value }(msg.sender, payable(round), assets);
-        IHouseStrategy(round).initialize(config);
-
-        return round;
-    }
-
-    /// @notice Approve the house to pull assets, create a new funding round,
-    /// partially or fully fund it, and mint the round manager NFT to the caller.
-    /// @param strategy The house strategy implementation contract address
-    /// @param config The house strategy configuration data
-    /// @param voting The selected voting strategy IDs
-    /// @param title A short title for the round
-    /// @param description A desciption that adds context about the round
-    /// @param assets Assets to deposit to the funding round
-    /// @param signature The house approval signature for the caller
-    function createAndFundRoundWithHouseApproval(
-        address strategy,
-        bytes calldata config,
-        uint256[] calldata voting,
-        string calldata title,
-        string calldata description,
-        Asset[] calldata assets,
-        Signature calldata signature
-    ) external payable returns (address) {
-        address round = _createRound(strategy, voting, title, description);
-
-        _approvalManager.setApprovalForHouseBySig(
-            msg.sender,
-            address(this),
-            true,
-            0,
-            signature.v,
-            signature.r,
-            signature.s
-        );
-        _awardRouter.batchPullTo{ value: msg.value }(msg.sender, payable(round), assets);
-        IHouseStrategy(round).initialize(config);
-
-        return round;
-    }
-
-    /// @notice Forwards a cross-chain message from a house strategy to the Starknet messenger contract
-    /// @param toAddress The callee address
-    /// @param selector The function selector
-    /// @param payload The message payload
-    function forwardMessageToL2(
-        uint256 toAddress,
-        uint256 selector,
-        uint256[] calldata payload
-    ) external onlyHouseStrategy returns (bytes32) {
-        return _messenger.sendMessageToL2(toAddress, selector, payload);
-    }
-
-    /// @notice Returns `true` if the provided address is a valid strategy for this house
-    /// @param strategy The house strategy to validate
-    function isValidHouseStrategy(address strategy) public view override(IHouse, HouseBase) returns (bool) {
-        address expectedStrategy = getHouseStrategyAddress(IFundingHouseStrategy(strategy).roundId());
-        return strategy == expectedStrategy;
-    }
-
-    /// @notice Get the house strategy address for a given token ID
+    /// @notice Returns round metadata for `tokenId` as a Base64-JSON blob
     /// @param tokenId The token ID
-    function getHouseStrategyAddress(uint256 tokenId) public view returns (address) {
-        return LibRLP.computeAddress(address(this), tokenId);
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        return renderer.tokenURI(tokenId);
     }
 
-    /// @notice Create a new funding round and mint the round manager NFT to the caller
-    /// @param strategy The house strategy implementation contract address
-    /// @param voting The selected voting strategy IDs
-    /// @param title A short title for the round
-    /// @param description A desciption that adds context about the round
-    function _createRound(
-        address strategy,
-        uint256[] memory voting,
-        string memory title,
-        string memory description
-    ) internal returns (address) {
-        // Validate strategy, voting information, and creator
-        _requireValidStrategy(strategy);
-        _requireVotingStrategiesWhitelisted(voting);
-        _requireRoundCreatorWhitelisted(msg.sender);
+    /// @notice Mint one or more round creator passes to the provided `creator`
+    /// @param creator The address who will receive the round creator token(s)
+    /// @param amount The amount of creator passes to mint
+    /// @dev This function is only callable by the house owner
+    function mintCreatorPassesTo(address creator, uint256 amount) external onlyHouseOwner {
+        creatorPassRegistry.mintCreatorPassesTo(creator, amount);
+    }
 
-        uint256 _roundId = ++roundId;
+    /// @notice Burn one or more round creator passes from the provided `creator`
+    /// @param creator The address to burn the creator pass(es) from
+    /// @param amount The amount of creator passes to burn
+    /// @dev This function is only callable by the house owner
+    function burnCreatorPassesFrom(address creator, uint256 amount) external onlyHouseOwner {
+        creatorPassRegistry.burnCreatorPassesFrom(creator, amount);
+    }
+
+    /// @notice Mint one or more round creator passes to many `creators`
+    /// @param creators The addresses who will receive the round creator token(s)
+    /// @param amounts The amount of creator passes to mint to each creator
+    /// @dev This function is only callable by the house owner
+    function mintCreatorPassesToMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
+        creatorPassRegistry.mintCreatorPassesToMany(creators, amounts);
+    }
+
+    // prettier-ignore
+    /// @notice Burn one or more round creator passes from many `creators`
+    /// @param creators The addresses to burn the creator pass(es) from
+    /// @param amounts The amount of creator passes to burn from each creator
+    /// @dev This function is only callable by the house owner
+    function burnCreatorPassesFromMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
+        creatorPassRegistry.burnCreatorPassesFromMany(creators, amounts);
+    }
+
+    /// @notice Returns `true` if the provided address is a valid round on the house
+    /// @param round The round to validate
+    function isRound(address round) public view returns (bool) {
+        return exists(round.toUint256());
+    }
+
+    /// @notice Create a new funding round and mint the round management NFT to the caller
+    /// @param roundImpl The round implementation contract address
+    /// @param creator The address who is creating the round
+    function createRound(address roundImpl, address creator) external onlyPropHouse returns (address round) {
+        // Revert if the creator does not hold a pass to create rounds on the house
+        creatorPassRegistry.requirePass(creator, id());
+
+        // Deploy the round contract with a pointer to the house
+        round = roundImpl.clone(abi.encodePacked(address(this)));
 
         // Mint the management token to the round creator
-        _mint(msg.sender, _roundId);
-
-        address round = strategy.clone(_encodeData(_roundId, voting));
-
-        emit RoundCreated(_roundId, voting, title, description, strategy, round);
-        return round;
-    }
-
-    /// @notice Returns the downcasted uint8 from uint256, reverting on
-    /// overflow (when the input is greater than largest uint8).
-    /// @param value The value to cast
-    function _toUint8(uint256 value) internal pure returns (uint8) {
-        if (value > type(uint8).max) {
-            revert VALUE_DOES_NOT_FIT_IN_8_BITS();
-        }
-        return uint8(value);
-    }
-
-    /// @notice Encode the house address, round ID, and voting strategies as immutable variables
-    /// held in the contract code of the clone.
-    /// @param roundId The round ID
-    function _encodeData(uint256 roundId, uint256[] memory voting) internal view returns (bytes memory) {
-        return abi.encodePacked(address(this), roundId, _toUint8(voting.length), voting);
-    }
-
-    /// @notice Add a voting strategy to the whitelist
-    /// @param strategy The L2 voting strategy information
-    function _addVotingStrategyToWhitelist(VotingStrategy memory strategy) internal returns (uint256) {
-        uint256 strategyHash = keccak256(abi.encode(strategy.addr, strategy.params)).mask250();
-        _registerVotingStrategyOnL2(strategyHash, strategy);
-
-        isVotingStrategyWhitelisted[strategyHash] = true;
-        emit VotingStrategyAddedToWhitelist(strategyHash, strategy.addr, strategy.params);
-
-        return strategyHash;
-    }
-
-    /// @notice Add many voting strategies to the whitelist
-    /// @param strategies The voting strategies to whitelist
-    function _addManyVotingStrategiesToWhitelist(VotingStrategy[] memory strategies) internal {
-        unchecked {
-            uint256 numStrategies = strategies.length;
-            for (uint256 i = 0; i < numStrategies; ++i) {
-                _addVotingStrategyToWhitelist(strategies[i]);
-            }
-        }
-    }
-
-    /// @notice Add a round creator to the whitelist
-    /// @param creator The creator to add to the whitelist
-    function _addRoundCreatorToWhitelist(address creator) internal {
-        isRoundCreatorWhitelisted[creator] = true;
-        emit RoundCreatorAddedToWhitelist(creator);
-    }
-
-    /// @notice Remove a round creator from the whitelist
-    /// @param creator The creator to remove from the whitelist
-    function _removeRoundCreatorFromWhitelist(address creator) internal {
-        isRoundCreatorWhitelisted[creator] = false;
-        emit RoundCreatorRemovedFromWhitelist(creator);
-    }
-
-    /// @notice Add many round creators to the whitelist
-    /// @param creators The creators to add to the whitelist
-    function _addManyRoundCreatorsToWhitelist(address[] memory creators) internal {
-        unchecked {
-            uint256 numCreators = creators.length;
-            for (uint256 i = 0; i < numCreators; ++i) {
-                _addRoundCreatorToWhitelist(creators[i]);
-            }
-        }
-    }
-
-    /// @notice Register an added voting strategy using a L1 -> L2 message
-    /// @param strategyHash The masked hash of the L2 strategy + params
-    /// @param strategy The L2 voting strategy information
-    function _registerVotingStrategyOnL2(uint256 strategyHash, VotingStrategy memory strategy) internal {
-        uint256 offset = 3;
-        uint256 numParams = strategy.params.length;
-
-        uint256[] memory payload = new uint256[](offset + numParams);
-        payload[0] = strategyHash;
-        payload[1] = strategy.addr;
-        payload[2] = numParams;
-        unchecked {
-            for (uint256 i = 0; i < numParams; ++i) {
-                payload[offset++] = strategy.params[i];
-            }
-        }
-        _messenger.sendMessageToL2(_votingStrategyRegistry, REGISTER_VOTING_STRATEGY_SELECTOR, payload);
-    }
-
-    /// @notice Reverts if any of the provided voting strategies are not whitelisted
-    /// For easy duplicate checking, provided strategy hashes MUST be ordered least to greatest
-    /// @param strategyHashes The voting strategy hashes
-    function _requireVotingStrategiesWhitelisted(uint256[] memory strategyHashes) internal view {
-        unchecked {
-            uint256 votingStrategy;
-            uint256 prevVotingStrategy;
-
-            uint256 numVotingStrategies = strategyHashes.length;
-            for (uint256 i = 0; i < numVotingStrategies; ++i) {
-                votingStrategy = strategyHashes[i];
-                _requireVotingStrategyWhitelisted(votingStrategy);
-
-                if (votingStrategy <= prevVotingStrategy) {
-                    revert DUPLICATE_VOTING_STRATEGY();
-                }
-                prevVotingStrategy = votingStrategy;
-            }
-        }
-    }
-
-    /// @notice Reverts if the voting strategy is not whitelisted
-    /// @param strategyHash The voting strategy hash
-    function _requireVotingStrategyWhitelisted(uint256 strategyHash) internal view {
-        if (!isVotingStrategyWhitelisted[strategyHash]) {
-            revert VOTING_STRATEGY_NOT_WHITELISTED();
-        }
-    }
-
-    /// @notice Reverts if the round creator is not whitelisted
-    /// @param creator The address of the round creator
-    function _requireRoundCreatorWhitelisted(address creator) internal view {
-        if (!isRoundCreatorWhitelisted[creator]) {
-            revert ROUND_CREATOR_NOT_WHITELISTED();
-        }
+        _mint(creator, round.toUint256());
     }
 }

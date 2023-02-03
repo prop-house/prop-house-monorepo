@@ -2,38 +2,13 @@
 pragma solidity >=0.8.17;
 
 import { ERC1155TokenReceiver } from '../utils/TokenReceiver.sol';
+import { IERC1155 } from '../../interfaces/IERC1155.sol';
 
 /// @notice Minimalist and gas efficient standard ERC1155 implementation.
 /// @author Modified from Solmate (https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC1155.sol)
 /// - Uses custom errors
 /// - Does not revert on `_mint` & `_batchMint` if the receiver is a contract and does NOT implement the ERC1155TokenReceiver rules
-abstract contract ERC1155 {
-    error NOT_AUTHORIZED();
-
-    error UNSAFE_RECIPIENT();
-
-    error LENGTH_MISMATCH();
-
-    event TransferSingle(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256 id,
-        uint256 amount
-    );
-
-    event TransferBatch(
-        address indexed operator,
-        address indexed from,
-        address indexed to,
-        uint256[] ids,
-        uint256[] amounts
-    );
-
-    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
-
-    event URI(string value, uint256 indexed id);
-
+abstract contract ERC1155 is IERC1155 {
     mapping(address => mapping(uint256 => uint256)) public balanceOf;
 
     mapping(address => mapping(address => bool)) public isApprovedForAll;

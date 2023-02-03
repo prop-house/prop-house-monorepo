@@ -3,21 +3,19 @@ pragma solidity >=0.8.17;
 
 import { Clone } from 'solady/src/utils/Clone.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
+import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { REGISTER_HOUSE_STRATEGY_SELECTOR } from '../Constants.sol';
-import { IFundingHouse } from '../interfaces/houses/IFundingHouse.sol';
-import { ITimedFundingRound } from '../interfaces/house-strategies/ITimedFundingRound.sol';
-import { ITokenMetadataRenderer } from '../interfaces/renderers/ITokenMetadataRenderer.sol';
+import { ITimedFundingRound } from '../interfaces/ITimedFundingRound.sol';
+import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
 import { ERC1155Supply } from '../lib/token/ERC1155Supply.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
+import { IMessenger } from '../interfaces/IMessenger.sol';
 import { Asset, Award } from '../lib/types/Common.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
-import { Sort } from '../lib/utils/Sort.sol';
 
 contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, Clone {
-    using Sort for Award[];
-
     using { Uint256.split } for uint256;
     using { Uint256.toUint256 } for address;
 
@@ -33,14 +31,17 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
 
-    /// @notice The hash of the house strategy on Starknet
-    uint256 public immutable classHash;
+    /// @notice The hash of the Starknet round contract
+    uint256 public immutable classHash; // TODO: Consider one L2 factory per round type
 
-    /// @notice The contract used to route ETH, ERC20, ERC721, & ERC1155 tokens to this contract
-    address public immutable awardRouter;
+    /// @notice The entrypoint for all house and round creation
+    IPropHouse public immutable propHouse;
 
     /// @notice The Starknet Core contract
     IStarknetCore public immutable starknet;
+
+    /// @notice The Starknet Messenger contract
+    IMessenger public immutable messenger;
 
     /// @notice The Asset Metadata Renderer contract
     ITokenMetadataRenderer public immutable renderer;
@@ -57,22 +58,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         return _getArgAddress(0);
     }
 
-    /// @notice Get the ID of this round. Note that this maps to the token ID on the house contract.
-    /// @dev Value is read using clone-with-immutable-args from contract's code region.
-    function roundId() public pure returns (uint256) {
-        return _getArgUint256(20);
-    }
-
-    /// @notice Get the number of voting strategies
-    /// @dev Value is read using clone-with-immutable-args from contract's code region.
-    function numVotingStrategies() public pure returns (uint8) {
-        return _getArgUint8(52);
-    }
-
-    /// @notice Get the voting strategies
-    /// @dev Value is read using clone-with-immutable-args from contract's code region.
-    function votingStrategies() public pure returns (uint256[] memory) {
-        return _getArgUint256Array(53, numVotingStrategies());
+    /// @notice Get the round ID
+    function id() public view returns (uint256) {
+        return address(this).toUint256();
     }
 
     /// @notice The current state of the timed funding round
@@ -100,41 +88,35 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @dev Proposal IDs map to bits in the uint256 mapping
     mapping(uint256 => uint256) private _claimedBitmap;
 
-    /// @notice Require that the sender is the house that created this strategy
-    modifier onlyHouse() {
-        if (msg.sender != house()) {
-            revert ONLY_HOUSE();
-        }
-        _;
-    }
-
-    /// @notice Require that the sender is the round manager
+    /// @notice Require that the caller is the round manager
     modifier onlyRoundManager() {
-        if (msg.sender != IFundingHouse(house()).ownerOf(roundId())) {
+        if (msg.sender != IHouse(house()).ownerOf(id())) {
             revert ONLY_ROUND_MANAGER();
         }
         _;
     }
 
-    /// @notice Require that the sender is the award router
-    modifier onlyAwardRouter() {
-        if (msg.sender != awardRouter) {
-            revert ONLY_AWARD_ROUTER();
+    /// @notice Require that the caller is the prop house contract
+    modifier onlyPropHouse() {
+        if (msg.sender != address(propHouse)) {
+            revert ONLY_PROP_HOUSE();
         }
         _;
     }
 
     constructor(
         uint256 _classHash,
-        address _awardRouter,
+        address _propHouse,
         address _starknet,
+        address _messenger,
         address _renderer,
         uint256 _strategyFactory,
         uint256 _executionRelayer
     ) {
         classHash = _classHash;
-        awardRouter = _awardRouter;
+        propHouse = IPropHouse(_propHouse);
         starknet = IStarknetCore(_starknet);
+        messenger = IMessenger(_messenger);
         renderer = ITokenMetadataRenderer(_renderer);
         strategyFactory = _strategyFactory;
         executionRelayer = _executionRelayer;
@@ -146,75 +128,46 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         return renderer.tokenURI(tokenId);
     }
 
-    /// @notice Initialize the strategy by optionally defining the round's
-    /// configuration and registering the round on L2.
-    /// @dev This function is only callable by the house
-    function initialize(bytes calldata data) external onlyHouse {
+    /// @notice Initialize the round by optionally defining the
+    /// rounds configuration and registering it on L2.
+    /// @dev This function is only callable by the prop house contract
+    function initialize(bytes calldata data) external onlyPropHouse {
         if (data.length != 0) {
-            RoundConfig memory config = abi.decode(data, (RoundConfig));
-
-            _defineRound(
-                config.proposalPeriodStartTimestamp,
-                config.proposalPeriodDuration,
-                config.votePeriodDuration,
-                config.winnerCount
-            );
-            if (config.awards.length != 0) {
-                _registerRound(config.awards);
-            }
+            _register(abi.decode(data, (RoundConfig)));
         }
+    }
+
+    /// @notice Define the configuration and register the round on L2.
+    /// @param config The round configuration
+    /// @dev This function is only callable by the round manager
+    function register(RoundConfig calldata config) external onlyRoundManager {
+        _register(config);
     }
 
     /// @notice Mint deposit tokens to the provided address
     /// @param to The recipient address
-    /// @param id The token identifier
+    /// @param identifier The token identifier
     /// @param amount The token amount
     /// @dev This function is only callable by the award router
     function mintDepositTokens(
         address to,
-        uint256 id,
+        uint256 identifier,
         uint256 amount
-    ) external onlyAwardRouter {
-        _mint(to, id, amount, new bytes(0));
+    ) external onlyPropHouse {
+        _mint(to, identifier, amount, new bytes(0));
     }
 
     /// @notice Batch mint deposit tokens to the provided address
     /// @param to The recipient address
-    /// @param ids The token identifiers
+    /// @param identifiers The token identifiers
     /// @param amounts The token amounts
     /// @dev This function is only callable by the award router
     function batchMintDepositTokens(
         address to,
-        uint256[] memory ids,
+        uint256[] memory identifiers,
         uint256[] memory amounts
-    ) external onlyAwardRouter {
-        _batchMint(to, ids, amounts, new bytes(0));
-    }
-
-    /// @notice Define the round's configuration, assign awards, validate balances,
-    /// and register the round on L2. This function should be used if the configuration
-    /// was not defined during round initialization. The round must be fully funded
-    /// before this function is called.
-    /// @param config The round configuration
-    /// @dev This function is only callable by the round manager
-    function defineAndRegisterRound(RoundConfig calldata config) external onlyRoundManager {
-        _defineRound(
-            config.proposalPeriodStartTimestamp,
-            config.proposalPeriodDuration,
-            config.votePeriodDuration,
-            config.winnerCount
-        );
-        _registerRound(config.awards);
-    }
-
-    /// @notice Assign awards, validate balances, and register the round on L2. This function
-    /// should be used if the configuration was defined during round initialization, but the
-    /// awards have not yet been assigned and the round has not been registered. The round
-    /// must be fully funded before this function is called.
-    /// @param awards The round award assets
-    /// @dev This function is only callable by the round manager
-    function registerRound(Award[] calldata awards) external onlyRoundManager {
-        _registerRound(awards);
+    ) external onlyPropHouse {
+        _batchMint(to, identifiers, amounts, new bytes(0));
     }
 
     /// @notice Cancel the timed funding round
@@ -225,7 +178,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
         state = RoundState.Cancelled;
 
-        // TODO: Cancel the round on L2 using a state proof (if necessary)
+        // TODO: Cancel the round on L2 using a state proof
 
         emit RoundCancelled();
     }
@@ -368,142 +321,133 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         }
     }
 
-    /// @notice Set the round configuration. Once the configuration is set, it cannot be updated.
-    /// @param proposalPeriodStartTimestamp_ The timestamp at which the proposal period starts
-    /// @param proposalPeriodDuration_ The proposal period duration in seconds
-    /// @param votePeriodDuration_ The vote period duration in seconds
-    /// @param winnerCount_ The number of possible winners
-    function _defineRound(
-        uint40 proposalPeriodStartTimestamp_,
-        uint40 proposalPeriodDuration_,
-        uint40 votePeriodDuration_,
-        uint16 winnerCount_
-    ) internal {
-        // To protect depositors, the round can only be defined once
-        if (winnerCount != 0) {
-            revert ROUND_ALREADY_DEFINED();
-        }
-
-        // Ensure the round configuration is valid
-        if (proposalPeriodDuration_ < MIN_PROPOSAL_PERIOD_DURATION) {
-            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (proposalPeriodStartTimestamp_ + proposalPeriodDuration_ < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
-            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (votePeriodDuration_ < MIN_VOTE_PERIOD_DURATION) {
-            revert VOTE_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (winnerCount_ == 0) {
-            revert WINNER_COUNT_CANNOT_BE_ZERO();
-        }
-        if (winnerCount_ > MAX_WINNER_COUNT) {
-            revert WINNER_COUNT_EXCEEDS_MAXIMUM();
-        }
-
-        // Write round metadata to storage. This will be consumed by the token URI later.
-        proposalPeriodStartTimestamp = proposalPeriodStartTimestamp_;
-        proposalPeriodDuration = proposalPeriodDuration_;
-        votePeriodDuration = votePeriodDuration_;
-        winnerCount = winnerCount_;
-
-        emit RoundDefined(proposalPeriodStartTimestamp_, proposalPeriodDuration_, votePeriodDuration_, winnerCount_);
-    }
-
-    // prettier-ignore
-    /// @notice Assign round awards, validate balances, and register the round on L2
-    /// @param awards The round award assets
-    function _registerRound(Award[] memory awards) internal {
-        // The configuration must be defined prior to registration
-        if (winnerCount == 0) {
-            revert ROUND_NOT_DEFINED();
-        }
-        if (state != RoundState.Pending) {
+    /// @notice Define the configuration and register the round on L2.
+    /// For easy duplicate checking, provided strategy hashes MUST be ordered least to greatest.
+    /// @param config The round configuration
+    function _register(RoundConfig memory config) internal {
+        if (state != RoundState.Pending) { // TODO: Rename to AwaitingRegistration?
             revert ROUND_ALREADY_REGISTERED();
         }
+        _requireConfigValid(config);
 
-        // Ensure awards are valid and there is enough time remaining in the proposal period
-        if (proposalPeriodStartTimestamp + proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
-            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (awards.length != 1 && awards.length != winnerCount) {
-            revert INVALID_AWARD_LENGTH();
-        }
-        if (awards.length == 1 && winnerCount > 1 && awards[0].amount % winnerCount != 0) {
-            revert INVALID_AWARD_AMOUNT();
-        }
-
-        // Ensure the round is sufficiently funded
-        if (!_isFullyFunded(awards)) {
-            revert INSUFFICIENT_ASSET_FUNDING();
-        }
+        // Write round metadata to storage. This will be consumed by the token URI later.
+        proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
+        proposalPeriodDuration = config.proposalPeriodDuration;
+        votePeriodDuration = config.votePeriodDuration;
+        winnerCount = config.winnerCount;
 
         state = RoundState.Active;
 
-        IHouse(house()).forwardMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(awards));
+        // Register the round on L2
+        messenger.sendMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(config));
 
-        emit RoundRegistered(awards);
+        emit RoundRegistered(
+            config.awards,
+            config.strategies,
+            config.proposalPeriodStartTimestamp,
+            config.proposalPeriodDuration,
+            config.votePeriodDuration,
+            config.winnerCount
+        );
     }
 
-    /// @notice Determine if the round has been sufficiently funded to back the
-    // selected awards.
-    /// @param awards The selected awards
-    function _isFullyFunded(Award[] memory awards) internal view returns (bool) {
-        uint256 awardCount = awards.length;
-
-        // Funding checks require the array to be sorted
-        awards.sort(0, int256(awardCount - 1));
-
-        uint256 allocated;
-        Award memory currAsset;
-        Award memory prevAsset;
-        for (uint256 i = 0; i < awardCount; ) {
-            currAsset = awards[i];
-            if (currAsset.assetId == prevAsset.assetId) {
-                allocated += currAsset.amount;
-            } else {
-                if (totalSupply(prevAsset.assetId) < allocated) {
-                    return false;
-                }
-                allocated = currAsset.amount;
-            }
-            prevAsset = currAsset;
-
-            unchecked {
-                ++i;
-            }
+    // prettier-ignore
+    /// @notice Revert if the round configuration is invalid
+    /// @param config The round configuration
+    function _requireConfigValid(RoundConfig memory config) internal view {
+        if (config.proposalPeriodDuration < MIN_PROPOSAL_PERIOD_DURATION) {
+            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
         }
-        return true;
+        if (config.proposalPeriodStartTimestamp < block.timestamp) {
+            revert PROPOSAL_PERIOD_START_TIMESTAMP_IN_PAST();
+        }
+        if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
+            revert VOTE_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (config.winnerCount == 0 || config.winnerCount > MAX_WINNER_COUNT) {
+            revert WINNER_COUNT_OUT_OF_RANGE();
+        }
+        if (config.awards.length != 1 && config.awards.length != config.winnerCount) {
+            revert AWARD_LENGTH_MISMATCH();
+        }
+        if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
+            revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
+        }
+        if (config.strategies.length == 0) {
+            revert NO_STRATEGIES_PROVIDED();
+        }
+
+        uint256 prevStrategyId;
+        for (uint256 i = 0; i < config.strategies.length; ++i) {
+            VotingStrategy memory strategy = config.strategies[i];
+
+            // Ensure there are no duplicate voting strategies
+            uint256 strategyId = uint256(keccak256(abi.encode(strategy.addr, strategy.params)));
+            if (strategyId <= prevStrategyId) {
+                revert DUPLICATE_VOTING_STRATEGY();
+            }
+            prevStrategyId = strategyId;
+        }
     }
 
     /// @notice Generate the payload required to register the round on L2
-    /// @param awards The round award assets
-    function _getL2Payload(Award[] memory awards) internal view returns (uint256[] memory payload) {
-        uint8 _numVotingStrategies = numVotingStrategies();
-        uint256[] memory _votingStrategies = votingStrategies();
+    /// @param config The round configuration
+    function _getL2Payload(RoundConfig memory config) internal view returns (uint256[] memory payload) {
+        uint256[] memory flattenedStrategies = _flatten(config.strategies);
+        uint256 flattenedStrategyCount = flattenedStrategies.length;
+        payload = new uint256[](10 + flattenedStrategyCount);
 
-        payload = new uint256[](10 + _numVotingStrategies);
-
-        // L1 strategy address & L2 class hash
-        payload[0] = address(this).toUint256();
+        // `payload[0]` is reserved for the round address, which is
+        // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
         payload[2] = 6;
-        (payload[3], payload[4]) = uint256(keccak256(abi.encode(awards))).split();
+        (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards))).split();
         payload[5] = proposalPeriodStartTimestamp;
         payload[6] = proposalPeriodDuration;
         payload[7] = votePeriodDuration;
         payload[8] = winnerCount;
 
+        // L2 voting strategies
         unchecked {
-            // L2 voting strategies
-            payload[9] = _numVotingStrategies;
-            for (uint256 i = 0; i < _numVotingStrategies; ++i) {
-                payload[10 + i] = _votingStrategies[i];
+            payload[9] = flattenedStrategyCount;
+            for (uint256 i = 0; i < flattenedStrategyCount; ++i) {
+                payload[10 + i] = flattenedStrategies[i];
             }
         }
         return payload;
+    }
+
+    /// @notice Flatten voting strategies for consumption on L2.
+    /// Duplicates validation MUST occur prior to flattening.
+    /// @param strategies The voting strategies
+    function _flatten(VotingStrategy[] memory strategies) internal pure returns (uint256[] memory) {
+        unchecked {
+            uint256 strategyCount = strategies.length;
+            uint256 paramCount = _getTotalParamCount(strategies);
+            uint256[] memory flattenedStrategies = new uint256[](strategyCount + paramCount);
+
+            uint256 offset;
+            for (uint256 i = 0; i < strategyCount; ++i) {
+                VotingStrategy memory strategy = strategies[i];
+
+                flattenedStrategies[offset++] = strategy.addr;
+                for (uint256 k = 0; k < strategy.params.length; ++k) {
+                    flattenedStrategies[offset++] = strategy.params[k];
+                }
+            }
+            return flattenedStrategies;
+        }
+    }
+
+    /// @notice Get the total number of voting strategy parameters
+    /// @param strategies The voting strategies
+    function _getTotalParamCount(VotingStrategy[] memory strategies) internal pure returns (uint256 count) {
+        uint256 strategyCount = strategies.length;
+        for (uint256 i = 0; i < strategyCount; ++i) {
+            count += strategies[i].params.length;
+        }
     }
 
     /// @notice Mark an award as 'claimed' for the provided proposal ID

@@ -6,8 +6,7 @@ export enum FundingHouseStrategyType {
 
 export interface TimedFundingRoundStrategy {
   strategyType: FundingHouseStrategyType.TIMED_FUNDING_ROUND;
-  config: TimedFundingRoundConfig;
-  validator?: string;
+  config?: TimedFundingRoundConfig;
 }
 
 export type FundingHouseStrategy = TimedFundingRoundStrategy;

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-interface ISharedMetadataRenderer {
+interface IMetadataEncoder {
     /// @notice Encode the name, description, and image as a Base64-JSON blob
     /// @param name The name of the item
     /// @param description A human readable description of the item

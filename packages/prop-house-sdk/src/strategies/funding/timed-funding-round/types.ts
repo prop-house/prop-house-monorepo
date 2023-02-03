@@ -1,11 +1,13 @@
-import { BigNumberish } from '@ethersproject/bignumber';
 import { AuthStrategy, ClientConfig, IEnvelope, VotingStrategy } from '../../types';
+import { BigNumberish } from '@ethersproject/bignumber';
+import { Award } from '../../../houses';
 
 export interface TimedFundingRoundConfig {
   proposalPeriodStartTimestamp: number;
   proposalPeriodDuration: number;
   votePeriodDuration: number;
   winnerCount: number;
+  awards: Award[];
 }
 
 export interface ProposalVote {

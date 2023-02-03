@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { ISharedMetadataRenderer } from '../interfaces/renderers/ISharedMetadataRenderer.sol';
-import { ITokenMetadataRenderer } from '../interfaces/renderers/ITokenMetadataRenderer.sol';
+import { IMetadataEncoder } from '../interfaces/IMetadataEncoder.sol';
+import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetType } from '../lib/types/Common.sol';
 
 contract AssetMetadataRenderer is ITokenMetadataRenderer {
-    /// @notice A contract which holds shared rendering logic
-    ISharedMetadataRenderer internal immutable _renderer;
+    /// @notice A contract which holds shared metadata encoding logic
+    IMetadataEncoder internal immutable _encoder;
 
-    constructor(address renderer_) {
-        _renderer = ISharedMetadataRenderer(renderer_);
+    constructor(address encoder_) {
+        _encoder = IMetadataEncoder(encoder_);
     }
 
     /// @notice Returns asset metadata for `tokenId` as a Base64-JSON blob
@@ -20,7 +20,7 @@ contract AssetMetadataRenderer is ITokenMetadataRenderer {
         string memory name = string.concat(assetName, ' Deposit');
         string memory description = 'Tokens that can be redeemed for a deposited asset.';
 
-        return _renderer.encode(name, description, _renderSVG(assetName));
+        return _encoder.encode(name, description, _renderSVG(assetName));
     }
 
     /// @notice Get the asset type for the provided token ID

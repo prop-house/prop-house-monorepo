@@ -3,9 +3,9 @@ pragma solidity >=0.8.17;
 
 import { IStarknetCore } from './IStarknetCore.sol';
 
-interface IStarknetMessenger {
-    /// @notice Thrown when the caller of a guarded function is not a valid house
-    error ONLY_HOUSE();
+interface IMessenger {
+    /// @notice Thrown when the caller of a guarded function is not a valid round
+    error ONLY_ROUND();
 
     /// @notice Returns the Starknet core contract instance
     function starknet() external view returns (IStarknetCore);

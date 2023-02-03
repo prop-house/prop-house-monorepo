@@ -7,6 +7,9 @@ from starkware.cairo.common.bool import TRUE, FALSE
 from starkware.cairo.common.math_cmp import is_le
 from starkware.cairo.common.alloc import alloc
 
+// TODO: register strategy only if it does not yet exist here,
+// otherwise pull it from here. that means, hash it to see every time.
+
 @storage_var
 func starknet_messenger_store() -> (starknet_messenger: felt) {
 }
@@ -49,6 +52,8 @@ func get_voting_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_c
     );
     return (voting_strategy, voting_strategy_params_len, voting_strategy_params);
 }
+
+// TODO: This should be a function and the registrar should be able to control who can call it. The L1 handler is the first whitelisted address.
 
 // Receives a voting strategy registration and stores it in the registry.
 @l1_handler

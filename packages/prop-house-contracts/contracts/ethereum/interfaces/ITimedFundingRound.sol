@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { IFundingHouseStrategy } from '../../interfaces/IFundingHouseStrategy.sol';
-import { Award } from '../../lib/types/Common.sol';
+import { IRound } from './IRound.sol';
+import { Award } from '../lib/types/Common.sol';
 
-/// @notice Interface implemented by the timed funding round house strategy
-interface ITimedFundingRound is IFundingHouseStrategy {
+/// @notice Interface implemented by the timed funding round
+interface ITimedFundingRound is IRound {
     /// @notice All possible round states
     enum RoundState {
         Pending,
@@ -19,29 +19,27 @@ interface ITimedFundingRound is IFundingHouseStrategy {
         MerkleProof
     }
 
-    /// @notice The timed funding round house strategy configuration
+    /// @notice Voting strategy information
+    struct VotingStrategy {
+        uint256 addr;
+        uint256[] params;
+    }
+
+    /// @notice The timed funding round configuration
     struct RoundConfig {
+        Award[] awards;
+        VotingStrategy[] strategies;
         uint40 proposalPeriodStartTimestamp;
         uint40 proposalPeriodDuration;
         uint40 votePeriodDuration;
         uint16 winnerCount;
-        Award[] awards;
     }
-
-    /// @notice Thrown when the round has already been defined
-    error ROUND_ALREADY_DEFINED();
-
-    /// @notice Thrown when the round has not yet been defined
-    error ROUND_NOT_DEFINED();
 
     /// @notice Thrown when an award has already been claimed
     error AWARD_ALREADY_CLAIMED();
 
-    /// @notice Thrown when the caller of a guarded function is not the award router
-    error ONLY_AWARD_ROUTER();
-
-    /// @notice Thrown when the caller of a guarded function is not the round's house
-    error ONLY_HOUSE();
+    /// @notice Thrown when the caller of a guarded function is not the prop house contrat
+    error ONLY_PROP_HOUSE();
 
     /// @notice Thrown when the caller of a guarded function is not the round manager
     error ONLY_ROUND_MANAGER();
@@ -61,29 +59,29 @@ interface ITimedFundingRound is IFundingHouseStrategy {
     /// @notice Thrown when the full proposal period duration is too short
     error PROPOSAL_PERIOD_DURATION_TOO_SHORT();
 
-    /// @notice Thrown when the remaining proposal period duration is too short
-    error REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
+    /// @notice Thrown when the proposal period start timestamp is in the past
+    error PROPOSAL_PERIOD_START_TIMESTAMP_IN_PAST();
 
     /// @notice Thrown when the vote period duration is too short
     error VOTE_PERIOD_DURATION_TOO_SHORT();
 
-    /// @notice Thrown when the award length is invalid
-    error INVALID_AWARD_LENGTH();
+    /// @notice Thrown when the award length is greater than one and does not match the winner count
+    error AWARD_LENGTH_MISMATCH();
 
-    /// @notice Thrown when the award amount is invalid
-    error INVALID_AWARD_AMOUNT();
+    /// @notice Thrown when one award is split between winners and the amount is not a multiple of the winner count
+    error AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
 
-    /// @notice Thrown when the winner count is zero
-    error WINNER_COUNT_CANNOT_BE_ZERO();
+    /// @notice Thrown when the winner count is zero or greater than the maximum allowable
+    error WINNER_COUNT_OUT_OF_RANGE();
 
-    /// @notice Thrown when the winner count is greater than the maximum allowable count
-    error WINNER_COUNT_EXCEEDS_MAXIMUM();
+    /// @notice Thrown when no voting strategies are provided
+    error NO_STRATEGIES_PROVIDED();
 
     /// @notice Thrown when attempting to register a round that has already been registered on L2
     error ROUND_ALREADY_REGISTERED();
 
-    /// @notice Thrown when the round has not received sufficient funding for the selected awards
-    error INSUFFICIENT_ASSET_FUNDING();
+    /// @notice Thrown when the same voting strategy is included multiple times in an array
+    error DUPLICATE_VOTING_STRATEGY();
 
     /// @notice Thrown when an asset rescue is attempted, but there is no excess balance in the contract
     error NO_EXCESS_BALANCE();
@@ -110,21 +108,21 @@ interface ITimedFundingRound is IFundingHouseStrategy {
     /// @param amount The amount of the asset being rescued
     event AssetRescued(address recipient, uint256 assetId, uint256 amount);
 
-    /// @notice Emitted when the round configuration is defined
+    /// @notice Emitted when the round is registered on L2
+    /// @param awards The awards offered to round winners
+    /// @param strategies The voting strategies used in the round
     /// @param proposalPeriodStartTimestamp The timestamp at which the proposal period starts
     /// @param proposalPeriodDuration The proposal period duration in seconds
     /// @param votePeriodDuration The vote period duration in seconds
     /// @param winnerCount The number of possible winners
-    event RoundDefined(
+    event RoundRegistered(
+        Award[] awards,
+        VotingStrategy[] strategies,
         uint40 proposalPeriodStartTimestamp,
         uint40 proposalPeriodDuration,
         uint40 votePeriodDuration,
         uint16 winnerCount
     );
-
-    /// @notice Emitted when the round registration is submitted to L2
-    /// @param awards The awards offered to winners
-    event RoundRegistered(Award[] awards);
 
     /// @notice Emitted when the round is finalized
     event RoundFinalized();

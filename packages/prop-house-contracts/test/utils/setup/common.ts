@@ -1,6 +1,8 @@
 import {
+  AwardRouter__factory,
   RegistrarManager__factory,
   DeploymentManager__factory,
+  HouseApprovalManager__factory,
   UpgradeManager__factory,
   StrategyManager__factory,
   HouseFactory__factory,
@@ -20,6 +22,9 @@ export const commonL1Setup = async () => {
 
   const houseDeployerFactory = new HouseFactory__factory(registrar);
 
+  const houseApprovalManagerFactory = new HouseApprovalManager__factory(registrar);
+  const awardRouterFactory = new AwardRouter__factory(registrar);
+
   const mockStarknetMessagingFactory = new MockStarknetMessaging__factory(registrar);
   const starknetCommitFactory = new StarkNetCommit__factory(registrar);
   const starknetMessengerFactory = new StarknetMessenger__factory(registrar);
@@ -34,6 +39,11 @@ export const commonL1Setup = async () => {
     ]);
 
   const houseFactory = await houseDeployerFactory.deploy(deploymentManager.address);
+  const houseApprovalManager = await houseApprovalManagerFactory.deploy(houseFactory.address);
+  const awardRouter = await awardRouterFactory.deploy(
+    houseFactory.address,
+    houseApprovalManager.address,
+  );
   const starknetCommit = await starknetCommitFactory.deploy(mockStarknetMessaging.address);
   const starknetMessenger = await starknetMessengerFactory.deploy(
     mockStarknetMessaging.address,
@@ -47,6 +57,8 @@ export const commonL1Setup = async () => {
     upgradeManager,
     strategyManager,
     houseFactory,
+    houseApprovalManager,
+    awardRouter,
     starknetMessenger,
     mockStarknetMessaging,
     starknetCommit,

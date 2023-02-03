@@ -17,7 +17,7 @@ struct Asset {
     uint256 amount;
 }
 
-/// @notice An award asset that's held in a house strategy contract
+/// @notice An award asset that's held in a round contract
 struct Award {
     uint256 assetId;
     uint256 amount;

@@ -10,6 +10,10 @@ export const ONE_ETHER = ethers.utils.parseEther('1');
 
 export const ONE_DAY_SEC = 60 * 60 * 24;
 
-export const HOUSE_URI = 'Test House';
+export const HOUSE_NAME = 'Test House';
+
+export const HOUSE_SYMBOL = 'TEST';
+
+export const CONTRACT_URI = 'Test Contract URI';
 
 export const METADATA_URI = 'My first proposal!';

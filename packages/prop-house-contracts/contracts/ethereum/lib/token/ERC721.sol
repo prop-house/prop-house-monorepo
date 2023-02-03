@@ -10,12 +10,16 @@ import { Address } from '../utils/Address.sol';
 /// @notice Modified from Rohan Kulkarni's work for Nouns Builder
 /// Originally modified from OpenZeppelin Contracts v4.7.3 (token/ERC721/ERC721Upgradeable.sol)
 /// - Uses custom errors declared in IERC721
+/// - Includes contract-level metadata via `contractURI`
 abstract contract ERC721 is IERC721, Initializable {
     /// @notice The token name
     string public name;
 
     /// @notice The token symbol
     string public symbol;
+
+    /// @notice A contract-level metadata
+    string public contractURI;
 
     /// @notice The token owners
     /// @dev ERC-721 token id => Owner
@@ -36,9 +40,15 @@ abstract contract ERC721 is IERC721, Initializable {
     /// @dev Initializes an ERC-721 token
     /// @param _name The ERC-721 token name
     /// @param _symbol The ERC-721 token symbol
-    function __ERC721_init(string memory _name, string memory _symbol) internal onlyInitializing {
+    /// @param _contractURI The ERC-721 contract URI
+    function __ERC721_init(
+        string memory _name,
+        string memory _symbol,
+        string memory _contractURI
+    ) internal onlyInitializing {
         name = _name;
         symbol = _symbol;
+        contractURI = _contractURI;
     }
 
     /// @notice The token URI
@@ -73,6 +83,12 @@ abstract contract ERC721 is IERC721, Initializable {
         if (owner == address(0)) revert ADDRESS_ZERO();
 
         return balances[owner];
+    }
+
+    /// @notice Returns whether `tokenId` exists.
+    /// @param tokenId The ERC-721 token id
+    function exists(uint256 tokenId) public view returns (bool) {
+        return owners[tokenId] != address(0);
     }
 
     /// @notice The owner of a token
