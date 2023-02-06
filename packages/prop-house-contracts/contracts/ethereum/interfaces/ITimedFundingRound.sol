@@ -80,9 +80,6 @@ interface ITimedFundingRound is IRound {
     /// @notice Thrown when attempting to register a round that has already been registered on L2
     error ROUND_ALREADY_REGISTERED();
 
-    /// @notice Thrown when the same voting strategy is included multiple times in an array
-    error DUPLICATE_VOTING_STRATEGY();
-
     /// @notice Thrown when an asset rescue is attempted, but there is no excess balance in the contract
     error NO_EXCESS_BALANCE();
 

@@ -6,8 +6,9 @@ from starkware.cairo.common.memcpy import memcpy
 
 from contracts.starknet.common.lib.execute import execute
 from contracts.starknet.common.lib.eth_tx import EthTx
-from contracts.starknet.strategies.timed_funding_round.lib.session_key import SessionKey
-from contracts.starknet.strategies.timed_funding_round.lib.stark_eip191 import StarkEIP191
+
+from contracts.starknet.rounds.timed_funding_round.lib.session_key import SessionKey
+from contracts.starknet.rounds.timed_funding_round.lib.stark_eip191 import StarkEIP191
 
 // print(get_selector_from_name("propose"))
 const PROPOSAL_SELECTOR = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f4ad8d220b81;

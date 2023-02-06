@@ -8,8 +8,9 @@ from starkware.cairo.common.alloc import alloc
 
 from contracts.starknet.common.lib.eth_tx import EthTx
 from contracts.starknet.common.lib.array_utils import ArrayUtils
-from contracts.starknet.strategies.timed_funding_round.lib.stark_eip191 import StarkEIP191
-from contracts.starknet.strategies.timed_funding_round.lib.eip712 import EIP712
+
+from contracts.starknet.rounds.timed_funding_round.lib.stark_eip191 import StarkEIP191
+from contracts.starknet.rounds.timed_funding_round.lib.eip712 import EIP712
 
 // @dev Stores the owner Ethereum address for a given session key
 @storage_var

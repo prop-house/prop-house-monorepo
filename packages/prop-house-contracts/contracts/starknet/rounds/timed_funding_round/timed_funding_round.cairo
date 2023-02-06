@@ -38,16 +38,16 @@ from contracts.starknet.common.interfaces.voting_strategy_registry_interface imp
 
 // Types
 from contracts.starknet.common.lib.execution_type import ExecutionType
-from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
-from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
-from contracts.starknet.strategies.timed_funding_round.lib.round_state import RoundState
-from contracts.starknet.strategies.timed_funding_round.lib.award import Award
+from contracts.starknet.rounds.timed_funding_round.lib.proposal_info import ProposalInfo
+from contracts.starknet.rounds.timed_funding_round.lib.proposal_vote import ProposalVote
+from contracts.starknet.rounds.timed_funding_round.lib.round_state import RoundState
+from contracts.starknet.rounds.timed_funding_round.lib.award import Award
 
 // Libraries
 from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.merkle_keccak import MerkleKeccak
 from contracts.starknet.common.lib.array_utils import ArrayUtils, Immutable2DArray
-from contracts.starknet.strategies.timed_funding_round.lib.proposal_utils import ProposalUtils
+from contracts.starknet.rounds.timed_funding_round.lib.proposal_utils import ProposalUtils
 
 //
 // Constants
@@ -110,7 +110,7 @@ func cancelled_proposals_store(proposal_id: felt) -> (cancelled: felt) {
 }
 
 @storage_var
-func voting_strategy_hashes_store(index: felt) -> (strategy_hash: felt) {
+func registered_voting_strategies_store(strategy_id: felt) -> (registered: felt) {
 }
 
 //
@@ -141,10 +141,7 @@ func round_finalized(merkle_root: Uint256, winners_len: felt, winners: ProposalI
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    house_strategy_params_len: felt,
-    house_strategy_params: felt*,
-    voting_strategy_hashes_len: felt,
-    voting_strategy_hashes: felt*,
+    round_params_len: felt, round_params: felt*
 ) {
     alloc_locals;
 
@@ -155,7 +152,10 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         proposal_period_duration,
         vote_period_duration,
         winner_count,
-    ) = _decode_param_array(house_strategy_params_len, house_strategy_params);
+        voting_strategies_len,
+        voting_strategies,
+        voting_strategy_params_all,
+    ) = _decode_param_array(round_params_len, round_params);
 
     // Sanity checks. Message cancellation is required on error.
     // Note that it is possible for the proposal period to be active upon creation,
@@ -168,6 +168,7 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
         assert_not_zero(vote_period_duration);
         assert_not_zero(winner_count);
         assert_le(winner_count, MAX_WINNERS);
+        assert_not_zero(voting_strategies_len);
     }
 
     let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
@@ -183,7 +184,10 @@ func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
     award_hash_store.write(Uint256(low=award_hash_low, high=award_hash_high));
     winner_count_store.write(winner_count);
 
-    _unchecked_add_voting_strategy_hashes(voting_strategy_hashes_len, voting_strategy_hashes, 0);
+    // Register the voting strategies and store the strategy IDs
+    _register_voting_strategies(
+        voting_strategies_len, voting_strategies, voting_strategy_params_all, 0
+    );
 
     // The first proposal in a round will have a proposal ID of 1.
     next_proposal_nonce_store.write(1);
@@ -206,8 +210,8 @@ func vote{
     voter_address: felt,
     proposal_votes_len: felt,
     proposal_votes: ProposalVote*,
-    used_voting_strategy_hash_indexes_len: felt,
-    used_voting_strategy_hash_indexes: felt*,
+    used_voting_strategy_ids_len: felt,
+    used_voting_strategy_ids: felt*,
     user_voting_strategy_params_flat_len: felt,
     user_voting_strategy_params_flat: felt*,
 ) -> () {
@@ -247,8 +251,8 @@ func vote{
     let (user_voting_power) = _get_cumulative_voting_power(
         snapshot_timestamp,
         voter_address,
-        used_voting_strategy_hash_indexes_len,
-        used_voting_strategy_hash_indexes,
+        used_voting_strategy_ids_len,
+        used_voting_strategy_ids,
         user_voting_strategy_params_all,
         0,
     );
@@ -570,19 +574,29 @@ func get_proposal_info{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
 //  Internal Functions
 //
 
-// Inserts voting strategy hashes to storage
-func _unchecked_add_voting_strategy_hashes{
-    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr
-}(voting_strategy_hashes_len: felt, voting_strategy_hashes: felt*, index: felt) {
-    if (voting_strategy_hashes_len == 0) {
-        // List is empty
+// Registers the voting strategies and stores the strategy IDs
+func _register_voting_strategies{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    addresses_len: felt, addresses: felt*, params_all: Immutable2DArray, current_index: felt
+) {
+    alloc_locals;
+
+    if (addresses_len == 0) {
         return ();
     } else {
-        // Store voting parameter
-        voting_strategy_hashes_store.write(index, voting_strategy_hashes[0]);
+        let (strategy_params_len, strategy_params) = ArrayUtils.get_sub_array(
+            params_all, current_index
+        );
 
-        _unchecked_add_voting_strategy_hashes(
-            voting_strategy_hashes_len - 1, &voting_strategy_hashes[1], index + 1
+        let (strategy_id) = IVotingStrategyRegistry.register_voting_strategy_if_not_exists(
+            contract_address=voting_strategy_registry,
+            strategy_addr=addresses[0],
+            strategy_params_len=strategy_params_len,
+            strategy_params=strategy_params,
+        );
+        registered_voting_strategies_store.write(strategy_id, TRUE);
+
+        _register_voting_strategies(
+            addresses_len - 1, &addresses[1], params_all, current_index + 1
         );
         return ();
     }
@@ -599,18 +613,18 @@ func _get_auth_strategy(index: felt) -> (strategy_addr: felt) {
 }
 
 // Determines whether the provided address is a valid auth strategy
-func _is_valid_auth_strategy(addr: felt, curr_index: felt, num_strategies: felt) -> (
+func _is_valid_auth_strategy(addr: felt, current_index: felt, num_strategies: felt) -> (
     is_valid: felt
 ) {
-    if (num_strategies == curr_index) {
+    if (num_strategies == current_index) {
         return (FALSE,);
     }
 
-    let (strategy_addr) = _get_auth_strategy(curr_index);
+    let (strategy_addr) = _get_auth_strategy(current_index);
     if (addr == strategy_addr) {
         return (TRUE,);
     }
-    return _is_valid_auth_strategy(addr, curr_index + 1, num_strategies);
+    return _is_valid_auth_strategy(addr, current_index + 1, num_strategies);
 }
 
 // Throws if the caller address is not a member of the set of whitelisted auth strategies
@@ -638,27 +652,25 @@ func _assert_round_active{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_
     return ();
 }
 
-// Computes the cumulated voting power of a user by iterating over the voting strategies of `used_voting_strategy_hash_indexes`.
+// Computes the cumulated voting power of a user by iterating over the voting strategies of `used_voting_strategy_ids`.
 func _get_cumulative_voting_power{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     current_timestamp: felt,
     voter_address: felt,
-    used_voting_strategy_hash_indexes_len: felt,
-    used_voting_strategy_hash_indexes: felt*,
+    used_voting_strategy_ids_len: felt,
+    used_voting_strategy_ids: felt*,
     user_voting_strategy_params_all: Immutable2DArray,
-    index: felt,
+    current_index: felt,
 ) -> (voting_power: Uint256) {
     // Make sure there are no duplicates to avoid an attack where people double count a voting strategy
-    ArrayUtils.assert_no_duplicates(
-        used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
-    );
+    ArrayUtils.assert_no_duplicates(used_voting_strategy_ids_len, used_voting_strategy_ids);
 
     return _unchecked_get_cumulative_voting_power(
         current_timestamp,
         voter_address,
-        used_voting_strategy_hash_indexes_len,
-        used_voting_strategy_hash_indexes,
+        used_voting_strategy_ids_len,
+        used_voting_strategy_ids,
         user_voting_strategy_params_all,
-        index,
+        current_index,
     );
 }
 
@@ -668,34 +680,33 @@ func _unchecked_get_cumulative_voting_power{
 }(
     current_timestamp: felt,
     voter_address: felt,
-    used_voting_strategy_hash_indexes_len: felt,
-    used_voting_strategy_hash_indexes: felt*,
+    used_voting_strategy_ids_len: felt,
+    used_voting_strategy_ids: felt*,
     user_voting_strategy_params_all: Immutable2DArray,
-    index: felt,
+    current_index: felt,
 ) -> (voting_power: Uint256) {
     alloc_locals;
 
-    if (used_voting_strategy_hash_indexes_len == 0) {
+    if (used_voting_strategy_ids_len == 0) {
         // Reached the end, stop iteration
         return (Uint256(0, 0),);
     }
 
-    let strategy_hash_index = used_voting_strategy_hash_indexes[0];
+    let voting_strategy_id = used_voting_strategy_ids[0];
+    let (is_registered) = registered_voting_strategies_store.read(voting_strategy_id);
+    with_attr error_message("TimedFundingRound: Strategy is not registered for round") {
+        assert is_registered = TRUE;
+    }
 
-    let (voting_strategy_hash) = voting_strategy_hashes_store.read(strategy_hash_index);
     let (
         voting_strategy_address, voting_strategy_params_len, voting_strategy_params
     ) = IVotingStrategyRegistry.get_voting_strategy(
-        contract_address=voting_strategy_registry, strategy_hash=voting_strategy_hash
+        contract_address=voting_strategy_registry, strategy_id=voting_strategy_id
     );
-
-    with_attr error_message("TimedFundingRound: Invalid voting strategy") {
-        assert_not_zero(voting_strategy_address);
-    }
 
     // Extract voting params array for the voting strategy specified by the index
     let (user_voting_strategy_params_len, user_voting_strategy_params) = ArrayUtils.get_sub_array(
-        user_voting_strategy_params_all, index
+        user_voting_strategy_params_all, current_index
     );
 
     let (user_voting_power) = IVotingStrategy.get_voting_power(
@@ -711,33 +722,57 @@ func _unchecked_get_cumulative_voting_power{
     let (additional_voting_power) = _get_cumulative_voting_power(
         current_timestamp,
         voter_address,
-        used_voting_strategy_hash_indexes_len - 1,
-        &used_voting_strategy_hash_indexes[1],
+        used_voting_strategy_ids_len - 1,
+        &used_voting_strategy_ids[1],
         user_voting_strategy_params_all,
-        index + 1,
+        current_index + 1,
     );
 
     let (voting_power) = SafeUint256.add(user_voting_power, additional_voting_power);
     return (voting_power,);
 }
 
-// Decodes the array of house strategy params
-func _decode_param_array{range_check_ptr}(strategy_params_len: felt, strategy_params: felt*) -> (
+// Decodes the array of round params
+func _decode_param_array{range_check_ptr}(round_params_len: felt, round_params: felt*) -> (
     award_hash_low: felt,
     award_hash_high: felt,
     proposal_period_start_timestamp: felt,
     proposal_period_duration: felt,
     vote_period_duration: felt,
     winner_count: felt,
+    voting_strategies_len: felt,
+    voting_strategies: felt*,
+    voting_strategy_params_all: Immutable2DArray,
 ) {
-    assert_nn_le(6, strategy_params_len);
+    alloc_locals;
+
+    let (voting_strategies: felt*) = alloc();
+    let voting_strategies_len = round_params[6];
+    memcpy(voting_strategies, round_params + 6, voting_strategies_len);
+
+    let voting_strategy_params_flat_len = round_params[7 + voting_strategies_len];
+    let (voting_strategy_params_flat: felt*) = alloc();
+    memcpy(
+        voting_strategy_params_flat,
+        round_params + 7 + voting_strategies_len,
+        voting_strategy_params_flat_len,
+    );
+
+    // Reconstruct the voting params 2D array (1 sub array per strategy) from the flattened version.
+    let (voting_strategy_params_all: Immutable2DArray) = ArrayUtils.construct_array2d(
+        voting_strategy_params_flat_len, voting_strategy_params_flat
+    );
+
     return (
-        strategy_params[0],
-        strategy_params[1],
-        strategy_params[2],
-        strategy_params[3],
-        strategy_params[4],
-        strategy_params[5],
+        round_params[0],
+        round_params[1],
+        round_params[2],
+        round_params[3],
+        round_params[4],
+        round_params[5],
+        voting_strategies_len,
+        voting_strategies,
+        voting_strategy_params_all,
     );
 }
 

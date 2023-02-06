@@ -22,7 +22,7 @@ from starkware.cairo.common.uint256 import (
 from contracts.starknet.common.lib.math_utils import MathUtils
 from contracts.starknet.common.lib.array_utils import ArrayUtils
 
-from contracts.starknet.strategies.timed_funding_round.lib.proposal_vote import ProposalVote
+from contracts.starknet.rounds.timed_funding_round.lib.proposal_vote import ProposalVote
 
 const ETHEREUM_PREFIX = 0x1901;
 
@@ -33,21 +33,21 @@ const ETHEREUM_PREFIX = 0x1901;
 const DOMAIN_HASH_HIGH = 0x367959fbff4da0a038f30383de089bcd;
 const DOMAIN_HASH_LOW = 0x293b7960f35bd1db59a620d4c2cbfd81;
 
-// keccak256("Propose(bytes32 authStrategy,bytes32 houseStrategy,address proposerAddress,string metadataUri,uint256 salt)")
-const PROPOSAL_TYPE_HASH_HIGH = 0xE9EF30A75143EFB91633457A3DA2EED2;
-const PROPOSAL_TYPE_HASH_LOW = 0x13AD4E7ED21203F5990DC04D819E79EE;
+// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposerAddress,string metadataUri,uint256 salt)")
+const PROPOSAL_TYPE_HASH_HIGH = 0x782C7E7AEB98C20F9395BFDB9030A3D6;
+const PROPOSAL_TYPE_HASH_LOW = 0xBBCE0E74657DEA727DF7F4E40F37E44C;
 
-// keccak256("Vote(bytes32 authStrategy,bytes32 houseStrategy,address voterAddress,bytes32 proposalVotesHash,bytes32 votingStrategiesHash,bytes32 votingStrategyParamsHash,uint256 salt)")
-const VOTE_TYPE_HASH_HIGH = 0x2DF4A490F0DA73A4804C16B31FFAD04B;
-const VOTE_TYPE_HASH_LOW = 0x46BDFC71C0CA7FFD5A85CE9FA9777868;
+// keccak256("Vote(bytes32 authStrategy,bytes32 house,address voterAddress,bytes32 proposalVotesHash,bytes32 votingStrategiesHash,bytes32 votingStrategyParamsHash,uint256 salt)")
+const VOTE_TYPE_HASH_HIGH = 0x4BA04D788B8F165FF304D664E5251DD7;
+const VOTE_TYPE_HASH_LOW = 0x5D305D3A6E96E3B87933BF12A98E0C96;
 
-// keccak256("CancelProposal(bytes32 authStrategy,bytes32 houseStrategy,address proposerAddress,uint256 proposalId,uint256 salt)")
-const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0x69E48746EF56A2276B12F179EA13EC55;
-const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0x25F52F519DF1AE69AE2C251BAEBE7D1F;
+// keccak256("CancelProposal(bytes32 authStrategy,bytes32 round,address proposerAddress,uint256 proposalId,uint256 salt)")
+const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0x171B70688E107ED47A5AB51E3CF4A20E;
+const CANCEL_PROPOSAL_TYPE_HASH_LOW = 0x11FB0CEB275F51F3B1469D5DA7B6D7D4;
 
-// keccak256("CancelRound(bytes32 authStrategy,bytes32 houseStrategy,address roundInitiatorAddress,uint256 salt)")
-const CANCEL_ROUND_TYPE_HASH_HIGH = 0x9C8D53F4766EB124290BED6664ED985;
-const CANCEL_ROUND_TYPE_HASH_LOW = 0x3C2506601D1BA61FCA6DC79B9EB11203;
+// keccak256("CancelRound(bytes32 authStrategy,bytes32 round,address roundInitiatorAddress,uint256 salt)")
+const CANCEL_ROUND_TYPE_HASH_HIGH = 0xEFB20B2E8BAD8DB42EDDB1C3A60F848D;
+const CANCEL_ROUND_TYPE_HASH_LOW = 0x7DDE4E43312DA9774877ED1AEE225611;
 
 // keccak256("SessionKey(address address,bytes32 sessionPublicKey,uint256 sessionDuration,uint256 salt)")
 const SESSION_KEY_INIT_TYPE_HASH_HIGH = 0x53f1294cb551b4ff97c8fd4caefa8ec6;
@@ -91,7 +91,7 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = MathUtils.felt_to_uint256(target);
+        let (round) = MathUtils.felt_to_uint256(target);
 
         let (voter_address_u256) = MathUtils.felt_to_uint256(voter_address);
 
@@ -99,14 +99,14 @@ namespace EIP712 {
         let proposal_votes = &calldata[2];
         let (proposal_votes_hash) = _get_padded_hash(proposal_votes_len, proposal_votes);
 
-        let used_voting_strategy_hash_indexes_len = calldata[2 + proposal_votes_len];
-        let used_voting_strategy_hash_indexes = &calldata[3 + proposal_votes_len];
-        let (used_voting_strategy_hash_indexes_hash) = _get_padded_hash(
-            used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
+        let used_voting_strategy_id_indexes_len = calldata[2 + proposal_votes_len];
+        let used_voting_strategy_id_indexes = &calldata[3 + proposal_votes_len];
+        let (used_voting_strategy_id_indexes_hash) = _get_padded_hash(
+            used_voting_strategy_id_indexes_len, used_voting_strategy_id_indexes
         );
 
-        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_hash_indexes_len];
-        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_hash_indexes_len];
+        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_id_indexes_len];
+        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_id_indexes_len];
         let (user_voting_strategy_params_flat_hash) = _get_padded_hash(
             user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
         );
@@ -115,10 +115,10 @@ namespace EIP712 {
         let (data: Uint256*) = alloc();
         assert data[0] = Uint256(VOTE_TYPE_HASH_LOW, VOTE_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
-        assert data[2] = house_strategy;
+        assert data[2] = round;
         assert data[3] = voter_address_u256;
         assert data[4] = proposal_votes_hash;
-        assert data[5] = used_voting_strategy_hash_indexes_hash;
+        assert data[5] = used_voting_strategy_id_indexes_hash;
         assert data[6] = user_voting_strategy_params_flat_hash;
         assert data[7] = salt;
 
@@ -192,7 +192,7 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = MathUtils.felt_to_uint256(target);
+        let (round) = MathUtils.felt_to_uint256(target);
 
         // Proposer address
         let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
@@ -210,7 +210,7 @@ namespace EIP712 {
 
         assert data[0] = Uint256(PROPOSAL_TYPE_HASH_LOW, PROPOSAL_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
-        assert data[2] = house_strategy;
+        assert data[2] = round;
         assert data[3] = proposer_address_u256;
         assert data[4] = metadata_uri_hash;
         assert data[5] = salt;
@@ -283,7 +283,7 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = MathUtils.felt_to_uint256(target);
+        let (round) = MathUtils.felt_to_uint256(target);
 
         let (proposer_address_u256) = MathUtils.felt_to_uint256(proposer_address);
         let (proposal_id) = MathUtils.felt_to_uint256(calldata[1]);
@@ -293,7 +293,7 @@ namespace EIP712 {
 
         assert data[0] = Uint256(CANCEL_PROPOSAL_TYPE_HASH_LOW, CANCEL_PROPOSAL_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
-        assert data[2] = house_strategy;
+        assert data[2] = round;
         assert data[3] = proposer_address_u256;
         assert data[4] = proposal_id;
         assert data[5] = salt;
@@ -366,7 +366,7 @@ namespace EIP712 {
 
         // We don't need to pad because calling `.address` with starknet.js
         // already left pads the address with 0s
-        let (house_strategy) = MathUtils.felt_to_uint256(target);
+        let (round) = MathUtils.felt_to_uint256(target);
 
         let (round_initiator_address_u256) = MathUtils.felt_to_uint256(round_initiator_address);
 
@@ -375,7 +375,7 @@ namespace EIP712 {
 
         assert data[0] = Uint256(CANCEL_ROUND_TYPE_HASH_LOW, CANCEL_ROUND_TYPE_HASH_HIGH);
         assert data[1] = auth_address_u256;
-        assert data[2] = house_strategy;
+        assert data[2] = round;
         assert data[3] = round_initiator_address_u256;
         assert data[4] = salt;
 

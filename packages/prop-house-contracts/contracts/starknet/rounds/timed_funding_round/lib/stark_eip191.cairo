@@ -16,17 +16,17 @@ const DOMAIN_HASH = 0xe555db13b92f041c987f35e960ce967667d7aa3095c901826b6191ab69
 
 const STARKNET_MESSAGE = 0x537461726b4e6574204d657373616765;
 
-// print(get_selector_from_name("Propose(house_strategy:felt,proposer_address:felt,metadata_uri:felt*,salt:felt)"))
-const PROPOSAL_TYPE_HASH = 0x44d93addcdbfc5b1f3f45d3425cdd57fd135eff6a1b7748ce6aa2f6ac081f1;
+// print(get_selector_from_name("Propose(round:felt,proposer_address:felt,metadata_uri:felt*,salt:felt)"))
+const PROPOSAL_TYPE_HASH = 0x1ed40837426068d88f74d764f1e1bf1ba95d0e8598a0405fac3c2b4778cb4f1;
 
-// print(get_selector_from_name("Vote(house_strategy:felt,voter_address:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
-const VOTE_TYPE_HASH = 0x2171fa7a357682500d2758586610c73eb1114a7257de59ff7d2bc03184bd8e1;
+// print(get_selector_from_name("Vote(round:felt,voter_address:felt,proposal_votes_hash:felt,strategies_hash:felt,strategies_params_hash:felt,salt:felt)"))
+const VOTE_TYPE_HASH = 0x2f9cfef828d664ae1253481ab7c6adaf6255161764f3c7107332fa75eddd18f;
 
-// print(get_selector_from_name("CancelProposal(house_strategy:felt,proposer_address:felt,proposal_id:felt,salt:felt)"))
-const CANCEL_PROPOSAL_TYPE_HASH = 0x26ddb2d957b32296ccaa4486158f926acb3f1fae41d71894037acae90229863;
+// print(get_selector_from_name("CancelProposal(round:felt,proposer_address:felt,proposal_id:felt,salt:felt)"))
+const CANCEL_PROPOSAL_TYPE_HASH = 0x22d5975711be74214ced53a19822f4d385855a4763700e6bc00b9dffba714e0;
 
-// print(get_selector_from_name("CancelRound(house_strategy:felt,round_initiator_address:felt,salt:felt)"))
-const CANCEL_ROUND_TYPE_HASH = 0x3f1b8eb98c8ddf63acd6fbf71612667dd4553ac7d888c317fee48ac6a96acb9;
+// print(get_selector_from_name("CancelRound(round:felt,round_initiator_address:felt,salt:felt)"))
+const CANCEL_ROUND_TYPE_HASH = 0x1f037915ceb685208c4fdc813d5d050feeac74bbb2bda6757ecd1af62ba9826;
 
 // print(get_selector_from_name("RevokeSessionKey(salt:felt)")
 const REVOKE_SESSION_KEY_TYPE_HASH = 0x31F0BF4E2BBD12ECBA02E325F0EA3231350A638FC633AF8EBF244F50663ACE8;
@@ -127,14 +127,14 @@ namespace StarkEIP191 {
         let proposal_votes = &calldata[2];
         let (proposal_votes_hash) = ArrayUtils.hash(proposal_votes_len, proposal_votes);
 
-        let used_voting_strategy_hash_indexes_len = calldata[2 + proposal_votes_len];
-        let used_voting_strategy_hash_indexes = &calldata[3 + proposal_votes_len];
-        let (used_voting_strategy_hash_indexes_hash) = ArrayUtils.hash(
-            used_voting_strategy_hash_indexes_len, used_voting_strategy_hash_indexes
+        let used_voting_strategy_id_indexes_len = calldata[2 + proposal_votes_len];
+        let used_voting_strategy_id_indexes = &calldata[3 + proposal_votes_len];
+        let (used_voting_strategy_id_indexes_hash) = ArrayUtils.hash(
+            used_voting_strategy_id_indexes_len, used_voting_strategy_id_indexes
         );
 
-        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_hash_indexes_len];
-        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_hash_indexes_len];
+        let user_voting_strategy_params_flat_len = calldata[3 + proposal_votes_len + used_voting_strategy_id_indexes_len];
+        let user_voting_strategy_params_flat = &calldata[4 + proposal_votes_len + used_voting_strategy_id_indexes_len];
         let (user_voting_strategy_params_flat_hash) = ArrayUtils.hash(
             user_voting_strategy_params_flat_len, user_voting_strategy_params_flat
         );
@@ -145,7 +145,7 @@ namespace StarkEIP191 {
         assert structure[1] = target;
         assert structure[2] = voter_address;
         assert structure[3] = proposal_votes_hash;
-        assert structure[4] = used_voting_strategy_hash_indexes_hash;
+        assert structure[4] = used_voting_strategy_id_indexes_hash;
         assert structure[5] = user_voting_strategy_params_flat_hash;
         assert structure[6] = salt;
 

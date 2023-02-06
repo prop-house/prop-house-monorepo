@@ -6,8 +6,9 @@ from starkware.cairo.common.cairo_keccak.keccak import keccak_uint256s_bigend
 from starkware.cairo.common.uint256 import Uint256, uint256_le, uint256_eq, uint256_unsigned_div_rem
 
 from contracts.starknet.common.lib.math_utils import MathUtils
-from contracts.starknet.strategies.timed_funding_round.lib.award import Award
-from contracts.starknet.strategies.timed_funding_round.lib.proposal_info import ProposalInfo
+
+from contracts.starknet.rounds.timed_funding_round.lib.award import Award
+from contracts.starknet.rounds.timed_funding_round.lib.proposal_info import ProposalInfo
 
 namespace ProposalUtils {
     // Generate an array of uint256 leaves from the provided ProposalInfo array for the purposes

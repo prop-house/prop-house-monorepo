@@ -12,7 +12,8 @@ from starkware.cairo.common.cairo_keccak.keccak import (
 )
 
 from contracts.starknet.common.lib.execute import execute
-from contracts.starknet.strategies.timed_funding_round.lib.eip712 import EIP712
+
+from contracts.starknet.rounds.timed_funding_round.lib.eip712 import EIP712
 
 // print(get_selector_from_name("propose"))
 const PROPOSAL_SELECTOR = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f4ad8d220b81;

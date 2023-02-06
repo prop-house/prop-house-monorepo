@@ -323,7 +323,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     }
 
     /// @notice Define the configuration and register the round on L2.
-    /// For easy duplicate checking, provided strategy hashes MUST be ordered least to greatest.
+    /// Duplicate voting strategies are handled on L2.
     /// @param config The round configuration
     function _register(RoundConfig memory config) internal {
         if (state != RoundState.AwaitingRegistration) {
@@ -377,18 +377,6 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         if (config.strategies.length == 0) {
             revert NO_STRATEGIES_PROVIDED();
         }
-
-        uint256 prevStrategyId;
-        for (uint256 i = 0; i < config.strategies.length; ++i) {
-            VotingStrategy memory strategy = config.strategies[i];
-
-            // Ensure there are no duplicate voting strategies
-            uint256 strategyId = uint256(keccak256(abi.encode(strategy.addr, strategy.params)));
-            if (strategyId <= prevStrategyId) {
-                revert DUPLICATE_VOTING_STRATEGY();
-            }
-            prevStrategyId = strategyId;
-        }
     }
 
     /// @notice Generate the payload required to register the round on L2
@@ -421,7 +409,6 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     }
 
     /// @notice Flatten voting strategies for consumption on L2.
-    /// Duplicates validation MUST occur prior to flattening.
     /// @param strategies The voting strategies
     function _flatten(VotingStrategy[] memory strategies) internal pure returns (uint256[] memory) {
         unchecked {
