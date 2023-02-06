@@ -19,7 +19,7 @@ import { setActiveProposal, setModalActive } from '../../state/slices/propHouse'
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import Divider from '../Divider';
-import getImageFromDescription from '../../utils/getImageFromDescription';
+import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 
 const ProposalCard: React.FC<{
@@ -44,7 +44,7 @@ const ProposalCard: React.FC<{
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    const getImg = async () => setImageUrl(await getImageFromDescription(proposal));
+    const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
     getImg();
   }, [proposal]);
 
@@ -96,7 +96,7 @@ const ProposalCard: React.FC<{
               </div>
             </div>
 
-            {imageUrl && imageUrl && (
+            {imageUrl && (
               <div className={classes.propImgContainer}>
                 <img src={imageUrl} alt="propCardImage" />
               </div>
