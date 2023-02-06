@@ -118,7 +118,7 @@
 .ql-editor img {
   max-width: 100% !important;
 }
-.ql-editor p {
+.ql-editor :is(p, li) {
   font-family: 'PT Root UI' !important;
   font-style: normal !important;
   font-weight: 400 !important;

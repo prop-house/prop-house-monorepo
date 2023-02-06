@@ -289,7 +289,7 @@ p {
 .proposalCopy img {
   max-width: 100% !important;
 }
-.proposalCopy p {
+.proposalCopy :is(p, li) {
   font-family: 'PT Root UI' !important;
   font-style: normal !important;
   font-weight: 400 !important;
@@ -298,6 +298,7 @@ p {
   letter-spacing: 0.02em !important;
   margin-bottom: 0 !important;
 }
+
 .proposalCopy blockquote {
   font-family: 'PT Root UI';
   color: var(--brand-black) !important;
