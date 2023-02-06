@@ -151,6 +151,7 @@
   text-decoration: underline !important;
 }
 .ql-editor :is(code, pre) {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace !important;
   font-size: 13px !important;
   background: #2f3136 !important;
   color: white !important;

@@ -280,7 +280,6 @@ p {
   font-style: normal !important;
   font-weight: 700 !important;
   font-size: 14px !important;
-  /* text-decoration: underline !important; */
   line-height: 19px !important;
   margin-top: 15px !important;
   letter-spacing: 0.02em !important;
@@ -323,6 +322,7 @@ p {
   text-decoration: underline !important;
 }
 .proposalCopy :is(code, pre) {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace !important;
   font-size: 13px !important;
   background: #2f3136 !important;
   color: white !important;
