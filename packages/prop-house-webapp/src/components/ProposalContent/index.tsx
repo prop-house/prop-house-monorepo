@@ -15,7 +15,7 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
 
   return (
     <>
-      <div className={classes.previewCol}>
+      <div className="proposalCopy">
         <span className={classes.proposalBody}>
           {fields.tldr && (
             <>
