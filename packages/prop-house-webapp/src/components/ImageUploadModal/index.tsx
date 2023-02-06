@@ -50,7 +50,6 @@ const ImageUploadModal: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
-  const signerless = new PropHouseWrapper('https://prod.backend.prop.house');
 
   const handleImageUpload = async () => {
     if (!quill) return;
@@ -63,7 +62,7 @@ const ImageUploadModal: React.FC<{
 
       const res = await Promise.all(
         files.map(async (file: File) => {
-          return await signerless.postFile(file, file.name);
+          return await client.current.postFile(file, file.name);
         }),
       );
 
