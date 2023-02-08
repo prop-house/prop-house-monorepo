@@ -254,6 +254,7 @@ export interface StoredProposal extends Proposal {
   voteCount: number;
   lastUpdatedDate: Date;
   deletedAt: Date;
+  reqAmount: number | null;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {
