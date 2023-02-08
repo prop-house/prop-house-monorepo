@@ -67,5 +67,7 @@ export const communities = new CaseInsensitiveMap(
     ),
     // Nouns DAO Amigos
     '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
+    // Nouns BR
+    '0x36b2AA1795d8cdEf4B784Fe34045fAdC45d61e8c': balanceOfErc721(),
   }),
 );
