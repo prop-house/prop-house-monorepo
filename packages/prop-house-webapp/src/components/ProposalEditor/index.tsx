@@ -185,6 +185,7 @@ const ProposalEditor: React.FC<{
         descriptionData={descriptionData}
         editorBlurred={editorBlurred}
         setEditorBlurred={setEditorBlurred}
+        initReqAmount={data.reqAmount}
       />
 
       {showImageUploadModal && (

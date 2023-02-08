@@ -23,6 +23,7 @@ const ProposalInputs: React.FC<{
   onFileDrop: any;
   editorBlurred: boolean;
   setEditorBlurred: (blurred: boolean) => void;
+  initReqAmount: number | null;
 }> = props => {
   const {
     quill,
@@ -33,6 +34,7 @@ const ProposalInputs: React.FC<{
     editorBlurred,
     setEditorBlurred,
     onFileDrop,
+    initReqAmount,
   } = props;
   const location = useLocation();
   // active round comes from two diff places depending on where inputs are being displayed
@@ -46,7 +48,7 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(initReqAmount);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, library?.getSigner());
