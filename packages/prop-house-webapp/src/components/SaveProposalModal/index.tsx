@@ -53,6 +53,7 @@ const SaveProposalModal: React.FC<{
           updatedProposal.what,
           updatedProposal.tldr,
           roundId,
+          updatedProposal.reqAmount,
         ),
       );
       setErrorSaving(false);

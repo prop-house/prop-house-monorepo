@@ -41,11 +41,8 @@ export class ProposalsService {
       relations: ['votes', 'auction'],
       where: { visible: true },
     });
-    // Nasty hack to work around TypeORM's polymorphism inability
-    if (
-      proposal.auction === null &&
-      proposal.parentType === 'infinite-auction'
-    ) {
+
+    if (proposal.parentType === 'infinite-auction') {
       proposal.auction = await this.infiniteAuctionService.findOne(
         proposal.auctionId,
       );

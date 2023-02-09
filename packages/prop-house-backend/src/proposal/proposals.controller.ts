@@ -141,6 +141,9 @@ export class ProposalsController {
     foundProposal.tldr = updateProposalDto.tldr;
     foundProposal.title = updateProposalDto.title;
     foundProposal.signedData = updateProposalDto.signedData;
+    foundProposal.reqAmount = updateProposalDto.reqAmount
+      ? updateProposalDto.reqAmount
+      : null;
     return this.proposalsService.store(foundProposal);
   }
 

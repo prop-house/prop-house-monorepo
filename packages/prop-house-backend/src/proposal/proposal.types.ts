@@ -40,6 +40,9 @@ export class CreateInfiniteAuctionProposalDto extends CreateProposalDto {
 export class UpdateProposalDto extends CreateProposalDto {
   @IsNumber()
   id: number;
+
+  @IsOptional()
+  reqAmount?: number;
 }
 
 export class DeleteProposalDto extends SignedEntity {
