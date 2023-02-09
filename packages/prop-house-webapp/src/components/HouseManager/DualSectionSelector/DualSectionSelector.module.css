@@ -1,0 +1,13 @@
+.container {
+  display: flex;
+  background: var(--bg-med);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  gap: 16px;
+}
+.section {
+  flex: 1;
+}
+.section:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  width: 100%;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+  max-width: min-content;
+  white-space: nowrap;
+  margin: -10px 0px;
+}
+.inputContainer {
+  min-width: 100px;
+}
+:global(.houseManager) {
+  min-width: 150px;
+}
+:global(.houseManager) :is(:global(#dropdown-basic), :global(.dropdown-item)) {
+  font-size: 14px !important;
+  line-height: 19px !important;
+}
+:global(.houseManager) :global(.dropdown-item) {
+  height: 34px !important;
+}
