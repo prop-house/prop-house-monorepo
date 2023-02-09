@@ -74,7 +74,7 @@ const StatusFilters: React.FC<{
       </div>
 
       {/* mobile */}
-      <div className={clsx(classes.dropdown, 'houseDropdown')}>
+      <div className={clsx(classes.dropdown, 'phDropdown')}>
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
             {t(`${statuses[currentRoundStatus].title}`)}

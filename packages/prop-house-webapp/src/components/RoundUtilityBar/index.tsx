@@ -47,7 +47,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
           </div>
         )}
 
-        <div className={clsx(classes.dropdown, 'houseDropdown')}>
+        <div className={clsx(classes.dropdown, 'phDropdown')}>
           {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
             <RoundDropdown
               sortSelection={sortSelection}

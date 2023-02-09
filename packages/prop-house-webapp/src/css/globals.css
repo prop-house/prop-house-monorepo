@@ -119,14 +119,14 @@ p {
 }
 
 /* dropdown-basic */
-.houseDropdown .dropdown button {
+.phDropdown .dropdown button {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0px 1rem;
 }
-.houseDropdown .dropdown button,
-.houseDropdown .show > .btn-success.dropdown-toggle {
+.phDropdown .dropdown button,
+.phDropdown .show > .btn-success.dropdown-toggle {
   background: transparent;
   width: 100%;
   height: 38px;
@@ -135,21 +135,19 @@ p {
   border-radius: 10px;
   border: 1px solid var(--border-med);
 }
-
-.houseDropdown .show {
+.phDropdown .show {
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
   border-radius: 12px;
 }
-.houseDropdown .dropdown .dropdown-menu.show {
+.phDropdown .dropdown .dropdown-menu.show {
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.06);
   border-radius: 12px;
   padding: 2px;
   width: 100%;
 }
-
-.houseDropdown .dropdown-item {
+.phDropdown .dropdown-item {
   font-weight: 700;
   display: flex;
   justify-content: space-between;
@@ -157,13 +155,12 @@ p {
   height: 38px;
   align-items: center;
 }
-.houseDropdown .dropdown-item:active,
-.houseDropdown .dropdown-item:focus,
-.houseDropdown .dropdown-item:hover {
+.phDropdown .dropdown-item:active,
+.phDropdown .dropdown-item:focus,
+.phDropdown .dropdown-item:hover {
   background: var(--border-light);
   border-radius: 10px;
 }
-
 .btn-success:hover,
 .btn-success:focus,
 .btn-success:focus-visible {
