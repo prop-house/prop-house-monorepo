@@ -13,7 +13,7 @@ const DevEnvDropDown = () => {
   };
 
   return (
-    <div className={clsx(classes.dropdown, 'houseDropdown')}>
+    <div className={clsx(classes.dropdown, 'phDropdown')}>
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className={classes.dropDownBtn}>
           ENV
