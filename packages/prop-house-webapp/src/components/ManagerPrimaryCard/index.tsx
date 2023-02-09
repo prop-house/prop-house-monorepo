@@ -1,13 +1,13 @@
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import DeployContractStep from '../DeployContractStep';
-import DepositFundsStep from '../DepositFundsStep/DepositFundsStep';
-import SetupRoundStep from '../SetupRoundStep';
 import classes from './ManagerPrimaryCard.module.css';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import NameTheRound from '../HouseManager/NameTheRound';
+import WhoCanParticipate from '../HouseManager/WhoCanParticipate';
+import SetTheAwards from '../HouseManager/SetTheAwards';
 
-const ManagerPrimaryCard: React.FC<{
-  activeStep: number;
-}> = props => {
-  const { activeStep } = props;
+import { useAppSelector } from '../../hooks';
+
+const ManagerPrimaryCard: React.FC<{}> = () => {
+  const activeStep = useAppSelector(state => state.createRound.activeStep);
 
   return (
     <>
@@ -16,9 +16,9 @@ const ManagerPrimaryCard: React.FC<{
         borderRadius={CardBorderRadius.thirty}
         classNames={classes.primaryCard}
       >
-        {activeStep === 1 && <DeployContractStep />}
-        {activeStep === 2 && <DepositFundsStep />}
-        {activeStep === 3 && <SetupRoundStep />}
+        {activeStep === 1 && <NameTheRound />}
+        {activeStep === 2 && <WhoCanParticipate />}
+        {activeStep === 3 && <SetTheAwards />}
       </Card>
     </>
   );
