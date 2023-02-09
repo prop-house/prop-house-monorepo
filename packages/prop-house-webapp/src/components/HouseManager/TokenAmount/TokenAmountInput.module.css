@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+}
+.container input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  height: 32px;
+  width: 43px;
+  border: 1px solid var(--border-med);
+}
+/* Chrome, Safari, Edge, Opera */
+.container
+  :is(input[type='number']::-webkit-outer-spin-button, input[type='number']::-webkit-inner-spin-button) {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.container input[type='number'] {
+  -moz-appearance: textfield;
+}
+.awardInput {
+  margin: 4px 0px;
+}
+.awardInput input {
+  width: 100%;
+}
