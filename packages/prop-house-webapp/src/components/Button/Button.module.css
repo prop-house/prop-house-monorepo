@@ -166,6 +166,27 @@
   box-shadow: 0 0 0 0.25rem var(--brand-red-semi-transparent) !important;
 }
 
+/* Black BG */
+
+.btnBlackBg {
+  background: var(--brand-black) !important;
+  border: 1px solid var(--brand-black);
+  color: white;
+}
+
+.btnBlackBg:hover {
+  color: var(--brand-black-semi-transparent);
+}
+
+.btnBlackBg:active,
+.btnBlackBg:focus {
+  color: white;
+}
+
+.btnBlackBg:disabled {
+  color: var(--brand-black-semi-transparent);
+}
+
 /* GRAY BG */
 
 .btnGrayBg {

@@ -24,7 +24,7 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import HouseManager from './components/pages/HouseManager';
+import HouseManager from './pages/HouseManager';
 
 const { chains, provider } = configureChains(
   [mainnet],
