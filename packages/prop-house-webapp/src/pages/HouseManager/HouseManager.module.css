@@ -1,0 +1,6 @@
+.cardsContainer {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  color: var(--brand-black);
+}
