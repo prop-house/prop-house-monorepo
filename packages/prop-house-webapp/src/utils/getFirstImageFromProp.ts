@@ -1,7 +1,7 @@
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import isImage from 'is-image-url';
 
-const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
+const getFirstImageFromProp = async (proposal: StoredProposalWithVotes) => {
   // proposal description field
   const proposalDescription = proposal.what;
 
@@ -19,4 +19,4 @@ const getImageFromDescription = async (proposal: StoredProposalWithVotes) => {
     : undefined;
 };
 
-export default getImageFromDescription;
+export default getFirstImageFromProp;

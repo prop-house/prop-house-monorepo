@@ -25,7 +25,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
   return (
     <>
       <Row>
-        <Col xl={12} className={classes.previewCol}>
+        <Col xl={12} className="proposalCopy">
           <div className={classes.headerContainer}>
             <div className={classes.backBtnContainer}>
               {backButton && backButton}
