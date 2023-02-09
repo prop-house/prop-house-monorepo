@@ -12,6 +12,7 @@ export enum ButtonColor {
   PurpleLight,
   Gray,
   Red,
+  Black,
 }
 
 export interface ButtonProps {
@@ -40,6 +41,8 @@ const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
       ? classes.btnGreenBg
       : bgColor === ButtonColor.Red
       ? classes.btnRedBg
+      : bgColor === ButtonColor.Black
+      ? classes.btnBlackBg
       : bgColor === ButtonColor.Gray
       ? classes.btnGrayBg
       : classes.btnWhiteYellowBg;
