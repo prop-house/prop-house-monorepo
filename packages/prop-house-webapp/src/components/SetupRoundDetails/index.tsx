@@ -18,7 +18,7 @@ const SetupRoundDetails = () => {
       <div className={classes.detailsContainer}>
         <div className={classes.detailsSection}>
           <p className={classes.title}>Round type</p>
-          <div className={clsx(classes.dropdown, 'houseDropdown')}>
+          <div className={clsx(classes.dropdown, 'phDropdown')}>
             <Dropdown>
               <Dropdown.Toggle variant="success" id="dropdown-basic">
                 Timed
@@ -54,7 +54,7 @@ const SetupRoundDetails = () => {
           <p className={classes.title}>Reward funds</p>
 
           <div className={classes.rewardFunds}>
-            <div className={clsx(classes.dropdown, classes.fundsDropdown, 'houseDropdown')}>
+            <div className={clsx(classes.dropdown, classes.fundsDropdown, 'phDropdown')}>
               <Dropdown>
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                   ETH
