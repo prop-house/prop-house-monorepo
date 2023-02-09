@@ -1,0 +1,39 @@
+:is(.title, .heading, .subtitle, .link) {
+  font-weight: 700;
+}
+.heading {
+  font-size: 32px;
+  line-height: 39px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.title {
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.02em;
+}
+:is(.subtitle, .link) {
+  font-size: 14px;
+  line-height: 19px;
+}
+.link {
+  color: var(--brand-pink);
+}
+.link:hover {
+  cursor: pointer;
+  text-decoration: underline !important;
+  transition: all 0.15s ease-in-out;
+}
+.body {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+  color: var(--brand-gray);
+}
+.disabled {
+  color: var(--brand-gray);
+}

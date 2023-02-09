@@ -1,0 +1,21 @@
+.container {
+  flex: 1;
+  margin: 4px 0px;
+}
+.container input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+  font-size: 14px;
+}
+
+.container input::placeholder {
+  color: var(--brand-gray-transparent) !important;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+}
