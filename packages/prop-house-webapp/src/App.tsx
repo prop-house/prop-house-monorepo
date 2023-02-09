@@ -26,7 +26,7 @@ import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/r
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
-import HouseManager from './components/pages/HouseManager';
+import HouseManager from './pages/HouseManager';
 
 const { chains, provider } = configureChains(
   [mainnet],
