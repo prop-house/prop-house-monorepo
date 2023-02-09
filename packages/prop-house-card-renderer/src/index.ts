@@ -83,15 +83,20 @@ const generateRemote =
       userAgent: 'PropHouseSnapshotBot',
     });
     console.log(remoteCardUrl(path));
-    await page.goto(remoteCardUrl(path), {
-      waitUntil: config.remoteWaitUntil,
-    });
-    await page.screenshot({ path: cacheFilePath });
+    try {
+      await page.goto(remoteCardUrl(path), {
+        waitUntil: config.remoteWaitUntil,
+      });
+      await page.screenshot({ path: cacheFilePath });
 
-    res
-      .header('X-PropHouse-Type', 'local')
-      .header('Content-Type', 'image/png')
-      .send(fs.readFileSync(cacheFilePath));
+      res
+        .header('X-PropHouse-Type', 'local')
+        .header('Content-Type', 'image/png')
+        .send(fs.readFileSync(cacheFilePath));
+    } catch (e) {
+      console.error(e);
+      res.status(500).send({ message: 'Unable to render cards at this time' });
+    }
   };
 
 (async () => {
