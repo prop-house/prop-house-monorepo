@@ -98,7 +98,7 @@ const Proposal = () => {
           />
         )}
         {proposal ? (
-          <>
+          <Container>
             <RenderedProposalFields
               fields={proposalFields(proposal)}
               address={proposal.address}
@@ -111,7 +111,7 @@ const Proposal = () => {
                 </div>
               }
             />
-          </>
+          </Container>
         ) : failedFetch ? (
           <NotFound />
         ) : (
