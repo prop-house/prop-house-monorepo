@@ -5,11 +5,11 @@ import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { useNavigate } from 'react-router-dom';
-import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
+import DeadlineDates from '../DeadlineDates';
 
 const RoundHeader: React.FC<{
   community: Community;
@@ -65,9 +65,7 @@ const RoundHeader: React.FC<{
         </div>
 
         <Col lg={12} className={classes.communityInfoCol}>
-          <div className={classes.date}>
-            {auction && `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
-          </div>
+          <DeadlineDates round={auction} />
           <Col
             className={clsx(
               classes.titleRow,
