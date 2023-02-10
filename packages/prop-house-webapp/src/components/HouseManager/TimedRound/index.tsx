@@ -4,7 +4,7 @@ import DateTimeInput from '../DateTimeInput';
 import Group from '../Group';
 import InstructionBox from '../InstructionBox';
 import Text from '../Text';
-import { validStartDate, validEndDate } from '../../../utils/isValidDate';
+// import { validStartDate, validEndDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import Flex from '../Flex';
 
@@ -31,7 +31,7 @@ const TimedRound: React.FC<{}> = () => {
         <DateTimeInput
           selectedDate={startDate}
           onDateChange={handleStartDateChange}
-          isValidDate={validStartDate}
+          // isValidDate={validStartDate}
         />
 
         <Text type="body">Round will need to be started manually</Text>
@@ -64,7 +64,7 @@ const TimedRound: React.FC<{}> = () => {
           <DateTimeInput
             selectedDate={endDate}
             onDateChange={handleEndDateChange}
-            isValidDate={validEndDate(startDate)}
+            // isValidDate={validEndDate(startDate)}
           />
         )}
       </Group>
@@ -93,7 +93,7 @@ const TimedRound: React.FC<{}> = () => {
           <DateTimeInput
             selectedDate={endDate}
             onDateChange={handleEndDateChange}
-            isValidDate={validEndDate(startDate)}
+            // isValidDate={validEndDate(startDate)}
           />
         )}
       </Group>
