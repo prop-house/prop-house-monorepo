@@ -1,0 +1,7 @@
+.container {
+  display: flex;
+  flex: 1;
+}
+.periodButton {
+  width: 100%;
+}
