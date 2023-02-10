@@ -11,11 +11,6 @@
 .communityInfoCol > * {
   margin: 0.75rem 0;
 }
-.date {
-  margin: 0;
-  color: var(--brand-pink) !important;
-  font-weight: bold;
-}
 .titleRow {
   display: flex;
   flex-direction: row;

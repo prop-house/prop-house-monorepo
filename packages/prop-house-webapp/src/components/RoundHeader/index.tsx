@@ -5,13 +5,13 @@ import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { useNavigate } from 'react-router-dom';
-import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
+import formatTime from '../../utils/formatTime';
 
 const RoundHeader: React.FC<{
   community: Community;
