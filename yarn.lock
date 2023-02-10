@@ -17223,7 +17223,7 @@ prop-types@^15.0.0, prop-types@^15.6.2, prop-types@^15.7.2:
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-prop-types@^15.8.1:
+prop-types@^15.5.7, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -17560,6 +17560,13 @@ react-countup@^6.3.1:
   integrity sha512-+Bf1caAZHtmVQ5Jmhe2MZuN1cw1CEP5OdeMph9CBwM5K8DEDGmg00AzcN6fO9XolUhqUfiR0pOEiSyngSrHwig==
   dependencies:
     countup.js "^2.2.0"
+
+react-datetime@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-datetime/-/react-datetime-3.2.0.tgz#fdfa4dced5a9b59724f4c478a1ecc3cb6a6a80cf"
+  integrity sha512-w5XdeNIGzBht9CadaZIJhKUhEcDTgH0XokKxGPCxeeJRYL7B3HIKA8CM6Q0xej2JFJt0n5d+zi3maMwaY3262A==
+  dependencies:
+    prop-types "^15.5.7"
 
 react-dev-utils@^11.0.3:
   version "11.0.4"
