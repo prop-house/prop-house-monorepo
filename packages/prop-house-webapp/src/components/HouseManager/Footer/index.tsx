@@ -24,6 +24,7 @@ const Footer: React.FC = () => {
       <div className={clsx(classes.footer, activeStep === 1 && classes.justifyEnd)}>
         {activeStep > 1 && <Button text="Back" bgColor={ButtonColor.Black} onClick={handlePrev} />}
         {activeStep < 5 && <Button text="Next" bgColor={ButtonColor.Pink} onClick={handleNext} />}
+        {activeStep === 5 && <Button text="Create" bgColor={ButtonColor.Pink} onClick={() => {}} />}
       </div>
     </>
   );
