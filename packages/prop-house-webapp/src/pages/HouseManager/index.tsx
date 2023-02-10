@@ -1,17 +1,16 @@
 import classes from './HouseManager.module.css';
 import { Col, Container, Row } from 'react-bootstrap';
-import ManagerPrimaryCard from '../../components/ManagerPrimaryCard';
-// import ManagerSecondaryCard from '../../components/ManagerSecondaryCard';
+import PrimaryCard from '../../components/HouseManager/PrimaryCard';
+import SecondaryCard from '../../components/HouseManager/SecondaryCard';
 
 const HouseManager = () => {
   return (
     <>
       <Container>
-        <Row className={classes.propCardsRow}>
+        <Row>
           <Col xl={8} className={classes.cardsContainer}>
-            <ManagerPrimaryCard />
-
-            {/* <ManagerSecondaryCard activeStep={activeStep} setActiveStep={setActiveStep} /> */}
+            <PrimaryCard />
+            <SecondaryCard />
           </Col>
         </Row>
       </Container>
