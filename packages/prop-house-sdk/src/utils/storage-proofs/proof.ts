@@ -1,6 +1,28 @@
 import { IntsSequence } from '../ints-sequence';
 import { hexToBytes } from '../bytes';
 
+export interface ProofInputs {
+  blockNumber: number;
+  accountOptions: number;
+  ethAddress: IntsSequence;
+  ethAddressFelt: string; // Fossil treats eth addresses two different ways for some reason, it will be changed soon but now this works
+  accountProofSizesBytes: string[];
+  accountProofSizesWords: string[];
+  accountProof: string[];
+  storageProofs: string[][]; // Multiple storage proofs
+}
+
+export interface StorageProof {
+  key: string;
+  proof: string[];
+}
+
+export interface Proofs {
+  accountProof: string[];
+  address: string;
+  storageProof: StorageProof[];
+}
+
 /**
  * Single slot proof voting strategy parameter array encoding (Inclusive -> Exclusive):
  *
@@ -40,28 +62,6 @@ export const decodeParams = (params: string[]): string[][] => {
   const proofsConcat = params.slice(5 + 2 * numNodes);
   return [slot, proofSizesBytes, proofSizesWords, proofsConcat];
 };
-
-export interface ProofInputs {
-  blockNumber: number;
-  accountOptions: number;
-  ethAddress: IntsSequence;
-  ethAddressFelt: string; // Fossil treats eth addresses two different ways for some reason, it will be changed soon but now this works
-  accountProofSizesBytes: string[];
-  accountProofSizesWords: string[];
-  accountProof: string[];
-  storageProofs: string[][]; // Multiple storage proofs
-}
-
-export interface StorageProof {
-  key: string;
-  proof: string[];
-}
-
-export interface Proofs {
-  accountProof: string[];
-  address: string;
-  storageProof: StorageProof[];
-}
 
 /**
  * Produces the input data for the account and storage proof verification methods in Fossil

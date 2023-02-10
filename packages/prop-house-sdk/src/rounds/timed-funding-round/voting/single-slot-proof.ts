@@ -1,6 +1,6 @@
 import { hash } from 'starknet';
-import { encoding, storageProofs } from '../../../../utils';
-import { ClientConfig, VotingStrategy } from '../../../types';
+import { encoding, storageProofs } from '../../../utils';
+import { ClientConfig, StarknetVotingStrategy } from '../../../types';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
 import { TimedFundingRoundEnvelope, VoteMessage } from '../types';
 
@@ -14,7 +14,7 @@ const fetchStrategyParams = async (
   clientConfig: ClientConfig,
 ): Promise<string[]> => {
   const strategyHash = await clientConfig.starkProvider.getStorageAt(
-    envelope.data.message.houseStrategy,
+    envelope.data.message.round,
     encoding.getStorageVarAddress(VOTING_STRATEGY_HASHES_STORE, index.toString(16)),
   );
   const { result } = await clientConfig.starkProvider.callContract({
@@ -32,7 +32,7 @@ const getBlockStorage = async (
 ): Promise<[string, string]> => {
   const timestamp = (
     await clientConfig.starkProvider.getStorageAt(
-      envelope.data.message.houseStrategy,
+      envelope.data.message.round,
       encoding.getStorageVarAddress(PROPOSAL_PERIOD_END_TIMESTAMP_STORE),
     )
   ).toString();
@@ -90,7 +90,7 @@ const fetchProofInputs = async (
   return storageProofs.getProofInputs(block, data.result);
 };
 
-export const singleSlotProofVotingStrategy: VotingStrategy<TimedFundingRoundEnvelope> = {
+export const singleSlotProofVotingStrategy: StarknetVotingStrategy<TimedFundingRoundEnvelope> = {
   type: 'singleSlotProof',
   async getParams(
     address: string,

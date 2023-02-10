@@ -1,6 +1,6 @@
 import { hash, Provider } from 'starknet';
-import { bytes, encoding, splitUint256 } from '../../../../utils';
-import { VotingStrategy } from '../../../types';
+import { bytes, encoding, splitUint256 } from '../../../utils';
+import { StarknetVotingStrategy } from '../../../types';
 import {
   DOMAIN as domain,
   TIMED_FUNDING_ROUND_PROPOSE_TYPES as proposeTypes,
@@ -28,7 +28,7 @@ export class TimedFundingRoundEthSigClient {
   public readonly ethUrl: string;
   public readonly starkProvider: Provider;
   public readonly starknetRelayerUrl: string;
-  public readonly votingStrategies: Map<string, VotingStrategy<TimedFundingRoundEnvelope>>;
+  public readonly votingStrategies: Map<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
 
   constructor(config: TimedFundingRoundEthSigClientConfig) {
     this.ethUrl = config.ethUrl;
@@ -98,7 +98,7 @@ export class TimedFundingRoundEthSigClient {
   ): Promise<TimedFundingRoundEnvelope<EthSigProposeMessage>> {
     const message: EthSigProposeMessage = {
       ...data,
-      houseStrategy: encoding.hexPadRight(data.houseStrategy),
+      round: encoding.hexPadRight(data.round),
       authStrategy: encoding.hexPadRight(data.authStrategy),
       proposerAddress: encoding.hexPadRight(address),
       salt: this.generateSalt(),
@@ -140,7 +140,7 @@ export class TimedFundingRoundEthSigClient {
       ),
     );
     const message: EthSigVoteMessage = {
-      houseStrategy: encoding.hexPadRight(data.houseStrategy),
+      round: encoding.hexPadRight(data.round),
       authStrategy: encoding.hexPadRight(data.authStrategy),
       voterAddress: encoding.hexPadRight(address),
       proposalVotesHash: encoding.hexPadRight(proposalVotesHash),
@@ -171,7 +171,7 @@ export class TimedFundingRoundEthSigClient {
     const votingStrategyHashes = await Promise.all(
       data.votingStrategies.map(index =>
         this.starkProvider.getStorageAt(
-          data.houseStrategy,
+          data.round,
           encoding.getStorageVarAddress('voting_strategy_hashes_store', index.toString(16)),
         ),
       ),

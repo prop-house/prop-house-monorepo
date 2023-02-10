@@ -1,5 +1,5 @@
 import type { Call } from 'starknet';
-import { encoding, splitUint256 } from '../../../../utils';
+import { encoding, splitUint256 } from '../../../utils';
 import type {
   TimedFundingRoundAuthStrategy,
   TimedFundingRoundEnvelope,
@@ -15,7 +15,7 @@ export const ethSigAuthStrategy: TimedFundingRoundAuthStrategy = {
     calldata: string[],
   ): Call {
     const { signature, data } = envelope;
-    const { houseStrategy, authStrategy, salt } = data.message;
+    const { round, authStrategy, salt } = data.message;
     const { r, s, v } = encoding.getRSVFromSig(signature);
     const rawSalt = splitUint256.SplitUint256.fromHex(`0x${salt.toString(16)}`);
 
@@ -30,7 +30,7 @@ export const ethSigAuthStrategy: TimedFundingRoundAuthStrategy = {
         v,
         rawSalt.low,
         rawSalt.high,
-        houseStrategy,
+        round,
         selector,
         calldata.length,
         ...calldata,

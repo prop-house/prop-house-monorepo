@@ -1,14 +1,5 @@
-import { AuthStrategy, ClientConfig, IEnvelope, VotingStrategy } from '../../types';
+import { AuthStrategy, ClientConfig, IEnvelope, StarknetVotingStrategy } from '../../types';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Award } from '../../../houses';
-
-export interface TimedFundingRoundConfig {
-  proposalPeriodStartTimestamp: number;
-  proposalPeriodDuration: number;
-  votePeriodDuration: number;
-  winnerCount: number;
-  awards: Award[];
-}
 
 export interface ProposalVote {
   proposalId: number;
@@ -16,15 +7,15 @@ export interface ProposalVote {
 }
 
 export interface ProposeMessage {
-  houseStrategy: string;
+  round: string;
   authStrategy: string;
   metadataUri: string;
 }
 
 export interface VoteMessage {
-  houseStrategy: string;
+  round: string;
   authStrategy: string;
-  votingStrategies: number[];
+  votingStrategies: number[]; // TODO: This uses hashes now
   proposalVotes: ProposalVote[];
 }
 
@@ -34,7 +25,7 @@ export interface EthSigProposeMessage extends ProposeMessage {
 }
 
 export interface EthSigVoteMessage {
-  houseStrategy: string;
+  round: string;
   authStrategy: string;
   voterAddress: string;
   proposalVotesHash: string;
@@ -67,10 +58,10 @@ export type TimedFundingRoundAuthStrategy = AuthStrategy<
 
 export interface TimedFundingRoundEthSigClientConfig extends ClientConfig {
   starknetRelayerUrl: string;
-  votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
+  votingStrategies?: Record<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
 }
 
 export interface TimedFundingRoundStarknetTxClientConfig extends ClientConfig {
   authStrategies?: Record<string, TimedFundingRoundAuthStrategy>;
-  votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
+  votingStrategies?: Record<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
 }

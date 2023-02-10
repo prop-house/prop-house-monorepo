@@ -419,6 +419,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
             uint256 offset;
             for (uint256 i = 0; i < strategyCount; ++i) {
                 VotingStrategy memory strategy = strategies[i];
+                if (strategy.addr == 0) {
+                    revert INVALID_VOTING_STRATEGY();
+                }
 
                 flattenedStrategies[offset++] = strategy.addr;
                 for (uint256 k = 0; k < strategy.params.length; ++k) {

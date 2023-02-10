@@ -72,7 +72,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         address house,
         Round calldata newRound,
         Asset[] calldata assets
-    ) external returns (address round) {
+    ) external payable returns (address round) {
         if (!isHouse(house)) {
             revert INVALID_HOUSE();
         }
@@ -114,7 +114,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         House calldata newHouse,
         Round calldata newRound,
         Asset[] calldata assets
-    ) external returns (address house, address round) {
+    ) external payable returns (address house, address round) {
         if (!manager.isHouseRegistered(newHouse.impl)) {
             revert INVALID_HOUSE_IMPL();
         }
@@ -139,7 +139,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         emit HouseCreated(house, newHouse.impl);
 
-        IHouse(house).initialize(newHouse.config);
+        IHouse(house).initialize(msg.sender, newHouse.config);
     }
 
     /// @notice Create a new round and emit an event

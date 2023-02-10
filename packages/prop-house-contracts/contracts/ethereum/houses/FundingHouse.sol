@@ -57,8 +57,9 @@ contract FundingHouse is IHouse, ERC721 {
     }
 
     /// @notice Initialize the house by populating token information
+    /// @param creator The house creator
     /// @param data Initialization data
-    function initialize(bytes calldata data) external initializer {
+    function initialize(address creator, bytes calldata data) external initializer {
         if (data.length != 0) {
             // TODO: Allow these to be changed
             (string memory name, string memory symbol, string memory contractURI) = abi.decode(
@@ -68,6 +69,9 @@ contract FundingHouse is IHouse, ERC721 {
 
             __ERC721_init(name, symbol, contractURI);
         }
+
+        // Mint a pass to the house creator
+        creatorPassRegistry.mintCreatorPassesTo(creator, 1);
     }
 
     /// @notice Returns round metadata for `tokenId` as a Base64-JSON blob

@@ -12,8 +12,9 @@ interface IHouse is IERC721 {
     error ONLY_HOUSE_OWNER();
 
     /// @notice Initialize the house
+    /// @param creator The house creator
     /// @param data Initialization data
-    function initialize(bytes calldata data) external;
+    function initialize(address creator, bytes calldata data) external;
 
     /// @notice Returns `true` if the provided address is a valid round on the house
     /// @param round The round to validate

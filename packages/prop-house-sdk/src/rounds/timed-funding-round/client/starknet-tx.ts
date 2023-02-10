@@ -1,13 +1,12 @@
 import { Account, hash, Provider } from 'starknet';
-import { encoding } from '../../../../utils';
-import { VotingStrategy } from '../../../types';
+import { encoding } from '../../../utils';
+import { StarknetVotingStrategy } from '../../../types';
 import { DEFAULT_AUTH_STRATEGIES } from '../auth';
 import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from '../calldata';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
 import { DEFAULT_VOTING_STRATEGIES } from '../voting';
 import {
   EthSigProposeMessage,
-  EthSigVoteMessage,
   ProposeMessage,
   TimedFundingRoundAuthStrategy,
   TimedFundingRoundEnvelope,
@@ -19,7 +18,7 @@ export class TimedFundingRoundStarknetTxClient {
   public readonly ethUrl: string;
   public readonly starkProvider: Provider;
   public readonly authStrategies: Map<string, TimedFundingRoundAuthStrategy>;
-  public readonly votingStrategies: Map<string, VotingStrategy<TimedFundingRoundEnvelope>>;
+  public readonly votingStrategies: Map<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
 
   constructor(config: TimedFundingRoundStarknetTxClientConfig) {
     this.ethUrl = config.ethUrl;
@@ -65,10 +64,7 @@ export class TimedFundingRoundStarknetTxClient {
    * @param account The Starknet account who's invoking the vote function
    * @param envelope The vote message envelope
    */
-  public async vote(
-    account: Account,
-    envelope: TimedFundingRoundEnvelope<VoteMessage>,
-  ) {
+  public async vote(account: Account, envelope: TimedFundingRoundEnvelope<VoteMessage>) {
     const { data } = envelope;
     const authStrategyAddress = encoding.hexPadRight(data.message.authStrategy).toLowerCase();
     const authStrategy = this.authStrategies.get(authStrategyAddress);
@@ -111,13 +107,11 @@ export class TimedFundingRoundStarknetTxClient {
    * Get the voting strategy addresses for the provided vote message envelope
    * @param envelope The vote message envelope
    */
-  public async getVotingStrategyAddresses(
-    envelope: TimedFundingRoundEnvelope<VoteMessage>,
-  ) {
+  public async getVotingStrategyAddresses(envelope: TimedFundingRoundEnvelope<VoteMessage>) {
     const votingStrategyHashes = await Promise.all(
       envelope.data.message.votingStrategies.map(index =>
         this.starkProvider.getStorageAt(
-          envelope.data.message.houseStrategy,
+          envelope.data.message.round,
           encoding.getStorageVarAddress('voting_strategy_hashes_store', index.toString(16)),
         ),
       ),
