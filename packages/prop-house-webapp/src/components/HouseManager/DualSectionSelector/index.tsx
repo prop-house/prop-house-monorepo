@@ -1,9 +1,9 @@
 import classes from './DualSectionSelector.module.css';
-import React from 'react';
+import React, { Dispatch, ReactNode, SetStateAction } from 'react';
 
 const DualSectionSelector: React.FC<{
-  children: React.ReactNode;
-  setActiveSection: React.Dispatch<React.SetStateAction<number>>;
+  children: ReactNode;
+  setActiveSection: Dispatch<SetStateAction<number>>;
 }> = props => {
   const { children, setActiveSection } = props;
 
