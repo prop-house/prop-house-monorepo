@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.container svg {
+  color: var(--brand-gray) !important;
+}
+.container svg:hover {
+  cursor: pointer;
+}
