@@ -6,7 +6,6 @@ import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
-import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
