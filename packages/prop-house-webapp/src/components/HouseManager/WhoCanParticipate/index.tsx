@@ -27,8 +27,6 @@ const WhoCanParticipate = () => {
 
       <Group>
         <AddAddressWithVotes type="contract" />
-        <AddAddressWithVotes type="contract" />
-        <AddAddressWithVotes type="contract" />
       </Group>
 
       <Text type="link">Add another token</Text>
