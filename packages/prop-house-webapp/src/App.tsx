@@ -57,49 +57,53 @@ function App() {
   const noNavPath =
     location.pathname === '/' || location.pathname === '/faq' || location.pathname === '/create';
 
-  return openGraphCardPath ? (
-      <Routes>
-        <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-        <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
-        <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
-      </Routes>
-  ) : (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider
-        chains={chains}
-        theme={lightTheme({
-          accentColor: 'var(--brand-purple)',
-        })}
-      >
-        <Suspense fallback={<LoadingIndicator />}>
-          <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-            {!noNavPath && <NavBar />}
+  return (
+    <>
+      <WagmiConfig client={wagmiClient}>
+        {openGraphCardPath ? (
+          <Routes>
+            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
+            <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
+            <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
+          </Routes>
+        ) : (
+          <RainbowKitProvider
+            chains={chains}
+            theme={lightTheme({
+              accentColor: 'var(--brand-purple)',
+            })}
+          >
+            <Suspense fallback={<LoadingIndicator />}>
+              <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+                {!noNavPath && <NavBar />}
 
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route
-                path="/create"
-                element={
-                  <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                    <Create />
-                  </ProtectedRoute>
-                }
-              />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route
+                    path="/create"
+                    element={
+                      <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                        <Create />
+                      </ProtectedRoute>
+                    }
+                  />
 
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/proposal/:id" element={<Proposal />} />
-              <Route path="/:house" element={<House />} />
-              <Route path="/:house/:title" element={<Round />} />
-              <Route path="/:house/:title/:id" element={<Proposal />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/proposal/:id" element={<Proposal />} />
+                  <Route path="/:house" element={<House />} />
+                  <Route path="/:house/:title" element={<Round />} />
+                  <Route path="/:house/:title/:id" element={<Proposal />} />
 
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
 
-            <Footer />
-          </div>
-        </Suspense>
-      </RainbowKitProvider>
-    </WagmiConfig>
+                <Footer />
+              </div>
+            </Suspense>
+          </RainbowKitProvider>
+        )}
+      </WagmiConfig>
+    </>
   );
 }
 
