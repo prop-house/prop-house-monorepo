@@ -1,7 +1,0 @@
-.primaryCard {
-  width: 66.666667%;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-low);
-  height: max-content;
-  min-height: 200px;
-}
