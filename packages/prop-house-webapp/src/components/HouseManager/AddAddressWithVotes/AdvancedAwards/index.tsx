@@ -1,7 +1,7 @@
 // import classes from './AdvancedAwards.module.css';
-import AddAwardByToken from '../AddAwardByToken';
-import Group from '../Group';
-import Text from '../Text';
+import AddAwardByToken from '../../AddAwardByToken';
+import Group from '../../Group';
+import Text from '../../Text';
 
 const AdvancedAwards: React.FC<{ numOfAwards: number }> = props => {
   const { numOfAwards } = props;
