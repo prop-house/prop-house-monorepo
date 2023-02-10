@@ -175,7 +175,7 @@
 }
 
 .btnBlackBg:hover {
-  color: var(--brand-black-semi-transparent);
+  opacity: 0.8;
 }
 
 .btnBlackBg:active,
