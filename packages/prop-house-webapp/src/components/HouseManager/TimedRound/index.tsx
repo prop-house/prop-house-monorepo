@@ -10,8 +10,8 @@ import FlexRow from '../FlexRow';
 
 const TimedRound: React.FC<{}> = () => {
   // need to .toISOString() the date before sending it to the backend
-  const [startDate, handleStartDateChange] = useState(new Date());
-  const [endDate, handleEndDateChange] = useState(new Date());
+  const [startDate, handleStartDateChange] = useState<Date | string>('mm/dd/yyyy, --:--');
+  const [endDate, handleEndDateChange] = useState<Date | string>('mm/dd/yyyy, --:--');
 
   const [proposalPeriod, setProposalPeriod] = useState<number>(-1);
   const [votingPeriod, setVotingPeriod] = useState<number>(0);
