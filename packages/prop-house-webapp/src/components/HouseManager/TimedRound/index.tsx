@@ -5,8 +5,8 @@ import Group from '../Group';
 import InstructionBox from '../InstructionBox';
 import Text from '../Text';
 import { validStartDate, validEndDate } from '../../../utils/isValidDate';
-import TimePeriodSelector from '../TimePeriodSelector';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
+import FlexRow from '../FlexRow';
 
 const TimedRound: React.FC<{}> = () => {
   // need to .toISOString() the date before sending it to the backend
@@ -41,7 +41,7 @@ const TimedRound: React.FC<{}> = () => {
 
       <Group>
         <Text type="subtitle">Proposal Period</Text>
-        <TimePeriodSelector>
+        <FlexRow>
           {proposingDays.map((day, index) => {
             return (
               <TimePeriod
@@ -58,7 +58,7 @@ const TimedRound: React.FC<{}> = () => {
               setProposalPeriod(proposingDays.length);
             }}
           />
-        </TimePeriodSelector>
+        </FlexRow>
 
         {proposalPeriod === proposingDays.length && (
           <DateTimeInput
@@ -71,7 +71,7 @@ const TimedRound: React.FC<{}> = () => {
 
       <Group>
         <Text type="subtitle">Voting Period</Text>
-        <TimePeriodSelector>
+        <FlexRow>
           {votingDays.map((day, index) => {
             return (
               <TimePeriod
@@ -87,7 +87,7 @@ const TimedRound: React.FC<{}> = () => {
             selectedPeriod={votingDays.length === votingPeriod}
             onClick={() => setVotingPeriod(votingDays.length)}
           />
-        </TimePeriodSelector>
+        </FlexRow>
 
         {votingPeriod === votingDays.length && (
           <DateTimeInput
