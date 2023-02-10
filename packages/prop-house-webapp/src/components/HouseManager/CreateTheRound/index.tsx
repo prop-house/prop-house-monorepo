@@ -45,11 +45,28 @@ const CreateTheRound = () => {
           </Text>
         }
       />
-      <EditSection section="votes" />
+
+      <Group>
+        <EditSection section="votes" />
+        <CardWrapper>
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+        </CardWrapper>
+      </Group>
 
       <Divider />
 
-      <EditSection section="awards" />
+      <Group>
+        <EditSection section="awards" />
+        <CardWrapper>
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+          <StrategyCard name="Nouns" />
+        </CardWrapper>
+      </Group>
 
       <Divider />
 
