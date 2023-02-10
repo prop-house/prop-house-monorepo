@@ -5,6 +5,7 @@ import WhoCanParticipate from '../HouseManager/WhoCanParticipate';
 import SetTheAwards from '../HouseManager/SetTheAwards';
 
 import { useAppSelector } from '../../hooks';
+import RoundTiming from '../HouseManager/RoundTiming';
 
 const ManagerPrimaryCard: React.FC<{}> = () => {
   const activeStep = useAppSelector(state => state.createRound.activeStep);
@@ -19,6 +20,7 @@ const ManagerPrimaryCard: React.FC<{}> = () => {
         {activeStep === 1 && <NameTheRound />}
         {activeStep === 2 && <WhoCanParticipate />}
         {activeStep === 3 && <SetTheAwards />}
+        {activeStep === 4 && <RoundTiming />}
       </Card>
     </>
   );
