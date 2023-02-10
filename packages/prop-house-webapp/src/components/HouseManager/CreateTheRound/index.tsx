@@ -1,11 +1,13 @@
 import DeadlineDates from '../../DeadlineDates';
 import Divider from '../../Divider';
 import ReadMore from '../../ReadMore';
+import CardWrapper from '../CardWrapper';
 import EditSection from '../EditSection';
 import Footer from '../Footer';
 import Group from '../Group';
 import InstructionBox from '../InstructionBox';
 import RoundName from '../RoundName';
+import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 
 const CreateTheRound = () => {
@@ -28,7 +30,10 @@ const CreateTheRound = () => {
 
   return (
     <>
-      <EditSection section="about" />
+      <Group>
+        <EditSection section="about" />
+      </Group>
+
       <DeadlineDates round={auction} />
       <RoundName name="Nouns Video Contest Marketing Team" />
       <ReadMore
@@ -61,7 +66,7 @@ const CreateTheRound = () => {
       <Divider />
 
       <Group>
-        <Text type="title">NFTS</Text>
+        <Text type="title">NFTs</Text>
       </Group>
 
       <Footer />
