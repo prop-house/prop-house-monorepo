@@ -8,7 +8,10 @@ const EditSection: React.FC<{
   section: 'about' | 'votes' | 'awards';
   onClick?: () => void;
 }> = props => {
-  const { section, onClick } = props;
+  const {
+    section,
+    //  onClick
+  } = props;
 
   return (
     <div className={classes.container}>
