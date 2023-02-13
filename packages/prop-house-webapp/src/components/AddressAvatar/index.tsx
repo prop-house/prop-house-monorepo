@@ -18,12 +18,12 @@ const AddressAvatar: React.FC<{ address: string; size?: number }> = props => {
   const size = s + 'px';
 
   return (
-    <div className={classes.container}>
+    <div className={clsx(classes.container, 'avatar')}>
       <img
         style={{ height: size, width: size }}
         className={clsx(!avatar && classes.glasses)}
         src={avatar ? avatar : glasses}
-        alt="avatar"
+        alt=""
       />
     </div>
   );

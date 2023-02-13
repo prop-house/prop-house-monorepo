@@ -4,7 +4,7 @@ import { useAppSelector } from '../../hooks';
 import trimEthAddress from '../../utils/trimEthAddress';
 import classes from './EthAddress.module.css';
 import { useEnsName, useEnsAvatar } from 'wagmi';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import AddressAvatar from '../AddressAvatar';
 
 const EthAddress: React.FC<{
   address: string;
@@ -23,16 +23,11 @@ const EthAddress: React.FC<{
 
   // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
   const shortAddress = trimEthAddress(address as string);
-
+  console.log('avatar', address, avatar);
   return (
     <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        {addAvatar &&
-          (avatar ? (
-            <img className={classes.avatar} src={avatar} alt="ens-avatar" />
-          ) : (
-            <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
-          ))}
+        {addAvatar && <AddressAvatar address={address} />}
         <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
     </div>

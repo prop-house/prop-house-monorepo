@@ -158,4 +158,7 @@ hr {
   .headerPropInfo {
     max-width: 75%;
   }
+  .submittedBy :global(.avatar) {
+    display: none;
+  }
 }

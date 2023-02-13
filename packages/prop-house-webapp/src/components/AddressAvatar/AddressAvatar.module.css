@@ -2,6 +2,7 @@
   overflow: hidden;
   background: #fff;
   border-radius: 50%;
+  margin: 1px;
   outline: 1px solid var(--border-light) !important;
 }
 .glasses {
