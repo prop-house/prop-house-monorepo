@@ -27,7 +27,6 @@
 .inputAndButtons {
   display: flex;
   margin: 4px 0px;
-
   gap: 4px;
 }
 .allotButtons {
@@ -35,18 +34,11 @@
   flex-direction: row;
   gap: 2px;
 }
-:is(.button, .editButton) {
+.button {
   line-height: 19px;
   height: 32px;
-}
-.button {
   font-weight: 900;
   font-size: 20px !important;
-}
-.editButton {
-  border: 1px solid var(--border-med) !important;
-  font-weight: 700;
-  font-size: 14px !important;
 }
 .awardInput input {
   width: 100%;

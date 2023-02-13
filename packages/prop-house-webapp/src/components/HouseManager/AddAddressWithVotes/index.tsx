@@ -19,7 +19,7 @@ const AddAddressWithVotes: React.FC<AddressTypeProps> = props => {
         <Address placeholder="ex: 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03" />
       </div>
 
-      <VotesPerToken type={type} />
+      <VotesPerToken />
 
       <XButton />
     </div>
