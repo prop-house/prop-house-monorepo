@@ -23,7 +23,7 @@ const EthAddress: React.FC<{
 
   // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
   const shortAddress = trimEthAddress(address as string);
-  console.log('avatar', address, avatar);
+
   return (
     <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
