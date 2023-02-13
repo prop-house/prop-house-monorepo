@@ -15,14 +15,17 @@ export const roundSlice = createSlice({
     setActiveStep: (state, action: PayloadAction<number>) => {
       state.activeStep = action.payload;
     },
-    nextStep: state => {
+    setNextStep: state => {
       state.activeStep = Math.min(state.activeStep + 1, 5);
     },
-    prevStep: state => {
+    setPrevStep: state => {
       state.activeStep = Math.max(state.activeStep - 1, 1);
+    },
+    updateRound: (state, action: PayloadAction<InitialRoundProps>) => {
+      state.round = action.payload;
     },
   },
 });
 
-export const { setActiveStep, nextStep, prevStep } = roundSlice.actions;
+export const { setActiveStep, setNextStep, setPrevStep, updateRound } = roundSlice.actions;
 export default roundSlice.reducer;
