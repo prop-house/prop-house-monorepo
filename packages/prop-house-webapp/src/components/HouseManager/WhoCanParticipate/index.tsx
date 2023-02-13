@@ -1,3 +1,4 @@
+import classes from './WhoCanParticipate.module.css';
 import Divider from '../../Divider';
 import AddAddressWithVotes from '../AddAddressWithVotes';
 import Footer from '../Footer';
@@ -5,7 +6,6 @@ import Group from '../Group';
 import Header from '../Header';
 import InstructionBox from '../InstructionBox';
 import Text from '../Text';
-import classes from './WhoCanParticipate.module.css';
 
 const WhoCanParticipate = () => {
   return (
