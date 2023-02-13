@@ -7,6 +7,7 @@
   letter-spacing: 0.02em;
   gap: 12px;
   margin-bottom: 12px;
+  position: relative;
 }
 .step :not(:last-child) {
   margin-bottom: 4px;
@@ -42,4 +43,16 @@
   background: var(--brand-gray-transparent);
   border: 2px solid transparent;
   color: white;
+}
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 20px;
+  width: 2px;
+  height: 100%;
+  border: 1px dashed var(--brand-pink);
+}
+.completedStep::after {
+  border: 1px dashed var(--brand-gray-transparent) !important;
 }
