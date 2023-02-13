@@ -1,28 +1,40 @@
 import classes from './PrimaryCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
+import { useAppSelector } from '../../../hooks';
 import NameTheRound from '../NameTheRound';
 import WhoCanParticipate from '../WhoCanParticipate';
 import SetTheAwards from '../SetTheAwards';
-import { useAppSelector } from '../../../hooks';
 import RoundTiming from '../RoundTiming';
 import CreateTheRound from '../CreateTheRound';
 
 const PrimaryCard: React.FC = () => {
   const activeStep = useAppSelector(state => state.createRound.activeStep);
 
+  const renderStep = () => {
+    switch (activeStep) {
+      case 1:
+        return <NameTheRound />;
+      case 2:
+        return <WhoCanParticipate />;
+      case 3:
+        return <SetTheAwards />;
+      case 4:
+        return <RoundTiming />;
+      case 5:
+        return <CreateTheRound />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <Card
         bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.thirty}
         classNames={classes.primaryCard}
+        borderRadius={CardBorderRadius.thirty}
       >
-        {activeStep === 1 && <NameTheRound />}
-        {activeStep === 2 && <WhoCanParticipate />}
-        {activeStep === 3 && <SetTheAwards />}
-        {activeStep === 4 && <RoundTiming />}
-        {activeStep === 5 && <CreateTheRound />}
-        {/* <CreateTheRound /> */}
+        {renderStep()}
       </Card>
     </>
   );
