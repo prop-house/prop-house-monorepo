@@ -1,11 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export interface InitialRoundProps {
+  title: string;
+  startTime: Date;
+  proposalEndTime: Date;
+  votingEndTime: Date;
+  fundingAmount: number;
+  numWinners: number;
+  currencyType: string;
+  description: string;
+}
+
 interface RoundState {
   activeStep: number;
+  round: InitialRoundProps;
 }
+
+const initialRound: InitialRoundProps = {
+  title: '',
+  startTime: new Date(),
+  proposalEndTime: new Date(),
+  votingEndTime: new Date(),
+  fundingAmount: 0,
+  numWinners: 0,
+  currencyType: '',
+  description: '',
+};
 
 const initialState: RoundState = {
   activeStep: 1,
+  round: initialRound,
 };
 
 export const roundSlice = createSlice({
