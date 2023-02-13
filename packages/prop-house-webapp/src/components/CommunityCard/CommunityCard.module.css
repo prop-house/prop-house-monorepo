@@ -61,13 +61,12 @@
   transition: background-color var(--card-transition), filter var(--card-transition);
 }
 .container a {
-  width: 100%;
   min-width: 100%;
 }
 .container a img {
+  object-fit: cover;
   width: 212px;
   height: 212px;
-  object-fit: cover;
 }
 
 .container:hover {
