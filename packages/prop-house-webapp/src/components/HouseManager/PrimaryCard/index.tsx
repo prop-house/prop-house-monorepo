@@ -8,7 +8,7 @@ import RoundTiming from '../RoundTiming';
 import CreateTheRound from '../CreateTheRound';
 
 const PrimaryCard: React.FC = () => {
-  const activeStep = useAppSelector(state => state.createRound.activeStep);
+  const activeStep = useAppSelector(state => state.round.activeStep);
 
   const renderStep = () => {
     switch (activeStep) {
