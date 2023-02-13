@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CreateRoundState {
+interface RoundState {
   activeStep: number;
 }
 
-const initialState: CreateRoundState = {
+const initialState: RoundState = {
   activeStep: 1,
 };
 
-export const createRoundSlice = createSlice({
-  name: 'createRound',
+export const roundSlice = createSlice({
+  name: 'round',
   initialState,
   reducers: {
     setActiveStep: (state, action: PayloadAction<number>) => {
@@ -24,5 +24,5 @@ export const createRoundSlice = createSlice({
   },
 });
 
-export const { setActiveStep, nextStep, prevStep } = createRoundSlice.actions;
-export default createRoundSlice.reducer;
+export const { setActiveStep, nextStep, prevStep } = roundSlice.actions;
+export default roundSlice.reducer;

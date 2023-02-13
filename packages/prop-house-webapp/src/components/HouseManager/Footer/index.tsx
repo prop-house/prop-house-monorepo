@@ -3,11 +3,11 @@ import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
-import { nextStep, prevStep } from '../../../state/slices/createRound';
+import { nextStep, prevStep } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 
 const Footer: React.FC = () => {
-  const activeStep = useAppSelector(state => state.createRound.activeStep);
+  const activeStep = useAppSelector(state => state.round.activeStep);
 
   const dispatch = useDispatch();
   const handleNext = () => {
