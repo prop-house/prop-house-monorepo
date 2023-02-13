@@ -4,7 +4,7 @@ import CreateRoundStep from '../../CreateRoundStep';
 import { useAppSelector } from '../../../hooks';
 
 const SecondaryCard: React.FC = () => {
-  const activeStep = useAppSelector(state => state.createRound.activeStep);
+  const activeStep = useAppSelector(state => state.round.activeStep);
 
   const steps = [
     {

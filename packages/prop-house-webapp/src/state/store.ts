@@ -3,13 +3,13 @@ import propHouseReducer from './slices/propHouse';
 import configurationReducer from './slices/configuration';
 import votingReducer from './slices/voting';
 import editorReducer from './slices/editor';
-import createRoundReducer from './slices/createRound';
+import roundReducer from './slices/round';
 
 const store = configureStore({
   reducer: {
     // backend: backendReducer,
     propHouse: propHouseReducer,
-    createRound: createRoundReducer,
+    round: roundReducer,
     configuration: configurationReducer,
     editor: editorReducer,
     voting: votingReducer,
