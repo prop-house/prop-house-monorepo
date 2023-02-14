@@ -158,4 +158,10 @@ hr {
   .headerPropInfo {
     max-width: 75%;
   }
+  .propTitle {
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 }
