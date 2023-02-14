@@ -1,4 +1,10 @@
-import { balanceOfErc721, balanceOfErc721Multiple, erc1155, oneHundredVotes } from '../strategies';
+import {
+  balanceOfErc20,
+  balanceOfErc721,
+  balanceOfErc721Multiple,
+  erc1155,
+  oneHundredVotes,
+} from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
 import { onchainMonkey } from '../strategies/onchainMonkey';
@@ -80,5 +86,7 @@ export const communities = new CaseInsensitiveMap(
       ],
       [1, 1, 1],
     ),
+    // Chaos
+    '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
   }),
 );
