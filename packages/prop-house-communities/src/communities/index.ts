@@ -1,4 +1,10 @@
-import { balanceOfErc721, balanceOfErc721Multiple, erc1155, oneHundredVotes } from '../strategies';
+import {
+  balanceOfErc20,
+  balanceOfErc721,
+  balanceOfErc721Multiple,
+  erc1155,
+  oneHundredVotes,
+} from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
 import { onchainMonkey } from '../strategies/onchainMonkey';
@@ -69,5 +75,22 @@ export const communities = new CaseInsensitiveMap(
     '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
     // Nouns BR
     '0x36b2AA1795d8cdEf4B784Fe34045fAdC45d61e8c': balanceOfErc721(),
+    // Kiwami
+    '0x701A038aF4Bd0fc9b69A829DdcB2f61185a49568': balanceOfErc721(),
+    // Humankind
+    '0xb20e024da94fEf84B5dbDE3a639048952De58169': balanceOfErc721Multiple(
+      [
+        '0xb20e024da94fEf84B5dbDE3a639048952De58169',
+        '0xA30CF1135BE5Af62E412f22BD01069e2CEbA8706',
+        '0xceE9F881bb972CeCD5Df06c6111cE457b0d63F0B',
+      ],
+      [1, 1, 1],
+    ),
+    // Chaos
+    '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
+    // Rug Radio
+    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': balanceOfErc20(18),
+    // Noggle DAO
+    '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
   }),
 );
