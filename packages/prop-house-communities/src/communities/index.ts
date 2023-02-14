@@ -71,5 +71,14 @@ export const communities = new CaseInsensitiveMap(
     '0x36b2AA1795d8cdEf4B784Fe34045fAdC45d61e8c': balanceOfErc721(),
     // Kiwami
     '0x701A038aF4Bd0fc9b69A829DdcB2f61185a49568': balanceOfErc721(),
+    // Humankind
+    '0xb20e024da94fEf84B5dbDE3a639048952De58169': balanceOfErc721Multiple(
+      [
+        '0xb20e024da94fEf84B5dbDE3a639048952De58169',
+        '0xA30CF1135BE5Af62E412f22BD01069e2CEbA8706',
+        '0xceE9F881bb972CeCD5Df06c6111cE457b0d63F0B',
+      ],
+      [1, 1, 1],
+    ),
   }),
 );
