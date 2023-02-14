@@ -184,6 +184,24 @@
     overflow: hidden;
     white-space: nowrap;
   }
+  .propInfo {
+    flex-direction: column;
+  }
+  .propTitle {
+    -webkit-line-clamp: 2;
+  }
+  .propImgContainer {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+  }
+  .titleContainer {
+    align-items: flex-start;
+  }
+  .crownNoun {
+    margin-top: 3px;
+    display: block;
+  }
 }
 .hideVoteModule {
   display: none;

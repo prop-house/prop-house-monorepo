@@ -24,6 +24,7 @@ import ProposalModal from '../../components/ProposalModal';
 import { useSigner } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
+import { isMobile } from 'web3modal';
 
 const Round = () => {
   const location = useLocation();
@@ -42,7 +43,11 @@ const Round = () => {
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
-  const [loading, setLoading] = useState(false);
+  const [loadingCommAndRound, setLoadingCommAndRound] = useState(false);
+  const [commAndRoundfailedFetch, setCommAndRoundFailedFetch] = useState(false);
+
+  const [loadingProps, setLoadingProps] = useState(false);
+  const [propsFailedFetch, setPropsFailedFetch] = useState(false);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -50,36 +55,53 @@ const Round = () => {
 
   // if no round is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
+    if (round) return;
+
     const fetchCommunityAndRound = async () => {
-      const community = await client.current.getCommunityWithName(slugToName(communityName));
-      const round = await client.current.getAuctionWithNameForCommunity(
-        nameToSlug(roundName),
-        community.id,
-      );
-      dispatch(setActiveCommunity(community));
-      dispatch(setActiveRound(round));
+      try {
+        setLoadingCommAndRound(true);
+
+        const community = await client.current.getCommunityWithName(slugToName(communityName));
+        const round = await client.current.getAuctionWithNameForCommunity(
+          nameToSlug(roundName),
+          community.id,
+        );
+
+        dispatch(setActiveCommunity(community));
+        dispatch(setActiveRound(round));
+        setLoadingCommAndRound(false);
+      } catch (e) {
+        setLoadingCommAndRound(false);
+        setCommAndRoundFailedFetch(true);
+      }
     };
 
-    if (!round) fetchCommunityAndRound();
+    fetchCommunityAndRound();
   }, [communityName, dispatch, roundName, round]);
 
   // fetch proposals
   useEffect(() => {
     if (!round) return;
-    setLoading(true);
 
     const fetchAuctionProposals = async () => {
-      const proposals = await client.current.getAuctionProposals(round.id);
+      try {
+        setLoadingProps(true);
 
-      dispatch(setActiveProposals(proposals));
+        const proposals = await client.current.getAuctionProposals(round.id);
+        dispatch(setActiveProposals(proposals));
 
-      // if the round is in voting state or over we sort by votes, otherwise we sort by created date
-      isVotingWindow || isRoundOver
-        ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
-        : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+        // if the round is in voting state or over we sort by votes, otherwise we sort by created date
+        isVotingWindow || isRoundOver
+          ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
+          : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
 
-      setLoading(false);
+        setLoadingProps(false);
+      } catch (e) {
+        setLoadingProps(false);
+        setPropsFailedFetch(true);
+      }
     };
+
     fetchAuctionProposals();
 
     return () => {
@@ -102,29 +124,37 @@ const Round = () => {
         />
       )}
 
-      <Container>
-        {community && round && <RoundHeader auction={round} community={community} />}
-      </Container>
-
-      {round && (
-        <div className={classes.stickyContainer}>
-          <Container>
-            <RoundUtilityBar auction={round} />
-          </Container>
-        </div>
+      {loadingCommAndRound ? (
+        <LoadingIndicator height={isMobile() ? 416 : 332} />
+      ) : !loadingCommAndRound && commAndRoundfailedFetch ? (
+        <NotFound />
+      ) : (
+        community &&
+        round && (
+          <>
+            <Container>
+              <RoundHeader auction={round} community={community} />
+            </Container>
+            <div className={classes.stickyContainer}>
+              <Container>
+                <RoundUtilityBar auction={round} />
+              </Container>
+            </div>
+          </>
+        )
       )}
 
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {loading ? (
+            {loadingProps ? (
               <div className={classes.loader}>
                 <LoadingIndicator />
               </div>
-            ) : !round ? (
+            ) : !loadingProps && propsFailedFetch ? (
               <NotFound />
             ) : (
-              proposals && <RoundContent auction={round} proposals={proposals} />
+              round && proposals && <RoundContent auction={round} proposals={proposals} />
             )}
           </div>
         </Container>
