@@ -88,5 +88,7 @@ export const communities = new CaseInsensitiveMap(
     ),
     // Chaos
     '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
+    // Rug Radio
+    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': balanceOfErc20(18),
   }),
 );
