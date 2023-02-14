@@ -40,7 +40,9 @@ const House = () => {
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [loadingCommunity, setLoadingCommunity] = useState(false);
+  const [failedLoadingCommunity, setFailedLoadingCommunity] = useState(false);
   const [loadingRounds, setLoadingRounds] = useState(false);
+  const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);
   const { t } = useTranslation();
 
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
@@ -52,10 +54,15 @@ const House = () => {
   // fetch community
   useEffect(() => {
     const fetchCommunity = async () => {
-      setLoadingCommunity(true);
-      const community = await client.current.getCommunityWithName(slugToName(slug));
-      dispatch(setActiveCommunity(community));
-      setLoadingCommunity(false);
+      try {
+        setLoadingCommunity(true);
+        const community = await client.current.getCommunityWithName(slugToName(slug));
+        dispatch(setActiveCommunity(community));
+        setLoadingCommunity(false);
+      } catch (e) {
+        setLoadingCommunity(false);
+        setFailedLoadingCommunity(true);
+      }
     };
     fetchCommunity();
   }, [slug, dispatch]);
@@ -63,29 +70,37 @@ const House = () => {
   // fetch rounds
   useEffect(() => {
     if (!community) return;
-    setLoadingRounds(true);
-    const fetchRounds = async () => {
-      const rounds = await client.current.getAuctionsForCommunity(community.id);
-      setRounds(rounds);
 
-      // Number of rounds under a certain status type in a House
-      setNumberOfRoundsPerStatus([
-        // number of active rounds (proposing & voting)
+    const fetchRounds = async () => {
+      try {
+        setLoadingRounds(true);
+        const rounds = await client.current.getAuctionsForCommunity(community.id);
+
+        setRounds(rounds);
+
+        // Number of rounds under a certain status type in a House
+        setNumberOfRoundsPerStatus([
+          // number of active rounds (proposing & voting)
+          rounds.filter(
+            r =>
+              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
+              auctionStatus(r) === AuctionStatus.AuctionVoting,
+          ).length,
+          rounds.length,
+        ]);
+
+        // if there are no active rounds, default filter by all rounds
         rounds.filter(
           r =>
             auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
             auctionStatus(r) === AuctionStatus.AuctionVoting,
-        ).length,
-        rounds.length,
-      ]);
+        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
 
-      // if there are no active rounds, default filter by all rounds
-      rounds.filter(
-        r =>
-          auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-          auctionStatus(r) === AuctionStatus.AuctionVoting,
-      ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
-      setLoadingRounds(false);
+        setLoadingRounds(false);
+      } catch (e) {
+        setLoadingRounds(false);
+        setFailedLoadingRounds(true);
+      }
     };
     fetchRounds();
   }, [community]);
@@ -132,48 +147,52 @@ const House = () => {
 
       {loadingCommunity ? (
         <LoadingIndicator />
-      ) : !community ? (
+      ) : !loadingCommunity && failedLoadingCommunity ? (
         <NotFound />
       ) : (
-        <>
-          <Container>
-            <HouseHeader community={community} />
-          </Container>
-
-          <div className={classes.stickyContainer}>
+        community && (
+          <>
             <Container>
-              <HouseUtilityBar
-                numberOfRoundsPerStatus={numberOfRoundsPerStatus}
-                currentRoundStatus={currentRoundStatus}
-                setCurrentRoundStatus={setCurrentRoundStatus}
-                input={input}
-                setInput={setInput}
-              />
+              <HouseHeader community={community} />
             </Container>
-          </div>
 
-          <div className={classes.houseContainer}>
-            <Container>
-              <Row>
-                {loadingRounds ? (
-                  <LoadingIndicator />
-                ) : roundsOnDisplay.length > 0 ? (
-                  sortRoundByStatus(roundsOnDisplay).map((round, index) => (
-                    <Col key={index} xl={6}>
-                      <RoundCard round={round} />
-                    </Col>
-                  ))
-                ) : input === '' ? (
-                  <Col>
+            <div className={classes.stickyContainer}>
+              <Container>
+                <HouseUtilityBar
+                  numberOfRoundsPerStatus={numberOfRoundsPerStatus}
+                  currentRoundStatus={currentRoundStatus}
+                  setCurrentRoundStatus={setCurrentRoundStatus}
+                  input={input}
+                  setInput={setInput}
+                />
+              </Container>
+            </div>
+
+            <div className={classes.houseContainer}>
+              <Container>
+                <Row>
+                  {loadingRounds ? (
+                    <LoadingIndicator />
+                  ) : !loadingRounds && failedLoadingRounds ? (
                     <ErrorMessageCard message={t('noRoundsAvailable')} />
-                  </Col>
-                ) : (
-                  <NoSearchResults />
-                )}
-              </Row>
-            </Container>
-          </div>
-        </>
+                  ) : roundsOnDisplay.length > 0 ? (
+                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+                      <Col key={index} xl={6}>
+                        <RoundCard round={round} />
+                      </Col>
+                    ))
+                  ) : input === '' ? (
+                    <Col>
+                      <ErrorMessageCard message={t('noRoundsAvailable')} />
+                    </Col>
+                  ) : (
+                    <NoSearchResults />
+                  )}
+                </Row>
+              </Container>
+            </div>
+          </>
+        )
       )}
     </>
   );
