@@ -23,6 +23,7 @@ import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
 import { useSigner } from 'wagmi';
+import { isMobile } from 'web3modal';
 
 const House = () => {
   const location = useLocation();
@@ -146,7 +147,7 @@ const House = () => {
       )}
 
       {loadingCommunity ? (
-        <LoadingIndicator />
+        <LoadingIndicator height={isMobile() ? 288 : 349} />
       ) : !loadingCommunity && failedLoadingCommunity ? (
         <NotFound />
       ) : (

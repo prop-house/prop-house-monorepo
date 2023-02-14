@@ -24,6 +24,7 @@ import ProposalModal from '../../components/ProposalModal';
 import { useSigner } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
+import { isMobile } from 'web3modal';
 
 const Round = () => {
   const location = useLocation();
@@ -124,7 +125,7 @@ const Round = () => {
       )}
 
       {loadingCommAndRound ? (
-        <LoadingIndicator />
+        <LoadingIndicator height={isMobile() ? 416 : 332} />
       ) : !loadingCommAndRound && commAndRoundfailedFetch ? (
         <NotFound />
       ) : (
