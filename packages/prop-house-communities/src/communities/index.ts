@@ -69,5 +69,7 @@ export const communities = new CaseInsensitiveMap(
     '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
     // Nouns BR
     '0x36b2AA1795d8cdEf4B784Fe34045fAdC45d61e8c': balanceOfErc721(),
+    // Kiwami
+    '0x701A038aF4Bd0fc9b69A829DdcB2f61185a49568': balanceOfErc721(),
   }),
 );
