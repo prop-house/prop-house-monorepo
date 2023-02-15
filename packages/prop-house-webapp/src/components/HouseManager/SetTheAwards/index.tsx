@@ -8,15 +8,34 @@ import RoundName from '../RoundName';
 import Section from '../Section';
 import RewardsSimple from '../RewardsSimple';
 import RewardsAdvanced from '../RewardsAdvanced';
-
-const numOfAwards = 4;
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../../hooks';
+import { InitialRoundProps, updateRound } from '../../../state/slices/round';
 
 const SetTheAwards = () => {
   const [activeSection, setActiveSection] = useState(0);
 
+  const dispatch = useDispatch();
+  const round = useAppSelector(state => state.round.round);
+
+  const handleChange = (
+    property: keyof InitialRoundProps,
+    value: InitialRoundProps[keyof InitialRoundProps],
+  ) => {
+    const newRound = { ...round, [property]: value };
+    dispatch(updateRound(newRound));
+  };
+
+  // const [rewards, setRewards] = useState([]);
+
+  const dataToBeCleared = {
+    numWinners: 0,
+    fundingAmount: 0,
+  };
+
   return (
     <>
-      <RoundName name="Nouns Video Contest Marketing Team" />
+      <RoundName name={round.title} />
 
       <Header
         title="What will the winners be awarded?"
