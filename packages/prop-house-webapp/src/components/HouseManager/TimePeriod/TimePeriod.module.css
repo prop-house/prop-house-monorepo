@@ -5,3 +5,9 @@
 .periodButton {
   width: 100%;
 }
+
+.periodButton:disabled {
+  background-color: white;
+  color: var(--brand-gray-transparent);
+  border: 1px solid var(--border-med);
+}

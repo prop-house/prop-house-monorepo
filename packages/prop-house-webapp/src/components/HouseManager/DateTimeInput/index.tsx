@@ -1,29 +1,31 @@
 import classes from './DateTimeInput.module.css';
 import 'react-datetime/css/react-datetime.css';
 import DateTime from 'react-datetime';
-import clsx from 'clsx';
+import { Dayjs } from 'dayjs';
 
 const DateTimeInput: React.FC<{
-  selectedDate: Date | string;
+  selectedDate: Date | undefined;
   onDateChange: any;
-  // isValidDate: any;
+  isValidDate: (current: Dayjs) => boolean;
 }> = props => {
-  const {
-    selectedDate,
-    onDateChange,
-    // isValidDate
-  } = props;
+  const { selectedDate, onDateChange, isValidDate } = props;
 
-  // when the date is not selected, it is a string vs a date object
-  const placeholder = typeof selectedDate === 'string';
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Backspace' || event.key === 'Enter') {
+      event.preventDefault();
+    }
+  };
 
   return (
     // placeholder class makes the text gray
-    <div className={clsx(classes.container, placeholder && classes.placeholder)}>
+    <div onKeyDown={handleKeyDown} className={classes.container}>
       <DateTime
         value={selectedDate}
+        initialValue={'mm/dd/yyyy, --:--'}
+        inputProps={{ className: selectedDate ? '' : classes.placeholder }}
         onChange={onDateChange}
-        //  isValidDate={isValidDate}
+        closeOnSelect
+        isValidDate={isValidDate}
       />
     </div>
   );

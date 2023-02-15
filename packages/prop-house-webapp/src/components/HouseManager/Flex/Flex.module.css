@@ -1,7 +1,0 @@
-.row {
-  display: flex;
-  gap: 6px;
-}
-.column {
-  flex-direction: column;
-}
