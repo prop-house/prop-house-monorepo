@@ -11,7 +11,10 @@
 .btn div {
   margin: auto;
 }
-
+:global(.btn-primary:focus) {
+  border: none;
+  box-shadow: none;
+}
 .btn:disabled {
   background-color: var(--brand-gray);
 }
@@ -36,14 +39,6 @@
 .btnPurpleBg {
   background-color: var(--brand-purple);
   border: none;
-}
-.btnPurpleBg:hover {
-  background-color: var(--brand-purple-semi-transparent);
-}
-.btnPurpleBg:active,
-.btnPurpleBg:focus {
-  background-color: var(--brand-purple-semi-transparent);
-  box-shadow: 0 0 0 0.25rem var(--brand-purple-transparent) !important;
 }
 
 /* PURPLE LIGHT BG */
