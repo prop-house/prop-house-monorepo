@@ -1,3 +1,4 @@
+import { useAppSelector } from '../../../hooks';
 import DeadlineDates from '../../DeadlineDates';
 import Divider from '../../Divider';
 import ReadMore from '../../ReadMore';
@@ -11,40 +12,17 @@ import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 
 const CreateTheRound = () => {
-  const auction: any = {
-    id: 149,
-    visible: true,
-    title: 'Round 33',
-    startTime: new Date('2023-02-06T22:00:00.000Z'),
-    proposalEndTime: new Date('2023-02-11T22:00:00.000Z'),
-    votingEndTime: new Date('2023-02-13T22:00:00.000Z'),
-    fundingAmount: 1,
-    createdDate: new Date('2023-02-06T12:00:00.000Z'),
-    numWinners: 5,
-    community: 8,
-    currencyType: 'UMA',
-    description:
-      'Welcome to another weekly round of the UMA Prop House! Take your chance and submit a proposal detailing what you’d be willing to contribute for an opportunity to mint an UMA NFT. The best proposals include what you’re making, approximately how long it’s going to take & possibly a bit about yourself. Proposals which further the UMA ecosystem, lore & meme, or simply delight UMA token owners have the best chances at winning! If you have any questions please join our [UMA Discord](https://discord.com/invite/ryZsjTaryF) and ask away!',
-    balanceBlockTag: 16572318,
-  };
+  const round = useAppSelector(state => state.round.round);
 
   return (
     <>
       <Group>
         <EditSection section="about" />
       </Group>
-
-      <DeadlineDates round={auction} />
-      <RoundName name="Nouns Video Contest Marketing Team" />
-      <ReadMore
-        description={
-          <Text type="body">
-            This Prop House round is specifically for people to propose how they will get people to
-            enter the Nouns $200k Video Contest. The round is not about making a video, it is about
-            getting other people to make videos and enter the main contest by whatever means.
-          </Text>
-        }
-      />
+      {/*  */}
+      <DeadlineDates round={round} />
+      <RoundName name={round.title} />
+      <ReadMore description={<Text type="body">{round.description}</Text>} />
 
       <Group>
         <EditSection section="votes" />

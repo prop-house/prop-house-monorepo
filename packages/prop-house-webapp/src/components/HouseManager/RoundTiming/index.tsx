@@ -34,7 +34,7 @@ const RoundTiming = () => {
 
   return (
     <>
-      <RoundName name="Nouns Video Contest Marketing Team" />
+      <RoundName name={round.title} />
 
       <Header
         title="How long should the round run?"
