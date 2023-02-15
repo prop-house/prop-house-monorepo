@@ -23,6 +23,7 @@
   color: var(--brand-pink);
   border: none;
   background: none;
+  width: max-content;
 }
 .link:hover:not(.disabled) {
   cursor: pointer;
