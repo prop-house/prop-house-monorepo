@@ -1,13 +1,21 @@
-import clsx from 'clsx';
-import classes from './Flex.module.css';
+import { CSSProperties } from 'react';
 
 const Flex: React.FC<{
   children: React.ReactNode;
+  gap?: number;
   column?: boolean;
 }> = props => {
-  const { children, column } = props;
+  const { children, gap, column } = props;
 
-  return <div className={clsx(classes.row, column && classes.column)}>{children}</div>;
+  const gapValue = gap ? `${gap}px` : undefined;
+
+  const styles: CSSProperties = {
+    display: 'flex',
+    flexDirection: column ? 'column' : 'row',
+    gap: gapValue,
+  };
+
+  return <div style={styles}>{children}</div>;
 };
 
 export default Flex;

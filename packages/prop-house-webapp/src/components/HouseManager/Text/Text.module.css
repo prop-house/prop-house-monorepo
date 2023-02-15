@@ -21,8 +21,10 @@
 }
 .link {
   color: var(--brand-pink);
+  border: none;
+  background: none;
 }
-.link:hover {
+.link:hover:not(.disabled) {
   cursor: pointer;
   text-decoration: underline !important;
   transition: all 0.15s ease-in-out;
