@@ -10,9 +10,13 @@ interface TextProps {
 
 const Text: React.FC<TextProps> = ({ type, disabled, onClick, children }) => {
   return type === 'link' ? (
-    <div onClick={onClick} className={clsx(classes.link, disabled && classes.disabled)}>
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      className={clsx(classes.link, disabled && classes.disabled)}
+    >
       {children}
-    </div>
+    </button>
   ) : (
     <p className={clsx(classes[type], disabled && classes.disabled)}>{children}</p>
   );
