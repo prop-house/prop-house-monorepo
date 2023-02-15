@@ -1,6 +1,6 @@
 import { Account, hash, Provider } from 'starknet';
-import { encoding } from '../../../utils';
-import { StarknetVotingStrategy } from '../../../types';
+import { encoding } from '../../../../utils';
+import { StarknetVotingStrategy } from '../../../../types';
 import { DEFAULT_AUTH_STRATEGIES } from '../auth';
 import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from '../calldata';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';

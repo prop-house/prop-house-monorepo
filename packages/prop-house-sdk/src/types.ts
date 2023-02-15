@@ -60,7 +60,7 @@ export interface HouseConfig {
   [HouseType.FUNDING]: FundingHouseConfig;
 }
 
-export interface House<T extends HouseType> {
+export interface HouseInfo<T extends HouseType> {
   houseType: T;
   config: HouseConfig[T];
 }
@@ -75,7 +75,7 @@ export enum RoundType {
 
 export interface TimedFundingRoundConfig {
   awards: Asset[];
-  strategies: VotingStrategy[];
+  strategies: VotingStrategyInfo[];
   proposalPeriodStartTimestamp: number;
   proposalPeriodDuration: number;
   votePeriodDuration: number;
@@ -86,7 +86,7 @@ export interface RoundConfig {
   [RoundType.TIMED_FUNDING]: TimedFundingRoundConfig;
 }
 
-export interface Round<T extends RoundType> {
+export interface RoundInfo<T extends RoundType> {
   roundType: T;
   config: RoundConfig[T];
   title: string;
@@ -100,6 +100,7 @@ export interface Round<T extends RoundType> {
 export enum VotingStrategyType {
   BALANCE_OF = 'BALANCE_OF',
   WHITELIST = 'WHITELIST',
+  VANILLA = 'VANILLA',
 }
 
 export interface BalanceOf {
@@ -117,12 +118,31 @@ export interface BalanceOfWithTokenID {
   multiplier?: number;
 }
 
-export interface Whitelist {
-  strategyType: VotingStrategyType.WHITELIST;
-  addresses: string[];
+export interface WhitelistMember {
+  address: string;
+  votingPower: string;
 }
 
-export type VotingStrategy = BalanceOf | BalanceOfWithTokenID | Whitelist;
+export interface Whitelist {
+  strategyType: VotingStrategyType.WHITELIST;
+  members: WhitelistMember[];
+}
+
+export interface Vanilla {
+  strategyType: VotingStrategyType.VANILLA;
+}
+
+export interface Custom {
+  strategyType: string;
+}
+
+// prettier-ignore
+export type VotingStrategyInfo<C extends Custom = Custom> = BalanceOf | BalanceOfWithTokenID | Whitelist | Vanilla | C;
+
+export interface VotingStrategyStruct {
+  addr: BigNumberish;
+  params: BigNumberish[];
+}
 
 //#endregion
 
@@ -162,5 +182,11 @@ export interface StarknetVotingStrategy<E extends Envelope> {
     clientConfig: ClientConfig,
   ): Promise<string[]>;
 }
+
+//#endregion
+
+//#region Helpers
+
+export type Newable<T> = new (...args: any[]) => T;
 
 //#endregion

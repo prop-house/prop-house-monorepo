@@ -1,6 +1,6 @@
 import { hash, Provider } from 'starknet';
-import { bytes, encoding, splitUint256 } from '../../../utils';
-import { StarknetVotingStrategy } from '../../../types';
+import { bytes, encoding, splitUint256 } from '../../../../utils';
+import { StarknetVotingStrategy } from '../../../../types';
 import {
   DOMAIN as domain,
   TIMED_FUNDING_ROUND_PROPOSE_TYPES as proposeTypes,

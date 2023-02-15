@@ -1,4 +1,4 @@
-import { AuthStrategy, ClientConfig, IEnvelope, StarknetVotingStrategy } from '../../types';
+import { AuthStrategy, ClientConfig, IEnvelope, StarknetVotingStrategy } from '../../../types';
 import { BigNumberish } from '@ethersproject/bignumber';
 
 export interface ProposalVote {

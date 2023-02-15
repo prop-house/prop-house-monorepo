@@ -8,8 +8,8 @@ address constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 uint256 constant MASK_250 = 0x03FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 // prettier-ignore
-// print(get_selector_from_name("register_house_strategy"))
-uint256 constant REGISTER_HOUSE_STRATEGY_SELECTOR = 0x377cce40a22f1b8904235a96284f1b6dc44451c8d7670914040b7948520b507;
+// print(get_selector_from_name("register_round"))
+uint256 constant REGISTER_ROUND_SELECTOR = 0x26490f901ea8ad5a245d987479919f1d20fbb0c164367e33ef09a9ea4ba8d04;
 
 // The Prop House entrypoint NFT name
 string constant PROP_HOUSE_NAME = 'Prop House';

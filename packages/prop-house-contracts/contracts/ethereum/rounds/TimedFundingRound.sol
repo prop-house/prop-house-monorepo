@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 import { Clone } from 'solady/src/utils/Clone.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
-import { REGISTER_HOUSE_STRATEGY_SELECTOR } from '../Constants.sol';
+import { REGISTER_ROUND_SELECTOR } from '../Constants.sol';
 import { ITimedFundingRound } from '../interfaces/ITimedFundingRound.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
@@ -46,8 +46,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice The Asset Metadata Renderer contract
     ITokenMetadataRenderer public immutable renderer;
 
-    /// @notice The Strategy Factory contract address on Starknet
-    uint256 internal immutable strategyFactory;
+    /// @notice The Round Factory contract address on Starknet
+    uint256 internal immutable roundFactory;
 
     /// @notice The generalized execution relayer contract on Starknet
     uint256 public immutable executionRelayer;
@@ -110,7 +110,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         address _starknet,
         address _messenger,
         address _renderer,
-        uint256 _strategyFactory,
+        uint256 _roundFactory,
         uint256 _executionRelayer
     ) {
         classHash = _classHash;
@@ -118,7 +118,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         starknet = IStarknetCore(_starknet);
         messenger = IMessenger(_messenger);
         renderer = ITokenMetadataRenderer(_renderer);
-        strategyFactory = _strategyFactory;
+        roundFactory = _roundFactory;
         executionRelayer = _executionRelayer;
     }
 
@@ -340,7 +340,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         state = RoundState.Registered;
 
         // Register the round on L2
-        messenger.sendMessageToL2(strategyFactory, REGISTER_HOUSE_STRATEGY_SELECTOR, _getL2Payload(config));
+        messenger.sendMessageToL2(roundFactory, REGISTER_ROUND_SELECTOR, _getL2Payload(config));
 
         emit RoundRegistered(
             config.awards,

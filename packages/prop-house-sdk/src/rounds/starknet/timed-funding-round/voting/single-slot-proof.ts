@@ -1,6 +1,6 @@
 import { hash } from 'starknet';
-import { encoding, storageProofs } from '../../../utils';
-import { ClientConfig, StarknetVotingStrategy } from '../../../types';
+import { encoding, storageProofs } from '../../../../utils';
+import { ClientConfig, StarknetVotingStrategy } from '../../../../types';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
 import { TimedFundingRoundEnvelope, VoteMessage } from '../types';
 

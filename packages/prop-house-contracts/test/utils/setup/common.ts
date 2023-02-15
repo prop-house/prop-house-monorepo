@@ -1,65 +1,43 @@
 import {
-  AwardRouter__factory,
-  RegistrarManager__factory,
-  DeploymentManager__factory,
-  HouseApprovalManager__factory,
-  UpgradeManager__factory,
-  StrategyManager__factory,
-  HouseFactory__factory,
+  Manager__factory,
+  Messenger__factory,
   MockStarknetMessaging__factory,
+  CreatorPassRegistry__factory,
+  PropHouse__factory,
   StarkNetCommit__factory,
-  StarknetMessenger__factory,
 } from '../../../typechain';
 import { ethers } from 'hardhat';
+import { constants } from 'ethers';
 
 export const commonL1Setup = async () => {
-  const [registrar] = await ethers.getSigners();
+  const [deployer] = await ethers.getSigners();
 
-  const registrarManagerFactory = new RegistrarManager__factory(registrar);
-  const deploymentManagerFactory = new DeploymentManager__factory(registrar);
-  const upgradeManagerFactory = new UpgradeManager__factory(registrar);
-  const strategyManagerFactory = new StrategyManager__factory(registrar);
+  const managerFactory = new Manager__factory(deployer);
+  const propHouseFactory = new PropHouse__factory(deployer);
+  const creatorPassRegistryFactory = new CreatorPassRegistry__factory(deployer);
 
-  const houseDeployerFactory = new HouseFactory__factory(registrar);
+  const mockStarknetMessagingFactory = new MockStarknetMessaging__factory(deployer);
+  const starknetCommitFactory = new StarkNetCommit__factory(deployer);
+  const messengerFactory = new Messenger__factory(deployer);
 
-  const houseApprovalManagerFactory = new HouseApprovalManager__factory(registrar);
-  const awardRouterFactory = new AwardRouter__factory(registrar);
+  const manager = await managerFactory.deploy();
+  const [propHouse, mockStarknetMessaging] = await Promise.all([
+    propHouseFactory.deploy(manager.address),
+    mockStarknetMessagingFactory.deploy(),
+  ]);
 
-  const mockStarknetMessagingFactory = new MockStarknetMessaging__factory(registrar);
-  const starknetCommitFactory = new StarkNetCommit__factory(registrar);
-  const starknetMessengerFactory = new StarknetMessenger__factory(registrar);
-
-  const registrarManager = await registrarManagerFactory.deploy(registrar.address);
-  const [deploymentManager, upgradeManager, strategyManager, mockStarknetMessaging] =
-    await Promise.all([
-      deploymentManagerFactory.deploy(registrarManager.address),
-      upgradeManagerFactory.deploy(registrarManager.address),
-      strategyManagerFactory.deploy(registrarManager.address),
-      mockStarknetMessagingFactory.deploy(),
-    ]);
-
-  const houseFactory = await houseDeployerFactory.deploy(deploymentManager.address);
-  const houseApprovalManager = await houseApprovalManagerFactory.deploy(houseFactory.address);
-  const awardRouter = await awardRouterFactory.deploy(
-    houseFactory.address,
-    houseApprovalManager.address,
-  );
-  const starknetCommit = await starknetCommitFactory.deploy(mockStarknetMessaging.address);
-  const starknetMessenger = await starknetMessengerFactory.deploy(
-    mockStarknetMessaging.address,
-    houseFactory.address,
-  );
+  const [creatorPassRegistry, starknetCommit] = await Promise.all([
+    creatorPassRegistryFactory.deploy(propHouse.address, constants.AddressZero),
+    starknetCommitFactory.deploy(mockStarknetMessaging.address),
+  ]);
+  const messenger = await messengerFactory.deploy(mockStarknetMessaging.address, propHouse.address);
 
   return {
-    registrar,
-    registrarManager,
-    deploymentManager,
-    upgradeManager,
-    strategyManager,
-    houseFactory,
-    houseApprovalManager,
-    awardRouter,
-    starknetMessenger,
+    deployer,
+    manager,
+    propHouse,
+    creatorPassRegistry,
+    messenger,
     mockStarknetMessaging,
     starknetCommit,
   };

@@ -1,5 +1,5 @@
 import type { Call } from 'starknet';
-import { encoding, splitUint256 } from '../../../utils';
+import { encoding, splitUint256 } from '../../../../utils';
 import type {
   TimedFundingRoundAuthStrategy,
   TimedFundingRoundEnvelope,

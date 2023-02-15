@@ -1,15 +1,32 @@
 import { PropHouseContract, PropHouse__factory } from '@prophouse/contracts';
-import { Asset, AssetStruct, AssetType, House, HouseType, Round, RoundType } from './types';
+import {
+  Asset,
+  AssetStruct,
+  AssetType,
+  Custom,
+  HouseInfo,
+  HouseType,
+  Newable,
+  RoundInfo,
+  RoundType,
+  VotingStrategyInfo,
+} from './types';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from './addresses';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
-import { encoding, houses, rounds } from './utils';
+import { encoding } from './utils';
+import { House } from './houses';
+import { Round } from './rounds';
+import { Voting, VotingStrategy } from './voting';
 
-export class PropHouse {
+export class PropHouse<CVS extends Custom> {
   private readonly _contract: PropHouseContract;
   private readonly _addresses: ContractAddresses;
+  private readonly _house: House;
+  private readonly _round: Round;
+  private readonly _voting: Voting<CVS>;
 
   /**
    * The prop house contract instance
@@ -25,9 +42,37 @@ export class PropHouse {
     return this._addresses;
   }
 
-  constructor(chainId: number, signerOrProvider: Signer | Provider) {
+  /**
+   * Shared house helper
+   */
+  public get house() {
+    return this._house;
+  }
+
+  /**
+   * Shared round helper
+   */
+  public get round() {
+    return this._round;
+  }
+
+  /**
+   * Shared voting helper
+   */
+  public get voting() {
+    return this._voting;
+  }
+
+  constructor(
+    chainId: number,
+    signerOrProvider: Signer | Provider,
+    customVotingStrategies: Newable<VotingStrategy<VotingStrategyInfo<CVS>>>[] = [],
+  ) {
     this._addresses = getContractAddressesForChainOrThrow(chainId);
     this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, signerOrProvider);
+    this._house = House.for(chainId);
+    this._round = Round.for(chainId);
+    this._voting = Voting.for(chainId, customVotingStrategies);
   }
 
   /**
@@ -71,7 +116,7 @@ export class PropHouse {
    */
   public async createRoundOnExistingHouse<RT extends RoundType>(
     houseAddress: string,
-    round: Round<RT>,
+    round: RoundInfo<RT>,
     overrides: Overrides = {},
   ) {
     return this.contract.createRoundOnExistingHouse(
@@ -79,8 +124,8 @@ export class PropHouse {
       {
         title: round.title,
         description: round.description,
-        impl: rounds.addressForType(round.roundType, this.addresses),
-        config: rounds.encodeConfig(round),
+        impl: this.round.getImplForType(round.roundType),
+        config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
     );
@@ -95,7 +140,7 @@ export class PropHouse {
    */
   public async createAndFundRoundOnExistingHouse<RT extends RoundType>(
     houseAddress: string,
-    round: Round<RT>,
+    round: RoundInfo<RT>,
     funding: Asset[],
     overrides: Overrides = {},
   ) {
@@ -105,8 +150,8 @@ export class PropHouse {
       {
         title: round.title,
         description: round.description,
-        impl: rounds.addressForType(round.roundType, this.addresses),
-        config: rounds.encodeConfig(round),
+        impl: this.round.getImplForType(round.roundType),
+        config: await this.round.getABIEncodedConfig(round),
       },
       assets,
       {
@@ -123,20 +168,20 @@ export class PropHouse {
    * @param overrides Optional transaction overrides
    */
   public async createRoundOnNewHouse<HT extends HouseType, RT extends RoundType>(
-    house: House<HT>,
-    round: Round<RT>,
+    house: HouseInfo<HT>,
+    round: RoundInfo<RT>,
     overrides: Overrides = {},
   ) {
     return this.contract.createRoundOnNewHouse(
       {
-        impl: houses.addressForType(house.houseType, this.addresses),
-        config: houses.encodeConfig(house),
+        impl: this.house.getImplForType(house.houseType),
+        config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: rounds.addressForType(round.roundType, this.addresses),
-        config: rounds.encodeConfig(round),
+        impl: this.round.getImplForType(round.roundType),
+        config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
     );
@@ -150,22 +195,22 @@ export class PropHouse {
    * @param overrides Optional transaction overrides
    */
   public async createAndFundRoundOnNewHouse<HT extends HouseType, RT extends RoundType>(
-    house: House<HT>,
-    round: Round<RT>,
+    house: HouseInfo<HT>,
+    round: RoundInfo<RT>,
     funding: Asset[],
     overrides: Overrides = {},
   ) {
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnNewHouse(
       {
-        impl: houses.addressForType(house.houseType, this.addresses),
-        config: houses.encodeConfig(house),
+        impl: this.house.getImplForType(house.houseType),
+        config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: rounds.addressForType(round.roundType, this.addresses),
-        config: rounds.encodeConfig(round),
+        impl: this.round.getImplForType(round.roundType),
+        config: await this.round.getABIEncodedConfig(round),
       },
       assets,
       {

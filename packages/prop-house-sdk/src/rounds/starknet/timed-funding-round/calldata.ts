@@ -1,5 +1,5 @@
 import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
-import { encoding, intsSequence, splitUint256 } from '../../utils';
+import { encoding, intsSequence, splitUint256 } from '../../../utils';
 import { ProposalVote } from './types';
 
 /**

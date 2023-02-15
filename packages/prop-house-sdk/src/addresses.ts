@@ -15,6 +15,7 @@ export interface VotingStrategies {
   balanceOf: string;
   balanceOfMultiplier: string;
   whitelist: string;
+  vanilla: string;
 }
 
 export interface EVMContracts {
@@ -48,6 +49,7 @@ export const contracts: Record<number, ContractAddresses> = {
         balanceOf: '',
         balanceOfMultiplier: '',
         whitelist: '',
+        vanilla: '',
       },
     },
   },
@@ -66,6 +68,7 @@ export const contracts: Record<number, ContractAddresses> = {
         balanceOf: '',
         balanceOfMultiplier: '',
         whitelist: '',
+        vanilla: '',
       },
     },
   },
