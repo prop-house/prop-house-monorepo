@@ -40,7 +40,6 @@ const NumberInput: React.FC<{
             e.preventDefault();
             setNumberError(true);
           } else if (input === 0 && resetVotingPeriod) {
-            console.log('resetting voting period!');
             resetVotingPeriod();
           } else {
             setValue(input);
