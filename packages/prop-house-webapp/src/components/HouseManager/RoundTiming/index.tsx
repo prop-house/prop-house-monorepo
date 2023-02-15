@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../../hooks';
+import { InitialRoundProps, updateRound } from '../../../state/slices/round';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Footer from '../Footer';
@@ -12,6 +15,23 @@ import TimedRound from '../TimedRound';
 const RoundTiming = () => {
   const [activeSection, setActiveSection] = useState(0);
 
+  const dispatch = useDispatch();
+  const round = useAppSelector(state => state.round.round);
+
+  const handleChange = (
+    property: keyof InitialRoundProps,
+    value: InitialRoundProps[keyof InitialRoundProps],
+  ) => {
+    const newRound = { ...round, [property]: value };
+    dispatch(updateRound(newRound));
+  };
+
+  const dataToBeCleared = {
+    startTime: null,
+    proposalEndTime: null,
+    votingEndTime: null,
+  };
+
   return (
     <>
       <RoundName name="Nouns Video Contest Marketing Team" />
@@ -23,7 +43,7 @@ const RoundTiming = () => {
 
       <Group>
         <Text type="subtitle">Select a round type</Text>
-        <DualSectionSelector setActiveSection={setActiveSection}>
+        <DualSectionSelector dataToBeCleared={dataToBeCleared} setActiveSection={setActiveSection}>
           <Section
             id={0}
             title="A time round"
@@ -41,7 +61,7 @@ const RoundTiming = () => {
 
       <Divider />
 
-      {activeSection === 0 && <TimedRound />}
+      {activeSection === 0 && <TimedRound handleChange={handleChange} round={round} />}
       {activeSection === 1 && <div>infinite round</div>}
 
       <Footer />

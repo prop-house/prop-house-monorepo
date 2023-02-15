@@ -1,16 +1,24 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
-export const validStartDate = (current: dayjs.Dayjs) => {
+export const validStartDate = (current: Dayjs) => {
   // need to figure out how to validate by time too
-  return dayjs().isBefore(current) === true;
-};
+  // 1)
+  return dayjs().isBefore(current);
 
-export const validEndDate = (startDate: Date) => (current: dayjs.Dayjs) => {
-  const start = dayjs(startDate);
+  // 2)
+  // // Check if the selected date is in the past
+  // const now = dayjs();
+  // if (current.isBefore(now, 'day')) {
+  //   return false;
+  // }
 
-  return (
-    dayjs().isBefore(current) === false &&
-    start.isBefore(current) === true &&
-    start.diff(current, 'day') >= 1
-  );
+  // // Check if the selected date is today and the selected time is in the past
+  // if (current.isSame(now, 'day') && current.isBefore(now)) {
+  //   return false;
+  // }
+
+  // return true;
+  // 3)
+  // const now = dayjs();
+  // return !current.isBefore(now, 'minute');
 };

@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface InitialRoundProps {
   title: string;
-  startTime: Date;
-  proposalEndTime: Date;
-  votingEndTime: Date;
+  startTime: Date | null;
+  proposalEndTime: Date | null;
+  votingEndTime: Date | null;
   fundingAmount: number;
   numWinners: number;
   currencyType: string;
@@ -18,9 +18,9 @@ interface RoundState {
 
 const initialRound: InitialRoundProps = {
   title: '',
-  startTime: new Date(),
-  proposalEndTime: new Date(),
-  votingEndTime: new Date(),
+  startTime: null,
+  proposalEndTime: null,
+  votingEndTime: null,
   fundingAmount: 0,
   numWinners: 0,
   currencyType: '',
