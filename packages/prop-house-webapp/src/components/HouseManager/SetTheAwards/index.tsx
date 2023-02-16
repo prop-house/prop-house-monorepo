@@ -66,8 +66,10 @@ const SetTheAwards = () => {
 
       <Divider />
 
-      {activeSection === 0 && <RewardsSimple />}
-      {activeSection === 1 && <RewardsAdvanced numOfAwards={numOfAwards} />}
+      {activeSection === 0 && <RewardsSimple handleChange={handleChange} round={round} />}
+      {activeSection === 1 && (
+        <RewardsAdvanced handleChange={handleChange} numOfAwards={round.numWinners} />
+      )}
 
       <Footer />
     </>
