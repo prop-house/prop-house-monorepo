@@ -19,12 +19,12 @@ const CreateTheRound = () => {
       <Group>
         <EditSection section="about" />
       </Group>
-      {/*  */}
+
       <DeadlineDates round={round} />
       <RoundName name={round.title} />
       <ReadMore description={<Text type="body">{round.description}</Text>} />
 
-      <Group>
+      <Group gap={16}>
         <EditSection section="votes" />
         <CardWrapper>
           <StrategyCard name="Nouns" />
@@ -37,7 +37,7 @@ const CreateTheRound = () => {
 
       <Divider />
 
-      <Group>
+      <Group gap={16}>
         <EditSection section="awards" />
         <CardWrapper>
           <StrategyCard name="Nouns" />
@@ -48,11 +48,13 @@ const CreateTheRound = () => {
 
       <Divider />
 
-      <Text type="title">Deposit funds for the round</Text>
-      <InstructionBox
-        title="Funding now vs later"
-        text="You can add either contract addresses allowing anyone that holds the relevant ERC20/ERC721 to participate, or add any specific wallet addresses for individual access to the round."
-      />
+      <Group gap={16} mb={16}>
+        <Text type="title">Deposit funds for the round</Text>
+        <InstructionBox
+          title="Funding now vs later"
+          text="You can add either contract addresses allowing anyone that holds the relevant ERC20/ERC721 to participate, or add any specific wallet addresses for individual access to the round."
+        />
+      </Group>
 
       <Group>
         <Text type="title">Tokens</Text>

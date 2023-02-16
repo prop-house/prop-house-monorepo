@@ -20,27 +20,39 @@ const WhoCanParticipate = () => {
         }
       />
 
-      <Group>
+      <Group gap={6} mb={16}>
         <Text type="subtitle">Token balance</Text>
         <Text type="body">Choose how many votes are allotted for each ERC20/ERC721 held.</Text>
       </Group>
 
-      <Group>
-        <AddAddressWithVotes type="contract" />
-      </Group>
+      <Group gap={8}>
+        <Group gap={12}>
+          {addresses.map((address, index) => (
+            <AddAddressWithVotes
+              key={index}
+              index={index}
+              type="contract"
+              remove={handleRemoveAddress}
+              addresses={addresses}
+              // setAddresses={setAddresses}
+            />
+          ))}
+        </Group>
+        {/* <AddAddressWithVotes type="contract" /> */}
 
-      <Text type="link">Add another token</Text>
+        <Text type="link" onClick={addAddress}>
+          Add another token
+        </Text>
+      </Group>
 
       <Divider />
 
-      <Group>
+      <Group gap={4}>
         <Text type="subtitle">Add additional voters by address</Text>
         <Text type="body">Provides a list of voter addresses that can participate.</Text>
       </Group>
 
-      <Group>
-        <AddAddressWithVotes type="user" />
-      </Group>
+      <Group>{/* <AddAddressWithVotes type="user" /> */}</Group>
 
       <div className={classes.addAddress}>
         <Text type="subtitle">Add another address</Text>
