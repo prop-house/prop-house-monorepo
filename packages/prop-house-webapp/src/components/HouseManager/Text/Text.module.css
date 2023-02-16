@@ -24,6 +24,7 @@
   border: none;
   background: none;
   width: max-content;
+  padding: 0;
 }
 .link:hover:not(.disabled) {
   cursor: pointer;
