@@ -1,21 +1,52 @@
 // import classes from './RewardsAdvanced.module.css';
+import { useState } from 'react';
+import { InitialRoundProps } from '../../../state/slices/round';
 import AddAwardByToken from '../AddAwardByToken';
 import Group from '../Group';
 import Text from '../Text';
 
-const RewardsAdvanced: React.FC<{ numOfAwards: number }> = props => {
-  const { numOfAwards } = props;
+const RewardsAdvanced: React.FC<{
+  handleChange: (
+    property: keyof InitialRoundProps,
+    value: InitialRoundProps[keyof InitialRoundProps],
+  ) => void;
+  numOfAwards: number;
+}> = props => {
+  const { handleChange, numOfAwards } = props;
 
+  const [customRewards, setCustomRewards] = useState([{}, {}, {}]);
+
+  const handleRemove = (index: number) => {
+    setCustomRewards(prevItems => {
+      const newItems = [...prevItems];
+      newItems.splice(index, 1);
+      return newItems;
+    });
+  };
+
+  const handleAdd = () => {
+    setCustomRewards(prevItems => [...prevItems, {}]);
+  };
   return (
     <>
       <Group>
-        {[...Array(numOfAwards)].map((a, idx) => (
-          <AddAwardByToken place={idx + 1} />
+        {customRewards.map((a, idx) => (
+          <>
+            <AddAwardByToken
+              numOfAwards={numOfAwards}
+              handleChange={handleChange}
+              place={idx + 1}
+              onClick={() => handleRemove(idx)}
+              oneRewardLeft={customRewards.length === 1}
+            />
+          </>
         ))}
       </Group>
 
       <Group>
-        <Text type="link">Add more awards</Text>
+        <Text type="link" onClick={handleAdd}>
+          Add more awards
+        </Text>
       </Group>
     </>
   );
