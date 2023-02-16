@@ -7,7 +7,6 @@ import EditSection from '../EditSection';
 import Footer from '../Footer';
 import Group from '../Group';
 import InstructionBox from '../InstructionBox';
-import RoundName from '../RoundName';
 import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 
@@ -16,13 +15,14 @@ const CreateTheRound = () => {
 
   return (
     <>
-      <Group>
-        <EditSection section="about" />
+      <DeadlineDates round={round} />
+
+      <Group gap={6} mb={-10}>
+        <Text type="heading">{round.title}</Text>
+        <ReadMore description={<Text type="body">{round.description}</Text>} />
       </Group>
 
-      <DeadlineDates round={round} />
-      <RoundName name={round.title} />
-      <ReadMore description={<Text type="body">{round.description}</Text>} />
+      <Divider narrow />
 
       <Group gap={16}>
         <EditSection section="votes" />

@@ -7,7 +7,6 @@ import DualSectionSelector from '../DualSectionSelector';
 import Footer from '../Footer';
 import Group from '../Group';
 import Header from '../Header';
-import RoundName from '../RoundName';
 import Section from '../Section';
 import Text from '../Text';
 import TimedRound from '../TimedRound';
@@ -38,7 +37,8 @@ const RoundTiming = () => {
 
   return (
     <>
-      <RoundName name={round.title} />
+      <Text type="heading">{round.title}</Text>
+      <Divider narrow />
 
       <Header
         title="How long should the round run?"
