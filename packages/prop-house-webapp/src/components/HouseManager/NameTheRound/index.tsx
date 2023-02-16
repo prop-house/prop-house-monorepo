@@ -17,24 +17,27 @@ const NameTheRound = () => {
   ) => {
     const newRound = { ...round, [property]: value };
     dispatch(updateRound(newRound));
+
+    // Dispatch the setDisabled action with the validation check for step 1
+    const isStepCompleted = round.title !== '' && round.description !== '';
+    dispatch(setDisabled(!isStepCompleted));
   };
 
   return (
     <>
       <Header title="What's your round about?" />
 
-      <Group>
+      <Group gap={8} mb={16}>
         <Text type="subtitle">Round name</Text>
         <Input
           placeholder={'Hack-a-thon'}
           value={round.title}
-          onChange={e => {
-            handleChange('title', e.target.value);
-          }}
+          autoFocus
+          onChange={e => handleChange('title', e.target.value)}
         />
       </Group>
 
-      <Group>
+      <Group gap={8}>
         <Text type="subtitle">Describe your round</Text>
         <Input
           type="textarea"
@@ -42,9 +45,7 @@ const NameTheRound = () => {
             'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
           }
           value={round.description}
-          onChange={e => {
-            handleChange('description', e.target.value);
-          }}
+          onChange={e => handleChange('description', e.target.value)}
         />
       </Group>
 
