@@ -48,7 +48,7 @@ const SetTheAwards = () => {
       />
 
       <Group>
-        <DualSectionSelector setActiveSection={setActiveSection}>
+        <DualSectionSelector dataToBeCleared={dataToBeCleared} setActiveSection={setActiveSection}>
           <Section
             id={0}
             title="Simple: ETH or ERC20s"
