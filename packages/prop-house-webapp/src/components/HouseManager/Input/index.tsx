@@ -11,6 +11,7 @@ const Input: React.FC<{
   onChange: Dispatch<SetStateAction<any>>;
   classNames?: string;
   note?: string;
+  autoFocus?: boolean;
 }> = props => {
   const {
     type = 'input',
@@ -21,6 +22,7 @@ const Input: React.FC<{
     onChange,
     classNames,
     note,
+    autoFocus,
   } = props;
 
   return (
@@ -38,6 +40,7 @@ const Input: React.FC<{
           placeholder={placeholder}
           value={value}
           onChange={onChange}
+          autoFocus={autoFocus}
         />
       ) : (
         <textarea
