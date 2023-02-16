@@ -1,13 +1,52 @@
 import classes from './WhoCanParticipate.module.css';
 import Divider from '../../Divider';
-import AddAddressWithVotes from '../AddAddressWithVotes';
+import AddressWithVotes from '../AddressWithVotes';
 import Footer from '../Footer';
 import Group from '../Group';
 import Header from '../Header';
 import InstructionBox from '../InstructionBox';
 import Text from '../Text';
+import { useState } from 'react';
+import { uuid } from 'uuidv4';
+
+export interface AddressWithVotesProps {
+  id: string;
+
+  addressValue: string;
+  votesPerToken: number;
+}
 
 const WhoCanParticipate = () => {
+  const [addresses, setAddresses] = useState<AddressWithVotesProps[]>([
+    { id: uuid(), addressValue: '', votesPerToken: 0 },
+  ]);
+
+  const addAddress = () => {
+    setAddresses([...addresses, { id: uuid(), addressValue: '', votesPerToken: 0 }]);
+  };
+
+  const removeAddress = (id: string) => {
+    setAddresses(addresses.filter(address => address.id !== id));
+  };
+
+  const handleAddressValueChange = (id: string, newValue: string) => {
+    setAddresses(oldAddresses => {
+      const newAddresses = [...oldAddresses];
+      const index = newAddresses.findIndex(address => address.id === id);
+      newAddresses[index] = { ...newAddresses[index], addressValue: newValue };
+      return newAddresses;
+    });
+  };
+
+  const handleVotesPerTokenChange = (id: string, newValue: number) => {
+    setAddresses(oldAddresses => {
+      const newAddresses = [...oldAddresses];
+      const index = newAddresses.findIndex(address => address.id === id);
+      newAddresses[index] = { ...newAddresses[index], votesPerToken: newValue };
+      return newAddresses;
+    });
+  };
+
   return (
     <>
       <Header
@@ -28,17 +67,18 @@ const WhoCanParticipate = () => {
       <Group gap={8}>
         <Group gap={12}>
           {addresses.map((address, index) => (
-            <AddAddressWithVotes
-              key={index}
+            <AddressWithVotes
+              key={address.id}
               index={index}
               type="contract"
-              remove={handleRemoveAddress}
+              address={address}
               addresses={addresses}
-              // setAddresses={setAddresses}
+              remove={removeAddress}
+              onAddressValueChange={handleAddressValueChange}
+              onVotesPerTokenChange={handleVotesPerTokenChange}
             />
           ))}
         </Group>
-        {/* <AddAddressWithVotes type="contract" /> */}
 
         <Text type="link" onClick={addAddress}>
           Add another token
