@@ -1,0 +1,68 @@
+.container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 10px;
+}
+.addressAndTitle {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 65%;
+}
+.voteContainer {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+}
+.voteContainer input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  height: 32px;
+  width: 43px;
+  border: 1px solid var(--border-med);
+}
+/* Chrome, Safari, Edge, Opera */
+.voteContainer
+  :is(input[type='number']::-webkit-outer-spin-button, input[type='number']::-webkit-inner-spin-button) {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.voteContainer input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.allotButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+.button {
+  line-height: 19px;
+  height: 32px;
+  font-weight: 900;
+  font-size: 20px !important;
+}
+.awardInput input {
+  width: 100%;
+}
+.xButton {
+  display: flex;
+  align-self: flex-end;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--brand-gray);
+  font-weight: 600;
+  font-size: 12px !important;
+  line-height: 19px;
+  text-align: center;
+}
