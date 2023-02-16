@@ -4,13 +4,13 @@ import DualSectionSelector from '../DualSectionSelector';
 import Footer from '../Footer';
 import Group from '../Group';
 import Header from '../Header';
-import RoundName from '../RoundName';
 import Section from '../Section';
 import RewardsSimple from '../RewardsSimple';
 import RewardsAdvanced from '../RewardsAdvanced';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
+import Text from '../Text';
 
 const SetTheAwards = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -39,7 +39,8 @@ const SetTheAwards = () => {
 
   return (
     <>
-      <RoundName name={round.title} />
+      <Text type="heading">{round.title}</Text>
+      <Divider narrow />
 
       <Header
         title="What will the winners be awarded?"
