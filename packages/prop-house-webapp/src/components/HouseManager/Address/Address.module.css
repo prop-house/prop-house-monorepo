@@ -1,8 +1,8 @@
 .container {
   flex: 1;
-  margin: 4px 0px;
 }
 .container input {
+  min-width: 100%;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
   padding: 2px 8px;
