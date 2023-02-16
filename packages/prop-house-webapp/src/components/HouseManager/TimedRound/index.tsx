@@ -7,7 +7,6 @@ import InstructionBox from '../InstructionBox';
 import Text from '../Text';
 import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
-import Flex from '../Flex';
 import NumberInput from '../NumberInput';
 import { InitialRoundProps } from '../../../state/slices/round';
 import Bullet from '../Bullet';
@@ -98,30 +97,30 @@ const TimedRound: React.FC<{
     setProposingPeriodLength(0);
     setVotingPeriodLength(0);
     setSelectedVotingPeriod(null);
+    handleChange('votingEndTime', null);
   };
 
   return (
     <>
-      <Group>
+      <Group margin={16}>
         <InstructionBox title="How timing works" text="Your round starts " />
       </Group>
 
-      <Group>
+      <Group gap={6}>
+        {' '}
         <Text type="subtitle">Round start time</Text>
-
         <DateTimeInput
           selectedDate={proposingStartDate}
           onDateChange={setProposingStartDate}
           isValidDate={validStartDate}
         />
-
         <Text type="body">Round will need to be started manually</Text>
       </Group>
 
       <Divider />
 
-      <Group>
-        <Flex>
+      <Group gap={6}>
+        <Group row>
           <Text type="subtitle">Proposal Period</Text>
           {proposingInputError ? (
             <>
@@ -137,9 +136,9 @@ const TimedRound: React.FC<{
               </>
             )
           )}
-        </Flex>
+        </Group>
 
-        <Flex gap={6}>
+        <Group row gap={6}>
           {proposingDays.map((day, index) => {
             return (
               <TimePeriod
@@ -165,12 +164,12 @@ const TimedRound: React.FC<{
             setNumberError={setProposingInputError}
             resetVotingPeriod={resetVotingPeriod}
           />
-        </Flex>
+        </Group>
       </Group>
 
       {/* VOITNG */}
-      <Group>
-        <Flex>
+      <Group gap={6} mt={8}>
+        <Group row>
           <Text type="subtitle">Voting Period</Text>
           {votingInputError ? (
             <>
@@ -186,9 +185,9 @@ const TimedRound: React.FC<{
               </>
             )
           )}
-        </Flex>
+        </Group>
 
-        <Flex gap={6}>
+        <Group row gap={6}>
           {votingDays.map((day, index) => {
             return (
               <TimePeriod
@@ -213,7 +212,7 @@ const TimedRound: React.FC<{
             classNames={classes.customNumberInput}
             setNumberError={setVotingInputError}
           />
-        </Flex>
+        </Group>
       </Group>
     </>
   );
