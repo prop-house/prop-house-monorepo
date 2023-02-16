@@ -1,15 +1,16 @@
+import classes from './VotesPerToken.module.css';
 import Button, { ButtonColor } from '../../Button';
 import Text from '../Text';
-import classes from './VotesPerToken.module.css';
+import Group from '../Group';
 
 const VotesPerToken: React.FC = () => {
   return (
     <>
       <div className={classes.container}>
-        <Text type="subtitle">Votes per token</Text>
+        <Group gap={4}>
+          <Text type="subtitle">Votes per token</Text>
 
-        <div className={classes.inputAndButtons}>
-          <>
+          <Group row gap={4}>
             <input value={10} type="text" />
             <div className={classes.allotButtons}>
               <Button
@@ -26,8 +27,8 @@ const VotesPerToken: React.FC = () => {
                 onClick={() => {}}
               />
             </div>
-          </>
-        </div>
+          </Group>
+        </Group>
       </div>
     </>
   );
