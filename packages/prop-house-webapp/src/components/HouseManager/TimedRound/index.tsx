@@ -22,9 +22,11 @@ const TimedRound: React.FC<{
 }> = props => {
   const { handleChange, round } = props;
 
-  // PROPOSING PERIOD //
+  // PROPOSING PERIOD START //
   // the date when the proposal period starts
   const [proposingStartDate, setProposingStartDate] = useState<Date | undefined>(undefined);
+
+  // PROPOSING PERIOD END //
   // which proposal period button is selected
   const [selectedProposingPeriod, setSelectedProposingPeriod] = useState<number | null>(null);
   // custom proposal period options in days
