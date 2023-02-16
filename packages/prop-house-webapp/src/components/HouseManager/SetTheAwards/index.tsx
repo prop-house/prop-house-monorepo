@@ -10,7 +10,7 @@ import RewardsSimple from '../RewardsSimple';
 import RewardsAdvanced from '../RewardsAdvanced';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { InitialRoundProps, updateRound } from '../../../state/slices/round';
+import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
 
 const SetTheAwards = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -24,6 +24,10 @@ const SetTheAwards = () => {
   ) => {
     const newRound = { ...round, [property]: value };
     dispatch(updateRound(newRound));
+
+    // Dispatch the setDisabled action with the validation check for step 3
+    const isStepCompleted = round.numWinners !== 0 && round.fundingAmount !== 0;
+    dispatch(setDisabled(!isStepCompleted));
   };
 
   // const [rewards, setRewards] = useState([]);

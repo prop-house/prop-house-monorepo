@@ -68,13 +68,15 @@ const TimedRound: React.FC<{
   };
 
   useEffect(() => {
+    if (proposingStartDate) handleChange('startTime', proposingStartDate.toISOString());
+
     // calculate the proposal end date
-    if (proposingStartDate) {
+    if (proposingStartDate && proposingPeriodLength !== 0) {
       const proposalEndDate = dayjs(proposingStartDate)
         .add(proposingPeriodLength, 'day')
         .toISOString();
       setProposingEndDate(proposalEndDate);
-      handleChange('startTime', proposingStartDate.toISOString());
+      handleChange('proposalEndTime', proposalEndDate);
     }
 
     // calculate the voting end date
