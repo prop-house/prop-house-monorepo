@@ -4,7 +4,7 @@ import { VanillaVotingStrategy } from './vanilla';
 import { WhitelistVotingStrategy } from './whitelist';
 import { VotingStrategy } from './base';
 
-export class Voting<CVS extends Custom> {
+export class Voting<CVS extends Custom | void = void> {
   private readonly _strategies: Map<string, VotingStrategy<VotingStrategyInfo<CVS>>>;
 
   constructor(
@@ -27,7 +27,7 @@ export class Voting<CVS extends Custom> {
    * @param chainId The chain ID
    * @param customStrategies Optional custom voting strategies
    */
-  public static for<CVS extends Custom>(
+  public static for<CVS extends Custom | void = void>(
     chainId: number,
     customStrategies: Newable<VotingStrategy<VotingStrategyInfo<CVS>>>[] = [],
   ) {

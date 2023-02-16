@@ -36,13 +36,13 @@ export const getTimedFundingRoundCancelProposalCalldata = (
  * Generates a calldata array for casting a vote through an authenticator
  * @param voterAddress The address of the voter
  * @param proposalVotes The proposal IDs and voting power
- * @param usedVotingStrategies The array of the used voting strategy indexes
+ * @param usedVotingStrategyIds The array of the used voting strategy IDs
  * @param usedVotingStrategyParams The array of arrays containing the parameters corresponding to the used voting strategies
  */
 export const getTimedFundingRoundVoteCalldata = (
   voterAddress: string,
   proposalVotes: ProposalVote[],
-  usedVotingStrategies: number[],
+  usedVotingStrategyIds: string[],
   usedVotingStrategyParams: string[][],
 ): string[] => {
   const flattenedUsedVotingStrategyParams = encoding.flatten2DArray(usedVotingStrategyParams);
@@ -60,8 +60,8 @@ export const getTimedFundingRoundVoteCalldata = (
     voterAddress,
     `0x${proposalVotes.length.toString(16)}`,
     ...flattenedProposalVotes,
-    `0x${usedVotingStrategies.length.toString(16)}`,
-    ...usedVotingStrategies.map(strategy => `0x${strategy.toString(16)}`),
+    `0x${usedVotingStrategyIds.length.toString(16)}`,
+    ...usedVotingStrategyIds,
     `0x${flattenedUsedVotingStrategyParams.length.toString(16)}`,
     ...flattenedUsedVotingStrategyParams,
   ];

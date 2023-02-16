@@ -145,7 +145,7 @@ export class TimedFundingRoundEthSigClient {
       voterAddress: encoding.hexPadRight(address),
       proposalVotesHash: encoding.hexPadRight(proposalVotesHash),
       votingStrategiesHash: encoding.hexPadRight(
-        hash.computeHashOnElements(data.votingStrategies.map(s => `0x${s.toString(16)}`)),
+        hash.computeHashOnElements(data.votingStrategyIds),
       ),
       votingStrategyParamsHash: encoding.hexPadRight(
         hash.computeHashOnElements(encoding.flatten2DArray(votingStrategyParams)),
@@ -168,20 +168,24 @@ export class TimedFundingRoundEthSigClient {
    * @param data The vote message data
    */
   public async getVotingStrategyAddresses(data: VoteMessage) {
-    const votingStrategyHashes = await Promise.all(
-      data.votingStrategies.map(index =>
+    const votingStrategiesRegistered = await Promise.all(
+      data.votingStrategyIds.map(id =>
         this.starkProvider.getStorageAt(
           data.round,
-          encoding.getStorageVarAddress('voting_strategy_hashes_store', index.toString(16)),
+          encoding.getStorageVarAddress('registered_voting_strategies_store', id),
         ),
       ),
     );
+    if (votingStrategiesRegistered.some(isRegistered => BigNumber.from(isRegistered).eq(0))) {
+      throw new Error('Attempted use of an unregistered voting strategy');
+    }
+
     const votingStrategyAddresses = await Promise.all(
-      votingStrategyHashes.map(async strategyHash => {
+      data.votingStrategyIds.map(async strategyId => {
         const { result } = await this.starkProvider.callContract({
           contractAddress: VOTING_STRATEGY_REGISTRY_ADDRESS,
           entrypoint: hash.getSelectorFromName('get_voting_strategy'),
-          calldata: [strategyHash],
+          calldata: [strategyId],
         });
         return result[0];
       }),

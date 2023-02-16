@@ -15,6 +15,10 @@ contract Manager is IManager, Ownable {
     /// @dev House Address => Round Address => Is Registered
     mapping(address => mapping(address => bool)) private rounds;
 
+    constructor() initializer {
+        __Ownable_init(msg.sender);
+    }
+
     /// @notice Determine if a house implementation is registered
     /// @param houseImpl The house implementation address
     function isHouseRegistered(address houseImpl) external view returns (bool) {

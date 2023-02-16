@@ -15,7 +15,7 @@ export interface ProposeMessage {
 export interface VoteMessage {
   round: string;
   authStrategy: string;
-  votingStrategies: number[]; // TODO: This uses hashes now
+  votingStrategyIds: string[];
   proposalVotes: ProposalVote[];
 }
 

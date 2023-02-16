@@ -1,6 +1,7 @@
 export enum ChainId {
   EthereumMainnet = 1,
   EthereumGoerli = 5,
+  EthereumHardhat = 31337,
 }
 
 export interface HouseImpls {
@@ -34,25 +35,6 @@ export interface ContractAddresses {
 }
 
 export const contracts: Record<number, ContractAddresses> = {
-  [ChainId.EthereumMainnet]: {
-    evm: {
-      prophouse: '',
-      house: {
-        funding: '',
-      },
-      round: {
-        timedFunding: '',
-      },
-    },
-    starknet: {
-      voting: {
-        balanceOf: '',
-        balanceOfMultiplier: '',
-        whitelist: '',
-        vanilla: '',
-      },
-    },
-  },
   [ChainId.EthereumGoerli]: {
     evm: {
       prophouse: '',

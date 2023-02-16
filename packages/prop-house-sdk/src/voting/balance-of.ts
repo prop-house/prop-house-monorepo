@@ -15,6 +15,7 @@ export class BalanceOfVotingStrategy extends VotingStrategy<BalanceOf | BalanceO
   private readonly _rpcs: Record<number, string> = {
     [ChainId.EthereumGoerli]: 'https://goerli.blockpi.network/v1/rpc/756ed7f20b1fcbed679bc9384c021a69ffd59cfc',
     [ChainId.EthereumMainnet]: 'https://ethereum.blockpi.network/v1/rpc/515fa4f00418c429db4f81cda04b628e7ecc7191',
+    [ChainId.EthereumHardhat]: 'https://localhost:8545/',
   };
   private readonly _provider: JsonRpcProvider;
 

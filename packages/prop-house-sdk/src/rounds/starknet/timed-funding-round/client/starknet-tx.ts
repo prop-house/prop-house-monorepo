@@ -5,6 +5,7 @@ import { DEFAULT_AUTH_STRATEGIES } from '../auth';
 import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from '../calldata';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
 import { DEFAULT_VOTING_STRATEGIES } from '../voting';
+import { BigNumber } from '@ethersproject/bignumber';
 import {
   EthSigProposeMessage,
   ProposeMessage,
@@ -92,13 +93,13 @@ export class TimedFundingRoundStarknetTxClient {
     envelope: TimedFundingRoundEnvelope<VoteMessage>,
   ) {
     const { address, data } = envelope;
-    const { votingStrategies, proposalVotes } = data.message;
+    const { votingStrategyIds, proposalVotes } = data.message;
 
     const votingStrategyParams = await this.getVotingStrategyParams(strategyAddresses, envelope);
     return getTimedFundingRoundVoteCalldata(
       address,
       proposalVotes,
-      votingStrategies,
+      votingStrategyIds,
       votingStrategyParams,
     );
   }
@@ -108,20 +109,24 @@ export class TimedFundingRoundStarknetTxClient {
    * @param envelope The vote message envelope
    */
   public async getVotingStrategyAddresses(envelope: TimedFundingRoundEnvelope<VoteMessage>) {
-    const votingStrategyHashes = await Promise.all(
-      envelope.data.message.votingStrategies.map(index =>
+    const votingStrategiesRegistered = await Promise.all(
+      envelope.data.message.votingStrategyIds.map(id =>
         this.starkProvider.getStorageAt(
           envelope.data.message.round,
-          encoding.getStorageVarAddress('voting_strategy_hashes_store', index.toString(16)),
+          encoding.getStorageVarAddress('registered_voting_strategies_store', id),
         ),
       ),
     );
+    if (votingStrategiesRegistered.some(isRegistered => BigNumber.from(isRegistered).eq(0))) {
+      throw new Error('Attempted use of an unregistered voting strategy');
+    }
+
     const votingStrategyAddresses = await Promise.all(
-      votingStrategyHashes.map(async strategyHash => {
+      envelope.data.message.votingStrategyIds.map(async strategyId => {
         const { result } = await this.starkProvider.callContract({
           contractAddress: VOTING_STRATEGY_REGISTRY_ADDRESS,
           entrypoint: hash.getSelectorFromName('get_voting_strategy'),
-          calldata: [strategyHash],
+          calldata: [strategyId],
         });
         return result[0];
       }),

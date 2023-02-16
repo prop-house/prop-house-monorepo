@@ -6,22 +6,19 @@ import {
   Custom,
   HouseInfo,
   HouseType,
-  Newable,
+  PropHouseConfig,
   RoundInfo,
   RoundType,
-  VotingStrategyInfo,
 } from './types';
 import { ContractAddresses, getContractAddressesForChainOrThrow } from './addresses';
-import { Signer } from '@ethersproject/abstract-signer';
-import { Provider } from '@ethersproject/providers';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
 import { encoding } from './utils';
 import { House } from './houses';
 import { Round } from './rounds';
-import { Voting, VotingStrategy } from './voting';
+import { Voting } from './voting';
 
-export class PropHouse<CVS extends Custom> {
+export class PropHouse<CVS extends Custom | void = void> {
   private readonly _contract: PropHouseContract;
   private readonly _addresses: ContractAddresses;
   private readonly _house: House;
@@ -63,16 +60,12 @@ export class PropHouse<CVS extends Custom> {
     return this._voting;
   }
 
-  constructor(
-    chainId: number,
-    signerOrProvider: Signer | Provider,
-    customVotingStrategies: Newable<VotingStrategy<VotingStrategyInfo<CVS>>>[] = [],
-  ) {
-    this._addresses = getContractAddressesForChainOrThrow(chainId);
-    this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, signerOrProvider);
-    this._house = House.for(chainId);
-    this._round = Round.for(chainId);
-    this._voting = Voting.for(chainId, customVotingStrategies);
+  constructor(config: PropHouseConfig<CVS>) {
+    this._addresses = getContractAddressesForChainOrThrow(config.chainId);
+    this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, config.signerOrProvider);
+    this._house = House.for(config.chainId);
+    this._round = Round.for(config.chainId);
+    this._voting = Voting.for<CVS>(config.chainId);
   }
 
   /**

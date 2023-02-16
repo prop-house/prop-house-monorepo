@@ -1,6 +1,19 @@
+import { Signer } from '@ethersproject/abstract-signer';
+import { Provider } from '@ethersproject/providers';
 import { BigNumberish } from '@ethersproject/bignumber';
+import { Call, Provider as StarknetProvider } from 'starknet';
 import { TimedFundingRoundEnvelope } from './rounds';
-import { Call, Provider } from 'starknet';
+import { VotingStrategy } from './voting';
+
+//#region Prop House
+
+export interface PropHouseConfig<CVS extends Custom | void = void> {
+  chainId: number,
+  signerOrProvider: Signer | Provider,
+  customVotingStrategies?: Newable<VotingStrategy<VotingStrategyInfo<CVS>>>[];
+}
+
+//#endregion
 
 //#region Assets
 
@@ -136,8 +149,10 @@ export interface Custom {
   strategyType: string;
 }
 
+export type DefaultVotingStrategies = BalanceOf | BalanceOfWithTokenID | Whitelist | Vanilla;
+
 // prettier-ignore
-export type VotingStrategyInfo<C extends Custom = Custom> = BalanceOf | BalanceOfWithTokenID | Whitelist | Vanilla | C;
+export type VotingStrategyInfo<C extends Custom | void = void> = C extends void ? DefaultVotingStrategies : DefaultVotingStrategies;
 
 export interface VotingStrategyStruct {
   addr: BigNumberish;
@@ -150,7 +165,7 @@ export interface VotingStrategyStruct {
 
 export interface ClientConfig {
   ethUrl: string;
-  starkProvider: Provider;
+  starkProvider: StarknetProvider;
 }
 
 export interface IEnvelope<Message, SignatureMessage, Action> {
