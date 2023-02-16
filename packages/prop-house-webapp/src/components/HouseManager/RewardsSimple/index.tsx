@@ -1,7 +1,7 @@
 import classes from './RewardsSimple.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import Address from '../Address';
+// import Address from '../Address';
 import { InitialRoundProps } from '../../../state/slices/round';
 
 const RewardsSimple: React.FC<{
@@ -47,7 +47,7 @@ const RewardsSimple: React.FC<{
       <Group gap={6} classNames={classes.fullWidth}>
         <Text type="subtitle">Contract Address</Text>
 
-        <Address placeholder="ex: 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03" />
+        {/* <Address placeholder="ex: 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03" /> */}
       </Group>
     </div>
   );
