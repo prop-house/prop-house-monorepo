@@ -1,23 +1,43 @@
 .container {
   display: flex;
   width: 100%;
+  width: auto;
   align-items: flex-end;
-  justify-content: space-between;
   gap: 10px;
-  max-width: min-content;
   white-space: nowrap;
-  margin: -10px 0px;
 }
 .inputContainer {
-  min-width: 100px;
+  width: 100px;
+  max-width: 100px;
 }
-:global(.houseManager) {
-  min-width: 150px;
+.fullWidth {
+  width: 100%;
 }
-:global(.houseManager) :is(:global(#dropdown-basic), :global(.dropdown-item)) {
-  font-size: 14px !important;
-  line-height: 19px !important;
+.inputContainer input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 36px;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med);
 }
-:global(.houseManager) :global(.dropdown-item) {
-  height: 34px !important;
+.inputContainer input:active,
+.inputContainer input:focus:focus-visible {
+  outline: none;
+  border: 1px solid var(--border-dark) !important;
+}
+.inputContainer input::placeholder {
+  color: var(--brand-black-semi-transparent);
+}
+/* Chrome, Safari, Edge, Opera */
+.inputContainer input[type='number']::-webkit-outer-spin-button,
+.inputContainer input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.inputContainer input[type='number'] {
+  -moz-appearance: textfield;
 }
