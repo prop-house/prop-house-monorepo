@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { InitialRoundProps, updateRound } from '../../../state/slices/round';
+import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Footer from '../Footer';
@@ -24,6 +24,10 @@ const RoundTiming = () => {
   ) => {
     const newRound = { ...round, [property]: value };
     dispatch(updateRound(newRound));
+
+    const isStepCompleted =
+      round.startTime !== null && round.proposalEndTime !== null && round.votingEndTime !== null;
+    dispatch(setDisabled(!isStepCompleted));
   };
 
   const dataToBeCleared = {
