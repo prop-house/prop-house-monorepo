@@ -2,7 +2,7 @@
 pragma solidity >=0.8.17;
 
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
-import { ICreatorPassRegistry } from '../interfaces/ICreatorPassRegistry.sol';
+import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
@@ -19,8 +19,8 @@ contract FundingHouse is IHouse, ERC721 {
     /// @notice The Asset Metadata Renderer contract
     ITokenMetadataRenderer public immutable renderer;
 
-    /// @notice The round creator pass registry contract for all houses
-    ICreatorPassRegistry public immutable creatorPassRegistry;
+    /// @notice The round creator pass issuer contract for all houses
+    ICreatorPassIssuer public immutable creatorPassIssuer;
 
     /// @notice Require that the caller is the prop house contract
     modifier onlyPropHouse() {
@@ -40,15 +40,15 @@ contract FundingHouse is IHouse, ERC721 {
 
     /// @param _propHouse The address of the house and round creation contract
     /// @param _renderer The funding house renderer contract address
-    /// @param _creatorPassRegistry The address of the round creator pass registry contract
+    /// @param _creatorPassIssuer The address of the round creator pass issuer contract
     constructor(
         address _propHouse,
         address _renderer,
-        address _creatorPassRegistry
+        address _creatorPassIssuer
     ) {
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);
-        creatorPassRegistry = ICreatorPassRegistry(_creatorPassRegistry);
+        creatorPassIssuer = ICreatorPassIssuer(_creatorPassIssuer);
     }
 
     /// @notice Get the house ID
@@ -70,8 +70,8 @@ contract FundingHouse is IHouse, ERC721 {
             __ERC721_init(name, symbol, contractURI);
         }
 
-        // Mint a pass to the house creator
-        creatorPassRegistry.mintCreatorPassesTo(creator, 1);
+        // Issue a pass to the house creator
+        creatorPassIssuer.issueCreatorPassesTo(creator, 1);
     }
 
     /// @notice Returns round metadata for `tokenId` as a Base64-JSON blob
@@ -80,37 +80,37 @@ contract FundingHouse is IHouse, ERC721 {
         return renderer.tokenURI(tokenId);
     }
 
-    /// @notice Mint one or more round creator passes to the provided `creator`
+    /// @notice Issue one or more round creator passes to the provided `creator`
     /// @param creator The address who will receive the round creator token(s)
-    /// @param amount The amount of creator passes to mint
+    /// @param amount The amount of creator passes to issue
     /// @dev This function is only callable by the house owner
-    function mintCreatorPassesTo(address creator, uint256 amount) external onlyHouseOwner {
-        creatorPassRegistry.mintCreatorPassesTo(creator, amount);
+    function issueCreatorPassesTo(address creator, uint256 amount) external onlyHouseOwner {
+        creatorPassIssuer.issueCreatorPassesTo(creator, amount);
     }
 
-    /// @notice Burn one or more round creator passes from the provided `creator`
-    /// @param creator The address to burn the creator pass(es) from
-    /// @param amount The amount of creator passes to burn
+    /// @notice Revoke one or more round creator passes from the provided `creator`
+    /// @param creator The address to revoke the creator pass(es) from
+    /// @param amount The amount of creator passes to revoke
     /// @dev This function is only callable by the house owner
-    function burnCreatorPassesFrom(address creator, uint256 amount) external onlyHouseOwner {
-        creatorPassRegistry.burnCreatorPassesFrom(creator, amount);
+    function revokeCreatorPassesFrom(address creator, uint256 amount) external onlyHouseOwner {
+        creatorPassIssuer.revokeCreatorPassesFrom(creator, amount);
     }
 
-    /// @notice Mint one or more round creator passes to many `creators`
+    /// @notice Issue one or more round creator passes to many `creators`
     /// @param creators The addresses who will receive the round creator token(s)
-    /// @param amounts The amount of creator passes to mint to each creator
+    /// @param amounts The amount of creator passes to issue to each creator
     /// @dev This function is only callable by the house owner
-    function mintCreatorPassesToMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
-        creatorPassRegistry.mintCreatorPassesToMany(creators, amounts);
+    function issueCreatorPassesToMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
+        creatorPassIssuer.issueCreatorPassesToMany(creators, amounts);
     }
 
     // prettier-ignore
-    /// @notice Burn one or more round creator passes from many `creators`
-    /// @param creators The addresses to burn the creator pass(es) from
-    /// @param amounts The amount of creator passes to burn from each creator
+    /// @notice Revoke one or more round creator passes from many `creators`
+    /// @param creators The addresses to revoke the creator pass(es) from
+    /// @param amounts The amount of creator passes to revoke from each creator
     /// @dev This function is only callable by the house owner
-    function burnCreatorPassesFromMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
-        creatorPassRegistry.burnCreatorPassesFromMany(creators, amounts);
+    function revokeCreatorPassesFromMany(address[] calldata creators, uint256[] calldata amounts) external onlyHouseOwner {
+        creatorPassIssuer.revokeCreatorPassesFromMany(creators, amounts);
     }
 
     /// @notice Returns `true` if the provided address is a valid round on the house
@@ -124,7 +124,7 @@ contract FundingHouse is IHouse, ERC721 {
     /// @param creator The address who is creating the round
     function createRound(address roundImpl, address creator) external onlyPropHouse returns (address round) {
         // Revert if the creator does not hold a pass to create rounds on the house
-        creatorPassRegistry.requirePass(creator, id());
+        creatorPassIssuer.requirePass(creator, id());
 
         // Deploy the round contract with a pointer to the house
         round = roundImpl.clone(abi.encodePacked(address(this)));

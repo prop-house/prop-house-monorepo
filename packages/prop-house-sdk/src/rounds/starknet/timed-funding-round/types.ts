@@ -1,4 +1,4 @@
-import { AuthStrategy, ClientConfig, IEnvelope, StarknetVotingStrategy } from '../../../types';
+import { AuthStrategy, ClientConfig, IEnvelope, VotingStrategy } from '../../../types';
 import { BigNumberish } from '@ethersproject/bignumber';
 
 export interface ProposalVote {
@@ -58,10 +58,10 @@ export type TimedFundingRoundAuthStrategy = AuthStrategy<
 
 export interface TimedFundingRoundEthSigClientConfig extends ClientConfig {
   starknetRelayerUrl: string;
-  votingStrategies?: Record<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
+  votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 }
 
 export interface TimedFundingRoundStarknetTxClientConfig extends ClientConfig {
   authStrategies?: Record<string, TimedFundingRoundAuthStrategy>;
-  votingStrategies?: Record<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
+  votingStrategies?: Record<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 }

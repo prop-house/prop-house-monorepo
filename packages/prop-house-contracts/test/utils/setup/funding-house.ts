@@ -21,19 +21,17 @@ export const fundingHouseSetup = async () => {
   const fundingHouseFactory = new FundingHouse__factory(config.deployer);
 
   const roundFactory = await roundDeployerFactory.deploy({
-    starknet_messenger: config.messenger.address,
+    l1_messenger: config.messenger.address,
   });
   const ethExecutionStrategy = await ethExecutionStrategyFactory.deploy({
     round_factory_address: roundFactory.address,
   });
-  const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy({
-    starknet_messenger: config.messenger.address,
-  });
+  const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy();
 
   const fundingHouseImpl = await fundingHouseFactory.deploy(
     config.propHouse.address,
     constants.AddressZero,
-    config.creatorPassRegistry.address,
+    config.creatorPassIssuer.address,
   );
 
   await config.manager.registerHouse(fundingHouseImpl.address);
@@ -53,14 +51,14 @@ export const timedFundingRoundSetup = async () => {
 
   const timedFundingRoundFactory = new TimedFundingRound__factory(config.deployer);
   const timedFundingRoundL2Factory = await starknet.getContractFactory(
-    './contracts/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
+    './contracts/starknet/rounds/timed_funding_round/timed_funding_round.cairo',
   );
 
   const timedFundingRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
-    './contracts/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
+    './contracts/starknet/rounds/timed_funding_round/auth/eth_tx.cairo',
   );
   const timedFundingRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
-    './contracts/starknet/strategies/timed_funding_round/auth/eth_sig.cairo',
+    './contracts/starknet/rounds/timed_funding_round/auth/eth_sig.cairo',
   );
 
   const timedFundingRoundEthTxAuthStrategy = await timedFundingRoundEthTxAuthStrategyFactory.deploy(

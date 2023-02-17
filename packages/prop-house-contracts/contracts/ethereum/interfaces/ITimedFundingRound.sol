@@ -19,16 +19,11 @@ interface ITimedFundingRound is IRound {
         MerkleProof
     }
 
-    /// @notice Voting strategy information
-    struct VotingStrategy {
-        uint256 addr;
-        uint256[] params;
-    }
-
     /// @notice The timed funding round configuration
     struct RoundConfig {
         Award[] awards;
-        VotingStrategy[] strategies;
+        uint256[] votingStrategies;
+        uint256[] votingStrategyParamsFlat;
         uint40 proposalPeriodStartTimestamp;
         uint40 proposalPeriodDuration;
         uint40 votePeriodDuration;
@@ -110,14 +105,16 @@ interface ITimedFundingRound is IRound {
 
     /// @notice Emitted when the round is registered on L2
     /// @param awards The awards offered to round winners
-    /// @param strategies The voting strategies used in the round
+    /// @param votingStrategies The voting strategy addresses
+    /// @param votingStrategyParamsFlat The flattened voting strategy params
     /// @param proposalPeriodStartTimestamp The timestamp at which the proposal period starts
     /// @param proposalPeriodDuration The proposal period duration in seconds
     /// @param votePeriodDuration The vote period duration in seconds
     /// @param winnerCount The number of possible winners
     event RoundRegistered(
         Award[] awards,
-        VotingStrategy[] strategies,
+        uint256[] votingStrategies,
+        uint256[] votingStrategyParamsFlat,
         uint40 proposalPeriodStartTimestamp,
         uint40 proposalPeriodDuration,
         uint40 votePeriodDuration,

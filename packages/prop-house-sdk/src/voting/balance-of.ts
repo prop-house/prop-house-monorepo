@@ -2,15 +2,15 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import {
   BalanceOf,
   BalanceOfWithTokenID,
-  VotingStrategyStruct,
+  StarknetVotingStrategy,
   VotingStrategyType,
 } from '../types';
 import { ChainId, getContractAddressesForChainOrThrow } from '../addresses';
-import { VotingStrategy } from './base';
+import { VotingStrategyBase } from './base';
 import { storageProofs } from '../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 
-export class BalanceOfVotingStrategy extends VotingStrategy<BalanceOf | BalanceOfWithTokenID> {
+export class BalanceOfVotingStrategy extends VotingStrategyBase<BalanceOf | BalanceOfWithTokenID> {
   // prettier-ignore
   private readonly _rpcs: Record<number, string> = {
     [ChainId.EthereumGoerli]: 'https://goerli.blockpi.network/v1/rpc/756ed7f20b1fcbed679bc9384c021a69ffd59cfc',
@@ -44,12 +44,12 @@ export class BalanceOfVotingStrategy extends VotingStrategy<BalanceOf | BalanceO
   }
 
   /**
-   * @notice Convert the provided `balanceOf` voting strategy to a low-level voting strategy struct
+   * @notice Get the address and low-level parameter information for the provided `balanceOf` voting strategy
    * @param strategy The voting strategy information
    */
-  public async getStructConfig(
+  public async getStarknetStrategy(
     strategy: BalanceOf | BalanceOfWithTokenID,
-  ): Promise<VotingStrategyStruct> {
+  ): Promise<StarknetVotingStrategy> {
     const { starknet } = getContractAddressesForChainOrThrow(this._chainId);
 
     if (this.hasTokenID(strategy)) {

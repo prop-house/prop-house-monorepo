@@ -432,7 +432,6 @@ func finalize_round{
     }
 
     let (num_winners) = winner_count_store.read();
-
     let (next_unused_proposal_nonce) = next_proposal_nonce_store.read();
 
     // If nonce 1 is unused, no proposals were received
@@ -748,13 +747,13 @@ func _decode_param_array{range_check_ptr}(round_params_len: felt, round_params: 
 
     let (voting_strategies: felt*) = alloc();
     let voting_strategies_len = round_params[6];
-    memcpy(voting_strategies, round_params + 6, voting_strategies_len);
+    memcpy(voting_strategies, round_params + 7, voting_strategies_len);
 
     let voting_strategy_params_flat_len = round_params[7 + voting_strategies_len];
     let (voting_strategy_params_flat: felt*) = alloc();
     memcpy(
         voting_strategy_params_flat,
-        round_params + 7 + voting_strategies_len,
+        round_params + 8 + voting_strategies_len,
         voting_strategy_params_flat_len,
     );
 
@@ -811,11 +810,11 @@ func _flatten_and_abi_encode_award_array{range_check_ptr}(awards_len: felt, awar
     alloc_locals;
 
     let (data_offset) = MathUtils.felt_to_uint256(0x20);
-    let (array_langth) = MathUtils.felt_to_uint256(awards_len);
+    let (array_length) = MathUtils.felt_to_uint256(awards_len);
 
     let (awards_flat: Uint256*) = alloc();
     assert awards_flat[0] = data_offset;
-    assert awards_flat[1] = array_langth;
+    assert awards_flat[1] = array_length;
     memcpy(4 + awards_flat, awards, Award.SIZE * awards_len);
 
     // length = (data_offset + array_length) + (num_uint256_in_award * awards_len)

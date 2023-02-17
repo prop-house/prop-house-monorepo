@@ -1,6 +1,6 @@
 import { Account, hash, Provider } from 'starknet';
 import { encoding } from '../../../../utils';
-import { StarknetVotingStrategy } from '../../../../types';
+import { VotingStrategy } from '../../../../types';
 import { DEFAULT_AUTH_STRATEGIES } from '../auth';
 import { getTimedFundingRoundProposeCalldata, getTimedFundingRoundVoteCalldata } from '../calldata';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
@@ -19,7 +19,7 @@ export class TimedFundingRoundStarknetTxClient {
   public readonly ethUrl: string;
   public readonly starkProvider: Provider;
   public readonly authStrategies: Map<string, TimedFundingRoundAuthStrategy>;
-  public readonly votingStrategies: Map<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
+  public readonly votingStrategies: Map<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 
   constructor(config: TimedFundingRoundStarknetTxClientConfig) {
     this.ethUrl = config.ethUrl;

@@ -1,4 +1,4 @@
-import { BigNumberish } from '@ethersproject/bignumber';
+import { BigNumber, BigNumberish } from '@ethersproject/bignumber';
 import { BytesLike, concat, hexlify } from '@ethersproject/bytes';
 import { AddressZero, HashZero, One, Zero } from '@ethersproject/constants';
 import { Asset, AssetType, AssetStruct } from '../../types';
@@ -62,8 +62,8 @@ export const getAssetStruct = (asset: Asset): AssetStruct => {
  */
 export const compressAssets = (assets: Asset[]) => {
   return assets.map(asset => [
-    asset.assetType === AssetType.ERC721 ? 1 : asset.amount,
     getAssetID(asset),
+    asset.assetType === AssetType.ERC721 ? 1 : asset.amount,
   ]);
 };
 
@@ -90,7 +90,7 @@ export const getAssetID = (asset: Asset): string => {
  * Generate an ETH asset ID
  */
 export const getETHAssetID = (): string => {
-  return toBytes32(AssetType.ETH.toString());
+  return toBytes32(BigNumber.from(AssetType.ETH).toHexString());
 };
 
 /**

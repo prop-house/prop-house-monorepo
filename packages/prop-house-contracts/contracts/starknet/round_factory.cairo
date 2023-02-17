@@ -4,6 +4,7 @@ from starkware.cairo.common.cairo_builtins import HashBuiltin
 from starkware.cairo.common.uint256 import Uint256
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.memcpy import memcpy
+from starkware.cairo.common.bool import FALSE
 from starkware.starknet.common.syscalls import deploy, get_caller_address
 
 @storage_var
@@ -80,7 +81,7 @@ func register_round{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_
         contract_address_salt=current_salt,
         constructor_calldata_size=calldata_len,
         constructor_calldata=calldata,
-        deploy_from_zero=0,
+        deploy_from_zero=FALSE,
     );
     l1_round_store.write(l2_round_address, l1_round_address);
     salt_store.write(value=current_salt + 1);

@@ -344,7 +344,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
         emit RoundRegistered(
             config.awards,
-            config.strategies,
+            config.votingStrategies,
+            config.votingStrategyParamsFlat,
             config.proposalPeriodStartTimestamp,
             config.proposalPeriodDuration,
             config.votePeriodDuration,
@@ -374,7 +375,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
             revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
         }
-        if (config.strategies.length == 0) {
+        if (config.votingStrategies.length == 0) {
             revert NO_STRATEGIES_PROVIDED();
         }
     }
@@ -382,16 +383,17 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
     function _getL2Payload(RoundConfig memory config) internal view returns (uint256[] memory payload) {
-        uint256[] memory flattenedStrategies = _flatten(config.strategies);
-        uint256 flattenedStrategyCount = flattenedStrategies.length;
-        payload = new uint256[](10 + flattenedStrategyCount);
+        uint256 strategyCount = config.votingStrategies.length;
+        uint256 strategyParamsFlatCount = config.votingStrategyParamsFlat.length;
+
+        payload = new uint256[](11 + strategyCount + strategyParamsFlatCount);
 
         // `payload[0]` is reserved for the round address, which is
         // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
-        payload[2] = 6;
+        payload[2] = 8 + strategyCount + strategyParamsFlatCount;
         (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards))).split();
         payload[5] = proposalPeriodStartTimestamp;
         payload[6] = proposalPeriodDuration;
@@ -400,45 +402,23 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
         // L2 voting strategies
         unchecked {
-            payload[9] = flattenedStrategyCount;
-            for (uint256 i = 0; i < flattenedStrategyCount; ++i) {
-                payload[10 + i] = flattenedStrategies[i];
+            payload[9] = strategyCount;
+
+            uint256 offset = 9;
+            for (uint256 i = 0; i < strategyCount; ++i) {
+                uint256 strategy = config.votingStrategies[i];
+                if (strategy == 0) {
+                    revert INVALID_VOTING_STRATEGY();
+                }
+                payload[++offset] = config.votingStrategies[i];
+            }
+
+            payload[++offset] = strategyParamsFlatCount;
+            for (uint256 i = 0; i < strategyParamsFlatCount; ++i) {
+                payload[++offset] = config.votingStrategyParamsFlat[i];
             }
         }
         return payload;
-    }
-
-    /// @notice Flatten voting strategies for consumption on L2.
-    /// @param strategies The voting strategies
-    function _flatten(VotingStrategy[] memory strategies) internal pure returns (uint256[] memory) {
-        unchecked {
-            uint256 strategyCount = strategies.length;
-            uint256 paramCount = _getTotalParamCount(strategies);
-            uint256[] memory flattenedStrategies = new uint256[](strategyCount + paramCount);
-
-            uint256 offset;
-            for (uint256 i = 0; i < strategyCount; ++i) {
-                VotingStrategy memory strategy = strategies[i];
-                if (strategy.addr == 0) {
-                    revert INVALID_VOTING_STRATEGY();
-                }
-
-                flattenedStrategies[offset++] = strategy.addr;
-                for (uint256 k = 0; k < strategy.params.length; ++k) {
-                    flattenedStrategies[offset++] = strategy.params[k];
-                }
-            }
-            return flattenedStrategies;
-        }
-    }
-
-    /// @notice Get the total number of voting strategy parameters
-    /// @param strategies The voting strategies
-    function _getTotalParamCount(VotingStrategy[] memory strategies) internal pure returns (uint256 count) {
-        uint256 strategyCount = strategies.length;
-        for (uint256 i = 0; i < strategyCount; ++i) {
-            count += strategies[i].params.length;
-        }
     }
 
     /// @notice Mark an award as 'claimed' for the provided proposal ID

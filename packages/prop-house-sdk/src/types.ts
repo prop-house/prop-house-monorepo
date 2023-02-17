@@ -3,14 +3,14 @@ import { Provider } from '@ethersproject/providers';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Call, Provider as StarknetProvider } from 'starknet';
 import { TimedFundingRoundEnvelope } from './rounds';
-import { VotingStrategy } from './voting';
+import { VotingStrategyBase } from './voting';
 
 //#region Prop House
 
 export interface PropHouseConfig<CVS extends Custom | void = void> {
-  chainId: number,
-  signerOrProvider: Signer | Provider,
-  customVotingStrategies?: Newable<VotingStrategy<VotingStrategyInfo<CVS>>>[];
+  chainId: number;
+  signerOrProvider: Signer | Provider;
+  customVotingStrategies?: Newable<VotingStrategyBase<VotingStrategyInfo<CVS>>>[];
 }
 
 //#endregion
@@ -154,7 +154,7 @@ export type DefaultVotingStrategies = BalanceOf | BalanceOfWithTokenID | Whiteli
 // prettier-ignore
 export type VotingStrategyInfo<C extends Custom | void = void> = C extends void ? DefaultVotingStrategies : DefaultVotingStrategies;
 
-export interface VotingStrategyStruct {
+export interface StarknetVotingStrategy {
   addr: BigNumberish;
   params: BigNumberish[];
 }
@@ -188,7 +188,7 @@ export interface AuthStrategy<Message, SignatureMessage, Action> {
 
 export type Envelope = TimedFundingRoundEnvelope;
 
-export interface StarknetVotingStrategy<E extends Envelope> {
+export interface VotingStrategy<E extends Envelope> {
   type: string;
   getParams(
     address: string,

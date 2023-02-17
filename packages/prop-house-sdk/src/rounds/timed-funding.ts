@@ -10,8 +10,8 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
   /**
    * The `RoundConfig` struct type
    */
-  public static CONFIG_STRUCT_TYPE =
-    'tuple(tuple(uint256,uint256)[],tuple(uint256,uint256[])[],uint40,uint40,uint40,uint16)';
+  // prettier-ignore
+  public static CONFIG_STRUCT_TYPE = 'tuple(tuple(uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)';
 
   /**
    * The minimum proposal submission period duration
@@ -91,7 +91,7 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
       throw new Error('Round must have at least one voting strategy');
     }
     const strategies = await Promise.all(
-      config.strategies.map(s => Voting.for(this._chainId).getStructConfig(s)),
+      config.strategies.map(s => Voting.for(this._chainId).getStarknetStrategy(s)),
     );
 
     return defaultAbiCoder.encode(
@@ -99,7 +99,8 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
       [
         [
           encoding.compressAssets(config.awards),
-          strategies.map(s => [s.addr, s.params]),
+          strategies.map(s => s.addr),
+          encoding.flatten2DArray(strategies.map(s => s.params.map(p => p.toString()))),
           config.proposalPeriodStartTimestamp,
           config.proposalPeriodDuration,
           config.votePeriodDuration,

@@ -1,6 +1,6 @@
-import { VotingStrategyInfo, VotingStrategyStruct } from '../types';
+import { VotingStrategyInfo, StarknetVotingStrategy } from '../types';
 
-export abstract class VotingStrategy<VS extends VotingStrategyInfo> {
+export abstract class VotingStrategyBase<VS extends VotingStrategyInfo> {
   /**
    * The voting strategy type
    */
@@ -9,8 +9,8 @@ export abstract class VotingStrategy<VS extends VotingStrategyInfo> {
   constructor(protected readonly _chainId: number) {}
 
   /**
-   * Convert the provided voting strategy to a low-level voting strategy struct
+   * Get the address and low-level parameter information for the provided voting strategy
    * @param strategy The voting strategy information
    */
-  public abstract getStructConfig(strategy: VS): Promise<VotingStrategyStruct>;
+  public abstract getStarknetStrategy(strategy: VS): Promise<StarknetVotingStrategy>;
 }

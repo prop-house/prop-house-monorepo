@@ -1,6 +1,6 @@
 import { hash } from 'starknet';
 import { encoding, storageProofs } from '../../../../utils';
-import { ClientConfig, StarknetVotingStrategy } from '../../../../types';
+import { ClientConfig, VotingStrategy } from '../../../../types';
 import { VOTING_STRATEGY_REGISTRY_ADDRESS } from '../constants';
 import { TimedFundingRoundEnvelope, VoteMessage } from '../types';
 
@@ -90,7 +90,7 @@ const fetchProofInputs = async (
   return storageProofs.getProofInputs(block, data.result);
 };
 
-export const singleSlotProofVotingStrategy: StarknetVotingStrategy<TimedFundingRoundEnvelope> = {
+export const singleSlotProofVotingStrategy: VotingStrategy<TimedFundingRoundEnvelope> = {
   type: 'singleSlotProof',
   async getParams(
     address: string,

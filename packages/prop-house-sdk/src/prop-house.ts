@@ -62,7 +62,10 @@ export class PropHouse<CVS extends Custom | void = void> {
 
   constructor(config: PropHouseConfig<CVS>) {
     this._addresses = getContractAddressesForChainOrThrow(config.chainId);
-    this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, config.signerOrProvider);
+    this._contract = PropHouse__factory.connect(
+      this.addresses.evm.prophouse,
+      config.signerOrProvider,
+    );
     this._house = House.for(config.chainId);
     this._round = Round.for(config.chainId);
     this._voting = Voting.for<CVS>(config.chainId);

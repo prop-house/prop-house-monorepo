@@ -2,7 +2,7 @@ import {
   Manager__factory,
   Messenger__factory,
   MockStarknetMessaging__factory,
-  CreatorPassRegistry__factory,
+  CreatorPassIssuer__factory,
   PropHouse__factory,
   StarkNetCommit__factory,
 } from '../../../typechain';
@@ -14,7 +14,7 @@ export const commonL1Setup = async () => {
 
   const managerFactory = new Manager__factory(deployer);
   const propHouseFactory = new PropHouse__factory(deployer);
-  const creatorPassRegistryFactory = new CreatorPassRegistry__factory(deployer);
+  const creatorPassIssuerFactory = new CreatorPassIssuer__factory(deployer);
 
   const mockStarknetMessagingFactory = new MockStarknetMessaging__factory(deployer);
   const starknetCommitFactory = new StarkNetCommit__factory(deployer);
@@ -26,8 +26,8 @@ export const commonL1Setup = async () => {
     mockStarknetMessagingFactory.deploy(),
   ]);
 
-  const [creatorPassRegistry, starknetCommit] = await Promise.all([
-    creatorPassRegistryFactory.deploy(propHouse.address, constants.AddressZero),
+  const [creatorPassIssuer, starknetCommit] = await Promise.all([
+    creatorPassIssuerFactory.deploy(propHouse.address, constants.AddressZero),
     starknetCommitFactory.deploy(mockStarknetMessaging.address),
   ]);
   const messenger = await messengerFactory.deploy(mockStarknetMessaging.address, propHouse.address);
@@ -36,7 +36,7 @@ export const commonL1Setup = async () => {
     deployer,
     manager,
     propHouse,
-    creatorPassRegistry,
+    creatorPassIssuer,
     messenger,
     mockStarknetMessaging,
     starknetCommit,

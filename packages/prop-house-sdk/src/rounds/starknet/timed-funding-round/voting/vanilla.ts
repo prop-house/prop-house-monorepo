@@ -1,7 +1,7 @@
-import { ClientConfig, StarknetVotingStrategy } from '../../../../types';
+import { ClientConfig, VotingStrategy } from '../../../../types';
 import type { ProposeMessage, TimedFundingRoundEnvelope, VoteMessage } from '../types';
 
-export const vanillaVotingStrategy: StarknetVotingStrategy<TimedFundingRoundEnvelope> = {
+export const vanillaVotingStrategy: VotingStrategy<TimedFundingRoundEnvelope> = {
   type: 'vanilla',
   async getParams(
     _address: string,

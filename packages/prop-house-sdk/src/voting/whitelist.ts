@@ -1,10 +1,10 @@
 import { computeHashOnElements } from 'starknet/dist/utils/hash';
 import { getContractAddressesForChainOrThrow } from '../addresses';
-import { VotingStrategyStruct, VotingStrategyType, Whitelist, WhitelistMember } from '../types';
+import { StarknetVotingStrategy, VotingStrategyType, Whitelist, WhitelistMember } from '../types';
 import { merkle, splitUint256 } from '../utils';
-import { VotingStrategy } from './base';
+import { VotingStrategyBase } from './base';
 
-export class WhitelistVotingStrategy extends VotingStrategy<Whitelist> {
+export class WhitelistVotingStrategy extends VotingStrategyBase<Whitelist> {
   /**
    * Returns a `WhitelistVotingStrategy` instance for the provided chain ID
    * @param chainId The chain ID
@@ -21,10 +21,10 @@ export class WhitelistVotingStrategy extends VotingStrategy<Whitelist> {
   }
 
   /**
-   * @notice Convert the provided whitelist voting strategy to a low-level voting strategy struct
+   * @notice Get the address and low-level parameter information for the provided whitelist voting strategy
    * @param strategy The voting strategy information
    */
-  public async getStructConfig(strategy: Whitelist): Promise<VotingStrategyStruct> {
+  public async getStarknetStrategy(strategy: Whitelist): Promise<StarknetVotingStrategy> {
     const { starknet } = getContractAddressesForChainOrThrow(this._chainId);
     if (!strategy.members?.length) {
       throw new Error('No whitelist members provided');

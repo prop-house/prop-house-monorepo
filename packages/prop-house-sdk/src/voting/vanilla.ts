@@ -1,8 +1,8 @@
 import { getContractAddressesForChainOrThrow } from '../addresses';
-import { Vanilla, VotingStrategyStruct, VotingStrategyType } from '../types';
-import { VotingStrategy } from './base';
+import { Vanilla, StarknetVotingStrategy, VotingStrategyType } from '../types';
+import { VotingStrategyBase } from './base';
 
-export class VanillaVotingStrategy extends VotingStrategy<Vanilla> {
+export class VanillaVotingStrategy extends VotingStrategyBase<Vanilla> {
   /**
    * Returns a `VanillaVotingStrategy` instance for the provided chain ID
    * @param chainId The chain ID
@@ -19,10 +19,10 @@ export class VanillaVotingStrategy extends VotingStrategy<Vanilla> {
   }
 
   /**
-   * @notice Convert the provided voting strategy to a low-level voting strategy struct
+   * @notice Get the address and low-level parameter information for the vanilla voting strategy
    * @param strategy The voting strategy information
    */
-  public async getStructConfig(): Promise<VotingStrategyStruct> {
+  public async getStarknetStrategy(): Promise<StarknetVotingStrategy> {
     const { starknet } = getContractAddressesForChainOrThrow(this._chainId);
     return {
       addr: starknet.voting.vanilla,

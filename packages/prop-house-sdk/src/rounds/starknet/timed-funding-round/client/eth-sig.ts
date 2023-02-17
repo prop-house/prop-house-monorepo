@@ -1,6 +1,6 @@
 import { hash, Provider } from 'starknet';
 import { bytes, encoding, splitUint256 } from '../../../../utils';
-import { StarknetVotingStrategy } from '../../../../types';
+import { VotingStrategy } from '../../../../types';
 import {
   DOMAIN as domain,
   TIMED_FUNDING_ROUND_PROPOSE_TYPES as proposeTypes,
@@ -28,7 +28,7 @@ export class TimedFundingRoundEthSigClient {
   public readonly ethUrl: string;
   public readonly starkProvider: Provider;
   public readonly starknetRelayerUrl: string;
-  public readonly votingStrategies: Map<string, StarknetVotingStrategy<TimedFundingRoundEnvelope>>;
+  public readonly votingStrategies: Map<string, VotingStrategy<TimedFundingRoundEnvelope>>;
 
   constructor(config: TimedFundingRoundEthSigClientConfig) {
     this.ethUrl = config.ethUrl;

@@ -37,9 +37,9 @@ const DOMAIN_HASH_LOW = 0x293b7960f35bd1db59a620d4c2cbfd81;
 const PROPOSAL_TYPE_HASH_HIGH = 0x782C7E7AEB98C20F9395BFDB9030A3D6;
 const PROPOSAL_TYPE_HASH_LOW = 0xBBCE0E74657DEA727DF7F4E40F37E44C;
 
-// keccak256("Vote(bytes32 authStrategy,bytes32 house,address voterAddress,bytes32 proposalVotesHash,bytes32 votingStrategiesHash,bytes32 votingStrategyParamsHash,uint256 salt)")
-const VOTE_TYPE_HASH_HIGH = 0x4BA04D788B8F165FF304D664E5251DD7;
-const VOTE_TYPE_HASH_LOW = 0x5D305D3A6E96E3B87933BF12A98E0C96;
+// keccak256("Vote(bytes32 authStrategy,bytes32 round,address voterAddress,bytes32 proposalVotesHash,bytes32 votingStrategiesHash,bytes32 votingStrategyParamsHash,uint256 salt)")
+const VOTE_TYPE_HASH_HIGH = 0xFA0DEBB52364E16244B35664AFCE7152;
+const VOTE_TYPE_HASH_LOW = 0x479E5AE09EA00CE01036179CC073A2C7;
 
 // keccak256("CancelProposal(bytes32 authStrategy,bytes32 round,address proposerAddress,uint256 proposalId,uint256 salt)")
 const CANCEL_PROPOSAL_TYPE_HASH_HIGH = 0x171B70688E107ED47A5AB51E3CF4A20E;
