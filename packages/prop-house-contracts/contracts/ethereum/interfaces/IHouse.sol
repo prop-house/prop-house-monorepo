@@ -1,46 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
-/// @notice Common interface for a house
-interface IHouse {
-    /// @notice Thrown when a strategy is not enabled in the house instance
-    error StrategyNotEnabled();
+import { IERC721 } from './IERC721.sol';
 
-    /// @notice Emitted when a house strategy is enabled
-    /// @param strategy The address of the enabled strategy
-    event StrategyEnabled(address strategy);
+/// @notice Common House interface
+interface IHouse is IERC721 {
+    /// @notice Thrown when the caller is not the prop house contract
+    error ONLY_PROP_HOUSE();
 
-    /// @notice Emitted when a house strategy is disabled
-    /// @param strategy The address of the disabled strategy
-    event StrategyDisabled(address strategy);
-
-    /// @notice Emitted when the house URI is updated
-    /// @param houseURI The new house URI
-    event HouseURIUpdated(string houseURI);
-
-    /// @notice The string representation of the unique identifier
-    function name() external view returns (string memory);
-
-    /// @notice A unique identifier
-    function id() external view returns (bytes32);
-
-    /// @notice The house implementation contract version
-    function version() external view returns (uint256);
+    /// @notice Thrown when the caller does not hold the house ownership token
+    error ONLY_HOUSE_OWNER();
 
     /// @notice Initialize the house
-    /// @param creator The creator of the house
+    /// @param creator The house creator
     /// @param data Initialization data
-    function initialize(address creator, bytes calldata data) external payable;
+    function initialize(address creator, bytes calldata data) external;
 
-    /// @notice Enable a house strategy
-    function enableStrategy(address strategy) external;
+    /// @notice Returns `true` if the provided address is a valid round on the house
+    /// @param round The round to validate
+    function isRound(address round) external view returns (bool);
 
-    /// @notice Disable a house strategy
-    function disableStrategy(address strategy) external;
-
-    /// @notice Enable many house strategies
-    function enableManyStrategies(address[] calldata strategies) external;
-
-    /// @notice Disable many house strategies
-    function disableManyStrategies(address[] calldata strategies) external;
+    /// @notice Create a new round
+    /// @param impl The round implementation contract
+    /// @param creator The round creator address
+    function createRound(address impl, address creator) external returns (address);
 }

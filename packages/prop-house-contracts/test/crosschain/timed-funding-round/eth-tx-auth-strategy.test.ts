@@ -1,32 +1,44 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  CANCEL_PROPOSAL_SELECTOR,
-  fundingHouseTimedFundingRoundSetup,
+  timedFundingRoundSetup,
   generateClaimLeaf,
   generateClaimMerkleTree,
-  HOUSE_URI,
+  CONTRACT_URI,
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
   PROPOSE_SELECTOR,
   VOTE_SELECTOR,
+  CANCEL_PROPOSAL_SELECTOR,
 } from '../../utils';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import {
   AssetType,
-  FundingHouse,
-  FundingHouseStrategyType,
+  HouseType,
+  RoundType,
+  VotingStrategyType,
+  PropHouse,
   getTimedFundingRoundProposeCalldata,
-  getTimedFundingRoundCancelProposalCalldata,
   getTimedFundingRoundVoteCalldata,
   utils,
+  Asset,
+  ContractAddresses,
+  getTimedFundingRoundCancelProposalCalldata,
 } from '@prophouse/sdk';
+import * as addresses from '@prophouse/sdk/dist/addresses';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
-import { HouseFactory, MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
+import {
+  MockStarknetMessaging,
+  StarkNetCommit,
+  TimedFundingRound,
+  TimedFundingRound__factory,
+} from '../../../typechain';
+import { computeHashOnElements } from 'starknet/dist/utils/hash';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
 import chai, { expect } from 'chai';
+import { constants } from 'ethers';
 
 chai.use(solidity);
 
@@ -35,22 +47,20 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   let timestamp: number;
 
-  let fundingHouse: FundingHouse;
-
   let signer: SignerWithAddress;
   let starknetSigner: Account;
 
-  // Contracts
-  let houseFactory: HouseFactory;
+  let propHouse: PropHouse;
+  let timedFundingRound: TimedFundingRound;
   let mockStarknetMessaging: MockStarknetMessaging;
   let starknetCommit: StarkNetCommit;
 
   let timedFundingRoundContract: StarknetContract;
   let ethTxAuth: StarknetContract;
 
-  let timedFundingRoundStrategyL2Factory: StarknetContractFactory;
+  let timedFundingRoundL2Factory: StarknetContractFactory;
 
-  let houseStrategyAddress: string;
+  let l2RoundAddress: string;
   let metadataUri: utils.intsSequence.IntsSequence;
   let proposeCalldata: string[];
   let voteCalldata: string[];
@@ -60,11 +70,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     [signer] = await ethers.getSigners();
 
-    const config = await fundingHouseTimedFundingRoundSetup();
+    const config = await timedFundingRoundSetup();
     ({
-      houseFactory,
       timedFundingRoundEthTxAuthStrategy: ethTxAuth,
-      timedFundingRoundStrategyL2Factory,
+      timedFundingRoundL2Factory,
       mockStarknetMessaging,
       starknetCommit,
       starknetSigner,
@@ -74,60 +83,76 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       './contracts/starknet/common/voting/vanilla.cairo',
     );
     const vanillaVotingStrategy = await vanillaVotingStrategyFactory.deploy();
+    const vanillaVotingStrategyId = computeHashOnElements([vanillaVotingStrategy.address]);
+
+    // Override contract addresses
+    (addresses.getContractAddressesForChainOrThrow as Function) = (): ContractAddresses => {
+      return {
+        evm: {
+          prophouse: config.propHouse.address,
+          house: {
+            funding: config.fundingHouseImpl.address,
+          },
+          round: {
+            timedFunding: config.timedFundingRoundImpl.address,
+          },
+        },
+        starknet: {
+          voting: {
+            balanceOf: '',
+            balanceOfMultiplier: '',
+            whitelist: '',
+            vanilla: vanillaVotingStrategy.address,
+          },
+        },
+      };
+    };
+
+    propHouse = new PropHouse({
+      chainId: await signer.getChainId(),
+      signerOrProvider: signer,
+    });
 
     await starknet.devnet.loadL1MessagingContract(networkUrl, mockStarknetMessaging.address);
 
-    const creationResponse = await houseFactory.create(
-      config.fundingHouseImpl.address,
-      ethers.utils.defaultAbiCoder.encode(
-        ['string', 'address[]', 'address[]', 'tuple(uint256,uint256[])[]'],
-        [
-          HOUSE_URI,
-          [config.timedFundingRoundStrategyValidator.address],
-          [signer.address],
-          [[vanillaVotingStrategy.address, []]],
-        ],
-      ),
+    const asset: Asset = {
+      assetType: AssetType.ETH,
+      amount: ONE_ETHER,
+    };
+    const creationResponse = await propHouse.createAndFundRoundOnNewHouse(
+      {
+        houseType: HouseType.FUNDING,
+        config: {
+          contractURI: CONTRACT_URI,
+        },
+      },
+      {
+        roundType: RoundType.TIMED_FUNDING,
+        title: 'Test Round',
+        description: 'A round used for testing purposes',
+        config: {
+          awards: [asset],
+          strategies: [
+            {
+              strategyType: VotingStrategyType.VANILLA,
+            },
+          ],
+          proposalPeriodStartTimestamp: timestamp + ONE_DAY_SEC,
+          proposalPeriodDuration: ONE_DAY_SEC,
+          votePeriodDuration: ONE_DAY_SEC,
+          winnerCount: 1,
+        },
+      },
+      [asset],
     );
 
     const creationReceipt = await creationResponse.wait();
-    const [votingStrategyHash] = ethers.utils.defaultAbiCoder.decode(
-      ['uint256', 'uint256', 'uint256[]'],
-      creationReceipt.events?.[creationReceipt.events.length - 3].data!,
-    );
-    const [, fundingHouseAddress] =
-      creationReceipt.events?.[creationReceipt.events.length - 1].args!;
+    const [, roundAddress] = creationReceipt.events!.find(({ event }) => event === 'RoundCreated')!
+      .args!;
 
     await starknet.devnet.flush();
 
-    fundingHouse = new FundingHouse(fundingHouseAddress, signer);
-
-    await fundingHouse.depositETH({ value: ONE_ETHER });
-
-    const start = timestamp + ONE_DAY_SEC;
-    const tx = await fundingHouse.initiateRoundSimple({
-      title: 'Test Round',
-      description: 'A round used for testing purposes',
-      tags: ['test', 'prop-house'],
-      votingStrategies: [votingStrategyHash],
-      strategy: {
-        strategyType: FundingHouseStrategyType.TIMED_FUNDING_ROUND,
-        config: {
-          proposalPeriodStartTimestamp: start,
-          proposalPeriodDuration: ONE_DAY_SEC,
-          votePeriodDuration: ONE_DAY_SEC,
-          winnerCount: 2,
-        },
-        validator: config.timedFundingRoundStrategyValidator.address,
-      },
-      awards: [
-        {
-          assetType: AssetType.ETH,
-          amount: ONE_ETHER,
-        },
-      ],
-    });
-    await tx.wait();
+    timedFundingRound = TimedFundingRound__factory.connect(roundAddress, signer);
 
     // Send the pending L1 -> L2 message
     await starknet.devnet.flush();
@@ -135,10 +160,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const block = await starknet.getBlock({
       blockNumber: 'latest',
     });
-    [, houseStrategyAddress] = block.transaction_receipts[0].events[0].data;
+    [, l2RoundAddress] = block.transaction_receipts[0].events[1].data;
 
-    timedFundingRoundContract = timedFundingRoundStrategyL2Factory.getContractAt(
-      `0x${BigInt(houseStrategyAddress).toString(16)}`,
+    timedFundingRoundContract = timedFundingRoundL2Factory.getContractAt(
+      `0x${BigInt(l2RoundAddress).toString(16)}`,
     );
 
     metadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
@@ -151,12 +176,11 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
           votingPower: 1,
         },
       ],
-      [0],
+      [vanillaVotingStrategyId],
       [[]],
     );
 
     await starknet.devnet.increaseTime(ONE_DAY_SEC + 1);
-
     await starknet.devnet.createBlock();
   });
 
@@ -164,14 +188,14 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
+      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
 
-    // Creating proposal
+    // Create the proposal
     const txHash = await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-      target: houseStrategyAddress,
+      target: l2RoundAddress,
       function_selector: PROPOSE_SELECTOR,
       calldata: proposeCalldata,
     });
@@ -191,19 +215,19 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
+      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
 
     await starknet.devnet.flush();
     await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-      target: houseStrategyAddress,
+      target: l2RoundAddress,
       function_selector: PROPOSE_SELECTOR,
       calldata: proposeCalldata,
     });
     // Second attempt at calling authenticate should fail
     try {
       await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-        target: houseStrategyAddress,
+        target: l2RoundAddress,
         function_selector: PROPOSE_SELECTOR,
         calldata: proposeCalldata,
       });
@@ -216,13 +240,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   it('should fail if the correct hash of the payload is not committed on L1 before execution is called', async () => {
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, VOTE_SELECTOR, proposeCalldata),
+      utils.encoding.getCommit(l2RoundAddress, VOTE_SELECTOR, proposeCalldata),
     ); // Wrong selector
 
     await starknet.devnet.flush();
     try {
       await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-        target: houseStrategyAddress,
+        target: l2RoundAddress,
         function_selector: PROPOSE_SELECTOR,
         calldata: proposeCalldata,
       });
@@ -236,13 +260,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     proposeCalldata[0] = ethers.Wallet.createRandom().address; // Random l1 address in the calldata
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
+      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
 
     await starknet.devnet.flush();
     try {
       await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-        target: houseStrategyAddress,
+        target: l2RoundAddress,
         function_selector: PROPOSE_SELECTOR,
         calldata: proposeCalldata,
       });
@@ -261,13 +285,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, PROPOSE_SELECTOR, proposeCalldata),
+      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
 
     const proposeTxHash = await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-      target: houseStrategyAddress,
+      target: l2RoundAddress,
       function_selector: PROPOSE_SELECTOR,
       calldata: proposeCalldata,
     });
@@ -285,17 +309,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     );
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(
-        houseStrategyAddress,
-        CANCEL_PROPOSAL_SELECTOR,
-        cancelProposalCalldata,
-      ),
+      utils.encoding.getCommit(l2RoundAddress, CANCEL_PROPOSAL_SELECTOR, cancelProposalCalldata),
     );
 
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
 
     await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-      target: houseStrategyAddress,
+      target: l2RoundAddress,
       function_selector: CANCEL_PROPOSAL_SELECTOR,
       calldata: cancelProposalCalldata,
     });
@@ -310,7 +330,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Commit the hash of the payload to the StarkNet commit L1 contract
     await starknetCommit.commit(
       ethTxAuth.address,
-      utils.encoding.getCommit(houseStrategyAddress, VOTE_SELECTOR, voteCalldata),
+      utils.encoding.getCommit(l2RoundAddress, VOTE_SELECTOR, voteCalldata),
     );
     // Check that the L1 -> L2 message has been propagated
     expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
@@ -321,7 +341,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     // Cast vote
     const txHash = await starknetSigner.invoke(ethTxAuth, 'authenticate', {
-      target: houseStrategyAddress,
+      target: l2RoundAddress,
       function_selector: VOTE_SELECTOR,
       calldata: voteCalldata,
     });
@@ -333,9 +353,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(parseInt(votingPower, 16)).to.equal(1);
   });
 
-  it('should finalize a round and allow the winners to claim their awards', async () => {
+  it('should finalize a round and allow the winner to claim their award', async () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
-
     await starknet.devnet.createBlock();
 
     // Finalize the round
@@ -353,14 +372,13 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       ],
     });
     const { events } = await starknet.getTransactionReceipt(txHash);
-    const [roundId, merkleRootLow, merkleRootHigh, winnersLen, ...winners] = events[0].data;
+    const [merkleRootLow, merkleRootHigh, winnersLen, ...winners] = events[0].data;
 
-    expect(parseInt(roundId, 16)).to.equal(1);
     expect(merkleRootLow.length).to.equal(34);
     expect(merkleRootHigh.length).to.equal(34);
-    expect(parseInt(winnersLen, 16)).to.equal(2);
+    expect(parseInt(winnersLen, 16)).to.equal(1);
 
-    const winner1 = {
+    const winner = {
       proposalId: parseInt(winners[0], 16),
       proposerAddress: winners[1],
       proposalVotes: utils.splitUint256.SplitUint256.fromObj({
@@ -368,82 +386,39 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
         high: winners[3],
       }).toUint(),
     };
-    expect(winner1.proposalId).to.equal(1);
-    expect(winner1.proposerAddress).to.equal(signer.address.toLowerCase());
-    expect(winner1.proposalVotes).to.equal(BigInt(1));
-
-    const winner2 = {
-      proposalId: parseInt(winners[4], 16),
-      proposerAddress: winners[5],
-      proposalVotes: utils.splitUint256.SplitUint256.fromObj({
-        low: winners[6],
-        high: winners[7],
-      }).toUint(),
-    };
-    expect(winner2.proposalId).to.equal(2);
-    expect(winner2.proposerAddress).to.equal(signer.address.toLowerCase());
-    expect(winner2.proposalVotes).to.equal(BigInt(0));
+    expect(winner.proposalId).to.equal(1);
+    expect(winner.proposerAddress).to.equal(signer.address.toLowerCase());
+    expect(winner.proposalVotes).to.equal(BigInt(1));
 
     const { consumed_messages } = await starknet.devnet.flush();
 
     expect(consumed_messages.from_l2.length).to.equal(1);
 
-    const finalizeTx = fundingHouse.finalizeRound(roundId, merkleRootLow, merkleRootHigh);
+    const finalizeTx = timedFundingRound.finalizeRound(merkleRootLow, merkleRootHigh);
 
-    await expect(finalizeTx).to.emit(fundingHouse, 'RoundFinalized').withArgs(roundId);
+    await expect(finalizeTx).to.emit(timedFundingRound, 'RoundFinalized');
 
-    const splitAmount = ONE_ETHER.div(2);
-    const leaf1 = generateClaimLeaf({
-      proposalId: winner1.proposalId,
+    const leaf = generateClaimLeaf({
+      proposalId: winner.proposalId,
       proposerAddress: signer.address,
-      assetId: assetId.toHex(),
-      assetAmount: splitAmount,
+      assetId: utils.encoding.getETHAssetID(),
+      assetAmount: amount.toHex(),
     });
-    const leaf2 = generateClaimLeaf({
-      proposalId: winner2.proposalId,
-      proposerAddress: signer.address,
-      assetId: assetId.toHex(),
-      assetAmount: splitAmount,
-    });
-    const tree = generateClaimMerkleTree([leaf1, leaf2]);
-    const proof1 = tree.getHexProof(leaf1);
-    const proof2 = tree.getHexProof(leaf2);
-
-    const claimTx1 = fundingHouse.claimAward(
-      roundId,
-      winner1.proposalId,
-      splitAmount,
-      utils.encoding.encodeETHAssetData(),
-      proof1,
+    const tree = generateClaimMerkleTree([leaf]);
+    const proof = tree.getHexProof(leaf);
+    const claimTx = timedFundingRound.claimAward(
+      winner.proposalId,
+      ONE_ETHER,
+      {
+        assetType: AssetType.ETH,
+        amount: ONE_ETHER,
+        token: constants.AddressZero,
+        identifier: 0,
+      },
+      proof,
     );
-    const claimTx2 = fundingHouse.claimAward(
-      roundId,
-      winner2.proposalId,
-      splitAmount,
-      utils.encoding.encodeETHAssetData(),
-      proof2,
-    );
-    await Promise.all([
-      expect(claimTx1)
-        .to.emit(fundingHouse, 'AwardClaimed')
-        .withArgs(
-          roundId,
-          winner1.proposalId,
-          signer.address,
-          assetId.toHex(),
-          splitAmount,
-          signer.address,
-        ),
-      expect(claimTx2)
-        .to.emit(fundingHouse, 'AwardClaimed')
-        .withArgs(
-          roundId,
-          winner2.proposalId,
-          signer.address,
-          assetId.toHex(),
-          splitAmount,
-          signer.address,
-        ),
-    ]);
+    await expect(claimTx)
+      .to.emit(timedFundingRound, 'AwardClaimed')
+      .withArgs(winner.proposalId, signer.address, assetId.toHex(), amount.toHex(), signer.address);
   });
 });

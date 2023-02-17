@@ -1,18 +1,17 @@
 import {
-  DeploymentManager__factory,
-  FundingHouse__factory,
-  HouseFactory__factory,
-  RegistrarManager__factory,
+  Manager__factory,
+  Messenger__factory,
+  CreatorPassIssuer__factory,
+  PropHouse__factory,
   StarkNetCommit__factory,
-  StarknetMessenger__factory,
-  StrategyManager__factory,
-  TimedFundingRoundStrategyValidator__factory,
-  UpgradeManager__factory,
+  FundingHouse__factory,
+  TimedFundingRound__factory,
 } from '../typechain';
 import { task, types } from 'hardhat/config';
 import { NonceManager } from '@ethersproject/experimental';
 import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'fs';
 import { DeployContractPayload, Provider } from 'starknet';
+import { constants } from 'ethers';
 
 enum ChainId {
   Mainnet = 1,
@@ -24,7 +23,6 @@ interface NetworkConfig {
     network: 'mainnet-alpha' | 'goerli-alpha';
     core: string;
   };
-  weth: string;
   fossil?: {
     factRegistry: string;
     l1HeadersStore: string;
@@ -37,14 +35,12 @@ const networkConfig: Record<number, NetworkConfig> = {
       network: 'mainnet-alpha',
       core: '0xc662c410C0ECf747543f5bA90660f6ABeBD9C8c4',
     },
-    weth: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
   },
   [ChainId.Goerli]: {
     starknet: {
       network: 'goerli-alpha',
       core: '0xde29d060D45901Fb19ED6C6e959EB22d8626708e',
     },
-    weth: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
     fossil: {
       factRegistry: '0x363108ac1521a47b4f7d82f8ba868199bc1535216bbedfc1b071ae93cc406fd',
       l1HeadersStore: '0x6ca3d25e901ce1fff2a7dd4079a24ff63ca6bbf8ba956efc71c1467975ab78f',
@@ -57,7 +53,6 @@ const sleep = (ms = 1_000) => new Promise(resolve => setTimeout(resolve, ms));
 task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
   .addOptionalParam('registrar', 'The registrar address', undefined, types.string)
   .addOptionalParam('starknetCore', 'The Starknet core contract address', undefined, types.string)
-  .addOptionalParam('weth', 'The WETH contract address', undefined, types.string)
   .addOptionalParam(
     'fossilFactRegistry',
     'The Fossil fact registry contract address',
@@ -101,14 +96,6 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       }
       args.starknetCore = config.starknet.core;
     }
-    if (!args.weth) {
-      if (!config.weth) {
-        throw new Error(
-          `Can not auto-detect WETH contract on chain ${ethNetwork.name}. Provide it with the --weth arg.`,
-        );
-      }
-      args.weth = config.weth;
-    }
     if (!args.fossilFactRegistry) {
       if (!config.fossil?.factRegistry) {
         throw new Error(
@@ -127,35 +114,32 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     }
 
     // L1 factories
-    const registrarManagerFactory = new RegistrarManager__factory(ethDeployer);
-    const deploymentManagerFactory = new DeploymentManager__factory(ethDeployer);
-    const upgradeManagerFactory = new UpgradeManager__factory(ethDeployer);
-    const strategyManagerFactory = new StrategyManager__factory(ethDeployer);
-    const houseDeployerFactory = new HouseFactory__factory(ethDeployer);
+    const managerFactory = new Manager__factory(ethDeployer);
+    const propHouseFactory = new PropHouse__factory(ethDeployer);
+    const messengerFactory = new Messenger__factory(ethDeployer);
+    const creatorPassIssuerFactory = new CreatorPassIssuer__factory(ethDeployer);
     const starknetCommitFactory = new StarkNetCommit__factory(ethDeployer);
-    const starknetMessengerFactory = new StarknetMessenger__factory(ethDeployer);
-    const fundingHouseFactory = new FundingHouse__factory(ethDeployer);
-    const timedFundingRoundStrategyValidatorFactory =
-      new TimedFundingRoundStrategyValidator__factory(ethDeployer);
+    const fundingHouseImplFactory = new FundingHouse__factory(ethDeployer);
+    const timedFundingRoundImplFactory = new TimedFundingRound__factory(ethDeployer);
 
     // L2 factories
-    const houseStrategyDeployerFactory = await starknet.getContractFactory(
-      './contracts/starknet/house_strategy_factory.cairo',
+    const roundDeployerFactory = await starknet.getContractFactory(
+      './contracts/starknet/round_factory.cairo',
     );
-    const ethHouseExecutionStrategyFactory = await starknet.getContractFactory(
-      './contracts/starknet/common/execution/eth_house.cairo',
+    const ethExecutionStrategyFactory = await starknet.getContractFactory(
+      './contracts/starknet/common/execution/eth_strategy.cairo',
     );
     const votingStrategyRegistryFactory = await starknet.getContractFactory(
       './contracts/starknet/common/registry/voting_strategy_registry.cairo',
     );
     const timedFundingRoundStrategyL2Factory = await starknet.getContractFactory(
-      './contracts/starknet/strategies/timed_funding_round/timed_funding_round.cairo',
+      './contracts/starknet/rounds/timed_funding_round/timed_funding_round.cairo',
     );
     const timedFundingRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
-      './contracts/starknet/strategies/timed_funding_round/auth/eth_tx.cairo',
+      './contracts/starknet/rounds/timed_funding_round/auth/eth_tx.cairo',
     );
     const timedFundingRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
-      './contracts/starknet/strategies/timed_funding_round/auth/eth_sig.cairo',
+      './contracts/starknet/rounds/timed_funding_round/auth/eth_sig.cairo',
     );
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/vanilla.cairo',
@@ -165,29 +149,24 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
 
     // Deploy core protocol contracts
-    const registrarManager = await registrarManagerFactory.deploy(args.registrar);
-    const [deploymentManager, upgradeManager, strategyManager] = await Promise.all([
-      deploymentManagerFactory.deploy(registrarManager.address),
-      upgradeManagerFactory.deploy(registrarManager.address),
-      strategyManagerFactory.deploy(registrarManager.address),
+    const manager = await managerFactory.deploy();
+    const propHouse = await propHouseFactory.deploy(manager.address);
+
+    const [creatorPassIssuer, starknetCommit] = await Promise.all([
+      creatorPassIssuerFactory.deploy(propHouse.address, constants.AddressZero),
+      starknetCommitFactory.deploy(args.starknetCore),
     ]);
-    const houseFactory = await houseDeployerFactory.deploy(deploymentManager.address);
-    const starknetCommit = await starknetCommitFactory.deploy(args.starknetCore);
-    const starknetMessenger = await starknetMessengerFactory.deploy(
-      args.starknetCore,
-      houseFactory.address,
-    );
-    const houseStrategyFactory = await starknetProvider.deployContract({
-      contract: readFileSync(houseStrategyDeployerFactory.metadataPath, 'ascii'),
-      constructorCalldata: [starknetMessenger.address],
+    const messenger = await messengerFactory.deploy(args.starknetCore, propHouse.address);
+    const roundFactory = await starknetProvider.deployContract({
+      contract: readFileSync(roundDeployerFactory.metadataPath, 'ascii'),
+      constructorCalldata: [messenger.address],
     });
-    const ethHouseExecutionStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(ethHouseExecutionStrategyFactory.metadataPath, 'ascii'),
-      constructorCalldata: [houseStrategyFactory.contract_address],
+    const ethExecutionStrategy = await starknetProvider.deployContract({
+      contract: readFileSync(ethExecutionStrategyFactory.metadataPath, 'ascii'),
+      constructorCalldata: [roundFactory.contract_address],
     });
     const votingStrategyRegistry = await starknetProvider.deployContract({
       contract: readFileSync(votingStrategyRegistryFactory.metadataPath, 'ascii'),
-      constructorCalldata: [starknetMessenger.address],
     });
 
     // Deploy funding house contracts
@@ -199,27 +178,32 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       contract: readFileSync(timedFundingRoundEthSigAuthStrategyFactory.metadataPath, 'ascii'),
     });
 
-    const generatedTimedFundingRoundStrategyMetadataPath =
-      hre.starknetWrapper.writeConstantsToOutput(timedFundingRoundStrategyL2Factory.metadataPath, {
+    const generatedTimedFundingRoundMetadataPath = hre.starknetWrapper.writeConstantsToOutput(
+      timedFundingRoundStrategyL2Factory.metadataPath,
+      {
         voting_strategy_registry: votingStrategyRegistry.contract_address,
-        eth_execution_strategy: ethHouseExecutionStrategy.contract_address,
+        eth_execution_strategy: ethExecutionStrategy.contract_address,
         eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.contract_address,
         eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.contract_address,
-      });
-    // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
-    const timedFundingRoundStrategyClassHash = await hre.starknetWrapper.getClassHash(
-      generatedTimedFundingRoundStrategyMetadataPath,
+      },
     );
-    const timedFundingRoundStrategyValidator =
-      await timedFundingRoundStrategyValidatorFactory.deploy(timedFundingRoundStrategyClassHash);
-    const fundingHouseImpl = await fundingHouseFactory.deploy(
-      ethHouseExecutionStrategy.contract_address,
-      votingStrategyRegistry.contract_address,
-      upgradeManager.address,
-      strategyManager.address,
-      starknetMessenger.address,
-      houseStrategyFactory.contract_address,
-      args.weth,
+    // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
+    const timedFundingRoundClassHash = await hre.starknetWrapper.getClassHash(
+      generatedTimedFundingRoundMetadataPath,
+    );
+    const timedFundingRoundImpl = await timedFundingRoundImplFactory.deploy(
+      timedFundingRoundClassHash,
+      propHouse.address,
+      args.starknetCore,
+      messenger.address,
+      constants.AddressZero,
+      roundFactory.contract_address,
+      ethExecutionStrategy.contract_address,
+    );
+    const fundingHouseImpl = await fundingHouseImplFactory.deploy(
+      propHouse.address,
+      constants.AddressZero,
+      creatorPassIssuer.address,
     );
 
     // Deploy voting strategy contracts
@@ -232,30 +216,25 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     });
 
     // Configure contracts
-    await deploymentManager.registerDeployment(fundingHouseImpl.address);
-    await strategyManager['registerStrategy(bytes32,address)'](
-      await fundingHouseImpl.id(),
-      timedFundingRoundStrategyValidator.address,
-    );
+    await manager.registerHouse(fundingHouseImpl.address);
+    await manager.registerRound(fundingHouseImpl.address, timedFundingRoundImpl.address);
 
     const deployment = {
       ethereum: {
         address: {
-          registrarManager: registrarManager.address,
-          deploymentManager: deploymentManager.address,
-          upgradeManager: upgradeManager.address,
-          strategyManager: strategyManager.address,
-          houseFactory: houseFactory.address,
+          manager: manager.address,
+          propHouse: propHouse.address,
+          messenger: messenger.address,
+          creatorPassIssuer: creatorPassIssuer.address,
           starknetCommit: starknetCommit.address,
-          starknetMessenger: starknetMessenger.address,
-          timedFundingRoundStrategyValidator: timedFundingRoundStrategyValidator.address,
           fundingHouseImpl: fundingHouseImpl.address,
+          timedFundingRoundImpl: timedFundingRoundImpl.address,
         },
       },
       starknet: {
         address: {
-          houseStrategyFactory: houseStrategyFactory.contract_address,
-          ethHouseExecutionStrategy: ethHouseExecutionStrategy.contract_address,
+          roundFactory: roundFactory.contract_address,
+          ethExecutionStrategy: ethExecutionStrategy.contract_address,
           votingStrategyRegistry: votingStrategyRegistry.contract_address,
           timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.contract_address,
           timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.contract_address,
@@ -263,7 +242,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.contract_address,
         },
         classHash: {
-          timedFundingRoundStrategy: timedFundingRoundStrategyClassHash,
+          timedFundingRound: timedFundingRoundClassHash,
         },
       },
     };

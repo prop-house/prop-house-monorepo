@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 import { IOwnable } from '../../interfaces/IOwnable.sol';
 import { Initializable } from './Initializable.sol';
@@ -18,13 +18,13 @@ abstract contract Ownable is IOwnable, Initializable {
 
     /// @dev Ensures the caller is the owner
     modifier onlyOwner() {
-        if (msg.sender != _owner) revert OnlyOwner();
+        if (msg.sender != _owner) revert ONLY_OWNER();
         _;
     }
 
     /// @dev Ensures the caller is the pending owner
     modifier onlyPendingOwner() {
-        if (msg.sender != _pendingOwner) revert OnlyPendingOwner();
+        if (msg.sender != _pendingOwner) revert ONLY_PENDING_OWNER();
         _;
     }
 

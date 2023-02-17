@@ -3,126 +3,164 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin
-from starkware.cairo.common.bool import TRUE, FALSE
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math import assert_not_zero
 from starkware.cairo.common.alloc import alloc
 
+from contracts.starknet.common.lib.array_utils import ArrayUtils
+
 @storage_var
-func starknet_messenger_store() -> (starknet_messenger: felt) {
+func voting_strategy_store(strategy_id: felt) -> (strategy_address: felt) {
 }
 
 @storage_var
-func voting_strategy_store(strategy_hash: felt) -> (strategy_address: felt) {
-}
-
-@storage_var
-func voting_strategy_params_store(strategy_hash: felt, param_index: felt) -> (param: felt) {
+func voting_strategy_params_store(strategy_id: felt, strategy_param_index: felt) -> (param: felt) {
 }
 
 @event
-func voting_strategy_registered(strategy_hash: felt) {
-}
-
-@constructor
-func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    starknet_messenger: felt
+func voting_strategy_registered(
+    strategy_id: felt, strategy_addr: felt, strategy_params_len: felt, strategy_params: felt*
 ) {
-    starknet_messenger_store.write(value=starknet_messenger);
-    return ();
 }
 
+// Returns the voting strategy address and params for the passed strategy ID
 @view
 func get_voting_strategy{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt}(
-    strategy_hash: felt
+    strategy_id: felt
 ) -> (strategy_addr: felt, strategy_params_len: felt, strategy_params: felt*) {
     alloc_locals;
 
-    let (voting_strategy) = voting_strategy_store.read(strategy_hash);
-    let (voting_strategy_params: felt*) = alloc();
-    if (voting_strategy == 0) {
-        return (0, 0, voting_strategy_params);
+    let (voting_strategy) = voting_strategy_store.read(strategy_id);
+    with_attr error_message("VotingStrategyRegistry: Strategy is not registered") {
+        assert_not_zero(voting_strategy);
     }
 
-    let (voting_strategy_params_len) = voting_strategy_params_store.read(strategy_hash, 0);
-    let (voting_strategy_params_len, voting_strategy_params) = _get_voting_strategy_params(
-        strategy_hash, voting_strategy_params_len, voting_strategy_params, 1
+    let (voting_strategy_params: felt*) = alloc();
+
+    let (voting_strategy_params_len) = voting_strategy_params_store.read(strategy_id, 0);
+    let (voting_strategy_params_len, voting_strategy_params) = _read_voting_strategy_params(
+        strategy_id, voting_strategy_params_len, voting_strategy_params, 1
     );
     return (voting_strategy, voting_strategy_params_len, voting_strategy_params);
 }
 
-// Receives a voting strategy registration and stores it in the registry.
-@l1_handler
-func register_voting_strategy{
+// Registers a voting strategy if it does not yet exist and returns the strategy ID
+@external
+func register_voting_strategy_if_not_exists{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr: felt
-}(
-    from_address: felt,
-    strategy_hash: felt,
-    strategy_addr: felt,
-    strategy_params_len: felt,
-    strategy_params: felt*,
-) {
+}(strategy_addr: felt, strategy_params_len: felt, strategy_params: felt*) -> (strategy_id: felt) {
     alloc_locals;
 
-    // Check L1 message origin is equal to the L1 messenger
-    let (origin) = starknet_messenger_store.read();
-    with_attr error_message("VotingStrategyRegistry: Invalid message origin address") {
-        assert from_address = origin;
-    }
+    let (strategy_id) = _compute_strategy_id(strategy_addr, strategy_params_len, strategy_params);
+    let (voting_strategy) = voting_strategy_store.read(strategy_id);
 
-    let (voting_strategy) = voting_strategy_store.read(strategy_hash);
+    // Strategy is already registered. Return early.
     if (voting_strategy != 0) {
-        return ();  // The strategy has already been registered. Exit early.
+        return (strategy_id,);
     }
 
-    voting_strategy_store.write(strategy_hash, strategy_addr);
+    voting_strategy_store.write(strategy_id, strategy_addr);
 
     // The length of the voting strategy params array is stored at index 0
-    voting_strategy_params_store.write(strategy_hash, 0, strategy_params_len);
-    _write_voting_strategy_params(strategy_hash, 1, strategy_params_len, strategy_params);
+    voting_strategy_params_store.write(strategy_id, 0, strategy_params_len);
+    _write_voting_strategy_params(strategy_id, 1, strategy_params_len, strategy_params);
 
-    voting_strategy_registered.emit(strategy_hash);
-    return ();
+    voting_strategy_registered.emit(
+        strategy_id, strategy_addr, strategy_params_len, strategy_params
+    );
+    return (strategy_id,);
 }
 
 //
 //  Internal Functions
 //
 
+// Writes the strategy address and params to the provided array
+func _populate_strategy_array{pedersen_ptr: HashBuiltin*}(
+    strategy_addr: felt,
+    strategy_params_len: felt,
+    strategy_params: felt*,
+    strategy_array: felt*,
+    current_index: felt,
+) {
+    alloc_locals;
+
+    if (current_index == 0) {
+        assert strategy_array[current_index] = strategy_addr;
+
+        _populate_strategy_array(
+            strategy_addr, strategy_params_len, strategy_params, strategy_array, current_index + 1
+        );
+        return ();
+    } else {
+        if (strategy_params_len == 0) {
+            return ();
+        } else {
+            assert strategy_array[current_index] = strategy_params[current_index - 1];
+
+            _populate_strategy_array(
+                strategy_addr,
+                strategy_params_len - 1,
+                &strategy_params[1],
+                strategy_array,
+                current_index + 1,
+            );
+            return ();
+        }
+    }
+}
+
+// Computes the strategy ID using the strategy address and params
+func _compute_strategy_id{pedersen_ptr: HashBuiltin*}(
+    strategy_addr: felt, strategy_params_len: felt, strategy_params: felt*
+) -> (strategy_id: felt) {
+    alloc_locals;
+
+    let (strategy_array: felt*) = alloc();
+    _populate_strategy_array(
+        strategy_addr, strategy_params_len, strategy_params, strategy_array, 0
+    );
+
+    let (strategy_id) = ArrayUtils.hash(1 + strategy_params_len, strategy_array);
+    return (strategy_id,);
+}
+
 // Writes the voting strategy params to storage for the provided strategy hash
 func _write_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    strategy_hash: felt, param_index: felt, params_len: felt, params: felt*
+    strategy_id: felt, strategy_param_index: felt, strategy_params_len: felt, strategy_params: felt*
 ) {
-    if (params_len == 0) {
+    if (strategy_params_len == 0) {
         // List is empty
         return ();
     } else {
         // Store voting parameter
-        voting_strategy_params_store.write(strategy_hash, param_index, params[0]);
+        voting_strategy_params_store.write(strategy_id, strategy_param_index, strategy_params[0]);
 
-        _write_voting_strategy_params(strategy_hash, param_index + 1, params_len - 1, &params[1]);
+        _write_voting_strategy_params(
+            strategy_id, strategy_param_index + 1, strategy_params_len - 1, &strategy_params[1]
+        );
         return ();
     }
 }
 
-// Reconstructs the voting strategy param array for the provided strategy hash
-func _get_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    strategy_hash: felt, params_len: felt, params: felt*, index: felt
-) -> (params_len: felt, params: felt*) {
+// Reconstructs the voting strategy param array for the provided strategy id
+func _read_voting_strategy_params{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    strategy_id: felt, strategy_params_len: felt, strategy_params: felt*, current_index: felt
+) -> (strategy_params_len: felt, strategy_params: felt*) {
     // The are no parameters so we just return an empty array
-    if (params_len == 0) {
-        return (0, params);
+    if (strategy_params_len == 0) {
+        return (0, strategy_params);
     }
 
-    let (param) = voting_strategy_params_store.read(strategy_hash, index);
-    assert params[index - 1] = param;
+    let (strategy_param) = voting_strategy_params_store.read(strategy_id, current_index);
+    assert strategy_params[current_index - 1] = strategy_param;
 
     // All parameters have been added to the array so we can return it
-    if (index == params_len) {
-        return (params_len, params);
+    if (current_index == strategy_params_len) {
+        return (strategy_params_len, strategy_params);
     }
 
-    let (params_len, params) = _get_voting_strategy_params(
-        strategy_hash, params_len, params, index + 1
+    let (strategy_params_len, strategy_params) = _read_voting_strategy_params(
+        strategy_id, strategy_params_len, strategy_params, current_index + 1
     );
-    return (params_len, params);
+    return (strategy_params_len, strategy_params);
 }

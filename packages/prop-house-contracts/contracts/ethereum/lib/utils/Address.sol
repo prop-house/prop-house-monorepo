@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 /// @title Address
 /// @notice Modified from Rohan Kulkarni's work for Nouns Builder
@@ -8,10 +8,10 @@ pragma solidity ^0.8.13;
 /// - Adds util converting address to bytes32
 library Address {
     /// @dev Thrown when the target of a delegatecall is not a contract
-    error InvalidTarget();
+    error INVALID_TARGET();
 
     /// @dev Thrown when a delegatecall has failed
-    error DelegateCallFailed();
+    error DELEGATE_CALL_FAILED();
 
     /// @dev If an address is a contract
     function isContract(address _account) internal view returns (bool rv) {
@@ -22,7 +22,7 @@ library Address {
 
     /// @dev Performs a delegatecall on an address
     function functionDelegateCall(address _target, bytes memory _data) internal returns (bytes memory) {
-        if (!isContract(_target)) revert InvalidTarget();
+        if (!isContract(_target)) revert INVALID_TARGET();
 
         (bool success, bytes memory returndata) = _target.delegatecall(_data);
 
@@ -41,7 +41,7 @@ library Address {
                     revert(add(32, _returndata), returndata_size)
                 }
             } else {
-                revert DelegateCallFailed();
+                revert DELEGATE_CALL_FAILED();
             }
         }
     }

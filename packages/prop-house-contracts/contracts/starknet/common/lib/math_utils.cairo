@@ -72,9 +72,7 @@ namespace MathUtils {
     // @param num2 2nd number
     // @param num3 3rd number
     // @return packed_felt The packed felt
-    func pack_3_40_bit{range_check_ptr}(num1: felt, num2: felt, num3: felt) -> (
-        packed_felt: felt
-    ) {
+    func pack_3_40_bit{range_check_ptr}(num1: felt, num2: felt, num3: felt) -> (packed_felt: felt) {
         with_attr error_message("MathUtils: number too big to be packed") {
             assert_nn_le(num1, MAX_40);
             assert_nn_le(num2, MAX_40);

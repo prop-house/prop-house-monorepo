@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.13;
+pragma solidity >=0.8.17;
 
 /// @title IOwnable
 /// @notice The external Ownable events, errors, and functions
 interface IOwnable {
     /// @dev Thrown when an unauthorized user calls an owner function
-    error OnlyOwner();
+    error ONLY_OWNER();
 
     /// @dev Thrown when an unauthorized user calls a pending owner function
-    error OnlyPendingOwner();
+    error ONLY_PENDING_OWNER();
 
     /// @notice Emitted when ownership has been updated
     /// @param prevOwner The previous owner address
