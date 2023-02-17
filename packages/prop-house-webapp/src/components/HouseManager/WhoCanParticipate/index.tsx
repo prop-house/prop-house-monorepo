@@ -17,7 +17,7 @@ export interface AddressWithVotesProps {
   addressName: string;
   votesPerToken: number;
   state: 'Input' | 'Searching' | 'Success' | 'Error';
-  errorType?: 'AddressNotFound' | 'AddressAlreadyExists';
+  errorType?: 'AddressNotFound' | 'AddressAlreadyExists' | 'UnidentifiedContract';
 }
 
 const initialAddress: AddressWithVotesProps = {
@@ -137,7 +137,19 @@ const WhoCanParticipate = () => {
     try {
       const tokenInfo = await getTokenInfo(event.target.value);
 
-      if (tokenInfo) {
+      if (tokenInfo.name === 'Unidentified contract' || !tokenInfo.image) {
+        setAddresses(
+          addresses.map(address =>
+            address.id === id
+              ? {
+                  ...address,
+                  state: 'Error',
+                  errorType: 'UnidentifiedContract',
+                }
+              : address,
+          ),
+        );
+      } else if (tokenInfo.name && tokenInfo.image) {
         setAddresses(
           addresses.map(address =>
             address.id === id
