@@ -254,7 +254,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     }
   });
 
-  it('should create a vote using an Ethereum transaction', async () => {
+  it('should create a vote using an Ethereum signature', async () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
     await starknet.devnet.createBlock();
 

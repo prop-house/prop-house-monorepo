@@ -14,6 +14,6 @@ export const HOUSE_NAME = 'Test House';
 
 export const HOUSE_SYMBOL = 'TEST';
 
-export const CONTRACT_URI = 'Test Contract URI';
+export const CONTRACT_URI = 'ipfs://test_uri';
 
 export const METADATA_URI = 'My first proposal!';
