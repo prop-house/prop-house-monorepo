@@ -12,6 +12,7 @@ const Input: React.FC<{
   classNames?: string;
   note?: string;
   autoFocus?: boolean;
+  handleBlur?: any;
 }> = props => {
   const {
     type = 'input',
@@ -23,6 +24,7 @@ const Input: React.FC<{
     classNames,
     note,
     autoFocus,
+    handleBlur,
   } = props;
 
   return (
@@ -41,6 +43,7 @@ const Input: React.FC<{
           value={value}
           onChange={onChange}
           autoFocus={autoFocus}
+          onBlur={handleBlur}
         />
       ) : (
         <textarea
