@@ -70,6 +70,7 @@ const AddressWithVotes: React.FC<{
   const inputHasError = address.state === 'Error';
   const isInvalidAddress = address.errorType === 'AddressNotFound';
   const isDuplicateAddress = address.errorType === 'AddressAlreadyExists';
+  const isUnidentifiedContract = address.errorType === 'UnidentifiedContract';
 
   return (
     <>
@@ -162,8 +163,9 @@ const AddressWithVotes: React.FC<{
       {address.state === 'Error' && !isTyping && (
         <Group mt={-10}>
           <p className={classes.error}>
-            {isInvalidAddress && 'ERROR: please check your address again'}
-            {isDuplicateAddress && 'ERROR: address already exists'}
+            {isInvalidAddress && 'Invalid address, please check again'}
+            {isDuplicateAddress && 'Contract already exists'}
+            {isUnidentifiedContract && 'Unidenfitied contract'}
           </p>
         </Group>
       )}
