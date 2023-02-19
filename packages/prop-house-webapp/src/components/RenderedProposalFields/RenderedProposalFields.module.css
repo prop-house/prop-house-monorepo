@@ -51,6 +51,9 @@ hr {
   font-size: 1rem;
   gap: 5px;
 }
+.submittedBy a {
+  text-decoration: none !important;
+}
 
 .textSpacer {
   padding: 0px 5px;
@@ -65,16 +68,11 @@ hr {
   height: auto;
 }
 
-.communityAndPropNumber {
+.propBy {
   display: flex;
   align-items: center;
   color: var(--brand-gray) !important;
   gap: 5px;
-}
-
-.communityProfImgContainer {
-  display: flex;
-  align-items: center;
 }
 
 .communityProfImg {
