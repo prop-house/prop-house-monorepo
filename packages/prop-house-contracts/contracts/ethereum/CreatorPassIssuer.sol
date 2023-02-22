@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { ERC1155Supply } from './lib/token/ERC1155Supply.sol';
+import { ERC1155 } from './lib/token/ERC1155.sol';
 import { ICreatorPassIssuer } from './interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from './interfaces/ITokenMetadataRenderer.sol';
 import { IPropHouse } from './interfaces/IPropHouse.sol';
 import { Uint256 } from './lib/utils/Uint256.sol';
 import { IHouse } from './interfaces/IHouse.sol';
 
-contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155Supply {
+contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155 {
     using { Uint256.toUint256 } for address;
 
     /// @notice The entrypoint for all house and round creation

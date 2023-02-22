@@ -25,21 +25,6 @@ abstract contract AssetController {
     /// @notice Thrown when no asset amount is provided
     error MISSING_ASSET_AMOUNT();
 
-    /// @dev Calculates the asset ID for the provided asset
-    /// @param asset The asset information
-    function _getAssetID(Asset memory asset) internal pure returns (uint256) {
-        if (asset.assetType == AssetType.Native) {
-            return uint256(asset.assetType);
-        }
-        if (asset.assetType == AssetType.ERC20) {
-            return uint256(bytes32(abi.encodePacked(asset.assetType, asset.token)));
-        }
-        // prettier-ignore
-        return uint256(
-            bytes32(abi.encodePacked(asset.assetType, keccak256(abi.encodePacked(asset.token, asset.identifier))))
-        );
-    }
-
     /// @dev Returns the balance of `asset` for `account`
     /// @param asset The asset to fetch the balance of
     /// @param account The account to fetch the balance for

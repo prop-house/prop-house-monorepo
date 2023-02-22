@@ -4,20 +4,23 @@ pragma solidity >=0.8.17;
 /// @title IERC721
 /// @notice The external ERC721 events, errors, and functions
 interface IERC721 {
-    /// @dev Reverts if a caller is not authorized to approve or transfer a token
+    /// @dev Thrown when a caller is not authorized to approve or transfer a token
     error INVALID_APPROVAL();
 
-    /// @dev Reverts if a transfer is called with the incorrect token owner
+    /// @dev Thrown when a transfer is called with the incorrect token owner
     error INVALID_OWNER();
 
-    /// @dev Reverts if a transfer is attempted to address(0)
+    /// @dev Thrown when a transfer is attempted to address(0)
     error INVALID_RECIPIENT();
 
-    /// @dev Reverts if an existing token is called to be minted
+    /// @dev Thrown when an existing token is called to be minted
     error ALREADY_MINTED();
 
-    /// @dev Reverts if a non-existent token is called to be burned
+    /// @dev Thrown when a non-existent token is called to be burned
     error NOT_MINTED();
+
+    /// @dev Thrown when address(0) is incorrectly provided
+    error ADDRESS_ZERO();
 
     /// @notice Emitted when a token is transferred from sender to recipient
     /// @param from The sender address
@@ -36,6 +39,10 @@ interface IERC721 {
     /// @param operator The spender address
     /// @param approved If the approval is being set or removed
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+    /// @notice Emitted when the contract URI is updated
+    /// @param uri The updated contract URI
+    event ContractURIUpdated(string uri);
 
     /// @notice The number of tokens owned
     /// @param owner The owner address

@@ -11,7 +11,7 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
    * The `RoundConfig` struct type
    */
   // prettier-ignore
-  public static CONFIG_STRUCT_TYPE = 'tuple(tuple(uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)';
+  public static CONFIG_STRUCT_TYPE = 'tuple(tuple(uint8,address,uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)';
 
   /**
    * The minimum proposal submission period duration
@@ -98,7 +98,10 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
       [TimedFundingRound.CONFIG_STRUCT_TYPE],
       [
         [
-          encoding.compressAssets(config.awards),
+          config.awards.map(award => {
+            const struct = encoding.getAssetStruct(award);
+            return [struct.assetType, struct.token, struct.identifier, struct.amount];
+          }),
           strategies.map(s => s.addr),
           encoding.flatten2DArray(strategies.map(s => s.params.map(p => p.toString()))),
           config.proposalPeriodStartTimestamp,

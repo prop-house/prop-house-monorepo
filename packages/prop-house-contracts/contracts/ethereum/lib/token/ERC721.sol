@@ -2,8 +2,8 @@
 pragma solidity >=0.8.17;
 
 import { IERC721 } from '../../interfaces/IERC721.sol';
-import { Initializable } from '../utils/Initializable.sol';
 import { ERC721TokenReceiver } from '../utils/TokenReceiver.sol';
+import { ImmutableStrings } from '../utils/ImmutableStrings.sol';
 import { Address } from '../utils/Address.sol';
 
 /// @title ERC721
@@ -11,12 +11,16 @@ import { Address } from '../utils/Address.sol';
 /// Originally modified from OpenZeppelin Contracts v4.7.3 (token/ERC721/ERC721Upgradeable.sol)
 /// - Uses custom errors declared in IERC721
 /// - Includes contract-level metadata via `contractURI`
-abstract contract ERC721 is IERC721, Initializable {
+/// - Uses immutable name and symbol via `ImmutableStrings`
+abstract contract ERC721 is IERC721 {
+    using ImmutableStrings for string;
+    using ImmutableStrings for ImmutableStrings.ImmutableString;
+
     /// @notice The token name
-    string public name;
+    ImmutableStrings.ImmutableString internal immutable _name;
 
     /// @notice The token symbol
-    string public symbol;
+    ImmutableStrings.ImmutableString internal immutable _symbol;
 
     /// @notice A contract-level metadata
     string public contractURI;
@@ -37,23 +41,26 @@ abstract contract ERC721 is IERC721, Initializable {
     /// @dev Owner => Operator => Approved
     mapping(address => mapping(address => bool)) internal operatorApprovals;
 
-    /// @dev Initializes an ERC-721 token
-    /// @param _name The ERC-721 token name
-    /// @param _symbol The ERC-721 token symbol
-    /// @param _contractURI The ERC-721 contract URI
-    function __ERC721_init(
-        string memory _name,
-        string memory _symbol,
-        string memory _contractURI
-    ) internal onlyInitializing {
-        name = _name;
-        symbol = _symbol;
-        contractURI = _contractURI;
+    /// @param name_ The token name
+    /// @param symbol_ The token symbol
+    constructor(string memory name_, string memory symbol_) {
+        _name = name_.toImmutableString();
+        _symbol = symbol_.toImmutableString();
     }
 
     /// @notice The token URI
     /// @param tokenId The ERC-721 token id
     function tokenURI(uint256 tokenId) public view virtual returns (string memory) {}
+
+    /// @notice The token name
+    function name() public view virtual returns (string memory) {
+        return _name.toString();
+    }
+
+    /// @notice The token symbol
+    function symbol() public view virtual returns (string memory) {
+        return _symbol.toString();
+    }
 
     /// @notice If the contract implements an interface
     /// @param interfaceId The interface id
@@ -191,6 +198,14 @@ abstract contract ERC721 is IERC721, Initializable {
             ERC721TokenReceiver(to).onERC721Received(msg.sender, from, tokenId, data) !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert INVALID_RECIPIENT();
+    }
+
+    /// @dev Updates the contract URI
+    /// @param _contractURI The new contract URI
+    function _setContractURI(string memory _contractURI) internal {
+        contractURI = _contractURI;
+
+        emit ContractURIUpdated(_contractURI);
     }
 
     /// @dev Mints a token to a recipient

@@ -51,7 +51,7 @@ const networkConfig: Record<number, NetworkConfig> = {
 const sleep = (ms = 1_000) => new Promise(resolve => setTimeout(resolve, ms));
 
 task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
-  .addOptionalParam('registrar', 'The registrar address', undefined, types.string)
+  .addOptionalParam('manager', 'The manager address', undefined, types.string)
   .addOptionalParam('starknetCore', 'The Starknet core contract address', undefined, types.string)
   .addOptionalParam(
     'fossilFactRegistry',
@@ -85,8 +85,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       return deployContract(payload);
     };
 
-    if (!args.registrar) {
-      args.registrar = await ethDeployer.getAddress();
+    if (!args.manager) {
+      args.manager = await ethDeployer.getAddress();
     }
     if (!args.starknetCore) {
       if (!config.starknet?.core) {

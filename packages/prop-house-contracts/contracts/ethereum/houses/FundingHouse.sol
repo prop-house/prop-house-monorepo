@@ -4,6 +4,7 @@ pragma solidity >=0.8.17;
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
+import { FUNDING_HOUSE_NAME, FUNDING_HOUSE_SYMBOL } from '../Constants.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
@@ -45,7 +46,7 @@ contract FundingHouse is IHouse, ERC721 {
         address _propHouse,
         address _renderer,
         address _creatorPassIssuer
-    ) {
+    ) ERC721(FUNDING_HOUSE_NAME, FUNDING_HOUSE_SYMBOL) {
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);
         creatorPassIssuer = ICreatorPassIssuer(_creatorPassIssuer);
@@ -56,28 +57,25 @@ contract FundingHouse is IHouse, ERC721 {
         return address(this).toUint256();
     }
 
-    /// @notice Initialize the house by populating token information
-    /// @param creator The house creator
+    /// @notice Initialize the house
     /// @param data Initialization data
-    function initialize(address creator, bytes calldata data) external initializer {
+    function initialize(bytes calldata data) external onlyPropHouse {
         if (data.length != 0) {
-            // TODO: Allow these to be changed
-            (string memory name, string memory symbol, string memory contractURI) = abi.decode(
-                data,
-                (string, string, string)
-            );
-
-            __ERC721_init(name, symbol, contractURI);
+            _setContractURI(abi.decode(data, (string)));
         }
-
-        // Issue a pass to the house creator
-        creatorPassIssuer.issueCreatorPassesTo(creator, 1);
     }
 
     /// @notice Returns round metadata for `tokenId` as a Base64-JSON blob
     /// @param tokenId The token ID
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         return renderer.tokenURI(tokenId);
+    }
+
+    /// @dev Updates the contract URI
+    /// @param _contractURI The new contract URI
+    /// @dev This function is only callable by the house owner
+    function setContractURI(string memory _contractURI) internal onlyHouseOwner {
+        _setContractURI(_contractURI);
     }
 
     /// @notice Issue one or more round creator passes to the provided `creator`
@@ -121,15 +119,31 @@ contract FundingHouse is IHouse, ERC721 {
 
     /// @notice Create a new funding round and mint the round management NFT to the caller
     /// @param roundImpl The round implementation contract address
+    /// @param roundTitle The round title
     /// @param creator The address who is creating the round
-    function createRound(address roundImpl, address creator) external onlyPropHouse returns (address round) {
-        // Revert if the creator does not hold a pass to create rounds on the house
-        creatorPassIssuer.requirePass(creator, id());
+    function createRound(
+        address roundImpl,
+        string calldata roundTitle,
+        address creator
+    ) external onlyPropHouse returns (address round) {
+        // Revert if the creator is not the house owner and does not hold a creator pass
+        if (creator != propHouse.ownerOf(id())) {
+            creatorPassIssuer.requirePass(creator, id());
+        }
 
         // Deploy the round contract with a pointer to the house
-        round = roundImpl.clone(abi.encodePacked(address(this)));
+        round = roundImpl.clone(abi.encodePacked(address(this), _toUint8(bytes(roundTitle).length), roundTitle));
 
         // Mint the management token to the round creator
         _mint(creator, round.toUint256());
+    }
+
+    /// @notice Cast a `uint256` value to `uint8`, reverting if the value is too large to fit
+    /// @param value The value to cast to `uint8`
+    function _toUint8(uint256 value) internal pure returns (uint8) {
+        if (value > type(uint8).max) {
+            revert VALUE_DOES_NOT_FIT_IN_8_BITS();
+        }
+        return uint8(value);
     }
 }

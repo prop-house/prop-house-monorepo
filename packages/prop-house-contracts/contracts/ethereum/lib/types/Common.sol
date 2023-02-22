@@ -17,8 +17,8 @@ struct Asset {
     uint256 amount;
 }
 
-/// @notice An award asset that's held in a round contract
-struct Award {
+/// @notice Packed asset information, which consists of an asset ID and amount
+struct PackedAsset {
     uint256 assetId;
     uint256 amount;
 }

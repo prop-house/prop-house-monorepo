@@ -71,7 +71,7 @@ contract Messenger is IMessenger {
     }
 
     /// @notice Insert the `msg.sender` address to the first index of the payload.
-    /// This is used to prevent spoofing in the event of a malicious registrar.
+    /// This is used to prevent spoofing in the event of a malicious manager.
     /// @param payload The message payload
     function _insertCaller(uint256[] memory payload) internal view returns (uint256[] memory) {
         payload[0] = msg.sender.toUint256();

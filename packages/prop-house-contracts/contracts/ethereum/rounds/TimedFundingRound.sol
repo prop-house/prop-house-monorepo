@@ -10,14 +10,20 @@ import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
 import { ERC1155Supply } from '../lib/token/ERC1155Supply.sol';
+import { ReceiptIssuer } from '../lib/utils/ReceiptIssuer.sol';
+import { Asset, PackedAsset } from '../lib/types/Common.sol';
+import { AssetHelper } from '../lib/utils/AssetHelper.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
 import { IMessenger } from '../interfaces/IMessenger.sol';
-import { Asset, Award } from '../lib/types/Common.sol';
+import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
+import { ERC1155 } from '../lib/token/ERC1155.sol';
 
-contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, Clone {
+contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, ReceiptIssuer, Clone {
     using { Uint256.split } for uint256;
     using { Uint256.toUint256 } for address;
+    using { AssetHelper.toID } for Asset;
+    using { AssetHelper.pack } for Asset[];
 
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 256;
@@ -32,7 +38,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
 
     /// @notice The hash of the Starknet round contract
-    uint256 public immutable classHash; // TODO: Consider one L2 factory per round type
+    uint256 public immutable classHash;
 
     /// @notice The entrypoint for all house and round creation
     IPropHouse public immutable propHouse;
@@ -56,6 +62,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @dev Value is read using clone-with-immutable-args from contract's code region.
     function house() public pure returns (address) {
         return _getArgAddress(0);
+    }
+
+    /// @notice Get the round title
+    /// @dev Value is read using clone-with-immutable-args from contract's code region.
+    function title() public pure returns (string memory) {
+        return string(_getArgBytes(21, _getArgUint8(20)));
     }
 
     /// @notice Get the round ID
@@ -128,6 +140,13 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         return renderer.tokenURI(tokenId);
     }
 
+    // prettier-ignore
+    /// @notice If the contract implements an interface
+    /// @param interfaceId The interface id
+    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, ERC1155, IERC165) returns (bool) {
+        return ReceiptIssuer.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
+    }
+
     /// @notice Initialize the round by optionally defining the
     /// rounds configuration and registering it on L2.
     /// @dev This function is only callable by the prop house contract
@@ -144,12 +163,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _register(config);
     }
 
-    /// @notice Mint a deposit receipt to the provided address
+    /// @notice Issue a deposit receipt to the provided address
     /// @param to The recipient address
     /// @param identifier The token identifier
     /// @param amount The token amount
     /// @dev This function is only callable by the prop house contract
-    function mintReceipt(
+    function issueReceipt(
         address to,
         uint256 identifier,
         uint256 amount
@@ -157,12 +176,12 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         _mint(to, identifier, amount, new bytes(0));
     }
 
-    /// @notice Mint one or more deposit receipts to the provided address
+    /// @notice Issue one or more deposit receipts to the provided address
     /// @param to The recipient address
     /// @param identifiers The token identifiers
     /// @param amounts The token amounts
     /// @dev This function is only callable by the prop house contract
-    function mintReceipts(
+    function issueReceipts(
         address to,
         uint256[] memory identifiers,
         uint256[] memory amounts
@@ -224,7 +243,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         if (isAwardClaimed(proposalId)) {
             revert AWARD_ALREADY_CLAIMED();
         }
-        uint256 assetId = _getAssetID(asset);
+        uint256 assetId = asset.toID();
 
         bytes32 leaf = keccak256(abi.encode(proposalId, caller, assetId, amount));
         if (!MerkleProof.verify(proof, winnerMerkleRoot, leaf)) {
@@ -265,7 +284,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         address reclaimer = msg.sender;
 
         for (uint256 i = 0; i < assetCount; ) {
-            uint256 assetId = _getAssetID(assets[i]);
+            uint256 assetId = assets[i].toID();
 
             // Burn deposit credits. This will revert if the caller does not have enough credits.
             _burn(reclaimer, assetId, assets[i].amount);
@@ -295,7 +314,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         uint256 assetCount = assets.length;
 
         for (uint256 i = 0; i < assetCount; ) {
-            uint256 assetId = _getAssetID(assets[i]);
+            uint256 assetId = assets[i].toID();
             uint256 balanceOf = _balanceOf(assets[i], address(this));
 
             if (balanceOf - assets[i].amount < totalSupply(assetId)) {
@@ -394,7 +413,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
         // L2 strategy params
         payload[2] = 8 + strategyCount + strategyParamsFlatCount;
-        (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards))).split();
+        (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards.pack()))).split();
         payload[5] = proposalPeriodStartTimestamp;
         payload[6] = proposalPeriodDuration;
         payload[7] = votePeriodDuration;

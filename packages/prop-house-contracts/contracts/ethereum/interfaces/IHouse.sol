@@ -11,10 +11,12 @@ interface IHouse is IERC721 {
     /// @notice Thrown when the caller does not hold the house ownership token
     error ONLY_HOUSE_OWNER();
 
+    /// @notice Thrown when the provided value does not fit into 8 bits
+    error VALUE_DOES_NOT_FIT_IN_8_BITS();
+
     /// @notice Initialize the house
-    /// @param creator The house creator
     /// @param data Initialization data
-    function initialize(address creator, bytes calldata data) external;
+    function initialize(bytes calldata data) external;
 
     /// @notice Returns `true` if the provided address is a valid round on the house
     /// @param round The round to validate
@@ -22,6 +24,11 @@ interface IHouse is IERC721 {
 
     /// @notice Create a new round
     /// @param impl The round implementation contract
+    /// @param title The round title
     /// @param creator The round creator address
-    function createRound(address impl, address creator) external returns (address);
+    function createRound(
+        address impl,
+        string calldata title,
+        address creator
+    ) external returns (address);
 }

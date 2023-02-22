@@ -2,7 +2,7 @@
 pragma solidity >=0.8.17;
 
 import { IRound } from './IRound.sol';
-import { Award } from '../lib/types/Common.sol';
+import { Asset } from '../lib/types/Common.sol';
 
 /// @notice Interface implemented by the timed funding round
 interface ITimedFundingRound is IRound {
@@ -21,7 +21,7 @@ interface ITimedFundingRound is IRound {
 
     /// @notice The timed funding round configuration
     struct RoundConfig {
-        Award[] awards;
+        Asset[] awards;
         uint256[] votingStrategies;
         uint256[] votingStrategyParamsFlat;
         uint40 proposalPeriodStartTimestamp;
@@ -112,7 +112,7 @@ interface ITimedFundingRound is IRound {
     /// @param votePeriodDuration The vote period duration in seconds
     /// @param winnerCount The number of possible winners
     event RoundRegistered(
-        Award[] awards,
+        Asset[] awards,
         uint256[] votingStrategies,
         uint256[] votingStrategyParamsFlat,
         uint40 proposalPeriodStartTimestamp,

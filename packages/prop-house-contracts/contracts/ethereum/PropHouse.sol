@@ -4,6 +4,8 @@ pragma solidity >=0.8.17;
 import { IManager } from './interfaces/IManager.sol';
 import { AssetController } from './lib/utils/AssetController.sol';
 import { PROP_HOUSE_NAME, PROP_HOUSE_SYMBOL, PROP_HOUSE_URI } from './Constants.sol';
+import { IReceiptIssuer } from './interfaces/IReceiptIssuer.sol';
+import { AssetHelper } from './lib/utils/AssetHelper.sol';
 import { AssetType, Asset } from './lib/types/Common.sol';
 import { IPropHouse } from './interfaces/IPropHouse.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
@@ -15,16 +17,17 @@ import { ERC721 } from './lib/token/ERC721.sol';
 /// @notice The entrypoint for house and round creation
 contract PropHouse is IPropHouse, ERC721, AssetController {
     using { Uint256.toUint256 } for address;
+    using { AssetHelper.toID } for Asset;
     using LibClone for address;
 
     /// @notice The Prop House Manager contract
     IManager public immutable manager;
 
     /// @param _manager The Prop House Manager contract address
-    constructor(address _manager) initializer {
+    constructor(address _manager) ERC721(PROP_HOUSE_NAME, PROP_HOUSE_SYMBOL) {
         manager = IManager(_manager);
 
-        __ERC721_init(PROP_HOUSE_NAME, PROP_HOUSE_SYMBOL, PROP_HOUSE_URI);
+        _setContractURI(PROP_HOUSE_URI);
     }
 
     /// @notice Deposit an asset to the provided round
@@ -139,18 +142,16 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         emit HouseCreated(house, newHouse.impl);
 
-        IHouse(house).initialize(msg.sender, newHouse.config);
+        IHouse(house).initialize(newHouse.config);
     }
 
     /// @notice Create a new round and emit an event
     /// @param house The house address on which to create the round
     /// @param newRound The round creation data
-    function _createRound(address house, Round calldata newRound) internal returns (address) {
-        // TODO: Consider passing round title to write into contract
-        address round = IHouse(house).createRound(newRound.impl, msg.sender);
+    function _createRound(address house, Round calldata newRound) internal returns (address round) {
+        round = IHouse(house).createRound(newRound.impl, newRound.title, msg.sender);
 
         emit RoundCreated(house, round, newRound.impl, newRound.title, newRound.description);
-        return round;
     }
 
     /// @notice Returns `true` if the passed `house` address is valid
@@ -192,9 +193,11 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         _transfer(asset, user, round);
 
-        // Mint a deposit receipt to the caller, which is used to recoup assets in the event of
-        // claim failure or cancellation.
-        IRound(round).mintReceipt(user, _getAssetID(asset), asset.amount);
+        // If applicable, issue a deposit receipt to the caller, which is used to recoup
+        // assets in the event of claim failure or cancellation.
+        if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
+            IReceiptIssuer(round).issueReceipt(user, asset.toID(), asset.amount);
+        }
 
         // Return any remaining ether to the caller
         if (etherRemaining != 0) {
@@ -221,7 +224,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
             _transfer(assets[i], user, round);
 
             // Populate asset IDs and amounts in preparation for deposit token minting
-            assetIds[i] = _getAssetID(assets[i]);
+            assetIds[i] = assets[i].toID();
             assetAmounts[i] = assets[i].amount;
 
             // Reduce amount of remaining ether, if necessary
@@ -242,9 +245,11 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
             }
         }
 
-        // Mint one or more deposit receipts to the caller, which are used to recoup assets in the
-        // event of claim failure or cancellation.
-        IRound(round).mintReceipts(user, assetIds, assetAmounts);
+        // If applicable, issue one or more deposit receipts to the caller, which is used to recoup
+        // assets in the event of claim failure or cancellation.
+        if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
+            IReceiptIssuer(round).issueReceipts(user, assetIds, assetAmounts);
+        }
 
         // Return any remaining ether to the caller
         if (etherRemaining != 0) {

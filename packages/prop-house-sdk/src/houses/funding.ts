@@ -33,7 +33,7 @@ export class FundingHouse extends HouseBase<HouseType.FUNDING> {
     if (!this.isValidURI(config.contractURI)) {
       throw new Error(`Invalid contract URI: ${config.contractURI}`);
     }
-    return defaultAbiCoder.encode(['string', 'string', 'string'], ['', '', config.contractURI]);
+    return defaultAbiCoder.encode(['string'], [config.contractURI]);
   }
 
   /**

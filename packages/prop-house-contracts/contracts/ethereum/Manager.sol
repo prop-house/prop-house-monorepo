@@ -5,7 +5,7 @@ import { IManager } from './interfaces/IManager.sol';
 import { Ownable } from './lib/utils/Ownable.sol';
 
 /// @title Manager
-/// @notice This contract allows the registrar to manage house and round implementations
+/// @notice This contract allows an account to manage house and round implementations
 contract Manager is IManager, Ownable {
     /// @notice Determine if a contract is a registered house implementation
     /// @dev House Address => Registered
@@ -42,7 +42,7 @@ contract Manager is IManager, Ownable {
 
     /// @notice Unregister a house implementation contract
     /// @param houseImpl The house implementation address
-    function unregisterDeployment(address houseImpl) external onlyOwner {
+    function unregisterHouse(address houseImpl) external onlyOwner {
         delete houses[houseImpl];
 
         emit HouseUnregistered(houseImpl);
