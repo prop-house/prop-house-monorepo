@@ -1,3 +1,4 @@
+import Group from '../Group';
 import Text from '../Text';
 import classes from './InstructionBox.module.css';
 
@@ -8,10 +9,10 @@ const InstructionBox: React.FC<{
   const { title, text } = props;
 
   return (
-    <div className={classes.box}>
+    <Group gap={2} classNames={classes.box}>
       <Text type="subtitle">{title}</Text>
       <Text type="body">{text}</Text>
-    </div>
+    </Group>
   );
 };
 

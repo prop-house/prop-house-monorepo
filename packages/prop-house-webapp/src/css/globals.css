@@ -41,6 +41,13 @@ p {
   border-right-color: var(--brand-gray);
 }
 
+iframe {
+  display: none !important;
+}
+html {
+  overflow-y: scroll;
+}
+
 :root {
   /* Pink */
   --brand-pink: #e02ecf;

@@ -1,23 +1,222 @@
+import clsx from 'clsx';
+import { useEffect } from 'react';
+import { useEnsName } from 'wagmi';
+
+import { capitalize } from '../../../utils/capitalize';
+import trimEthAddress from '../../../utils/trimEthAddress';
+import Button, { ButtonColor } from '../../Button';
+import EthAddress from '../../EthAddress';
+import Group from '../Group';
+import Text from '../Text';
+import { changeAddress } from '../utils/changeAddress';
+import { AddressProps } from '../WhoCanParticipate';
 import classes from './Address.module.css';
 
 const Address: React.FC<{
-  value: string;
-  handleChange: any;
-  handleBlur: any;
-  placeholder: string;
+  address: AddressProps;
+  addresses: AddressProps[];
+  isTyping: boolean;
+  setIsTyping: (value: boolean) => void;
+  handleRemove(address: AddressProps): void;
+  handleChange: (address: AddressProps, value: string) => void;
+  handleVote: (address: AddressProps, votes: number) => void;
+  handleBlur: (event: React.FocusEvent<HTMLInputElement>, address: AddressProps) => void;
+  handleInputTypeChange: (address: AddressProps) => void;
+  placeholder?: string;
 }> = props => {
-  const { value, handleChange, handleBlur, placeholder } = props;
+  const {
+    address,
+    addresses,
+    isTyping,
+    setIsTyping,
+    handleRemove,
+    handleChange,
+    handleVote,
+    handleBlur,
+    handleInputTypeChange,
+    placeholder,
+  } = props;
+
+  // Get ENS name
+  const { data: ens, isLoading } = useEnsName({ address: address.addressValue as `0x${string}` });
+
+  useEffect(() => {
+    if (!isLoading && ens) {
+      changeAddress(address.id, addresses, { addressName: ens });
+    }
+  }, [isLoading, ens, address.id, addresses]);
+
+  console.log('ran!', address.addressValue, address.addressName);
+  // Handle change event on address input
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsTyping(true);
+    const newValue = e.target.value;
+
+    handleChange(address, newValue);
+  };
+
+  // Vote button handlers
+  const handleDecrement = () => handleVote(address, address.votesPerToken - 1);
+  const handleIncrement = () => handleVote(address, address.votesPerToken + 1);
+
+  // Vote input handler
+  const handleVoteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = parseInt(e.target.value);
+    // If value is NaN or negative, set to 0
+    if (isNaN(value) || value < 0) value = 0;
+
+    // If the value is greater than 3 digits, truncate it to first 3 digits
+    // ie. 1234 -> 123
+    if (value.toString().length > 3) value = Number(value.toString().substring(0, 3));
+
+    handleVote(address, value);
+  };
+
+  // Handle paste event on vote input
+  const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const clipboardData = e.clipboardData.getData('text');
+    const value = parseInt(clipboardData, 10);
+    if (isNaN(value) || value < 0) {
+      e.preventDefault();
+      return;
+    }
+  };
+
+  // Boolean to check if address is a contract
+  const isContract = address.type === 'contract';
+
+  // If address is not a contract and ENS name is found, update address name field with the ENS
+  // if (!isContract && !isLoading && ens) {
+  //   console.log('run', address, ens);
+  //   changeAddress(address.id, addresses, { addressName: ens });
+  // }
+
+  // Disabled states
+  const oneAddressLeft = addresses.length === 1;
+  const zeroVotesAllotted = address.votesPerToken === 0;
+
+  const inputHasError = address.state === 'Error';
+
+  // Error states
+  const getErrorMessage = () => {
+    switch (address.errorType) {
+      case 'AddressNotFound':
+        return 'Invalid address';
+      case 'ContractAlreadyExists':
+        return 'Contract already exists';
+      case 'UserAlreadyExists':
+        return 'User already exists';
+      case 'UnidentifiedContract':
+        return 'Unidentified contract';
+      case 'NotUserAddress':
+        return 'Not a user address';
+      default:
+        return 'Error';
+    }
+  };
 
   return (
-    <div className={classes.container}>
-      <input
-        type="text"
-        placeholder={placeholder}
-        value={value}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-    </div>
+    <>
+      <div className={classes.container}>
+        <Group gap={4} classNames={classes.addressAndTitle}>
+          <Text type="subtitle">{capitalize(address.type)} Address</Text>
+
+          {(address.state === 'Input' || inputHasError) && (
+            <div className={classes.addressContainer}>
+              <input
+                className={clsx(
+                  classes.addressInput,
+                  address.state === 'Error' && classes.addressInputError,
+                )}
+                type="text"
+                value={address.addressValue}
+                onBlur={e => handleBlur(e, address)}
+                onChange={handleInputChange}
+                placeholder={
+                  placeholder ? placeholder : 'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'
+                }
+              />
+            </div>
+          )}
+
+          {address.state === 'Searching' && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>{trimEthAddress(address.addressValue)}</div>
+              <div>Searching...</div>
+            </div>
+          )}
+
+          {address.state === 'Success' && (
+            <button
+              className={classes.addressSuccess}
+              onClick={() => handleInputTypeChange(address)}
+            >
+              {/*  if address.type === 'contract' show image and name
+              else, its a user, show ENS/address with avatar */}
+              {isContract ? (
+                <div className={classes.addressImgAndTitle}>
+                  <img src={address.addressImage} alt={address.addressName} />
+
+                  <span>{address.addressName}</span>
+                </div>
+              ) : (
+                <EthAddress address={address.addressValue} addAvatar />
+              )}
+
+              <div>{trimEthAddress(address.addressValue)}</div>
+            </button>
+          )}
+        </Group>
+
+        <div className={classes.voteContainer}>
+          <Group gap={4}>
+            <Text type="subtitle">{isContract ? 'Votes per token' : 'Votes per user'}</Text>
+
+            <Group row gap={4}>
+              <input
+                maxLength={3}
+                className={classes.voteInput}
+                disabled={inputHasError}
+                value={address.votesPerToken}
+                type="number"
+                onChange={handleVoteInputChange}
+                onPaste={handleInputPaste}
+              />
+              <div className={classes.allotButtons}>
+                <Button
+                  text="-"
+                  classNames={classes.button}
+                  bgColor={ButtonColor.Gray}
+                  onClick={handleDecrement}
+                  disabled={zeroVotesAllotted || inputHasError}
+                />
+                <Button
+                  text="+"
+                  disabled={inputHasError}
+                  classNames={classes.button}
+                  bgColor={ButtonColor.Gray}
+                  onClick={handleIncrement}
+                />
+              </div>
+            </Group>
+          </Group>
+        </div>
+
+        <Button
+          text="X"
+          classNames={classes.xButton}
+          bgColor={ButtonColor.White}
+          onClick={() => handleRemove(address)}
+          disabled={oneAddressLeft}
+        />
+      </div>
+
+      {address.state === 'Error' && !isTyping && (
+        <Group mt={-10}>
+          <p className={classes.error}>{getErrorMessage()}</p>
+        </Group>
+      )}
+    </>
   );
 };
 
