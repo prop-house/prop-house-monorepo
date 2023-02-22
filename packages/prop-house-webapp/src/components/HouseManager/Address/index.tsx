@@ -1,16 +1,12 @@
+import classes from './Address.module.css';
 import clsx from 'clsx';
-import { useEffect } from 'react';
-import { useEnsName } from 'wagmi';
-
 import { capitalize } from '../../../utils/capitalize';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import Button, { ButtonColor } from '../../Button';
 import EthAddress from '../../EthAddress';
 import Group from '../Group';
 import Text from '../Text';
-import { changeAddress } from '../utils/changeAddress';
 import { AddressProps } from '../WhoCanParticipate';
-import classes from './Address.module.css';
 
 const Address: React.FC<{
   address: AddressProps;
@@ -20,7 +16,7 @@ const Address: React.FC<{
   handleRemove(address: AddressProps): void;
   handleChange: (address: AddressProps, value: string) => void;
   handleVote: (address: AddressProps, votes: number) => void;
-  handleBlur: (event: React.FocusEvent<HTMLInputElement>, address: AddressProps) => void;
+  handleBlur: (address: AddressProps) => void;
   handleInputTypeChange: (address: AddressProps) => void;
   placeholder?: string;
 }> = props => {
@@ -37,16 +33,6 @@ const Address: React.FC<{
     placeholder,
   } = props;
 
-  // Get ENS name
-  const { data: ens, isLoading } = useEnsName({ address: address.addressValue as `0x${string}` });
-
-  useEffect(() => {
-    if (!isLoading && ens) {
-      changeAddress(address.id, addresses, { addressName: ens });
-    }
-  }, [isLoading, ens, address.id, addresses]);
-
-  console.log('ran!', address.addressValue, address.addressName);
   // Handle change event on address input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsTyping(true);
@@ -84,12 +70,6 @@ const Address: React.FC<{
 
   // Boolean to check if address is a contract
   const isContract = address.type === 'contract';
-
-  // If address is not a contract and ENS name is found, update address name field with the ENS
-  // if (!isContract && !isLoading && ens) {
-  //   console.log('run', address, ens);
-  //   changeAddress(address.id, addresses, { addressName: ens });
-  // }
 
   // Disabled states
   const oneAddressLeft = addresses.length === 1;
@@ -130,7 +110,7 @@ const Address: React.FC<{
                 )}
                 type="text"
                 value={address.addressValue}
-                onBlur={e => handleBlur(e, address)}
+                onBlur={() => handleBlur(address)}
                 onChange={handleInputChange}
                 placeholder={
                   placeholder ? placeholder : 'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'
