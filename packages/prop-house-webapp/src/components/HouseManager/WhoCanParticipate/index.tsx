@@ -1,15 +1,16 @@
+import classes from './WhoCanParticipate.module.css';
 import Divider from '../../Divider';
 import Footer from '../Footer';
 import Group from '../Group';
 import Header from '../Header';
 import InstructionBox from '../InstructionBox';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { uuid } from 'uuidv4';
 import { changeAddress } from '../utils/changeAddress';
-import ContractAddresses from '../ContractAddresses';
-import UserAddresses from '../UserAddresses';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { useProvider } from 'wagmi';
+import Text from '../Text';
+import Address from '../Address';
+import { isAddress } from 'ethers/lib/utils.js';
 
 export interface AddressProps {
   id: string;
@@ -50,9 +51,8 @@ const WhoCanParticipate = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [contracts, setContracts] = useState<AddressProps[]>([initialContractAddress]);
   const [userAddresses, setUserAddresses] = useState<AddressProps[]>([initialUserAddress]);
-  const [showVoterMessage, setShowVoterMessage] = useState(false);
 
-  const provider = useProvider();
+  // const provider = useProvider();
 
   const handleAddAddress = (arrayType: 'contract' | 'user') =>
     arrayType === 'contract'
@@ -62,27 +62,7 @@ const WhoCanParticipate = () => {
   const handleAddressChange = (address: AddressProps, value: string) => {
     const isContract = address.type === 'contract';
     const array = isContract ? contracts : userAddresses;
-
-    // don't compare empty addresses
-    const ignoreEmptyAddresses = array.filter(a => a.addressValue !== '');
-    // check if address already exists
-    const isDuplicateAddress = ignoreEmptyAddresses.some(a => a.addressValue === value);
-
-    let changes = {};
-
-    // if address is a duplicate, set error state
-    if (isDuplicateAddress) {
-      changes = {
-        addressValue: value,
-        state: 'Error',
-        errorType: isContract ? 'ContractAlreadyExists' : 'UserAlreadyExists',
-      };
-    } else {
-      // if address is not a duplicate, set input state like normal
-      changes = { addressValue: value };
-    }
-
-    const updatedArray = changeAddress(address.id, array, changes);
+    const updatedArray = changeAddress(address.id, array, { addressValue: value });
     return isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
   };
 
@@ -110,28 +90,15 @@ const WhoCanParticipate = () => {
       : setUserAddresses(updatedArray);
   };
 
-  const isContractAddress = async (address: string) => {
-    const bytecode = await provider.getCode(address);
-    return bytecode !== '0x';
-  };
-
-  const addressesToIgnore = (array: AddressProps[]) =>
-    array
-      // ignore empty addresses
-      .filter(a => a.addressValue !== '')
-      // ignore addresses with 0 votes
-      .filter(a => a.votesPerToken !== 0);
-
-  useEffect(() => {
-    const nonEmptyContracts = addressesToIgnore(contracts);
-    const nonEmptyUserAddresses = addressesToIgnore(userAddresses);
-    if (nonEmptyContracts.length > 0 || nonEmptyUserAddresses.length > 0) {
-      setShowVoterMessage(true);
-    }
-  }, [contracts, userAddresses]);
-
   // Generate a message that describes the voting power of each address
   const getVoterMessage = () => {
+    const addressesToIgnore = (array: AddressProps[]) =>
+      array
+        // ignore empty addresses
+        .filter(a => a.addressValue !== '')
+        // ignore addresses with 0 votes
+        .filter(a => a.votesPerToken !== 0);
+
     const contractMessages = addressesToIgnore(contracts).map(contract => {
       return `${contract.addressName} holders get ${contract.votesPerToken} ${
         contract.votesPerToken === 1 ? 'vote' : 'votes'
@@ -163,6 +130,85 @@ const WhoCanParticipate = () => {
       return '';
     }
   };
+  const showMessage = getVoterMessage().length;
+
+  // Get contract Name and Image from OpenSea API
+  const getTokenInfo = async (contractAddress: string) => {
+    try {
+      const response = await fetch(
+        `https://api.opensea.io/api/v1/asset_contract/${contractAddress}`,
+      );
+      if (!response.ok) {
+        throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      const { name, image_url } = data;
+      return { name, image: image_url };
+    } catch (error) {
+      console.error(error);
+      throw new Error(`Error fetching contract info: ${error}`);
+    }
+  };
+
+  const handleAddressBlur = async (address: AddressProps) => {
+    setIsTyping(false);
+
+    const isContract = address.type === 'contract';
+    const setAddress = isContract ? setContracts : setUserAddresses;
+    const array = isContract ? contracts : userAddresses;
+
+    const isEmptyString = address.addressValue === '';
+    const isValidAddressString = isAddress(address.addressValue);
+
+    const isDuplicate = array
+      .filter(a => a.addressValue !== '') // ignore empty addresses
+      .filter(a => a.id !== address.id) // ignore the current address
+      .some(a => a.addressValue === address.addressValue); // check if address already exists
+
+    if (isEmptyString) {
+      // if address state was set to error but then the addressValue is now an empty string, reset the state to input
+      if (address.state === 'Error') {
+        setAddress(changeAddress(address.id, array, { state: 'Input' }));
+      }
+      // if address is empty, don't do anything
+      return;
+    } else if (!isValidAddressString) {
+      // if address isn't even the right format, set state to error
+      setAddress(
+        changeAddress(address.id, array, { state: 'Error', errorType: 'AddressNotFound' }),
+      );
+    } else if (isDuplicate) {
+      // if address is a duplicate, set state to error
+      setAddress(
+        changeAddress(address.id, array, {
+          state: 'Error',
+          errorType: isContract ? 'ContractAlreadyExists' : 'UserAlreadyExists',
+        }),
+      );
+    } else {
+      // address is valid, fetch data
+      if (isContract) {
+        const tokenInfo = await getTokenInfo(address.addressValue);
+        const { name, image } = tokenInfo;
+        if (!name || !image) {
+          setAddress(
+            changeAddress(address.id, array, { state: 'Error', errorType: 'UnidentifiedContract' }),
+          );
+        } else {
+          setAddress(
+            changeAddress(address.id, array, {
+              state: 'Success',
+              addressImage: tokenInfo.image,
+              addressName: tokenInfo.name,
+            }),
+          );
+        }
+      } else {
+        //  valid user address
+        setAddress(changeAddress(address.id, array, { state: 'Success' }));
+      }
+    }
+  };
 
   return (
     <>
@@ -178,38 +224,73 @@ const WhoCanParticipate = () => {
         />
       </Group>
 
-      <ContractAddresses
-        isTyping={isTyping}
-        contracts={contracts}
-        setContracts={setContracts}
-        setIsTyping={setIsTyping}
-        isContractAddress={isContractAddress}
-        handleAddAddress={handleAddAddress}
-        handleRemoveAddress={handleRemoveAddress}
-        handleAddressChange={handleAddressChange}
-        handleVoteChange={handleVoteChange}
-        handleChangeSuccessToInput={handleChangeSuccessToInput}
-      />
+      <Group gap={6} mb={16} mt={-10}>
+        <Text type="subtitle">Token balance</Text>
+        <Text type="body">Choose how many votes are allotted for each ERC20/ERC721 held.</Text>
+      </Group>
+
+      <Group gap={8}>
+        <Group gap={12}>
+          {contracts.map(contract => (
+            <Address
+              key={contract.id}
+              isTyping={isTyping}
+              address={contract}
+              addresses={contracts}
+              setIsTyping={setIsTyping}
+              handleRemove={handleRemoveAddress}
+              handleChange={handleAddressChange}
+              handleVote={handleVoteChange}
+              handleBlur={handleAddressBlur}
+              handleInputTypeChange={handleChangeSuccessToInput}
+            />
+          ))}
+        </Group>
+
+        <Text type="link" onClick={() => handleAddAddress('contract')}>
+          Add another token
+        </Text>
+      </Group>
 
       <Divider />
 
-      <UserAddresses
-        isTyping={isTyping}
-        userAddresses={userAddresses}
-        setUserAddresses={setUserAddresses}
-        setIsTyping={setIsTyping}
-        isContractAddress={isContractAddress}
-        handleAddAddress={handleAddAddress}
-        handleRemoveAddress={handleRemoveAddress}
-        handleAddressChange={handleAddressChange}
-        handleVoteChange={handleVoteChange}
-        handleChangeSuccessToInput={handleChangeSuccessToInput}
-      />
+      <Group gap={4} mb={16}>
+        <Text type="subtitle">Add additional voters by address</Text>
+        <Text type="body">Provides a list of voter addresses that can participate.</Text>
+      </Group>
 
-      {showVoterMessage && !isTyping && (
+      <Group gap={8}>
+        <Group gap={12}>
+          {userAddresses.map(userAddress => (
+            <Address
+              key={userAddress.id}
+              isTyping={isTyping}
+              address={userAddress}
+              addresses={userAddresses}
+              setIsTyping={setIsTyping}
+              handleRemove={handleRemoveAddress}
+              handleChange={handleAddressChange}
+              handleVote={handleVoteChange}
+              handleBlur={handleAddressBlur}
+              handleInputTypeChange={handleChangeSuccessToInput}
+            />
+          ))}
+        </Group>
+
+        <div className={classes.addAddress}>
+          <Text type="link" onClick={() => handleAddAddress('user')}>
+            Add another address
+          </Text>
+          <Text type="link">Upload CSV</Text>
+        </div>
+      </Group>
+
+      {showMessage ? (
         <Group mt={20}>
           <InstructionBox title="Vote allotment for your round" text={getVoterMessage()} />
         </Group>
+      ) : (
+        <></>
       )}
 
       <Footer />
