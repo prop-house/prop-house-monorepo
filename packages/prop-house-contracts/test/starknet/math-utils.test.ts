@@ -8,10 +8,16 @@ describe('Math Utils', () => {
 
   before(async function () {
     this.timeout(800000);
+
+    const [{ address, private_key }] = await starknet.devnet.getPredeployedAccounts();
+    const account = await starknet.OpenZeppelinAccount.getAccountFromAddress(address, private_key);
+
     const testMathUtilsFactory = await starknet.getContractFactory(
       './contracts/starknet/test_contracts/test_math_utils.cairo',
     );
-    testMathUtils = await testMathUtilsFactory.deploy();
+    await account.declare(testMathUtilsFactory);
+
+    testMathUtils = await account.deploy(testMathUtilsFactory);
   });
 
   it('should convert 4 64-bit words to a Uint256', async () => {

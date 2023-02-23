@@ -6,7 +6,11 @@ import { constants } from 'ethers';
 export const fundingHouseSetup = async () => {
   const config = await commonL1Setup();
 
-  const starknetSigner = await starknet.deployAccount('OpenZeppelin');
+  const [{ address, private_key }] = await starknet.devnet.getPredeployedAccounts();
+  const starknetSigner = await starknet.OpenZeppelinAccount.getAccountFromAddress(
+    address,
+    private_key,
+  );
 
   const roundDeployerFactory = await starknet.getContractFactory(
     './contracts/starknet/round_factory.cairo',
@@ -17,16 +21,19 @@ export const fundingHouseSetup = async () => {
   const votingStrategyRegistryFactory = await starknet.getContractFactory(
     './contracts/starknet/common/registry/voting_strategy_registry.cairo',
   );
+  await starknetSigner.declare(roundDeployerFactory);
+  await starknetSigner.declare(ethExecutionStrategyFactory);
+  await starknetSigner.declare(votingStrategyRegistryFactory);
 
   const fundingHouseFactory = new FundingHouse__factory(config.deployer);
 
-  const roundFactory = await roundDeployerFactory.deploy({
+  const roundFactory = await starknetSigner.deploy(roundDeployerFactory, {
     l1_messenger: config.messenger.address,
   });
-  const ethExecutionStrategy = await ethExecutionStrategyFactory.deploy({
+  const ethExecutionStrategy = await starknetSigner.deploy(ethExecutionStrategyFactory, {
     round_factory_address: roundFactory.address,
   });
-  const votingStrategyRegistry = await votingStrategyRegistryFactory.deploy();
+  const votingStrategyRegistry = await starknetSigner.deploy(votingStrategyRegistryFactory);
 
   const fundingHouseImpl = await fundingHouseFactory.deploy(
     config.propHouse.address,
@@ -61,13 +68,20 @@ export const timedFundingRoundSetup = async () => {
     './contracts/starknet/rounds/timed_funding_round/auth/eth_sig.cairo',
   );
 
-  const timedFundingRoundEthTxAuthStrategy = await timedFundingRoundEthTxAuthStrategyFactory.deploy(
+  await config.starknetSigner.declare(timedFundingRoundL2Factory);
+  await config.starknetSigner.declare(timedFundingRoundEthTxAuthStrategyFactory);
+  await config.starknetSigner.declare(timedFundingRoundEthSigAuthStrategyFactory);
+
+  const timedFundingRoundEthTxAuthStrategy = await config.starknetSigner.deploy(
+    timedFundingRoundEthTxAuthStrategyFactory,
     {
       starknet_commit_address: config.starknetCommit.address,
     },
   );
   // prettier-ignore
-  const timedFundingRoundEthSigAuthStrategy = await timedFundingRoundEthSigAuthStrategyFactory.deploy();
+  const timedFundingRoundEthSigAuthStrategy = await config.starknetSigner.deploy(
+    timedFundingRoundEthSigAuthStrategyFactory,
+  );
 
   const timedFundingRoundClassHash = await config.starknetSigner.declare(
     timedFundingRoundL2Factory,

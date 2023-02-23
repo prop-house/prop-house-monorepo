@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { starknet, ethers } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { utils } from '@snapshot-labs/sx';
-import { computeHashOnElements } from 'starknet/dist/utils/hash';
+import { hash } from 'starknet';
 import { MerklePedersen } from '../utils';
 
 describe('Merkle Whitelist', () => {
@@ -23,10 +23,15 @@ describe('Merkle Whitelist', () => {
   let merkleData: (string | number)[][];
 
   before(async () => {
+    const [{ address, private_key }] = await starknet.devnet.getPredeployedAccounts();
+    const account = await starknet.OpenZeppelinAccount.getAccountFromAddress(address, private_key);
+
     const merkleWhitelistFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/merkle_whitelist.cairo',
     );
-    whitelist = await merkleWhitelistFactory.deploy();
+    await account.declare(merkleWhitelistFactory);
+
+    whitelist = await account.deploy(merkleWhitelistFactory);
 
     address1 = ethers.Wallet.createRandom().address;
     address2 = ethers.Wallet.createRandom().address;
@@ -47,7 +52,7 @@ describe('Merkle Whitelist', () => {
 
     // computing the hash of each address value pair, and sorting
     merkleData = values
-      .map(v => [computeHashOnElements(v), v[0], v[1]])
+      .map(v => [hash.computeHashOnElements(v), v[0], v[1]])
       .sort((a, b) => {
         if (a > b) return 1;
         if (a < b) return -1;

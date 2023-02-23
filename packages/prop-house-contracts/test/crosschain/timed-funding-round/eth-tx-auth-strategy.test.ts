@@ -33,7 +33,7 @@ import {
   TimedFundingRound,
   TimedFundingRound__factory,
 } from '../../../typechain';
-import { computeHashOnElements } from 'starknet/dist/utils/hash';
+import { hash } from 'starknet';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
@@ -82,8 +82,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/vanilla.cairo',
     );
-    const vanillaVotingStrategy = await vanillaVotingStrategyFactory.deploy();
-    const vanillaVotingStrategyId = computeHashOnElements([vanillaVotingStrategy.address]);
+    await config.starknetSigner.declare(vanillaVotingStrategyFactory);
+
+    const vanillaVotingStrategy = await config.starknetSigner.deploy(vanillaVotingStrategyFactory);
+    const vanillaVotingStrategyId = hash.computeHashOnElements([vanillaVotingStrategy.address]);
 
     // Override contract addresses
     (addresses.getContractAddressesForChainOrThrow as Function) = (): ContractAddresses => {

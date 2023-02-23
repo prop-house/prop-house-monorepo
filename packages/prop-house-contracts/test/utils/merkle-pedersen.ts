@@ -1,4 +1,4 @@
-import { pedersen } from 'starknet/dist/utils/hash';
+import { hash } from 'starknet';
 
 export class MerklePedersen {
   public root: string;
@@ -27,9 +27,9 @@ export class MerklePedersen {
     for (let i = 0; i < level.length; i += 2) {
       let node = '0x0';
       if (BigInt(level[i]) < BigInt(level[i + 1])) {
-        node = pedersen([level[i], level[i + 1]]);
+        node = hash.pedersen([level[i], level[i + 1]]);
       } else {
-        node = pedersen([level[i + 1], level[i]]);
+        node = hash.pedersen([level[i + 1], level[i]]);
       }
       nextLevel.push(node);
     }

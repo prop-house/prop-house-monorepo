@@ -29,7 +29,7 @@
     "@prophouse/contracts": "~0.1.0-alpha",
     "bn.js": "^5.2.1",
     "randombytes": "^2.1.0",
-    "starknet": "^4.9.0",
+    "starknet": "4.19.3",
     "time-ts": "^0.1.0"
   },
   "devDependencies": {

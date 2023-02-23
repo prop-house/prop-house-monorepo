@@ -35,7 +35,7 @@ import {
   TimedFundingRound,
   TimedFundingRound__factory,
 } from '../../../typechain';
-import { computeHashOnElements } from 'starknet/dist/utils/hash';
+import { hash } from 'starknet';
 import { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
@@ -84,8 +84,10 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/vanilla.cairo',
     );
-    const vanillaVotingStrategy = await vanillaVotingStrategyFactory.deploy();
-    const vanillaVotingStrategyId = computeHashOnElements([vanillaVotingStrategy.address]);
+    await config.starknetSigner.declare(vanillaVotingStrategyFactory);
+
+    const vanillaVotingStrategy = await config.starknetSigner.deploy(vanillaVotingStrategyFactory);
+    const vanillaVotingStrategyId = hash.computeHashOnElements([vanillaVotingStrategy.address]);
 
     // Override contract addresses
     (addresses.getContractAddressesForChainOrThrow as Function) = (): ContractAddresses => {
@@ -181,8 +183,10 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       [vanillaVotingStrategyId],
       [[]],
     );
-    usedVotingStrategiesHash = computeHashOnElements([vanillaVotingStrategyId]);
-    userVotingStrategyParamsFlatHash = computeHashOnElements(utils.encoding.flatten2DArray([[]]));
+    usedVotingStrategiesHash = hash.computeHashOnElements([vanillaVotingStrategyId]);
+    userVotingStrategyParamsFlatHash = hash.computeHashOnElements(
+      utils.encoding.flatten2DArray([[]]),
+    );
 
     await starknet.devnet.increaseTime(ONE_DAY_SEC + 1);
     await starknet.devnet.createBlock();
@@ -266,7 +270,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       },
     ];
     const proposalVotesHash = utils.encoding.hexPadRight(
-      computeHashOnElements(
+      hash.computeHashOnElements(
         proposalVotes
           .map(vote => {
             const { low, high } = utils.splitUint256.SplitUint256.fromUint(

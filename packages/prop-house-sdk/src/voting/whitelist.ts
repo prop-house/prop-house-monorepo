@@ -1,4 +1,4 @@
-import { computeHashOnElements } from 'starknet/dist/utils/hash';
+import { hash } from 'starknet';
 import { getContractAddressesForChainOrThrow } from '../addresses';
 import { StarknetVotingStrategy, VotingStrategyType, Whitelist, WhitelistMember } from '../types';
 import { merkle, splitUint256 } from '../utils';
@@ -43,7 +43,7 @@ export class WhitelistVotingStrategy extends VotingStrategyBase<Whitelist> {
     const data = members
       .map(member => {
         const { low, high } = splitUint256.SplitUint256.fromUint(BigInt(member.votingPower));
-        return [computeHashOnElements([member.address, low, high]), member.address, low];
+        return [hash.computeHashOnElements([member.address, low, high]), member.address, low];
       })
       .sort((a, b) => {
         if (a > b) return 1;
