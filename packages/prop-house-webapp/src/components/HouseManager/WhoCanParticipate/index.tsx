@@ -1,4 +1,3 @@
-import classes from './WhoCanParticipate.module.css';
 import Divider from '../../Divider';
 import Footer from '../Footer';
 import Group from '../Group';
@@ -11,6 +10,10 @@ import trimEthAddress from '../../../utils/trimEthAddress';
 import Text from '../Text';
 import Address from '../Address';
 import { isAddress } from 'ethers/lib/utils.js';
+import Bullet from '../Bullet';
+import { useAppSelector } from '../../../hooks';
+import { useDispatch } from 'react-redux';
+import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
 
 export interface AddressProps {
   id: string;
@@ -27,7 +30,6 @@ export interface AddressProps {
     | 'UnidentifiedContract'
     | 'NotUserAddress';
 }
-
 const initialContractAddress: AddressProps = {
   id: uuid(),
   type: 'contract',
@@ -48,17 +50,51 @@ const initialUserAddress: AddressProps = {
 };
 
 const WhoCanParticipate = () => {
+  const dispatch = useDispatch();
+  const round = useAppSelector(state => state.round.round);
+
   const [isTyping, setIsTyping] = useState(false);
   const [contracts, setContracts] = useState<AddressProps[]>([initialContractAddress]);
   const [userAddresses, setUserAddresses] = useState<AddressProps[]>([initialUserAddress]);
 
-  // const provider = useProvider();
+  const verifiedAddresses = (addresses: AddressProps[]) =>
+    addresses.filter(a => a.state === 'Success');
 
+  // Update the server with round changes
+  const handleChange = (
+    property: keyof InitialRoundProps,
+    value: InitialRoundProps[keyof InitialRoundProps],
+  ) => {
+    const newRound = { ...round, [property]: value };
+    dispatch(updateRound(newRound));
+
+    const isStepCompleted =
+      round.verifiedContracts.some(address => address.state === 'Success') ||
+      round.verifiedUserAddresses.some(address => address.state === 'Success');
+    dispatch(setDisabled(!isStepCompleted));
+  };
+
+  // Add a new address to the array
   const handleAddAddress = (arrayType: 'contract' | 'user') =>
     arrayType === 'contract'
       ? setContracts([...contracts, { ...initialContractAddress, id: uuid() }])
       : setUserAddresses([...userAddresses, { ...initialUserAddress, id: uuid() }]);
 
+  // Remove an address from the array
+  const handleRemoveAddress = (address: AddressProps) => {
+    const isContract = address.type === 'contract';
+
+    const updatedArray = isContract
+      ? contracts.filter(contract => contract.id !== address.id)
+      : userAddresses.filter(userAddress => userAddress.id !== address.id);
+
+    return isContract
+      ? (setContracts(updatedArray),
+        handleChange('verifiedContracts', verifiedAddresses(updatedArray)))
+      : (setUserAddresses(updatedArray),
+        handleChange('verifiedUserAddresses', verifiedAddresses(updatedArray)));
+  };
+  // Update the address value for each address
   const handleAddressChange = (address: AddressProps, value: string) => {
     const isContract = address.type === 'contract';
     const array = isContract ? contracts : userAddresses;
@@ -66,28 +102,61 @@ const WhoCanParticipate = () => {
     return isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
   };
 
-  const handleRemoveAddress = (address: AddressProps) =>
-    address.type === 'contract'
-      ? setContracts(contracts.filter(contract => contract.id !== address.id))
-      : setUserAddresses(userAddresses.filter(userAddress => userAddress.id !== address.id));
+  // Clear all values for an given address
+  const handleAddressClear = (address: AddressProps) => {
+    const isContract = address.type === 'contract';
+    const array = isContract ? contracts : userAddresses;
 
-  const handleVoteChange = (address: AddressProps, votes: number) => {
-    const array = address.type === 'contract' ? contracts : userAddresses;
-    const changes = { votesPerToken: votes };
-    const updatedArray = changeAddress(address.id, array, changes);
+    // Clear the address, but don't remove from UI
+    const updatedArray = changeAddress(address.id, array, {
+      addressValue: '',
+      addressImage: '',
+      addressName: '',
+      votesPerToken: 0,
+      state: 'Input',
+    });
 
-    return address.type === 'contract'
-      ? setContracts(updatedArray)
-      : setUserAddresses(updatedArray);
+    // Update the UI state
+    isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
+
+    // Remove the reset address from the server state
+    handleChange(
+      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
+      (isContract ? round.verifiedContracts : round.verifiedUserAddresses).filter(
+        a => a.id !== address.id,
+      ),
+    );
   };
 
+  // Update the votes per token for each address
+  const handleVoteChange = (address: AddressProps, votes: number) => {
+    const isContract = address.type === 'contract';
+    const array = isContract ? contracts : userAddresses;
+    const updatedArray = changeAddress(address.id, array, { votesPerToken: votes });
+
+    // Update the UI state
+    isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
+
+    // Update the server state if the address is verified
+    handleChange(
+      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
+      verifiedAddresses(updatedArray),
+    );
+  };
+
+  // Clicking a successfully set address will change it back to an input
   const handleChangeSuccessToInput = (address: AddressProps) => {
-    const array = address.type === 'contract' ? contracts : userAddresses;
+    const isContract = address.type === 'contract';
+    const array = isContract ? contracts : userAddresses;
     const updatedArray = changeAddress(address.id, array, { state: 'Input' });
 
-    return address.type === 'contract'
-      ? setContracts(updatedArray)
-      : setUserAddresses(updatedArray);
+    isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
+
+    // Since the address is no longer verified, remove it from the server state
+    handleChange(
+      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
+      verifiedAddresses(updatedArray),
+    );
   };
 
   // Generate a message that describes the voting power of each address
@@ -130,7 +199,6 @@ const WhoCanParticipate = () => {
       return '';
     }
   };
-  const showMessage = getVoterMessage().length;
 
   // Get contract Name and Image from OpenSea API
   const getTokenInfo = async (contractAddress: string) => {
@@ -150,6 +218,7 @@ const WhoCanParticipate = () => {
     }
   };
 
+  // Validate address and update state
   const handleAddressBlur = async (address: AddressProps) => {
     setIsTyping(false);
 
@@ -166,10 +235,9 @@ const WhoCanParticipate = () => {
       .some(a => a.addressValue === address.addressValue); // check if address already exists
 
     if (isEmptyString) {
-      // if address state was set to error but then the addressValue is now an empty string, reset the state to input
-      if (address.state === 'Error') {
+      if (address.state === 'Error')
         setAddress(changeAddress(address.id, array, { state: 'Input' }));
-      }
+
       // if address is empty, don't do anything
       return;
     } else if (!isValidAddressString) {
@@ -195,17 +263,23 @@ const WhoCanParticipate = () => {
             changeAddress(address.id, array, { state: 'Error', errorType: 'UnidentifiedContract' }),
           );
         } else {
-          setAddress(
-            changeAddress(address.id, array, {
-              state: 'Success',
-              addressImage: tokenInfo.image,
-              addressName: tokenInfo.name,
-            }),
-          );
+          const updatedArray = changeAddress(address.id, array, {
+            state: 'Success',
+            addressImage: image,
+            addressName: name,
+          });
+
+          handleChange('verifiedContracts', verifiedAddresses(updatedArray));
+
+          setAddress(updatedArray);
         }
       } else {
         //  valid user address
-        setAddress(changeAddress(address.id, array, { state: 'Success' }));
+        const updatedArray = changeAddress(address.id, array, { state: 'Success' });
+
+        handleChange('verifiedUserAddresses', verifiedAddresses(updatedArray));
+
+        setAddress(updatedArray);
       }
     }
   };
@@ -239,6 +313,7 @@ const WhoCanParticipate = () => {
               addresses={contracts}
               setIsTyping={setIsTyping}
               handleRemove={handleRemoveAddress}
+              handleClear={handleAddressClear}
               handleChange={handleAddressChange}
               handleVote={handleVoteChange}
               handleBlur={handleAddressBlur}
@@ -270,6 +345,7 @@ const WhoCanParticipate = () => {
               setIsTyping={setIsTyping}
               handleRemove={handleRemoveAddress}
               handleChange={handleAddressChange}
+              handleClear={handleAddressClear}
               handleVote={handleVoteChange}
               handleBlur={handleAddressBlur}
               handleInputTypeChange={handleChangeSuccessToInput}
@@ -277,15 +353,16 @@ const WhoCanParticipate = () => {
           ))}
         </Group>
 
-        <div className={classes.addAddress}>
+        <Group row>
           <Text type="link" onClick={() => handleAddAddress('user')}>
             Add another address
           </Text>
+          <Bullet />
           <Text type="link">Upload CSV</Text>
-        </div>
+        </Group>
       </Group>
 
-      {showMessage ? (
+      {getVoterMessage().length ? (
         <Group mt={20}>
           <InstructionBox title="Vote allotment for your round" text={getVoterMessage()} />
         </Group>

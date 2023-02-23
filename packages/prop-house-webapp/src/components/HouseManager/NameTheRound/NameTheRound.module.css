@@ -1,0 +1,57 @@
+.addressContainer {
+  flex: 1;
+}
+.input,
+textarea {
+  min-width: 100%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+  font-size: 14px;
+}
+.inputError {
+  border: 1px solid red !important;
+}
+.input::placeholder {
+  color: var(--brand-gray-transparent) !important;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+}
+.inputContainer :is(input, textarea) {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 36px;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+}
+textarea {
+  min-height: 10rem !important;
+  padding: 8px !important;
+}
+:is(input, textarea):active,
+:is(input, textarea):focus:focus-visible {
+  outline: none;
+  border: 1px solid var(--border-dark) !important;
+}
+:is(input, textarea)::placeholder {
+  color: var(--brand-black-semi-transparent);
+}
+.error {
+  color: red;
+  font-size: 12px;
+  font-weight: 700;
+  font-style: italic;
+}
+.descriptionTitile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
