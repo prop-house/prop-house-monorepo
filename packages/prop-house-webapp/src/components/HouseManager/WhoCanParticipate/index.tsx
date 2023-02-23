@@ -14,6 +14,7 @@ import Bullet from '../Bullet';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
+import UploadCSVModal from '../../UploadCSVModal';
 
 export interface AddressProps {
   id: string;
@@ -286,6 +287,8 @@ const WhoCanParticipate = () => {
 
   return (
     <>
+      {showUploadCSVModal && <UploadCSVModal setShowUploadCSVModal={setShowUploadCSVModal} />}
+
       <Group gap={6} mb={16}>
         <Header
           title="Who's this for?"
@@ -358,7 +361,9 @@ const WhoCanParticipate = () => {
             Add another address
           </Text>
           <Bullet />
-          <Text type="link">Upload CSV</Text>
+          <Text type="link" onClick={() => setShowUploadCSVModal(true)}>
+            Upload CSV
+          </Text>
         </Group>
       </Group>
 
