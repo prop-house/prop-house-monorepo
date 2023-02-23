@@ -1,26 +1,47 @@
-import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
+import classes from './NameTheRound.module.css';
+import { setDisabled, updateRound } from '../../../state/slices/round';
 import Footer from '../Footer';
 import Group from '../Group';
 import Header from '../Header';
-import Input from '../Input';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
+import { useState } from 'react';
+import clsx from 'clsx';
+import { capitalize } from '../../../utils/capitalize';
 
 const NameTheRound = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const handleChange = (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => {
-    const newRound = { ...round, [property]: value };
-    dispatch(updateRound(newRound));
+  const [title, setTitle] = useState(round.title || '');
+  const [description, setDescription] = useState(round.description || '');
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
-    // Dispatch the setDisabled action with the validation check for step 1
-    const isStepCompleted = round.title !== '' && round.description !== '';
-    dispatch(setDisabled(!isStepCompleted));
+  const handleBlur = (field: 'title' | 'description') => {
+    const value = field === 'title' ? title : description;
+    const minLen = field === 'title' ? 5 : 20;
+    const maxLen = field === 'title' ? 255 : undefined;
+    const error =
+      value && value.length < minLen
+        ? `${field} must be at least ${minLen} characters.`
+        : maxLen && value.length > maxLen
+        ? `${field} must be less than ${maxLen} characters.`
+        : undefined;
+
+    setErrors({ ...errors, [field]: error });
+  };
+
+  const handleChange = (field: 'title' | 'description', value: string) => {
+    // set errors
+    errors[field] && setErrors({ ...errors, [field]: undefined });
+    // set state
+    field === 'title' ? setTitle(value) : setDescription(value);
+    // update round
+    dispatch(updateRound({ ...round, [field]: value }));
+
+    // if no errors, enable next button
+    if (!errors.title && !errors.description) dispatch(setDisabled(false));
   };
 
   return (
@@ -28,25 +49,51 @@ const NameTheRound = () => {
       <Header title="What's your round about?" />
 
       <Group gap={8} mb={16}>
-        <Text type="subtitle">Round name</Text>
-        <Input
+        <div className={classes.descriptionTitile}>
+          <Text type="subtitle">Round name</Text>
+          <Text type="body">{title.length}/255</Text>
+        </div>
+
+        <input
+          className={clsx(classes.input, errors.title && classes.inputError)}
+          type="text"
           placeholder={'Hack-a-thon'}
-          value={round.title}
-          autoFocus
+          maxLength={255}
+          id="title"
+          value={title}
           onChange={e => handleChange('title', e.target.value)}
+          onBlur={() => handleBlur('title')}
         />
+
+        {errors.title && (
+          <Group mt={-8}>
+            <p className={classes.error}>{errors.title}</p>
+          </Group>
+        )}
       </Group>
 
       <Group gap={8}>
-        <Text type="subtitle">Describe your round</Text>
-        <Input
-          type="textarea"
+        <div className={classes.descriptionTitile}>
+          <Text type="subtitle">Describe your round</Text>
+          <Text type="body">{description.length}</Text>
+        </div>
+
+        <textarea
+          className={clsx(classes.input, errors.description && classes.inputError)}
+          value={description}
+          onChange={e => handleChange('description', e.target.value)}
+          onBlur={() => handleBlur('description')}
+          minLength={20}
           placeholder={
             'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
           }
-          value={round.description}
-          onChange={e => handleChange('description', e.target.value)}
         />
+
+        {errors.description && (
+          <Group mt={-8}>
+            <p className={classes.error}>{capitalize(errors.description)}</p>
+          </Group>
+        )}
       </Group>
 
       <Footer />
