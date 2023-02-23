@@ -5,8 +5,6 @@ import { IMetadataEncoder } from '../interfaces/IMetadataEncoder.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetType } from '../lib/types/Common.sol';
 
-// TODO: Use Noun art by calling those contracts on-chain.
-
 contract AssetMetadataRenderer is ITokenMetadataRenderer {
     /// @notice A contract which holds shared metadata encoding logic
     IMetadataEncoder internal immutable _encoder;
