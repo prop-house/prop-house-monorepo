@@ -111,6 +111,7 @@ const Address: React.FC<{
                 type="text"
                 value={address.addressValue}
                 onBlur={() => handleBlur(address)}
+                onKeyPress={event => event.key === 'Enter' && handleBlur(address)}
                 onChange={handleInputChange}
                 placeholder={
                   placeholder ? placeholder : 'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'
