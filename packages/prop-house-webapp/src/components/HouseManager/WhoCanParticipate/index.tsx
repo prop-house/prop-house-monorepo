@@ -55,8 +55,13 @@ const WhoCanParticipate = () => {
   const round = useAppSelector(state => state.round.round);
 
   const [isTyping, setIsTyping] = useState(false);
-  const [contracts, setContracts] = useState<AddressProps[]>([initialContractAddress]);
-  const [userAddresses, setUserAddresses] = useState<AddressProps[]>([initialUserAddress]);
+  const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
+  const [contracts, setContracts] = useState<AddressProps[]>(
+    round.verifiedContracts.length ? round.verifiedContracts : [initialContractAddress],
+  );
+  const [userAddresses, setUserAddresses] = useState<AddressProps[]>(
+    round.verifiedUserAddresses.length ? round.verifiedUserAddresses : [initialUserAddress],
+  );
 
   const verifiedAddresses = (addresses: AddressProps[]) =>
     addresses.filter(a => a.state === 'Success');
@@ -95,6 +100,7 @@ const WhoCanParticipate = () => {
       : (setUserAddresses(updatedArray),
         handleChange('verifiedUserAddresses', verifiedAddresses(updatedArray)));
   };
+
   // Update the address value for each address
   const handleAddressChange = (address: AddressProps, value: string) => {
     const isContract = address.type === 'contract';
