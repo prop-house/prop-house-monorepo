@@ -53,7 +53,7 @@
     "test:l2": "hardhat test test/starknet/*.test.ts",
     "test:crosschain": "hardhat test test/crosschain/**/*.test.ts --network 'ethereumLocal' --starknet-network 'starknetLocal'",
     "test": "yarn test:l1 && yarn test:l2",
-    "task:deploy": "hardhat deploy"
+    "task:deploy": "STARKNET_NETWORK=alpha-goerli hardhat deploy --network goerli"
   },
   "dependencies": {
     "ethers": "~5.5.0"

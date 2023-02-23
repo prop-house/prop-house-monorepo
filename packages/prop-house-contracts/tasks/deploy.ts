@@ -9,8 +9,8 @@ import {
 } from '../typechain';
 import { task, types } from 'hardhat/config';
 import { NonceManager } from '@ethersproject/experimental';
-import { existsSync, writeFileSync, readFileSync, mkdirSync } from 'fs';
-import { DeployContractPayload, Provider } from 'starknet';
+import { Starknet } from 'starknet-hardhat-plugin-extended/dist/src/types/starknet';
+import { existsSync, writeFileSync, mkdirSync } from 'fs';
 import { constants } from 'ethers';
 
 enum ChainId {
@@ -20,7 +20,6 @@ enum ChainId {
 
 interface NetworkConfig {
   starknet: {
-    network: 'mainnet-alpha' | 'goerli-alpha';
     core: string;
   };
   fossil?: {
@@ -32,13 +31,11 @@ interface NetworkConfig {
 const networkConfig: Record<number, NetworkConfig> = {
   [ChainId.Mainnet]: {
     starknet: {
-      network: 'mainnet-alpha',
       core: '0xc662c410C0ECf747543f5bA90660f6ABeBD9C8c4',
     },
   },
   [ChainId.Goerli]: {
     starknet: {
-      network: 'goerli-alpha',
       core: '0xde29d060D45901Fb19ED6C6e959EB22d8626708e',
     },
     fossil: {
@@ -48,7 +45,33 @@ const networkConfig: Record<number, NetworkConfig> = {
   },
 };
 
+const MAX_FEE = BigInt(3e15);
+
 const sleep = (ms = 1_000) => new Promise(resolve => setTimeout(resolve, ms));
+
+const getStarknetAccount = async (starknet: Starknet) => {
+  const { env } = process;
+  const config = {
+    oz: {
+      address: env.STARKNET_OZ_ACCOUNT_ADDRESS?.toLowerCase(),
+      privateKey: env.STARKNET_OZ_ACCOUNT_PRIVATE_KEY,
+    },
+    argent: {
+      address: env.STARKNET_ARGENT_ACCOUNT_ADDRESS?.toLowerCase(),
+      privateKey: env.STARKNET_ARGENT_ACCOUNT_PRIVATE_KEY,
+    },
+  };
+  if (config.oz.address) {
+    return starknet.OpenZeppelinAccount.getAccountFromAddress(
+      config.oz.address,
+      config.oz.privateKey!,
+    );
+  }
+  return starknet.ArgentAccount.getAccountFromAddress(
+    config.argent.address!,
+    config.argent.privateKey!,
+  );
+};
 
 task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
   .addOptionalParam('manager', 'The manager address', undefined, types.string)
@@ -73,17 +96,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
 
     const [ethSigner] = await ethers.getSigners();
     const ethDeployer = new NonceManager(ethSigner as any);
-
-    const starknetProvider = new Provider({
-      sequencer: {
-        network: config.starknet.network,
-      },
-    });
-    const deployContract = starknetProvider.deployContract.bind(starknetProvider);
-    starknetProvider.deployContract = async (payload: DeployContractPayload) => {
-      await sleep(); // Naive approach to avoid strict gateway rate-limiting
-      return deployContract(payload);
-    };
+    const starknetDeployer = await getStarknetAccount(starknet);
 
     if (!args.manager) {
       args.manager = await ethDeployer.getAddress();
@@ -147,6 +160,28 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const ethereumBalanceOfVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/ethereum_balance_of.cairo',
     );
+    const factories = [
+      roundDeployerFactory,
+      ethExecutionStrategyFactory,
+      votingStrategyRegistryFactory,
+      timedFundingRoundEthTxAuthStrategyFactory,
+      timedFundingRoundEthSigAuthStrategyFactory,
+      vanillaVotingStrategyFactory,
+    ];
+    let nonce = await starknet.getNonce(starknetDeployer.address, {
+      blockNumber: 'latest',
+    });
+    const promises: Promise<string>[] = [];
+    for (const factory of factories) {
+      promises.push(
+        starknetDeployer.declare(factory, {
+          maxFee: MAX_FEE,
+          nonce: nonce++,
+        }),
+      );
+      await sleep(5_000);
+    }
+    await Promise.all(promises);
 
     // Deploy core protocol contracts
     const manager = await managerFactory.deploy();
@@ -157,34 +192,51 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       starknetCommitFactory.deploy(args.starknetCore),
     ]);
     const messenger = await messengerFactory.deploy(args.starknetCore, propHouse.address);
-    const roundFactory = await starknetProvider.deployContract({
-      contract: readFileSync(roundDeployerFactory.metadataPath, 'ascii'),
-      constructorCalldata: [messenger.address],
-    });
-    const ethExecutionStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(ethExecutionStrategyFactory.metadataPath, 'ascii'),
-      constructorCalldata: [roundFactory.contract_address],
-    });
-    const votingStrategyRegistry = await starknetProvider.deployContract({
-      contract: readFileSync(votingStrategyRegistryFactory.metadataPath, 'ascii'),
-    });
+    const roundFactory = await starknetDeployer.deploy(
+      roundDeployerFactory,
+      {
+        l1_messenger: messenger.address,
+      },
+      { maxFee: MAX_FEE },
+    );
+    const ethExecutionStrategy = await starknetDeployer.deploy(
+      ethExecutionStrategyFactory,
+      {
+        round_factory_address: roundFactory.address,
+      },
+      {
+        maxFee: MAX_FEE,
+      },
+    );
+    const votingStrategyRegistry = await starknetDeployer.deploy(
+      votingStrategyRegistryFactory,
+      undefined,
+      {
+        maxFee: MAX_FEE,
+      },
+    );
 
     // Deploy funding house contracts
-    const timedFundingRoundEthTxAuthStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(timedFundingRoundEthTxAuthStrategyFactory.metadataPath, 'ascii'),
-      constructorCalldata: [starknetCommit.address],
-    });
-    const timedFundingRoundEthSigAuthStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(timedFundingRoundEthSigAuthStrategyFactory.metadataPath, 'ascii'),
-    });
+    const timedFundingRoundEthTxAuthStrategy = await starknetDeployer.deploy(
+      timedFundingRoundEthTxAuthStrategyFactory,
+      {
+        starknet_commit_address: starknetCommit.address,
+      },
+      { maxFee: MAX_FEE },
+    );
+    const timedFundingRoundEthSigAuthStrategy = await starknetDeployer.deploy(
+      timedFundingRoundEthSigAuthStrategyFactory,
+      undefined,
+      { maxFee: MAX_FEE },
+    );
 
     const generatedTimedFundingRoundMetadataPath = hre.starknetWrapper.writeConstantsToOutput(
       timedFundingRoundStrategyL2Factory.metadataPath,
       {
-        voting_strategy_registry: votingStrategyRegistry.contract_address,
-        eth_execution_strategy: ethExecutionStrategy.contract_address,
-        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.contract_address,
-        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.contract_address,
+        voting_strategy_registry: votingStrategyRegistry.address,
+        eth_execution_strategy: ethExecutionStrategy.address,
+        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
+        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
       },
     );
     // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
@@ -197,8 +249,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       args.starknetCore,
       messenger.address,
       constants.AddressZero,
-      roundFactory.contract_address,
-      ethExecutionStrategy.contract_address,
+      roundFactory.address,
+      ethExecutionStrategy.address,
     );
     const fundingHouseImpl = await fundingHouseImplFactory.deploy(
       propHouse.address,
@@ -207,13 +259,21 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
 
     // Deploy voting strategy contracts
-    const vanillaVotingStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(vanillaVotingStrategyFactory.metadataPath, 'ascii'),
-    });
-    const ethereumBalanceOfVotingStrategy = await starknetProvider.deployContract({
-      contract: readFileSync(ethereumBalanceOfVotingStrategyFactory.metadataPath, 'ascii'),
-      constructorCalldata: [args.fossilFactRegistry, args.fossilL1HeadersStore],
-    });
+    const vanillaVotingStrategy = await starknetDeployer.deploy(
+      vanillaVotingStrategyFactory,
+      undefined,
+      {
+        maxFee: MAX_FEE,
+      },
+    );
+    const ethereumBalanceOfVotingStrategy = await starknetDeployer.deploy(
+      ethereumBalanceOfVotingStrategyFactory,
+      {
+        fact_registry_address: args.fossilFactRegistry,
+        l1_headers_store_address: args.fossilL1HeadersStore,
+      },
+      { maxFee: MAX_FEE },
+    );
 
     // Configure contracts
     await manager.registerHouse(fundingHouseImpl.address);
@@ -233,13 +293,13 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       },
       starknet: {
         address: {
-          roundFactory: roundFactory.contract_address,
-          ethExecutionStrategy: ethExecutionStrategy.contract_address,
-          votingStrategyRegistry: votingStrategyRegistry.contract_address,
-          timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.contract_address,
-          timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.contract_address,
-          vanillaVotingStrategy: vanillaVotingStrategy.contract_address,
-          ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.contract_address,
+          roundFactory: roundFactory.address,
+          ethExecutionStrategy: ethExecutionStrategy.address,
+          votingStrategyRegistry: votingStrategyRegistry.address,
+          timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.address,
+          timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.address,
+          vanillaVotingStrategy: vanillaVotingStrategy.address,
+          ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.address,
         },
         classHash: {
           timedFundingRound: timedFundingRoundClassHash,

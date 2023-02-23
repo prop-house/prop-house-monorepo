@@ -8,7 +8,7 @@ import './tasks';
 
 dotenv.config();
 
-const { ETH_MNEMONIC, ETH_PRIVATE_KEY } = process.env;
+const { ETH_MNEMONIC, ETH_PRIVATE_KEY, STARKNET_NETWORK } = process.env;
 
 const getRemappings = () => {
   return fs
@@ -53,14 +53,7 @@ const config: HardhatUserConfig = {
   },
   starknet: {
     venv: 'active',
-    network: 'starknetLocal',
-    wallets: {
-      Deployer: {
-        accountName: 'OpenZeppelin',
-        modulePath: 'starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount',
-        accountPath: '~/.starknet_accounts',
-      },
-    },
+    network: STARKNET_NETWORK ?? 'starknetLocal',
   },
   networks: {
     ethereumLocal: {
