@@ -7,6 +7,7 @@ import EthAddress from '../../EthAddress';
 import Group from '../Group';
 import Text from '../Text';
 import { AddressProps } from '../WhoCanParticipate';
+import Bullet from '../Bullet';
 
 const Address: React.FC<{
   address: AddressProps;
@@ -14,6 +15,7 @@ const Address: React.FC<{
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
   handleRemove(address: AddressProps): void;
+  handleClear(address: AddressProps): void;
   handleChange: (address: AddressProps, value: string) => void;
   handleVote: (address: AddressProps, votes: number) => void;
   handleBlur: (address: AddressProps) => void;
@@ -26,6 +28,7 @@ const Address: React.FC<{
     isTyping,
     setIsTyping,
     handleRemove,
+    handleClear,
     handleChange,
     handleVote,
     handleBlur,
@@ -99,7 +102,14 @@ const Address: React.FC<{
     <>
       <div className={classes.container}>
         <Group gap={4} classNames={classes.addressAndTitle}>
-          <Text type="subtitle">{capitalize(address.type)} Address</Text>
+          <Group row>
+            <Text type="subtitle">{capitalize(address.type)} Address</Text>
+            <Bullet />
+
+            <Text type="link" onClick={() => handleClear(address)}>
+              clear
+            </Text>
+          </Group>
 
           {(address.state === 'Input' || inputHasError) && (
             <div className={classes.addressContainer}>
