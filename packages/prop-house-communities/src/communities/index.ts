@@ -97,5 +97,7 @@ export const communities = new CaseInsensitiveMap(
     '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(10),
     // MferbuilderDAO
     '0x795D300855069F602862c5e23814Bdeeb25DCa6b': balanceOfErc721(10),
+    // Nouns OTG
+    '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(),
   }),
 );
