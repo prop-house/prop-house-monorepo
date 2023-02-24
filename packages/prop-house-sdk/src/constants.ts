@@ -11,6 +11,7 @@ export const BALANCE_OF_TRACER = `{
   count: 0,
   prev: undefined,
   index: '-1',
+  fault: function(log) {},
   step: function(log) {
     if(this.count === 0 && log.op.toString() === 'MSTORE') {
       this.index = log.stack.peek(1);

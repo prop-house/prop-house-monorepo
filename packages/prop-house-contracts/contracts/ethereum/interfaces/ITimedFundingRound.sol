@@ -51,11 +51,8 @@ interface ITimedFundingRound is IRound {
     /// @notice Thrown when award reclamation is not available
     error RECLAMATION_NOT_AVAILABLE();
 
-    /// @notice Thrown when the full proposal period duration is too short
-    error PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-
-    /// @notice Thrown when the proposal period start timestamp is in the past
-    error PROPOSAL_PERIOD_START_TIMESTAMP_IN_PAST();
+    /// @notice Thrown when the remaining proposal period is too short
+    error REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
 
     /// @notice Thrown when the vote period duration is too short
     error VOTE_PERIOD_DURATION_TOO_SHORT();

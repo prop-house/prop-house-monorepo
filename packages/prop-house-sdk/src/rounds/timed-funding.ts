@@ -57,11 +57,9 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
   public async getABIEncodedConfig(config: TimedFundingRoundConfig): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
 
-    if (config.proposalPeriodDuration < TimedFundingRound.MIN_PROPOSAL_PERIOD_DURATION) {
-      throw new Error('Proposal period duration is too short');
-    }
-    if (config.proposalPeriodStartTimestamp < now) {
-      throw new Error('Proposal period start timestamp is in the past');
+    // prettier-ignore
+    if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < now + TimedFundingRound.MIN_PROPOSAL_PERIOD_DURATION) {
+      throw new Error('Remaining proposal period duration is too short');
     }
     if (config.votePeriodDuration < TimedFundingRound.MIN_VOTE_PERIOD_DURATION) {
       throw new Error('Vote period duration is too short');
