@@ -113,6 +113,7 @@ const response = await propHouse.createRoundOnExistingHouse(
 ```ts
 import { Asset, AssetType, HouseType, RoundType, VotingStrategyType } from '@prophouse/sdk';
 
+// Offer 5 ETH split between 10 winners
 const assets: Asset[] = [
   {
     assetType: AssetType.ETH,
@@ -132,7 +133,6 @@ const response = await propHouse.createAndFundRoundOnNewHouse(
     title: 'Test Round',
     description: 'A round used for testing purposes',
     config: {
-      // Offer 5 ETH split between 10 winners, funded later
       awards: assets,
       // Voting power for this round is determined by a user's Noun balance
       strategies: [
@@ -157,6 +157,7 @@ const response = await propHouse.createAndFundRoundOnNewHouse(
 ```ts
 import { Asset, AssetType, RoundType, VotingStrategyType } from '@prophouse/sdk';
 
+// Offer 5 ETH split between 10 winners
 const assets: Asset[] = [
   {
     assetType: AssetType.ETH,
