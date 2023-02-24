@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@davatar/react": "^1.11.1",
+    "@cloudnouns/factory": "^0.1.3",
     "@fortawesome/fontawesome-free": "^6.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@nouns/prop-house-wrapper": "1.0.0",
+    "@rainbow-me/rainbowkit": "^0.8.1",
     "@reduxjs/toolkit": "^1.7.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-html-parser": "^2.0.2",
     "@types/react-modal": "^3.13.1",
+    "@types/react-show-more-text": "^1.4.2",
     "@types/sanitize-html": "^2.6.2",
     "@usedapp/core": "^0.10.1",
     "@walletconnect/web3-provider": "^1.7.1",
@@ -27,13 +29,15 @@
     "clsx": "^1.1.1",
     "crowdin-cli": "^0.3.0",
     "dayjs": "^1.10.7",
-    "ethers": "^5.6.2",
+    "ethers": "^5.7.2",
     "i18next": "^21.8.11",
     "i18next-browser-languagedetector": "^6.1.4",
     "i18next-chained-backend": "^3.0.2",
     "i18next-http-backend": "^1.4.1",
     "i18next-localstorage-backend": "^3.1.3",
+    "is-image-url": "^1.1.8",
     "markdown-to-jsx": "^7.1.7",
+    "quill-blot-formatter": "^1.0.5",
     "react": "^17.0.2",
     "react-bootstrap": "^2.0.2",
     "react-countup": "^6.3.1",
@@ -42,6 +46,7 @@
     "react-html-parser": "^2.0.2",
     "react-i18next": "^11.17.3",
     "react-icons": "^4.3.1",
+    "react-jazzicon": "^1.0.4",
     "react-loading": "^2.0.3",
     "react-markdown": "^8.0.1",
     "react-modal": "^3.15.1",
@@ -50,10 +55,12 @@
     "react-redux": "^7.2.6",
     "react-router-dom": "6",
     "react-scripts": "4.0.3",
+    "react-tooltip": "^4.5.1",
     "remark-breaks": "^3.0.2",
     "sanitize-html": "^2.7.0",
     "slugify": "^1.6.5",
-    "typescript": "^4.1.2",
+    "typescript": "^4.8.4",
+    "wagmi": "^0.9.2",
     "web-vitals": "^1.0.1",
     "web3modal": "^1.9.5",
     "yarn": "^1.22.18"
@@ -70,18 +77,11 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "devDependencies": {
     "@types/quill": "^2.0.9",
     "@types/react-helmet": "^6.1.5"

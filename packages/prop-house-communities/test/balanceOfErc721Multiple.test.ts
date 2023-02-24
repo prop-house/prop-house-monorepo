@@ -54,14 +54,14 @@ describe('balance of erc721 multiple', () => {
     const ocmBalanceOf = await ocmContract.balanceOf(holderAddress);
 
     const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
-    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 15568893 });
+    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 16398844 });
 
     const sum = BigNumber.from(ocmBalanceOf).add(BigNumber.from(karmaBalanceOf)).toNumber();
 
     const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], [1, 1])(
       holderAddress,
       onChainMonkeyAddress,
-      15568893,
+      16398844,
       provider,
     );
 
@@ -79,7 +79,7 @@ describe('balance of erc721 multiple', () => {
     const ocmBalanceWMult = BigNumber.from(ocmBalanceOf).mul(multipliers[0]);
 
     const karmaContract = new Contract(karmaAddress, BalanceOfABI, provider);
-    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 15568893 });
+    const karmaBalanceOf = await karmaContract.balanceOf(holderAddress, { blockTag: 16398844 });
     const karmaBalanceWMult = BigNumber.from(karmaBalanceOf).mul(multipliers[1]);
 
     const sum = BigNumber.from(ocmBalanceWMult).add(BigNumber.from(karmaBalanceWMult)).toNumber();
@@ -87,7 +87,7 @@ describe('balance of erc721 multiple', () => {
     const votes = await balanceOfErc721Multiple([onChainMonkeyAddress, karmaAddress], multipliers)(
       holderAddress,
       onChainMonkeyAddress,
-      15568893,
+      16398844,
       provider,
     );
 

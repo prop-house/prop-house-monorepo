@@ -1,0 +1,52 @@
+@media (min-width: 576px) {
+  .btnContainer {
+    display: none !important;
+  }
+}
+.propNavigationButtons {
+  display: flex;
+  gap: 2px;
+}
+.propNavigationButtons button {
+  border: 1.5px solid rgba(102, 102, 102, 0.25);
+  padding: 0;
+  background-color: white;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+  width: 34px;
+  height: 34px;
+}
+.propNavigationButtons button:disabled {
+  background: var(--border-light);
+}
+.propNavigationButtons button:disabled svg {
+  color: var(--brand-gray-transparent);
+}
+.propNavigationButtons button svg {
+  padding: 4px;
+}
+.propNavigationButtons button:first-child {
+  border-radius: 10px 4px 4px 10px;
+}
+.propNavigationButtons button:nth-child(2) {
+  border-radius: 4px 10px 10px 4px;
+}
+.propNavigationButtons {
+  gap: 5px;
+}
+.propNavigationButtons button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 10px;
+  height: 38px;
+}
+
+@media (max-width: 575px) {
+  .btnContainer {
+    padding: 0px 20px 20px 20px;
+    /* padding: 0px 12px; */
+  }
+}

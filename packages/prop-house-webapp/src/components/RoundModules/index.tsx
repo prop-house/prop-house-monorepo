@@ -7,12 +7,10 @@ import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
@@ -22,19 +20,23 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { useTranslation } from 'react-i18next';
+import { clearProposal } from '../../state/slices/editor';
+import { useDispatch } from 'react-redux';
+import ConnectButton from '../ConnectButton';
+import { useAccount } from 'wagmi';
 
 const RoundModules: React.FC<{
   auction: StoredAuction;
+  proposals: StoredProposalWithVotes[];
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { auction, community, setShowVotingModal } = props;
+  const { auction, proposals, community, setShowVotingModal } = props;
 
-  const { account } = useEthers();
-  const connect = useWeb3Modal();
+  const { address: account } = useAccount();
+
   const navigate = useNavigate();
 
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
@@ -50,34 +52,43 @@ const RoundModules: React.FC<{
   const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
 
   const getVoteTotal = () =>
-    proposals && proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
+    proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
+  const [fetchedUserProps, setFetchedUserProps] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!account || !proposals) return;
+    setFetchedUserProps(false);
 
     // set user props
     if (proposals.some(p => isSameAddress(p.address, account))) {
-      return setUserProposals(
+      setUserProposals(
         proposals
           .filter(p => isSameAddress(p.address, account))
           .sort((a: { voteCount: any }, b: { voteCount: any }) =>
             Number(a.voteCount) < Number(b.voteCount) ? 1 : -1,
           ),
       );
+
+      setFetchedUserProps(true);
     }
   }, [account, proposals]);
 
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-      {!auctionNotStarted && account && userProposals && userProposals.length > 0 && (
-        <UserPropCard
-          userProps={userProposals}
-          proposals={proposals}
-          numOfWinners={auction.numWinners}
-          status={auctionStatus(auction)}
-          winningIds={winningIds && winningIds}
-        />
-      )}
+      {!auctionNotStarted &&
+        account &&
+        userProposals &&
+        userProposals.length > 0 &&
+        fetchedUserProps && (
+          <UserPropCard
+            userProps={userProposals}
+            proposals={proposals}
+            numOfWinners={auction.numWinners}
+            status={auctionStatus(auction)}
+            winningIds={winningIds && winningIds}
+          />
+        )}
 
       <Card
         bgColor={CardBgColor.White}
@@ -98,10 +109,7 @@ const RoundModules: React.FC<{
 
           {/* ROUND ENDED */}
           {isRoundOver && (
-            <RoundOverModule
-              numOfProposals={proposals && proposals.length}
-              totalVotes={getVoteTotal()}
-            />
+            <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
           )}
         </div>
 
@@ -113,15 +121,18 @@ const RoundModules: React.FC<{
               <Button
                 text={t('createYourProposal')}
                 bgColor={ButtonColor.Green}
-                onClick={() => navigate('/create', { state: { auction, community } })}
+                onClick={() => {
+                  dispatch(clearProposal());
+                  navigate('/create', { state: { auction, community } });
+                }}
               />
             ) : (
-              <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
+              <ConnectButton text={t('connectToSubmit')} color={ButtonColor.Pink} />
             ))}
 
           {/* VOTING WINDOW, NOT CONNECTED */}
           {isVotingWindow && !account && (
-            <Button text={t('connectToVote')} bgColor={ButtonColor.Pink} onClick={connect} />
+            <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
           )}
 
           {/* VOTING PERIOD, CONNECTED, HAS VOTES */}

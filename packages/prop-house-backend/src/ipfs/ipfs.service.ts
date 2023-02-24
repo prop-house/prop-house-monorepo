@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PinataClient, PinataPinOptions } from '@pinata/sdk';
+import PinataClient, { PinataPinOptions } from '@pinata/sdk';
 import fs from 'fs';
 import { Readable } from 'stream';
 const pinataClient = require('@pinata/sdk');
@@ -11,7 +11,7 @@ export class IpfsService {
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('PINATA_API_KEY');
     const apiSecret = this.configService.get<string>('PINATA_API_SECRET');
-    this.ipfsClient = pinataClient(apiKey, apiSecret);
+    this.ipfsClient = new pinataClient(apiKey, apiSecret);
   }
 
   async pinFile(path: string, name: string, keyvalues: any = {}) {

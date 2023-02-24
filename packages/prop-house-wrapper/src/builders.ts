@@ -1,19 +1,72 @@
-import { Signer } from '@ethersproject/abstract-signer';
+import {
+  Signer,
+  TypedDataSigner,
+  TypedDataField,
+  TypedDataDomain,
+} from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
+import { DomainSeparator } from './types/eip712Types';
 
 export abstract class Signable {
   abstract toPayload(): any;
 
-  async signedPayload(signer: Signer | Wallet) {
+  async typedSignature(
+    signer: Signer,
+    domainSeparator: TypedDataDomain,
+    eip712MessageType: Record<string, TypedDataField[]>,
+  ) {
+    const typedSigner = signer as Signer & TypedDataSigner;
+    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, this.toPayload());
+  }
+
+  async signedPayload(
+    signer: Signer | Wallet,
+    isContract: boolean,
+    eip712MessageTypes?: Record<string, TypedDataField[]>,
+  ) {
     const jsonPayload = this.jsonPayload();
     const address = await signer.getAddress();
+
+    let signature: string | undefined;
+
+    if (isContract) signature = await signer.signMessage(jsonPayload);
+    if (eip712MessageTypes)
+      signature = await this.typedSignature(signer, DomainSeparator, eip712MessageTypes);
+
+    if (!signature) throw new Error(`Error signing payload.`);
+
     return {
       signedData: {
         message: Buffer.from(jsonPayload).toString('base64'),
-        signature: await signer.signMessage(jsonPayload),
+        signature: signature,
         signer: address,
       },
       address,
+      messageTypes: eip712MessageTypes,
+      domainSeparator: DomainSeparator,
+      ...this.toPayload(),
+    };
+  }
+
+  /**
+   * Signed payload with supplied signature
+   */
+  async presignedPayload(
+    signer: Signer | Wallet,
+    signature: string,
+    jsonPayload?: string,
+    eip712MessageTypes?: Record<string, TypedDataField[]>,
+  ) {
+    const address = await signer.getAddress();
+    return {
+      signedData: {
+        message: Buffer.from(jsonPayload ? jsonPayload : this.jsonPayload()).toString('base64'),
+        signature,
+        signer: address,
+      },
+      address,
+      messageTypes: eip712MessageTypes,
+      domainSeparator: DomainSeparator,
       ...this.toPayload(),
     };
   }
@@ -96,15 +149,48 @@ export class Proposal extends Signable {
   }
 }
 
+export class UpdatedProposal extends Proposal {
+  constructor(
+    public readonly id: number,
+    public readonly title: string,
+    public readonly what: string,
+    public readonly tldr: string,
+    public readonly auctionId: number,
+  ) {
+    super(title, what, tldr, auctionId);
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+      ...super.toPayload(),
+    };
+  }
+}
+
 export interface StoredProposal extends Proposal {
   id: number;
   address: string;
   createdDate: Date;
   voteCount: number;
+  lastUpdatedDate: Date;
+  deletedAt: Date;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {
   votes: StoredVote[];
+}
+
+export class DeleteProposal extends Signable {
+  constructor(public readonly id: number) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      id: this.id,
+    };
+  }
 }
 
 export enum Direction {
@@ -142,60 +228,6 @@ export class Vote extends Signable {
   }
 }
 
-/**
- * Manages single vote submission with multi-vote signatures.
- *
- * To prevent users form signing each vote, we group together all votes and sign one payload.
- * This one signature is then used to submit each vote to the backend.
- */
-export class SignableVotes extends Signable {
-  constructor(public readonly votes: Vote[]) {
-    super();
-  }
-
-  /**
-   * The signed payload for a `vote` using a supplied signature
-   */
-  async presignedPayload(
-    vote: Vote,
-    signer: Signer | Wallet,
-    jsonPayload: string,
-    signature: string,
-  ) {
-    const address = await signer.getAddress();
-    return {
-      signedData: {
-        message: Buffer.from(jsonPayload).toString('base64'),
-        signature,
-        signer: address,
-      },
-      address,
-      ...vote.toPayload(),
-    };
-  }
-
-  /**
-   * Signature for payload of all votes
-   */
-  async multiVoteSignature(signer: Signer) {
-    return await signer.signMessage(this.jsonPayload());
-  }
-
-  /**
-   * Payload for all votes
-   */
-  private allVotesPayload() {
-    const filtered = this.votes.filter(v => v.weight > 0);
-    return {
-      ...filtered.map(v => v.toPayload()),
-    };
-  }
-
-  toPayload() {
-    return this.allVotesPayload();
-  }
-}
-
 export interface StoredVote extends Vote {
   address: string;
   signedData: string;
@@ -223,6 +255,7 @@ export class Community extends Signable {
     public readonly numAuctions: number,
     public readonly numProposals: number,
     public readonly ethFunded: number,
+    public readonly totalFunded: number,
     public readonly description: number,
   ) {
     super();
@@ -237,6 +270,7 @@ export class Community extends Signable {
       numAuctions: this.numAuctions,
       numProposals: this.numProposals,
       ethFunded: this.ethFunded,
+      totalFunded: this.totalFunded,
       description: this.description,
     };
   }

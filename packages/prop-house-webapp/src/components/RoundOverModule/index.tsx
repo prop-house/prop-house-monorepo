@@ -5,7 +5,7 @@ import classes from './RoundOverModule.module.css';
 
 export interface RoundOverModuleProps {
   totalVotes: number | undefined;
-  numOfProposals: number | undefined;
+  numOfProposals: number;
 }
 
 const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleProps) => {
@@ -20,12 +20,12 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
         </div>
         <div className={classes.textContainer}>
           <p className={classes.title}>{t('votingEnded')}</p>
-          {numOfProposals && (
+          {numOfProposals ? (
             <p className={classes.subtitle}>
               {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? t('vote') : t('votes')}{' '}
               {t('castFor')} {numOfProposals} {numOfProposals === 1 ? t('prop') : t('props')}!
             </p>
-          )}
+          ) : <></>}
         </div>
       </div>
 

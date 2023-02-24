@@ -1,4 +1,3 @@
-import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
@@ -10,15 +9,26 @@ import {
   Vote,
   Community,
   CommunityWithAuctions,
-  SignableVotes,
+  UpdatedProposal,
+  DeleteProposal,
 } from './builders';
 import FormData from 'form-data';
-import fs from 'fs';
+import * as fs from 'fs';
+
+import {
+  DeleteProposalMessageTypes,
+  EditProposalMessageTypes,
+  ProposalMessageTypes,
+  VoteMessageTypes,
+} from './types/eip712Types';
+import { multiVoteSignature } from './utils/multiVoteSignature';
+import { multiVotePayload } from './utils/multiVotePayload';
+import { Signer } from 'ethers';
 
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined,
+    private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: Auction): Promise<StoredAuction[]> {
@@ -101,13 +111,45 @@ export class PropHouseWrapper {
     }
   }
 
-  async createProposal(proposal: Proposal) {
+  async createProposal(proposal: Proposal, isContract = false) {
     if (!this.signer) return;
     try {
-      const signedPayload = await proposal.signedPayload(this.signer);
+      const signedPayload = await proposal.signedPayload(
+        this.signer,
+        isContract,
+        ProposalMessageTypes,
+      );
       return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
+    }
+  }
+
+  async updateProposal(updatedProposal: UpdatedProposal, isContract = false) {
+    if (!this.signer) return;
+    try {
+      const signedPayload = await updatedProposal.signedPayload(
+        this.signer,
+        isContract,
+        EditProposalMessageTypes,
+      );
+      return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async deleteProposal(deleteProposal: DeleteProposal, isContract = false) {
+    if (!this.signer) return;
+    try {
+      const signedPayload = await deleteProposal.signedPayload(
+        this.signer,
+        isContract,
+        DeleteProposalMessageTypes,
+      );
+      return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
+    } catch (e: any) {
+      throw e;
     }
   }
 
@@ -115,11 +157,11 @@ export class PropHouseWrapper {
     if (!this.signer) return;
 
     try {
-      const signableVotes = new SignableVotes(votes);
       // sign payload and use for all votes, awaiting if the signer is not a contract
       let signature = '0x';
+      const payload = multiVotePayload(votes);
 
-      const signaturePromise = signableVotes.multiVoteSignature(this.signer);
+      const signaturePromise = multiVoteSignature(this.signer, isContract, payload);
       if (!isContract) {
         signature = await signaturePromise;
       }
@@ -127,26 +169,16 @@ export class PropHouseWrapper {
       let responses = [];
 
       // POST each vote with the signature of the payload of all votes
-      for (const vote of signableVotes.votes) {
-        const signedPayload = await signableVotes.presignedPayload(
-          vote,
+      for (const vote of votes) {
+        const signedPayload = await vote.presignedPayload(
           this.signer,
-          signableVotes.jsonPayload(),
           signature,
+          JSON.stringify(payload),
+          VoteMessageTypes,
         );
         responses.push((await axios.post(`${this.host}/votes`, signedPayload)).data);
       }
       return responses;
-    } catch (e: any) {
-      throw e.response.data.message;
-    }
-  }
-
-  async logVote(vote: Vote) {
-    if (!this.signer) return;
-    try {
-      const signedPayload = await vote.signedPayload(this.signer);
-      return (await axios.post(`${this.host}/votes`, signedPayload)).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -165,13 +197,14 @@ export class PropHouseWrapper {
       const form = new FormData();
       form.append('file', file, name);
       form.append('name', name);
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      if (this.signer) {
-        const signature = await this.signer.signMessage(fileBuffer);
-        form.append('signature', signature);
-      }
-      return await axios.post(`${this.host}/file`, form);
+      const config = {
+        headers: {
+          'content-type': 'multipart/form-data',
+        },
+      };
+      return await axios.post(`${this.host}/file`, form, config);
     } catch (e: any) {
+      console.log('error', e);
       throw e.response.data.message;
     }
   }
@@ -198,7 +231,7 @@ export class PropHouseWrapper {
         },
       });
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e.response;
     }
   }
 

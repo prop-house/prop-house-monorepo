@@ -11,6 +11,8 @@ const CommunityCard: React.FC<{
   const { community } = props;
   const { t } = useTranslation();
 
+  const houseCurrency = getHouseCurrency(community.contractAddress);
+
   return (
     <div className={classes.container}>
       <CommunityProfImg community={community} />
@@ -21,8 +23,10 @@ const CommunityCard: React.FC<{
           <div className={classes.infoWithSymbol}>
             <div className={classes.infoText}>
               <span className={classes.infoAmount}>
-                <TruncateThousands amount={community.ethFunded} />{' '}
-                {getHouseCurrency(community.contractAddress)}
+                <TruncateThousands
+                  amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
+                />{' '}
+                {houseCurrency}
               </span>{' '}
               <span className={classes.infoCopy}>{t('funded')}</span>
             </div>

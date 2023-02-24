@@ -1,47 +1,50 @@
 import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import classes from './PropCardVotingModule.module.css';
-import { ProposalCardStatus } from '../../utils/cardStatus';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
-import { Direction, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import React, { useEffect, useState } from 'react';
+import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import React, { useCallback, useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
+import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
 
 const PropCardVotingModule: React.FC<{
-  proposal: StoredProposal;
-  cardStatus: ProposalCardStatus;
+  proposal: StoredProposalWithVotes;
+  showVoteAllotmentModal?: boolean;
 }> = props => {
-  const { proposal } = props;
+  const { proposal, showVoteAllotmentModal } = props;
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const allottedVotesForProp = votesForProp(voteAllotments, proposal.id);
+  const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
+  const _votesRemaining = votesRemaining(votingPower, submittedVotes, voteAllotments);
 
-  const [voteCount, setVoteCount] = useState(0);
+  const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
   const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
   const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
 
-  const isAllotting = () => allottedVotesForProp > 0 || inputIsInFocus;
+  const isAllotting = () => (allottedVotesForProp && allottedVotesForProp > 0) || inputIsInFocus;
 
   useEffect(() => {
-    // clear input on successful vote
-    setVoteCount(0);
-  }, [submittedVotes]);
+    if (allottedVotesForProp === undefined) return;
+    setVoteCountDisplayed(allottedVotesForProp);
+  }, [allottedVotesForProp]);
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
+    if (!proposal) return;
     e.stopPropagation();
-    setVoteCount(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+    setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
     dispatch(
       allotVotes({
         proposalId: proposal.id,
@@ -54,13 +57,15 @@ const PropCardVotingModule: React.FC<{
 
   // handle votes by text input
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!proposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
+    const numVotesAllotting = inputVotes - allottedVotesForProp;
 
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (inputVotes > votingPower - submittedVotes) {
+    if (numVotesAllotting > votingPower - submittedVotes || numVotesAllotting > _votesRemaining) {
       setAttemptedInputVotes(inputVotes);
       setDisplayWarningTooltip(true);
       setTimeout(() => {
@@ -75,7 +80,7 @@ const PropCardVotingModule: React.FC<{
         proposalTitle: proposal.title,
         proposalId: proposal.id,
         direction: Direction.Down,
-        weight: voteCount,
+        weight: voteCountDisplayed,
       }),
     );
 
@@ -89,8 +94,48 @@ const PropCardVotingModule: React.FC<{
       }),
     );
 
-    setVoteCount(inputVotes);
+    setVoteCountDisplayed(inputVotes);
   };
+
+  // handle votes by up/down keyboard press
+  const handleKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      if (!modalActive || showVoteAllotmentModal) return; // only use keyboard voting in modal
+
+      const direction =
+        event.key === 'ArrowUp'
+          ? Direction.Up
+          : event.key === 'ArrowDown'
+          ? Direction.Down
+          : undefined;
+
+      if (direction === undefined || !proposal) return;
+      if (direction === Direction.Up && !_canAllotVotes) return;
+      if (direction === Direction.Down && allottedVotesForProp === 0) return;
+
+      event.preventDefault();
+      setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
+
+      dispatch(
+        allotVotes({
+          proposalId: proposal.id,
+          proposalTitle: proposal.title,
+          direction: direction,
+          weight: 1,
+        }),
+      );
+    },
+    [modalActive, showVoteAllotmentModal, proposal, _canAllotVotes, allottedVotesForProp, dispatch],
+  );
+
+  useEffect(() => {
+    if (!modalActive) return;
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress, modalActive]);
 
   return (
     <Row>
@@ -109,15 +154,15 @@ const PropCardVotingModule: React.FC<{
           >
             <input
               type="text"
-              value={displayWarningTooltip ? attemptedInputVotes : voteCount}
-              className={classes.votesAllottedInput}
+              value={displayWarningTooltip ? attemptedInputVotes : voteCountDisplayed}
+              className={clsx(classes.votesAllottedInput, 'voteInput')}
               onChange={e => handleInputChange(e)}
               onFocus={() => setInputIsInFocus(true)}
             />
           </OverlayTrigger>
         </div>
 
-        <div className={classes.voteBtns}>
+        <div className={clsx(classes.voteBtns, 'votingBtns')}>
           <Button
             text="↓"
             bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}

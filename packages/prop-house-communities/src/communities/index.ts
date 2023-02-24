@@ -1,6 +1,13 @@
-import { balanceOfErc721, balanceOfErc721Multiple, erc1155, oneHundredVotes } from '../strategies';
+import {
+  balanceOfErc20,
+  balanceOfErc721,
+  balanceOfErc721Multiple,
+  erc1155,
+  oneHundredVotes,
+} from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
+import { onchainMonkey } from '../strategies/onchainMonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**
@@ -11,10 +18,7 @@ export const communities = new CaseInsensitiveMap(
     // nouns
     '0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03': nouns(10),
     // onchainmonkey
-    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': balanceOfErc721Multiple(
-      ['0x86cc280d0bac0bd4ea38ba7d31e895aa20cceb4b', '0x960b7a6bcd451c9968473f7bbfd9be826efd549a'],
-      [1, 1],
-    ),
+    '0x960b7a6bcd451c9968473f7bbfd9be826efd549a': onchainMonkey(),
     // cryptoadz
     '0x1CB1A5e65610AEFF2551A50f76a87a7d3fB649C6': balanceOfErc721(),
     // nouns japan
@@ -51,5 +55,42 @@ export const communities = new CaseInsensitiveMap(
     '0x38930aae699c4cd99d1d794df9db41111b13092b': balanceOfErc721(),
     // Anata
     '0xf729f878F95548BC7F14B127c96089cf121505F8': balanceOfErc721(),
+    // Builder
+    '0xdf9B7D26c8Fc806b1Ae6273684556761FF02d422': balanceOfErc721(20),
+    // NSFW
+    '0xa0aaf3b8a71dcb51fb61845899ab6df3e2c81ae3': balanceOfErc721(10),
+    // Shark DAO
+    '0x8277aCa3Aa9eCf15cB224346575C4130CF36dE00': balanceOfErc721(),
+    // Tiny Dinos
+    '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4': balanceOfErc721Multiple(
+      [
+        '0xd9b78a2f1dafc8bb9c60961790d2beefebee56f4',
+        '0x5a1190759c9e7cf42da401639016f8f60affd465',
+        '0xc1dcc70e27b187457709e0c72db3df941034ec6f',
+        '0x89e83F99Bc48B9229EA7F2B9509a995e89C8472F',
+      ],
+      [1, 1, 1, 1],
+    ),
+    // Nouns DAO Amigos
+    '0x964629a577ebD3d1cc9ce4361BDcc1ABb282132F': balanceOfErc721(10),
+    // Nouns BR
+    '0x36b2AA1795d8cdEf4B784Fe34045fAdC45d61e8c': balanceOfErc721(),
+    // Kiwami
+    '0x701A038aF4Bd0fc9b69A829DdcB2f61185a49568': balanceOfErc721(),
+    // Humankind
+    '0xb20e024da94fEf84B5dbDE3a639048952De58169': balanceOfErc721Multiple(
+      [
+        '0xb20e024da94fEf84B5dbDE3a639048952De58169',
+        '0xA30CF1135BE5Af62E412f22BD01069e2CEbA8706',
+        '0xceE9F881bb972CeCD5Df06c6111cE457b0d63F0B',
+      ],
+      [1, 1, 1],
+    ),
+    // Chaos
+    '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
+    // Rug Radio
+    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': balanceOfErc20(18),
+    // Noggle DAO
+    '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
   }),
 );

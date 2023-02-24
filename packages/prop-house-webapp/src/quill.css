@@ -1,75 +1,54 @@
 .ql-container {
   border: none;
-  font-size: 20px;
+  font-size: 16px !important;
   color: var(--brand-black);
   margin-bottom: 1.75rem;
   white-space: pre-line;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
   border: 1px rgba(0, 0, 0, 0.1) solid;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
+  padding: 1rem 0.75rem;
+  margin-bottom: 0rem;
   min-height: 20em !important;
+  background: white;
 }
 
 .ql-toolbar {
-  background: #f5f5f5;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  background: white;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   border-bottom: none;
-  padding: 1.5rem !important;
+  padding: 0.5rem !important;
   position: sticky;
   top: 0;
   z-index: 9;
 }
 .ql-editor {
-  font-size: 20px !important;
+  font-size: 16px !important;
   padding: 0 !important;
+  min-height: 20em !important;
+  font-weight: 500;
 }
 .ql-editor.ql-blank::before {
   left: auto !important;
   right: auto !important;
-  font-size: 22px !important;
-  font-weight: 600 !important;
-  color: var(--brand-black-transparent) !important;
-}
-.ql-editor a {
-  text-decoration: underline !important;
-  color: var(--brand-gray) !important;
-}
-.ql-editor a:hover {
-  color: var(--brand-gray-semi-transparent) !important;
-  cursor: pointer !important;
-  transition: all 0.1s ease-in-out !important;
-}
-.ql-editor strong {
-  font-weight: 600 !important;
-}
-.ql-editor.ql-blank::before {
-  font-style: normal !important;
+  color: var(--brand-gray-transparent) !important;
+  font-size: 16px !important;
+  font-style: italic !important;
 }
 
 .hideBorderBox {
-  background: #fcfcfc;
+  background: #f5f5f5;
   top: 0;
   position: sticky !important;
-  z-index: 9;
-  height: 20px;
+  z-index: 1;
+  height: 10px;
 }
-
+.editPropContainer .hideBorderBox {
+  background: white;
+}
 .quill {
   margin-top: -20px;
-}
-pre {
-  background: #2f3136 !important;
-  padding: 22px !important;
-  color: white;
-}
-.ql-editor pre {
-  background: #2f3136 !important;
-  color: white !important;
-  padding: 22px !important;
-  overflow-x: auto;
 }
 
 .ReactModal__Overlay--after-open {
@@ -84,27 +63,104 @@ pre {
   backdrop-filter: blur(10px) !important;
 }
 
-blockquote {
-  border-left: 4px solid #ccc !important;
-  margin-bottom: 5px !important;
-  margin-top: 5px !important;
-  padding-left: 16px !important;
-}
-
 .ql-tooltip {
-  background: #f5f5f5 !important;
-  border-radius: 15px !important;
-  padding: 0.5rem 1rem !important;
-  font-size: 16px !important;
+  background: var(--bg-light);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.12), var(--shadow-low);
+  border-radius: 8px;
+  color: black;
+  font-size: 14px;
+  font-weight: 700;
+}
+.ql-action,
+.ql-preview,
+.ql-remove {
+  font-weight: 500;
 }
 .ql-preview {
   color: black !important;
   text-decoration: underline !important;
+  color: var(--brand-pink) !important;
 }
 .ql-preview:hover {
-  color: var(--brand-pink) !important;
+  font-weight: 700;
 }
 .ql-action:hover,
 .ql-remove:hover {
   font-weight: 600 !important;
+}
+@media (max-width: 768px) {
+  .blot-formatter__overlay {
+    display: none !important;
+  }
+}
+
+.ql-editor {
+  word-break: break-word;
+}
+.ql-editor h1 {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  line-height: 25px !important;
+  letter-spacing: 0.02em !important;
+}
+.ql-editor h2 {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  line-height: 19px !important;
+  margin-top: 15px !important;
+  letter-spacing: 0.02em !important;
+  color: var(--brand-black) !important;
+}
+.ql-editor img {
+  max-width: 100% !important;
+}
+.ql-editor :is(p, li) {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 0 !important;
+}
+.ql-editor blockquote {
+  font-family: 'PT Root UI';
+  color: var(--brand-black) !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin: 0 !important;
+  margin-left: 20px !important;
+  margin-bottom: 10px !important;
+  border-left-color: rgba(102, 102, 102, 0.25) !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  padding-left: 16px !important;
+}
+.ql-editor a {
+  color: var(--brand-purple) !important;
+  text-decoration: underline !important;
+}
+.ql-editor a:hover {
+  text-decoration: underline !important;
+}
+.ql-editor :is(code, pre) {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+  font-size: 13px !important;
+  background: #2f3136 !important;
+  color: white !important;
+  padding: 22px !important;
+  white-space: pre-wrap;
+}
+.ql-editor ul {
+  margin-bottom: 0 !important;
+}
+.ql-editor {
+  padding: 0 !important;
 }

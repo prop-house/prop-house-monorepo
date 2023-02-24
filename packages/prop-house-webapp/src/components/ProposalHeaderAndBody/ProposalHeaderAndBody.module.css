@@ -1,0 +1,49 @@
+.propCol {
+  padding: 0 !important;
+  padding: 0px 6px !important;
+}
+.backToAuction {
+  color: white;
+  background: var(--brand-pink);
+  cursor: pointer;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+  align-items: center;
+  font-size: 1.25rem;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-self: center;
+  border: 1.5px solid #e02ecf;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+@media (min-width: 577px) {
+  .backToAuction svg {
+    height: 2rem;
+    width: 2rem;
+  }
+}
+.modalContainer {
+  border: 2px solid green;
+  height: 100%;
+  min-height: 100%;
+}
+.stickyContainer {
+  position: sticky !important;
+  top: 0;
+  z-index: 10 !important;
+  background: white !important;
+  margin: 0 !important;
+  padding-top: 18px !important;
+}
+
+.propContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}

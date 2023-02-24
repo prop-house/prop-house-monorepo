@@ -2,7 +2,6 @@
   cursor: pointer;
   color: inherit;
   text-decoration: none;
-
   color: #666666 !important;
   margin: 0 !important;
   display: flex;
@@ -15,13 +14,12 @@
   color: inherit;
 }
 
-.ethAddress a div {
-  min-width: 24px !important;
+.paper {
+  min-width: 20px !important;
 }
 
-.truncate {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  display: block;
-  overflow: hidden;
+.avatar {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
 }

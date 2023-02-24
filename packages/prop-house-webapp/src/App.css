@@ -81,10 +81,6 @@ body {
   letter-spacing: -0.2px;
   background-color: #ffffff;
 }
-html {
-  overflow-x: hidden;
-  margin-right: calc(-1 * (100vw - 100%));
-}
 
 .bgGray {
   background-color: #f5f5f5;
@@ -128,7 +124,7 @@ html {
     );
 }
 
-.faqGradientBg {
+.gradientBg {
   background: linear-gradient(180deg, rgba(245, 245, 245, 0) 78.1%, #f5f5f5 100%),
     radial-gradient(
         19.94% 82.15% at 100% 0%,
