@@ -1,0 +1,25 @@
+{
+  "name": "@prophouse/subgraph",
+  "version": "0.1.0",
+  "license": "GPL-3.0",
+  "scripts": {
+    "local-node": "docker-compose up",
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "build:local": "graph build --network local",
+    "create:local": "graph create --node http://localhost:8020/ --network local streamer",
+    "remove:local": "graph remove --node http://localhost:8020/ --network local streamer",
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 --network local streamer",
+    "build:goerli": "graph build --network goerli",
+    "deploy:goerli": "graph deploy --network goerli --product hosted-service verbsteam/streamer-goerli",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.34.0",
+    "@graphprotocol/graph-ts": "0.28.0",
+    "as-pedersen": "0.2.1-downgrade"
+  },
+  "devDependencies": {
+    "matchstick-as": "0.5.0"
+  }
+}

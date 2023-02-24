@@ -1,0 +1,86 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: PropHouse
+    source:
+      abi: PropHouse
+      address: "0x0000000000000000000000000000000000000000"
+      startBlock: 10000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/prop-house.ts
+      entities:
+        - Account
+        - House
+        - Round
+      abis:
+        - name: PropHouse
+          file: ./abis/PropHouse.json
+      eventHandlers:
+        - event: HouseCreated(indexed address,address)
+          handler: handleHouseCreated
+        - event: RoundCreated(indexed address,indexed address,address,string,string)
+          handler: handleRoundCreated
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleHouseTransfer
+    network: goerli
+
+templates:
+  - name: FundingHouse
+    kind: ethereum/contract
+    source:
+      abi: FundingHouse
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/funding-house.ts
+      entities:
+        - House
+        - Round
+      abis:
+        - name: FundingHouse
+          file: ./abis/FundingHouse.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleRoundTransfer
+    network: goerli
+  - name: TimedFundingRound
+    kind: ethereum/contract
+    source:
+      abi: TimedFundingRound
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/timed-funding-round.ts
+      entities:
+        - House
+        - Round
+      abis:
+        - name: TimedFundingRound
+          file: ./abis/TimedFundingRound.json
+      eventHandlers:
+        - event: RoundRegistered((uint8,address,uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)
+          handler: handleRoundRegistered
+        - event: RoundCancelled()
+          handler: handleRoundCancelled
+        - event: RoundFinalized()
+          handler: handleRoundFinalized
+        - event: AwardClaimed(uint256,address,uint256,uint256,address)
+          handler: handleAwardClaimed
+        - event: AssetReclaimed(address,uint256,uint256)
+          handler: handleAssetReclaimed
+        - event: AssetRescued(address,uint256,uint256)
+          handler: handleAssetRescued
+        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleSingleTransfer
+        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+          handler: handleBatchTransfer
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+    network: goerli
