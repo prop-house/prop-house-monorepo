@@ -1,4 +1,7 @@
 import {
+  nouns,
+  lilNouns,
+  onchainMonkey,
   balanceOfErc20,
   balanceOfErc721,
   balanceOfErc721Multiple,
@@ -6,9 +9,6 @@ import {
   oneHundredVotes,
   perWalletVoteErc20,
 } from '../strategies';
-import { lilNouns } from '../strategies/lilNouns';
-import { nouns } from '../strategies/nouns';
-import { onchainMonkey } from '../strategies/onchainMonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**
