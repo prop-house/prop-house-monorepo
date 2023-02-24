@@ -24,4 +24,17 @@ export abstract class HouseBase<HT extends HouseType> {
    * @param config The house configuration
    */
   public abstract getABIEncodedConfig(config: HouseConfig[HT]): string;
+
+  /**
+   * Determine if the passed `uri` is valid
+   * @param uri The URI
+   */
+  protected isValidURI(uri: string) {
+    try {
+      new URL(uri);
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

@@ -6,7 +6,7 @@
       "messenger": "0xBd602C4f41E52a9000DeAbAae6d997C1115EbBD7",
       "creatorPassIssuer": "0x86B70B35B85Aebae5297eC56f7cEeB09004EC3c0",
       "starknetCommit": "0x3DF1e86A81C9Ac5A2fC76EF45ae91Cd10064f78B",
-      "fundingHouseImpl": "0x1DFE998BCa5aA7b3de101C327b59582d7c371dE0",
+      "communityHouseImpl": "0x1DFE998BCa5aA7b3de101C327b59582d7c371dE0",
       "timedFundingRoundImpl": "0xbcF421780569641B3848D4aDE555EC2B939DFA8e"
     }
   },

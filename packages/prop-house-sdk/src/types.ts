@@ -62,15 +62,15 @@ export interface AssetStruct {
 //#region Houses
 
 export enum HouseType {
-  FUNDING = 'FUNDING',
+  COMMUNITY = 'COMMUNITY',
 }
 
-export interface FundingHouseConfig {
+export interface CommunityHouseConfig {
   contractURI: string;
 }
 
 export interface HouseConfig {
-  [HouseType.FUNDING]: FundingHouseConfig;
+  [HouseType.COMMUNITY]: CommunityHouseConfig;
 }
 
 export interface HouseInfo<T extends HouseType> {

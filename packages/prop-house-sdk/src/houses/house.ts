@@ -1,12 +1,12 @@
 import { HouseInfo, HouseType } from '../types';
 import { HouseBase } from './base';
-import { FundingHouse } from './funding';
+import { CommunityHouse } from './community';
 
 export class House {
   private readonly _houses: Map<HouseType, HouseBase<HouseType>>;
 
   constructor(chainId: number) {
-    this._houses = new Map([[HouseType.FUNDING, FundingHouse.for(chainId)]]);
+    this._houses = new Map([[HouseType.COMMUNITY, CommunityHouse.for(chainId)]]);
   }
 
   /**
