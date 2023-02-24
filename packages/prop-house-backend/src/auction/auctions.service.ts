@@ -33,6 +33,20 @@ export class AuctionsService {
       .getRawMany();
   }
 
+  findAllActiveForCommunities(addresses: string[]): Promise<Auction[]> {
+    const now = new Date();
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .where('a.startTime < :now', { now }) // TODO FIX
+      .leftJoin('a.community', 'c')
+      .where('c.contractAddress IN (:...addresses)', { addresses })
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('a.id')
+      .getRawMany();
+  }
+
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {
     const parsedName = name.replaceAll('-', ' '); // parse slug to name
     return this.auctionsRepository

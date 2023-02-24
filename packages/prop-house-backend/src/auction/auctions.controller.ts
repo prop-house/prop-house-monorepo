@@ -89,4 +89,16 @@ export class AuctionsController {
     }
     return foundProposals;
   }
+
+  @Get('active/:addresses')
+  async findAllActiveForCommunities(
+    @Param('addresses') addresses: string,
+  ): Promise<Auction[]> {
+    const auctions = await this.auctionsService.findAllActiveForCommunities(
+      addresses.split(','),
+    );
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auctions;
+  }
 }
