@@ -25,7 +25,7 @@ import {
   ContractAddresses,
   getTimedFundingRoundCancelProposalCalldata,
 } from '@prophouse/sdk';
-import * as addresses from '@prophouse/sdk/dist/addresses';
+import * as addresses from '@prophouse/contracts/dist/src/addresses';
 import { Account } from 'starknet-hardhat-plugin-extended/dist/src/account';
 import {
   MockStarknetMessaging,

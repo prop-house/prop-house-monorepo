@@ -188,7 +188,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           nonce: nonce++,
         }),
       );
-      await sleep(5_000);
+      await sleep(5_000); // Naive approach to avoid gateway 429s
     }
     await Promise.all(promises);
 
