@@ -25,9 +25,3 @@ string constant COMMUNITY_HOUSE_NAME = 'Community House';
 
 // The Community House NFT symbol
 string constant COMMUNITY_HOUSE_SYMBOL = 'COMM';
-
-// The Open House NFT name
-string constant OPEN_HOUSE_NAME = 'Open House';
-
-// The Open House NFT symbol
-string constant OPEN_HOUSE_SYMBOL = 'OPEN';

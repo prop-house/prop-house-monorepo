@@ -1,9 +1,9 @@
 import { starknet } from 'hardhat';
 import { commonL1Setup } from './common';
-import { FundingHouse__factory, TimedFundingRound__factory } from '../../../typechain';
+import { CommunityHouse__factory, TimedFundingRound__factory } from '../../../typechain';
 import { constants } from 'ethers';
 
-export const fundingHouseSetup = async () => {
+export const communityHouseSetup = async () => {
   const config = await commonL1Setup();
 
   const [{ address, private_key }] = await starknet.devnet.getPredeployedAccounts();
@@ -25,7 +25,7 @@ export const fundingHouseSetup = async () => {
   await starknetSigner.declare(ethExecutionStrategyFactory);
   await starknetSigner.declare(votingStrategyRegistryFactory);
 
-  const fundingHouseFactory = new FundingHouse__factory(config.deployer);
+  const communityHouseFactory = new CommunityHouse__factory(config.deployer);
 
   const roundFactory = await starknetSigner.deploy(roundDeployerFactory, {
     l1_messenger: config.messenger.address,
@@ -35,18 +35,18 @@ export const fundingHouseSetup = async () => {
   });
   const votingStrategyRegistry = await starknetSigner.deploy(votingStrategyRegistryFactory);
 
-  const fundingHouseImpl = await fundingHouseFactory.deploy(
+  const communityHouseImpl = await communityHouseFactory.deploy(
     config.propHouse.address,
     constants.AddressZero,
     config.creatorPassIssuer.address,
   );
 
-  await config.manager.registerHouse(fundingHouseImpl.address);
+  await config.manager.registerHouse(communityHouseImpl.address);
 
   return {
     ...config,
     starknetSigner,
-    fundingHouseImpl,
+    communityHouseImpl,
     roundFactory,
     votingStrategyRegistry,
     ethExecutionStrategy,
@@ -54,7 +54,7 @@ export const fundingHouseSetup = async () => {
 };
 
 export const timedFundingRoundSetup = async () => {
-  const config = await fundingHouseSetup();
+  const config = await communityHouseSetup();
 
   const timedFundingRoundFactory = new TimedFundingRound__factory(config.deployer);
   const timedFundingRoundL2Factory = await starknet.getContractFactory(
@@ -106,7 +106,7 @@ export const timedFundingRoundSetup = async () => {
   );
 
   await config.manager.registerRound(
-    config.fundingHouseImpl.address,
+    config.communityHouseImpl.address,
     timedFundingRoundImpl.address,
   );
 

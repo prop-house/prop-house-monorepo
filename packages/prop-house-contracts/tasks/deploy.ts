@@ -4,7 +4,7 @@ import {
   CreatorPassIssuer__factory,
   PropHouse__factory,
   StarkNetCommit__factory,
-  FundingHouse__factory,
+  CommunityHouse__factory,
   TimedFundingRound__factory,
 } from '../typechain';
 import { task, types } from 'hardhat/config';
@@ -132,7 +132,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const messengerFactory = new Messenger__factory(ethDeployer);
     const creatorPassIssuerFactory = new CreatorPassIssuer__factory(ethDeployer);
     const starknetCommitFactory = new StarkNetCommit__factory(ethDeployer);
-    const fundingHouseImplFactory = new FundingHouse__factory(ethDeployer);
+    const communityHouseImplFactory = new CommunityHouse__factory(ethDeployer);
     const timedFundingRoundImplFactory = new TimedFundingRound__factory(ethDeployer);
 
     // L2 factories
@@ -225,7 +225,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       },
     );
 
-    // Deploy funding house contracts
+    // Deploy house & round contracts contracts
     const timedFundingRoundEthTxAuthStrategy = await starknetDeployer.deploy(
       timedFundingRoundEthTxAuthStrategyFactory,
       {
@@ -261,7 +261,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       roundFactory.address,
       ethExecutionStrategy.address,
     );
-    const fundingHouseImpl = await fundingHouseImplFactory.deploy(
+    const communityHouseImpl = await communityHouseImplFactory.deploy(
       propHouse.address,
       constants.AddressZero,
       creatorPassIssuer.address,
@@ -300,8 +300,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
 
     // Configure contracts
-    await manager.registerHouse(fundingHouseImpl.address);
-    await manager.registerRound(fundingHouseImpl.address, timedFundingRoundImpl.address);
+    await manager.registerHouse(communityHouseImpl.address);
+    await manager.registerRound(communityHouseImpl.address, timedFundingRoundImpl.address);
 
     const deployment = {
       ethereum: {
@@ -311,7 +311,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           messenger: messenger.address,
           creatorPassIssuer: creatorPassIssuer.address,
           starknetCommit: starknetCommit.address,
-          fundingHouseImpl: fundingHouseImpl.address,
+          communityHouseImpl: communityHouseImpl.address,
           timedFundingRoundImpl: timedFundingRoundImpl.address,
         },
       },
