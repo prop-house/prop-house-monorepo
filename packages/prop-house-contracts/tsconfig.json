@@ -2,13 +2,15 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "preserveConstEnums": true,
+    "resolveJsonModule": true,
 		"outDir": "dist"
   },
   "include": [
     "tasks",
     "src",
     "test",
-    "typechain"
+    "typechain",
+    "deployments"
   ],
   "exclude": ["test/foundry/**", "node_modules"],
   "files": ["blacksmith.ts", "hardhat.config.ts"]

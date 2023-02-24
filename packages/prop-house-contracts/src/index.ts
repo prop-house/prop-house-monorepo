@@ -5,3 +5,15 @@ export { TimedFundingRound__factory } from '../typechain/factories/TimedFundingR
 export { PropHouse as PropHouseContract } from '../typechain/PropHouse';
 export { FundingHouse as FundingHouseContract } from '../typechain/FundingHouse';
 export { TimedFundingRound as TimedFundingRoundContract } from '../typechain/TimedFundingRound';
+
+export {
+  ChainId,
+  HouseImpls,
+  RoundImpls,
+  VotingStrategies,
+  EVMContracts,
+  StarknetContracts,
+  ContractAddresses,
+  contracts,
+  getContractAddressesForChainOrThrow,
+} from './addresses';

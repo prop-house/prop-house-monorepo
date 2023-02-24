@@ -5,7 +5,7 @@ import {
   StarknetVotingStrategy,
   VotingStrategyType,
 } from '../types';
-import { ChainId, getContractAddressesForChainOrThrow } from '../addresses';
+import { ChainId, getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { VotingStrategyBase } from './base';
 import { storageProofs } from '../utils';
 import { BigNumber } from '@ethersproject/bignumber';

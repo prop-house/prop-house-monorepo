@@ -1,4 +1,4 @@
-import { getContractAddressesForChainOrThrow, HouseImpls } from '../addresses';
+import { getContractAddressesForChainOrThrow, HouseImpls } from '@prophouse/contracts';
 import { HouseConfig, HouseType } from '../types';
 
 export abstract class HouseBase<HT extends HouseType> {

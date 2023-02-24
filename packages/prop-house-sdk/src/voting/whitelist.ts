@@ -1,5 +1,5 @@
 import { hash } from 'starknet';
-import { getContractAddressesForChainOrThrow } from '../addresses';
+import { getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { StarknetVotingStrategy, VotingStrategyType, Whitelist, WhitelistMember } from '../types';
 import { merkle, splitUint256 } from '../utils';
 import { VotingStrategyBase } from './base';

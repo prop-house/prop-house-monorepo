@@ -1,3 +1,5 @@
+import goerli from '../deployments/goerli.json';
+
 export enum ChainId {
   EthereumMainnet = 1,
   EthereumGoerli = 5,
@@ -37,20 +39,20 @@ export interface ContractAddresses {
 export const contracts: Record<number, ContractAddresses> = {
   [ChainId.EthereumGoerli]: {
     evm: {
-      prophouse: '',
+      prophouse: goerli.ethereum.address.propHouse,
       house: {
-        funding: '',
+        funding: goerli.ethereum.address.fundingHouseImpl,
       },
       round: {
-        timedFunding: '',
+        timedFunding: goerli.ethereum.address.timedFundingRoundImpl,
       },
     },
     starknet: {
       voting: {
-        balanceOf: '',
-        balanceOfMultiplier: '',
-        whitelist: '',
-        vanilla: '',
+        balanceOf: goerli.starknet.address.ethereumBalanceOfVotingStrategy,
+        balanceOfMultiplier: goerli.starknet.address.ethereumBalanceOfMultiplierVotingStrategy,
+        whitelist: goerli.starknet.address.merkleWhitelistVotingStrategy,
+        vanilla: goerli.starknet.address.vanillaVotingStrategy,
       },
     },
   },
@@ -61,7 +63,7 @@ export const contracts: Record<number, ContractAddresses> = {
  * Throws if there are no known contracts deployed on the corresponding chain.
  * @param chainId The desired chainId
  */
-export const getContractAddressesForChainOrThrow = (chainId: number): ContractAddresses => {
+export const getContractAddressesForChainOrThrow = (chainId: number) => {
   if (!contracts[chainId]) {
     throw new Error(
       `Unknown chain id (${chainId}). No known contracts have been deployed on this chain.`,

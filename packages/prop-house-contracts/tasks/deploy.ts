@@ -157,8 +157,14 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/vanilla.cairo',
     );
+    const merkleWhitelistVotingStrategyFactory = await starknet.getContractFactory(
+      './contracts/starknet/common/voting/merkle_whitelist.cairo',
+    );
     const ethereumBalanceOfVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/ethereum_balance_of.cairo',
+    );
+    const ethereumBalanceOfMultiplierVotingStrategyFactory = await starknet.getContractFactory(
+      './contracts/starknet/common/voting/ethereum_balance_of_multiplier.cairo',
     );
     const factories = [
       roundDeployerFactory,
@@ -167,6 +173,9 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       timedFundingRoundEthTxAuthStrategyFactory,
       timedFundingRoundEthSigAuthStrategyFactory,
       vanillaVotingStrategyFactory,
+      merkleWhitelistVotingStrategyFactory,
+      ethereumBalanceOfVotingStrategyFactory,
+      ethereumBalanceOfMultiplierVotingStrategyFactory,
     ];
     let nonce = await starknet.getNonce(starknetDeployer.address, {
       blockNumber: 'latest',
@@ -266,8 +275,23 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         maxFee: MAX_FEE,
       },
     );
+    const merkleWhitelistVotingStrategy = await starknetDeployer.deploy(
+      merkleWhitelistVotingStrategyFactory,
+      undefined,
+      {
+        maxFee: MAX_FEE,
+      },
+    );
     const ethereumBalanceOfVotingStrategy = await starknetDeployer.deploy(
       ethereumBalanceOfVotingStrategyFactory,
+      {
+        fact_registry_address: args.fossilFactRegistry,
+        l1_headers_store_address: args.fossilL1HeadersStore,
+      },
+      { maxFee: MAX_FEE },
+    );
+    const ethereumBalanceOfMultiplierVotingStrategy = await starknetDeployer.deploy(
+      ethereumBalanceOfMultiplierVotingStrategyFactory,
       {
         fact_registry_address: args.fossilFactRegistry,
         l1_headers_store_address: args.fossilL1HeadersStore,
@@ -299,7 +323,10 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.address,
           timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.address,
           vanillaVotingStrategy: vanillaVotingStrategy.address,
+          merkleWhitelistVotingStrategy: merkleWhitelistVotingStrategy.address,
           ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.address,
+          ethereumBalanceOfMultiplierVotingStrategy:
+            ethereumBalanceOfMultiplierVotingStrategy.address,
         },
         classHash: {
           timedFundingRound: timedFundingRoundClassHash,

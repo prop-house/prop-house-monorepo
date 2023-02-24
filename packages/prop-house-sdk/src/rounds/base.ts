@@ -1,4 +1,4 @@
-import { getContractAddressesForChainOrThrow, RoundImpls } from '../addresses';
+import { getContractAddressesForChainOrThrow, RoundImpls } from '@prophouse/contracts';
 import { RoundConfig, RoundType } from '../types';
 
 export abstract class RoundBase<RT extends RoundType> {

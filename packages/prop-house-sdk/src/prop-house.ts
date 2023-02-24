@@ -10,7 +10,7 @@ import {
   RoundInfo,
   RoundType,
 } from './types';
-import { ContractAddresses, getContractAddressesForChainOrThrow } from './addresses';
+import { ContractAddresses, getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
 import { encoding } from './utils';

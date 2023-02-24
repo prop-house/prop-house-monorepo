@@ -1,4 +1,4 @@
-import { getContractAddressesForChainOrThrow } from '../addresses';
+import { getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { Vanilla, StarknetVotingStrategy, VotingStrategyType } from '../types';
 import { VotingStrategyBase } from './base';
 
