@@ -94,7 +94,7 @@ export const communities = new CaseInsensitiveMap(
     // Noggle DAO
     '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
     // Headline
-    '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(),
+    '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(10),
     // MferbuilderDAO
     '0x795D300855069F602862c5e23814Bdeeb25DCa6b': balanceOfErc721(10),
   }),
