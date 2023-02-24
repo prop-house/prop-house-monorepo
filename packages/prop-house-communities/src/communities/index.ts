@@ -93,5 +93,7 @@ export const communities = new CaseInsensitiveMap(
     '0x6235CAEea7C515DaC14060Ec23a760090655F21b': perWalletVoteErc20(18, 5),
     // Noggle DAO
     '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
+    // Headline
+    '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(),
   }),
 );
