@@ -7,7 +7,9 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAppSelector } from '../../hooks';
 import NavBar from '../../components/NavBar';
-import { useSigner } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
+
+import Base from '../Base';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -30,6 +32,7 @@ const Home = () => {
   };
 
   const { data: signer } = useSigner();
+  const { address: account } = useAccount();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -62,14 +65,26 @@ const Home = () => {
 
   return (
     <>
-      <div className="homeGradientBg">
-        <NavBar />
-        <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
-      </div>
-
-      <Container className={classes.homeCardsContainer}>
-        <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
-      </Container>
+      {account ? (
+        <Container>
+          <NavBar />
+          <Base />
+        </Container>
+      ) : (
+        <>
+          <div className="homeGradientBg">
+            <NavBar />
+            <HomeHeader
+              input={input}
+              handleSeachInputChange={handleSeachInputChange}
+              stats={stats}
+            />
+          </div>
+          <Container className={classes.homeCardsContainer}>
+            <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
+          </Container>
+        </>
+      )}
     </>
   );
 };
