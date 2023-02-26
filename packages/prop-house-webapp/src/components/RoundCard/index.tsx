@@ -54,7 +54,7 @@ const RoundCard: React.FC<{
     const fetchCommunity = async () =>
       setCommunity(await wrapper.getCommunityWithId(round.communityId));
     fetchCommunity();
-  }, []);
+  });
 
   return (
     <>
@@ -80,7 +80,7 @@ const RoundCard: React.FC<{
             <div className={classes.topContainer}>
               {console.log(community?.profileImageUrl)}
               <div className={classes.leftContainer}>
-                <img src={_community?.profileImageUrl} />
+                <img src={_community?.profileImageUrl} alt="community profile" />
                 <div>{_community?.name}</div>
               </div>
               <StatusPill status={auctionStatus(round)} />

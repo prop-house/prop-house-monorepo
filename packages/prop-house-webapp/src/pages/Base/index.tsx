@@ -3,7 +3,7 @@ import { StoredAuction, StoredVoteWithProposal } from '@nouns/prop-house-wrapper
 import { getRelevantComms } from 'prop-house-communities';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import { useAccount, useBlockNumber, useProvider } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import RoundCard from '../../components/RoundCard';
@@ -11,7 +11,6 @@ import { useAppSelector } from '../../hooks';
 
 const Base = () => {
   const { address: account } = useAccount();
-  const { data: block } = useBlockNumber();
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [votes, setVotes] = useState<StoredVoteWithProposal[]>();
   const provider = useProvider();
@@ -28,7 +27,7 @@ const Base = () => {
     };
 
     getRounds();
-  }, []);
+  });
 
   useEffect(() => {
     if (!account || !provider || votes) return;
@@ -40,7 +39,7 @@ const Base = () => {
     };
 
     getRounds();
-  }, []);
+  });
 
   return rounds ? (
     <>
