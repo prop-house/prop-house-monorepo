@@ -31,12 +31,12 @@ export class VotesService {
   async findAllByCommunityAddresses(addresses: string[]): Promise<Vote[]> {
     return this.votesRepository
       .createQueryBuilder('v')
-      .select('v.*')
       .leftJoin('v.proposal', 'p')
       .leftJoin('p.auction', 'a')
       .leftJoin('a.community', 'c')
       .where('c.contractAddress IN (:...addresses)', { addresses })
-      .getRawMany();
+      .addSelect('p')
+      .getMany();
   }
 
   findOne(id: number): Promise<Vote> {

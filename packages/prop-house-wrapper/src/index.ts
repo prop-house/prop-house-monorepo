@@ -11,6 +11,7 @@ import {
   CommunityWithAuctions,
   UpdatedProposal,
   DeleteProposal,
+  StoredVoteWithProposal,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -268,7 +269,7 @@ export class PropHouseWrapper {
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 
-  async getVotesForCommunities(addresses: string[]): Promise<StoredVote[]> {
+  async getVotesForCommunities(addresses: string[]): Promise<StoredVoteWithProposal[]> {
     try {
       return (await axios.get(`${this.host}/votes/byCommunities/${addresses}`)).data;
     } catch (e: any) {

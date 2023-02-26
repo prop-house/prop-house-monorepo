@@ -234,6 +234,10 @@ export interface StoredVote extends Vote {
   id: number;
 }
 
+export interface StoredVoteWithProposal extends Vote {
+  proposal: StoredProposal;
+}
+
 export interface StoredFile {
   id: number;
   hidden: boolean;
