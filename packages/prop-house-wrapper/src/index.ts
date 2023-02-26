@@ -268,6 +268,14 @@ export class PropHouseWrapper {
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 
+  async getVotesForCommunities(addresses: string[]): Promise<StoredVote[]> {
+    try {
+      return (await axios.get(`${this.host}/votes/byCommunities/${addresses}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async getCommunities(): Promise<CommunityWithAuctions[]> {
     try {
       return (await axios.get(`${this.host}/communities`)).data;

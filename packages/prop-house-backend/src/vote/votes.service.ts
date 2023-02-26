@@ -28,6 +28,17 @@ export class VotesService {
     return await this.votesRepository.find({ where: { auctionId } });
   }
 
+  async findAllByCommunityAddresses(addresses: string[]): Promise<Vote[]> {
+    return this.votesRepository
+      .createQueryBuilder('v')
+      .select('v.*')
+      .leftJoin('v.proposal', 'p')
+      .leftJoin('p.auction', 'a')
+      .leftJoin('a.community', 'c')
+      .where('c.contractAddress IN (:...addresses)', { addresses })
+      .getRawMany();
+  }
+
   findOne(id: number): Promise<Vote> {
     return this.votesRepository.findOne(id);
   }

@@ -39,6 +39,16 @@ export class VotesController {
     return this.votesService.findByAddress(address);
   }
 
+  @Get('byCommunities/:addresses')
+  findByCommunity(@Param('addresses') addresses: string) {
+    const votes = this.votesService.findAllByCommunityAddresses(
+      addresses.split(','),
+    );
+    if (!votes)
+      throw new HttpException('Votes not found', HttpStatus.NOT_FOUND);
+    return votes;
+  }
+
   /**
    * Checks:
    * - signature is valid via `SignedPayloadValidationPipe`
