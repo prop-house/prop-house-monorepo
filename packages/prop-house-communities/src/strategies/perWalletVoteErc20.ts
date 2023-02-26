@@ -23,6 +23,6 @@ export const perWalletVoteErc20 = (
       blockTag,
       provider,
     );
-    return tokenBalance > threshold ? votes : 0;
+    return tokenBalance >= threshold ? votes : 0;
   };
 };
