@@ -60,12 +60,15 @@ const RoundCard: React.FC<{
     <>
       <div
         onClick={e => {
+          if (!_community) return;
           dispatch(setActiveRound(round));
           if (cmdPlusClicked(e)) {
-            openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
+            openInNewTab(
+              `${window.location.href}/${nameToSlug(_community.name)}/${nameToSlug(round.title)}`,
+            );
             return;
           }
-          navigate(`${nameToSlug(round.title)}`);
+          navigate(`${nameToSlug(_community.name)}/${nameToSlug(round.title)}`);
         }}
       >
         <Card
