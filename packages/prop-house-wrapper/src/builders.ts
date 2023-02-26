@@ -234,7 +234,7 @@ export interface StoredVote extends Vote {
   id: number;
 }
 
-export interface StoredVoteWithProposal extends Vote {
+export interface StoredVoteWithProposal extends StoredVote {
   proposal: StoredProposal;
 }
 
