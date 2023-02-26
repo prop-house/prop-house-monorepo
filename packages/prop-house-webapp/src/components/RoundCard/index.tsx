@@ -30,7 +30,7 @@ const RoundCard: React.FC<{
   community?: Community;
   displayTldr?: boolean;
 }> = props => {
-  const { round, community, displayTldr } = props;
+  const { round, displayTldr } = props;
 
   const { t } = useTranslation();
   const [_community, setCommunity] = useState<Community | undefined>();
@@ -78,7 +78,6 @@ const RoundCard: React.FC<{
         >
           <div className={classes.textContainer}>
             <div className={classes.topContainer}>
-              {console.log(community?.profileImageUrl)}
               <div className={classes.leftContainer}>
                 <img src={_community?.profileImageUrl} alt="community profile" />
                 <div>{_community?.name}</div>
