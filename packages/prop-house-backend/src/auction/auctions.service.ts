@@ -32,18 +32,29 @@ export class AuctionsService {
       .groupBy('a.id')
       .getRawMany();
   }
+  findAllActive(): Promise<Auction[]> {
+    const now = new Date();
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .where('a.startTime < :now', { now })
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('a.id')
+      .getRawMany();
+  }
 
   findAllActiveForCommunities(addresses: string[]): Promise<Auction[]> {
     const now = new Date();
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .leftJoin('a.community', 'c')
       .where('a.startTime < :now', { now })
-      .andWhere('c.contractAddress IN (:...addresses)', { addresses })
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
+      .leftJoin('a.community', 'c')
+      .andWhere('c.contractAddress IN (:...addresses)', { addresses })
       .getRawMany();
   }
 

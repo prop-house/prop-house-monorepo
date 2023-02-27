@@ -90,6 +90,11 @@ export class AuctionsController {
     return foundProposals;
   }
 
+  @Get('allActive/:n')
+  findAllActive(@Param('n') _: string): Promise<Auction[]> {
+    return this.auctionsService.findAllActive();
+  }
+
   @Get('active/:addresses')
   async findAllActiveForCommunities(
     @Param('addresses') addresses: string,

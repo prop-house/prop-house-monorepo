@@ -66,7 +66,14 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
   }
-
+  async getActiveAuctions(): Promise<StoredAuction[]> {
+    try {
+      const rawAuctions = (await axios.get(`${this.host}/auctions/allActive/n`)).data;
+      return rawAuctions.map(StoredAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
   async getActiveAuctionsForCommunities(addresses: string[]): Promise<StoredAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions/active/${addresses}`)).data;
