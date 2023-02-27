@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { InitialRoundProps } from '../../../state/slices/round';
 import AddAwardByToken from '../AddAwardByToken';
 import Group from '../Group';
+import { AwardProps } from '../SetTheAwards';
 import Text from '../Text';
 
 const RewardsAdvanced: React.FC<{
@@ -11,8 +12,9 @@ const RewardsAdvanced: React.FC<{
     value: InitialRoundProps[keyof InitialRoundProps],
   ) => void;
   numOfAwards: number;
+  awardContracts: AwardProps[];
 }> = props => {
-  const { handleChange, numOfAwards } = props;
+  const { handleChange, numOfAwards, awardContracts } = props;
 
   const [customRewards, setCustomRewards] = useState([{}, {}, {}]);
 

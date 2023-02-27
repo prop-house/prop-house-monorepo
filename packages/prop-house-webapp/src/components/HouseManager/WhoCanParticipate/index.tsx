@@ -15,6 +15,7 @@ import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import { InitialRoundProps, setDisabled, updateRound } from '../../../state/slices/round';
 import UploadCSVModal from '../../UploadCSVModal';
+import { getTokenInfo } from '../utils/getTokenInfo';
 
 export interface AddressProps {
   id: string;
@@ -57,10 +58,10 @@ const WhoCanParticipate = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
   const [contracts, setContracts] = useState<AddressProps[]>(
-    round.verifiedContracts.length ? round.verifiedContracts : [initialContractAddress],
+    round.votingContracts.length ? round.votingContracts : [initialContractAddress],
   );
   const [userAddresses, setUserAddresses] = useState<AddressProps[]>(
-    round.verifiedUserAddresses.length ? round.verifiedUserAddresses : [initialUserAddress],
+    round.votingUsers.length ? round.votingUsers : [initialUserAddress],
   );
 
   const verifiedAddresses = (addresses: AddressProps[]) =>
@@ -75,8 +76,8 @@ const WhoCanParticipate = () => {
     dispatch(updateRound(newRound));
 
     const isStepCompleted =
-      round.verifiedContracts.some(address => address.state === 'Success') ||
-      round.verifiedUserAddresses.some(address => address.state === 'Success');
+      round.votingContracts.some(a => a.state === 'Success' && a.votesPerToken > 0) ||
+      round.votingUsers.some(a => a.state === 'Success' && a.votesPerToken > 0);
     dispatch(setDisabled(!isStepCompleted));
   };
 
@@ -96,9 +97,9 @@ const WhoCanParticipate = () => {
 
     return isContract
       ? (setContracts(updatedArray),
-        handleChange('verifiedContracts', verifiedAddresses(updatedArray)))
+        handleChange('votingContracts', verifiedAddresses(updatedArray)))
       : (setUserAddresses(updatedArray),
-        handleChange('verifiedUserAddresses', verifiedAddresses(updatedArray)));
+        handleChange('votingUsers', verifiedAddresses(updatedArray)));
   };
 
   // Update the address value for each address
@@ -128,10 +129,8 @@ const WhoCanParticipate = () => {
 
     // Remove the reset address from the server state
     handleChange(
-      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
-      (isContract ? round.verifiedContracts : round.verifiedUserAddresses).filter(
-        a => a.id !== address.id,
-      ),
+      isContract ? 'votingContracts' : 'votingUsers',
+      (isContract ? round.votingContracts : round.votingUsers).filter(a => a.id !== address.id),
     );
   };
 
@@ -145,10 +144,7 @@ const WhoCanParticipate = () => {
     isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
 
     // Update the server state if the address is verified
-    handleChange(
-      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
-      verifiedAddresses(updatedArray),
-    );
+    handleChange(isContract ? 'votingContracts' : 'votingUsers', verifiedAddresses(updatedArray));
   };
 
   // Clicking a successfully set address will change it back to an input
@@ -160,10 +156,7 @@ const WhoCanParticipate = () => {
     isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
 
     // Since the address is no longer verified, remove it from the server state
-    handleChange(
-      isContract ? 'verifiedContracts' : 'verifiedUserAddresses',
-      verifiedAddresses(updatedArray),
-    );
+    handleChange(isContract ? 'votingContracts' : 'votingUsers', verifiedAddresses(updatedArray));
   };
 
   // Generate a message that describes the voting power of each address
@@ -204,24 +197,6 @@ const WhoCanParticipate = () => {
       return `${messageParts.join(', ')}, and ${lastPart}`;
     } else {
       return '';
-    }
-  };
-
-  // Get contract Name and Image from OpenSea API
-  const getTokenInfo = async (contractAddress: string) => {
-    try {
-      const response = await fetch(
-        `https://api.opensea.io/api/v1/asset_contract/${contractAddress}`,
-      );
-      if (!response.ok) {
-        throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
-      }
-      const data = await response.json();
-      const { name, image_url } = data;
-      return { name, image: image_url };
-    } catch (error) {
-      console.error(error);
-      throw new Error(`Error fetching contract info: ${error}`);
     }
   };
 
@@ -276,7 +251,7 @@ const WhoCanParticipate = () => {
             addressName: name,
           });
 
-          handleChange('verifiedContracts', verifiedAddresses(updatedArray));
+          handleChange('votingContracts', verifiedAddresses(updatedArray));
 
           setAddress(updatedArray);
         }
@@ -284,7 +259,7 @@ const WhoCanParticipate = () => {
         //  valid user address
         const updatedArray = changeAddress(address.id, array, { state: 'Success' });
 
-        handleChange('verifiedUserAddresses', verifiedAddresses(updatedArray));
+        handleChange('votingUsers', verifiedAddresses(updatedArray));
 
         setAddress(updatedArray);
       }
@@ -319,7 +294,7 @@ const WhoCanParticipate = () => {
               key={contract.id}
               isTyping={isTyping}
               address={contract}
-              addresses={contracts}
+              disableRemoval={contracts.length === 1}
               setIsTyping={setIsTyping}
               handleRemove={handleRemoveAddress}
               handleClear={handleAddressClear}
@@ -350,7 +325,7 @@ const WhoCanParticipate = () => {
               key={userAddress.id}
               isTyping={isTyping}
               address={userAddress}
-              addresses={userAddresses}
+              disableRemoval={userAddresses.length === 1}
               setIsTyping={setIsTyping}
               handleRemove={handleRemoveAddress}
               handleChange={handleAddressChange}
