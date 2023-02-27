@@ -1,8 +1,9 @@
 import { log } from '@graphprotocol/graph-ts';
-import { HouseCreated, RoundCreated } from '../generated/PropHouse/PropHouse';
+import { HouseCreated, RoundCreated, Transfer } from '../generated/PropHouse/PropHouse';
 import { Account, House, Round } from '../generated/schema';
 import { FundingHouse as FundingHouseTemplate, TimedFundingRound as TimedFundingRoundTemplate } from '../generated/templates';
 import { getHouseType, getRoundType } from './utils';
+import { ZERO_ADDRESS } from './constants';
 import { RoundState } from './types';
 
 export function handleHouseCreated(event: HouseCreated): void {
@@ -19,6 +20,7 @@ export function handleHouseCreated(event: HouseCreated): void {
   house.creator = creator.id;
   house.createdAt = event.block.timestamp;
   house.creationTx = event.transaction.hash;
+  house.owner = creator.id; // The initial owner is the house creator
 
   FundingHouseTemplate.create(event.params.house);
 
@@ -54,4 +56,29 @@ export function handleRoundCreated(event: RoundCreated): void {
   TimedFundingRoundTemplate.create(event.params.round);
 
   round.save();
+}
+
+export function handleHouseTransfer(event: Transfer): void {
+  if (event.params.from.toHex() === ZERO_ADDRESS) {
+    return; // Handled in `handleRoundCreated`
+  }
+
+  let house = House.load(event.params.tokenId.toHex());
+  if (!house) {
+    log.error('[handleHouseTransfer] House not found: {}. Transfer Hash: {}', [
+      event.params.tokenId.toHex(),
+      event.transaction.hash.toHex(),
+    ]);
+    return;
+  }
+
+  let addr = event.params.to.toHex();
+  let to = Account.load(addr);
+  if (!to) {
+    to = new Account(addr);
+    to.save();
+  }
+
+  house.owner = to.id;
+  house.save();
 }
