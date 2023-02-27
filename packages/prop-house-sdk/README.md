@@ -31,6 +31,8 @@ const propHouse = new PropHouse({
 
 A round can be created on new or existing house in a single transaction. The round can be fully funded, partially funded, or not funded at all at this time.
 
+When funding a round, the `PropHouse` contract must be approved to spend included tokens prior to the transfer. If funding with ETH, no approval is necessary.
+
 #### Create a round on a new house
 
 ```ts
