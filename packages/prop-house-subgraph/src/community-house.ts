@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts';
-import { Transfer } from '../generated/templates/FundingHouse/FundingHouse';
-import { Account, Round } from '../generated/schema';
+import { ContractURIUpdated, Transfer } from '../generated/templates/CommunityHouse/CommunityHouse';
+import { Account, House, Round } from '../generated/schema';
 import { ZERO_ADDRESS } from './constants';
 
 export function handleRoundTransfer(event: Transfer): void {
@@ -26,4 +26,18 @@ export function handleRoundTransfer(event: Transfer): void {
 
   round.manager = to.id;
   round.save();
+}
+
+export function handleHouseURIUpdated(event: ContractURIUpdated): void {
+  let house = House.load(event.address.toHex());
+  if (!house) {
+    log.error('[handleHouseURIUpdated] House not found: {}. URI Update Hash: {}', [
+      event.address.toHex(),
+      event.transaction.hash.toHex(),
+    ]);
+    return;
+  }
+
+  house.contractURI = event.params.uri;
+  house.save();
 }

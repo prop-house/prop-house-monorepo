@@ -8,6 +8,11 @@ export function get2DArray(votingStrategyParamsFlat: BigInt[]): BigInt[][] {
   const array2D: BigInt[][] = [];
 
   const numArrays = votingStrategyParamsFlat[0];
+  if (numArrays.toI32() == 1) {
+    array2D.push(votingStrategyParamsFlat.slice(2));
+    return array2D;
+  }
+  
   for (let i = 0; i < numArrays.toI32(); i++) {
     const start = votingStrategyParamsFlat[i + 1];
     const end = votingStrategyParamsFlat[i + 2];
@@ -55,14 +60,14 @@ export function getAssetTypeString(assetType: AssetType): string {
 }
 
 export function getHouseType(impl: string): string {
-  if (impl == '0xb4d5696D3E58F6A55e360d5D1Bd568aC1c992Ed0') {
+  if (impl.toLowerCase() == '0xb4d5696d3e58f6a55e360d5d1bd568ac1c992ed0') {
     return HouseType.COMMUNITY;
   }
   throw new Error(`Unknown house implementation: ${impl}`);
 }
 
 export function getRoundType(impl: string): string {
-  if (impl == '0xd687A6708bb5A8A025e25DD4BE1e3Af33eB8fa0d') {
+  if (impl.toLowerCase() == '0xd687a6708bb5a8a025e25dd4be1e3af33eb8fa0d') {
     return RoundType.TIMED_FUNDING;
   }
   throw new Error(`Unknown round implementation: ${impl}`);

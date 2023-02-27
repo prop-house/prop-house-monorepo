@@ -17,11 +17,6 @@
   },
   {
     "inputs": [],
-    "name": "ALREADY_INITIALIZED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "ALREADY_MINTED",
     "type": "error"
   },
@@ -33,11 +28,6 @@
   {
     "inputs": [],
     "name": "HOUSE_NOT_APPROVED_BY_USER",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "INITIALIZING",
     "type": "error"
   },
   {
@@ -92,12 +82,12 @@
   },
   {
     "inputs": [],
-    "name": "MISSING_ASSET_AMOUNT",
+    "name": "LENGTH_GTE_32",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "NOT_INITIALIZING",
+    "name": "MISSING_ASSET_AMOUNT",
     "type": "error"
   },
   {
@@ -164,6 +154,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "name": "ContractURIUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "house",
@@ -177,19 +180,6 @@
       }
     ],
     "name": "HouseCreated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "version",
-        "type": "uint256"
-      }
-    ],
-    "name": "Initialized",
     "type": "event"
   },
   {

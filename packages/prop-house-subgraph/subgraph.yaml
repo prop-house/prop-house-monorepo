@@ -29,10 +29,10 @@ dataSources:
           handler: handleHouseTransfer
     network: goerli
 templates:
-  - name: FundingHouse
+  - name: CommunityHouse
     kind: ethereum/contract
     source:
-      abi: FundingHouse
+      abi: CommunityHouse
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -42,11 +42,13 @@ templates:
         - House
         - Round
       abis:
-        - name: FundingHouse
-          file: ./abis/FundingHouse.json
+        - name: CommunityHouse
+          file: ./abis/CommunityHouse.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleRoundTransfer
+        - event: ContractURIUpdated(string)
+          handler: handleHouseURIUpdated
     network: goerli
   - name: TimedFundingRound
     kind: ethereum/contract

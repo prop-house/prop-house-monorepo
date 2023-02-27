@@ -1,5 +1,5 @@
 import { log, BigInt, Value } from '@graphprotocol/graph-ts';
-import { RoundRegistered } from '../generated/templates/TimedFundingRound/TimedFundingRound';
+import { RoundCancelled, RoundFinalized, RoundRegistered } from '../generated/templates/TimedFundingRound/TimedFundingRound';
 import { Asset, Award, Round, TimedFundingRoundConfig, VotingStrategy } from '../generated/schema';
 import { computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getVotingStrategyType } from './utils';
 import { BIGINT_ONE } from './constants';
@@ -15,10 +15,11 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     return;
   }
   round.state = RoundState.REGISTERED;
-  round.save();
 
 
-  const config = new TimedFundingRoundConfig(`${event.transaction.hash}-${event.logIndex}`);
+  const config = new TimedFundingRoundConfig(
+    `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
+  );
 
   config.winnerCount = event.params.winnerCount;
   config.proposalPeriodStartTimestamp = event.params.proposalPeriodStartTimestamp;
@@ -32,8 +33,9 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   const votingStrategyIds: string[] = []; 
   const params2D = get2DArray(event.params.votingStrategyParamsFlat);
   for (let i = 0; i < event.params.votingStrategies.length; i++) {
+    const address = event.params.votingStrategies[i];
     const strategyId = computeVotingStrategyID(
-      event.params.votingStrategies[i],
+      address,
       params2D[i],
     );
     votingStrategyIds.push(strategyId);
@@ -41,9 +43,9 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     let strategy = VotingStrategy.load(strategyId);
     if (!strategy) {
       strategy = new VotingStrategy(strategyId);
-      strategy.type = getVotingStrategyType(strategyId);
-      strategy.address = Value.fromBigInt(event.params.votingStrategies[i]).toBytes();
-      strategy.params = Value.fromBigIntArray(params2D[i]).toBytesArray();
+      strategy.type = getVotingStrategyType(address.toHex());
+      strategy.address = address;
+      strategy.params = params2D[i];
       strategy.save();
     }
   }
@@ -67,7 +69,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
       for (let k = 0; k < event.params.winnerCount; k++) {
         const award = new Award(`${round.id}-${k}`);
         award.asset = asset.id;
-        award.amount = awardStruct.amount.div(BigInt.fromU32(event.params.winnerCount));
+        award.amount = awardStruct.amount.div(BigInt.fromU32(event.params.winnerCount)); // TODO: Only do this once
         award.round = config.id;
         award.save();
       }
@@ -82,4 +84,35 @@ export function handleRoundRegistered(event: RoundRegistered): void {
 
   config.votingStrategies = votingStrategyIds; // TODO: Better to do the relation on the strategy side?
   config.save();
+
+  round.timedFundingConfig = config.id;
+  round.save();
+}
+
+export function handleRoundCancelled(event: RoundCancelled): void {
+  let round = Round.load(event.address.toHex());
+  if (!round) {
+    log.error('[handleRoundCancelled] Round not found: {}. Cancellation Hash: {}', [
+      event.address.toHex(),
+      event.transaction.hash.toHex(),
+    ]);
+    return;
+  }
+
+  round.state = RoundState.CANCELLED;
+  round.save();
+}
+
+export function handleRoundFinalized(event: RoundFinalized): void {
+  let round = Round.load(event.address.toHex());
+  if (!round) {
+    log.error('[handleRoundFinalized] Round not found: {}. Finalization Hash: {}', [
+      event.address.toHex(),
+      event.transaction.hash.toHex(),
+    ]);
+    return;
+  }
+
+  round.state = RoundState.FINALIZED;
+  round.save();
 }

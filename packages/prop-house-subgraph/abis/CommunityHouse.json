@@ -27,17 +27,7 @@
   },
   {
     "inputs": [],
-    "name": "ALREADY_INITIALIZED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "ALREADY_MINTED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "INITIALIZING",
     "type": "error"
   },
   {
@@ -57,7 +47,7 @@
   },
   {
     "inputs": [],
-    "name": "NOT_INITIALIZING",
+    "name": "LENGTH_GTE_32",
     "type": "error"
   },
   {
@@ -73,6 +63,11 @@
   {
     "inputs": [],
     "name": "ONLY_PROP_HOUSE",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "VALUE_DOES_NOT_FIT_IN_8_BITS",
     "type": "error"
   },
   {
@@ -130,12 +125,12 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "version",
-        "type": "uint256"
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
       }
     ],
-    "name": "Initialized",
+    "name": "ContractURIUpdated",
     "type": "event"
   },
   {
@@ -219,6 +214,11 @@
         "internalType": "address",
         "name": "roundImpl",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "roundTitle",
+        "type": "string"
       },
       {
         "internalType": "address",

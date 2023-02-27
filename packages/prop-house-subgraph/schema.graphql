@@ -256,10 +256,10 @@ type VotingStrategy @entity {
   type: VotingStrategyType!
 
   "The voting strategy Starknet address"
-  address: Bytes!
+  address: BigInt!
 
   "The voting strategy params"
-  params: [Bytes!]!
+  params: [BigInt!]!
 }
 
 type Asset @entity {
@@ -289,11 +289,11 @@ type Award @entity {
   "The round that the award if offered inm"
   round: TimedFundingRoundConfig!
 
-  "The award claimer (null if the award has not been claimed)"
-  claimer: Claimer
+  "The award claim (null if the award has not been claimed)"
+  claim: Claim
 }
 
-type Claimer @entity {
+type Claim @entity {
   "A concatenation of the claim tx hash and the the event log index"
   id: ID!
 

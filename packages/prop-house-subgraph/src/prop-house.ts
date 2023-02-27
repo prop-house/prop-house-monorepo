@@ -1,7 +1,10 @@
 import { log } from '@graphprotocol/graph-ts';
 import { HouseCreated, RoundCreated, Transfer } from '../generated/PropHouse/PropHouse';
 import { Account, House, Round } from '../generated/schema';
-import { FundingHouse as FundingHouseTemplate, TimedFundingRound as TimedFundingRoundTemplate } from '../generated/templates';
+import {
+  CommunityHouse as CommunityHouseTemplate,
+  TimedFundingRound as TimedFundingRoundTemplate,
+} from '../generated/templates';
 import { getHouseType, getRoundType } from './utils';
 import { ZERO_ADDRESS } from './constants';
 import { RoundState } from './types';
@@ -22,7 +25,7 @@ export function handleHouseCreated(event: HouseCreated): void {
   house.creationTx = event.transaction.hash;
   house.owner = creator.id; // The initial owner is the house creator
 
-  FundingHouseTemplate.create(event.params.house);
+  CommunityHouseTemplate.create(event.params.house);
 
   house.save();
 }
@@ -49,6 +52,7 @@ export function handleRoundCreated(event: RoundCreated): void {
   round.type = getRoundType(event.params.impl.toHex());
   round.state = RoundState.AWAITING_REGISTRATION;
   round.house = house.id;
+  round.creator = creator.id;
   round.createdAt = event.block.timestamp;
   round.creationTx = event.transaction.hash;
   round.manager = creator.id; // The initial manager is the round creator

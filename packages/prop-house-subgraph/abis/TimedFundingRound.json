@@ -132,17 +132,12 @@
   },
   {
     "inputs": [],
-    "name": "PROPOSAL_PERIOD_DURATION_TOO_SHORT",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "PROPOSAL_PERIOD_START_TIMESTAMP_IN_PAST",
-    "type": "error"
-  },
-  {
-    "inputs": [],
     "name": "RECLAMATION_NOT_AVAILABLE",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT",
     "type": "error"
   },
   {
@@ -816,19 +811,6 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "messenger",
-    "outputs": [
-      {
-        "internalType": "contract IMessenger",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
@@ -846,7 +828,7 @@
         "type": "uint256"
       }
     ],
-    "name": "mintReceipt",
+    "name": "issueReceipt",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -869,9 +851,22 @@
         "type": "uint256[]"
       }
     ],
-    "name": "mintReceipts",
+    "name": "issueReceipts",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "messenger",
+    "outputs": [
+      {
+        "internalType": "contract IMessenger",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1253,6 +1248,19 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "title",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
