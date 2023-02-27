@@ -59,8 +59,8 @@ export function handleRoundCreated(event: RoundCreated): void {
 }
 
 export function handleHouseTransfer(event: Transfer): void {
-  if (event.params.from.toHex() === ZERO_ADDRESS) {
-    return; // Handled in `handleRoundCreated`
+  if (event.params.from.toHex() == ZERO_ADDRESS) {
+    return; // Handled in `handleHouseCreated`
   }
 
   let house = House.load(event.params.tokenId.toHex());

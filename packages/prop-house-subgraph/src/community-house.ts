@@ -4,7 +4,7 @@ import { Account, Round } from '../generated/schema';
 import { ZERO_ADDRESS } from './constants';
 
 export function handleRoundTransfer(event: Transfer): void {
-  if (event.params.from.toHex() === ZERO_ADDRESS) {
+  if (event.params.from.toHex() == ZERO_ADDRESS) {
     return; // Handled in `handleRoundCreated`
   }
 
