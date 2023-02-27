@@ -1,3 +1,3 @@
 export { HouseBase } from './base';
-export { FundingHouse } from './funding';
+export { CommunityHouse } from './community';
 export { House } from './house';

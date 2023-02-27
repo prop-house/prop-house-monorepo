@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.5",
   "description": "Useful tooling for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -26,7 +26,7 @@
     "@ethersproject/keccak256": "~5.5.0",
     "@ethersproject/providers": "~5.5.0",
     "@ethersproject/solidity": "~5.5.0",
-    "@prophouse/contracts": "^0.1.0-alpha.0",
+    "@prophouse/contracts": "^0.1.0-alpha.2",
     "bn.js": "^5.2.1",
     "randombytes": "^2.1.0",
     "starknet": "4.19.3",

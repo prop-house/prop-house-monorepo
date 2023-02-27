@@ -376,11 +376,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @notice Revert if the round configuration is invalid
     /// @param config The round configuration
     function _requireConfigValid(RoundConfig memory config) internal view {
-        if (config.proposalPeriodDuration < MIN_PROPOSAL_PERIOD_DURATION) {
-            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (config.proposalPeriodStartTimestamp < block.timestamp) {
-            revert PROPOSAL_PERIOD_START_TIMESTAMP_IN_PAST();
+        if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
+            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
         }
         if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
             revert VOTE_PERIOD_DURATION_TOO_SHORT();

@@ -4,13 +4,14 @@ pragma solidity >=0.8.17;
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
-import { FUNDING_HOUSE_NAME, FUNDING_HOUSE_SYMBOL } from '../Constants.sol';
+import { COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL } from '../Constants.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
 
-contract FundingHouse is IHouse, ERC721 {
+/// @notice The community house is designed for teams who want to create rounds under a single organization
+contract CommunityHouse is IHouse, ERC721 {
     using { Uint256.toUint256 } for address;
     using LibClone for address;
 
@@ -40,13 +41,13 @@ contract FundingHouse is IHouse, ERC721 {
     }
 
     /// @param _propHouse The address of the house and round creation contract
-    /// @param _renderer The funding house renderer contract address
+    /// @param _renderer The community house renderer contract address
     /// @param _creatorPassIssuer The address of the round creator pass issuer contract
     constructor(
         address _propHouse,
         address _renderer,
         address _creatorPassIssuer
-    ) ERC721(FUNDING_HOUSE_NAME, FUNDING_HOUSE_SYMBOL) {
+    ) ERC721(COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL) {
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);
         creatorPassIssuer = ICreatorPassIssuer(_creatorPassIssuer);
@@ -117,7 +118,7 @@ contract FundingHouse is IHouse, ERC721 {
         return exists(round.toUint256());
     }
 
-    /// @notice Create a new funding round and mint the round management NFT to the caller
+    /// @notice Create a new round and mint the round management NFT to the caller
     /// @param roundImpl The round implementation contract address
     /// @param roundTitle The round title
     /// @param creator The address who is creating the round

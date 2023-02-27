@@ -7,7 +7,7 @@ export enum ChainId {
 }
 
 export interface HouseImpls {
-  funding: string;
+  community: string;
 }
 
 export interface RoundImpls {
@@ -41,7 +41,7 @@ export const contracts: Record<number, ContractAddresses> = {
     evm: {
       prophouse: goerli.ethereum.address.propHouse,
       house: {
-        funding: goerli.ethereum.address.fundingHouseImpl,
+        community: goerli.ethereum.address.communityHouseImpl,
       },
       round: {
         timedFunding: goerli.ethereum.address.timedFundingRoundImpl,

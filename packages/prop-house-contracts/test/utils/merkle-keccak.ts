@@ -10,7 +10,7 @@ interface Winner {
 }
 
 /**
- * Generate a single leaf for a funding house claim merkle tree
+ * Generate a single leaf for a claim merkle tree
  * @param winner Information relating to a round winner
  */
 export const generateClaimLeaf = (winner: Winner) => {

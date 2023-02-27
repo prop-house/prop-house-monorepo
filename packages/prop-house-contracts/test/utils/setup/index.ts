@@ -1,2 +1,2 @@
 export * from './common';
-export * from './funding-house';
+export * from './community-house';

@@ -93,7 +93,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
         evm: {
           prophouse: config.propHouse.address,
           house: {
-            funding: config.fundingHouseImpl.address,
+            community: config.communityHouseImpl.address,
           },
           round: {
             timedFunding: config.timedFundingRoundImpl.address,
@@ -123,7 +123,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     };
     const creationResponse = await propHouse.createAndFundRoundOnNewHouse(
       {
-        houseType: HouseType.FUNDING,
+        houseType: HouseType.COMMUNITY,
         config: {
           contractURI: CONTRACT_URI,
         },
