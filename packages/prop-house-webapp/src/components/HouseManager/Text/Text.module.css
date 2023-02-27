@@ -39,5 +39,5 @@
   color: var(--brand-gray);
 }
 .disabled {
-  color: var(--brand-gray);
+  color: var(--brand-gray-transparent);
 }

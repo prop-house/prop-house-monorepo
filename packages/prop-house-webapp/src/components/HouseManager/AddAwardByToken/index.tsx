@@ -4,6 +4,7 @@ import XButton from '../XButton';
 import AwardHeader from '../AwardHeader';
 import TokenAmountInput from '../TokenAmountInput';
 import { InitialRoundProps } from '../../../state/slices/round';
+import AwardInput from '../AwardInput';
 
 const AddAwardByToken: React.FC<{
   place: number;
@@ -21,7 +22,15 @@ const AddAwardByToken: React.FC<{
     <div className={classes.container}>
       <div className={classes.addressAndPlace}>
         <AwardHeader place={place} />
-        {/* <Address placeholder="ex: 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03" /> */}
+        {/* <AwardInput
+          award={{}}
+          isTyping={false}
+          setIsTyping={() => {}}
+          handleClear={() => {}}
+          handleChange={() => {}}
+          handleBlur={() => {}}
+          handleInputTypeChange={() => {}}
+        /> */}
       </div>
 
       <TokenAmountInput handleChange={handleChange} numOfAwards={numOfAwards} />

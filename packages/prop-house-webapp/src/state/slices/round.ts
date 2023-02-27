@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AwardProps } from '../../components/HouseManager/SetTheAwards';
 import { AddressProps } from '../../components/HouseManager/WhoCanParticipate';
 
 export interface InitialRoundProps {
@@ -10,8 +11,9 @@ export interface InitialRoundProps {
   numWinners: number;
   currencyType: string;
   description: string;
-  verifiedContracts: AddressProps[];
-  verifiedUserAddresses: AddressProps[];
+  votingContracts: AddressProps[];
+  votingUsers: AddressProps[];
+  awards: AwardProps[];
 }
 
 const initialRound: InitialRoundProps = {
@@ -23,8 +25,9 @@ const initialRound: InitialRoundProps = {
   numWinners: 0,
   currencyType: '',
   description: '',
-  verifiedContracts: [],
-  verifiedUserAddresses: [],
+  votingContracts: [],
+  votingUsers: [],
+  awards: [],
 };
 
 interface RoundState {
@@ -57,10 +60,14 @@ export const roundSlice = createSlice({
         20 <= round.description.length
       );
       const isStep2Disabled = !(
-        round.verifiedContracts.some(address => address.state === 'Success') ||
-        round.verifiedUserAddresses.some(address => address.state === 'Success')
+        round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
+        round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0)
       );
-      const isStep3Disabled = !(round.numWinners !== 0 && round.fundingAmount !== 0);
+      const isStep3Disabled = !(
+        round.awards.some(c => c.state === 'Success') &&
+        round.numWinners !== 0 &&
+        round.fundingAmount !== 0
+      );
       const isStep4Disabled = !(
         round.startTime !== null &&
         round.proposalEndTime !== null &&

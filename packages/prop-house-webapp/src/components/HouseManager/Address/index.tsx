@@ -11,7 +11,7 @@ import Bullet from '../Bullet';
 
 const Address: React.FC<{
   address: AddressProps;
-  addresses: AddressProps[];
+  disableRemoval: boolean;
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
   handleRemove(address: AddressProps): void;
@@ -24,7 +24,7 @@ const Address: React.FC<{
 }> = props => {
   const {
     address,
-    addresses,
+    disableRemoval,
     isTyping,
     setIsTyping,
     handleRemove,
@@ -75,7 +75,6 @@ const Address: React.FC<{
   const isContract = address.type === 'contract';
 
   // Disabled states
-  const oneAddressLeft = addresses.length === 1;
   const zeroVotesAllotted = address.votesPerToken === 0;
 
   const inputHasError = address.state === 'Error';
@@ -198,7 +197,7 @@ const Address: React.FC<{
           classNames={classes.xButton}
           bgColor={ButtonColor.White}
           onClick={() => handleRemove(address)}
-          disabled={oneAddressLeft}
+          disabled={disableRemoval}
         />
       </div>
 
