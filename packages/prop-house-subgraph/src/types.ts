@@ -1,7 +1,6 @@
-// String enums are not yet supported by AssemblyScript
-
+// Note: String enums are not yet supported by AssemblyScript
 export namespace HouseType {
-  export const FUNDING = 'FUNDING';
+  export const COMMUNITY = 'COMMUNITY';
 }
 
 export namespace RoundType {
@@ -16,9 +15,10 @@ export namespace RoundState {
 }
 
 export namespace VotingStrategyType {
-  export const BALANCE_OF = 'BALANCE_OF';
-  export const WHITELIST = 'WHITELIST';
   export const VANILLA = 'VANILLA';
+  export const WHITELIST = 'WHITELIST';
+  export const BALANCE_OF = 'BALANCE_OF';
+  export const BALANCE_OF_WITH_MULTIPLIER = 'BALANCE_OF_WITH_MULTIPLIER';
   export const UNKNOWN = 'UNKNOWN';
 }
 

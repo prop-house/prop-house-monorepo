@@ -6,8 +6,8 @@ dataSources:
     name: PropHouse
     source:
       abi: PropHouse
-      address: "0x0000000000000000000000000000000000000000"
-      startBlock: 10000000
+      address: "0x785a9350F1ca4E9590182CDD76b02871078F0Da5"
+      startBlock: 8549845
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -28,7 +28,6 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleHouseTransfer
     network: goerli
-
 templates:
   - name: FundingHouse
     kind: ethereum/contract
@@ -38,7 +37,7 @@ templates:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
-      file: ./src/funding-house.ts
+      file: ./src/community-house.ts
       entities:
         - House
         - Round
@@ -77,9 +76,11 @@ templates:
           handler: handleAssetReclaimed
         - event: AssetRescued(address,uint256,uint256)
           handler: handleAssetRescued
-        - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+        - event: TransferSingle(indexed address,indexed address,indexed
+            address,uint256,uint256)
           handler: handleSingleTransfer
-        - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
+        - event: TransferBatch(indexed address,indexed address,indexed
+            address,uint256[],uint256[])
           handler: handleBatchTransfer
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll

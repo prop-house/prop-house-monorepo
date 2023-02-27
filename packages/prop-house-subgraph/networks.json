@@ -1,8 +1,8 @@
 {
   "goerli": {
     "PropHouse": {
-      "address": "0x5De5fee5734Efa43417466E92159c012657b93aB",
-      "startBlock": 8544998
+      "address": "0x785a9350F1ca4E9590182CDD76b02871078F0Da5",
+      "startBlock": 8549845
     }
   }
 }

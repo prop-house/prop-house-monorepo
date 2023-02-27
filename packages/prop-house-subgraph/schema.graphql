@@ -1,5 +1,5 @@
 enum HouseType {
-  FUNDING
+  COMMUNITY
 }
 
 enum RoundType {
@@ -17,7 +17,7 @@ enum VotingStrategyType {
   VANILLA
   WHITELIST
   BALANCE_OF
-  BALANCE_OF_WITH_MULTIPLER
+  BALANCE_OF_WITH_MULTIPLIER
   UNKNOWN
 }
 

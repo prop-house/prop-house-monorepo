@@ -7,11 +7,11 @@
     "codegen": "graph codegen",
     "build": "graph build",
     "build:local": "graph build --network local",
-    "create:local": "graph create --node http://localhost:8020/ --network local streamer",
-    "remove:local": "graph remove --node http://localhost:8020/ --network local streamer",
-    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 --network local streamer",
+    "create:local": "graph create --node http://localhost:8020/ --network local prop-house",
+    "remove:local": "graph remove --node http://localhost:8020/ --network local prop-house",
+    "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 --network local prop-house",
     "build:goerli": "graph build --network goerli",
-    "deploy:goerli": "graph deploy --network goerli --product hosted-service verbsteam/streamer-goerli",
+    "deploy:goerli": "graph deploy --network goerli --product hosted-service prop-house/prop-house-goerli",
     "test": "graph test"
   },
   "dependencies": {

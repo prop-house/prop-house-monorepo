@@ -2,7 +2,8 @@ import { log } from '@graphprotocol/graph-ts';
 import { HouseCreated, RoundCreated } from '../generated/PropHouse/PropHouse';
 import { Account, House, Round } from '../generated/schema';
 import { FundingHouse as FundingHouseTemplate, TimedFundingRound as TimedFundingRoundTemplate } from '../generated/templates';
-import { HouseType, RoundState, RoundType } from './types';
+import { getHouseType, getRoundType } from './utils';
+import { RoundState } from './types';
 
 export function handleHouseCreated(event: HouseCreated): void {
   let house = new House(event.params.house.toHex());
@@ -14,8 +15,7 @@ export function handleHouseCreated(event: HouseCreated): void {
     creator.save();
   }
 
-  // Easier to emit the type than add an if/else to get the type?
-  house.type = HouseType.FUNDING;
+  house.type = getHouseType(event.params.impl.toHex());
   house.creator = creator.id;
   house.createdAt = event.block.timestamp;
   house.creationTx = event.transaction.hash;
@@ -44,8 +44,7 @@ export function handleRoundCreated(event: RoundCreated): void {
     return;
   }
 
-  // Easier to emit the type than add an if/else to get the type?
-  round.type = RoundType.TIMED_FUNDING;
+  round.type = getRoundType(event.params.impl.toHex());
   round.state = RoundState.AWAITING_REGISTRATION;
   round.house = house.id;
   round.createdAt = event.block.timestamp;
