@@ -38,9 +38,9 @@ export class AuctionsService {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .where('a.startTime < :now', { now }) // TODO FIX
       .leftJoin('a.community', 'c')
-      .where('c.contractAddress IN (:...addresses)', { addresses })
+      .where('a.startTime < :now', { now })
+      .andWhere('c.contractAddress IN (:...addresses)', { addresses })
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
