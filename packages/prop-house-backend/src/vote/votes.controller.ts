@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { verifySignedPayload } from 'src/utils/verifySignedPayload';
 import { Vote } from './vote.entity';
-import { CreateVoteDto } from './vote.types';
+import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { AuctionsService } from 'src/auction/auctions.service';
@@ -27,6 +28,11 @@ export class VotesController {
   @Get()
   getVotes(): Promise<Vote[]> {
     return this.votesService.findAll();
+  }
+
+  @Get('findWithOpts')
+  getVotesWithOpts(@Query() dto: GetVoteDto): Promise<Vote[]> {
+    return this.votesService.findAllWithOpts(dto);
   }
 
   @Get(':id')

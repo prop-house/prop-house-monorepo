@@ -170,6 +170,27 @@ export class PropHouseWrapper {
     }
   }
 
+  async getVotes(
+    limit = 20,
+    skip = 0,
+    order: 'ASC' | 'DESC' = 'DESC',
+    addresses?: string[],
+  ): Promise<StoredVoteWithProposal[]> {
+    try {
+      const { data } = await axios.get(`${this.host}/votes/findWithOpts`, {
+        params: {
+          limit,
+          skip,
+          order,
+          addresses,
+        },
+      });
+      return data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async logVotes(votes: Vote[], isContract = false) {
     if (!this.signer) return;
 
