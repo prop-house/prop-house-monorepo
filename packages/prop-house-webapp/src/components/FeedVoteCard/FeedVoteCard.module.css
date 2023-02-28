@@ -1,15 +1,24 @@
 .feedRow {
-  border-radius: 18px;
+  border-radius: 12px;
   background-color: white;
   padding: 1rem 2rem;
   margin: 1rem 0;
   border: 1px solid var(--border-med) !important;
+  font-size: medium;
 }
-
-.feedRow .owner {
-  font-weight: 700;
+.content {
+  display: flex;
+  align-items: center;
+  font-size: medium;
 }
-.feedRow .propName {
+.owner {
+  margin-right: 5px;
+  font-weight: 700 !important;
+  font-size: medium;
+  color: black;
+}
+.propName {
+  margin-left: 5px;
   font-weight: 700;
   cursor: pointer;
 }

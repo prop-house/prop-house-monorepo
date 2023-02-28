@@ -14,12 +14,13 @@ const FeedVoteCard: React.FC<{ vote: StoredVoteWithProposal }> = props => {
 
   return (
     <div className={classes.feedRow}>
-      <span>{`id: ${vote.id}`}</span>
-      <span className={classes.owner}>{<EthAddress address={vote.address} />}</span> voted{' '}
-      {vote.weight} times for{' '}
-      <span className={classes.propName} onClick={() => handleOnClick()}>
-        {vote.proposal.title}
-      </span>
+      <div className={classes.content}>
+        {<EthAddress address={vote.address} addAvatar={true} className={classes.owner} />}
+        {`cast ${vote.weight} votes for`}
+        <span className={classes.propName} onClick={() => handleOnClick()}>
+          {vote.proposal.title}
+        </span>
+      </div>
     </div>
   );
 };
