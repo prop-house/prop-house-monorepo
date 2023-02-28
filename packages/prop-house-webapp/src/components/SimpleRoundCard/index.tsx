@@ -68,9 +68,7 @@ const SimpleRoundCard: React.FC<{
             );
             return;
           }
-          navigate(`../${nameToSlug(community.name)}/${nameToSlug(round.title)}`, {
-            replace: true,
-          });
+          navigate(`../${nameToSlug(community.name)}/${nameToSlug(round.title)}`);
         }}
       >
         <Card
