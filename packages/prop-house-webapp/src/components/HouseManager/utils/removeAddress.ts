@@ -1,4 +1,4 @@
-import { AddressProps } from '../WhoCanParticipate';
+import { AddressProps } from '../VotingStrategies';
 
 /**
  * Remove address by ID
