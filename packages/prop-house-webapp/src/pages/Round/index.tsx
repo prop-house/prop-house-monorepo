@@ -53,9 +53,9 @@ const Round = () => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
-  // if no round is found in store (ie round page is entry point), fetch community and round
+  // if no data is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
-    if (round) return;
+    if (round && community) return;
 
     const fetchCommunityAndRound = async () => {
       try {
