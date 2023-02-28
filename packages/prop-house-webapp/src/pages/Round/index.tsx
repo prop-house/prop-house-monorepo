@@ -55,7 +55,8 @@ const Round = () => {
 
   // if no data is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
-    if (round) return;
+    // eslint-disable-next-line
+    if (round && community) return;
 
     const fetchCommunityAndRound = async () => {
       try {
@@ -77,7 +78,7 @@ const Round = () => {
     };
 
     fetchCommunityAndRound();
-  }, [communityName, dispatch, roundName, round, community]);
+  }, [communityName, dispatch, roundName, round]);
 
   // fetch proposals
   useEffect(() => {
