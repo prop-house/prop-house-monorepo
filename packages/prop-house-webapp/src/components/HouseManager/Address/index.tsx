@@ -6,7 +6,7 @@ import Button, { ButtonColor } from '../../Button';
 import EthAddress from '../../EthAddress';
 import Group from '../Group';
 import Text from '../Text';
-import { AddressProps } from '../WhoCanParticipate';
+import { AddressProps } from '../VotingStrategies';
 import Bullet from '../Bullet';
 
 const Address: React.FC<{
