@@ -125,7 +125,7 @@ const RewardsSimple: React.FC<{
             {/* //TODO: remove */}
             {/* {award.state === 'Searching' && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>{trimEthAddress(award.addressValue)}</div>
+              <div>{trimEthAddress(award.address)}</div>
               <div>Searching...</div>
             </div>
           )} */}
