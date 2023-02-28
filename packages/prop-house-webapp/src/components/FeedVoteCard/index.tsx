@@ -1,6 +1,5 @@
 import { StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { useNavigate } from 'react-router-dom';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import classes from './FeedVoteCard.module.css';
 
