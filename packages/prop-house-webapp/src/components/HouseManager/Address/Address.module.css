@@ -122,7 +122,6 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
-  /* max-width: 90%; */
   margin-right: 5px;
 }
 .addressImgAndTitle img {
