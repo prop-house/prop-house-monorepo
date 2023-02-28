@@ -1,5 +1,5 @@
 import { uuid } from 'uuidv4';
-import { AddressProps } from '../WhoCanParticipate';
+import { AddressProps } from '../VotingStrategies';
 
 /**
  * Add new address to array of addresses
