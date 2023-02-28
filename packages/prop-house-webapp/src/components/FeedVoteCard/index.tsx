@@ -9,7 +9,7 @@ const FeedVoteCard: React.FC<{ vote: StoredVoteWithProposal }> = props => {
   const navigate = useNavigate();
 
   const handleOnClick = () => {
-    navigate('/proposal/1');
+    navigate(`proposal/${vote.id}`);
   };
 
   return (
