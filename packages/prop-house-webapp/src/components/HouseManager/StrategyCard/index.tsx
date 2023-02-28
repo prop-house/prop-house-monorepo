@@ -1,6 +1,6 @@
 import classes from './StrategyCard.module.css';
 import Text from '../Text';
-import { AddressProps } from '../WhoCanParticipate';
+import { AddressProps } from '../VotingStrategies';
 import AddressAvatar from '../../AddressAvatar';
 import { useEnsName } from 'wagmi';
 import trimEthAddress from '../../../utils/trimEthAddress';
