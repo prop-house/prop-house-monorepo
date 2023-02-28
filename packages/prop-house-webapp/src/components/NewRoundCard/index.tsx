@@ -1,6 +1,6 @@
-import classes from './RoundCard.module.css';
+import classes from './NewRoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -17,19 +17,27 @@ import Tooltip from '../Tooltip';
 import dayjs from 'dayjs';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
-import { useAppDispatch } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
+import { useEffect, useState } from 'react';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
-const RoundCard: React.FC<{
+const NewRoundCard: React.FC<{
   round: StoredAuction;
+  displayCommunity?: boolean;
+  displayTldr?: boolean;
 }> = props => {
-  const { round } = props;
+  const { round, displayCommunity, displayTldr } = props;
+
   const { t } = useTranslation();
+  const [community, setCommunity] = useState<Community | undefined>();
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const wrapper = new PropHouseWrapper(host);
 
   interface changeTagProps {
     children: React.ReactNode;
@@ -41,16 +49,26 @@ const RoundCard: React.FC<{
   // overrides any tag to become a <span> tag
   const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
 
+  useEffect(() => {
+    if (community !== undefined && displayCommunity) return;
+    const fetchCommunity = async () =>
+      setCommunity(await wrapper.getCommunityWithId(round.communityId));
+    fetchCommunity();
+  });
+
   return (
     <>
       <div
         onClick={e => {
+          if (!community) return;
           dispatch(setActiveRound(round));
           if (cmdPlusClicked(e)) {
-            openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
+            openInNewTab(
+              `${window.location.href}/${nameToSlug(community.name)}/${nameToSlug(round.title)}`,
+            );
             return;
           }
-          navigate(`${nameToSlug(round.title)}`);
+          navigate(`${nameToSlug(community.name)}/${nameToSlug(round.title)}`);
         }}
       >
         <Card
@@ -62,26 +80,32 @@ const RoundCard: React.FC<{
           )}
         >
           <div className={classes.textContainer}>
-            <div className={classes.titleContainer}>
-              <div className={classes.authorContainer}>{round.title}</div>
+            <div className={classes.topContainer}>
+              <div className={classes.leftContainer}>
+                <img src={community?.profileImageUrl} alt="community profile" />
+                <div>{community?.name}</div>
+              </div>
               <StatusPill status={auctionStatus(round)} />
             </div>
+            <div className={classes.authorContainer}>{round.title}</div>
 
-            {/* support both markdown & html in round's description.  */}
-            <Markdown
-              className={classes.truncatedTldr}
-              options={{
-                overrides: {
-                  h1: changeTagToParagraph,
-                  h2: changeTagToParagraph,
-                  h3: changeTagToParagraph,
-                  a: changeTagToSpan,
-                  br: changeTagToSpan,
-                },
-              }}
-            >
-              {sanitizeHtml(round.description)}
-            </Markdown>
+            {displayTldr && (
+              //  support both markdown & html in round's description.
+              <Markdown
+                className={classes.truncatedTldr}
+                options={{
+                  overrides: {
+                    h1: changeTagToParagraph,
+                    h2: changeTagToParagraph,
+                    h3: changeTagToParagraph,
+                    a: changeTagToSpan,
+                    br: changeTagToSpan,
+                  },
+                }}
+              >
+                {sanitizeHtml(round.description)}
+              </Markdown>
+            )}
           </div>
 
           <div className={classes.roundInfo}>
@@ -128,4 +152,4 @@ const RoundCard: React.FC<{
   );
 };
 
-export default RoundCard;
+export default NewRoundCard;

@@ -7,7 +7,7 @@ import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import RoundCard from '../../components/RoundCard';
+import NewRoundCard from '../../components/NewRoundCard';
 import { useAppSelector } from '../../hooks';
 import Button, { ButtonColor } from '../../components/Button';
 
@@ -81,7 +81,7 @@ const Base = () => {
         {rounds ? (
           rounds.map(round => (
             <Col md={6}>
-              <RoundCard round={round} displayTldr={false} />
+              <NewRoundCard round={round} displayTldr={false} />
             </Col>
           ))
         ) : (
