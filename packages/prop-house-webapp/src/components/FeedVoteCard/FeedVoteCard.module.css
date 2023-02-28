@@ -6,19 +6,37 @@
   border: 1px solid var(--border-med) !important;
   font-size: medium;
 }
+
 .content {
   display: flex;
   align-items: center;
   font-size: medium;
+  white-space: normal;
 }
+
 .owner {
   margin-right: 5px;
   font-weight: 700 !important;
   font-size: medium;
   color: black;
 }
+
+.voteWeight {
+  font-weight: 700;
+}
+
 .propName {
   margin-left: 5px;
   font-weight: 700;
   cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .content {
+    display: block;
+    /* align-items: center; */
+  }
+  .ethAddressContainer {
+    display: inline-block;
+  }
 }

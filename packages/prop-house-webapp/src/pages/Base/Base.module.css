@@ -1,3 +1,6 @@
 .sectionTitle {
   color: var(--brand-black);
 }
+.loadMoreBtn {
+  width: 100%;
+}

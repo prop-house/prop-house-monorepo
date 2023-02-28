@@ -15,8 +15,15 @@ const FeedVoteCard: React.FC<{ vote: StoredVoteWithProposal }> = props => {
   return (
     <div className={classes.feedRow}>
       <div className={classes.content}>
-        {<EthAddress address={vote.address} addAvatar={true} className={classes.owner} />}
-        {`cast ${vote.weight} votes for`}
+        <EthAddress
+          address={vote.address}
+          addAvatar={true}
+          containerClassName={classes.ethAddressContainer}
+          className={classes.owner}
+        />
+        {'cast '}
+        <span className={classes.voteWeight}>{vote.weight}</span>
+        {' votes for '}
         <span className={classes.propName} onClick={() => handleOnClick()}>
           {vote.proposal.title}
         </span>

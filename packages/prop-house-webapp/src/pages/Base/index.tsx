@@ -94,13 +94,18 @@ const Base = () => {
           {votes && votes.length > 0 ? (
             <Row>
               {votes.map(v => (
-                <FeedVoteCard vote={v} />
+                <Col xs={12}>
+                  <FeedVoteCard vote={v} />
+                </Col>
               ))}
-              <Button
-                text="load more votes"
-                bgColor={ButtonColor.Green}
-                onClick={() => fetchMoreVotes()}
-              />
+              <Col xs={12}>
+                <Button
+                  text="load more votes"
+                  bgColor={ButtonColor.Green}
+                  onClick={() => fetchMoreVotes()}
+                  classNames={classes.loadMoreBtn}
+                />
+              </Col>
             </Row>
           ) : (
             <LoadingIndicator />
