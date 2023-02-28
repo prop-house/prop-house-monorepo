@@ -10,6 +10,8 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import { useAppSelector } from '../../hooks';
 import Button, { ButtonColor } from '../../components/Button';
 import SimpleRoundCard from '../../components/SimpleRoundCard';
+import { FiActivity } from 'react-icons/fi';
+import { BiBadgeCheck } from 'react-icons/bi';
 
 const Base = () => {
   const { address: account } = useAccount();
@@ -76,21 +78,33 @@ const Base = () => {
   return (
     <Container>
       <Navbar />
-      <div className={classes.sectionTitle}>Active rounds</div>
-      <Row>
-        {rounds ? (
-          rounds.map(round => (
-            <Col md={6}>
-              <SimpleRoundCard round={round} displayTldr={false} />
-            </Col>
-          ))
-        ) : (
-          <LoadingIndicator />
-        )}
-      </Row>
-      <div className={classes.sectionTitle}>Activity</div>
+
       <Row>
         <Col>
+          <div className={classes.sectionTitle}>
+            <BiBadgeCheck className={classes.icon} size={22} />
+            <>Active rounds</>
+          </div>
+          {rounds ? (
+            <Row>
+              {rounds.map(round => (
+                <Col md={6}>
+                  <SimpleRoundCard round={round} displayTldr={false} />
+                </Col>
+              ))}
+            </Row>
+          ) : (
+            <LoadingIndicator />
+          )}
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+          <div className={classes.sectionTitle}>
+            <FiActivity className={classes.icon} size={22} />
+            <>Activity</>
+          </div>
           {votes && votes.length > 0 ? (
             <Row>
               {votes.map(v => (

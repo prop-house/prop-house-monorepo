@@ -1,5 +1,13 @@
 .sectionTitle {
   color: var(--brand-black);
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+}
+.sectionTitle .icon {
+  margin: 0 8px;
 }
 .loadMoreBtn {
   width: 100%;
