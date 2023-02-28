@@ -36,7 +36,7 @@ const initialContractAddress: AddressProps = {
   addressValue: '',
   addressImage: '',
   addressName: '',
-  votesPerToken: 0,
+  votesPerToken: 1,
   state: 'Input',
 };
 const initialUserAddress: AddressProps = {
@@ -45,7 +45,7 @@ const initialUserAddress: AddressProps = {
   addressValue: '',
   addressImage: '',
   addressName: '',
-  votesPerToken: 0,
+  votesPerToken: 1,
   state: 'Input',
 };
 
@@ -113,7 +113,7 @@ const VotingStrategies = () => {
       addressValue: '',
       addressImage: '',
       addressName: '',
-      votesPerToken: 0,
+      votesPerToken: 1,
       state: 'Input',
     });
 
