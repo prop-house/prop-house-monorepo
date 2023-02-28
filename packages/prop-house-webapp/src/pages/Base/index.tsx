@@ -3,7 +3,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuction, StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
 import { useEffect, useState } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
 import LoadingIndicator from '../../components/LoadingIndicator';
@@ -74,7 +74,8 @@ const Base = () => {
   };
 
   return (
-    <>
+    <Container>
+      <Navbar />
       <div className={classes.sectionTitle}>Active rounds</div>
       <Row>
         {rounds ? (
@@ -106,7 +107,7 @@ const Base = () => {
           )}
         </Col>
       </Row>
-    </>
+    </Container>
   );
 };
 
