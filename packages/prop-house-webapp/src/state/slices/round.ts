@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AwardProps } from '../../components/HouseManager/SetTheAwards';
-import { AddressProps } from '../../components/HouseManager/WhoCanParticipate';
+import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
+import { AwardProps } from '../../components/HouseManager/AwardsSelector';
+import { AddressProps } from '../../components/HouseManager/VotingStrategies';
 
 export interface InitialRoundProps {
   title: string;
@@ -49,49 +50,14 @@ export const roundSlice = createSlice({
     setActiveStep: (state, action: PayloadAction<number>) => {
       state.activeStep = action.payload;
     },
-    setDisabled: (state, action: PayloadAction<boolean>) => {
-      // Update the stepDisabledArray based on the active step
-      const { activeStep, round } = state;
-
-      // Validation criteria for each step
-      const isStep1Disabled = !(
-        5 <= round.title.length &&
-        round.title.length <= 255 &&
-        20 <= round.description.length
+    checkStepCriteria: state => {
+      const { round } = state;
+      // Call isRoundStepValid to calculate the disabled state for the current step (i + 1).
+      // If the step is not valid (isRoundStepValid returns false), set the disabled state to true by negating the result.
+      state.stepDisabledArray = Array.from(
+        { length: 5 },
+        (_, i) => !isRoundStepValid(round, i + 1),
       );
-      const isStep2Disabled = !(
-        round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
-        round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0)
-      );
-      const isStep3Disabled = !(
-        round.awards.some(c => c.state === 'Success') &&
-        round.numWinners !== 0 &&
-        round.fundingAmount !== 0
-      );
-      const isStep4Disabled = !(
-        round.startTime !== null &&
-        round.proposalEndTime !== null &&
-        round.votingEndTime !== null
-      );
-      const isStep5Disabled = !(
-        5 <= round.title.length &&
-        round.title.length <= 255 &&
-        20 <= round.description.length &&
-        (round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
-          round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0)) &&
-        round.awards.some(c => c.state === 'Success') &&
-        round.numWinners !== 0 &&
-        round.fundingAmount !== 0 &&
-        round.startTime !== null &&
-        round.proposalEndTime !== null &&
-        round.votingEndTime !== null
-      );
-
-      if (activeStep === 1) state.stepDisabledArray[0] = isStep1Disabled;
-      if (activeStep === 2) state.stepDisabledArray[1] = isStep2Disabled;
-      if (activeStep === 3) state.stepDisabledArray[2] = isStep3Disabled;
-      if (activeStep === 4) state.stepDisabledArray[3] = isStep4Disabled;
-      if (activeStep === 5) state.stepDisabledArray[4] = isStep5Disabled;
     },
     setNextStep: state => {
       state.activeStep = Math.min(state.activeStep + 1, 5);
@@ -105,6 +71,6 @@ export const roundSlice = createSlice({
   },
 });
 
-export const { setActiveStep, setDisabled, setNextStep, setPrevStep, updateRound } =
+export const { setActiveStep, checkStepCriteria, setNextStep, setPrevStep, updateRound } =
   roundSlice.actions;
 export default roundSlice.reducer;
