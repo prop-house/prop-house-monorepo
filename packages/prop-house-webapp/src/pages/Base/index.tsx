@@ -1,70 +1,112 @@
+import classes from './Base.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuction, StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import RoundCard from '../../components/RoundCard';
 import { useAppSelector } from '../../hooks';
+import Button, { ButtonColor } from '../../components/Button';
 
 const Base = () => {
   const { address: account } = useAccount();
-  const [rounds, setRounds] = useState<StoredAuction[]>();
-  const [votes, setVotes] = useState<StoredVoteWithProposal[]>();
+  const { data: block } = useBlockNumber();
   const provider = useProvider();
+
+  const VOTE_LOAD = 5;
+
+  const [loadingRelComms, setLoadingRelComms] = useState(false);
+  const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
+  const [rounds, setRounds] = useState<StoredAuction[]>();
+  const [votes, setVotes] = useState<StoredVoteWithProposal[]>([]);
+  const [votesTracker, setVotesTracker] = useState(0);
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const wrapper = new PropHouseWrapper(host);
 
   useEffect(() => {
-    if (!account || !provider || rounds) return;
-
-    const getRounds = async () => {
-      const relevantComms = await getRelevantComms(account, provider, 16700923);
-      const addresses = Object.keys(relevantComms);
-      setRounds(await wrapper.getActiveAuctionsForCommunities(addresses));
+    if (!account || relevantCommunities !== undefined || block === undefined) return;
+    const getRelComms = async () => {
+      try {
+        setRelevantCommunites(Object.keys(await getRelevantComms(account, provider, block)));
+        setLoadingRelComms(true);
+      } catch (e) {
+        setRelevantCommunites([]);
+        setLoadingRelComms(true);
+      }
     };
+    getRelComms();
+  });
 
+  useEffect(() => {
+    if (!account || rounds || !loadingRelComms || votesTracker > 0) return;
+    const getRounds = async () => {
+      try {
+        relevantCommunities && relevantCommunities.length > 0
+          ? setRounds(await wrapper.getActiveAuctionsForCommunities(relevantCommunities))
+          : setRounds(await wrapper.getActiveAuctions());
+      } catch (e) {
+        console.log(e);
+      }
+    };
     getRounds();
   });
 
   useEffect(() => {
-    if (!account || !provider || votes) return;
-
-    const getRounds = async () => {
-      const relevantComms = await getRelevantComms(account, provider, 16700923);
-      const addresses = Object.keys(relevantComms);
-      setVotes(await wrapper.getVotesForCommunities(addresses));
+    if (!relevantCommunities || (votes && votes.length > 0) || !loadingRelComms || votesTracker > 0)
+      return;
+    const getVotes = async () => {
+      setVotesTracker(VOTE_LOAD);
+      setVotes(await wrapper.getVotes(VOTE_LOAD, votesTracker, 'DESC', relevantCommunities));
     };
-
-    getRounds();
+    getVotes();
   });
 
-  return rounds ? (
+  const fetchMoreVotes = async () => {
+    const newVotes = await wrapper.getVotes(VOTE_LOAD, votesTracker, 'DESC', relevantCommunities);
+    setVotes(prev => {
+      return [...prev, ...newVotes];
+    });
+    setVotesTracker(prev => prev + VOTE_LOAD);
+  };
+
+  return (
     <>
-      <h3>Active rounds:</h3>
+      <div className={classes.sectionTitle}>Active rounds</div>
       <Row>
-        {rounds.map(round => (
-          <Col md={6}>
-            <RoundCard round={round} displayTldr={false} />
-          </Col>
-        ))}
+        {rounds ? (
+          rounds.map(round => (
+            <Col md={6}>
+              <RoundCard round={round} displayTldr={false} />
+            </Col>
+          ))
+        ) : (
+          <LoadingIndicator />
+        )}
       </Row>
-      <h3>Feed:</h3>
+      <div className={classes.sectionTitle}>Activity</div>
       <Row>
         <Col>
-          {votes &&
-            votes.map(v => (
-              <Row>
+          {votes && votes.length > 0 ? (
+            <Row>
+              {votes.map(v => (
                 <FeedVoteCard vote={v} />
-              </Row>
-            ))}
+              ))}
+              <Button
+                text="load more votes"
+                bgColor={ButtonColor.Green}
+                onClick={() => fetchMoreVotes()}
+              />
+            </Row>
+          ) : (
+            <LoadingIndicator />
+          )}
         </Col>
       </Row>
     </>
-  ) : (
-    <LoadingIndicator />
   );
 };
 
