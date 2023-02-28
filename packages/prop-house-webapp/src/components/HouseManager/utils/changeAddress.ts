@@ -1,6 +1,6 @@
 // import { ContractAddressProps, UserAddressProps } from '../WhoCanParticipate';
 
-import { AddressProps } from '../WhoCanParticipate';
+import { AddressProps } from '../VotingStrategies';
 
 /**
  * Change properties of address by ID
