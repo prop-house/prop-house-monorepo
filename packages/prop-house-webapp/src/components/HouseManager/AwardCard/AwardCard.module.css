@@ -12,31 +12,40 @@
   flex-basis: calc(25% - 8px);
   width: calc(25% - 8px);
 }
+.container :global(.award) {
+  border: 1px solid red !important;
+}
+.place p {
+  font-size: 12px;
+}
+.divider {
+  border: 0.5px solid var(--border-light);
+  width: 30%;
+  margin: 3px 0px;
+}
+.awardNameImg {
+  align-items: center;
+}
 .imageContainer {
   overflow: hidden;
   background: #fff;
-  border-radius: 12%;
-  /* outline: 1px solid var(--border-light) !important; */
+  line-height: 1px;
 }
 .image {
-  height: 42px;
-  width: 42px;
+  height: 14px;
+  width: 14px;
 }
 .text {
   text-align: center;
   max-width: 90%;
 }
-.text p:first-child {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
-  line-break: anywhere;
+.text .awardNameImg p {
+  color: var(--brand-black);
+  font-size: 16px;
 }
-.text p:nth-child(2) {
-  font-weight: 700 !important;
+.text p {
   color: var(--brand-gray-transparent);
+  font-weight: 700 !important;
 }
 
 @media (max-width: 1280px) {

@@ -7,9 +7,6 @@ import clsx from 'clsx';
 import Bullet from '../Bullet';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { capitalize } from '../../../utils/capitalize';
-// import { useState } from 'react';
-// import { isAddress } from 'ethers/lib/utils.js';
-// import { getTokenInfo } from '../utils/getTokenInfo';
 
 const RewardsSimple: React.FC<{
   isTyping: boolean;
@@ -21,8 +18,6 @@ const RewardsSimple: React.FC<{
   ) => void;
   round: InitialRoundProps;
   award: AwardProps;
-  // setSingleAward: (award: AwardProps) => void;
-  //
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
   handleInputTypeChange: (address: AwardProps) => void;
@@ -118,16 +113,16 @@ const RewardsSimple: React.FC<{
                     award.state === 'Error' && classes.addressInputError,
                   )}
                   type="text"
-                  value={award.addressValue}
+                  value={award.address}
                   onBlur={() => handleBlur(award)}
                   onKeyPress={event => event.key === 'Enter' && handleBlur(award)}
-                  // onChange={handleInputChange}
                   onChange={handleInputValueChange}
                   placeholder={'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'}
                 />
               </div>
             )}
 
+            {/* //TODO: remove */}
             {/* {award.state === 'Searching' && (
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>{trimEthAddress(award.addressValue)}</div>
@@ -142,12 +137,12 @@ const RewardsSimple: React.FC<{
               >
                 {/* Show award contract image and name */}
                 <div className={classes.addressImgAndTitle}>
-                  <img src={award.addressImage} alt={award.addressName} />
+                  <img src={award.image} alt={award.name} />
 
-                  <span>{award.addressName}</span>
+                  <span>{award.name}</span>
                 </div>
 
-                <div>{trimEthAddress(award.addressValue)}</div>
+                <div>{trimEthAddress(award.address)}</div>
               </button>
             )}
           </Group>

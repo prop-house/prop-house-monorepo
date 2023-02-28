@@ -73,7 +73,19 @@ export const roundSlice = createSlice({
         round.proposalEndTime !== null &&
         round.votingEndTime !== null
       );
-      const isStep5Disabled = false;
+      const isStep5Disabled = !(
+        5 <= round.title.length &&
+        round.title.length <= 255 &&
+        20 <= round.description.length &&
+        (round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
+          round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0)) &&
+        round.awards.some(c => c.state === 'Success') &&
+        round.numWinners !== 0 &&
+        round.fundingAmount !== 0 &&
+        round.startTime !== null &&
+        round.proposalEndTime !== null &&
+        round.votingEndTime !== null
+      );
 
       if (activeStep === 1) state.stepDisabledArray[0] = isStep1Disabled;
       if (activeStep === 2) state.stepDisabledArray[1] = isStep2Disabled;
