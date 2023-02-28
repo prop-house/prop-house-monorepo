@@ -19,13 +19,15 @@ import { getTokenInfo } from '../utils/getTokenInfo';
 export interface AwardProps {
   id: string;
   type: 'contract';
-  addressValue: string;
-  addressImage: string;
-  addressName: string;
+  address: string;
+  image: string;
+  name: string;
+  symbol: string;
   state: 'Input' | 'Success' | 'Searching ' | 'Error';
   errorType?: 'AddressNotFound' | 'UnidentifiedContract';
 }
 
+// TODO: add to utils folder
 export const changeAward = (id: string, addresses: AwardProps[], changes: Partial<AwardProps>) =>
   addresses.map(address => (address.id === id ? { ...address, ...changes } : address));
 
@@ -54,9 +56,10 @@ const SetTheAwards = () => {
   const initialAward: AwardProps = {
     id: uuid(),
     type: 'contract',
-    addressValue: '',
-    addressImage: '',
-    addressName: '',
+    address: '',
+    image: '',
+    name: '',
+    symbol: '',
     state: 'Input',
   };
 
@@ -72,9 +75,9 @@ const SetTheAwards = () => {
     dispatch(setDisabled(true));
   };
 
+  //TODO: This is a hack to clear the awards when the user goes back to the previous step
   useEffect(() => {
     if (activeSection === 0) {
-      console.log('back');
     } else {
       clearAwards();
     }
@@ -85,11 +88,12 @@ const SetTheAwards = () => {
 
   // on input change
   const handleInputChange = (award: AwardProps, value: string) => {
-    const updated = changeAward(award.id, awardContracts, { ...award, addressValue: value });
+    const updated = changeAward(award.id, awardContracts, { ...award, address: value });
     setAwardContracts(updated);
     handleChange('awards', updated);
   };
 
+  // TODO: keep?
   // const handleWinnerChange = (value: number) => {
   //   handleChange('numWinners', value);
   // };
@@ -97,11 +101,12 @@ const SetTheAwards = () => {
   //   handleChange('fundingAmount', value);
   // };
 
+  // TODO: better comments
   // onblur
   const handleOnBlur = async (award: AwardProps) => {
     setIsTyping(false);
-    const isEmptyString = award.addressValue === '';
-    const isValidAddressString = isAddress(award.addressValue);
+    const isEmptyString = award.address === '';
+    const isValidAddressString = isAddress(award.address);
 
     if (isEmptyString) {
       const updated = changeAward(award.id, awardContracts, { ...award, state: 'Input' });
@@ -119,9 +124,9 @@ const SetTheAwards = () => {
 
       setAwardContracts(updated);
     } else {
-      const tokenInfo = await getTokenInfo(award.addressValue);
-      const { name, image } = tokenInfo;
-      if (!name || !image) {
+      const tokenInfo = await getTokenInfo(award.address);
+      const { name, image, symbol } = tokenInfo;
+      if (!name || !image || !symbol) {
         const updated = changeAward(award.id, awardContracts, {
           ...award,
           state: 'Error',
@@ -133,10 +138,11 @@ const SetTheAwards = () => {
         const updated = changeAward(award.id, awardContracts, {
           ...award,
           state: 'Success',
-          addressImage: image,
-          addressName: name,
+          image: image,
+          name: name,
+          symbol: symbol,
         });
-        handleChange('awards', updated);
+        dispatch(updateRound({ ...round, currencyType: symbol, awards: updated }));
         setAwardContracts(updated);
       }
     }
@@ -146,9 +152,10 @@ const SetTheAwards = () => {
   const handleClearAward = (award: AwardProps) => {
     const updated = changeAward(award.id, awardContracts, {
       ...award,
-      addressValue: '',
-      addressImage: '',
-      addressName: '',
+      address: '',
+      image: '',
+      name: '',
+      symbol: '',
       state: 'Input',
     });
     setAwardContracts(updated);
@@ -198,7 +205,7 @@ const SetTheAwards = () => {
             award={award}
             handleChange={handleChange}
             round={round}
-            //
+            // TODO: keep?
             handleClear={handleClearAward}
             isTyping={isTyping}
             setIsTyping={setIsTyping}

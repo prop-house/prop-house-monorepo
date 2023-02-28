@@ -6,8 +6,8 @@ export const getTokenInfo = async (contractAddress: string) => {
       throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
-    const { name, image_url } = data;
-    return { name, image: image_url };
+    const { name, image_url, symbol } = data;
+    return { name, image: image_url, symbol };
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching contract info: ${error}`);
