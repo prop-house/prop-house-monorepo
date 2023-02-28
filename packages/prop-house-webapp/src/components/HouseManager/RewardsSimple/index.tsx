@@ -2,11 +2,11 @@ import classes from './RewardsSimple.module.css';
 import Text from '../Text';
 import Group from '../Group';
 import { InitialRoundProps } from '../../../state/slices/round';
-import { AwardProps } from '../SetTheAwards';
 import clsx from 'clsx';
 import Bullet from '../Bullet';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { capitalize } from '../../../utils/capitalize';
+import { AwardProps } from '../AwardsSelector';
 
 const RewardsSimple: React.FC<{
   isTyping: boolean;

@@ -5,17 +5,14 @@ import { FiEdit3 as EditIcon } from 'react-icons/fi';
 import Tooltip from '../../Tooltip';
 
 const EditSection: React.FC<{
-  section: 'about' | 'votes' | 'awards';
-  onClick?: () => void;
+  section?: string;
+  onClick: () => void;
 }> = props => {
-  const {
-    section,
-    //  onClick
-  } = props;
+  const { section, onClick } = props;
 
   return (
-    <div className={classes.container}>
-      <Text type="title">{capitalize(section)}</Text>
+    <div className={classes.container} onClick={onClick}>
+      {section && <Text type="title">{capitalize(section)}</Text>}
 
       <Tooltip content={<EditIcon />} tooltipContent="Edit" />
     </div>

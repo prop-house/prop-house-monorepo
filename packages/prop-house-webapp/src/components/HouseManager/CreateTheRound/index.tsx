@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import classes from './CreateTheRound.module.css';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
-import { setDisabled } from '../../../state/slices/round';
+import { checkStepCriteria } from '../../../state/slices/round';
 import DeadlineDates from '../../DeadlineDates';
 import Divider from '../../Divider';
 import ReadMore from '../../ReadMore';
@@ -9,49 +10,174 @@ import CardWrapper from '../CardWrapper';
 import EditSection from '../EditSection';
 import Footer from '../Footer';
 import Group from '../Group';
-import InstructionBox from '../InstructionBox';
+// import InstructionBox from '../InstructionBox';
 import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
+import Modal from '../../Modal';
+import NameAndDescriptionFields from '../NameAndDescriptionFields';
+import Button, { ButtonColor } from '../../Button';
+import { isRoundStepValid } from '../utils/isRoundStepValid';
+import RoundDatesSelector from '../RoundDatesSelector';
+import VotingStrategies from '../VotingStrategies';
+import AwardsSelector from '../AwardsSelector';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
   const addresses = [...round.votingContracts, ...round.votingUsers];
   const dispatch = useDispatch();
 
-  // need to watch for changes to round and set disabled accordingly if criteria is met
   useEffect(() => {
-    // Dispatch the setDisabled action with the validation check for step 5
-    // TODO: cleanup?
-    const isStepCompleted =
-      5 <= round.title.length &&
-      round.title.length <= 255 &&
-      20 <= round.description.length &&
-      (round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
-        round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0)) &&
-      round.awards.some(c => c.state === 'Success') &&
-      round.numWinners !== 0 &&
-      round.fundingAmount !== 0 &&
-      round.startTime !== null &&
-      round.proposalEndTime !== null &&
-      round.votingEndTime !== null;
-
-    dispatch(setDisabled(!isStepCompleted));
+    dispatch(checkStepCriteria());
   }, [dispatch, round]);
+
+  const [editDatesModal, setShowEditDatesModal] = useState(false);
+  const [editNameModal, setShowEditNameModal] = useState(false);
+  const [editVotesModal, setShowVotesModal] = useState(false);
+  const [editAwardsModal, setShowAwardsModal] = useState(false);
+
+  const handleDateSave = () => {
+    // TODO: since we save onChange here, we don't need to save on the modal save button
+    // TODO: but that also means the user can save invalid data, which will disable the Create button
+    // TODO: but the user won't know why, so we need to do some error handling
+    console.log('save changes', round.title, round.description);
+    setShowEditDatesModal(false);
+  };
+  const handleNameSave = () => {
+    // TODO: since we save onChange here, we don't need to save on the modal save button
+    // TODO: but that also means the user can save invalid data, which will disable the Create button
+    // TODO: but the user won't know why, so we need to do some error handling
+    console.log('save changes', round.title, round.description);
+    setShowEditNameModal(false);
+  };
+  const handleVotesSave = () => {
+    // TODO: since we save onChange here, we don't need to save on the modal save button
+    // TODO: but that also means the user can save invalid data, which will disable the Create button
+    // TODO: but the user won't know why, so we need to do some error handling
+    console.log('save changes', round.title, round.description);
+    setShowVotesModal(false);
+  };
+  const handleAwardsSave = () => {
+    // TODO: since we save onChange here, we don't need to save on the modal save button
+    // TODO: but that also means the user can save invalid data, which will disable the Create button
+    // TODO: but the user won't know why, so we need to do some error handling
+    console.log('save changes', round.title, round.description);
+    setShowAwardsModal(false);
+  };
 
   return (
     <>
-      <DeadlineDates round={round} />
+      {editDatesModal && (
+        <Modal
+          title="Edit round timing"
+          subtitle=""
+          body={<RoundDatesSelector />}
+          setShowModal={setShowEditDatesModal}
+          button={
+            <Button
+              text={'Cancel'}
+              bgColor={ButtonColor.Black}
+              onClick={() => setShowEditDatesModal(false)}
+            />
+          }
+          secondButton={
+            <Button
+              text={'Save Changes'}
+              bgColor={ButtonColor.Pink}
+              onClick={handleDateSave}
+              disabled={!isRoundStepValid(round, 4)}
+            />
+          }
+        />
+      )}
+      {editNameModal && (
+        <Modal
+          title="Edit round name and description"
+          subtitle=""
+          body={<NameAndDescriptionFields />}
+          setShowModal={setShowEditNameModal}
+          button={
+            <Button
+              text={'Cancel'}
+              bgColor={ButtonColor.Black}
+              onClick={() => setShowEditNameModal(false)}
+            />
+          }
+          secondButton={
+            <Button
+              text={'Save Changes'}
+              bgColor={ButtonColor.Pink}
+              onClick={handleNameSave}
+              disabled={!isRoundStepValid(round, 1)}
+            />
+          }
+        />
+      )}
+      {editVotesModal && (
+        <Modal
+          title="Edit voting strategies"
+          subtitle=""
+          body={<VotingStrategies />}
+          setShowModal={setShowVotesModal}
+          button={
+            <Button
+              text={'Cancel'}
+              bgColor={ButtonColor.Black}
+              onClick={() => setShowVotesModal(false)}
+            />
+          }
+          secondButton={
+            <Button
+              text={'Save Changes'}
+              bgColor={ButtonColor.Pink}
+              onClick={handleVotesSave}
+              disabled={!isRoundStepValid(round, 2)}
+            />
+          }
+        />
+      )}
+      {editAwardsModal && (
+        <Modal
+          title="Edit awards"
+          subtitle=""
+          body={<AwardsSelector />}
+          setShowModal={setShowAwardsModal}
+          button={
+            <Button
+              text={'Cancel'}
+              bgColor={ButtonColor.Black}
+              onClick={() => setShowAwardsModal(false)}
+            />
+          }
+          secondButton={
+            <Button
+              text={'Save Changes'}
+              bgColor={ButtonColor.Pink}
+              onClick={handleAwardsSave}
+              disabled={!isRoundStepValid(round, 3)}
+            />
+          }
+        />
+      )}
+
+      <Group row gap={10}>
+        <DeadlineDates round={round} />
+        <EditSection onClick={() => setShowEditDatesModal(true)} />
+      </Group>
 
       <Group gap={6} mb={-10}>
-        <Text type="heading">{round.title}</Text>
+        <Group row classNames={classes.titleAndEditIcon}>
+          <Text type="heading">{round.title}</Text>
+          <EditSection onClick={() => setShowEditNameModal(true)} />
+        </Group>
+
         <ReadMore description={<Text type="body">{round.description}</Text>} />
       </Group>
 
       <Divider narrow />
 
       <Group gap={16}>
-        <EditSection section="votes" />
+        <EditSection section="votes" onClick={() => setShowVotesModal(true)} />
         <CardWrapper>
           {addresses.map(a => (
             <StrategyCard address={a} />
@@ -62,7 +188,7 @@ const CreateTheRound = () => {
       <Divider />
 
       <Group gap={16}>
-        <EditSection section="awards" />
+        <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
         <CardWrapper>
           {[...Array(round.numWinners)].map((award, idx) => (
             <AwardCard amount={round.fundingAmount} award={round.awards[0]} place={idx + 1} />
@@ -70,9 +196,10 @@ const CreateTheRound = () => {
         </CardWrapper>
       </Group>
 
+      {/* // TODO: add this back in when we have the tokens and NFTs sections */}
+      {/*
       <Divider />
-
-      <Group gap={16} mb={16}>
+       <Group gap={16} mb={16}>
         <Text type="title">Deposit funds for the round</Text>
         <InstructionBox
           title="Funding now vs later"
@@ -80,7 +207,7 @@ const CreateTheRound = () => {
         />
       </Group>
 
-      <Group>
+       <Group>
         <Text type="title">Tokens</Text>
       </Group>
 
@@ -88,7 +215,7 @@ const CreateTheRound = () => {
 
       <Group>
         <Text type="title">NFTs</Text>
-      </Group>
+      </Group> */}
 
       <Footer />
     </>
