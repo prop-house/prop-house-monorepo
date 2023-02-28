@@ -51,8 +51,8 @@ const Address: React.FC<{
   // Vote input handler
   const handleVoteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseInt(e.target.value);
-    // If value is NaN or negative, set to 0
-    if (isNaN(value) || value < 0) value = 0;
+    // If value is NaN or negative, set to 1
+    if (isNaN(value) || value < 1) value = 1;
 
     // If the value is greater than 3 digits, truncate it to first 3 digits
     // ie. 1234 -> 123
@@ -75,7 +75,7 @@ const Address: React.FC<{
   const isContract = address.type === 'contract';
 
   // Disabled states
-  const zeroVotesAllotted = address.votesPerToken === 0;
+  const oneVoteAllotted = address.votesPerToken === 1;
 
   const inputHasError = address.state === 'Error';
 
@@ -105,7 +105,11 @@ const Address: React.FC<{
             <Text type="subtitle">{capitalize(address.type)} Address</Text>
             <Bullet />
 
-            <Text type="link" onClick={() => handleClear(address)}>
+            <Text
+              type="link"
+              disabled={address.state !== 'Success'}
+              onClick={() => handleClear(address)}
+            >
               clear
             </Text>
           </Group>
@@ -178,7 +182,7 @@ const Address: React.FC<{
                   classNames={classes.button}
                   bgColor={ButtonColor.Gray}
                   onClick={handleDecrement}
-                  disabled={zeroVotesAllotted || inputHasError}
+                  disabled={oneVoteAllotted || inputHasError}
                 />
                 <Button
                   text="+"
