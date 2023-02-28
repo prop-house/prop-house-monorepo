@@ -77,7 +77,7 @@ const Round = () => {
     };
 
     fetchCommunityAndRound();
-  }, [communityName, dispatch, roundName, round]);
+  }, [communityName, dispatch, roundName, round, community]);
 
   // fetch proposals
   useEffect(() => {
