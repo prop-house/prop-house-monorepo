@@ -55,7 +55,7 @@ const Round = () => {
 
   // if no data is found in store (ie round page is entry point), fetch community and round
   useEffect(() => {
-    if (round && community) return;
+    if (round) return;
 
     const fetchCommunityAndRound = async () => {
       try {
