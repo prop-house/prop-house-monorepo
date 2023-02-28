@@ -50,7 +50,8 @@ const SimpleRoundCard: React.FC<{
   const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
 
   useEffect(() => {
-    if (community !== undefined && displayCommunity) return;
+    if (community !== undefined || displayCommunity) return;
+
     const fetchCommunity = async () =>
       setCommunity(await wrapper.getCommunityWithId(round.communityId));
     fetchCommunity();
