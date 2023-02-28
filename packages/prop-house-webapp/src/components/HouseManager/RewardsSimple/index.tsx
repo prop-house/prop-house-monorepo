@@ -9,32 +9,32 @@ import { capitalize } from '../../../utils/capitalize';
 import { AwardProps } from '../AwardsSelector';
 
 const RewardsSimple: React.FC<{
+  round: InitialRoundProps;
+  award: AwardProps;
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
-  handleBlur: (award: AwardProps) => void;
   handleChange: (
     property: keyof InitialRoundProps,
     value: InitialRoundProps[keyof InitialRoundProps],
   ) => void;
-  round: InitialRoundProps;
-  award: AwardProps;
+  handleBlur: (award: AwardProps) => void;
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
   handleInputTypeChange: (address: AwardProps) => void;
 }> = props => {
   const {
     isTyping,
-    setIsTyping,
+    award,
     round,
+    setIsTyping,
     handleChange,
     handleBlur,
-    award,
     handleClear,
     handleInputTypeChange,
     handleInputChange,
   } = props;
 
-  // Handle change event on address input
+  // Handle change event on award input
   const handleInputValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsTyping(true);
     const newValue = e.target.value;
