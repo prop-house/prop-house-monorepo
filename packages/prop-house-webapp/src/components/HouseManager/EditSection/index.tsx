@@ -11,10 +11,12 @@ const EditSection: React.FC<{
   const { section, onClick } = props;
 
   return (
-    <div className={classes.container} onClick={onClick}>
+    <div className={classes.container}>
       {section && <Text type="title">{capitalize(section)}</Text>}
 
-      <Tooltip content={<EditIcon />} tooltipContent="Edit" />
+      <div onClick={onClick}>
+        <Tooltip content={<EditIcon />} tooltipContent="Edit" />
+      </div>
     </div>
   );
 };

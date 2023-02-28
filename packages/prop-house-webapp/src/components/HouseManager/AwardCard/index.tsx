@@ -1,8 +1,9 @@
 import classes from './AwardCard.module.css';
 import Text from '../Text';
-import { AwardProps } from '../SetTheAwards';
+import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
 import AwardWithPlace from '../AwardWithPlace';
+import TruncateThousands from '../../TruncateThousands';
 
 const AwardCard: React.FC<{
   amount: number;
@@ -28,7 +29,7 @@ const AwardCard: React.FC<{
 
         {/* // TODO: where are we getting currency type from on single award? */}
         <Text type="body">
-          {amount} {award.symbol}
+          <TruncateThousands amount={amount} decimals={1} /> {award.symbol}
         </Text>
       </Group>
     </div>

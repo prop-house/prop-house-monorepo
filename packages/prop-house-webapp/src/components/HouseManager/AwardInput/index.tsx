@@ -5,7 +5,7 @@ import trimEthAddress from '../../../utils/trimEthAddress';
 import Group from '../Group';
 import Text from '../Text';
 import Bullet from '../Bullet';
-import { AwardProps } from '../SetTheAwards';
+import { AwardProps } from '../AwardsSelector';
 
 const AwardInput: React.FC<{
   award: AwardProps;
@@ -75,7 +75,7 @@ const AwardInput: React.FC<{
                   award.state === 'Error' && classes.addressInputError,
                 )}
                 type="text"
-                value={award.addressValue}
+                value={award.address}
                 onBlur={() => handleBlur(award)}
                 onKeyPress={event => event.key === 'Enter' && handleBlur(award)}
                 onChange={handleInputChange}
@@ -97,12 +97,12 @@ const AwardInput: React.FC<{
             <button className={classes.addressSuccess} onClick={() => handleInputTypeChange(award)}>
               {/* Show award contract image and name */}
               <div className={classes.addressImgAndTitle}>
-                <img src={award.addressImage} alt={award.addressName} />
+                <img src={award.image} alt={award.name} />
 
-                <span>{award.addressName}</span>
+                <span>{award.name}</span>
               </div>
 
-              <div>{trimEthAddress(award.addressValue)}</div>
+              <div>{trimEthAddress(award.address)}</div>
             </button>
           )}
         </Group>
