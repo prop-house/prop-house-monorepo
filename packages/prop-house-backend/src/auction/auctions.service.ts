@@ -37,7 +37,8 @@ export class AuctionsService {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .where('a.startTime < :now', { now })
+      .where(':now > a.startTime', { now })
+      .andWhere(':now < a.votingEndTime', { now })
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
@@ -49,7 +50,8 @@ export class AuctionsService {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .where('a.startTime < :now', { now })
+      .where(':now > a.startTime', { now })
+      .andWhere(':now < a.votingEndTime', { now })
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
