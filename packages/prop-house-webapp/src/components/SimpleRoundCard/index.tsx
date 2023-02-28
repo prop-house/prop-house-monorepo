@@ -1,4 +1,4 @@
-import classes from './NewRoundCard.module.css';
+import classes from './SimpleRoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
