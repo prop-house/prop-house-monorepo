@@ -16,7 +16,7 @@ const Base = () => {
   const { data: block } = useBlockNumber();
   const provider = useProvider();
 
-  const VOTE_LOAD = 5;
+  const VOTE_LOAD = 10;
 
   const [loadingRelComms, setLoadingRelComms] = useState(false);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
