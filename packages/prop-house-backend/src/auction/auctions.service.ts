@@ -56,7 +56,9 @@ export class AuctionsService {
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
       .leftJoin('a.community', 'c')
-      .andWhere('c.contractAddress IN (:...addresses)', { addresses })
+      .andWhere('LOWER(c.contractAddress) IN (:...addresses)', {
+        addresses: addresses.map((addr) => addr.toLowerCase()),
+      })
       .getRawMany();
   }
 

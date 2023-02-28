@@ -53,7 +53,9 @@ export class VotesService {
       .leftJoin('v.proposal', 'p')
       .leftJoin('p.auction', 'a')
       .leftJoin('a.community', 'c')
-      .where('c.contractAddress IN (:...addresses)', { addresses })
+      .where('LOWER(c.contractAddress) IN (:...addresses)', {
+        addresses: addresses.map((addr) => addr.toLowerCase()),
+      })
       .addSelect('p')
       .getMany();
   }
