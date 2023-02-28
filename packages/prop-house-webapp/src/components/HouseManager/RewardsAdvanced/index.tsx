@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { InitialRoundProps } from '../../../state/slices/round';
 import AddAwardByToken from '../AddAwardByToken';
+import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
-import { AwardProps } from '../SetTheAwards';
 import Text from '../Text';
 
 const RewardsAdvanced: React.FC<{
@@ -14,7 +14,13 @@ const RewardsAdvanced: React.FC<{
   numOfAwards: number;
   awardContracts: AwardProps[];
 }> = props => {
-  const { handleChange, numOfAwards, awardContracts } = props;
+  const {
+    handleChange,
+    numOfAwards,
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    awardContracts,
+  } = props;
 
   const [customRewards, setCustomRewards] = useState([{}, {}, {}]);
 
