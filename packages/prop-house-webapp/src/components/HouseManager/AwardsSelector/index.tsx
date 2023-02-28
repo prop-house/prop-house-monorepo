@@ -4,7 +4,7 @@ import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
 import Section from '../Section';
 import RewardsSimple from '../RewardsSimple';
-// import RewardsAdvanced from '../RewardsAdvanced';
+import RewardsAdvanced from '../RewardsAdvanced';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
@@ -12,6 +12,7 @@ import { uuid } from 'uuidv4';
 
 import { isAddress } from 'ethers/lib/utils.js';
 import { getTokenInfo } from '../utils/getTokenInfo';
+import { changeAward } from '../utils/changeAward';
 
 export interface AwardProps {
   id: string;
@@ -23,10 +24,6 @@ export interface AwardProps {
   state: 'Input' | 'Success' | 'Searching ' | 'Error';
   errorType?: 'AddressNotFound' | 'UnidentifiedContract';
 }
-
-// TODO: add to utils folder
-export const changeAward = (id: string, addresses: AwardProps[], changes: Partial<AwardProps>) =>
-  addresses.map(address => (address.id === id ? { ...address, ...changes } : address));
 
 const AwardsSelector = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -69,10 +66,7 @@ const AwardsSelector = () => {
 
   //TODO: This is a hack to clear the awards when the user goes back to the previous step
   useEffect(() => {
-    if (activeSection === 0) {
-    } else {
-      clearAwards();
-    }
+    clearAwards();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeSection]);
 
@@ -87,11 +81,13 @@ const AwardsSelector = () => {
 
   // TODO: keep?
   // const handleWinnerChange = (value: number) => {
-  //   handleChange('numWinners', value);
+  // handleChange('numWinners', value);
   // };
   // const handleFundingChange = (value: number) => {
   //   handleChange('fundingAmount', value);
   // };
+
+  const verifiedAwards = (awards: AwardProps[]) => awards.filter(a => a.state === 'Success');
 
   // TODO: better comments
   // onblur
@@ -134,8 +130,20 @@ const AwardsSelector = () => {
           name: name,
           symbol: symbol,
         });
-        dispatch(updateRound({ ...round, currencyType: symbol, awards: updated }));
+
+        // handleChange('numWinners', verifiedAwards(updated).length);
+
         setAwardContracts(updated);
+
+        dispatch(
+          updateRound({
+            ...round,
+            // update the number of winners if the award is valid (state === 'Success')
+            numWinners: verifiedAwards(updated).length,
+            currencyType: symbol,
+            awards: updated,
+          }),
+        );
         dispatch(checkStepCriteria());
       }
     }
@@ -159,7 +167,37 @@ const AwardsSelector = () => {
   const handleChangeSuccessToInput = (award: AwardProps) => {
     const updated = changeAward(award.id, awardContracts, { ...award, state: 'Input' });
     setAwardContracts(updated);
+    // TODO: when Advanced, we need to calculate numWinners based of SUCCESS state awards, meaning, if we change from success to input, we need to subtract 1 from numWinners
+    // handleChange('numWinners', verifiedAwards(updated).length);
+    // TODO: but cant do it from here because on Simple setup, we track num winners in another input field
     handleChange('awards', updated);
+  };
+
+  // remove award
+  const handleRemoveAward = (award: AwardProps) => {
+    const updated = awardContracts.filter(a => a.id !== award.id);
+
+    setAwardContracts(updated);
+
+    dispatch(
+      updateRound({
+        ...round,
+        numWinners: verifiedAwards(updated).length,
+        awards: updated,
+      }),
+    );
+
+    console.log('removed', round.numWinners);
+  };
+
+  // add award
+  const handleAddAward = () => {
+    const updated = [...awardContracts, initialAward];
+
+    setAwardContracts(updated);
+
+    handleChange('awards', updated);
+    dispatch(checkStepCriteria());
   };
 
   return (
@@ -188,11 +226,10 @@ const AwardsSelector = () => {
           <RewardsSimple
             key={award.id}
             award={award}
-            handleChange={handleChange}
             round={round}
-            // TODO: keep?
-            handleClear={handleClearAward}
             isTyping={isTyping}
+            handleChange={handleChange}
+            handleClear={handleClearAward}
             setIsTyping={setIsTyping}
             handleBlur={handleOnBlur}
             handleInputChange={handleInputChange}
@@ -200,14 +237,21 @@ const AwardsSelector = () => {
           />
         ))}
 
-      {/* {activeSection === 1 && (
-        <div>Advanced</div>
-        // <RewardsAdvanced
-        //   awardContracts={awardContracts}
-        //   handleChange={handleChange}
-        //   numOfAwards={round.numWinners}
-        // />
-      )} */}
+      {activeSection === 1 && (
+        <RewardsAdvanced
+          awards={awardContracts}
+          numWinners={round.numWinners}
+          isTyping={isTyping}
+          setIsTyping={setIsTyping}
+          handleAdd={handleAddAward}
+          handleRemove={handleRemoveAward}
+          handleChange={handleChange}
+          handleClear={handleClearAward}
+          handleBlur={handleOnBlur}
+          handleInputChange={handleInputChange}
+          handleInputTypeChange={handleChangeSuccessToInput}
+        />
+      )}
     </>
   );
 };

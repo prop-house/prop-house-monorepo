@@ -1,53 +1,72 @@
 // import classes from './RewardsAdvanced.module.css';
-import { useState } from 'react';
 import { InitialRoundProps } from '../../../state/slices/round';
-import AddAwardByToken from '../AddAwardByToken';
+import AwardByToken from '../AwardByToken';
 import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
 import Text from '../Text';
 
 const RewardsAdvanced: React.FC<{
+  numWinners: number;
+  awards: AwardProps[];
+  isTyping: boolean;
+  setIsTyping: (value: boolean) => void;
+  handleAdd: () => void;
+  handleRemove: (award: AwardProps) => void;
   handleChange: (
     property: keyof InitialRoundProps,
     value: InitialRoundProps[keyof InitialRoundProps],
   ) => void;
-  numOfAwards: number;
-  awardContracts: AwardProps[];
+  handleBlur: (award: AwardProps) => void;
+  handleClear(address: AwardProps): void;
+  handleInputChange: (address: AwardProps, value: string) => void;
+  handleInputTypeChange: (address: AwardProps) => void;
 }> = props => {
   const {
+    numWinners,
+    awards,
+    isTyping,
+    setIsTyping,
+    handleAdd,
+    handleRemove,
     handleChange,
-    numOfAwards,
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    awardContracts,
+    handleBlur,
+    handleClear,
+    handleInputTypeChange,
+    handleInputChange,
   } = props;
 
-  const [customRewards, setCustomRewards] = useState([{}, {}, {}]);
-
-  const handleRemove = (index: number) => {
-    setCustomRewards(prevItems => {
-      const newItems = [...prevItems];
-      newItems.splice(index, 1);
-      return newItems;
-    });
-  };
-
-  const handleAdd = () => {
-    setCustomRewards(prevItems => [...prevItems, {}]);
-  };
   return (
     <>
-      <Group>
-        {customRewards.map((a, idx) => (
-          <>
-            <AddAwardByToken
-              numOfAwards={numOfAwards}
-              handleChange={handleChange}
-              place={idx + 1}
-              onClick={() => handleRemove(idx)}
-              oneRewardLeft={customRewards.length === 1}
-            />
-          </>
+      <Group mb={12} gap={12}>
+        {/* {(round.awards.length > 1 ? awards : [...Array(3)]).map((a, idx) => ( */}
+        {awards.map((a, idx) => (
+          <AwardByToken
+            // award={
+            //   round.awards.length > 1
+            //     ? a
+            //     : {
+            //         id: uuid(),
+            //         type: 'contract',
+            //         address: '',
+            //         image: '',
+            //         name: '',
+            //         symbol: '',
+            //         state: 'Input',
+            //       }
+            // }
+            award={a}
+            place={idx + 1}
+            isTyping={isTyping}
+            numWinners={numWinners}
+            disabled={awards.length === 1}
+            setIsTyping={setIsTyping}
+            handleBlur={handleBlur}
+            handleRemove={handleRemove}
+            handleClear={handleClear}
+            handleChange={handleChange}
+            handleInputChange={handleInputChange}
+            handleInputTypeChange={handleInputTypeChange}
+          />
         ))}
       </Group>
 
