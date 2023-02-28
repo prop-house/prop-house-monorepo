@@ -25,7 +25,7 @@ import sanitizeHtml from 'sanitize-html';
 import { useEffect, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
-const NewRoundCard: React.FC<{
+const SimpleRoundCard: React.FC<{
   round: StoredAuction;
   displayCommunity?: boolean;
   displayTldr?: boolean;
@@ -152,4 +152,4 @@ const NewRoundCard: React.FC<{
   );
 };
 
-export default NewRoundCard;
+export default SimpleRoundCard;
