@@ -1,5 +1,6 @@
 import { StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { useNavigate } from 'react-router-dom';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import classes from './FeedVoteCard.module.css';
 
@@ -13,7 +14,7 @@ const FeedVoteCard: React.FC<{ vote: StoredVoteWithProposal }> = props => {
   };
 
   return (
-    <div className={classes.feedRow}>
+    <div className={classes.feedRow} onClick={() => handleOnClick()}>
       <div className={classes.content}>
         <EthAddress
           address={vote.address}
@@ -21,12 +22,10 @@ const FeedVoteCard: React.FC<{ vote: StoredVoteWithProposal }> = props => {
           containerClassName={classes.ethAddressContainer}
           className={classes.owner}
         />
-        {'cast '}
-        <span className={classes.voteWeight}>{vote.weight}</span>
+        {'cast'}
+        <span className={classes.voteWeight}>&nbsp;{vote.weight}&nbsp;</span>
         {' votes for '}
-        <span className={classes.propName} onClick={() => handleOnClick()}>
-          {vote.proposal.title}
-        </span>
+        <span className={classes.propName}>{vote.proposal.title}</span>
       </div>
     </div>
   );

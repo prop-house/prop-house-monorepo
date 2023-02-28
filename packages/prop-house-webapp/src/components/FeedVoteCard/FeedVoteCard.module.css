@@ -5,6 +5,7 @@
   margin: 1rem 0;
   border: 1px solid var(--border-med) !important;
   font-size: medium;
+  cursor: pointer;
 }
 
 .content {
@@ -28,7 +29,6 @@
 .propName {
   margin-left: 5px;
   font-weight: 700;
-  cursor: pointer;
 }
 
 @media (max-width: 768px) {
