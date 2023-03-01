@@ -14,12 +14,13 @@ import { ReceiptIssuer } from '../lib/utils/ReceiptIssuer.sol';
 import { Asset, PackedAsset } from '../lib/types/Common.sol';
 import { AssetHelper } from '../lib/utils/AssetHelper.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
+import { TokenHolder } from '../lib/utils/TokenHolder.sol';
 import { IMessenger } from '../interfaces/IMessenger.sol';
 import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC1155 } from '../lib/token/ERC1155.sol';
 
-contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, ReceiptIssuer, Clone {
+contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, ERC1155Supply, ReceiptIssuer, Clone {
     using { Uint256.split } for uint256;
     using { Uint256.toUint256 } for address;
     using { AssetHelper.toID } for Asset;
@@ -148,8 +149,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     // prettier-ignore
     /// @notice If the contract implements an interface
     /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, ERC1155, IERC165) returns (bool) {
-        return ReceiptIssuer.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, TokenHolder, ERC1155, IERC165) returns (bool) {
+        return ReceiptIssuer.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 
     /// @notice Initialize the round by optionally defining the
