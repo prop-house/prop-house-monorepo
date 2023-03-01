@@ -155,12 +155,106 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "round",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum AssetType",
+            "name": "assetType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "identifier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Asset[]",
+        "name": "assets",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "BatchDepositToRound",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "string",
         "name": "uri",
         "type": "string"
       }
     ],
     "name": "ContractURIUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "round",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "enum AssetType",
+            "name": "assetType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "identifier",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct Asset",
+        "name": "asset",
+        "type": "tuple"
+      }
+    ],
+    "name": "DepositToRound",
     "type": "event"
   },
   {
@@ -174,9 +268,9 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "impl",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "kind",
+        "type": "bytes32"
       }
     ],
     "name": "HouseCreated",
@@ -199,9 +293,9 @@
       },
       {
         "indexed": false,
-        "internalType": "address",
-        "name": "impl",
-        "type": "address"
+        "internalType": "bytes32",
+        "name": "kind",
+        "type": "bytes32"
       },
       {
         "indexed": false,

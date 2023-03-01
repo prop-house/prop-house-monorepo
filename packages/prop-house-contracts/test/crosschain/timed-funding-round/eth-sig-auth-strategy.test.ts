@@ -386,6 +386,6 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     );
     await expect(claimTx)
       .to.emit(timedFundingRound, 'AwardClaimed')
-      .withArgs(winner.proposalId, signer.address, assetId.toHex(), amount.toHex(), signer.address);
+      .withArgs(winner.proposalId, signer.address, signer.address, assetId.toHex(), amount.toHex());
   });
 });

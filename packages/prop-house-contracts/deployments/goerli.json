@@ -1,29 +1,29 @@
 {
   "ethereum": {
     "address": {
-      "manager": "0xB45006F4C619AD31029705Ca0A29116d61EBd7fE",
-      "propHouse": "0x785a9350F1ca4E9590182CDD76b02871078F0Da5",
-      "messenger": "0x1F843f190Ed9096A90c529409B475bF915eAA4E0",
-      "creatorPassIssuer": "0xEd8f485c5279dBdd3fdeAfcDEeA223ce3F6B2168",
-      "starknetCommit": "0x2eb582FF3134b23eA050C4265f19086907067530",
-      "communityHouseImpl": "0xb4d5696D3E58F6A55e360d5D1Bd568aC1c992Ed0",
-      "timedFundingRoundImpl": "0xd687A6708bb5A8A025e25DD4BE1e3Af33eB8fa0d"
+      "manager": "0xd4edF6Ef8d7192D4ED525F0753D8CE0cD8A80975",
+      "propHouse": "0xD5AC988Ff34c563525d3dee841eCBe87f4a2D53a",
+      "messenger": "0x3a22f7348D2d88a4be00E74Bde3Ef9a290943F3A",
+      "creatorPassIssuer": "0x7B3973cCC427A94b123857322bFB1B7Ed2976878",
+      "starknetCommit": "0x648aeC52717b732f3898Dd21a41B35DD68E087D8",
+      "communityHouseImpl": "0x2B069Cc6D86ca8eD7647E9616F4fFd05b8D567be",
+      "timedFundingRoundImpl": "0x650f5A53Bf1Cb4f4e5Ceb73EE42Ab0D412ADFa77"
     }
   },
   "starknet": {
     "address": {
-      "roundFactory": "0x7b3b8f69b5f05c21ce9b15bca1a08e0031750fad64969e9c87be77004bb030b",
-      "ethExecutionStrategy": "0x5b7ea5a107b9c9a79fea6f85a6afda9560334632aff76879cae6996e414caf7",
-      "votingStrategyRegistry": "0x6c43f863214380ed6c6a0fb144c8f031679e7989e914980f91a60d210dcbf4c",
-      "timedFundingRoundEthTxAuthStrategy": "0x712eb922fdff6503e0dfdf1e4695990da36e90fb988057e5a5424e73299ee8f",
-      "timedFundingRoundEthSigAuthStrategy": "0x2b9d0e0d0b477bba2b45771a896459397edaa82416a364c4205d3590e7461a6",
-      "vanillaVotingStrategy": "0x5284369b5a72d628c20607e438351d8f1b20f26683e710ed68f3ebfb7b277ab",
-      "merkleWhitelistVotingStrategy": "0x6ff2c5160e8644bc256c8d0260a93f86baf2da481cdfaa0ff1d5db2e143d3a6",
-      "ethereumBalanceOfVotingStrategy": "0x4e2138a3d375454938f25316e13f6dee5a3d6ce977ef8768b04e52d98b4d3cb",
-      "ethereumBalanceOfMultiplierVotingStrategy": "0x60d2e252c13d76dee13a8567633f59ef497c02992f7a7c4eb4fe323eb22355d"
+      "roundFactory": "0x5b91da2a8145d4cae8bd4cd798b9fdf5105be21126bb8bc72ed23759409d127",
+      "ethExecutionStrategy": "0x99643ba8546202310dada3fe7830a8ef80d46af83713b4aeb00311750cd79b",
+      "votingStrategyRegistry": "0x330fd0196dd00dff39cabec8526fd8ae11fcc766bf61f557bc2940395c1994b",
+      "timedFundingRoundEthTxAuthStrategy": "0x1c08712135b3e706fc9130cf693c99502c632abde68d61b39643c7d8a139961",
+      "timedFundingRoundEthSigAuthStrategy": "0x22969ff4c4382d53c2839ba218a0bccbb460f0e11b294d2dac39148f5e4eb9f",
+      "vanillaVotingStrategy": "0x3de5b19d2dcdbb3415c37aeab4698e41a40dd35b7ad185cd08071ca0cbfc00c",
+      "merkleWhitelistVotingStrategy": "0xe6f7b1003ae775ff9a9bc977e36a4c3996efaac68d1c938161657eb78d40b8",
+      "ethereumBalanceOfVotingStrategy": "0x7d76f45aa273bcf33fa19139a2ee8f87436cd5fc3c0c91129dd2e2aad27dc9c",
+      "ethereumBalanceOfMultiplierVotingStrategy": "0x16e2c060a1d6f6754b7e13f8c050da7b27719df10a91c57caba72fde93c1c0d"
     },
     "classHash": {
-      "timedFundingRound": "0x5f63558feee9692cdea934a5f2286536d53609781fafb33b5b15098b9f7001f"
+      "timedFundingRound": "0x4983c21582791b2f5858188e1ba4182fb2a69380c6f3f8fc611433f7d8aa96f"
     }
   }
 }

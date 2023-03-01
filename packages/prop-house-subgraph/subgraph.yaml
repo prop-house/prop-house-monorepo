@@ -3,11 +3,41 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
+    name: Manager
+    source:
+      abi: Manager
+      address: "0xd4edF6Ef8d7192D4ED525F0753D8CE0cD8A80975"
+      startBlock: 8574730
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/manager.ts
+      entities:
+        - Administrative
+        - HouseImplementation
+        - RoundImplementation
+      abis:
+        - name: Manager
+          file: ./abis/Manager.json
+      eventHandlers:
+        - event: OwnerUpdated(indexed address,indexed address)
+          handler: handleOwnerUpdated
+        - event: HouseRegistered(address,bytes32)
+          handler: handleHouseRegistered
+        - event: HouseUnregistered(address)
+          handler: handleHouseUnregistered
+        - event: RoundRegistered(address,address,bytes32)
+          handler: handleRoundRegistered
+        - event: RoundUnregistered(address,address)
+          handler: handleRoundUnregistered
+    network: goerli
+  - kind: ethereum
     name: PropHouse
     source:
       abi: PropHouse
-      address: "0x785a9350F1ca4E9590182CDD76b02871078F0Da5"
-      startBlock: 8549845
+      address: "0xD5AC988Ff34c563525d3dee841eCBe87f4a2D53a"
+      startBlock: 8574730
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -21,12 +51,16 @@ dataSources:
         - name: PropHouse
           file: ./abis/PropHouse.json
       eventHandlers:
-        - event: HouseCreated(indexed address,address)
+        - event: HouseCreated(indexed address,bytes32)
           handler: handleHouseCreated
-        - event: RoundCreated(indexed address,indexed address,address,string,string)
+        - event: RoundCreated(indexed address,indexed address,bytes32,string,string)
           handler: handleRoundCreated
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleHouseTransfer
+        - event: DepositToRound(address,address,(uint8,address,uint256,uint256))
+          handler: handleDepositToRound
+        - event: BatchDepositToRound(address,address,(uint8,address,uint256,uint256)[])
+          handler: handleBatchDepositToRound
     network: goerli
 templates:
   - name: CommunityHouse
@@ -72,11 +106,9 @@ templates:
           handler: handleRoundCancelled
         - event: RoundFinalized()
           handler: handleRoundFinalized
-        - event: AwardClaimed(uint256,address,uint256,uint256,address)
+        - event: AwardClaimed(uint256,address,address,uint256,uint256)
           handler: handleAwardClaimed
-        - event: AssetReclaimed(address,uint256,uint256)
-          handler: handleAssetReclaimed
-        - event: AssetRescued(address,uint256,uint256)
+        - event: AssetRescued(address,address,uint256,uint256)
           handler: handleAssetRescued
         - event: TransferSingle(indexed address,indexed address,indexed
             address,uint256,uint256)
@@ -84,6 +116,4 @@ templates:
         - event: TransferBatch(indexed address,indexed address,indexed
             address,uint256[],uint256[])
           handler: handleBatchTransfer
-        - event: ApprovalForAll(indexed address,indexed address,bool)
-          handler: handleApprovalForAll
     network: goerli

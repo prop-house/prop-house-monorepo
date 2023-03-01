@@ -3,11 +3,7 @@ pragma solidity >=0.8.17;
 
 /// @notice Gas optimized merkle proof verification library
 library MerkleProof {
-    function verify(
-        bytes32[] calldata proof,
-        bytes32 root,
-        bytes32 leaf
-    ) internal pure returns (bool isValid) {
+    function verify(bytes32[] calldata proof, bytes32 root, bytes32 leaf) internal pure returns (bool isValid) {
         assembly {
             if proof.length {
                 // Left shifting by 5 is like multiplying by 32.

@@ -90,12 +90,10 @@ abstract contract ERC1155 is IERC1155 {
         }
     }
 
-    function balanceOfBatch(address[] calldata owners, uint256[] calldata ids)
-        public
-        view
-        virtual
-        returns (uint256[] memory balances)
-    {
+    function balanceOfBatch(
+        address[] calldata owners,
+        uint256[] calldata ids
+    ) public view virtual returns (uint256[] memory balances) {
         if (owners.length != ids.length) {
             revert LENGTH_MISMATCH();
         }
@@ -118,12 +116,7 @@ abstract contract ERC1155 is IERC1155 {
             interfaceId == 0x0e89341c; // ERC165 Interface ID for ERC1155MetadataURI
     }
 
-    function _mint(
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) internal virtual {
+    function _mint(address to, uint256 id, uint256 amount, bytes memory data) internal virtual {
         uint256[] memory ids = _asSingletonArray(id);
         uint256[] memory amounts = _asSingletonArray(amount);
 
@@ -205,11 +198,7 @@ abstract contract ERC1155 is IERC1155 {
         }
     }
 
-    function _batchBurn(
-        address from,
-        uint256[] memory ids,
-        uint256[] memory amounts
-    ) internal virtual {
+    function _batchBurn(address from, uint256[] memory ids, uint256[] memory amounts) internal virtual {
         uint256 idsLength = ids.length; // Saves MLOADs.
 
         if (idsLength != amounts.length) {
@@ -231,11 +220,7 @@ abstract contract ERC1155 is IERC1155 {
         emit TransferBatch(msg.sender, from, address(0), ids, amounts);
     }
 
-    function _burn(
-        address from,
-        uint256 id,
-        uint256 amount
-    ) internal virtual {
+    function _burn(address from, uint256 id, uint256 amount) internal virtual {
         uint256[] memory ids = _asSingletonArray(id);
         uint256[] memory amounts = _asSingletonArray(amount);
 

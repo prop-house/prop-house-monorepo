@@ -6,33 +6,27 @@ pragma solidity >=0.8.17;
 library NamedStorage {
     error ALREADY_SET();
 
-    function bytes32ToUint256Mapping(string memory tag_)
-        internal
-        pure
-        returns (mapping(bytes32 => uint256) storage randomVariable)
-    {
+    function bytes32ToUint256Mapping(
+        string memory tag_
+    ) internal pure returns (mapping(bytes32 => uint256) storage randomVariable) {
         bytes32 location = keccak256(abi.encodePacked(tag_));
         assembly {
             randomVariable.slot := location
         }
     }
 
-    function bytes32ToAddressMapping(string memory tag_)
-        internal
-        pure
-        returns (mapping(bytes32 => address) storage randomVariable)
-    {
+    function bytes32ToAddressMapping(
+        string memory tag_
+    ) internal pure returns (mapping(bytes32 => address) storage randomVariable) {
         bytes32 location = keccak256(abi.encodePacked(tag_));
         assembly {
             randomVariable.slot := location
         }
     }
 
-    function addressToBoolMapping(string memory tag_)
-        internal
-        pure
-        returns (mapping(address => bool) storage randomVariable)
-    {
+    function addressToBoolMapping(
+        string memory tag_
+    ) internal pure returns (mapping(address => bool) storage randomVariable) {
         bytes32 location = keccak256(abi.encodePacked(tag_));
         assembly {
             randomVariable.slot := location

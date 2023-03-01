@@ -3,6 +3,8 @@ pragma solidity >=0.8.17;
 
 import { IManager } from './interfaces/IManager.sol';
 import { Ownable } from './lib/utils/Ownable.sol';
+import { IHouse } from './interfaces/IHouse.sol';
+import { IRound } from './interfaces/IRound.sol';
 
 /// @title Manager
 /// @notice This contract allows an account to manage house and round implementations
@@ -37,7 +39,7 @@ contract Manager is IManager, Ownable {
     function registerHouse(address houseImpl) external onlyOwner {
         houses[houseImpl] = true;
 
-        emit HouseRegistered(houseImpl);
+        emit HouseRegistered(houseImpl, IHouse(houseImpl).kind());
     }
 
     /// @notice Unregister a house implementation contract
@@ -54,7 +56,7 @@ contract Manager is IManager, Ownable {
     function registerRound(address houseImpl, address roundImpl) external onlyOwner {
         rounds[houseImpl][roundImpl] = true;
 
-        emit RoundRegistered(houseImpl, roundImpl);
+        emit RoundRegistered(houseImpl, roundImpl, IRound(roundImpl).kind());
     }
 
     /// @notice Unregister a round implementation contract for a house

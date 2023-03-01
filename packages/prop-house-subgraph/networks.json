@@ -1,8 +1,12 @@
 {
   "goerli": {
+    "Manager": {
+      "address": "0xd4edF6Ef8d7192D4ED525F0753D8CE0cD8A80975",
+      "startBlock": 8574730
+    },
     "PropHouse": {
-      "address": "0x785a9350F1ca4E9590182CDD76b02871078F0Da5",
-      "startBlock": 8549845
+      "address": "0xD5AC988Ff34c563525d3dee841eCBe87f4a2D53a",
+      "startBlock": 8574730
     }
   }
 }

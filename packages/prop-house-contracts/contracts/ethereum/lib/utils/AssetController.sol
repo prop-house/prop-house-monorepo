@@ -48,11 +48,7 @@ abstract contract AssetController {
     /// @param asset The asset to transfer, including an amount and a recipient
     /// @param source The account supplying the asset
     /// @param recipient The asset recipient
-    function _transfer(
-        Asset memory asset,
-        address source,
-        address payable recipient
-    ) internal {
+    function _transfer(Asset memory asset, address source, address payable recipient) internal {
         if (asset.assetType == AssetType.Native) {
             // Ensure neither the token nor the identifier parameters are set
             if ((uint160(asset.token) | asset.identifier) != 0) {
@@ -96,12 +92,7 @@ abstract contract AssetController {
     /// @param source The transfer source
     /// @param recipient The transfer recipient
     /// @param amount The amount to transfer
-    function _transferERC20(
-        address token,
-        address source,
-        address recipient,
-        uint256 amount
-    ) internal {
+    function _transferERC20(address token, address source, address recipient, uint256 amount) internal {
         _assertNonZeroAmount(amount);
 
         // Use `transfer` if the source is this contract
