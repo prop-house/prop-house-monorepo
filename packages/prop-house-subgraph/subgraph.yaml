@@ -6,8 +6,8 @@ dataSources:
     name: Manager
     source:
       abi: Manager
-      address: "0xd4edF6Ef8d7192D4ED525F0753D8CE0cD8A80975"
-      startBlock: 8574730
+      address: "0x5634cD3940F1c3D8dFCa192150cAa1fD23951897"
+      startBlock: 8578889
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -36,8 +36,8 @@ dataSources:
     name: PropHouse
     source:
       abi: PropHouse
-      address: "0xD5AC988Ff34c563525d3dee841eCBe87f4a2D53a"
-      startBlock: 8574730
+      address: "0x96f4887de44C5fa01B2b96cE9ad56c95f5F9a186"
+      startBlock: 8578889
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -51,9 +51,10 @@ dataSources:
         - name: PropHouse
           file: ./abis/PropHouse.json
       eventHandlers:
-        - event: HouseCreated(indexed address,bytes32)
+        - event: HouseCreated(indexed address,indexed address,bytes32)
           handler: handleHouseCreated
-        - event: RoundCreated(indexed address,indexed address,bytes32,string,string)
+        - event: RoundCreated(indexed address,indexed address,indexed
+            address,bytes32,string,string)
           handler: handleRoundCreated
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleHouseTransfer

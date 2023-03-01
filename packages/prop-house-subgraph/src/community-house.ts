@@ -4,6 +4,10 @@ import { Account, House, Round } from '../generated/schema';
 import { ZERO_ADDRESS } from './lib/constants';
 
 export function handleRoundTransfer(event: Transfer): void {
+  if (event.params.from.toHex() == ZERO_ADDRESS) {
+    return; // Handled by `handleRoundCreated`
+  }
+
   const round = Round.load(event.params.tokenId.toHex());
   if (!round) {
     log.error('[handleRoundTransfer] Round not found: {}. Transfer Hash: {}', [
@@ -19,10 +23,7 @@ export function handleRoundTransfer(event: Transfer): void {
     to = new Account(addr);
     to.save();
   }
-  
-  if (event.params.from.toHex() == ZERO_ADDRESS) {
-    round.creator = to.id;
-  }
+
   round.manager = to.id;
   round.save();
 }

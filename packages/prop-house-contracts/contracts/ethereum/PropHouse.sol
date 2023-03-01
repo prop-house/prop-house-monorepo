@@ -140,7 +140,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         // Mint the ownership token to the house creator
         _mint(msg.sender, house.toUint256());
 
-        emit HouseCreated(house, IHouse(house).kind());
+        emit HouseCreated(msg.sender, house, IHouse(house).kind());
 
         IHouse(house).initialize(newHouse.config);
     }
@@ -151,7 +151,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     function _createRound(address house, Round calldata newRound) internal returns (address round) {
         round = IHouse(house).createRound(newRound.impl, newRound.title, msg.sender);
 
-        emit RoundCreated(house, round, IRound(round).kind(), newRound.title, newRound.description);
+        emit RoundCreated(msg.sender, house, round, IRound(round).kind(), newRound.title, newRound.description);
     }
 
     /// @notice Returns `true` if the passed `house` address is valid

@@ -1,7 +1,7 @@
 import { log } from '@graphprotocol/graph-ts';
 import { BatchDepositToRound, DepositToRound, HouseCreated, RoundCreated, Transfer } from '../generated/PropHouse/PropHouse';
 import { Account, Asset, Balance, Deposit, House, Round } from '../generated/schema';
-import { RoundState, ZERO_ADDRESS } from './lib/constants';
+import { BIGINT_ZERO, RoundState, ZERO_ADDRESS } from './lib/constants';
 import {
   CommunityHouse as CommunityHouseTemplate,
   TimedFundingRound as TimedFundingRoundTemplate,
@@ -10,7 +10,16 @@ import { AssetStruct, computeAssetID, getAssetTypeString } from './lib/utils';
 
 export function handleHouseCreated(event: HouseCreated): void {
   const house = new House(event.params.house.toHex());
+
+  let creator = Account.load(event.params.creator.toHex());
+  if (!creator) {
+    creator = new Account(event.params.creator.toHex());
+    creator.save();
+  }
+
   house.type = event.params.kind.toString();
+  house.creator = creator.id;
+  house.owner = creator.id;
   house.createdAt = event.block.timestamp;
   house.creationTx = event.transaction.hash;
 
@@ -29,10 +38,18 @@ export function handleRoundCreated(event: RoundCreated): void {
     return;
   }
 
+  let creator = Account.load(event.params.creator.toHex());
+  if (!creator) {
+    creator = new Account(event.params.creator.toHex());
+    creator.save();
+  }
+
   const round = new Round(event.params.round.toHex());
   round.type = event.params.kind.toString();
   round.state = RoundState.AWAITING_REGISTRATION;
   round.house = house.id;
+  round.creator = creator.id;
+  round.manager = creator.id;
   round.createdAt = event.block.timestamp;
   round.creationTx = event.transaction.hash;
 
@@ -42,6 +59,10 @@ export function handleRoundCreated(event: RoundCreated): void {
 }
 
 export function handleHouseTransfer(event: Transfer): void {
+  if (event.params.from.toHex() == ZERO_ADDRESS) {
+    return; // Handled by `handleHouseCreated`
+  }
+
   const house = House.load(event.params.tokenId.toHex());
   if (!house) {
     log.error('[handleHouseTransfer] House not found: {}. Transfer Hash: {}', [
@@ -58,9 +79,6 @@ export function handleHouseTransfer(event: Transfer): void {
     to.save();
   }
 
-  if (event.params.from.toHex() == ZERO_ADDRESS) {
-    house.creator = to.id;
-  }
   house.owner = to.id;
   house.save();
 }
@@ -101,6 +119,7 @@ export function handleDepositToRound(event: DepositToRound): void {
     balance = new Balance(balanceId);
     balance.asset = asset.id;
     balance.round = event.params.round.toHex();
+    balance.balance = BIGINT_ZERO;
   }
   balance.balance = balance.balance.plus(event.params.asset.amount);
   balance.updatedAt = event.block.timestamp;
@@ -145,6 +164,7 @@ export function handleBatchDepositToRound(event: BatchDepositToRound): void {
       balance = new Balance(balanceId);
       balance.asset = asset.id;
       balance.round = event.params.round.toHex();
+      balance.balance = BIGINT_ZERO;
     }
     balance.balance = balance.balance.plus(assetStruct.amount);
     balance.updatedAt = event.block.timestamp;

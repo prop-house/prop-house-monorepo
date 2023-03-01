@@ -39,17 +39,26 @@ interface IPropHouse is IERC721 {
     error HOUSE_NOT_APPROVED_BY_USER();
 
     /// @notice Emitted when a house is created
+    /// @param creator The house creator
     /// @param house The house contract address
     /// @param kind The house contract type
-    event HouseCreated(address indexed house, bytes32 kind);
+    event HouseCreated(address indexed creator, address indexed house, bytes32 kind);
 
     /// @notice Emitted when a round is created
+    /// @param creator The round creator
     /// @param house The house that the round was created on
     /// @param round The round contract address
     /// @param kind The round contract type
     /// @param title The round title
     /// @param description The round description
-    event RoundCreated(address indexed house, address indexed round, bytes32 kind, string title, string description);
+    event RoundCreated(
+        address indexed creator,
+        address indexed house,
+        address indexed round,
+        bytes32 kind,
+        string title,
+        string description
+    );
 
     /// @notice Emitted when an asset is deposited to a round
     /// @param from The user who deposited the asset
