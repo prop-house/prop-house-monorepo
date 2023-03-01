@@ -11,8 +11,10 @@ import { AwardProps } from '../AwardsSelector';
 const RewardsSimple: React.FC<{
   round: InitialRoundProps;
   award: AwardProps;
+
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
+  handleAmountInputChange: (e: React.ChangeEvent<HTMLInputElement>, award: AwardProps) => void;
   handleChange: (
     property: keyof InitialRoundProps,
     value: InitialRoundProps[keyof InitialRoundProps],
@@ -28,6 +30,7 @@ const RewardsSimple: React.FC<{
     round,
     setIsTyping,
     handleChange,
+    handleAmountInputChange,
     handleBlur,
     handleClear,
     handleInputTypeChange,
@@ -40,6 +43,40 @@ const RewardsSimple: React.FC<{
     const newValue = e.target.value;
 
     handleInputChange(award, newValue);
+  };
+
+  const handleWinnerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = parseInt(e.target.value);
+
+    // If value is NaN or negative, set to 0
+    if (isNaN(value) || value < 0) value = 0;
+
+    // If the value is greater than 5 digits, truncate it to first 5 digits
+    // ie. 1234 -> 123
+    if (value.toString().length > 3) value = Number(value.toString().substring(0, 3));
+
+    handleChange('numWinners', value);
+
+    // const updated = changeAward(award.id, awardContracts, { ...awardContracts, amount: value });
+    // dispatch(
+    //   updateRound({
+    //     ...round,
+    //     fundingAmount: value,
+    //     awards: updated,
+    //   }),
+    // );
+
+    // dispatch(checkStepCriteria());
+  };
+
+  const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const clipboardData = e.clipboardData.getData('text');
+    let value = parseInt(clipboardData, 10);
+
+    if (isNaN(value) || value < 1) {
+      e.preventDefault();
+      return;
+    }
   };
 
   const inputHasError = award.state === 'Error';
@@ -62,13 +99,10 @@ const RewardsSimple: React.FC<{
         <Text type="subtitle">Winner(s)</Text>
         <input
           type="number"
-          autoFocus
           placeholder="3"
           maxLength={3}
           value={round.numWinners === 0 ? '' : round.numWinners}
-          onChange={e => {
-            handleChange('numWinners', Number(e.target.value));
-          }}
+          onChange={handleWinnerInputChange}
         />
       </Group>
 
@@ -80,12 +114,11 @@ const RewardsSimple: React.FC<{
         <Text type="subtitle">Rewards</Text>
         <input
           type="number"
-          maxLength={3}
+          maxLength={5}
           placeholder="0.5"
-          value={round.fundingAmount === 0 ? '' : round.fundingAmount}
-          onChange={e => {
-            handleChange('fundingAmount', Number(e.target.value));
-          }}
+          value={round.fundingAmount === 0 ? undefined : round.fundingAmount}
+          onPaste={handleInputPaste}
+          onChange={e => handleAmountInputChange(e, award)}
         />
       </Group>
 

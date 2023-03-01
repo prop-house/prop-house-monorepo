@@ -6,7 +6,6 @@ import Group from '../Group';
 import Text from '../Text';
 
 const RewardsAdvanced: React.FC<{
-  numWinners: number;
   awards: AwardProps[];
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
@@ -22,7 +21,6 @@ const RewardsAdvanced: React.FC<{
   handleInputTypeChange: (address: AwardProps) => void;
 }> = props => {
   const {
-    numWinners,
     awards,
     isTyping,
     setIsTyping,
@@ -57,7 +55,6 @@ const RewardsAdvanced: React.FC<{
             award={a}
             place={idx + 1}
             isTyping={isTyping}
-            numWinners={numWinners}
             disabled={awards.length === 1}
             setIsTyping={setIsTyping}
             handleBlur={handleBlur}
