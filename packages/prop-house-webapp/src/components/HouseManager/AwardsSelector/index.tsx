@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { uuid } from 'uuidv4';
-
 import { isAddress } from 'ethers/lib/utils.js';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { changeAward } from '../utils/changeAward';
@@ -21,12 +20,15 @@ export interface AwardProps {
   image: string;
   name: string;
   symbol: string;
+  amount: number;
   state: 'Input' | 'Success' | 'Searching ' | 'Error';
   errorType?: 'AddressNotFound' | 'UnidentifiedContract';
 }
 
 const AwardsSelector = () => {
   const [activeSection, setActiveSection] = useState(0);
+  const isSimpleAward = activeSection === 0;
+  const isAdvancedAward = activeSection === 1;
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
@@ -49,6 +51,7 @@ const AwardsSelector = () => {
     image: '',
     name: '',
     symbol: '',
+    amount: 0,
     state: 'Input',
   };
 
@@ -78,14 +81,6 @@ const AwardsSelector = () => {
     setAwardContracts(updated);
     handleChange('awards', updated);
   };
-
-  // TODO: keep?
-  // const handleWinnerChange = (value: number) => {
-  // handleChange('numWinners', value);
-  // };
-  // const handleFundingChange = (value: number) => {
-  //   handleChange('fundingAmount', value);
-  // };
 
   const verifiedAwards = (awards: AwardProps[]) => awards.filter(a => a.state === 'Success');
 
@@ -131,19 +126,28 @@ const AwardsSelector = () => {
           symbol: symbol,
         });
 
-        // handleChange('numWinners', verifiedAwards(updated).length);
-
         setAwardContracts(updated);
 
-        dispatch(
-          updateRound({
-            ...round,
-            // update the number of winners if the award is valid (state === 'Success')
-            numWinners: verifiedAwards(updated).length,
-            currencyType: symbol,
-            awards: updated,
-          }),
-        );
+        if (isSimpleAward) {
+          dispatch(
+            updateRound({
+              ...round,
+              currencyType: symbol,
+              awards: updated,
+            }),
+          );
+        } else {
+          dispatch(
+            updateRound({
+              ...round,
+              // update the number of winners if the award is valid (state === 'Success')
+              numWinners: verifiedAwards(updated).length,
+              currencyType: symbol,
+              awards: updated,
+            }),
+          );
+        }
+
         dispatch(checkStepCriteria());
       }
     }
@@ -167,10 +171,16 @@ const AwardsSelector = () => {
   const handleChangeSuccessToInput = (award: AwardProps) => {
     const updated = changeAward(award.id, awardContracts, { ...award, state: 'Input' });
     setAwardContracts(updated);
-    // TODO: when Advanced, we need to calculate numWinners based of SUCCESS state awards, meaning, if we change from success to input, we need to subtract 1 from numWinners
-    // handleChange('numWinners', verifiedAwards(updated).length);
-    // TODO: but cant do it from here because on Simple setup, we track num winners in another input field
-    handleChange('awards', updated);
+
+    if (isAdvancedAward) {
+      // when Advanced setup, we calculate round.numWinners based off 'Success' state awards, meaning,
+      // if we change from success to input, we need to subtract 1 from round.numWinners
+      // but we don't want to do it when using the Simple setup since we track round.numWinners in another input field
+      handleChange('awards', verifiedAwards(updated).length);
+      dispatch(checkStepCriteria());
+    } else {
+      handleChange('awards', updated);
+    }
   };
 
   // remove award
@@ -186,8 +196,6 @@ const AwardsSelector = () => {
         awards: updated,
       }),
     );
-
-    console.log('removed', round.numWinners);
   };
 
   // add award
@@ -197,6 +205,31 @@ const AwardsSelector = () => {
     setAwardContracts(updated);
 
     handleChange('awards', updated);
+    dispatch(checkStepCriteria());
+  };
+
+  const handleAmountInputChange = (e: React.ChangeEvent<HTMLInputElement>, award: AwardProps) => {
+    let value = parseFloat(e.target.value);
+
+    // If value is NaN or negative, set to 0
+    if (isNaN(value) || value < 0) value = 0;
+
+    // If the value is greater than 5 digits, truncate it to first 5 digits
+    // ie. 123456 -> 12345
+    if (value.toString().length > 5) value = Number(value.toString().substring(0, 5));
+
+    const updated = changeAward(award.id, awardContracts, { ...awardContracts, amount: value });
+
+    setAwardContracts(updated);
+
+    dispatch(
+      updateRound({
+        ...round,
+        fundingAmount: value,
+        awards: updated,
+      }),
+    );
+
     dispatch(checkStepCriteria());
   };
 
@@ -221,13 +254,14 @@ const AwardsSelector = () => {
 
       <Divider />
 
-      {activeSection === 0 &&
+      {isSimpleAward &&
         awardContracts.map(award => (
           <RewardsSimple
             key={award.id}
             award={award}
             round={round}
             isTyping={isTyping}
+            handleAmountInputChange={handleAmountInputChange}
             handleChange={handleChange}
             handleClear={handleClearAward}
             setIsTyping={setIsTyping}
@@ -237,10 +271,9 @@ const AwardsSelector = () => {
           />
         ))}
 
-      {activeSection === 1 && (
+      {isAdvancedAward && (
         <RewardsAdvanced
           awards={awardContracts}
-          numWinners={round.numWinners}
           isTyping={isTyping}
           setIsTyping={setIsTyping}
           handleAdd={handleAddAward}

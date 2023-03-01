@@ -1,4 +1,3 @@
-import { uuid } from 'uuidv4';
 import { AwardProps } from '../AwardsSelector';
 
 /**

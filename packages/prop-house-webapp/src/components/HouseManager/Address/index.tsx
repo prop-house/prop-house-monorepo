@@ -65,7 +65,7 @@ const Address: React.FC<{
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
     const value = parseInt(clipboardData, 10);
-    if (isNaN(value) || value < 0) {
+    if (isNaN(value) || value < 1) {
       e.preventDefault();
       return;
     }
@@ -171,7 +171,8 @@ const Address: React.FC<{
                 maxLength={3}
                 className={classes.voteInput}
                 disabled={inputHasError}
-                value={address.votesPerToken}
+                value={address.addressValue === '' ? '' : address.votesPerToken}
+                placeholder="1"
                 type="number"
                 onChange={handleVoteInputChange}
                 onPaste={handleInputPaste}

@@ -12,7 +12,6 @@ import Text from '../Text';
 const AwardByToken: React.FC<{
   award: AwardProps;
   place: number;
-  numWinners: number;
   disabled: boolean;
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
@@ -28,7 +27,6 @@ const AwardByToken: React.FC<{
 }> = props => {
   const {
     place,
-    numWinners,
     award,
     disabled,
     isTyping,
@@ -128,10 +126,10 @@ const AwardByToken: React.FC<{
       <div className={classes.inputContainer}>
         <div className={classes.awardInput}>
           <input
-            placeholder="3"
-            value={numWinners === 0 ? '' : numWinners}
+            placeholder="0"
+            value={award.amount}
             onChange={e => {
-              handleChange('numWinners', e.target.value);
+              handleChange('fundingAmount', e.target.value);
             }}
           />
         </div>

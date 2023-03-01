@@ -7,6 +7,9 @@ export const getTokenInfo = async (contractAddress: string) => {
     }
     const data = await response.json();
     const { name, image_url, symbol } = data;
+    // TODO: DAI doesn't have symbol, could use coingecko API to get symbol
+    // https://api.coingecko.com/api/v3/coins/ethereum/contract/0x6b175474e89094c44da98b954eedeac495271d0f/
+    // 2) Can't find ETH symbol, could use coingecko API to get symbol
     return { name, image: image_url, symbol };
   } catch (error) {
     console.error(error);
