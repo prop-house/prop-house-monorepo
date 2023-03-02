@@ -49,12 +49,18 @@ const initialUserAddress: AddressProps = {
   state: 'Input',
 };
 
+export interface CSVRow {
+  address: string;
+  votes: number;
+}
+
 const VotingStrategies = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
   const [isTyping, setIsTyping] = useState(false);
-  const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
+  const [showUploadUserCSVModal, setShowUploadUserCSVModal] = useState(false);
+  const [showUploadContractCSVModal, setShowUploadContractCSVModal] = useState(false);
   const [contracts, setContracts] = useState<AddressProps[]>(
     round.votingContracts.length ? round.votingContracts : [initialContractAddress],
   );
@@ -259,10 +265,181 @@ const VotingStrategies = () => {
     }
   };
 
+  const handleCSVUpload = async (data: CSVRow[], type: 'contract' | 'user') => {
+    const csvAddresses: AddressProps[] = [];
+
+    const isContract = type === 'contract';
+    const initialAddress = isContract ? initialContractAddress : initialUserAddress;
+    const setAddress = isContract ? setContracts : setUserAddresses;
+    const array = isContract ? contracts : userAddresses;
+
+    // data.map(async (row: CSVRow) => {
+    //   // check if valid
+    //   if (!isAddress(row.address)) {
+    //     csvAddresses.push({
+    //       ...initialAddress,
+    //       id: uuid(),
+    //       state: 'Error',
+    //       errorType: 'AddressNotFound',
+    //       votesPerToken: row.votes,
+    //       addressValue: row.address,
+    //     });
+    //   } else if (
+    //     // check if duplicate
+    //     userAddresses.filter(a => a.addressValue !== '').some(a => a.addressValue === row.address)
+    //   ) {
+    //     csvAddresses.push({
+    //       ...initialAddress,
+    //       id: uuid(),
+    //       state: 'Error',
+    //       errorType: 'UserAlreadyExists',
+    //       votesPerToken: row.votes,
+    //       addressValue: row.address,
+    //     });
+    //   } else if (isContract) {
+    //     const tokenInfo = getTokenInfo(row.address);
+    //     const { name, image } = await tokenInfo;
+    //     // DON'T PROCEED UNTIL WE FETCH THE TOKEN INFO
+    //     if (!name || !image) {
+    //       csvAddresses.push({
+    //         ...initialAddress,
+    //         id: uuid(),
+    //         state: 'Error',
+    //         errorType: 'UnidentifiedContract',
+    //         votesPerToken: row.votes,
+    //         addressValue: row.address,
+    //       });
+    //     } else {
+    //       csvAddresses.push({
+    //         ...initialAddress,
+    //         id: uuid(),
+    //         state: 'Success',
+    //         addressImage: image,
+    //         addressName: name,
+    //       });
+    //     }
+    //   } else {
+    //     csvAddresses.push({
+    //       ...initialAddress,
+    //       id: uuid(),
+    //       state: 'Success',
+    //       votesPerToken: row.votes,
+    //       addressValue: row.address,
+    //     });
+    //   }
+    //   return row;
+    // });
+
+    // remove any empty addresses from userAddresses before adding new ones
+
+    for (const row of data) {
+      // check if valid
+      if (!isAddress(row.address)) {
+        csvAddresses.push({
+          ...initialAddress,
+          id: uuid(),
+          state: 'Error',
+          errorType: 'AddressNotFound',
+          votesPerToken: row.votes,
+          addressValue: row.address,
+        });
+      } else if (
+        // check if duplicate
+        userAddresses.filter(a => a.addressValue !== '').some(a => a.addressValue === row.address)
+      ) {
+        csvAddresses.push({
+          ...initialAddress,
+          id: uuid(),
+          state: 'Error',
+          errorType: 'UserAlreadyExists',
+          votesPerToken: row.votes,
+          addressValue: row.address,
+        });
+      } else if (isContract) {
+        const tokenInfo = await getTokenInfo(row.address);
+        const { name, image } = tokenInfo;
+        // Wait for token info to be fetched
+        if (!name || !image) {
+          csvAddresses.push({
+            ...initialAddress,
+            id: uuid(),
+            state: 'Error',
+            errorType: 'UnidentifiedContract',
+            votesPerToken: row.votes,
+            addressValue: row.address,
+          });
+        } else {
+          csvAddresses.push({
+            ...initialAddress,
+            id: uuid(),
+            state: 'Success',
+            addressImage: image,
+            addressName: name,
+            votesPerToken: row.votes,
+            addressValue: row.address,
+          });
+          setAddress(array => [
+            ...array,
+            {
+              ...initialAddress,
+              id: uuid(),
+              state: 'Success',
+              addressImage: image,
+              addressName: name,
+              votesPerToken: row.votes,
+              addressValue: row.address,
+            },
+          ]);
+        }
+      } else {
+        csvAddresses.push({
+          ...initialAddress,
+          id: uuid(),
+          state: 'Success',
+          votesPerToken: row.votes,
+          addressValue: row.address,
+        });
+        setAddress(array => [
+          ...array,
+          {
+            ...initialAddress,
+            id: uuid(),
+            state: 'Success',
+            votesPerToken: row.votes,
+            addressValue: row.address,
+          },
+        ]);
+      }
+    }
+
+    const removedEmptyAddresses = array.filter(a => a.addressValue !== '');
+
+    const updatedContracts = [...removedEmptyAddresses, ...csvAddresses];
+    setAddress(updatedContracts);
+
+    handleChange(
+      isContract ? 'votingContracts' : 'votingUsers',
+      verifiedAddresses(updatedContracts),
+    );
+  };
+
   return (
     <>
       {/* // TODO: allow user to upload a CSV file when on Step 5 (already in a modal)*/}
-      {showUploadCSVModal && <UploadCSVModal setShowUploadCSVModal={setShowUploadCSVModal} />}
+      {showUploadContractCSVModal && (
+        <UploadCSVModal
+          handleUpload={handleCSVUpload}
+          setShowUploadCSVModal={setShowUploadContractCSVModal}
+          type="contract"
+        />
+      )}
+      {showUploadUserCSVModal && (
+        <UploadCSVModal
+          handleUpload={handleCSVUpload}
+          setShowUploadCSVModal={setShowUploadUserCSVModal}
+          type="user"
+        />
+      )}
 
       <Group gap={6} mb={16} mt={-10}>
         <Text type="subtitle">Token balance</Text>
@@ -288,9 +465,15 @@ const VotingStrategies = () => {
           ))}
         </Group>
 
-        <Text type="link" onClick={() => handleAddAddress('contract')}>
-          Add another token
-        </Text>
+        <Group row>
+          <Text type="link" onClick={() => handleAddAddress('contract')}>
+            Add another token
+          </Text>
+          <Bullet />
+          <Text type="link" onClick={() => setShowUploadContractCSVModal(true)}>
+            Upload CSV
+          </Text>
+        </Group>
       </Group>
 
       <Divider />
@@ -324,7 +507,7 @@ const VotingStrategies = () => {
             Add another address
           </Text>
           <Bullet />
-          <Text type="link" onClick={() => setShowUploadCSVModal(true)}>
+          <Text type="link" onClick={() => setShowUploadUserCSVModal(true)}>
             Upload CSV
           </Text>
         </Group>
