@@ -248,9 +248,12 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
       },
     );
-    // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
-    const timedFundingRoundClassHash = await hre.starknetWrapper.getClassHash(
-      generatedTimedFundingRoundMetadataPath,
+
+    const timedFundingRoundClassHash = await starknetDeployer.declare(
+      timedFundingRoundStrategyL2Factory,
+      {
+        maxFee: MAX_FEE,
+      },
     );
     const timedFundingRoundImpl = await timedFundingRoundImplFactory.deploy(
       timedFundingRoundClassHash,

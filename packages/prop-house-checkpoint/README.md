@@ -1,3 +1,3 @@
 # @prophouse/checkpoint
 
-A subgraph that indexes Starknet Prop House events
+A subgraph-like API that indexes Starknet Prop House events
