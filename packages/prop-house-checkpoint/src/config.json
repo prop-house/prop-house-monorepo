@@ -2,9 +2,9 @@
   "network_node_url": "https://starknet-goerli.infura.io/v3/596754cde02d416e925e168c720a41c2",
   "sources": [
     {
-      "contract": "0x3df1d76735905e9c229a2b47c94a44129ab983b6b2f9f1207f6cff8065bca73",
+      "contract": "0x43bce101724fd1a21a635108901a778e80582a80bd95ecef83fac53129a2f6a",
       "abi": "RoundFactory",
-      "start": 774928,
+      "start": 775838,
       "events": [
         {
           "name": "round_registered",
