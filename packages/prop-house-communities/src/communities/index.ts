@@ -1,13 +1,14 @@
 import {
+  nouns,
+  lilNouns,
+  onchainMonkey,
   balanceOfErc20,
   balanceOfErc721,
   balanceOfErc721Multiple,
   erc1155,
   oneHundredVotes,
+  perWalletVoteErc20,
 } from '../strategies';
-import { lilNouns } from '../strategies/lilNouns';
-import { nouns } from '../strategies/nouns';
-import { onchainMonkey } from '../strategies/onchainMonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**
@@ -89,8 +90,16 @@ export const communities = new CaseInsensitiveMap(
     // Chaos
     '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
     // Rug Radio
-    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': balanceOfErc20(18),
+    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': perWalletVoteErc20(18, 5),
     // Noggle DAO
     '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
+    // Headline
+    '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(10),
+    // MferbuilderDAO
+    '0x795D300855069F602862c5e23814Bdeeb25DCa6b': balanceOfErc721(10),
+    // Nouns OTG
+    '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
+    // Seneca
+    '0x1f65ec15af924e931c07d509f0217cafff96712b': balanceOfErc721(10),
   }),
 );

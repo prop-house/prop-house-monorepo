@@ -5,3 +5,5 @@ export { nouns } from './nouns';
 export { erc1155 } from './erc1155';
 export { oneHundredVotes } from './oneHundredVotes';
 export { onchainMonkey } from './onchainMonkey';
+export { perWalletVoteErc20 } from './perWalletVoteErc20';
+export { lilNouns } from './lilNouns';
