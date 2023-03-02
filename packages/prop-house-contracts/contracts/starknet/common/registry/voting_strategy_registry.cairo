@@ -95,7 +95,7 @@ func _populate_strategy_array{pedersen_ptr: HashBuiltin*}(
         if (strategy_params_len == 0) {
             return ();
         } else {
-            assert strategy_array[current_index] = strategy_params[current_index - 1];
+            assert strategy_array[current_index] = strategy_params[0];
 
             _populate_strategy_array(
                 strategy_addr,
