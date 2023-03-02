@@ -98,6 +98,8 @@ export const communities = new CaseInsensitiveMap(
     // MferbuilderDAO
     '0x795D300855069F602862c5e23814Bdeeb25DCa6b': balanceOfErc721(10),
     // Nouns OTG
-    '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(),
+    '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
+    // Seneca
+    '0x1f65ec15af924e931c07d509f0217cafff96712b': balanceOfErc721(10),
   }),
 );
