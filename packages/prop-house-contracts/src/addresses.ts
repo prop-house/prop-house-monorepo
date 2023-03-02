@@ -21,6 +21,10 @@ export interface VotingStrategies {
   vanilla: string;
 }
 
+export interface ClassHashes {
+  timedFunding: string;
+}
+
 export interface EVMContracts {
   prophouse: string;
   house: HouseImpls;
@@ -29,6 +33,7 @@ export interface EVMContracts {
 
 export interface StarknetContracts {
   voting: VotingStrategies;
+  classHashes: ClassHashes;
 }
 
 export interface ContractAddresses {
@@ -53,6 +58,9 @@ export const contracts: Record<number, ContractAddresses> = {
         balanceOfMultiplier: goerli.starknet.address.ethereumBalanceOfMultiplierVotingStrategy,
         whitelist: goerli.starknet.address.merkleWhitelistVotingStrategy,
         vanilla: goerli.starknet.address.vanillaVotingStrategy,
+      },
+      classHashes: {
+        timedFunding: goerli.starknet.classHash.timedFundingRound,
       },
     },
   },
