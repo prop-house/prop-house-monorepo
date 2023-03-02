@@ -239,20 +239,16 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       { maxFee: MAX_FEE },
     );
 
-    const generatedTimedFundingRoundMetadataPath = hre.starknetWrapper.writeConstantsToOutput(
-      timedFundingRoundStrategyL2Factory.metadataPath,
-      {
-        voting_strategy_registry: votingStrategyRegistry.address,
-        eth_execution_strategy: ethExecutionStrategy.address,
-        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
-        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
-      },
-    );
-
     const timedFundingRoundClassHash = await starknetDeployer.declare(
       timedFundingRoundStrategyL2Factory,
       {
         maxFee: MAX_FEE,
+        constants: {
+          voting_strategy_registry: votingStrategyRegistry.address,
+          eth_execution_strategy: ethExecutionStrategy.address,
+          eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
+          eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
+        },
       },
     );
     const timedFundingRoundImpl = await timedFundingRoundImplFactory.deploy(
