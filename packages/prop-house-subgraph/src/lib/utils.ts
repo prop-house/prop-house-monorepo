@@ -103,16 +103,16 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The voting strategy address
  */
 export function getVotingStrategyType(addr: string): string {
-  if (addr == '0x1fda52b598464cc0562d57d2b8bd456ab37a1d28431e02bed98a0a2c2e57c53') {
+  if (addr == '0x7a281ea19f75f25d3e08c9c3e4ec77c389e09395fd7d7f8074a86814ce14b2c') {
     return VotingStrategyType.BALANCE_OF;
   }
-  if (addr == '0x440b79a3cfb2754d06a268d4823369ddb7b758876dbe86066287a226d883eb0') {
+  if (addr == '0x453c5443124262957245ce62a9a3edf587772dc04fc7480eeeab6f299cc1db5') {
     return VotingStrategyType.BALANCE_OF_WITH_MULTIPLIER;
   }
-  if (addr == '0x7b0c9e54fb369cb9a9cbd3ac3deb22a0771f926fdb0d099b7ac314428d9585c') {
+  if (addr == '0x1438cb91d5f4f8fa36a53db08253a264db15cbeac572e8ba3b20f0bdaa25601') {
     return VotingStrategyType.WHITELIST;
   }
-  if (addr == '0x625caeedc8b5bd8df3ca48c89550b586c63a475ce0d7f94de2141f92ba6f467') {
+  if (addr == '0x71d90d5a74e1cc922d1bd864459985d732e3500808b28a694c66695c85f203b') {
     return VotingStrategyType.VANILLA;
   }
   return VotingStrategyType.UNKNOWN;

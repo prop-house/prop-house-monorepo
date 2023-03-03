@@ -59,7 +59,7 @@ export class BalanceOfVotingStrategy extends VotingStrategyBase<BalanceOf | Bala
       this._provider,
       strategy.address,
     );
-    if (strategy.multiplier && BigNumber.from(strategy.multiplier).gt(0)) {
+    if (strategy.multiplier && BigNumber.from(strategy.multiplier).gt(1)) {
       return {
         addr: starknet.voting.balanceOfMultiplier,
         params: [strategy.address, slotIndex, strategy.multiplier],

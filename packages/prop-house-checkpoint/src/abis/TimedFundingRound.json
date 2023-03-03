@@ -1,0 +1,283 @@
+[
+  {
+      "members": [
+          {
+              "name": "low",
+              "offset": 0,
+              "type": "felt"
+          },
+          {
+              "name": "high",
+              "offset": 1,
+              "type": "felt"
+          }
+      ],
+      "name": "Uint256",
+      "size": 2,
+      "type": "struct"
+  },
+  {
+      "members": [
+          {
+              "name": "proposal_id",
+              "offset": 0,
+              "type": "felt"
+          },
+          {
+              "name": "proposer_address",
+              "offset": 1,
+              "type": "felt"
+          },
+          {
+              "name": "voting_power",
+              "offset": 2,
+              "type": "Uint256"
+          }
+      ],
+      "name": "ProposalInfo",
+      "size": 4,
+      "type": "struct"
+  },
+  {
+      "members": [
+          {
+              "name": "proposal_id",
+              "offset": 0,
+              "type": "felt"
+          },
+          {
+              "name": "voting_power",
+              "offset": 1,
+              "type": "Uint256"
+          }
+      ],
+      "name": "ProposalVote",
+      "size": 3,
+      "type": "struct"
+  },
+  {
+      "members": [
+          {
+              "name": "asset_id",
+              "offset": 0,
+              "type": "Uint256"
+          },
+          {
+              "name": "amount",
+              "offset": 2,
+              "type": "Uint256"
+          }
+      ],
+      "name": "Award",
+      "size": 4,
+      "type": "struct"
+  },
+  {
+      "data": [
+          {
+              "name": "proposal_id",
+              "type": "felt"
+          },
+          {
+              "name": "proposer_address",
+              "type": "felt"
+          },
+          {
+              "name": "metadata_uri_len",
+              "type": "felt"
+          },
+          {
+              "name": "metadata_uri",
+              "type": "felt*"
+          }
+      ],
+      "keys": [],
+      "name": "proposal_created",
+      "type": "event"
+  },
+  {
+      "data": [
+          {
+              "name": "proposal_id",
+              "type": "felt"
+          }
+      ],
+      "keys": [],
+      "name": "proposal_cancelled",
+      "type": "event"
+  },
+  {
+      "data": [
+          {
+              "name": "proposal_id",
+              "type": "felt"
+          },
+          {
+              "name": "voter_address",
+              "type": "felt"
+          },
+          {
+              "name": "voting_power",
+              "type": "Uint256"
+          }
+      ],
+      "keys": [],
+      "name": "vote_created",
+      "type": "event"
+  },
+  {
+      "data": [
+          {
+              "name": "merkle_root",
+              "type": "Uint256"
+          },
+          {
+              "name": "winners_len",
+              "type": "felt"
+          },
+          {
+              "name": "winners",
+              "type": "ProposalInfo*"
+          }
+      ],
+      "keys": [],
+      "name": "round_finalized",
+      "type": "event"
+  },
+  {
+      "inputs": [
+          {
+              "name": "round_params_len",
+              "type": "felt"
+          },
+          {
+              "name": "round_params",
+              "type": "felt*"
+          }
+      ],
+      "name": "constructor",
+      "outputs": [],
+      "type": "constructor"
+  },
+  {
+      "inputs": [
+          {
+              "name": "voter_address",
+              "type": "felt"
+          },
+          {
+              "name": "proposal_votes_len",
+              "type": "felt"
+          },
+          {
+              "name": "proposal_votes",
+              "type": "ProposalVote*"
+          },
+          {
+              "name": "used_voting_strategy_ids_len",
+              "type": "felt"
+          },
+          {
+              "name": "used_voting_strategy_ids",
+              "type": "felt*"
+          },
+          {
+              "name": "user_voting_strategy_params_flat_len",
+              "type": "felt"
+          },
+          {
+              "name": "user_voting_strategy_params_flat",
+              "type": "felt*"
+          }
+      ],
+      "name": "vote",
+      "outputs": [],
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "name": "proposer_address",
+              "type": "felt"
+          },
+          {
+              "name": "metadata_uri_string_len",
+              "type": "felt"
+          },
+          {
+              "name": "metadata_uri_len",
+              "type": "felt"
+          },
+          {
+              "name": "metadata_uri",
+              "type": "felt*"
+          }
+      ],
+      "name": "propose",
+      "outputs": [],
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "name": "awards_len",
+              "type": "felt"
+          },
+          {
+              "name": "awards",
+              "type": "Award*"
+          }
+      ],
+      "name": "finalize_round",
+      "outputs": [],
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "name": "proposer_address",
+              "type": "felt"
+          },
+          {
+              "name": "proposal_id",
+              "type": "felt"
+          }
+      ],
+      "name": "cancel_proposal",
+      "outputs": [],
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "get_round_state",
+      "outputs": [
+          {
+              "name": "round_state",
+              "type": "felt"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "name": "proposal_id",
+              "type": "felt"
+          }
+      ],
+      "name": "get_proposal_info",
+      "outputs": [
+          {
+              "name": "proposal_info",
+              "type": "ProposalInfo"
+          },
+          {
+              "name": "is_cancelled",
+              "type": "felt"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  }
+]
