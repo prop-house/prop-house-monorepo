@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
-import { COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL } from '../Constants.sol';
+import { COMMUNITY_HOUSE_TYPE, COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL } from '../Constants.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
@@ -14,6 +14,9 @@ import { ERC721 } from '../lib/token/ERC721.sol';
 contract CommunityHouse is IHouse, ERC721 {
     using { Uint256.toUint256 } for address;
     using LibClone for address;
+
+    /// @notice The house type
+    bytes32 public immutable kind;
 
     /// @notice The entrypoint for all house and round creation
     IPropHouse public immutable propHouse;
@@ -48,6 +51,8 @@ contract CommunityHouse is IHouse, ERC721 {
         address _renderer,
         address _creatorPassIssuer
     ) ERC721(COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL) {
+        kind = COMMUNITY_HOUSE_TYPE;
+
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);
         creatorPassIssuer = ICreatorPassIssuer(_creatorPassIssuer);

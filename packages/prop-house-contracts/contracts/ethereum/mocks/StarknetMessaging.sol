@@ -59,11 +59,10 @@ contract StarknetMessaging is IStarknetMessaging {
     }
 
     /// @notice Consumes a message that was sent from an L2 contract and returns the hash of the message
-    function consumeMessageFromL2(uint256 from_address, uint256[] calldata payload)
-        external
-        override
-        returns (bytes32)
-    {
+    function consumeMessageFromL2(
+        uint256 from_address,
+        uint256[] calldata payload
+    ) external override returns (bytes32) {
         bytes32 msgHash = keccak256(
             abi.encodePacked(from_address, uint256(uint160(address(msg.sender))), payload.length, payload)
         );

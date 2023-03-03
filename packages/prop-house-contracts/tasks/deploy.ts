@@ -239,18 +239,17 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       { maxFee: MAX_FEE },
     );
 
-    const generatedTimedFundingRoundMetadataPath = hre.starknetWrapper.writeConstantsToOutput(
-      timedFundingRoundStrategyL2Factory.metadataPath,
+    const timedFundingRoundClassHash = await starknetDeployer.declare(
+      timedFundingRoundStrategyL2Factory,
       {
-        voting_strategy_registry: votingStrategyRegistry.address,
-        eth_execution_strategy: ethExecutionStrategy.address,
-        eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
-        eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
+        maxFee: MAX_FEE,
+        constants: {
+          voting_strategy_registry: votingStrategyRegistry.address,
+          eth_execution_strategy: ethExecutionStrategy.address,
+          eth_tx_auth_strategy: timedFundingRoundEthTxAuthStrategy.address,
+          eth_sig_auth_strategy: timedFundingRoundEthSigAuthStrategy.address,
+        },
       },
-    );
-    // Declare using CLI due to https://github.com/0xs34n/starknet.js/issues/311
-    const timedFundingRoundClassHash = await hre.starknetWrapper.getClassHash(
-      generatedTimedFundingRoundMetadataPath,
     );
     const timedFundingRoundImpl = await timedFundingRoundImplFactory.deploy(
       timedFundingRoundClassHash,

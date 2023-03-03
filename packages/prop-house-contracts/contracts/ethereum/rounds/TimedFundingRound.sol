@@ -4,8 +4,8 @@ pragma solidity >=0.8.17;
 import { Clone } from 'solady/src/utils/Clone.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
-import { REGISTER_ROUND_SELECTOR } from '../Constants.sol';
 import { ITimedFundingRound } from '../interfaces/ITimedFundingRound.sol';
+import { REGISTER_ROUND_SELECTOR, TIMED_FUNDING_ROUND_TYPE } from '../Constants.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
@@ -14,12 +14,13 @@ import { ReceiptIssuer } from '../lib/utils/ReceiptIssuer.sol';
 import { Asset, PackedAsset } from '../lib/types/Common.sol';
 import { AssetHelper } from '../lib/utils/AssetHelper.sol';
 import { MerkleProof } from '../lib/utils/MerkleProof.sol';
+import { TokenHolder } from '../lib/utils/TokenHolder.sol';
 import { IMessenger } from '../interfaces/IMessenger.sol';
 import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC1155 } from '../lib/token/ERC1155.sol';
 
-contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply, ReceiptIssuer, Clone {
+contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, ERC1155Supply, ReceiptIssuer, Clone {
     using { Uint256.split } for uint256;
     using { Uint256.toUint256 } for address;
     using { AssetHelper.toID } for Asset;
@@ -36,6 +37,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
+
+    /// @notice The round type
+    bytes32 public immutable kind;
 
     /// @notice The hash of the Starknet round contract
     uint256 public immutable classHash;
@@ -125,6 +129,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         uint256 _roundFactory,
         uint256 _executionRelayer
     ) {
+        kind = TIMED_FUNDING_ROUND_TYPE;
+
         classHash = _classHash;
         propHouse = IPropHouse(_propHouse);
         starknet = IStarknetCore(_starknet);
@@ -143,8 +149,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     // prettier-ignore
     /// @notice If the contract implements an interface
     /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, ERC1155, IERC165) returns (bool) {
-        return ReceiptIssuer.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, TokenHolder, ERC1155, IERC165) returns (bool) {
+        return ReceiptIssuer.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 
     /// @notice Initialize the round by optionally defining the
@@ -168,11 +174,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @param identifier The token identifier
     /// @param amount The token amount
     /// @dev This function is only callable by the prop house contract
-    function issueReceipt(
-        address to,
-        uint256 identifier,
-        uint256 amount
-    ) external onlyPropHouse {
+    function issueReceipt(address to, uint256 identifier, uint256 amount) external onlyPropHouse {
         _mint(to, identifier, amount, new bytes(0));
     }
 
@@ -181,11 +183,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @param identifiers The token identifiers
     /// @param amounts The token amounts
     /// @dev This function is only callable by the prop house contract
-    function issueReceipts(
-        address to,
-        uint256[] memory identifiers,
-        uint256[] memory amounts
-    ) external onlyPropHouse {
+    function issueReceipts(address to, uint256[] memory identifiers, uint256[] memory amounts) external onlyPropHouse {
         _batchMint(to, identifiers, amounts, new bytes(0));
     }
 
@@ -239,20 +237,20 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
         Asset calldata asset,
         bytes32[] calldata proof
     ) public {
-        address caller = msg.sender;
+        address claimer = msg.sender;
         if (isAwardClaimed(proposalId)) {
             revert AWARD_ALREADY_CLAIMED();
         }
         uint256 assetId = asset.toID();
 
-        bytes32 leaf = keccak256(abi.encode(proposalId, caller, assetId, amount));
+        bytes32 leaf = keccak256(abi.encode(proposalId, claimer, assetId, amount));
         if (!MerkleProof.verify(proof, winnerMerkleRoot, leaf)) {
             revert INVALID_MERKLE_PROOF();
         }
         _setAwardClaimed(proposalId);
         _transfer(asset, address(this), payable(recipient));
 
-        emit AwardClaimed(proposalId, caller, assetId, amount, recipient);
+        emit AwardClaimed(proposalId, claimer, recipient, assetId, amount);
     }
 
     /// @notice Claim a round award to the caller
@@ -260,12 +258,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
     /// @param amount The award amount
     /// @param asset The award asset to claim
     /// @param proof The merkle proof used to verify the validity of the award payout
-    function claimAward(
-        uint256 proposalId,
-        uint256 amount,
-        Asset calldata asset,
-        bytes32[] calldata proof
-    ) external {
+    function claimAward(uint256 proposalId, uint256 amount, Asset calldata asset, bytes32[] calldata proof) external {
         claimAwardToRecipient(proposalId, msg.sender, amount, asset, proof);
     }
 
@@ -291,8 +284,6 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
 
             // Transfer the asset to the recipient
             _transfer(assets[i], address(this), payable(recipient));
-
-            emit AssetReclaimed(recipient, assetId, assets[i].amount);
 
             unchecked {
                 ++i;
@@ -324,7 +315,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, ERC1155Supply
             // Transfer the excess amount to the recipient
             _transfer(assets[i], address(this), payable(recipient));
 
-            emit AssetRescued(recipient, assetId, assets[i].amount);
+            emit AssetRescued(msg.sender, recipient, assetId, assets[i].amount);
 
             unchecked {
                 ++i;

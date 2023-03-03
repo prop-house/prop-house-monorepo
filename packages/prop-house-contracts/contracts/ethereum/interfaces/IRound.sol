@@ -5,6 +5,9 @@ import { IERC165 } from './IERC165.sol';
 
 /// @notice Interface that must be implemented by all round types
 interface IRound is IERC165 {
+    /// @notice The round type
+    function kind() external view returns (bytes32);
+
     /// @notice Initialize the round
     /// @param data The optional round data. If empty, round creation is deferred.
     function initialize(bytes calldata data) external;

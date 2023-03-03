@@ -7,11 +7,7 @@ contract MockStarknetMessaging is StarknetMessaging {
     error INVALID_MESSAGE_TO_CONSUME();
 
     /// @notice Mocks a message from L2 to L1
-    function mockSendMessageFromL2(
-        uint256 from_address,
-        uint256 to_address,
-        uint256[] calldata payload
-    ) external {
+    function mockSendMessageFromL2(uint256 from_address, uint256 to_address, uint256[] calldata payload) external {
         bytes32 msgHash = keccak256(abi.encodePacked(from_address, to_address, payload.length, payload));
         l2ToL1Messages()[msgHash] += 1;
     }

@@ -134,11 +134,7 @@ abstract contract ERC721 is IERC721 {
     /// @param from The sender address
     /// @param to The recipient address
     /// @param tokenId The ERC-721 token id
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public {
+    function transferFrom(address from, address to, uint256 tokenId) public {
         if (from != owners[tokenId]) revert INVALID_OWNER();
 
         if (to == address(0)) revert ADDRESS_ZERO();
@@ -167,11 +163,7 @@ abstract contract ERC721 is IERC721 {
     /// @param from The sender address
     /// @param to The recipient address
     /// @param tokenId The ERC-721 token id
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) external {
+    function safeTransferFrom(address from, address to, uint256 tokenId) external {
         transferFrom(from, to, tokenId);
 
         if (
@@ -185,12 +177,7 @@ abstract contract ERC721 is IERC721 {
     /// @param from The sender address
     /// @param to The recipient address
     /// @param tokenId The ERC-721 token id
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata data
-    ) external {
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external {
         transferFrom(from, to, tokenId);
 
         if (
@@ -255,19 +242,11 @@ abstract contract ERC721 is IERC721 {
     /// @param from The sender address
     /// @param to The recipient address
     /// @param tokenId The ERC-721 token id
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {}
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 
     /// @dev Hook called after a token transfer
     /// @param from The sender address
     /// @param to The recipient address
     /// @param tokenId The ERC-721 token id
-    function _afterTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal virtual {}
+    function _afterTokenTransfer(address from, address to, uint256 tokenId) internal virtual {}
 }

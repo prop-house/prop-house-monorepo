@@ -14,6 +14,9 @@ interface IHouse is IERC721 {
     /// @notice Thrown when the provided value does not fit into 8 bits
     error VALUE_DOES_NOT_FIT_IN_8_BITS();
 
+    /// @notice The house type
+    function kind() external view returns (bytes32);
+
     /// @notice Initialize the house
     /// @param data Initialization data
     function initialize(bytes calldata data) external;
@@ -26,9 +29,5 @@ interface IHouse is IERC721 {
     /// @param impl The round implementation contract
     /// @param title The round title
     /// @param creator The round creator address
-    function createRound(
-        address impl,
-        string calldata title,
-        address creator
-    ) external returns (address);
+    function createRound(address impl, string calldata title, address creator) external returns (address);
 }

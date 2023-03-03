@@ -8,11 +8,7 @@ library Sort {
     /// @param assets The packed assets to sort
     /// @param left The left index (starting index: `0`)
     /// @param right The right index (starting index: `assets.length - 1`)
-    function sort(
-        PackedAsset[] memory assets,
-        int256 left,
-        int256 right
-    ) internal view {
+    function sort(PackedAsset[] memory assets, int256 left, int256 right) internal view {
         unchecked {
             int256 i = left;
             int256 j = right;

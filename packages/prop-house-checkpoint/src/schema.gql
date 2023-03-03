@@ -1,0 +1,115 @@
+type Round {
+  "The Starknet round address"
+  id: String!
+
+  "The round address on the source chain"
+  source_chain_round: String!
+
+  "The round type (TIMED_FUNDING)"
+  type: String!
+
+  "The round state"
+  state: String!
+
+  "The total number of proposals in the round"
+  proposal_count: Int!
+
+  "The total number of votes in the round"
+  vote_count: Int!
+
+  "The unix timestamp when the round was registered"
+  registered_at: Int!
+
+  "The transaction in which the round was registered"
+  tx: String
+
+  "The winning proposals"
+  winning_proposals: [Proposal]
+
+  "All proposals that have been submitted to the round"
+  proposals: [Proposal]! @derivedFrom(field: "round")
+
+  "All votes that have been cast in the round"
+  votes: [Vote]! @derivedFrom(field: "round")
+}
+
+type Proposal {
+  "A concatenation of the Starknet round address and proposal ID"
+  id: String!
+
+  "The proposal ID"
+  proposal_id: Int!
+
+  "The round that the proposal was submitted to"
+  round: Round!
+
+  "The proposer account"
+  proposer: Account!
+
+  "The proposal metadata URI"
+  metadata_uri: String!
+
+  "The proposal title"
+  title: String!
+
+  "The proposal body"
+  body: String!
+
+  "Whether the proposal has been cancelled"
+  is_cancelled: Boolean!
+
+  "The unix timestamp when the proposal was received"
+  received_at: Int!
+
+  "The transaction in which the proposal was submitted"
+  tx: String
+
+  "The number of votes that the proposal has received"
+  vote_count: Int!
+
+  "All votes that the proposal has received"
+  votes: [Vote]! @derivedFrom(field: "proposal")
+}
+
+type Vote {
+  "A concatenation of the vote transaction hash and log index"
+  id: String!
+
+  "The voter account"
+  voter: Account!
+
+  "The round that the vote is in"
+  round: Round!
+
+  "The proposal that was voted for"
+  proposal: Proposal!
+
+  "The amount of voting power"
+  voting_power: Int!
+
+  "The unix timestamp when the vote was received"
+  received_at: Int!
+
+  "The transaction in which the votes were submitted"
+  tx: String
+}
+
+type Account {
+  "The account address"
+  id: String!
+
+  "The number of proposals created by the account"
+  proposal_count: Int!
+
+  "The number of votes submitted by the account"
+  vote_count: Int!
+
+  "The unix timestamp at which the account first interacted with prop house"
+  first_seen_at: Int!
+
+  "All proposals submitted by the account"
+  proposals: [Proposal]! @derivedFrom(field: "proposer")
+
+  "All votes submitted by the account"
+  votes: [Vote]! @derivedFrom(field: "voter")
+}

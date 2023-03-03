@@ -36,10 +36,10 @@ interface IERC1155 {
     function balanceOf(address account, uint256 id) external view returns (uint256);
 
     /// @notice Batched version of {balanceOf}
-    function balanceOfBatch(address[] calldata accounts, uint256[] calldata ids)
-        external
-        view
-        returns (uint256[] memory);
+    function balanceOfBatch(
+        address[] calldata accounts,
+        uint256[] calldata ids
+    ) external view returns (uint256[] memory);
 
     /// @notice Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`
     function setApprovalForAll(address operator, bool approved) external;
@@ -48,13 +48,7 @@ interface IERC1155 {
     function isApprovedForAll(address account, address operator) external view returns (bool);
 
     /// @notice Transfers `amount` tokens of token type `id` from `from` to `to`
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 id,
-        uint256 amount,
-        bytes calldata data
-    ) external;
+    function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes calldata data) external;
 
     /// @notice Batched version of {safeTransferFrom}
     function safeBatchTransferFrom(

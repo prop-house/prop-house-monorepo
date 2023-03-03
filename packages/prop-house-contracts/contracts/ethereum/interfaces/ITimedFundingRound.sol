@@ -80,25 +80,20 @@ interface ITimedFundingRound is IRound {
 
     /// @notice Emitted when an award is claimed
     /// @param proposalId The ID of the winning proposal
-    /// @param winner The address of the winner
+    /// @param claimer The address of the claimer (winner)
+    /// @param recipient The recipient of the award
     /// @param assetId The ID of the asset being claimed
     /// @param amount The amount of `asset` being claimed
-    /// @param recipient The recipient of the award
-    event AwardClaimed(uint256 proposalId, address winner, uint256 assetId, uint256 amount, address recipient);
-
-    /// @notice Emitted when an asset is reclaimed by a deposit credit holder
-    /// @param recipient The asset recipient
-    /// @param assetId The ID of the asset being reclaimed
-    /// @param amount The amount of the asset being reclaimed
-    event AssetReclaimed(address recipient, uint256 assetId, uint256 amount);
+    event AwardClaimed(uint256 proposalId, address claimer, address recipient, uint256 assetId, uint256 amount);
 
     /// @notice Emitted when an asset is rescued by the round manager
     /// This protects against the edge case in which tokens are sent directly
     /// to this contract, rather than passed through the prop house contract.
+    /// @param rescuer The address of the rescuer
     /// @param recipient The asset recipient
     /// @param assetId The ID of the asset being rescued
     /// @param amount The amount of the asset being rescued
-    event AssetRescued(address recipient, uint256 assetId, uint256 amount);
+    event AssetRescued(address rescuer, address recipient, uint256 assetId, uint256 amount);
 
     /// @notice Emitted when the round is registered on L2
     /// @param awards The awards offered to round winners

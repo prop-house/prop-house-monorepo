@@ -5,7 +5,8 @@ pragma solidity >=0.8.17;
 interface IManager {
     /// @notice Emitted when a house implementation is registered
     /// @param houseImpl The house implementation address
-    event HouseRegistered(address houseImpl);
+    /// @param houseType The house implementation type
+    event HouseRegistered(address houseImpl, bytes32 houseType);
 
     /// @notice Emitted when a house implementation is unregistered
     /// @param houseImpl The house implementation address
@@ -14,7 +15,8 @@ interface IManager {
     /// @notice Emitted when a round implementation is registered on a house
     /// @param houseImpl The house implementation address
     /// @param roundImpl The round implementation address
-    event RoundRegistered(address houseImpl, address roundImpl);
+    /// @param roundType The round implementation type
+    event RoundRegistered(address houseImpl, address roundImpl, bytes32 roundType);
 
     /// @notice Emitted when a round implementation is unregistered on a house
     /// @param houseImpl The house implementation address

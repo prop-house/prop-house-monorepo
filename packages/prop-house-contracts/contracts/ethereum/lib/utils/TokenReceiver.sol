@@ -1,29 +1,24 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
+import { IERC165 } from '../../interfaces/IERC165.sol';
+
 /// @notice A generic interface for a contract which properly accepts ERC721 tokens.
 abstract contract ERC721TokenReceiver {
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external virtual returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external virtual returns (bytes4) {
         return this.onERC721Received.selector;
     }
 }
 
 /// @notice A generic interface for a contract which properly accepts ERC1155 tokens.
-abstract contract ERC1155TokenReceiver {
-    function supportsInterface(bytes4 interfaceID) external view virtual returns (bool);
-
+abstract contract ERC1155TokenReceiver is IERC165 {
     function onERC1155Received(
         address,
         address,
         uint256,
         uint256,
         bytes calldata
-    ) external virtual returns (bytes4) {
+    ) external view virtual returns (bytes4) {
         return ERC1155TokenReceiver.onERC1155Received.selector;
     }
 
@@ -33,7 +28,7 @@ abstract contract ERC1155TokenReceiver {
         uint256[] calldata,
         uint256[] calldata,
         bytes calldata
-    ) external virtual returns (bytes4) {
+    ) external view virtual returns (bytes4) {
         return ERC1155TokenReceiver.onERC1155BatchReceived.selector;
     }
 }

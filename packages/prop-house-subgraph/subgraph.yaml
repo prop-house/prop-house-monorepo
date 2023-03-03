@@ -1,0 +1,120 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Manager
+    source:
+      abi: Manager
+      address: "0x4020a49e3B1AC879d4cF68BCedcB70891b1151b4"
+      startBlock: 8584975
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/manager.ts
+      entities:
+        - Administrative
+        - HouseImplementation
+        - RoundImplementation
+      abis:
+        - name: Manager
+          file: ./abis/Manager.json
+      eventHandlers:
+        - event: OwnerUpdated(indexed address,indexed address)
+          handler: handleOwnerUpdated
+        - event: HouseRegistered(address,bytes32)
+          handler: handleHouseRegistered
+        - event: HouseUnregistered(address)
+          handler: handleHouseUnregistered
+        - event: RoundRegistered(address,address,bytes32)
+          handler: handleRoundRegistered
+        - event: RoundUnregistered(address,address)
+          handler: handleRoundUnregistered
+    network: goerli
+  - kind: ethereum
+    name: PropHouse
+    source:
+      abi: PropHouse
+      address: "0x8a2c125D95ED3d28C23B0825cD0C086FF3088528"
+      startBlock: 8584975
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/prop-house.ts
+      entities:
+        - Account
+        - House
+        - Round
+      abis:
+        - name: PropHouse
+          file: ./abis/PropHouse.json
+      eventHandlers:
+        - event: HouseCreated(indexed address,indexed address,bytes32)
+          handler: handleHouseCreated
+        - event: RoundCreated(indexed address,indexed address,indexed
+            address,bytes32,string,string)
+          handler: handleRoundCreated
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleHouseTransfer
+        - event: DepositToRound(address,address,(uint8,address,uint256,uint256))
+          handler: handleDepositToRound
+        - event: BatchDepositToRound(address,address,(uint8,address,uint256,uint256)[])
+          handler: handleBatchDepositToRound
+    network: goerli
+templates:
+  - name: CommunityHouse
+    kind: ethereum/contract
+    source:
+      abi: CommunityHouse
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/community-house.ts
+      entities:
+        - House
+        - Round
+      abis:
+        - name: CommunityHouse
+          file: ./abis/CommunityHouse.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleRoundTransfer
+        - event: ContractURIUpdated(string)
+          handler: handleHouseURIUpdated
+    network: goerli
+  - name: TimedFundingRound
+    kind: ethereum/contract
+    source:
+      abi: TimedFundingRound
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/timed-funding-round.ts
+      entities:
+        - House
+        - Round
+      abis:
+        - name: TimedFundingRound
+          file: ./abis/TimedFundingRound.json
+      eventHandlers:
+        - event: RoundRegistered((uint8,address,uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)
+          handler: handleRoundRegistered
+        - event: RoundCancelled()
+          handler: handleRoundCancelled
+        - event: RoundFinalized()
+          handler: handleRoundFinalized
+        - event: AwardClaimed(uint256,address,address,uint256,uint256)
+          handler: handleAwardClaimed
+        - event: AssetRescued(address,address,uint256,uint256)
+          handler: handleAssetRescued
+        - event: TransferSingle(indexed address,indexed address,indexed
+            address,uint256,uint256)
+          handler: handleSingleTransfer
+        - event: TransferBatch(indexed address,indexed address,indexed
+            address,uint256[],uint256[])
+          handler: handleBatchTransfer
+    network: goerli

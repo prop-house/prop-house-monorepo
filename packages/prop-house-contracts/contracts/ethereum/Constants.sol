@@ -20,8 +20,14 @@ string constant PROP_HOUSE_SYMBOL = 'PROP';
 // The Prop House entrypoint NFT contract URI
 string constant PROP_HOUSE_URI = 'ipfs://bafkreifzufef7c2von6dxlcx2en4fwtfpha5qreurdhqyar7vurjmrqi3a';
 
+// The Community House type
+bytes32 constant COMMUNITY_HOUSE_TYPE = 'COMMUNITY';
+
 // The Community House NFT name
 string constant COMMUNITY_HOUSE_NAME = 'Community House';
 
 // The Community House NFT symbol
 string constant COMMUNITY_HOUSE_SYMBOL = 'COMM';
+
+// The Timed Funding Round type
+bytes32 constant TIMED_FUNDING_ROUND_TYPE = 'TIMED_FUNDING';
