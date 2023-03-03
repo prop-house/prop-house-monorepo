@@ -44,7 +44,7 @@
     "class-validator": "^0.13.2",
     "cross-fetch": "^3.1.5",
     "file-type": "16.5.3",
-    "graphql": "^16.6.0",
+    "graphql": "^16.5.0",
     "mime-types": "^2.1.35",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
