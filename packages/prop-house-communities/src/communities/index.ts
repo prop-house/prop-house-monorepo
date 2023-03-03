@@ -101,5 +101,7 @@ export const communities = new CaseInsensitiveMap(
     '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
     // Seneca
     '0x1f65ec15af924e931c07d509f0217cafff96712b': balanceOfErc721(10),
+    // Index card
+    '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': balanceOfErc721(50),
   }),
 );

@@ -18,6 +18,7 @@ import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
+import { countDecimals } from '../../utils/countDecimals';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuction;
@@ -92,7 +93,10 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemTitle}>{t('funding')}</div>
 
             <div className={classes.itemData}>
-              <TruncateThousands amount={auction.fundingAmount} decimals={2} />{' '}
+              <TruncateThousands
+                amount={auction.fundingAmount}
+                decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
+              />{' '}
               {auction.currencyType} <span className={classes.xDivide}>{' × '}</span>{' '}
               {auction.numWinners}
             </div>
