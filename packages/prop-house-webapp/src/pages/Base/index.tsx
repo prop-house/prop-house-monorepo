@@ -88,7 +88,7 @@ const Base = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    setOffset((viewportWidth - containerRef.current.offsetWidth) / 2);
+    setOffset((viewportWidth - containerRef.current.offsetWidth) / 2 + 15);
   }, [viewportWidth, containerRef.current?.offsetWidth]);
   return (
     <>
@@ -112,8 +112,8 @@ const Base = () => {
               <Swiper
                 spaceBetween={10}
                 slidesPerView={isMobile() ? 1 : 3}
-                slidesOffsetBefore={isMobile() ? 15 : offset}
-                slidesOffsetAfter={15}
+                slidesOffsetBefore={isMobile() ? 0 : offset}
+                slidesOffsetAfter={isMobile() ? 0 : 15}
                 modules={[Mousewheel, Pagination]}
                 mousewheel={isMobile() ? false : true}
                 pagination={{
@@ -123,7 +123,9 @@ const Base = () => {
               >
                 {rounds.map(r => (
                   <SwiperSlide>
-                    <SimpleRoundCard round={r} displayTldr={false} />
+                    <div className={classes.simpleRoundCardWrapper}>
+                      <SimpleRoundCard round={r} displayTldr={false} />
+                    </div>
                   </SwiperSlide>
                 ))}
               </Swiper>

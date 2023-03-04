@@ -12,3 +12,12 @@
 .loadMoreBtn {
   width: 100%;
 }
+.simpleRoundCardWrapper {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .simpleRoundCardWrapper {
+    margin: 0 15px;
+  }
+}
