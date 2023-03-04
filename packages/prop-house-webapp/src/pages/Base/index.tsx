@@ -102,16 +102,17 @@ const Base = () => {
           <Col>
             {rounds ? (
               <Swiper
+                spaceBetween={10}
+                slidesPerView={isMobile() ? 1 : 3}
+                slidesOffsetBefore={isMobile() ? 0 : 220}
+                slidesOffsetAfter={isMobile() ? 0 : 20}
+                freeMode={{ enabled: isMobile() ? true : false }}
                 modules={[Mousewheel, Pagination]}
                 mousewheel={isMobile() ? false : true}
                 pagination={{
                   enabled: isMobile() ? true : false,
                   dynamicBullets: true,
                 }}
-                spaceBetween={10}
-                slidesPerView={isMobile() ? 1 : 3}
-                slidesOffsetBefore={isMobile() ? 0 : 220}
-                slidesOffsetAfter={isMobile() ? 0 : 20}
               >
                 {rounds.map(r => (
                   <SwiperSlide>
