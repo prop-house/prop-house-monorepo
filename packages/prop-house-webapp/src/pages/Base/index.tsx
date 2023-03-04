@@ -88,9 +88,11 @@ const Base = () => {
 
   useEffect(() => {
     if (!containerRef.current) return;
+    console.log(viewportWidth);
+    console.log(containerRef.current.offsetWidth);
     setOffset((viewportWidth - containerRef.current.offsetWidth) / 2);
-  });
-
+  }, [viewportWidth, containerRef.current?.offsetWidth]);
+  console.log('offset: ', offset);
   return (
     <>
       <Container ref={containerRef}>
@@ -113,7 +115,7 @@ const Base = () => {
               <Swiper
                 spaceBetween={10}
                 slidesPerView={isMobile() ? 1 : 3}
-                slidesOffsetBefore={isMobile() ? 0 : offset}
+                slidesOffsetBefore={offset}
                 slidesOffsetAfter={isMobile() ? 0 : 20}
                 freeMode={{ enabled: isMobile() ? true : false }}
                 modules={[Mousewheel, Pagination]}
