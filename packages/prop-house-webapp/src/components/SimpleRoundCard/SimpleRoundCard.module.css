@@ -1,5 +1,5 @@
 .roundCard {
-  /* min-height: 12.5rem; */
+  min-height: 15rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
