@@ -108,7 +108,7 @@ const Base = () => {
       </Container>
       <Container fluid>
         <Row>
-          <Col style={{ padding: 0 }}>
+          <Col style={{ padding: isMobile() ? 15 : 0 }}>
             {rounds ? (
               <Swiper
                 spaceBetween={10}
