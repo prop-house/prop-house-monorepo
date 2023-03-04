@@ -1,6 +1,7 @@
 import { RoundType, getContractAddressesForChainOrThrow } from '@prophouse/sdk';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
+import fetch from 'node-fetch-commonjs';
 import { Uint256 } from './types';
 
 const {
@@ -74,7 +75,7 @@ export const getUrl = (uri: string, gateway = 'pineapple.fyi') => {
   return uri;
 };
 
-export const getJSON = async (uri: string) => {
+export const getJSON = async (uri: string): Promise<any> => {
   const url = getUrl(uri);
   if (url) {
     const res = await fetch(url);
