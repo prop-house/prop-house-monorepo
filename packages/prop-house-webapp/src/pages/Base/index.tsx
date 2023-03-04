@@ -114,7 +114,6 @@ const Base = () => {
                 slidesPerView={isMobile() ? 1 : 3}
                 slidesOffsetBefore={isMobile() ? 15 : offset}
                 slidesOffsetAfter={15}
-                freeMode={{ enabled: isMobile() ? true : false }}
                 modules={[Mousewheel, Pagination]}
                 mousewheel={isMobile() ? false : true}
                 pagination={{
