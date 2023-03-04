@@ -3,7 +3,7 @@ import './Base.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuction, StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
@@ -82,9 +82,18 @@ const Base = () => {
     setVotesTracker(prev => prev + VOTE_LOAD);
   };
 
+  const viewportWidth = window.innerWidth;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState<number>();
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    setOffset((viewportWidth - containerRef.current.offsetWidth) / 2);
+  });
+
   return (
     <>
-      <Container>
+      <Container ref={containerRef}>
         <Navbar />
       </Container>
       <Container>
@@ -99,12 +108,12 @@ const Base = () => {
       </Container>
       <Container fluid>
         <Row>
-          <Col>
+          <Col style={{ padding: 0 }}>
             {rounds ? (
               <Swiper
                 spaceBetween={10}
                 slidesPerView={isMobile() ? 1 : 3}
-                slidesOffsetBefore={isMobile() ? 0 : 220}
+                slidesOffsetBefore={isMobile() ? 0 : offset}
                 slidesOffsetAfter={isMobile() ? 0 : 20}
                 freeMode={{ enabled: isMobile() ? true : false }}
                 modules={[Mousewheel, Pagination]}
