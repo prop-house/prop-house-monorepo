@@ -43,8 +43,10 @@ const Round = () => {
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
-  const [loadingCommAndRound, setLoadingCommAndRound] = useState(false);
-  const [commAndRoundfailedFetch, setCommAndRoundFailedFetch] = useState(false);
+  const [loadingRound, setLoadingRound] = useState(false);
+  const [loadingComm, setLoadingComm] = useState(false);
+  const [loadingCommFailed, setLoadingCommFailed] = useState(false);
+  const [roundfailedFetch, setRoundFailedFetch] = useState(false);
 
   const [loadingProps, setLoadingProps] = useState(false);
   const [propsFailedFetch, setPropsFailedFetch] = useState(false);
@@ -53,32 +55,48 @@ const Round = () => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
-  // if no data is found in store (ie round page is entry point), fetch community and round
+  // if no data is found in store (ie round page is entry point), fetch data
   useEffect(() => {
-    // eslint-disable-next-line
-    if (round) return;
+    if (community) return;
 
-    const fetchCommunityAndRound = async () => {
+    const fetchCommunity = async () => {
       try {
-        setLoadingCommAndRound(true);
-
+        setLoadingComm(true);
         const community = await client.current.getCommunityWithName(slugToName(communityName));
+        dispatch(setActiveCommunity(community));
+
+        setLoadingComm(false);
+      } catch (e) {
+        setLoadingComm(false);
+        setLoadingCommFailed(true);
+      }
+    };
+
+    fetchCommunity();
+  }, [communityName, dispatch, roundName, round, community]);
+
+  // if no data is found in store (ie round page is entry point), fetch data
+  useEffect(() => {
+    if (round || !community) return;
+
+    const fetchRound = async () => {
+      try {
+        setLoadingRound(true);
+
         const round = await client.current.getAuctionWithNameForCommunity(
           nameToSlug(roundName),
           community.id,
         );
-
-        dispatch(setActiveCommunity(community));
         dispatch(setActiveRound(round));
-        setLoadingCommAndRound(false);
+        setLoadingRound(false);
       } catch (e) {
-        setLoadingCommAndRound(false);
-        setCommAndRoundFailedFetch(true);
+        setLoadingRound(false);
+        setRoundFailedFetch(true);
       }
     };
 
-    fetchCommunityAndRound();
-  }, [communityName, dispatch, roundName, round]);
+    fetchRound();
+  }, [communityName, dispatch, roundName, round, community]);
 
   // fetch proposals
   useEffect(() => {
@@ -125,9 +143,9 @@ const Round = () => {
         />
       )}
 
-      {loadingCommAndRound ? (
+      {loadingComm || loadingRound ? (
         <LoadingIndicator height={isMobile() ? 416 : 332} />
-      ) : !loadingCommAndRound && commAndRoundfailedFetch ? (
+      ) : loadingCommFailed || roundfailedFetch ? (
         <NotFound />
       ) : (
         community &&
