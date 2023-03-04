@@ -3,7 +3,7 @@ import './Base.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuction, StoredVoteWithProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import FeedVoteCard from '../../components/FeedVoteCard';
