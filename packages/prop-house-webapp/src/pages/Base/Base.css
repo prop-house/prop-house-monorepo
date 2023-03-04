@@ -1,8 +1,8 @@
 .swiper-ios {
-  height: 110%;
+  height: 105%;
 }
 .swiper-pagination {
-  bottom: 5px !important;
+  bottom: 0px !important;
 }
 .swiper-pagination-bullet-active {
   background: var(--brand-purple) !important;
