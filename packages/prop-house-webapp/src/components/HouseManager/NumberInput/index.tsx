@@ -3,28 +3,15 @@ import clsx from 'clsx';
 import { Dispatch, SetStateAction } from 'react';
 
 const NumberInput: React.FC<{
-  placeholder: string;
-  value: string | number;
+  placeholder?: string;
+  value: number;
   maxDigits?: number;
   classNames?: string;
   note?: string;
   setValue: Dispatch<SetStateAction<any>>;
   disabled?: boolean;
-  focus?: boolean;
-  setNumberError: Dispatch<SetStateAction<boolean>>;
-  resetVotingPeriod?: () => void;
 }> = props => {
-  const {
-    placeholder,
-    maxDigits = 2,
-    value,
-    focus,
-    setValue,
-    disabled,
-    setNumberError,
-    classNames,
-    resetVotingPeriod,
-  } = props;
+  const { placeholder, maxDigits = 2, value, setValue, disabled, classNames } = props;
 
   return (
     <div className={clsx(classes.inputContainer, classNames)}>
@@ -32,18 +19,13 @@ const NumberInput: React.FC<{
         type="number"
         placeholder={placeholder}
         value={value}
-        autoFocus={focus}
         disabled={disabled}
         onChange={e => {
           const input = Number(e.target.value);
-          if (input < 0) {
+          if (input <= 0 || isNaN(input) || !Number.isInteger(input)) {
             e.preventDefault();
-            setNumberError(true);
-          } else if (input === 0 && resetVotingPeriod) {
-            resetVotingPeriod();
           } else {
             setValue(input);
-            setNumberError(false);
           }
         }}
         maxLength={maxDigits}

@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import Footer from '../Footer';
