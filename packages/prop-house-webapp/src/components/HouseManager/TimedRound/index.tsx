@@ -1,4 +1,5 @@
 import classes from './TimedRound.module.css';
+import 'react-datetime/css/react-datetime.css';
 import { useEffect, useState } from 'react';
 import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
@@ -8,10 +9,11 @@ import Text from '../Text';
 import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import NumberInput from '../NumberInput';
-import { InitialRoundProps } from '../../../state/slices/round';
+import { checkStepCriteria, InitialRoundProps, updateRound } from '../../../state/slices/round';
 import Bullet from '../Bullet';
 import dayjs from 'dayjs';
 import formatDateTime from '../../../utils/formatDateTime';
+import { useDispatch } from 'react-redux';
 
 const TimedRound: React.FC<{
   handleChange: (
@@ -22,87 +24,110 @@ const TimedRound: React.FC<{
 }> = props => {
   const { handleChange, round } = props;
 
-  // PROPOSING PERIOD START //
-  // the date when the proposal period starts
-  const [proposingStartDate, setProposingStartDate] = useState<Date | undefined>(undefined);
+  const getDayDifference = (date1: Date, date2: Date) => dayjs(date1).diff(dayjs(date2), 'd');
 
-  // PROPOSING PERIOD END //
-  // which proposal period button is selected
-  const [selectedProposingPeriod, setSelectedProposingPeriod] = useState<number | null>(null);
-  // custom proposal period options in days
-  const [proposingPeriodLength, setProposingPeriodLength] = useState<number>(0);
-  // the date when the proposal period ends
-  const [proposingEndDate, setProposingEndDate] = useState<string>('');
-  // default proposal period options in days
-  const proposingDays = [5, 7, 14];
-  // if we're using a custom proposal period
-  const isCustomProposalPeriod = selectedProposingPeriod === 0;
-  // if user enters a negative number in the custom proposal period input
-  const [proposingInputError, setProposingInputError] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleSelectProposalPeriod = (selectedPeriod: number) => {
-    // If the custom period button is selected, reset the voting period state
-    if (selectedPeriod === 0) resetVotingPeriod();
+  const ProposalPeriodLengths = [5, 7, 14];
+  const VotingPeriodLengths = [5, 7, 14];
 
-    setProposingPeriodLength(selectedPeriod);
-    setSelectedProposingPeriod(selectedPeriod);
-    setProposingInputError(false);
+  const [isCustomProposalPeriod, setIsCustomProposalPeriod] = useState(
+    round.startTime &&
+      round.proposalEndTime &&
+      !ProposalPeriodLengths.includes(getDayDifference(round.proposalEndTime, round.startTime))
+      ? true
+      : false,
+  );
+  const handleProposingPeriodLengthChange = (length: number) => {
+    setIsCustomProposalPeriod(false);
+    setProposingPeriodLength(length);
+  };
+  const handleVotingPeriodLengthChange = (length: number) => {
+    setIsCustomVotingPeriod(false);
+    setVotingPeriodLength(length);
   };
 
-  // VOTING PERIOD //
-  // which voting period button is selected
-  const [selectedVotingPeriod, setSelectedVotingPeriod] = useState<number | null>(null);
-  // custom voting period options in days
-  const [votingPeriodLength, setVotingPeriodLength] = useState<number>(0);
-  // the date when the voting period ends
-  const [votingEndDate, setVotingEndDate] = useState<string>('');
-  // default voting period options in days
-  const votingDays = [5, 7, 14];
-  // if we're using a custom voting period
-  const isCustomVotingPeriod = selectedVotingPeriod === 0;
-  // if user enters a negative number in the custom voting period input
-  const [votingInputError, setVotingInputError] = useState(false);
+  const [isCustomVotingPeriod, setIsCustomVotingPeriod] = useState(
+    round.votingEndTime &&
+      round.proposalEndTime &&
+      !VotingPeriodLengths.includes(getDayDifference(round.votingEndTime, round.proposalEndTime))
+      ? true
+      : false,
+  );
+  const handleSelectCustomProposalPeriod = () => {
+    setIsCustomProposalPeriod(true);
+    setProposingPeriodLength(15);
+  };
+  const handleSelectCustomVotingPeriod = () => {
+    setIsCustomVotingPeriod(true);
+    setVotingPeriodLength(15);
+  };
 
-  const handleSelectVotingPeriod = (selectedPeriod: number) => {
-    setVotingInputError(false);
-    setSelectedVotingPeriod(selectedPeriod);
-    setVotingPeriodLength(selectedPeriod);
+  const [roundTime, setRoundTime] = useState({
+    start: round.startTime ? round.startTime : null,
+    proposalEnd: round.proposalEndTime ? round.proposalEndTime : null,
+    votingEnd: round.votingEndTime ? round.votingEndTime : null,
+  });
+  const [proposingStartTime, setProposingStartTime] = useState<Date | null>(
+    round.startTime ? new Date(round.startTime) : null,
+  );
+  const [proposingPeriodLength, setProposingPeriodLength] = useState<number | null>(
+    round.startTime && round.proposalEndTime
+      ? getDayDifference(round.proposalEndTime, round.startTime)
+      : null,
+  );
+  const [votingPeriodLength, setVotingPeriodLength] = useState<number | null>(
+    round.votingEndTime && round.proposalEndTime
+      ? getDayDifference(round.votingEndTime, round.proposalEndTime)
+      : null,
+  );
+
+  const handleProposingStartTimeChange = (date: Date | null) => {
+    if (date) {
+      setProposingStartTime(date);
+      setRoundTime(prevRound => ({ ...prevRound, start: date }));
+      handleChange('startTime', date.toISOString());
+    }
   };
 
   useEffect(() => {
-    if (proposingStartDate) handleChange('startTime', proposingStartDate.toISOString());
-
-    // calculate the proposal end date
-    if (proposingStartDate && proposingPeriodLength !== 0) {
-      const proposalEndDate = dayjs(proposingStartDate)
-        .add(proposingPeriodLength, 'day')
-        .toISOString();
-      setProposingEndDate(proposalEndDate);
-      handleChange('proposalEndTime', proposalEndDate);
+    if (proposingStartTime && proposingPeriodLength !== null) {
+      const proposingEndTime = new Date(proposingStartTime);
+      proposingEndTime.setDate(proposingEndTime.getDate() + proposingPeriodLength);
+      setRoundTime(prevRound => ({ ...prevRound, proposalEnd: proposingEndTime }));
+      handleChange('proposalEndTime', proposingEndTime.toISOString()); // save to server
+      dispatch(checkStepCriteria());
     }
-
-    // calculate the voting end date
-    if (proposingEndDate && votingPeriodLength) {
-      const votingEndDate = dayjs(proposingEndDate).add(votingPeriodLength, 'day').toISOString();
-      setVotingEndDate(votingEndDate);
-      handleChange('votingEndTime', votingEndDate);
-    }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [proposingStartDate, proposingPeriodLength, proposingEndDate, votingPeriodLength]);
+  }, [proposingStartTime, proposingPeriodLength]);
+
+  useEffect(() => {
+    if (proposingStartTime && proposingPeriodLength !== null && votingPeriodLength !== null) {
+      const votingEndTime = new Date(proposingStartTime);
+      votingEndTime.setDate(votingEndTime.getDate() + proposingPeriodLength + votingPeriodLength);
+      setRoundTime(prevRound => ({ ...prevRound, votingEnd: votingEndTime }));
+      handleChange('votingEndTime', votingEndTime.toISOString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [proposingStartTime, proposingPeriodLength, votingPeriodLength]);
+
+  useEffect(() => {
+    if (roundTime.start && roundTime.proposalEnd && roundTime.votingEnd) {
+      dispatch(
+        updateRound({
+          ...round,
+          startTime: roundTime.start,
+          proposalEndTime: roundTime.proposalEnd,
+          votingEndTime: roundTime.votingEnd,
+        }),
+      );
+      dispatch(checkStepCriteria());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [roundTime]);
 
   const disableVotingPeriod =
-    (isCustomProposalPeriod && proposingPeriodLength === 0) ||
-    selectedProposingPeriod === null ||
-    !round.startTime;
-
-  const resetVotingPeriod = () => {
-    setVotingInputError(false);
-    setProposingPeriodLength(0);
-    setVotingPeriodLength(0);
-    setSelectedVotingPeriod(null);
-    handleChange('votingEndTime', null);
-  };
+    !round.startTime || !round.proposalEndTime || proposingPeriodLength === null;
 
   return (
     <>
@@ -111,11 +136,11 @@ const TimedRound: React.FC<{
       </Group>
 
       <Group gap={6}>
-        {' '}
         <Text type="subtitle">Round start time</Text>
+
         <DateTimeInput
-          selectedDate={proposingStartDate}
-          onDateChange={setProposingStartDate}
+          selectedDate={proposingStartTime}
+          onDateChange={handleProposingStartTimeChange}
           isValidDate={validStartDate}
         />
         <Text type="body">Round will need to be started manually</Text>
@@ -126,95 +151,70 @@ const TimedRound: React.FC<{
       <Group gap={6}>
         <Group row>
           <Text type="subtitle">Proposal Period</Text>
-          {proposingInputError ? (
+
+          {proposingPeriodLength !== 0 && roundTime.proposalEnd && (
             <>
               <Bullet />
-              <p className={classes.date}>{"can't assign negative value"}</p>
+              <p className={classes.date}>{formatDateTime(roundTime.proposalEnd)}</p>
             </>
-          ) : (
-            proposingPeriodLength !== 0 &&
-            proposingEndDate && (
-              <>
-                <Bullet />
-                <p className={classes.date}>{formatDateTime(proposingEndDate)}</p>
-              </>
-            )
           )}
         </Group>
 
         <Group row gap={6}>
-          {proposingDays.map((day, index) => {
-            return (
-              <TimePeriod
-                key={day}
-                disabled={!round.startTime}
-                days={day}
-                selectedPeriod={selectedProposingPeriod === day}
-                onClick={() => handleSelectProposalPeriod(day)}
-              />
-            );
-          })}
+          {ProposalPeriodLengths.map(length => (
+            <TimePeriod
+              key={length}
+              disabled={!proposingStartTime}
+              days={length}
+              selectedPeriod={!isCustomProposalPeriod && proposingPeriodLength === length}
+              onClick={() => handleProposingPeriodLengthChange(length)}
+            />
+          ))}
           <CustomPeriod
             selectedPeriod={isCustomProposalPeriod}
             disabled={!round.startTime}
-            onClick={() => handleSelectProposalPeriod(0)}
+            onClick={() => handleSelectCustomProposalPeriod()}
           />
           <NumberInput
-            value={isCustomProposalPeriod ? proposingPeriodLength : 0}
+            value={isCustomProposalPeriod ? proposingPeriodLength! : 15}
             setValue={setProposingPeriodLength}
-            placeholder={'15'}
             disabled={!isCustomProposalPeriod}
             classNames={classes.customNumberInput}
-            setNumberError={setProposingInputError}
-            resetVotingPeriod={resetVotingPeriod}
           />
         </Group>
       </Group>
 
-      {/* VOITNG */}
       <Group gap={6} mt={8}>
         <Group row>
           <Text type="subtitle">Voting Period</Text>
-          {votingInputError ? (
+          {votingPeriodLength !== 0 && roundTime.votingEnd && (
             <>
               <Bullet />
-              <p className={classes.date}>{"can't assign negative value"}</p>
+              <p className={classes.date}>{formatDateTime(roundTime.votingEnd)}</p>
             </>
-          ) : (
-            votingPeriodLength !== 0 &&
-            votingEndDate && (
-              <>
-                <Bullet />
-                <p className={classes.date}>{formatDateTime(votingEndDate)}</p>
-              </>
-            )
           )}
         </Group>
 
         <Group row gap={6}>
-          {votingDays.map((day, index) => {
-            return (
-              <TimePeriod
-                key={day}
-                disabled={disableVotingPeriod}
-                days={day}
-                selectedPeriod={selectedVotingPeriod === day}
-                onClick={() => handleSelectVotingPeriod(day)}
-              />
-            );
-          })}
+          {VotingPeriodLengths.map(length => (
+            <TimePeriod
+              key={length}
+              disabled={!proposingStartTime || proposingPeriodLength === null}
+              days={length}
+              selectedPeriod={!isCustomVotingPeriod && votingPeriodLength === length}
+              onClick={() => handleVotingPeriodLengthChange(length)}
+            />
+          ))}
           <CustomPeriod
             selectedPeriod={isCustomVotingPeriod}
             disabled={disableVotingPeriod}
-            onClick={() => handleSelectVotingPeriod(0)}
+            onClick={() => handleSelectCustomVotingPeriod()}
           />
           <NumberInput
-            value={isCustomVotingPeriod ? votingPeriodLength : 0}
+            value={isCustomVotingPeriod ? votingPeriodLength! : 15}
             setValue={setVotingPeriodLength}
-            placeholder={'15'}
             disabled={!isCustomVotingPeriod}
             classNames={classes.customNumberInput}
-            setNumberError={setVotingInputError}
           />
         </Group>
       </Group>
