@@ -7,6 +7,8 @@ import { useAppSelector } from '../../../hooks';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { capitalize } from '../../../utils/capitalize';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const NameAndDescriptionFields = () => {
   const dispatch = useDispatch();
@@ -15,6 +17,9 @@ const NameAndDescriptionFields = () => {
   const [title, setTitle] = useState(round.title || '');
   const [description, setDescription] = useState(round.description || '');
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+
+  const modules = { toolbar: [['bold', 'italic', 'link']] };
+  const formats = ['bold', 'italic', 'link'];
 
   const handleBlur = (field: 'title' | 'description') => {
     const value = field === 'title' ? title : description;
@@ -72,16 +77,19 @@ const NameAndDescriptionFields = () => {
           <Text type="body">{description.length}</Text>
         </div>
 
-        <textarea
-          className={clsx(classes.input, errors.description && classes.inputError)}
-          value={description}
-          onChange={e => handleChange('description', e.target.value)}
-          onBlur={() => handleBlur('description')}
-          minLength={20}
-          placeholder={
-            'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
-          }
-        />
+        <Group classNames={classes.houseManagerEditor} mt={20}>
+          <ReactQuill
+            value={description}
+            className={clsx(errors.description && classes.editorError)}
+            onChange={value => handleChange('description', value)}
+            onBlur={() => handleBlur('description')}
+            placeholder={
+              'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
+            }
+            modules={modules}
+            formats={formats}
+          />
+        </Group>
 
         {errors.description && (
           <Group mt={-8}>
