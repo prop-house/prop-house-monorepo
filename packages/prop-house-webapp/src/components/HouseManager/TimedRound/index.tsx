@@ -28,13 +28,13 @@ const TimedRound: React.FC<{
 
   const dispatch = useDispatch();
 
-  const ProposalPeriodLengths = [5, 7, 14];
-  const VotingPeriodLengths = [5, 7, 14];
+  const proposalPeriods = [5, 7, 14];
+  const votingPeriods = [5, 7, 14];
 
   const [isCustomProposalPeriod, setIsCustomProposalPeriod] = useState(
     round.startTime &&
       round.proposalEndTime &&
-      !ProposalPeriodLengths.includes(getDayDifference(round.proposalEndTime, round.startTime))
+      !proposalPeriods.includes(getDayDifference(round.proposalEndTime, round.startTime))
       ? true
       : false,
   );
@@ -50,7 +50,7 @@ const TimedRound: React.FC<{
   const [isCustomVotingPeriod, setIsCustomVotingPeriod] = useState(
     round.votingEndTime &&
       round.proposalEndTime &&
-      !VotingPeriodLengths.includes(getDayDifference(round.votingEndTime, round.proposalEndTime))
+      !votingPeriods.includes(getDayDifference(round.votingEndTime, round.proposalEndTime))
       ? true
       : false,
   );
@@ -161,7 +161,7 @@ const TimedRound: React.FC<{
         </Group>
 
         <Group row gap={6}>
-          {ProposalPeriodLengths.map(length => (
+          {proposalPeriods.map(length => (
             <TimePeriod
               key={length}
               disabled={!proposingStartTime}
@@ -196,7 +196,7 @@ const TimedRound: React.FC<{
         </Group>
 
         <Group row gap={6}>
-          {VotingPeriodLengths.map(length => (
+          {votingPeriods.map(length => (
             <TimePeriod
               key={length}
               disabled={!proposingStartTime || proposingPeriodLength === null}
