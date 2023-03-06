@@ -9,6 +9,9 @@
   border: 1px solid var(--border-med);
   font-size: 14px;
 }
+.input::placeholder {
+  font-style: italic;
+}
 .inputError {
   border: 1px solid red !important;
 }
@@ -18,12 +21,12 @@
   font-size: 14px;
   line-height: 19px;
 }
-:is(input, textarea):active,
-:is(input, textarea):focus:focus-visible {
+.input:active,
+.input:focus:focus-visible {
   outline: none;
   border: 1px solid var(--border-dark) !important;
 }
-:is(input, textarea)::placeholder {
+.input::placeholder {
   color: var(--brand-black-semi-transparent);
 }
 .error {
@@ -32,20 +35,18 @@
   font-weight: 700;
   font-style: italic;
 }
-.editorError :global(.ql-toolbar) {
-  border: 1px solid red !important;
-}
-.editorError :global(.ql-container.ql-snow) {
-  border: 1px solid red !important;
-  border-top: 1px solid transparent !important;
-}
 .descriptionTitile {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.houseManagerEditor :global(.ql-toolbar) {
+  border: 1px solid var(--border-med) !important;
+}
 .houseManagerEditor :global(.ql-container.ql-snow) {
   padding: 0.5rem !important;
+  border: 1px solid var(--border-med) !important;
+  border-top: 1px solid transparent !important;
 }
 .houseManagerEditor :global(.ql-editor p),
 .houseManagerEditor :global(.ql-editor.ql-blank::before) {
@@ -57,4 +58,11 @@
 }
 .houseManagerEditor :global(.ql-editor) {
   min-height: auto !important;
+}
+.editorError :global(.ql-toolbar) {
+  border: 1px solid red !important;
+}
+.editorError :global(.ql-container.ql-snow) {
+  border: 1px solid red !important;
+  border-top: 1px solid transparent !important;
 }
