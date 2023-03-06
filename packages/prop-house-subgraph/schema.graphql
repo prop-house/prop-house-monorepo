@@ -72,6 +72,15 @@ type House @entity {
   "The house metadata URI"
   contractURI: String
 
+  "The house name, parsed from the contract URI"
+  name: String
+
+  "The house description, parsed from the contract URI"
+  description: String
+
+  "The house image URI, parsed from the contract URI"
+  imageURI: String  
+
   "The account who currently owns the house"
   owner: Account
 
