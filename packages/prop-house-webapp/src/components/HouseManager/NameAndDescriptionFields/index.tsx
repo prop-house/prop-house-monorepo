@@ -68,9 +68,9 @@ const NameAndDescriptionFields = () => {
     const maxLen = field === 'title' ? 255 : undefined;
     const error =
       value && value.length < minLen
-        ? `${field} must be at least ${minLen} characters.`
+        ? `${capitalize(field)} must be at least ${minLen} characters.`
         : maxLen && value.length > maxLen
-        ? `${field} must be less than ${maxLen} characters.`
+        ? `${capitalize(field)} must be less than ${maxLen} characters.`
         : undefined;
 
     setErrors({ ...errors, [field]: error });
@@ -79,11 +79,17 @@ const NameAndDescriptionFields = () => {
   const handleChange = (field: 'title' | 'description', value: string) => {
     // set errors
     errors[field] && setErrors({ ...errors, [field]: undefined });
+
     // set state
     field === 'title' ? setTitle(value) : setDescription(value);
 
     dispatch(updateRound({ ...round, [field]: value }));
     dispatch(checkStepCriteria());
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value);
+    handleChange('description', value);
   };
 
   return (
@@ -122,7 +128,7 @@ const NameAndDescriptionFields = () => {
           <ReactQuill
             value={description}
             className={clsx(errors.description && classes.editorError)}
-            onChange={value => handleChange('description', value)}
+            onChange={handleDescriptionChange}
             onBlur={() => handleBlur('description')}
             placeholder={
               'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
