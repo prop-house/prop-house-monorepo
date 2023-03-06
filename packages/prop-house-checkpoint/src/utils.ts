@@ -15,6 +15,7 @@ export const getRoundType = (hash: string) => {
   if (!CLASS_HASH_TO_ROUND_TYPE[hash]) {
     throw new Error(`Unknown class hash: ${hash}`);
   }
+  return CLASS_HASH_TO_ROUND_TYPE[hash];
 };
 
 export const shortStringToStr = (shortStringArr: bigint): string => {
