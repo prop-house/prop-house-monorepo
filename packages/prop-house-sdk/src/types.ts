@@ -205,3 +205,12 @@ export interface VotingStrategy<E extends Envelope> {
 export type Newable<T> = new (...args: any[]) => T;
 
 //#endregion
+
+//#region GraphQL
+
+export interface GraphQL<T = string> {
+  evm: T;
+  starknet: T;
+}
+
+//#endregion

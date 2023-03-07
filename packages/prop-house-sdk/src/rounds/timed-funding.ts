@@ -81,6 +81,7 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
       if (config.awards[0].assetType === AssetType.ERC721) {
         throw new Error(`Cannot split ERC721 between multiple winners`);
       }
+      // prettier-ignore
       if (!BigNumber.from(config.awards[0].amount).mod(config.winnerCount).eq(0)) {
         throw new Error(`Award must split equally between winners`);
       }

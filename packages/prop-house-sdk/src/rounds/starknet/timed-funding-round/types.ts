@@ -47,7 +47,7 @@ export enum TimedFundingRoundAction {
 }
 
 export type TimedFundingRoundEnvelope<
-  M extends TimedFundingRoundMessage = TimedFundingRoundMessage,
+  M extends TimedFundingRoundMessage = TimedFundingRoundMessage
 > = IEnvelope<M, TimedFundingRoundSignatureMessage, TimedFundingRoundAction>;
 
 export type TimedFundingRoundAuthStrategy = AuthStrategy<

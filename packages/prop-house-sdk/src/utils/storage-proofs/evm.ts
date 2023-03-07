@@ -43,10 +43,9 @@ export const getBalanceOfEVMStorageSlotIndex = async (
   provider: JsonRpcProvider,
   contract: string,
 ) => {
-  const data = new Interface(['function balanceOf(address account)']).encodeFunctionData(
-    'balanceOf',
-    [ADDRESS_ONE],
-  );
+  const data = new Interface([
+    'function balanceOf(address account)',
+  ]).encodeFunctionData('balanceOf', [ADDRESS_ONE]);
   const result = await getEVMStorageSlotIndex(provider, contract, data, BALANCE_OF_TRACER);
   if (!result.readCount || result.slotIndex === '-1') {
     throw new Error(

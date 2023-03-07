@@ -25,14 +25,16 @@ export class TimedFundingRoundStarknetTxClient {
     this.ethUrl = config.ethUrl;
     this.starkProvider = config.starkProvider;
     this.authStrategies = new Map(
-      Object.entries({ ...DEFAULT_AUTH_STRATEGIES, ...(config.authStrategies || {}) }).map(
-        ([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s],
-      ),
+      Object.entries({
+        ...DEFAULT_AUTH_STRATEGIES,
+        ...(config.authStrategies || {}),
+      }).map(([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s]),
     );
     this.votingStrategies = new Map(
-      Object.entries({ ...DEFAULT_VOTING_STRATEGIES, ...(config.votingStrategies || {}) }).map(
-        ([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s],
-      ),
+      Object.entries({
+        ...DEFAULT_VOTING_STRATEGIES,
+        ...(config.votingStrategies || {}),
+      }).map(([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s]),
     );
   }
 

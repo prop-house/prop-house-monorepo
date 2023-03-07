@@ -35,9 +35,10 @@ export class TimedFundingRoundEthSigClient {
     this.starkProvider = config.starkProvider;
     this.starknetRelayerUrl = config.starknetRelayerUrl;
     this.votingStrategies = new Map(
-      Object.entries({ ...DEFAULT_VOTING_STRATEGIES, ...(config.votingStrategies || {}) }).map(
-        ([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s],
-      ),
+      Object.entries({
+        ...DEFAULT_VOTING_STRATEGIES,
+        ...(config.votingStrategies || {}),
+      }).map(([a, s]) => [encoding.hexPadRight(a).toLowerCase(), s]),
     );
   }
 
