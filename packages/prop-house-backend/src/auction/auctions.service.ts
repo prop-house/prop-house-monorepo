@@ -59,6 +59,7 @@ export class AuctionsService {
       .andWhere('LOWER(c.contractAddress) IN (:...addresses)', {
         addresses: addresses.map((addr) => addr.toLowerCase()),
       })
+      .orderBy('a.votingEndTime')
       .getRawMany();
   }
 
