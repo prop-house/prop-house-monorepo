@@ -21,6 +21,9 @@ import { isRoundStepValid } from '../utils/isRoundStepValid';
 import RoundDatesSelector from '../RoundDatesSelector';
 import VotingStrategies from '../VotingStrategies';
 import AwardsSelector from '../AwardsSelector';
+import Markdown from 'markdown-to-jsx';
+import sanitizeHtml from 'sanitize-html';
+import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -171,7 +174,31 @@ const CreateTheRound = () => {
           <EditSection onClick={() => setShowEditNameModal(true)} />
         </Group>
 
-        <ReadMore description={<Text type="body">{round.description}</Text>} />
+        <ReadMore
+          description={
+            <Text type="body">
+              <Markdown
+                options={{
+                  overrides: {
+                    a: {
+                      component: ForceOpenInNewTab,
+                      props: {
+                        target: '_blank',
+                        rel: 'noreferrer',
+                      },
+                    },
+                  },
+                }}
+              >
+                {sanitizeHtml(round.description, {
+                  allowedAttributes: {
+                    a: ['href', 'target'],
+                  },
+                })}
+              </Markdown>
+            </Text>
+          }
+        />
       </Group>
 
       <Divider narrow />
@@ -191,7 +218,8 @@ const CreateTheRound = () => {
         <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
         <CardWrapper>
           {[...Array(round.numWinners)].map((award, idx) => (
-            <AwardCard amount={round.fundingAmount} award={round.awards[0]} place={idx + 1} />
+            // TODO: changed fundingAmount because now we're using the amount from the award
+            <AwardCard amount={2} award={round.awards[0]} place={idx + 1} />
           ))}
         </CardWrapper>
       </Group>

@@ -66,8 +66,7 @@ const Modal: React.FC<{
             </div>
           )}
 
-          <div>
-            <Divider />
+          <div className={classes.footer}>
             <div className={classes.buttonContainer}>
               {button ? button : closeButton}
               {secondButton && secondButton}

@@ -19,6 +19,7 @@
 :is(.subtitle, .link) {
   font-size: 14px;
   line-height: 19px;
+  min-width: max-content;
 }
 .link {
   color: var(--brand-pink);
@@ -41,4 +42,9 @@
 }
 .disabled {
   color: var(--brand-gray-transparent);
+}
+@media (max-width: 500px) {
+  .link {
+    width: auto !important;
+  }
 }

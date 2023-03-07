@@ -109,6 +109,7 @@ const Address: React.FC<{
               type="link"
               disabled={address.state !== 'Success'}
               onClick={() => handleClear(address)}
+              classNames={classes.clear}
             >
               clear
             </Text>
@@ -162,7 +163,7 @@ const Address: React.FC<{
           )}
         </Group>
 
-        <div className={classes.voteContainer}>
+        <Group row classNames={classes.buttons}>
           <Group gap={4}>
             <Text type="subtitle">{isContract ? 'Votes per token' : 'Votes per user'}</Text>
 
@@ -195,15 +196,22 @@ const Address: React.FC<{
               </div>
             </Group>
           </Group>
-        </div>
 
-        <Button
-          text="X"
-          classNames={classes.xButton}
-          bgColor={ButtonColor.White}
-          onClick={() => handleRemove(address)}
-          disabled={disableRemoval}
-        />
+          <Button
+            text="&#x2715;"
+            classNames={clsx(classes.xButton, classes.xButtonDesktop)}
+            bgColor={ButtonColor.White}
+            onClick={() => handleRemove(address)}
+            disabled={disableRemoval}
+          />
+          <Button
+            text="Remove&emsp;&#x2715;"
+            classNames={clsx(classes.xButton, classes.xButtonMobile)}
+            bgColor={ButtonColor.White}
+            onClick={() => handleRemove(address)}
+            disabled={disableRemoval}
+          />
+        </Group>
       </div>
 
       {address.state === 'Error' && !isTyping && (

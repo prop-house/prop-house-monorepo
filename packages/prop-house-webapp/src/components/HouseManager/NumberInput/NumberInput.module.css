@@ -18,7 +18,6 @@
   padding: 2px 8px;
   font-weight: 500;
   height: 36px;
-  /* height: 32px; */
   width: 100%;
   border: 1px solid var(--border-med);
 }
@@ -37,14 +36,3 @@
   color: var(--brand-gray-transparent);
   border: 1px solid var(--border-med);
 }
-
-/* Chrome, Safari, Edge, Opera */
-/* .numberInput input[type='number']::-webkit-outer-spin-button,
-.numberInput input[type='number']::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-} */
-/* Firefox */
-/* .numberInput input[type='number'] {
-  -moz-appearance: textfield;
-} */
