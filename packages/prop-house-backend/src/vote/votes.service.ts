@@ -89,6 +89,15 @@ export class VotesService {
     });
   }
 
+  async getNumVotesByAccountAndRoundId(account: string, roundId: number) {
+    const votes = await this.votesRepository
+      .createQueryBuilder('v')
+      .where('address = :account', { account })
+      .andWhere('v.auctionId = :roundId', { roundId })
+      .getMany();
+    return votes.reduce((sum, vote) => sum + Number(vote.weight), 0);
+  }
+
   async getNumVotes(
     dto: Pick<CreateVoteDto, 'address' | 'communityAddress'>,
     balanceblockTag: number,

@@ -45,6 +45,14 @@ export class VotesController {
     return this.votesService.findByAddress(address);
   }
 
+  @Get('numVotes/:account/:roundId')
+  numVotesCasted(
+    @Param('account') account: string,
+    @Param('roundId') roundId: number,
+  ) {
+    return this.votesService.getNumVotesByAccountAndRoundId(account, roundId);
+  }
+
   @Get('byCommunities/:addresses')
   findByCommunity(@Param('addresses') addresses: string) {
     const votes = this.votesService.findAllByCommunityAddresses(

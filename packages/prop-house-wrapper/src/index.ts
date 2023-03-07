@@ -191,6 +191,14 @@ export class PropHouseWrapper {
     }
   }
 
+  async getNumVotesCastedForRound(account: string, roundId: number) {
+    try {
+      return (await axios.get(`${this.host}/votes/numVotes/${account}/${roundId}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async logVotes(votes: Vote[], isContract = false) {
     if (!this.signer) return;
 
