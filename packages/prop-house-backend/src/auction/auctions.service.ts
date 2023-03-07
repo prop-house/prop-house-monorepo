@@ -47,20 +47,25 @@ export class AuctionsService {
 
   findAllActiveForCommunities(addresses: string[]): Promise<Auction[]> {
     const now = new Date();
-    return this.auctionsRepository
+    const inComms = this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .where(':now > a.startTime', { now })
-      .andWhere(':now < a.votingEndTime', { now })
+      .addSelect(
+        "CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime THEN 'true' ELSE 'false' END",
+        'active',
+      )
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
-      .groupBy('a.id')
       .leftJoin('a.community', 'c')
-      .andWhere('LOWER(c.contractAddress) IN (:...addresses)', {
-        addresses: addresses.map((addr) => addr.toLowerCase()),
-      })
-      .orderBy('a.votingEndTime')
+      .groupBy('a.id, c.contractAddress')
+      .orderBy(
+        'CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) IN (:addresses) THEN 1  WHEN NOW() < a.startTime AND LOWER(c.contractAddress) IN (:addresses) THEN 2 WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 3 WHEN NOW() < a.startTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 4 ELSE 5 END',
+        'ASC',
+      )
+      .setParameter('addresses', addresses)
       .getRawMany();
+
+    return inComms;
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {
