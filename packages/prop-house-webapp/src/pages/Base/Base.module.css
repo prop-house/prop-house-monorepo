@@ -9,7 +9,8 @@
 .sectionTitle .icon {
   margin: 0 8px;
 }
-.loadMoreBtn {
+.loadMoreRoundsBtn {
+  margin-top: 2rem;
   width: 100%;
 }
 .simpleRoundCardWrapper {
