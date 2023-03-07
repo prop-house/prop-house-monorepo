@@ -6,10 +6,11 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
-import { CreateAuctionDto } from './auction.types';
+import { CreateAuctionDto, GetAuctionsDto } from './auction.types';
 import { AuctionsService } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
@@ -95,12 +96,12 @@ export class AuctionsController {
     return this.auctionsService.findAllActive();
   }
 
-  @Get('active/:addresses')
+  @Get('active/:n')
   async findAllActiveForCommunities(
-    @Param('addresses') addresses: string,
+    @Query() dto: GetAuctionsDto,
   ): Promise<Auction[]> {
     const auctions = await this.auctionsService.findAllActiveForCommunities(
-      addresses.split(','),
+      dto,
     );
     if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
+import { GetAuctionsDto } from './auction.types';
 
 @Injectable()
 export class AuctionsService {
@@ -45,11 +46,12 @@ export class AuctionsService {
       .getRawMany();
   }
 
-  findAllActiveForCommunities(addresses: string[]): Promise<Auction[]> {
-    const now = new Date();
-    const inComms = this.auctionsRepository
+  findAllActiveForCommunities(dto: GetAuctionsDto): Promise<Auction[]> {
+    return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
+      .skip(dto.skip)
+      .limit(dto.limit)
       .addSelect(
         "CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime THEN 'true' ELSE 'false' END",
         'active',
@@ -62,10 +64,8 @@ export class AuctionsService {
         'CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) IN (:addresses) THEN 1  WHEN NOW() < a.startTime AND LOWER(c.contractAddress) IN (:addresses) THEN 2 WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 3 WHEN NOW() < a.startTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 4 ELSE 5 END',
         'ASC',
       )
-      .setParameter('addresses', addresses)
+      .setParameter('addresses', dto.addresses)
       .getRawMany();
-
-    return inComms;
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {
