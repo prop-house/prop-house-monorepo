@@ -46,6 +46,8 @@ export function handleRoundCreated(event: RoundCreated): void {
 
   const round = new Round(event.params.round.toHex());
   round.type = event.params.kind.toString();
+  round.title = event.params.title;
+  round.description = event.params.description;
   round.state = RoundState.AWAITING_REGISTRATION;
   round.house = house.id;
   round.creator = creator.id;

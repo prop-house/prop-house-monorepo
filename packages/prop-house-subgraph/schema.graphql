@@ -107,6 +107,12 @@ type Round @entity {
   "The round type (TIMED_FUNDING)"
   type: String!
 
+  "The round title"
+  title: String!
+
+  "The round description"
+  description: String!
+
   "The round state"
   state: RoundState!
 
