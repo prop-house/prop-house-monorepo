@@ -50,8 +50,6 @@ export class AuctionsService {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .skip(dto.skip)
-      .limit(dto.limit)
       .addSelect(
         "CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime THEN 'true' ELSE 'false' END",
         'active',
@@ -65,6 +63,8 @@ export class AuctionsService {
         'ASC',
       )
       .setParameter('addresses', dto.addresses)
+      .offset(dto.skip)
+      .limit(dto.limit)
       .getRawMany();
   }
 
