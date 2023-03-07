@@ -7,9 +7,7 @@ export const isRoundStepValid = (round: InitialRoundProps, step: number) => {
     round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
     round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0);
   const isStep3Valid =
-    round.awards.some(a => a.state === 'Success' && a.amount !== 0) &&
-    round.numWinners !== 0 &&
-    round.fundingAmount !== 0;
+    round.awards.some(a => a.state === 'Success' && a.amount !== 0) && round.numWinners !== 0;
   const isStep4Valid =
     round.startTime !== null && round.proposalEndTime !== null && round.votingEndTime !== null;
   const isStep5Valid = isStep1Valid && isStep2Valid && isStep3Valid && isStep4Valid;

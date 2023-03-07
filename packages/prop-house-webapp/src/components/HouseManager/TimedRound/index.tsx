@@ -160,7 +160,7 @@ const TimedRound: React.FC<{
           )}
         </Group>
 
-        <Group row gap={6}>
+        <Group row gap={6} classNames={classes.buttons}>
           {proposalPeriods.map(length => (
             <TimePeriod
               key={length}
@@ -184,7 +184,7 @@ const TimedRound: React.FC<{
         </Group>
       </Group>
 
-      <Group gap={6} mt={8}>
+      <Group gap={6} margin={8} classNames={classes.votingPeriod}>
         <Group row>
           <Text type="subtitle">Voting Period</Text>
           {votingPeriodLength !== 0 && roundTime.votingEnd && (
@@ -195,7 +195,7 @@ const TimedRound: React.FC<{
           )}
         </Group>
 
-        <Group row gap={6}>
+        <Group row gap={6} classNames={classes.buttons}>
           {votingPeriods.map(length => (
             <TimePeriod
               key={length}

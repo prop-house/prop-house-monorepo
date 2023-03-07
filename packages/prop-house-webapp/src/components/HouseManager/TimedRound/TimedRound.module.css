@@ -7,3 +7,22 @@
   font-size: 14px;
   line-height: 19px;
 }
+.buttons {
+  flex-wrap: wrap;
+}
+@media (max-width: 500px) {
+  .container {
+    min-width: 90px;
+  }
+  .customNumberInput {
+    width: 50%;
+  }
+  .votingPeriod {
+    margin-top: 20px !important;
+  }
+}
+@media (max-width: 375px) {
+  .customNumberInput {
+    width: -webkit-fill-available;
+  }
+}

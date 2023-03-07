@@ -1,5 +1,5 @@
 import classes from './NameAndDescriptionFields.module.css';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, initialRound, updateRound } from '../../../state/slices/round';
 import Group from '../Group';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
@@ -9,6 +9,8 @@ import clsx from 'clsx';
 import { capitalize } from '../../../utils/capitalize';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import Button, { ButtonColor } from '../../Button';
+import { fullRound } from '../Footer';
 
 const NameAndDescriptionFields = () => {
   const dispatch = useDispatch();
@@ -99,6 +101,28 @@ const NameAndDescriptionFields = () => {
           <Text type="subtitle">Round name</Text>
           <Text type="body">{title.length}/255</Text>
         </div>
+        {/* // TODO: to be removed, just for testing */}
+        <div className={classes.btns}>
+          <Button
+            onClick={() => {
+              dispatch(updateRound({ ...initialRound }));
+              setTitle('');
+              setDescription('');
+            }}
+            text="Clear"
+            bgColor={ButtonColor.Red}
+          />
+          <Button
+            onClick={() => {
+              dispatch(updateRound({ ...round, ...fullRound }));
+              setTitle(fullRound.title);
+              setDescription(fullRound.description);
+            }}
+            text="Full"
+            bgColor={ButtonColor.Purple}
+          />
+        </div>
+        {/* // TODO: to be removed, just for testing */}
 
         <input
           className={clsx(classes.input, errors.title && classes.inputError)}

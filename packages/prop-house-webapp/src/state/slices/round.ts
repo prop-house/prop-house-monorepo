@@ -2,13 +2,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
 import { AwardProps } from '../../components/HouseManager/AwardsSelector';
 import { AddressProps } from '../../components/HouseManager/VotingStrategies';
+// import {
+//   AssetType,
+//   HouseType,
+//   RoundType,
+//   TimedFundingRoundEnvelope,
+//   VotingStrategyType,
+// } from '@prophouse/sdk';
 
 export interface InitialRoundProps {
   title: string;
   startTime: Date | null;
   proposalEndTime: Date | null;
   votingEndTime: Date | null;
-  fundingAmount: number;
   numWinners: number;
   currencyType: string;
   description: string;
@@ -17,12 +23,11 @@ export interface InitialRoundProps {
   awards: AwardProps[];
 }
 
-const initialRound: InitialRoundProps = {
+export const initialRound: InitialRoundProps = {
   title: '',
   startTime: null,
   proposalEndTime: null,
   votingEndTime: null,
-  fundingAmount: 0,
   numWinners: 0,
   currencyType: '',
   description: '',
@@ -52,6 +57,7 @@ export const roundSlice = createSlice({
     },
     checkStepCriteria: state => {
       const { round } = state;
+
       // Call isRoundStepValid to calculate the disabled state for the current step (i + 1).
       // If the step is not valid (isRoundStepValid returns false), set the disabled state to true by negating the result.
       state.stepDisabledArray = Array.from(

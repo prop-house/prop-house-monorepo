@@ -37,7 +37,7 @@ const RoundDatesSelector = () => {
           <Section
             id={0}
             title="A time round"
-            text="Set a specific end date and time for yourround."
+            text="Set a specific end date and time for your round."
             activeSection={activeSection}
           />
           <Section

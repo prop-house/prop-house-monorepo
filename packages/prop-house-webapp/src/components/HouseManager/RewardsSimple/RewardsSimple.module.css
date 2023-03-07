@@ -1,14 +1,14 @@
 .container {
   display: flex;
-  width: 100%;
   width: auto;
   align-items: flex-end;
+  align-items: baseline;
   gap: 10px;
   white-space: nowrap;
 }
 .inputContainer {
   width: 100px;
-  max-width: 100px;
+  max-width: 70px;
 }
 .fullWidth {
   width: 100%;
@@ -41,12 +41,13 @@
 .inputContainer input[type='number'] {
   -moz-appearance: textfield;
 }
-/* ////// */
+
 .awardContainer {
   display: flex;
   width: 100%;
   justify-content: space-between;
   gap: 10px;
+  flex-direction: column;
 }
 .addressContainer {
   flex: 1;
@@ -120,4 +121,26 @@
   font-size: 12px;
   font-weight: 700;
   font-style: italic;
+}
+.willReceive {
+  align-self: self-end;
+}
+.winnersAndRewards {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+}
+@media (max-width: 500px) {
+  .winnersAndRewards {
+    align-items: self-end;
+    gap: 15px;
+  }
+  .container {
+    flex-direction: column;
+    align-items: normal;
+  }
+  .inputContainer {
+    width: 100%;
+    max-width: none;
+  }
 }

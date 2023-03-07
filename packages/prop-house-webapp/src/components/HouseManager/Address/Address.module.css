@@ -33,11 +33,6 @@
   width: 100%;
   max-width: 65%;
 }
-.voteContainer {
-  display: flex;
-  flex-direction: column;
-  width: 20%;
-}
 .voteInput {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
   border-radius: 10px;
@@ -59,7 +54,6 @@
 .voteInput {
   -moz-appearance: textfield !important;
 }
-
 .allotButtons {
   display: flex;
   flex-direction: row;
@@ -135,4 +129,41 @@
   font-size: 12px;
   font-weight: 700;
   font-style: italic;
+}
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+.xButtonMobile {
+  min-width: max-content;
+}
+@media (min-width: 501px) {
+  .xButtonMobile {
+    display: none;
+  }
+}
+@media (max-width: 500px) {
+  .container {
+    flex-direction: column;
+    width: 100%;
+  }
+  .addressAndTitle {
+    min-width: 100%;
+  }
+  .allotButtons button {
+    border-radius: 8px;
+  }
+  .buttons {
+    justify-content: space-between;
+  }
+  .xButton {
+    width: min-content !important;
+    border-radius: 8px !important;
+  }
+  .xButtonDesktop {
+    display: none;
+  }
+  .clear {
+    width: auto;
+  }
 }

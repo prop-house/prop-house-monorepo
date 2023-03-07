@@ -28,6 +28,9 @@
   display: flex;
   flex-direction: column;
 }
+.textContainer p:first-child {
+  font-size: 16px;
+}
 .currentStep .number {
   background: var(--brand-pink);
   color: white;
@@ -55,4 +58,19 @@
 }
 .completedStep::after {
   border: 1px dashed var(--brand-gray-transparent) !important;
+}
+@media (max-width: 991px) {
+  .step:not(:last-child)::after {
+    display: none;
+  }
+  .step {
+    align-items: flex-start;
+    margin-bottom: 0px;
+  }
+  .textContainer {
+    min-width: 180px;
+  }
+  .textContainer p:first-child {
+    min-width: max-content;
+  }
 }
