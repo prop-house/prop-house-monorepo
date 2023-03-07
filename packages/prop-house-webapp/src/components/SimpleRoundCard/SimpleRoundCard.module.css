@@ -228,8 +228,8 @@
 .roundInfo {
   display: flex;
   justify-content: space-between;
-  background: linear-gradient(180deg, #fcfcfc 0%, #ffffff 100%);
-  border-top: 1px solid var(--border-light);
+  /* background: linear-gradient(180deg, #fcfcfc 0%, #ffffff 100%); */
+  border-bottom: 1px solid var(--border-light);
   padding: 1.125rem 1.5rem 1.375rem 1.5rem;
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
@@ -238,6 +238,25 @@
 .roundInfo p {
   padding: 0;
   margin: 0;
+}
+
+.statusRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.125rem 1.5rem 1.375rem 1.5rem;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  font-weight: 700;
+}
+
+.statusRow.proposing {
+  background-color: var(--brand-green-hint);
+  color: var(--brand-green);
+}
+.statusRow.voting {
+  background-color: var(--brand-purple-hint);
+  color: var(--brand-purple);
 }
 
 .divider {

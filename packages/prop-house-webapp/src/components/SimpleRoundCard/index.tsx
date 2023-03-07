@@ -20,35 +20,72 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
-import Markdown from 'markdown-to-jsx';
-import sanitizeHtml from 'sanitize-html';
 import { useEffect, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useAccount, useSigner } from 'wagmi';
+import { InfuraProvider } from '@ethersproject/providers';
+import { getNumVotes } from 'prop-house-communities';
 
 const SimpleRoundCard: React.FC<{
   round: StoredAuction;
   displayCommunity?: boolean;
-  displayTldr?: boolean;
 }> = props => {
-  const { round, displayCommunity, displayTldr } = props;
+  const { round, displayCommunity } = props;
 
   const { t } = useTranslation();
+
   const [community, setCommunity] = useState<Community | undefined>();
+  const [numVotesCasted, setNumVotesCasted] = useState<number | null>(null);
+  const [votingPower, setVotingPower] = useState<number | null>(null);
+  const [statusCopy, setStatusCopy] = useState('...');
+
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const wrapper = new PropHouseWrapper(host);
 
-  interface changeTagProps {
-    children: React.ReactNode;
-  }
+  const { address: account } = useAccount();
+  const { data: signer } = useSigner();
 
-  // overrides any tag to become a <p> tag
-  const changeTagToParagraph = ({ children }: changeTagProps) => <p>{children}</p>;
+  // fetch num votes casted
+  useEffect(() => {
+    if (auctionStatus(round) === AuctionStatus.AuctionVoting && account) {
+      const fetchNumVotesCasted = async () => {
+        try {
+          const numVotes = await wrapper.getNumVotesCastedForRound(account, round.id);
+          setNumVotesCasted(numVotes);
+        } catch (e) {
+          console.log(e);
+        }
+      };
 
-  // overrides any tag to become a <span> tag
-  const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
+      fetchNumVotesCasted();
+    }
+  });
 
+  // fetch voting power for user
+  useEffect(() => {
+    if (!account || !signer || !community) return;
+
+    const fetchVotes = async () => {
+      try {
+        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
+        const votes = await getNumVotes(
+          account,
+          community.contractAddress,
+          provider,
+          round.balanceBlockTag,
+        );
+        setVotingPower(votes);
+      } catch (e) {
+        console.log('error fetching votes: ', e);
+      }
+    };
+    fetchVotes();
+  }, [account, signer, community, round.balanceBlockTag]);
+
+  // fetch community
   useEffect(() => {
     if (community !== undefined || displayCommunity) return;
 
@@ -56,6 +93,18 @@ const SimpleRoundCard: React.FC<{
       setCommunity(await wrapper.getCommunityWithId(round.communityId));
     fetchCommunity();
   });
+
+  // voting status copy
+  useEffect(() => {
+    if (votingPower === null || numVotesCasted === null) return;
+    if (numVotesCasted === 0) {
+      setStatusCopy(`You haven't voted yet!`);
+    } else if (numVotesCasted === votingPower) {
+      setStatusCopy(`You casted all your ${votingPower} votes!`);
+    } else {
+      setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
+    }
+  }, [votingPower, numVotesCasted]);
 
   return (
     <>
@@ -89,24 +138,6 @@ const SimpleRoundCard: React.FC<{
               <StatusPill status={auctionStatus(round)} />
             </div>
             <div className={classes.authorContainer}>{round.title}</div>
-
-            {displayTldr && (
-              //  support both markdown & html in round's description.
-              <Markdown
-                className={classes.truncatedTldr}
-                options={{
-                  overrides: {
-                    h1: changeTagToParagraph,
-                    h2: changeTagToParagraph,
-                    h3: changeTagToParagraph,
-                    a: changeTagToSpan,
-                    br: changeTagToSpan,
-                  },
-                }}
-              >
-                {sanitizeHtml(round.description)}
-              </Markdown>
-            )}
           </div>
 
           <div className={classes.roundInfo}>
@@ -146,6 +177,17 @@ const SimpleRoundCard: React.FC<{
               <p className={classes.title}> {t('proposalsCap')}</p>
               <p className={classes.info}>{round.numProposals}</p>
             </div>
+          </div>
+
+          <div
+            className={clsx(
+              classes.statusRow,
+              auctionStatus(round) === AuctionStatus.AuctionVoting
+                ? classes.voting
+                : classes.proposing,
+            )}
+          >
+            {statusCopy}
           </div>
         </Card>
       </div>
