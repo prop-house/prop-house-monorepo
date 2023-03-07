@@ -95,32 +95,36 @@ const RewardsSimple: React.FC<{
 
   return (
     <div className={classes.container}>
-      <Group gap={4} classNames={classes.inputContainer}>
-        <Text type="subtitle">Winner(s)</Text>
-        <input
-          type="number"
-          placeholder="3"
-          maxLength={3}
-          value={round.numWinners === 0 ? '' : round.numWinners}
-          onChange={handleWinnerInputChange}
-        />
-      </Group>
+      <div className={classes.winnersAndRewards}>
+        <Group gap={4} classNames={classes.inputContainer}>
+          <Text type="subtitle">Winner(s)</Text>
+          <input
+            type="number"
+            placeholder="3"
+            maxLength={3}
+            value={round.numWinners === 0 ? '' : round.numWinners}
+            onChange={handleWinnerInputChange}
+          />
+        </Group>
 
-      <Group mb={8}>
-        <Text type="subtitle">will receive</Text>
-      </Group>
+        <Group mb={8} classNames={classes.willReceive}>
+          <Text type="subtitle">will receive</Text>
+        </Group>
 
-      <Group gap={4} classNames={classes.inputContainer}>
-        <Text type="subtitle">Rewards</Text>
-        <input
-          type="number"
-          maxLength={5}
-          placeholder="0.5"
-          value={round.fundingAmount === 0 ? undefined : round.fundingAmount}
-          onPaste={handleInputPaste}
-          onChange={e => handleAmountInputChange(e, award)}
-        />
-      </Group>
+        <Group gap={4} classNames={classes.inputContainer}>
+          <Text type="subtitle">Rewards</Text>
+          <input
+            type="number"
+            maxLength={5}
+            placeholder="0.5"
+            // TODO: replace
+            value={4}
+            // value={round.fundingAmount === 0 ? undefined : round.fundingAmount}
+            onPaste={handleInputPaste}
+            onChange={e => handleAmountInputChange(e, award)}
+          />
+        </Group>
+      </div>
 
       <Group gap={6} classNames={classes.fullWidth}>
         <div className={classes.awardContainer}>
@@ -179,13 +183,13 @@ const RewardsSimple: React.FC<{
               </button>
             )}
           </Group>
-        </div>
 
-        {award.state === 'Error' && !isTyping && (
-          <Group mt={-8}>
-            <p className={classes.error}>{getErrorMessage()}</p>
-          </Group>
-        )}
+          {award.state === 'Error' && !isTyping && (
+            <Group mt={-8}>
+              <p className={classes.error}>{getErrorMessage()}</p>
+            </Group>
+          )}
+        </div>
       </Group>
     </div>
   );

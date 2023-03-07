@@ -12,6 +12,7 @@ import { uuid } from 'uuidv4';
 import { isAddress } from 'ethers/lib/utils.js';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { changeAward } from '../utils/changeAward';
+import { fullRound } from '../Footer';
 
 export interface AwardProps {
   id: string;
@@ -56,14 +57,20 @@ const AwardsSelector = () => {
   };
 
   const [awardContracts, setAwardContracts] = useState<AwardProps[]>(
-    round.awards.length ? round.awards : [initialAward],
+    round.awards[0].state === 'Success' ? [...round.awards] : [initialAward],
   );
-
+  console.log(
+    'awardContracts',
+    round.awards[0].state === 'Success',
+    round.awards,
+    fullRound.awards,
+    awardContracts,
+  );
   const dataToBeCleared = {};
 
   const clearAwards = () => {
     setAwardContracts([initialAward]);
-    dispatch(updateRound({ ...round, numWinners: 0, fundingAmount: 0, awards: [initialAward] }));
+    dispatch(updateRound({ ...round, numWinners: 0, awards: [initialAward] }));
     dispatch(checkStepCriteria());
   };
 
@@ -222,13 +229,7 @@ const AwardsSelector = () => {
 
     setAwardContracts(updated);
 
-    dispatch(
-      updateRound({
-        ...round,
-        fundingAmount: value,
-        awards: updated,
-      }),
-    );
+    dispatch(updateRound({ ...round, awards: updated }));
 
     dispatch(checkStepCriteria());
   };

@@ -16,3 +16,8 @@
 .active .textContainer {
   transform: scale(0.95);
 }
+@media (max-width: 500px) {
+  .active {
+    transform: scale(1.02);
+  }
+}

@@ -6,19 +6,22 @@ interface TextProps {
   disabled?: boolean;
   onClick?: () => void;
   children: React.ReactNode;
+  classNames?: string;
 }
 
-const Text: React.FC<TextProps> = ({ type, disabled, onClick, children }) => {
+const Text: React.FC<TextProps> = ({ type, disabled, onClick, children, classNames }) => {
   return type === 'link' ? (
     <button
       disabled={disabled}
       onClick={onClick}
-      className={clsx(classes.link, disabled && classes.disabled)}
+      className={clsx(classes.link, disabled && classes.disabled, classNames && classNames)}
     >
       {children}
     </button>
   ) : (
-    <p className={clsx(classes[type], disabled && classes.disabled)}>{children}</p>
+    <p className={clsx(classes[type], disabled && classes.disabled, classNames && classNames)}>
+      {children}
+    </p>
   );
 };
 

@@ -12,12 +12,15 @@ import Bullet from '../Bullet';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
-import UploadCSVModal from '../../UploadCSVModal';
+import UploadCSVModal from '../UploadCSVModal';
 import { getTokenInfo } from '../utils/getTokenInfo';
+import useAddressType from '../utils/useAddressType';
+// import { AssetType } from '@prophouse/sdk';
 
 export interface AddressProps {
   id: string;
   type: 'contract' | 'user';
+  // assetType: AssetType;
   addressValue: string;
   addressImage: string;
   addressName: string;

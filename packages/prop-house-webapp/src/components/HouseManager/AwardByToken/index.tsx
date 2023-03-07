@@ -32,7 +32,7 @@ const AwardByToken: React.FC<{
     isTyping,
     setIsTyping,
     handleBlur,
-    handleChange,
+    // handleChange,
     handleClear,
     handleRemove,
     handleInputChange,
@@ -128,9 +128,10 @@ const AwardByToken: React.FC<{
           <input
             placeholder="0"
             value={award.amount}
-            onChange={e => {
-              handleChange('fundingAmount', e.target.value);
-            }}
+            // TODO: fix funding amount input
+            // onChange={e => {
+            //   handleChange('fundingAmount', e.target.value);
+            // }}
           />
         </div>
       </div>

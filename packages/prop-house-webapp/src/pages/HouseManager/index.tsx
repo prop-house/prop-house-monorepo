@@ -5,7 +5,7 @@ import SecondaryCard from '../../components/HouseManager/SecondaryCard';
 
 const HouseManager = () => {
   return (
-    <>
+    <div className="manager">
       <Container>
         <Row>
           <Col xl={8} className={classes.cardsContainer}>
@@ -14,7 +14,7 @@ const HouseManager = () => {
           </Col>
         </Row>
       </Container>
-    </>
+    </div>
   );
 };
 

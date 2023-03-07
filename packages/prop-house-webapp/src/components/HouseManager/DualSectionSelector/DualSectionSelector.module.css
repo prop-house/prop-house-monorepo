@@ -11,3 +11,9 @@
 .section:hover {
   cursor: pointer;
 }
+@media (max-width: 500px) {
+  .container {
+    flex-direction: column;
+    gap: 6px;
+  }
+}
