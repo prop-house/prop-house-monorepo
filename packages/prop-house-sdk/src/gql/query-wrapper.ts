@@ -11,20 +11,20 @@ import { getDefaultConfig, getGraphQlClientsForChainOrThrow, toPaginated } from 
 import { GraphQL } from '../types';
 
 export class QueryWrapper {
-  private readonly _clients: GraphQL<GraphQLClient>;
+  private readonly _gql: GraphQL<GraphQLClient>;
 
   /**
    * Underlying GraphQL client instances
    */
-  public get clients() {
-    return this._clients;
+  public get gql() {
+    return this._gql;
   }
 
   /**
    * @param chainId The active source chain ID
    */
   constructor(chainId: number) {
-    this._clients = getGraphQlClientsForChainOrThrow(chainId, url => new GraphQLClient(url));
+    this._gql = getGraphQlClientsForChainOrThrow(chainId, url => new GraphQLClient(url));
   }
 
   /**
@@ -32,7 +32,7 @@ export class QueryWrapper {
    * @param config Pagination and ordering configuration
    */
   public async getHouses(config = getDefaultConfig(House_OrderBy.CreatedAt)) {
-    return this._clients.evm.request(ManyHousesSimpleQuery, toPaginated(config));
+    return this._gql.evm.request(ManyHousesSimpleQuery, toPaginated(config));
   }
 
   /**
@@ -40,7 +40,7 @@ export class QueryWrapper {
    * @param config Pagination and ordering configuration
    */
   public async getRounds(config = getDefaultConfig(Round_OrderBy.CreatedAt)) {
-    return this._clients.evm.request(ManyRoundsSimpleQuery, toPaginated(config));
+    return this._gql.evm.request(ManyRoundsSimpleQuery, toPaginated(config));
   }
 
   /**
@@ -52,7 +52,7 @@ export class QueryWrapper {
     house: string,
     config = getDefaultConfig(Round_OrderBy.CreatedAt),
   ) {
-    return this._clients.evm.request(ManyRoundsSimpleForHouseQuery, {
+    return this._gql.evm.request(ManyRoundsSimpleForHouseQuery, {
       ...toPaginated(config),
       house: house.toLowerCase(),
     });
@@ -67,7 +67,7 @@ export class QueryWrapper {
     titleContains: string,
     config = getDefaultConfig(Round_OrderBy.CreatedAt),
   ) {
-    return this._clients.evm.request(ManyRoundsSimpleWhereTitleContainsQuery, {
+    return this._gql.evm.request(ManyRoundsSimpleWhereTitleContainsQuery, {
       ...toPaginated(config),
       titleContains,
     });
@@ -78,6 +78,6 @@ export class QueryWrapper {
    * @param round The round address
    */
   public async getRound(round: string) {
-    return this._clients.evm.request(RoundQuery, { id: round.toLowerCase() });
+    return this._gql.evm.request(RoundQuery, { id: round.toLowerCase() });
   }
 }
