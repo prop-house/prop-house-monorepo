@@ -66,6 +66,7 @@ export class AuctionsService {
       )
       .setParameter('addresses', dto.addresses)
       .orderBy('auction_order', 'ASC')
+      .addOrderBy('a.votingEndTime', 'DESC')
       .getRawMany();
   }
 
