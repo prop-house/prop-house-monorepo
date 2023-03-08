@@ -28,9 +28,8 @@ import { getNumVotes } from 'prop-house-communities';
 
 const SimpleRoundCard: React.FC<{
   round: StoredAuction;
-  displayCommunity?: boolean;
 }> = props => {
-  const { round, displayCommunity } = props;
+  const { round } = props;
 
   const { t } = useTranslation();
 
@@ -46,49 +45,33 @@ const SimpleRoundCard: React.FC<{
   const wrapper = new PropHouseWrapper(host);
 
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
 
-  // fetch num votes casted
+  // fetch num votes casted & voting power
   useEffect(() => {
-    if (auctionStatus(round) === AuctionStatus.AuctionVoting && account) {
-      const fetchNumVotesCasted = async () => {
+    if (auctionStatus(round) === AuctionStatus.AuctionVoting && account && community) {
+      const fetchVotesData = async () => {
         try {
           const numVotes = await wrapper.getNumVotesCastedForRound(account, round.id);
+          const votes = await getNumVotes(
+            account,
+            community.contractAddress,
+            new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
+            round.balanceBlockTag,
+          );
+          setVotingPower(votes);
           setNumVotesCasted(numVotes);
         } catch (e) {
-          console.log(e);
+          console.log('error fetching votes data: ', e);
         }
       };
 
-      fetchNumVotesCasted();
+      fetchVotesData();
     }
   });
 
-  // fetch voting power for user
-  useEffect(() => {
-    if (!account || !signer || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-        const votes = await getNumVotes(
-          account,
-          community.contractAddress,
-          provider,
-          round.balanceBlockTag,
-        );
-        setVotingPower(votes);
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, signer, community, round.balanceBlockTag]);
-
   // fetch community
   useEffect(() => {
-    if (community !== undefined || displayCommunity) return;
-
+    if (community !== undefined) return;
     const fetchCommunity = async () =>
       setCommunity(await wrapper.getCommunityWithId(round.communityId));
     fetchCommunity();
