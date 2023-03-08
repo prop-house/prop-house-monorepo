@@ -41,6 +41,7 @@ export enum OrderByProposalFields {
   Body = 'body',
   Id = 'id',
   IsCancelled = 'is_cancelled',
+  IsWinner = 'is_winner',
   MetadataUri = 'metadata_uri',
   ProposalId = 'proposal_id',
   Proposer = 'proposer',
@@ -96,6 +97,8 @@ export type Proposal = {
   id: Scalars['String'];
   /** Whether the proposal has been cancelled */
   is_cancelled: Scalars['Boolean'];
+  /** Whether the proposal has been selected as a winner */
+  is_winner: Scalars['Boolean'];
   /** The proposal metadata URI */
   metadata_uri: Scalars['String'];
   /** The proposal ID */
@@ -221,8 +224,6 @@ export type Round = {
   vote_count: Scalars['Int'];
   /** All votes that have been cast in the round */
   votes: Array<Maybe<Vote>>;
-  /** The winning proposals */
-  winning_proposals?: Maybe<Array<Maybe<Proposal>>>;
 };
 
 export type Vote = {
@@ -293,6 +294,10 @@ export type WhereProposal = {
   is_cancelled_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
   is_cancelled_not?: InputMaybe<Scalars['Boolean']>;
   is_cancelled_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  is_winner?: InputMaybe<Scalars['Boolean']>;
+  is_winner_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  is_winner_not?: InputMaybe<Scalars['Boolean']>;
+  is_winner_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
   metadata_uri?: InputMaybe<Scalars['String']>;
   metadata_uri_contains?: InputMaybe<Scalars['String']>;
   metadata_uri_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
@@ -524,10 +529,57 @@ export type ManyProposalsForRoundQuery = {
     title: string;
     body: string;
     is_cancelled: boolean;
+    is_winner: boolean;
     received_at: number;
     tx?: string | null;
     vote_count: number;
     proposer: { __typename?: 'Account'; id: string };
+  } | null> | null;
+};
+
+export type ManyProposalsByAccountQueryVariables = Exact<{
+  proposer: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<OrderByProposalFields>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyProposalsByAccountQuery = {
+  __typename?: 'Query';
+  proposals?: Array<{
+    __typename?: 'Proposal';
+    id: string;
+    proposal_id: number;
+    metadata_uri: string;
+    title: string;
+    body: string;
+    is_cancelled: boolean;
+    is_winner: boolean;
+    received_at: number;
+    tx?: string | null;
+    vote_count: number;
+  } | null> | null;
+};
+
+export type ManyVotesByAccountQueryVariables = Exact<{
+  voter: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<OrderByVoteFields>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyVotesByAccountQuery = {
+  __typename?: 'Query';
+  votes?: Array<{
+    __typename?: 'Vote';
+    id: string;
+    voting_power: number;
+    received_at: number;
+    tx?: string | null;
+    round: { __typename?: 'Round'; id: string };
+    proposal: { __typename?: 'Proposal'; id: string };
   } | null> | null;
 };
 
@@ -633,6 +685,7 @@ export const ManyProposalsForRoundDocument = ({
                 { kind: 'Field', name: { kind: 'Name', value: 'title' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'body' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'is_cancelled' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'is_winner' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'received_at' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'vote_count' } },
@@ -644,3 +697,225 @@ export const ManyProposalsForRoundDocument = ({
     },
   ],
 } as unknown) as DocumentNode<ManyProposalsForRoundQuery, ManyProposalsForRoundQueryVariables>;
+export const ManyProposalsByAccountDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyProposalsByAccount' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'proposer' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderByProposalFields' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'proposals' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'proposer' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'proposer' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'proposal_id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'metadata_uri' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'body' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'is_cancelled' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'is_winner' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'received_at' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'vote_count' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<ManyProposalsByAccountQuery, ManyProposalsByAccountQueryVariables>;
+export const ManyVotesByAccountDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyVotesByAccount' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'voter' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderByVoteFields' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'votes' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'voter' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'voter' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'proposal' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'voting_power' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'received_at' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<ManyVotesByAccountQuery, ManyVotesByAccountQueryVariables>;

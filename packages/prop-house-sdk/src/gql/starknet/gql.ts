@@ -13,8 +13,12 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-  '\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      received_at\n      tx\n      vote_count\n    }\n  }\n':
+  '\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n':
     types.ManyProposalsForRoundDocument,
+  '\n  query manyProposalsByAccount(\n    $proposer: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { proposer: $proposer }\n    ) {\n      id\n      proposal_id\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n':
+    types.ManyProposalsByAccountDocument,
+  '\n  query manyVotesByAccount(\n    $voter: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByVoteFields\n    $orderDirection: OrderDirection\n  ) {\n    votes(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { voter: $voter }\n    ) {\n      id\n      round {\n        id\n      }\n      proposal {\n        id\n      }\n      voting_power\n      received_at\n      tx\n    }\n  }\n':
+    types.ManyVotesByAccountDocument,
 };
 
 /**
@@ -35,8 +39,20 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      received_at\n      tx\n      vote_count\n    }\n  }\n',
-): typeof documents['\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      received_at\n      tx\n      vote_count\n    }\n  }\n'];
+  source: '\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n',
+): typeof documents['\n  query manyProposalsForRound(\n    $round: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { round: $round }\n    ) {\n      id\n      proposal_id\n      proposer {\n        id\n      }\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query manyProposalsByAccount(\n    $proposer: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { proposer: $proposer }\n    ) {\n      id\n      proposal_id\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n',
+): typeof documents['\n  query manyProposalsByAccount(\n    $proposer: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByProposalFields\n    $orderDirection: OrderDirection\n  ) {\n    proposals(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { proposer: $proposer }\n    ) {\n      id\n      proposal_id\n      metadata_uri\n      title\n      body\n      is_cancelled\n      is_winner\n      received_at\n      tx\n      vote_count\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query manyVotesByAccount(\n    $voter: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByVoteFields\n    $orderDirection: OrderDirection\n  ) {\n    votes(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { voter: $voter }\n    ) {\n      id\n      round {\n        id\n      }\n      proposal {\n        id\n      }\n      voting_power\n      received_at\n      tx\n    }\n  }\n',
+): typeof documents['\n  query manyVotesByAccount(\n    $voter: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: OrderByVoteFields\n    $orderDirection: OrderDirection\n  ) {\n    votes(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { voter: $voter }\n    ) {\n      id\n      round {\n        id\n      }\n      proposal {\n        id\n      }\n      voting_power\n      received_at\n      tx\n    }\n  }\n'];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

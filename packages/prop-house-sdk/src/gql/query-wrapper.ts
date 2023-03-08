@@ -9,6 +9,12 @@ import {
 } from './queries.evm';
 import { getDefaultConfig, getGraphQlClientsForChainOrThrow, toPaginated } from './utils';
 import { GraphQL } from '../types';
+import {
+  ManyProposalsByAccountQuery,
+  ManyProposalsForRoundQuery,
+  ManyVotesByAccountQuery,
+} from './queries.starknet';
+import { OrderByProposalFields, OrderByVoteFields } from './starknet/graphql';
 
 export class QueryWrapper {
   private readonly _gql: GraphQL<GraphQLClient>;
@@ -79,5 +85,47 @@ export class QueryWrapper {
    */
   public async getRound(round: string) {
     return this._gql.evm.request(RoundQuery, { id: round.toLowerCase() });
+  }
+
+  /**
+   * Get paginated proposals for the provided round address
+   * @param round The round address
+   */
+  public async getProposalsForRound(
+    round: string,
+    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+  ) {
+    return this._gql.starknet.request(ManyProposalsForRoundQuery, {
+      ...toPaginated(config),
+      round: round.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated proposals by the provided account address
+   * @param round The account address
+   */
+  public async getProposalsByAccount(
+    account: string,
+    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+  ) {
+    return this._gql.starknet.request(ManyProposalsByAccountQuery, {
+      ...toPaginated(config),
+      proposer: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated votes by the provided account address
+   * @param round The account address
+   */
+  public async geVotesForAccount(
+    account: string,
+    config = getDefaultConfig(OrderByVoteFields.ReceivedAt),
+  ) {
+    return this._gql.starknet.request(ManyVotesByAccountQuery, {
+      ...toPaginated(config),
+      voter: account.toLowerCase(),
+    });
   }
 }
