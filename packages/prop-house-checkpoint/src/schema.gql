@@ -23,9 +23,6 @@ type Round {
   "The transaction in which the round was registered"
   tx: String
 
-  "The winning proposals"
-  winning_proposals: [Proposal]
-
   "All proposals that have been submitted to the round"
   proposals: [Proposal]! @derivedFrom(field: "round")
 
@@ -57,6 +54,9 @@ type Proposal {
 
   "Whether the proposal has been cancelled"
   is_cancelled: Boolean!
+
+  "Whether the proposal has been selected as a winner"
+  is_winner: Boolean!
 
   "The unix timestamp when the proposal was received"
   received_at: Int!

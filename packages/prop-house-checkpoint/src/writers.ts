@@ -150,6 +150,9 @@ export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, 
   const round = validateAndParseAddress(rawEvent.from_address);
   const winningIds = event.winners.map(({ proposal_id }: Proposal) => proposal_id);
 
-  const query = `UPDATE rounds SET state = ?, winning_proposals = ? WHERE id = ? LIMIT 1;`;
-  await mysql.queryAsync(query, [RoundState.FINALIZED, winningIds, round]);
+  const query = `
+    UPDATE rounds SET state = ? WHERE id = ? LIMIT 1;
+    UPDATE proposals SET is_winner = true WHERE id IN ?;
+  `;
+  await mysql.queryAsync(query, [RoundState.FINALIZED, round, winningIds]);
 };
