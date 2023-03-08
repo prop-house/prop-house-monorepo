@@ -39,9 +39,9 @@
   color: var(--brand-gray);
 }
 .modal button {
-  width: 100%;
   border-radius: 50px;
 }
+
 .buttonContainer {
   display: flex;
   gap: 8px;
@@ -83,6 +83,9 @@
   border-radius: 10px;
   background: white;
   background: var(--brand-gray-semi-transparent);
+}
+.footer .buttonContainer button {
+  width: 100% !important;
 }
 @media (max-width: 575px) {
   .modal {
