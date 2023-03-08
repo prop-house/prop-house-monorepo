@@ -50,21 +50,18 @@ export class AuctionsService {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .addSelect(
-        "CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime THEN 'true' ELSE 'false' END",
-        'active',
-      )
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .leftJoin('a.community', 'c')
       .groupBy('a.id, c.contractAddress')
-      .orderBy(
-        'CASE WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) IN (:addresses) THEN 1  WHEN NOW() < a.startTime AND LOWER(c.contractAddress) IN (:addresses) THEN 2 WHEN NOW() > a.startTime AND NOW() < a.votingEndTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 3 WHEN NOW() < a.startTime AND LOWER(c.contractAddress) NOT IN (:addresses) THEN 4 ELSE 5 END',
-        'ASC',
-      )
-      .setParameter('addresses', dto.addresses)
       .offset(dto.skip)
       .limit(dto.limit)
+      .addSelect(
+        'CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 1 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 2 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 3 ELSE CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 4 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 5 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 6 ELSE 7 END END END END END END',
+        'auction_order',
+      )
+      .setParameter('addresses', dto.addresses)
+      .orderBy('auction_order', 'ASC')
       .getRawMany();
   }
 
