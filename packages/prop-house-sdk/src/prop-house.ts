@@ -13,12 +13,13 @@ import {
 import { ContractAddresses, getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
+import { QueryWrapper } from './gql';
 import { encoding } from './utils';
 import { House } from './houses';
 import { Round } from './rounds';
 import { Voting } from './voting';
 
-export class PropHouse<CVS extends Custom | void = void> {
+export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
   private readonly _contract: PropHouseContract;
   private readonly _addresses: ContractAddresses;
   private readonly _house: House;
@@ -61,6 +62,8 @@ export class PropHouse<CVS extends Custom | void = void> {
   }
 
   constructor(config: PropHouseConfig<CVS>) {
+    super(config.chainId);
+
     this._addresses = getContractAddressesForChainOrThrow(config.chainId);
     this._contract = PropHouse__factory.connect(
       this.addresses.evm.prophouse,
