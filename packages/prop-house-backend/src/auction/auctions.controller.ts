@@ -92,8 +92,11 @@ export class AuctionsController {
   }
 
   @Get('allActive/:n')
-  findAllActive(@Param('n') _: string): Promise<Auction[]> {
-    return this.auctionsService.findAllActive();
+  async findAllActive(@Query() dto: GetAuctionsDto): Promise<Auction[]> {
+    const auctions = await this.auctionsService.findAllActive(dto);
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auctions;
   }
 
   @Get('active/:n')

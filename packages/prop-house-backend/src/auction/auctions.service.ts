@@ -33,16 +33,20 @@ export class AuctionsService {
       .groupBy('a.id')
       .getRawMany();
   }
-  findAllActive(): Promise<Auction[]> {
-    const now = new Date();
+  findAllActive(dto: GetAuctionsDto): Promise<Auction[]> {
     return this.auctionsRepository
       .createQueryBuilder('a')
       .select('a.*')
-      .where(':now > a.startTime', { now })
-      .andWhere(':now < a.votingEndTime', { now })
       .addSelect('SUM(p."numProposals")', 'numProposals')
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
+      .offset(dto.skip)
+      .limit(dto.limit)
+      .addSelect(
+        'CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime THEN 1 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime THEN 2 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime THEN 3 ELSE 4 END END END',
+        'auction_order',
+      )
+      .orderBy('auction_order', 'ASC')
       .getRawMany();
   }
 

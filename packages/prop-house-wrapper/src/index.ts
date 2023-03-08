@@ -66,9 +66,16 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
   }
-  async getActiveAuctions(): Promise<StoredAuction[]> {
+  async getActiveAuctions(skip = 5, limit = 5): Promise<StoredAuction[]> {
     try {
-      const rawAuctions = (await axios.get(`${this.host}/auctions/allActive/n`)).data;
+      const rawAuctions = (
+        await axios.get(`${this.host}/auctions/allActive/n`, {
+          params: {
+            limit,
+            skip,
+          },
+        })
+      ).data;
       return rawAuctions.map(StoredAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;
