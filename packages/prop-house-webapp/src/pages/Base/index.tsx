@@ -26,25 +26,27 @@ const Base = () => {
   const wrapper = new PropHouseWrapper(host);
 
   useEffect(() => {
-    if (!account || relevantCommunities !== undefined || block === undefined) return;
+    if (relevantCommunities !== undefined || !block) return;
+
     const getRelComms = async () => {
       setLoadingRelComms(true);
       try {
-        setRelevantCommunites(Object.keys(await getRelevantComms(account, provider, block)));
-        setLoadingRelComms(false);
+        setRelevantCommunites(
+          account ? Object.keys(await getRelevantComms(account, provider, block)) : [],
+        );
       } catch (e) {
         setRelevantCommunites([]);
-        setLoadingRelComms(false);
       }
+      setLoadingRelComms(false);
     };
     getRelComms();
-  });
+  }, [block, relevantCommunities, account, provider]);
 
   useEffect(() => {
-    if (!account || rounds || !loadingRelComms) return;
+    if (rounds || loadingRelComms || relevantCommunities === undefined) return;
     const getRounds = async () => {
       try {
-        relevantCommunities && relevantCommunities.length > 0
+        relevantCommunities.length > 0
           ? setRounds(
               await wrapper.getActiveAuctionsForCommunities(
                 roundsSkip,
