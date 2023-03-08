@@ -102,6 +102,26 @@ export class PropHouseWrapper {
     }
   }
 
+  /**
+   * @param auctionId
+   * @param timestamp unix timestamp
+   * @returns number of proposals submitted to round id after given timestamp
+   */
+  async getNumProps(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/numProps/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async getAuctionWithNameForCommunity(
     auctionName: string,
     communityId: number,

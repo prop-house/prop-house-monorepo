@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
-import { CreateAuctionDto, GetAuctionsDto } from './auction.types';
+import { CreateAuctionDto, GetAuctionsDto, NumPropsDto } from './auction.types';
 import { AuctionsService } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
@@ -109,5 +109,13 @@ export class AuctionsController {
     if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
     return auctions;
+  }
+
+  @Get('numProps/:n')
+  async numProps(@Query() dto: NumPropsDto): Promise<number> {
+    const numProps = await this.auctionsService.numProps(dto);
+    if (numProps === undefined)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return numProps;
   }
 }

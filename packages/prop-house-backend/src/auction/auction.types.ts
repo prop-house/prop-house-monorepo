@@ -56,3 +56,15 @@ export class GetAuctionsDto {
   @IsArray()
   addresses?: string[];
 }
+
+export class NumPropsDto {
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => Number(value))
+  timestamp: number;
+
+  @IsInt()
+  @Min(1)
+  @Transform(({ value }) => Number(value))
+  auctionId: number;
+}

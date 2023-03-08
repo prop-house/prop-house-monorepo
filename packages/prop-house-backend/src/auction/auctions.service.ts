@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
-import { GetAuctionsDto } from './auction.types';
+import { GetAuctionsDto, NumPropsDto } from './auction.types';
 
 @Injectable()
 export class AuctionsService {
@@ -68,6 +68,20 @@ export class AuctionsService {
       .orderBy('auction_order', 'ASC')
       .addOrderBy('a.votingEndTime', 'DESC')
       .getRawMany();
+  }
+
+  numProps(dto: NumPropsDto): Promise<number> {
+    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp to Date object
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .leftJoin('a.proposals', 'p')
+      .select('COUNT(p.id)', 'numProposals')
+      .where('a.id = :auctionId AND p.createdDate > :timestamp', {
+        auctionId: dto.auctionId,
+        timestamp: timestamp,
+      })
+      .getRawOne()
+      .then((result) => result.numProposals);
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {
