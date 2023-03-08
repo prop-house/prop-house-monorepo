@@ -16,7 +16,7 @@ const Base = () => {
   const { data: block } = useBlockNumber();
   const provider = useProvider();
 
-  const QUERY_LIMIT = 3;
+  const QUERY_LIMIT = 6;
   const [loadingRelComms, setLoadingRelComms] = useState(false);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
@@ -28,12 +28,13 @@ const Base = () => {
   useEffect(() => {
     if (!account || relevantCommunities !== undefined || block === undefined) return;
     const getRelComms = async () => {
+      setLoadingRelComms(true);
       try {
         setRelevantCommunites(Object.keys(await getRelevantComms(account, provider, block)));
-        setLoadingRelComms(true);
+        setLoadingRelComms(false);
       } catch (e) {
         setRelevantCommunites([]);
-        setLoadingRelComms(true);
+        setLoadingRelComms(false);
       }
     };
     getRelComms();
@@ -43,18 +44,16 @@ const Base = () => {
     if (!account || rounds || !loadingRelComms) return;
     const getRounds = async () => {
       try {
-        if (relevantCommunities && relevantCommunities.length > 0) {
-          setRounds(
-            await wrapper.getActiveAuctionsForCommunities(
-              roundsSkip,
-              QUERY_LIMIT,
-              relevantCommunities,
-            ),
-          );
-          setRoundsSkip(QUERY_LIMIT + 1);
-        } else {
-          setRounds(await wrapper.getActiveAuctions());
-        }
+        relevantCommunities && relevantCommunities.length > 0
+          ? setRounds(
+              await wrapper.getActiveAuctionsForCommunities(
+                roundsSkip,
+                QUERY_LIMIT,
+                relevantCommunities,
+              ),
+            )
+          : setRounds(await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT));
+        setRoundsSkip(QUERY_LIMIT);
       } catch (e) {
         console.log(e);
       }
@@ -64,13 +63,17 @@ const Base = () => {
 
   const fetchMoreRounds = async () => {
     if (relevantCommunities === undefined) return;
-    console.log(roundsSkip);
-    const newRounds = await wrapper.getActiveAuctionsForCommunities(
-      roundsSkip,
-      QUERY_LIMIT,
-      relevantCommunities,
-    );
-    console.log(newRounds);
+
+    const newRounds =
+      relevantCommunities.length > 0
+        ? await wrapper.getActiveAuctionsForCommunities(
+            roundsSkip,
+            QUERY_LIMIT,
+            relevantCommunities,
+          )
+        : await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
+
+    if (newRounds.length === 0) return;
     setRounds(prev => {
       return !prev ? [...newRounds] : [...prev, ...newRounds];
     });
