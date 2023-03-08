@@ -22,7 +22,7 @@ import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import { useEffect, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
 import { getNumVotes } from 'prop-house-communities';
 
@@ -113,7 +113,7 @@ const SimpleRoundCard: React.FC<{
           );
       }
     }
-  }, [votingPower, numVotesCasted, numProps]);
+  }, [votingPower, numVotesCasted, numProps, round]);
 
   return (
     <>
