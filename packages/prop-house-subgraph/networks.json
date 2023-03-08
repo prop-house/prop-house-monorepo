@@ -7,6 +7,10 @@
     "PropHouse": {
       "address": "0x8a2c125D95ED3d28C23B0825cD0C086FF3088528",
       "startBlock": 8584975
+    },
+    "CreatorPassIssuer": {
+      "address": "0x8Ca0CD6B7e76deDD93793C79D5E904529306Ef85",
+      "startBlock": 8584976
     }
   }
 }

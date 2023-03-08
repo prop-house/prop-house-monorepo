@@ -93,9 +93,6 @@ type House @entity {
   "The creation transaction hash"
   creationTx: Bytes!
 
-  "Accounts that hold creator pass(es) on the house"
-  creators: [Account!]
-
   "All rounds on the house"
   rounds: [Round!]! @derivedFrom(field: "house")
 }
@@ -196,15 +193,29 @@ type TimedFundingRoundConfig @entity {
   awards: [Award!]! @derivedFrom(field: "round")
 }
 
+type HouseCreator @entity {
+  "A concatenation of the house address and creator account id"
+  id: ID!
+
+  "The house that the creator belongs to"
+  house: House!
+
+  "The creator account"
+  creator: Account!
+
+  "The number of passes that the creator holds"
+  passCount: Int!
+}
+
 type Account @entity {
   "The account address"
   id: ID!
 
   "Houses owned by the account"
-  house: [House!]! @derivedFrom(field: "owner")
+  ownedHouses: [House!]! @derivedFrom(field: "owner")
 
   "Rounds created by the account"
-  rounds: [Round!]! @derivedFrom(field: "creator")
+  createdRounds: [Round!]! @derivedFrom(field: "creator")
 
   "Deposits made by the account"
   deposits: [Deposit!]! @derivedFrom(field: "depositor")
