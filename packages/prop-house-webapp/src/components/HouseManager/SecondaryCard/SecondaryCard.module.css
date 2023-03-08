@@ -24,9 +24,6 @@
   }
 }
 @media (max-width: 767px) {
-  .hideOnMobile {
-    display: none;
-  }
   .secondaryCard {
     width: 100%;
     display: flex;
@@ -44,5 +41,8 @@
     left: calc(-1 * (100vw - 100%) / 2);
     height: max-content !important;
     border-radius: 0px;
+  }
+  .hideOnMobile {
+    display: none;
   }
 }
