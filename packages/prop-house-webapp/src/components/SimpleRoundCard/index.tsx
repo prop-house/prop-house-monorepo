@@ -37,6 +37,7 @@ const SimpleRoundCard: React.FC<{
   const [numVotesCasted, setNumVotesCasted] = useState<number | null>(null);
   const [votingPower, setVotingPower] = useState<number | null>(null);
   const [statusCopy, setStatusCopy] = useState('...');
+  const [numProps, setNumProps] = useState<number | undefined>(undefined);
 
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -51,15 +52,15 @@ const SimpleRoundCard: React.FC<{
     if (auctionStatus(round) === AuctionStatus.AuctionVoting && account && community) {
       const fetchVotesData = async () => {
         try {
-          const numVotes = await wrapper.getNumVotesCastedForRound(account, round.id);
-          const votes = await getNumVotes(
+          const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
+          const votingPower = await getNumVotes(
             account,
             community.contractAddress,
             new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
             round.balanceBlockTag,
           );
-          setVotingPower(votes);
-          setNumVotesCasted(numVotes);
+          setVotingPower(votingPower);
+          setNumVotesCasted(numVotesCasted);
         } catch (e) {
           console.log('error fetching votes data: ', e);
         }
@@ -67,6 +68,17 @@ const SimpleRoundCard: React.FC<{
 
       fetchVotesData();
     }
+  });
+
+  // proposals data
+  useEffect(() => {
+    if (!(auctionStatus(round) === AuctionStatus.AuctionAcceptingProps)) return;
+    const fetchNumProps = async () => {
+      const dayAgo = Math.floor(new Date().getTime() - (24 * 60 * 60 * 1000) / 1000);
+      const numProps = await wrapper.getNumProps(round.id, dayAgo);
+      setNumProps(numProps);
+    };
+    fetchNumProps();
   });
 
   // fetch community
@@ -79,15 +91,29 @@ const SimpleRoundCard: React.FC<{
 
   // voting status copy
   useEffect(() => {
-    if (votingPower === null || numVotesCasted === null) return;
-    if (numVotesCasted === 0) {
-      setStatusCopy(`You haven't voted yet!`);
-    } else if (numVotesCasted === votingPower) {
-      setStatusCopy(`You casted all your ${votingPower} votes!`);
-    } else {
-      setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
+    if (auctionStatus(round) === AuctionStatus.AuctionVoting) {
+      if (votingPower === null || numVotesCasted === null) return;
+      if (numVotesCasted === 0) {
+        setStatusCopy(`You haven't voted yet!`);
+      } else if (numVotesCasted === votingPower) {
+        setStatusCopy(`You casted all your ${votingPower} votes!`);
+      } else {
+        setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
+      }
+    } else if (auctionStatus(round) === AuctionStatus.AuctionAcceptingProps) {
+      if (numProps === undefined) return;
+      if (numProps === 0) {
+        setStatusCopy('No props in the last 24 hrs!');
+      } else {
+        numProps &&
+          setStatusCopy(
+            `${numProps} prop${numProps > 1 ? 's' : ''} ${
+              numProps > 1 ? 'have' : 'has'
+            } submitted in the last 24 hrs`,
+          );
+      }
     }
-  }, [votingPower, numVotesCasted]);
+  }, [votingPower, numVotesCasted, numProps]);
 
   return (
     <>
