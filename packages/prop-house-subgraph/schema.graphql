@@ -95,6 +95,9 @@ type House @entity {
 
   "All rounds on the house"
   rounds: [Round!]! @derivedFrom(field: "house")
+
+  "All accounts who currently have permission to create rounds on the house (in addition to the owner)"
+  roundCreators: [RoundCreator!]! @derivedFrom(field: "house")
 }
 
 type Round @entity {
@@ -213,6 +216,9 @@ type Account @entity {
 
   "Houses owned by the account"
   ownedHouses: [House!]! @derivedFrom(field: "owner")
+
+  "Houses on which the account can create rounds"
+  creatorOnHouses: [RoundCreator!]! @derivedFrom(field: "creator")
 
   "Rounds created by the account"
   createdRounds: [Round!]! @derivedFrom(field: "creator")
