@@ -20,7 +20,7 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
@@ -35,8 +35,8 @@ const SimpleRoundCard: React.FC<{
   const { t } = useTranslation();
 
   const [community, setCommunity] = useState<Community | undefined>();
-  const [numVotesCasted, setNumVotesCasted] = useState<number | undefined>(undefined);
-  const [votingPower, setVotingPower] = useState<number | undefined>(undefined);
+  const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
+  const [votingPower, setVotingPower] = useState<number | undefined | null>(undefined);
   const [statusCopy, setStatusCopy] = useState('...');
   const [numProps, setNumProps] = useState<number | undefined>(undefined);
   const [numVotes, setNumVotes] = useState<number | undefined>(undefined);
@@ -45,7 +45,7 @@ const SimpleRoundCard: React.FC<{
   const dispatch = useAppDispatch();
 
   const host = useAppSelector(state => state.configuration.backendHost);
-  const wrapper = new PropHouseWrapper(host);
+  const wrapper = useMemo(() => new PropHouseWrapper(host), [host]);
 
   const { address: account } = useAccount();
 
@@ -54,26 +54,32 @@ const SimpleRoundCard: React.FC<{
 
   // fetch num votes casted & voting power
   useEffect(() => {
-    if (auctionStatus(round) === AuctionStatus.AuctionVoting && account && community) {
-      const fetchVotesData = async () => {
-        try {
-          const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
-          const votingPower = await getNumVotes(
-            account,
-            community.contractAddress,
-            new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
-            round.balanceBlockTag,
-          );
-          setVotingPower(votingPower);
-          setNumVotesCasted(numVotesCasted);
-        } catch (e) {
-          console.log('error fetching votes data: ', e);
-        }
-      };
+    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || !community) return;
 
-      fetchVotesData();
+    if (!account) {
+      setVotingPower(null);
+      setNumVotesCasted(null);
+      return;
     }
-  });
+
+    const fetchVotesData = async () => {
+      try {
+        const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
+        const votingPower = await getNumVotes(
+          account,
+          community.contractAddress,
+          new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
+          round.balanceBlockTag,
+        );
+        setVotingPower(votingPower);
+        setNumVotesCasted(numVotesCasted);
+      } catch (e) {
+        console.log('error fetching votes data: ', e);
+      }
+    };
+
+    fetchVotesData();
+  }, [setVotingPower, account, community, round, wrapper]);
 
   // proposals data
   useEffect(() => {
@@ -105,20 +111,24 @@ const SimpleRoundCard: React.FC<{
     fetchCommunity();
   });
 
-  // voting status copy
+  // status bar copy
   useEffect(() => {
     // voting
     if (auctionStatus(round) === AuctionStatus.AuctionVoting) {
       if (votingPower === undefined || numVotesCasted === undefined) return;
-      if (numVotesCasted === votingPower && votingPower > 0) {
-        setStatusCopy(`You casted all your ${votingPower} votes!`);
-      } else if (numVotesCasted > 0 && votingPower > 0) {
-        setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
-      } else if (numVotesCasted === 0 && votingPower > 0) {
-        setStatusCopy(`You haven't voted yet!`);
-      } else if (votingPower === 0) {
+
+      if (votingPower === null && numVotesCasted === null)
         setStatusCopy(`${numVotes} votes in the last 24 hrs`);
-      }
+
+      if (votingPower !== null && numVotesCasted !== null && votingPower > 0)
+        if (numVotesCasted === votingPower) {
+          setStatusCopy(`You casted all your ${votingPower} votes!`);
+        } else if (numVotesCasted > 0) {
+          setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
+        } else if (numVotesCasted === 0) {
+          setStatusCopy(`You haven't voted yet!`);
+        }
+
       // proposing
     } else if (auctionStatus(round) === AuctionStatus.AuctionAcceptingProps) {
       if (numProps === undefined) return;
