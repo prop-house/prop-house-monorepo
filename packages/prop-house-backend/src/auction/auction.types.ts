@@ -57,7 +57,7 @@ export class GetAuctionsDto {
   addresses?: string[];
 }
 
-export class NumPropsDto {
+export class LatestDto {
   @IsInt()
   @Min(1)
   @Transform(({ value }) => Number(value))

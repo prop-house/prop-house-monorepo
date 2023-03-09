@@ -34,10 +34,11 @@ const SimpleRoundCard: React.FC<{
   const { t } = useTranslation();
 
   const [community, setCommunity] = useState<Community | undefined>();
-  const [numVotesCasted, setNumVotesCasted] = useState<number | null>(null);
-  const [votingPower, setVotingPower] = useState<number | null>(null);
+  const [numVotesCasted, setNumVotesCasted] = useState<number | undefined>(undefined);
+  const [votingPower, setVotingPower] = useState<number | undefined>(undefined);
   const [statusCopy, setStatusCopy] = useState('...');
   const [numProps, setNumProps] = useState<number | undefined>(undefined);
+  const [numVotes, setNumVotes] = useState<number | undefined>(undefined);
 
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -46,6 +47,9 @@ const SimpleRoundCard: React.FC<{
   const wrapper = new PropHouseWrapper(host);
 
   const { address: account } = useAccount();
+
+  // timestamp to fetch latest prop/vote data (x votes/props y ago)
+  const pastTimestamp = dayjs().subtract(1, 'day').unix() * 1000;
 
   // fetch num votes casted & voting power
   useEffect(() => {
@@ -72,10 +76,21 @@ const SimpleRoundCard: React.FC<{
 
   // proposals data
   useEffect(() => {
+    // fetch if voting && user has not voting power
+    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || (votingPower && votingPower > 0))
+      return;
+    const fetchNumVotes = async () => {
+      const numVotes = await wrapper.getLatestNumVotes(round.id, pastTimestamp);
+      setNumVotes(numVotes);
+    };
+    fetchNumVotes();
+  });
+
+  // votes data
+  useEffect(() => {
     if (!(auctionStatus(round) === AuctionStatus.AuctionAcceptingProps)) return;
     const fetchNumProps = async () => {
-      const dayAgo = dayjs().subtract(1, 'day').unix() * 1000;
-      const numProps = await wrapper.getNumProps(round.id, dayAgo);
+      const numProps = await wrapper.getLatestNumProps(round.id, pastTimestamp);
       setNumProps(numProps);
     };
     fetchNumProps();
@@ -91,29 +106,29 @@ const SimpleRoundCard: React.FC<{
 
   // voting status copy
   useEffect(() => {
+    // voting
     if (auctionStatus(round) === AuctionStatus.AuctionVoting) {
-      if (votingPower === null || numVotesCasted === null) return;
-      if (numVotesCasted === 0) {
-        setStatusCopy(`You haven't voted yet!`);
-      } else if (numVotesCasted === votingPower) {
+      if (votingPower === undefined || numVotesCasted === undefined) return;
+      if (numVotesCasted === votingPower && votingPower > 0) {
         setStatusCopy(`You casted all your ${votingPower} votes!`);
-      } else {
+      } else if (numVotesCasted > 0 && votingPower > 0) {
         setStatusCopy(`You casted ${numVotesCasted} of ${votingPower} votes`);
+      } else if (numVotesCasted === 0 && votingPower > 0) {
+        setStatusCopy(`You haven't voted yet!`);
+      } else if (votingPower === 0) {
+        setStatusCopy(`${numVotes} votes in the last 24 hrs`);
       }
+      // proposing
     } else if (auctionStatus(round) === AuctionStatus.AuctionAcceptingProps) {
       if (numProps === undefined) return;
       if (numProps === 0) {
-        setStatusCopy('No props in the last 24 hrs!');
+        setStatusCopy('No props in the last 24 hrs');
       } else {
         numProps &&
-          setStatusCopy(
-            `${numProps} prop${numProps > 1 ? 's' : ''} ${
-              numProps > 1 ? 'have' : 'has'
-            } submitted in the last 24 hrs`,
-          );
+          setStatusCopy(`${numProps} prop${numProps > 1 ? 's' : ''} submitted in the last 24 hrs`);
       }
     }
-  }, [votingPower, numVotesCasted, numProps, round]);
+  }, [votingPower, numVotesCasted, numProps, round, numVotes]);
 
   return (
     <>

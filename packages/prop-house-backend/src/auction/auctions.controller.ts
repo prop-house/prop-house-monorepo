@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
-import { CreateAuctionDto, GetAuctionsDto, NumPropsDto } from './auction.types';
+import { CreateAuctionDto, GetAuctionsDto, LatestDto } from './auction.types';
 import { AuctionsService } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
@@ -111,11 +111,25 @@ export class AuctionsController {
     return auctions;
   }
 
-  @Get('numProps/:n')
-  async numProps(@Query() dto: NumPropsDto): Promise<number> {
-    const numProps = await this.auctionsService.numProps(dto);
+  @Get('latestNumProps/:n')
+  async latestNumProps(@Query() dto: LatestDto): Promise<number> {
+    const numProps = await this.auctionsService.latestNumProps(dto);
     if (numProps === undefined)
-      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
-    return numProps;
+      throw new HttpException(
+        `Error fetching num props for ${dto.auctionId} `,
+        HttpStatus.NOT_FOUND,
+      );
+    return Number(numProps);
+  }
+
+  @Get('latestNumVotes/:n')
+  async latestNumVotes(@Query() dto: LatestDto): Promise<number> {
+    const numVotes = await this.auctionsService.latestNumVotes(dto);
+    if (numVotes === undefined)
+      throw new HttpException(
+        `Error fetching num props for ${dto.auctionId} `,
+        HttpStatus.NOT_FOUND,
+      );
+    return Number(numVotes);
   }
 }

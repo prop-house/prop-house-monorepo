@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
-import { GetAuctionsDto, NumPropsDto } from './auction.types';
+import { GetAuctionsDto, LatestDto } from './auction.types';
 
 @Injectable()
 export class AuctionsService {
@@ -70,7 +70,7 @@ export class AuctionsService {
       .getRawMany();
   }
 
-  numProps(dto: NumPropsDto): Promise<number> {
+  latestNumProps(dto: LatestDto): Promise<number> {
     const timestamp = new Date(dto.timestamp); // Convert Unix timestamp (ms) to Date object
     return this.auctionsRepository
       .createQueryBuilder('a')
@@ -82,6 +82,30 @@ export class AuctionsService {
       })
       .getRawOne()
       .then((result) => result.numProposals);
+  }
+
+  latestNumVotes(dto: LatestDto): Promise<number> {
+    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp (ms) to Date object
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .leftJoinAndSelect('a.proposals', 'p')
+      .leftJoinAndSelect('p.votes', 'v')
+      .where('a.id = :auctionId AND v.createdDate > :timestamp', {
+        auctionId: dto.auctionId,
+        timestamp: timestamp,
+      })
+      .getOne()
+      .then((auction) => {
+        if (!auction) return 0; // Auction not found
+        return auction.proposals.reduce((totalVotes, proposal) => {
+          return (
+            totalVotes +
+            proposal.votes.reduce((totalWeight, vote) => {
+              return totalWeight + Number(vote.weight);
+            }, 0)
+          );
+        }, 0);
+      });
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {

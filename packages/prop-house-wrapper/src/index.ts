@@ -103,14 +103,34 @@ export class PropHouseWrapper {
   }
 
   /**
+   * number of proposals submitted to round id after given timestamp
    * @param auctionId
-   * @param timestamp unix timestamp
-   * @returns number of proposals submitted to round id after given timestamp
+   * @param timestamp unix timestamp (ms)
    */
-  async getNumProps(auctionId: number, timestamp: number): Promise<number> {
+  async getLatestNumProps(auctionId: number, timestamp: number): Promise<number> {
     try {
       return (
-        await axios.get(`${this.host}/auctions/numProps/f`, {
+        await axios.get(`${this.host}/auctions/latestNumProps/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  /**
+   * total vote weight submitted to round id after given timestamp
+   * @param auctionId
+   * @param timestamp unix timestamp (ms)
+   */
+  async getLatestNumVotes(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/latestNumVotes/f`, {
           params: {
             auctionId,
             timestamp,
