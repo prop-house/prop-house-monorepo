@@ -75,6 +75,8 @@ const SimpleRoundCard: React.FC<{
         setNumVotesCasted(numVotesCasted);
       } catch (e) {
         console.log('error fetching votes data: ', e);
+        setVotingPower(null);
+        setNumVotesCasted(null);
       }
     };
 
@@ -117,7 +119,7 @@ const SimpleRoundCard: React.FC<{
     if (auctionStatus(round) === AuctionStatus.AuctionVoting) {
       if (votingPower === undefined || numVotesCasted === undefined) return;
 
-      if (votingPower === null && numVotesCasted === null)
+      if ((votingPower === null && numVotesCasted === null) || votingPower === 0)
         setStatusCopy(`${numVotes} votes in the last 24 hrs`);
 
       if (votingPower !== null && numVotesCasted !== null && votingPower > 0)
