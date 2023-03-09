@@ -8,6 +8,7 @@ import {
   erc1155,
   oneHundredVotes,
   perWalletVoteErc20,
+  fixedVotes,
 } from '../strategies';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
@@ -103,5 +104,7 @@ export const communities = new CaseInsensitiveMap(
     '0x1f65ec15af924e931c07d509f0217cafff96712b': balanceOfErc721(10),
     // Index card
     '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': erc1155(1, 50),
+    // Explorer Grants
+    '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100),
   }),
 );
