@@ -50,7 +50,8 @@ const SimpleRoundCard: React.FC<{
   const { address: account } = useAccount();
 
   // timestamp to fetch latest prop/vote data (x votes/props y ago)
-  const pastTimestamp = dayjs().subtract(1, 'day').unix() * 1000;
+  const dayAgo = dayjs().subtract(1, 'day').unix() * 1000;
+  const tenYearsAgo = dayjs().subtract(10, 'year').unix() * 1000;
 
   // fetch num votes casted & voting power
   useEffect(() => {
@@ -83,23 +84,30 @@ const SimpleRoundCard: React.FC<{
     fetchVotesData();
   }, [setVotingPower, account, community, round, wrapper]);
 
-  // proposals data
+  // num votes
   useEffect(() => {
     // fetch if voting && user has not voting power
-    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || (votingPower && votingPower > 0))
+    if (
+      (!(auctionStatus(round) === AuctionStatus.AuctionVoting) &&
+        !(auctionStatus(round) === AuctionStatus.AuctionEnded)) ||
+      (votingPower && votingPower > 0)
+    )
       return;
     const fetchNumVotes = async () => {
-      const numVotes = await wrapper.getLatestNumVotes(round.id, pastTimestamp);
+      const numVotes = await wrapper.getLatestNumVotes(
+        round.id,
+        auctionStatus(round) === AuctionStatus.AuctionEnded ? tenYearsAgo : dayAgo,
+      );
       setNumVotes(numVotes);
     };
     fetchNumVotes();
   });
 
-  // votes data
+  // num props
   useEffect(() => {
     if (!(auctionStatus(round) === AuctionStatus.AuctionAcceptingProps)) return;
     const fetchNumProps = async () => {
-      const numProps = await wrapper.getLatestNumProps(round.id, pastTimestamp);
+      const numProps = await wrapper.getLatestNumProps(round.id, dayAgo);
       setNumProps(numProps);
     };
     fetchNumProps();
@@ -142,6 +150,13 @@ const SimpleRoundCard: React.FC<{
       }
     } else if (auctionStatus(round) === AuctionStatus.AuctionNotStarted) {
       setStatusCopy(`Round set to begin in `);
+    } else if (auctionStatus(round) === AuctionStatus.AuctionEnded && numVotes) {
+      const decimals = round.fundingAmount.toString().split('.')[1]?.length || 0;
+      const amount = (round.fundingAmount * round.numWinners).toFixed(decimals);
+
+      setStatusCopy(
+        `${numVotes} votes awarded ${amount} ${round.currencyType} to ${round.numWinners} builders`,
+      );
     }
   }, [votingPower, numVotesCasted, numProps, round, numVotes]);
 
