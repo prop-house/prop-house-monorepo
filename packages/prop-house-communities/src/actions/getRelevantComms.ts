@@ -6,9 +6,15 @@ export const getRelevantComms = async (
   provider: Provider,
   blockTag: number,
 ): Promise<{ [key: string]: number }> => {
-  // get all votes from all communities for user
   const allVotes = await Promise.all(
-    Array.from(communities).map(comm => comm[1](userAddress, comm[0], blockTag, provider)),
+    Array.from(communities).map(async comm => {
+      try {
+        return await comm[1](userAddress, comm[0], blockTag, provider);
+      } catch (e) {
+        console.log(`Error resolving voting power for community ${comm[0]}: ${e}`);
+        return 0;
+      }
+    }),
   );
 
   // map community addresses to votes
