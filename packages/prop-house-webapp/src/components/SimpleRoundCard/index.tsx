@@ -74,7 +74,7 @@ const SimpleRoundCard: React.FC<{
   useEffect(() => {
     if (!(auctionStatus(round) === AuctionStatus.AuctionAcceptingProps)) return;
     const fetchNumProps = async () => {
-      const dayAgo = dayjs().subtract(1, 'day').unix();
+      const dayAgo = dayjs().subtract(1, 'day').unix() * 1000;
       const numProps = await wrapper.getNumProps(round.id, dayAgo);
       setNumProps(numProps);
     };
