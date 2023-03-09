@@ -1,20 +1,32 @@
 import { GraphQLClient } from 'graphql-request';
-import { House_OrderBy, Round_OrderBy } from './evm/graphql';
 import {
+  Balance_OrderBy,
+  Claim_OrderBy,
+  Deposit_OrderBy,
+  House_OrderBy,
+  Round_OrderBy,
+} from './evm/graphql';
+import {
+  ManyClaimsByAccountQuery,
+  ManyDepositsByAccountQuery,
   ManyHousesSimpleQuery,
+  ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountIsOwnerQuery,
+  ManyRoundBalancesQuery,
   ManyRoundsSimpleForHouseQuery,
+  ManyRoundsSimpleManagedByAccountQuery,
   ManyRoundsSimpleQuery,
   ManyRoundsSimpleWhereTitleContainsQuery,
   RoundQuery,
 } from './queries.evm';
 import { getDefaultConfig, getGraphQlClientsForChainOrThrow, toPaginated } from './utils';
+import { OrderByProposalFields, OrderByVoteFields } from './starknet/graphql';
 import { GraphQL } from '../types';
 import {
   ManyProposalsByAccountQuery,
   ManyProposalsForRoundQuery,
   ManyVotesByAccountQuery,
 } from './queries.starknet';
-import { OrderByProposalFields, OrderByVoteFields } from './starknet/graphql';
 
 export class QueryWrapper {
   private readonly _gql: GraphQL<GraphQLClient>;
@@ -39,6 +51,36 @@ export class QueryWrapper {
    */
   public async getHouses(config = getDefaultConfig(House_OrderBy.CreatedAt)) {
     return this._gql.evm.request(ManyHousesSimpleQuery, toPaginated(config));
+  }
+
+  /**
+   * Get paginated houses where the provided account has creator permissions
+   * @param account The account address
+   * @param config Pagination and ordering configuration
+   */
+  public async getHousesWhereAccountHasCreatorPermissions(
+    account: string,
+    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+  ) {
+    return this._gql.evm.request(ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery, {
+      ...toPaginated(config),
+      creator: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated houses where the provided account is the house owner
+   * @param account The account address
+   * @param config Pagination and ordering configuration
+   */
+  public async getHousesWhereAccountIsOwner(
+    account: string,
+    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+  ) {
+    return this._gql.evm.request(ManyHousesSimpleWhereAccountIsOwnerQuery, {
+      ...toPaginated(config),
+      owner: account.toLowerCase(),
+    });
   }
 
   /**
@@ -88,22 +130,69 @@ export class QueryWrapper {
   }
 
   /**
-   * Get paginated proposals for the provided round address
+   * Get balance information for a single round
    * @param round The round address
+   * @param config Pagination and ordering configuration
    */
-  public async getProposalsForRound(
+  public async getRoundBalances(
     round: string,
-    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+    config = getDefaultConfig(Balance_OrderBy.UpdatedAt),
   ) {
-    return this._gql.starknet.request(ManyProposalsForRoundQuery, {
+    return this._gql.evm.request(ManyRoundBalancesQuery, {
       ...toPaginated(config),
       round: round.toLowerCase(),
     });
   }
 
   /**
+   * Get paginated rounds currently managed by the provided account address
+   * @param account The account address
+   * @param config Pagination and ordering configuration
+   */
+  public async getRoundsManagedByAccount(
+    account: string,
+    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+  ) {
+    return this._gql.evm.request(ManyRoundsSimpleManagedByAccountQuery, {
+      ...toPaginated(config),
+      manager: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated round deposits by the provided account address
+   * @param account The depositor address
+   * @param config Pagination and ordering configuration
+   */
+  public async getRoundDepositsByAccount(
+    account: string,
+    config = getDefaultConfig(Deposit_OrderBy.DepositedAt),
+  ) {
+    return this._gql.evm.request(ManyDepositsByAccountQuery, {
+      ...toPaginated(config),
+      depositor: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated round claims by the provided account address
+   * @param account The claimer address
+   * @param config Pagination and ordering configuration
+   */
+  public async getRoundClaimsByAccount(
+    account: string,
+    config = getDefaultConfig(Claim_OrderBy.ClaimedAt),
+  ) {
+    return this._gql.evm.request(ManyClaimsByAccountQuery, {
+      ...toPaginated(config),
+      claimer: account.toLowerCase(),
+    });
+  }
+
+  /**
    * Get paginated proposals by the provided account address
    * @param round The account address
+   * @param config Pagination and ordering configuration
    */
   public async getProposalsByAccount(
     account: string,
@@ -118,14 +207,30 @@ export class QueryWrapper {
   /**
    * Get paginated votes by the provided account address
    * @param round The account address
+   * @param config Pagination and ordering configuration
    */
-  public async geVotesForAccount(
+  public async getVotesByAccount(
     account: string,
     config = getDefaultConfig(OrderByVoteFields.ReceivedAt),
   ) {
     return this._gql.starknet.request(ManyVotesByAccountQuery, {
       ...toPaginated(config),
       voter: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated proposals for the provided round address
+   * @param round The round address
+   * @param config Pagination and ordering configuration
+   */
+  public async getProposalsForRound(
+    round: string,
+    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+  ) {
+    return this._gql.starknet.request(ManyProposalsForRoundQuery, {
+      ...toPaginated(config),
+      round: round.toLowerCase(),
     });
   }
 }

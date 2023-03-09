@@ -21,22 +21,24 @@ export type Account = {
   __typename?: 'Account';
   /** Claims made by the account */
   claims: Array<Claim>;
+  /** Rounds created by the account */
+  createdRounds: Array<Round>;
+  /** Houses on which the account can create rounds */
+  creatorOnHouses: Array<RoundCreator>;
   /** Deposits made by the account */
   deposits: Array<Deposit>;
-  /** Houses owned by the account */
-  house: Array<House>;
   /** The account address */
   id: Scalars['ID'];
   /** Incoming asset receipt transfers involving the account */
   incomingTransfers: Array<Transfer>;
   /** Outgoing asset receipt transfers involving the account */
   outgoingTransfers: Array<Transfer>;
+  /** Houses owned by the account */
+  ownedHouses: Array<House>;
   /** Reclamations made by the account */
   reclamations: Array<Reclaim>;
   /** Rescues made by the account */
   rescues: Array<Rescue>;
-  /** Rounds created by the account */
-  rounds: Array<Round>;
 };
 
 export type AccountClaimsArgs = {
@@ -47,20 +49,28 @@ export type AccountClaimsArgs = {
   where?: InputMaybe<Claim_Filter>;
 };
 
+export type AccountCreatedRoundsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<Round_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<Round_Filter>;
+};
+
+export type AccountCreatorOnHousesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundCreator_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundCreator_Filter>;
+};
+
 export type AccountDepositsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Deposit_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<Deposit_Filter>;
-};
-
-export type AccountHouseArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<House_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<House_Filter>;
 };
 
 export type AccountIncomingTransfersArgs = {
@@ -79,6 +89,14 @@ export type AccountOutgoingTransfersArgs = {
   where?: InputMaybe<Transfer_Filter>;
 };
 
+export type AccountOwnedHousesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<House_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<House_Filter>;
+};
+
 export type AccountReclamationsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Reclaim_OrderBy>;
@@ -95,21 +113,14 @@ export type AccountRescuesArgs = {
   where?: InputMaybe<Rescue_Filter>;
 };
 
-export type AccountRoundsArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Round_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Round_Filter>;
-};
-
 export type Account_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
   and?: InputMaybe<Array<InputMaybe<Account_Filter>>>;
   claims_?: InputMaybe<Claim_Filter>;
+  createdRounds_?: InputMaybe<Round_Filter>;
+  creatorOnHouses_?: InputMaybe<RoundCreator_Filter>;
   deposits_?: InputMaybe<Deposit_Filter>;
-  house_?: InputMaybe<House_Filter>;
   id?: InputMaybe<Scalars['ID']>;
   id_gt?: InputMaybe<Scalars['ID']>;
   id_gte?: InputMaybe<Scalars['ID']>;
@@ -121,21 +132,22 @@ export type Account_Filter = {
   incomingTransfers_?: InputMaybe<Transfer_Filter>;
   or?: InputMaybe<Array<InputMaybe<Account_Filter>>>;
   outgoingTransfers_?: InputMaybe<Transfer_Filter>;
+  ownedHouses_?: InputMaybe<House_Filter>;
   reclamations_?: InputMaybe<Reclaim_Filter>;
   rescues_?: InputMaybe<Rescue_Filter>;
-  rounds_?: InputMaybe<Round_Filter>;
 };
 
 export enum Account_OrderBy {
   Claims = 'claims',
+  CreatedRounds = 'createdRounds',
+  CreatorOnHouses = 'creatorOnHouses',
   Deposits = 'deposits',
-  House = 'house',
   Id = 'id',
   IncomingTransfers = 'incomingTransfers',
   OutgoingTransfers = 'outgoingTransfers',
+  OwnedHouses = 'ownedHouses',
   Reclamations = 'reclamations',
   Rescues = 'rescues',
-  Rounds = 'rounds',
 }
 
 export type Administrative = {
@@ -787,8 +799,6 @@ export type House = {
   creationTx: Scalars['Bytes'];
   /** The account who created the house */
   creator?: Maybe<Account>;
-  /** Accounts that hold creator pass(es) on the house */
-  creators?: Maybe<Array<Account>>;
   /** The house description, parsed from the contract URI */
   description?: Maybe<Scalars['String']>;
   /** The address of the house contract */
@@ -799,18 +809,20 @@ export type House = {
   name?: Maybe<Scalars['String']>;
   /** The account who currently owns the house */
   owner?: Maybe<Account>;
+  /** All accounts who currently have permission to create rounds on the house (in addition to the owner) */
+  roundCreators: Array<RoundCreator>;
   /** All rounds on the house */
   rounds: Array<Round>;
   /** The house type (COMMUNITY) */
   type: Scalars['String'];
 };
 
-export type HouseCreatorsArgs = {
+export type HouseRoundCreatorsArgs = {
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Account_OrderBy>;
+  orderBy?: InputMaybe<RoundCreator_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Account_Filter>;
+  where?: InputMaybe<RoundCreator_Filter>;
 };
 
 export type HouseRoundsArgs = {
@@ -977,13 +989,6 @@ export type House_Filter = {
   creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   creator_starts_with?: InputMaybe<Scalars['String']>;
   creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  creators?: InputMaybe<Array<Scalars['String']>>;
-  creators_?: InputMaybe<Account_Filter>;
-  creators_contains?: InputMaybe<Array<Scalars['String']>>;
-  creators_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  creators_not?: InputMaybe<Array<Scalars['String']>>;
-  creators_not_contains?: InputMaybe<Array<Scalars['String']>>;
-  creators_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   description?: InputMaybe<Scalars['String']>;
   description_contains?: InputMaybe<Scalars['String']>;
   description_contains_nocase?: InputMaybe<Scalars['String']>;
@@ -1074,6 +1079,7 @@ export type House_Filter = {
   owner_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   owner_starts_with?: InputMaybe<Scalars['String']>;
   owner_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  roundCreators_?: InputMaybe<RoundCreator_Filter>;
   rounds_?: InputMaybe<Round_Filter>;
   type?: InputMaybe<Scalars['String']>;
   type_contains?: InputMaybe<Scalars['String']>;
@@ -1103,13 +1109,13 @@ export enum House_OrderBy {
   CreationTx = 'creationTx',
   Creator = 'creator',
   CreatorId = 'creator__id',
-  Creators = 'creators',
   Description = 'description',
   Id = 'id',
   ImageUri = 'imageURI',
   Name = 'name',
   Owner = 'owner',
   OwnerId = 'owner__id',
+  RoundCreators = 'roundCreators',
   Rounds = 'rounds',
   Type = 'type',
 }
@@ -1147,6 +1153,8 @@ export type Query = {
   rescue?: Maybe<Rescue>;
   rescues: Array<Rescue>;
   round?: Maybe<Round>;
+  roundCreator?: Maybe<RoundCreator>;
+  roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
   rounds: Array<Round>;
@@ -1342,6 +1350,22 @@ export type QueryRoundArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type QueryRoundCreatorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type QueryRoundCreatorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundCreator_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundCreator_Filter>;
 };
 
 export type QueryRoundImplementationArgs = {
@@ -1803,6 +1827,99 @@ export type RoundTransfersArgs = {
   where?: InputMaybe<Transfer_Filter>;
 };
 
+export type RoundCreator = {
+  __typename?: 'RoundCreator';
+  /** The creator account */
+  creator: Account;
+  /** The house that the creator belongs to */
+  house: House;
+  /** A concatenation of the house address and creator account id */
+  id: Scalars['ID'];
+  /** The number of passes that the creator holds */
+  passCount: Scalars['Int'];
+};
+
+export type RoundCreator_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RoundCreator_Filter>>>;
+  creator?: InputMaybe<Scalars['String']>;
+  creator_?: InputMaybe<Account_Filter>;
+  creator_contains?: InputMaybe<Scalars['String']>;
+  creator_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_ends_with?: InputMaybe<Scalars['String']>;
+  creator_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_gt?: InputMaybe<Scalars['String']>;
+  creator_gte?: InputMaybe<Scalars['String']>;
+  creator_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_lt?: InputMaybe<Scalars['String']>;
+  creator_lte?: InputMaybe<Scalars['String']>;
+  creator_not?: InputMaybe<Scalars['String']>;
+  creator_not_contains?: InputMaybe<Scalars['String']>;
+  creator_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_not_starts_with?: InputMaybe<Scalars['String']>;
+  creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_starts_with?: InputMaybe<Scalars['String']>;
+  creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  house?: InputMaybe<Scalars['String']>;
+  house_?: InputMaybe<House_Filter>;
+  house_contains?: InputMaybe<Scalars['String']>;
+  house_contains_nocase?: InputMaybe<Scalars['String']>;
+  house_ends_with?: InputMaybe<Scalars['String']>;
+  house_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  house_gt?: InputMaybe<Scalars['String']>;
+  house_gte?: InputMaybe<Scalars['String']>;
+  house_in?: InputMaybe<Array<Scalars['String']>>;
+  house_lt?: InputMaybe<Scalars['String']>;
+  house_lte?: InputMaybe<Scalars['String']>;
+  house_not?: InputMaybe<Scalars['String']>;
+  house_not_contains?: InputMaybe<Scalars['String']>;
+  house_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  house_not_ends_with?: InputMaybe<Scalars['String']>;
+  house_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  house_not_in?: InputMaybe<Array<Scalars['String']>>;
+  house_not_starts_with?: InputMaybe<Scalars['String']>;
+  house_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  house_starts_with?: InputMaybe<Scalars['String']>;
+  house_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  or?: InputMaybe<Array<InputMaybe<RoundCreator_Filter>>>;
+  passCount?: InputMaybe<Scalars['Int']>;
+  passCount_gt?: InputMaybe<Scalars['Int']>;
+  passCount_gte?: InputMaybe<Scalars['Int']>;
+  passCount_in?: InputMaybe<Array<Scalars['Int']>>;
+  passCount_lt?: InputMaybe<Scalars['Int']>;
+  passCount_lte?: InputMaybe<Scalars['Int']>;
+  passCount_not?: InputMaybe<Scalars['Int']>;
+  passCount_not_in?: InputMaybe<Array<Scalars['Int']>>;
+};
+
+export enum RoundCreator_OrderBy {
+  Creator = 'creator',
+  CreatorId = 'creator__id',
+  House = 'house',
+  HouseContractUri = 'house__contractURI',
+  HouseCreatedAt = 'house__createdAt',
+  HouseCreationTx = 'house__creationTx',
+  HouseDescription = 'house__description',
+  HouseId = 'house__id',
+  HouseImageUri = 'house__imageURI',
+  HouseName = 'house__name',
+  HouseType = 'house__type',
+  Id = 'id',
+  PassCount = 'passCount',
+}
+
 export type RoundImplementation = {
   __typename?: 'RoundImplementation';
   /** The house implementation that the round is registered upon */
@@ -2142,6 +2259,8 @@ export type Subscription = {
   rescue?: Maybe<Rescue>;
   rescues: Array<Rescue>;
   round?: Maybe<Round>;
+  roundCreator?: Maybe<RoundCreator>;
+  roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
   rounds: Array<Round>;
@@ -2337,6 +2456,22 @@ export type SubscriptionRoundArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type SubscriptionRoundCreatorArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+export type SubscriptionRoundCreatorsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundCreator_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundCreator_Filter>;
 };
 
 export type SubscriptionRoundImplementationArgs = {
@@ -2825,6 +2960,46 @@ export type ManyHousesSimpleQuery = {
   }>;
 };
 
+export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables = Exact<{
+  creator: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Round_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = {
+  __typename?: 'Query';
+  houses: Array<{
+    __typename?: 'House';
+    id: string;
+    name?: string | null;
+    description?: string | null;
+    imageURI?: string | null;
+    createdAt: any;
+  }>;
+};
+
+export type ManyHousesSimpleWhereAccountIsOwnerQueryVariables = Exact<{
+  owner: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Round_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyHousesSimpleWhereAccountIsOwnerQuery = {
+  __typename?: 'Query';
+  houses: Array<{
+    __typename?: 'House';
+    id: string;
+    name?: string | null;
+    description?: string | null;
+    imageURI?: string | null;
+    createdAt: any;
+  }>;
+};
+
 export type ManyRoundsSimpleQueryVariables = Exact<{
   first: Scalars['Int'];
   skip: Scalars['Int'];
@@ -2910,6 +3085,88 @@ export type RoundQuery = {
         })
       | null;
   } | null;
+};
+
+export type ManyRoundBalancesQueryVariables = Exact<{
+  round: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Balance_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyRoundBalancesQuery = {
+  __typename?: 'Query';
+  balances: Array<{
+    __typename?: 'Balance';
+    id: string;
+    balance: any;
+    updatedAt: any;
+    asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+  }>;
+};
+
+export type ManyRoundsSimpleManagedByAccountQueryVariables = Exact<{
+  manager: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Round_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyRoundsSimpleManagedByAccountQuery = {
+  __typename?: 'Query';
+  rounds: Array<{
+    __typename?: 'Round';
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    createdAt: any;
+    state: RoundState;
+  }>;
+};
+
+export type ManyDepositsByAccountQueryVariables = Exact<{
+  depositor: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Deposit_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyDepositsByAccountQuery = {
+  __typename?: 'Query';
+  deposits: Array<{
+    __typename?: 'Deposit';
+    id: string;
+    depositedAt: any;
+    amount: any;
+    asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+    round: { __typename?: 'Round'; id: string };
+  }>;
+};
+
+export type ManyClaimsByAccountQueryVariables = Exact<{
+  claimer: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<Claim_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyClaimsByAccountQuery = {
+  __typename?: 'Query';
+  claims: Array<{
+    __typename?: 'Claim';
+    id: string;
+    claimedAt: any;
+    recipient: any;
+    proposalId: any;
+    amount: any;
+    round: { __typename?: 'Round'; id: string };
+    asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+  }>;
 };
 
 export const TimedFundingRoundConfigPartsFragmentDoc = ({
@@ -3049,6 +3306,183 @@ export const ManyHousesSimpleDocument = ({
     },
   ],
 } as unknown) as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
+export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyHousesSimpleWhereAccountHasCreatorPermissions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'creator' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'houses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'roundCreators_' },
+                      value: {
+                        kind: 'ObjectValue',
+                        fields: [
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'creator' },
+                            value: { kind: 'Variable', name: { kind: 'Name', value: 'creator' } },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<
+  ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables
+>;
+export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyHousesSimpleWhereAccountIsOwner' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'owner' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'houses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'owner' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'owner' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<
+  ManyHousesSimpleWhereAccountIsOwnerQuery,
+  ManyHousesSimpleWhereAccountIsOwnerQueryVariables
+>;
 export const ManyRoundsSimpleDocument = ({
   kind: 'Document',
   definitions: [
@@ -3460,3 +3894,459 @@ export const RoundDocument = ({
     },
   ],
 } as unknown) as DocumentNode<RoundQuery, RoundQueryVariables>;
+export const ManyRoundBalancesDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyRoundBalances' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Balance_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'balances' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'round' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'balance' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
+export const ManyRoundsSimpleManagedByAccountDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyRoundsSimpleManagedByAccount' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'manager' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'rounds' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'manager' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'manager' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<
+  ManyRoundsSimpleManagedByAccountQuery,
+  ManyRoundsSimpleManagedByAccountQueryVariables
+>;
+export const ManyDepositsByAccountDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyDepositsByAccount' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'depositor' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Deposit_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deposits' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'depositor' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'depositor' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'depositedAt' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
+export const ManyClaimsByAccountDocument = ({
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyClaimsByAccount' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'claimer' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Claim_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'claims' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'claimer' },
+                      value: { kind: 'Variable', name: { kind: 'Name', value: 'claimer' } },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'claimedAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'recipient' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown) as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;

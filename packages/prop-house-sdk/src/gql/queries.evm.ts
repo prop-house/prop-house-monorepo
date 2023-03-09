@@ -41,6 +41,42 @@ export const ManyHousesSimpleQuery = graphql(`
   }
 `);
 
+export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
+  query manyHousesSimpleWhereAccountHasCreatorPermissions(
+    $creator: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Round_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    houses(where: { roundCreators_: { creator: $creator } }) {
+      id
+      name
+      description
+      imageURI
+      createdAt
+    }
+  }
+`);
+
+export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
+  query manyHousesSimpleWhereAccountIsOwner(
+    $owner: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Round_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    houses(where: { owner: $owner }) {
+      id
+      name
+      description
+      imageURI
+      createdAt
+    }
+  }
+`);
+
 export const ManyRoundsSimpleQuery = graphql(`
   query manyRoundsSimple(
     $first: Int!
@@ -124,6 +160,120 @@ export const RoundQuery = graphql(`
       timedFundingConfig {
         ...TimedFundingRoundConfigParts
       }
+    }
+  }
+`);
+
+export const ManyRoundBalancesQuery = graphql(`
+  query manyRoundBalances(
+    $round: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Balance_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    balances(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { round: $round }
+    ) {
+      id
+      asset {
+        assetType
+        token
+        identifier
+      }
+      balance
+      updatedAt
+    }
+  }
+`);
+
+export const ManyRoundsSimpleManagedByAccountQuery = graphql(`
+  query manyRoundsSimpleManagedByAccount(
+    $manager: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Round_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    rounds(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { manager: $manager }
+    ) {
+      id
+      type
+      title
+      description
+      createdAt
+      state
+    }
+  }
+`);
+
+export const ManyDepositsByAccountQuery = graphql(`
+  query manyDepositsByAccount(
+    $depositor: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Deposit_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    deposits(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { depositor: $depositor }
+    ) {
+      id
+      depositedAt
+      asset {
+        assetType
+        token
+        identifier
+      }
+      amount
+      round {
+        id
+      }
+    }
+  }
+`);
+
+export const ManyClaimsByAccountQuery = graphql(`
+  query manyClaimsByAccount(
+    $claimer: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: Claim_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    claims(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { claimer: $claimer }
+    ) {
+      id
+      claimedAt
+      recipient
+      proposalId
+      round {
+        id
+      }
+      asset {
+        assetType
+        token
+        identifier
+      }
+      amount
     }
   }
 `);
