@@ -35,7 +35,7 @@ const Base = () => {
           account ? Object.keys(await getRelevantComms(account, provider, block)) : [],
         );
       } catch (e) {
-        console.log(e);
+        console.log('Error fetching relevant comms: ', e);
         setRelevantCommunites([]);
       }
       setLoadingRelComms(false);
