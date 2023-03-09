@@ -258,6 +258,10 @@
   background-color: var(--brand-purple-hint);
   color: var(--brand-purple);
 }
+.statusRow.notStartedOrEnded {
+  background-color: var(--bg-dark);
+  color: var(--brand-gray);
+}
 
 .divider {
   border: 1px solid var(--border-light);

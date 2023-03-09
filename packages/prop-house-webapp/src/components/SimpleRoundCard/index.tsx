@@ -25,6 +25,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
 import { getNumVotes } from 'prop-house-communities';
+import Countdown from '../Countdown';
 
 const SimpleRoundCard: React.FC<{
   round: StoredAuction;
@@ -127,6 +128,8 @@ const SimpleRoundCard: React.FC<{
         numProps &&
           setStatusCopy(`${numProps} prop${numProps > 1 ? 's' : ''} submitted in the last 24 hrs`);
       }
+    } else if (auctionStatus(round) === AuctionStatus.AuctionNotStarted) {
+      setStatusCopy(`Round set to begin in `);
     }
   }, [votingPower, numVotesCasted, numProps, round, numVotes]);
 
@@ -208,10 +211,16 @@ const SimpleRoundCard: React.FC<{
               classes.statusRow,
               auctionStatus(round) === AuctionStatus.AuctionVoting
                 ? classes.voting
-                : classes.proposing,
+                : auctionStatus(round) === AuctionStatus.AuctionAcceptingProps
+                ? classes.proposing
+                : classes.notStartedOrEnded,
             )}
           >
-            {statusCopy}
+            {auctionStatus(round) === AuctionStatus.AuctionNotStarted ? (
+              <Countdown date={round.startTime} />
+            ) : (
+              statusCopy
+            )}
           </div>
         </Card>
       </div>
