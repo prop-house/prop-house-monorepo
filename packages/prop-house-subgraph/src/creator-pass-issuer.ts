@@ -1,6 +1,6 @@
 import { log, store } from '@graphprotocol/graph-ts';
 import { TransferBatch, TransferSingle } from '../generated/CreatorPassIssuer/CreatorPassIssuer';
-import { Account, House, HouseCreator } from '../generated/schema';
+import { Account, House, RoundCreator } from '../generated/schema';
 import { ZERO_ADDRESS } from './lib/constants';
 
 export function handleSingleTransfer(event: TransferSingle): void {
@@ -21,16 +21,16 @@ export function handleSingleTransfer(event: TransferSingle): void {
       return;
     }
 
-    const houseCreatorId = `${house.id}-${to.id}`;
-    let houseCreator = HouseCreator.load(houseCreatorId);
-    if (!houseCreator) {
-      houseCreator = new HouseCreator(houseCreatorId);
-      houseCreator.house = house.id;
-      houseCreator.creator = to.id;
-      houseCreator.passCount = 0;
+    const roundCreatorId = `${house.id}-${to.id}`;
+    let roundCreator = RoundCreator.load(roundCreatorId);
+    if (!roundCreator) {
+      roundCreator = new RoundCreator(roundCreatorId);
+      roundCreator.house = house.id;
+      roundCreator.creator = to.id;
+      roundCreator.passCount = 0;
     }
-    houseCreator.passCount += 1;
-    houseCreator.save();
+    roundCreator.passCount += 1;
+    roundCreator.save();
   } else if (event.params.to.toHex() == ZERO_ADDRESS) {
     // Burn
     const from = Account.load(event.params.from.toHex());
@@ -49,20 +49,20 @@ export function handleSingleTransfer(event: TransferSingle): void {
       ]);
       return;
     }
-    const houseCreatorId = `${house.id}-${from.id}`;
-    const houseCreator = HouseCreator.load(houseCreatorId);
-    if (!houseCreator) {
+    const roundCreatorId = `${house.id}-${from.id}`;
+    const roundCreator = RoundCreator.load(roundCreatorId);
+    if (!roundCreator) {
       log.error('[handleSingleTransfer] House Creator Not Found: {}. Creator Pass Burn Hash: {}', [
-        houseCreatorId,
+        roundCreatorId,
         event.transaction.hash.toHex(),
       ]);
       return;
     }
-    houseCreator.passCount -= 1;
-    houseCreator.save();
+    roundCreator.passCount -= 1;
+    roundCreator.save();
 
-    if (houseCreator.passCount == 0) {
-      store.remove('HouseCreator', houseCreatorId);
+    if (roundCreator.passCount == 0) {
+      store.remove('RoundCreator', roundCreatorId);
     }
   } else {
     // Transfer
@@ -89,32 +89,32 @@ export function handleSingleTransfer(event: TransferSingle): void {
       ]);
       return;
     }
-    const fromHouseCreatorId = `${house.id}-${from.id}`;
-    const fromHouseCreator = HouseCreator.load(fromHouseCreatorId);
-    if (!fromHouseCreator) {
+    const fromRoundCreatorId = `${house.id}-${from.id}`;
+    const fromRoundCreator = RoundCreator.load(fromRoundCreatorId);
+    if (!fromRoundCreator) {
       log.error('[handleSingleTransfer] From House Creator Not Found: {}. Creator Pass Transfer Hash: {}', [
         from.id,
         event.transaction.hash.toHex(),
       ]);
       return;
     }
-    fromHouseCreator.passCount -= 1;
-    fromHouseCreator.save();
+    fromRoundCreator.passCount -= 1;
+    fromRoundCreator.save();
 
-    if (fromHouseCreator.passCount == 0) {
-      store.remove('HouseCreator', fromHouseCreatorId);
+    if (fromRoundCreator.passCount == 0) {
+      store.remove('RoundCreator', fromRoundCreatorId);
     }
 
-    const toHouseCreatorId = `${house.id}-${to.id}`;
-    let toHouseCreator = HouseCreator.load(toHouseCreatorId);
-    if (!toHouseCreator) {
-      toHouseCreator = new HouseCreator(toHouseCreatorId);
-      toHouseCreator.house = house.id;
-      toHouseCreator.creator = to.id;
-      toHouseCreator.passCount = 0;
+    const toRoundCreatorId = `${house.id}-${to.id}`;
+    let toRoundCreator = RoundCreator.load(toRoundCreatorId);
+    if (!toRoundCreator) {
+      toRoundCreator = new RoundCreator(toRoundCreatorId);
+      toRoundCreator.house = house.id;
+      toRoundCreator.creator = to.id;
+      toRoundCreator.passCount = 0;
     }
-    toHouseCreator.passCount += 1;
-    toHouseCreator.save();
+    toRoundCreator.passCount += 1;
+    toRoundCreator.save();
   }
 }
 
@@ -143,31 +143,31 @@ export function handleBatchTransfer(event: TransferBatch): void {
 
   for (let i = 0; i < event.params.ids.length; i++) {
     const houseId = event.params.ids[i].toHex();
-    const fromHouseCreatorId = `${houseId}-${from.id}`;
-    const fromHouseCreator = HouseCreator.load(fromHouseCreatorId);
-    if (!fromHouseCreator) {
+    const fromRoundCreatorId = `${houseId}-${from.id}`;
+    const fromRoundCreator = RoundCreator.load(fromRoundCreatorId);
+    if (!fromRoundCreator) {
       log.error('[handleBatchTransfer] From House Creator Not Found: {}. Creator Pass Transfer Hash: {}', [
-        fromHouseCreatorId,
+        fromRoundCreatorId,
         event.transaction.hash.toHex(),
       ]);
       return;
     }
-    fromHouseCreator.passCount -= 1;
-    fromHouseCreator.save();
+    fromRoundCreator.passCount -= 1;
+    fromRoundCreator.save();
 
-    if (fromHouseCreator.passCount == 0) {
-      store.remove('HouseCreator', fromHouseCreatorId);
+    if (fromRoundCreator.passCount == 0) {
+      store.remove('RoundCreator', fromRoundCreatorId);
     }
 
-    const toHouseCreatorId = `${houseId}-${to.id}`;
-    let toHouseCreator = HouseCreator.load(toHouseCreatorId);
-    if (!toHouseCreator) {
-      toHouseCreator = new HouseCreator(toHouseCreatorId);
-      toHouseCreator.house = houseId;
-      toHouseCreator.creator = to.id;
-      toHouseCreator.passCount = 0;
+    const toRoundCreatorId = `${houseId}-${to.id}`;
+    let toRoundCreator = RoundCreator.load(toRoundCreatorId);
+    if (!toRoundCreator) {
+      toRoundCreator = new RoundCreator(toRoundCreatorId);
+      toRoundCreator.house = houseId;
+      toRoundCreator.creator = to.id;
+      toRoundCreator.passCount = 0;
     }
-    toHouseCreator.passCount += 1;
-    toHouseCreator.save();
+    toRoundCreator.passCount += 1;
+    toRoundCreator.save();
   }
 }

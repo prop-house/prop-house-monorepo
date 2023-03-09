@@ -193,7 +193,7 @@ type TimedFundingRoundConfig @entity {
   awards: [Award!]! @derivedFrom(field: "round")
 }
 
-type HouseCreator @entity {
+type RoundCreator @entity {
   "A concatenation of the house address and creator account id"
   id: ID!
 
