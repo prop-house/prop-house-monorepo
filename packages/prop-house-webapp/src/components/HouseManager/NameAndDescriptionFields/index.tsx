@@ -1,24 +1,21 @@
 import classes from './NameAndDescriptionFields.module.css';
-import { checkStepCriteria, initialRound, updateRound } from '../../../state/slices/round';
 import Group from '../Group';
 import Text from '../Text';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '../../../hooks';
-import { useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef } from 'react';
 import clsx from 'clsx';
 import { capitalize } from '../../../utils/capitalize';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import Button, { ButtonColor } from '../../Button';
-import { fullRound } from '../Footer';
 
-const NameAndDescriptionFields = () => {
-  const dispatch = useDispatch();
-  const round = useAppSelector(state => state.round.round);
-
-  const [title, setTitle] = useState(round.title || '');
-  const [description, setDescription] = useState(round.description || '');
-  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+const NameAndDescriptionFields: FC<{
+  title: string;
+  description: string;
+  errors: { title?: string; description?: string };
+  handleBlur: (field: 'title' | 'description') => void;
+  handleChange: (field: 'title' | 'description', value: string) => void;
+  handleDescriptionChange: (value: string) => void;
+}> = props => {
+  const { title, description, errors, handleBlur, handleChange, handleDescriptionChange } = props;
 
   let quillRef = useRef<ReactQuill>(null);
   var icons = Quill.import('ui/icons');
@@ -64,36 +61,6 @@ const NameAndDescriptionFields = () => {
 
   const formats = ['bold', 'italic', 'link'];
 
-  const handleBlur = (field: 'title' | 'description') => {
-    const value = field === 'title' ? title : description;
-    const minLen = field === 'title' ? 5 : 20;
-    const maxLen = field === 'title' ? 255 : undefined;
-    const error =
-      value && value.length < minLen
-        ? `${capitalize(field)} must be at least ${minLen} characters.`
-        : maxLen && value.length > maxLen
-        ? `${capitalize(field)} must be less than ${maxLen} characters.`
-        : undefined;
-
-    setErrors({ ...errors, [field]: error });
-  };
-
-  const handleChange = (field: 'title' | 'description', value: string) => {
-    // set errors
-    errors[field] && setErrors({ ...errors, [field]: undefined });
-
-    // set state
-    field === 'title' ? setTitle(value) : setDescription(value);
-
-    dispatch(updateRound({ ...round, [field]: value }));
-    dispatch(checkStepCriteria());
-  };
-
-  const handleDescriptionChange = (value: string) => {
-    setDescription(value);
-    handleChange('description', value);
-  };
-
   return (
     <>
       <Group gap={8} mb={16}>
@@ -101,28 +68,6 @@ const NameAndDescriptionFields = () => {
           <Text type="subtitle">Round name</Text>
           <Text type="body">{title.length}/255</Text>
         </div>
-        {/* // TODO: to be removed, just for testing */}
-        <div className={classes.btns}>
-          <Button
-            onClick={() => {
-              dispatch(updateRound({ ...initialRound }));
-              setTitle('');
-              setDescription('');
-            }}
-            text="Clear"
-            bgColor={ButtonColor.Red}
-          />
-          <Button
-            onClick={() => {
-              dispatch(updateRound({ ...round, ...fullRound }));
-              setTitle(fullRound.title);
-              setDescription(fullRound.description);
-            }}
-            text="Full"
-            bgColor={ButtonColor.Purple}
-          />
-        </div>
-        {/* // TODO: to be removed, just for testing */}
 
         <input
           className={clsx(classes.input, errors.title && classes.inputError)}

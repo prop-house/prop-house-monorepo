@@ -15,7 +15,6 @@ import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import Modal from '../../Modal';
-import NameAndDescriptionFields from '../NameAndDescriptionFields';
 import Button, { ButtonColor } from '../../Button';
 import { isRoundStepValid } from '../utils/isRoundStepValid';
 import RoundDatesSelector from '../RoundDatesSelector';
@@ -24,6 +23,7 @@ import AwardsSelector from '../AwardsSelector';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
+import EditNameDescriptionModal from '../EditNameDescriptionModal';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -45,13 +45,6 @@ const CreateTheRound = () => {
     // TODO: but the user won't know why, so we need to do some error handling
     console.log('save changes', round.title, round.description);
     setShowEditDatesModal(false);
-  };
-  const handleNameSave = () => {
-    // TODO: since we save onChange here, we don't need to save on the modal save button
-    // TODO: but that also means the user can save invalid data, which will disable the Create button
-    // TODO: but the user won't know why, so we need to do some error handling
-    console.log('save changes', round.title, round.description);
-    setShowEditNameModal(false);
   };
   const handleVotesSave = () => {
     // TODO: since we save onChange here, we don't need to save on the modal save button
@@ -93,29 +86,7 @@ const CreateTheRound = () => {
           }
         />
       )}
-      {editNameModal && (
-        <Modal
-          title="Edit round name and description"
-          subtitle=""
-          body={<NameAndDescriptionFields />}
-          setShowModal={setShowEditNameModal}
-          button={
-            <Button
-              text={'Cancel'}
-              bgColor={ButtonColor.Black}
-              onClick={() => setShowEditNameModal(false)}
-            />
-          }
-          secondButton={
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Pink}
-              onClick={handleNameSave}
-              disabled={!isRoundStepValid(round, 1)}
-            />
-          }
-        />
-      )}
+      {editNameModal && <EditNameDescriptionModal setShowEditNameModal={setShowEditNameModal} />}
       {editVotesModal && (
         <Modal
           title="Edit voting strategies"
