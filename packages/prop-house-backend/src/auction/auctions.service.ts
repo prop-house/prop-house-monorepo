@@ -71,7 +71,7 @@ export class AuctionsService {
   }
 
   numProps(dto: NumPropsDto): Promise<number> {
-    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp to Date object
+    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp (ms) to Date object
     return this.auctionsRepository
       .createQueryBuilder('a')
       .leftJoin('a.proposals', 'p')
