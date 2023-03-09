@@ -32,6 +32,14 @@ export class QueryWrapper {
   private readonly _gql: GraphQL<GraphQLClient>;
 
   /**
+   * Returns a `QueryWrapper` instance for the provided chain ID
+   * @param chainId The active source chain ID
+   */
+  public static for(chainId: number) {
+    return new QueryWrapper(chainId);
+  }
+
+  /**
    * Underlying GraphQL client instances
    */
   public get gql() {

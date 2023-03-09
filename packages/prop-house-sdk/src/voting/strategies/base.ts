@@ -1,4 +1,4 @@
-import { VotingStrategyInfo, StarknetVotingStrategy } from '../types';
+import { VotingStrategyInfo, StarknetVotingStrategy } from '../../types';
 
 export abstract class VotingStrategyBase<VS extends VotingStrategyInfo> {
   /**

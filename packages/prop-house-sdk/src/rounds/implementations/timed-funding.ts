@@ -1,10 +1,11 @@
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
-import { AssetType, RoundType, TimedFundingRoundConfig } from '../types';
+import { AssetType, ChainConfig, RoundType, TimedFundingRoundConfig } from '../../types';
 import { Time, TimeUnit } from 'time-ts';
-import { encoding } from '../utils';
-import { Voting } from '../voting';
+import { encoding } from '../../utils';
+import { Voting } from '../../voting';
 import { RoundBase } from './base';
+import { TimedFundingRound__factory } from '@prophouse/contracts';
 
 export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
   /**
@@ -30,10 +31,10 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
 
   /**
    * Returns a `TimedFundingRound` instance for the provided chain ID
-   * @param chainId
+   * @param config The chain config
    */
-  public static for(chainId: number) {
-    return new TimedFundingRound(chainId);
+  public static for(config: ChainConfig) {
+    return new TimedFundingRound(config);
   }
 
   /**
@@ -90,7 +91,7 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
       throw new Error('Round must have at least one voting strategy');
     }
     const strategies = await Promise.all(
-      config.strategies.map(s => Voting.for(this._chainId).getStarknetStrategy(s)),
+      config.strategies.map(s => Voting.for(this._config.chainId).getStarknetStrategy(s)),
     );
 
     return defaultAbiCoder.encode(
@@ -110,5 +111,13 @@ export class TimedFundingRound extends RoundBase<RoundType.TIMED_FUNDING> {
         ],
       ],
     );
+  }
+
+  /**
+   * Given a round address, return a `TimedFundingRound` contract instance
+   * @param address The round address
+   */
+  public getContractInstance(address: string) {
+    return TimedFundingRound__factory.connect(address, this._config.signerOrProvider);
   }
 }

@@ -19,12 +19,13 @@ import { House } from './houses';
 import { Round } from './rounds';
 import { Voting } from './voting';
 
-export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
+export class PropHouse<CVS extends Custom | void = void> {
   private readonly _contract: PropHouseContract;
   private readonly _addresses: ContractAddresses;
   private readonly _house: House;
   private readonly _round: Round;
   private readonly _voting: Voting<CVS>;
+  private readonly _query: QueryWrapper;
 
   /**
    * The prop house contract instance
@@ -41,37 +42,61 @@ export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
   }
 
   /**
-   * Shared house helper
+   * House helper methods and utilities
    */
   public get house() {
     return this._house;
   }
 
   /**
-   * Shared round helper
+   * Round helper methods and utilities
    */
   public get round() {
     return this._round;
   }
 
   /**
-   * Shared voting helper
+   * Voting helper methods and utilities
    */
   public get voting() {
     return this._voting;
   }
 
-  constructor(config: PropHouseConfig<CVS>) {
-    super(config.chainId);
+  /**
+   * The GraphQL query wrapper
+   */
+  public get query() {
+    return this._query;
+  }
 
+  constructor(config: PropHouseConfig<CVS>) {
     this._addresses = getContractAddressesForChainOrThrow(config.chainId);
     this._contract = PropHouse__factory.connect(
       this.addresses.evm.prophouse,
       config.signerOrProvider,
     );
-    this._house = House.for(config.chainId);
-    this._round = Round.for(config.chainId);
+    this._house = House.for(config);
+    this._round = Round.for(config);
     this._voting = Voting.for<CVS>(config.chainId);
+    this._query = QueryWrapper.for(config.chainId);
+  }
+
+  /**
+   * Get a house contract instance
+   * @param type The house type
+   * @param address The house address
+   */
+  public getHouseContract(type: HouseType, address: string) {
+    return this.house.getContractInstance(type, address);
+  }
+
+  /**
+   * Get a round contract instance
+   * @param type The house type
+   * @param address The house address
+   */
+  public getRoundContract(type: RoundType, address: string) {
+    return this.round.getContractInstance(type, address);
   }
 
   /**
@@ -123,7 +148,7 @@ export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
@@ -149,7 +174,7 @@ export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       assets,
@@ -173,13 +198,13 @@ export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
   ) {
     return this.contract.createRoundOnNewHouse(
       {
-        impl: this.house.getImplForType(house.houseType),
+        impl: this.house.getImplAddressForType(house.houseType),
         config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
@@ -202,13 +227,13 @@ export class PropHouse<CVS extends Custom | void = void> extends QueryWrapper {
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnNewHouse(
       {
-        impl: this.house.getImplForType(house.houseType),
+        impl: this.house.getImplAddressForType(house.houseType),
         config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       assets,

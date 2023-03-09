@@ -1,8 +1,10 @@
 import { Custom, Newable, VotingStrategyInfo, VotingStrategyType } from '../types';
-import { BalanceOfVotingStrategy } from './balance-of';
-import { VanillaVotingStrategy } from './vanilla';
-import { WhitelistVotingStrategy } from './whitelist';
-import { VotingStrategyBase } from './base';
+import {
+  BalanceOfVotingStrategy,
+  VanillaVotingStrategy,
+  WhitelistVotingStrategy,
+  VotingStrategyBase,
+} from './strategies';
 
 export class Voting<CVS extends Custom | void = void> {
   private readonly _strategies: Map<string, VotingStrategyBase<VotingStrategyInfo<CVS>>>;

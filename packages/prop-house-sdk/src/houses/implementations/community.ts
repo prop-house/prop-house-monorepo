@@ -1,14 +1,15 @@
-import { CommunityHouseConfig, HouseType } from '../types';
+import { ChainConfig, CommunityHouseConfig, HouseType } from '../../types';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { HouseBase } from './base';
+import { CommunityHouse__factory } from '@prophouse/contracts';
 
 export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
   /**
    * Returns a `CommunityHouse` instance for the provided chain ID
    * @param chainId
    */
-  public static for(chainId: number) {
-    return new CommunityHouse(chainId);
+  public static for(config: ChainConfig) {
+    return new CommunityHouse(config);
   }
 
   /**
@@ -34,5 +35,13 @@ export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
       throw new Error(`Invalid contract URI: ${config.contractURI}`);
     }
     return defaultAbiCoder.encode(['string'], [config.contractURI]);
+  }
+
+  /**
+   * Given a house address, return a `CommunityHouse` contract instance
+   * @param address The house address
+   */
+  public getContractInstance(address: string) {
+    return CommunityHouse__factory.connect(address, this._config.signerOrProvider);
   }
 }

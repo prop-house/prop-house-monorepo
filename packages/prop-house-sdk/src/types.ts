@@ -4,12 +4,16 @@ import { BigNumberish } from '@ethersproject/bignumber';
 import { Call, Provider as StarknetProvider } from 'starknet';
 import { TimedFundingRoundEnvelope } from './rounds';
 import { VotingStrategyBase } from './voting';
+import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/contracts';
 
 //#region Prop House
 
-export interface PropHouseConfig<CVS extends Custom | void = void> {
+export interface ChainConfig {
   chainId: number;
   signerOrProvider: Signer | Provider;
+}
+
+export interface PropHouseConfig<CVS extends Custom | void = void> extends ChainConfig {
   customVotingStrategies?: Newable<VotingStrategyBase<VotingStrategyInfo<CVS>>>[];
 }
 
@@ -73,6 +77,10 @@ export interface HouseConfig {
   [HouseType.COMMUNITY]: CommunityHouseConfig;
 }
 
+export interface HouseContract {
+  [HouseType.COMMUNITY]: CommunityHouseContract;
+}
+
 export interface HouseInfo<T extends HouseType> {
   houseType: T;
   config: HouseConfig[T];
@@ -97,6 +105,10 @@ export interface TimedFundingRoundConfig {
 
 export interface RoundConfig {
   [RoundType.TIMED_FUNDING]: TimedFundingRoundConfig;
+}
+
+export interface RoundContract {
+  [RoundType.TIMED_FUNDING]: TimedFundingRoundContract;
 }
 
 export interface RoundInfo<T extends RoundType> {

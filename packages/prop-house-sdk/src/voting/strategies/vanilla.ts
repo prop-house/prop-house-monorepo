@@ -1,5 +1,5 @@
 import { getContractAddressesForChainOrThrow } from '@prophouse/contracts';
-import { Vanilla, StarknetVotingStrategy, VotingStrategyType } from '../types';
+import { Vanilla, StarknetVotingStrategy, VotingStrategyType } from '../../types';
 import { VotingStrategyBase } from './base';
 
 export class VanillaVotingStrategy extends VotingStrategyBase<Vanilla> {

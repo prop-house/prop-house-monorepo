@@ -4,10 +4,10 @@ import {
   BalanceOfWithTokenID,
   StarknetVotingStrategy,
   VotingStrategyType,
-} from '../types';
+} from '../../types';
 import { ChainId, getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { VotingStrategyBase } from './base';
-import { storageProofs } from '../utils';
+import { storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 
 export class BalanceOfVotingStrategy extends VotingStrategyBase<BalanceOf | BalanceOfWithTokenID> {

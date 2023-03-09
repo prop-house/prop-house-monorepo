@@ -1,20 +1,19 @@
-import { RoundInfo, RoundType } from '../types';
-import { RoundBase } from './base';
-import { TimedFundingRound } from './timed-funding';
+import { ChainConfig, RoundInfo, RoundType } from '../types';
+import { RoundBase, TimedFundingRound } from './implementations';
 
 export class Round {
   private readonly _rounds: Map<RoundType, RoundBase<RoundType>>;
 
-  constructor(chainId: number) {
-    this._rounds = new Map([[RoundType.TIMED_FUNDING, TimedFundingRound.for(chainId)]]);
+  constructor(config: ChainConfig) {
+    this._rounds = new Map([[RoundType.TIMED_FUNDING, TimedFundingRound.for(config)]]);
   }
 
   /**
    * Returns a `Round` instance for the provided chain ID
-   * @param chainId
+   * @param config The chain config
    */
-  public static for(chainId: number) {
-    return new Round(chainId);
+  public static for(config: ChainConfig) {
+    return new Round(config);
   }
 
   /**
@@ -25,22 +24,20 @@ export class Round {
   }
 
   /**
-   * @notice Get the round helper for the provided round type
+   * @notice Get a round contract instance
    * @param roundType The round type
+   * @param address The round address
    */
-  public getRound(roundType: RoundType) {
-    if (!this.rounds.has(roundType)) {
-      throw new Error(`Unknown round type: ${roundType}`);
-    }
-    return this.rounds.get(roundType)!;
+  public getContractInstance(roundType: RoundType, address: string) {
+    return this.getRoundHelper(roundType).getContractInstance(address);
   }
 
   /**
    * @notice Returns the implementation contract address for the provided round type
    * @param roundType The round type
    */
-  public getImplForType(roundType: RoundType) {
-    return this.getRound(roundType).impl;
+  public getImplAddressForType(roundType: RoundType) {
+    return this.getRoundHelper(roundType).impl;
   }
 
   /**
@@ -48,6 +45,17 @@ export class Round {
    * @param round The round information
    */
   public async getABIEncodedConfig<RT extends RoundType>(round: RoundInfo<RT>) {
-    return this.getRound(round.roundType).getABIEncodedConfig(round.config);
+    return this.getRoundHelper(round.roundType).getABIEncodedConfig(round.config);
+  }
+
+  /**
+   * @notice Get the round helper for the provided round type
+   * @param roundType The round type
+   */
+  private getRoundHelper(roundType: RoundType) {
+    if (!this.rounds.has(roundType)) {
+      throw new Error(`Unknown round type: ${roundType}`);
+    }
+    return this.rounds.get(roundType)!;
   }
 }
