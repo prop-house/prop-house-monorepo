@@ -7,3 +7,4 @@ export { oneHundredVotes } from './oneHundredVotes';
 export { onchainMonkey } from './onchainMonkey';
 export { perWalletVoteErc20 } from './perWalletVoteErc20';
 export { lilNouns } from './lilNouns';
+export { fixedVotes } from './fixedVotes';
