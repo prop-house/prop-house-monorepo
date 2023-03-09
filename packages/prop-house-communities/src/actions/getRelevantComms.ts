@@ -1,6 +1,9 @@
 import { communities } from '../communities';
 import { Provider } from '@ethersproject/providers';
 
+/**
+ * Looks up community where user has voting power
+ */
 export const getRelevantComms = async (
   userAddress: string,
   provider: Provider,
