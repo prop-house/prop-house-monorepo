@@ -1,0 +1,10 @@
+.example {
+  display: flex;
+  width: min-content;
+  /* justify-content: end; */
+}
+.example button {
+  width: min-content;
+  white-space: nowrap;
+  cursor: pointer;
+}
