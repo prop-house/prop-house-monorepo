@@ -1,7 +1,7 @@
 import classes from './RewardsSimple.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { InitialRoundProps } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import clsx from 'clsx';
 import Bullet from '../Bullet';
 import trimEthAddress from '../../../utils/trimEthAddress';
@@ -9,16 +9,13 @@ import { capitalize } from '../../../utils/capitalize';
 import { AwardProps } from '../AwardsSelector';
 
 const RewardsSimple: React.FC<{
-  round: InitialRoundProps;
+  round: NewRound;
   award: AwardProps;
 
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
   handleAmountInputChange: (e: React.ChangeEvent<HTMLInputElement>, award: AwardProps) => void;
-  handleChange: (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => void;
+  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
   handleBlur: (award: AwardProps) => void;
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;

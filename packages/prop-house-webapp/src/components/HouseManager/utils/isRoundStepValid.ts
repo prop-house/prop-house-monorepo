@@ -1,6 +1,6 @@
-import { InitialRoundProps } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 
-export const isRoundStepValid = (round: InitialRoundProps, step: number) => {
+export const isRoundStepValid = (round: NewRound, step: number) => {
   const isStep1Valid =
     5 <= round.title.length && round.title.length <= 255 && 20 <= round.description.length;
   const isStep2Valid =
