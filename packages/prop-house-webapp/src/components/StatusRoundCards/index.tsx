@@ -8,7 +8,6 @@ import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import SimpleRoundCard from '../StatusRoundCard';
 import { BiBadgeCheck } from 'react-icons/bi';
-import Button, { ButtonColor } from '../Button';
 import LoadingIndicator from '../LoadingIndicator';
 
 const StatusRoundCards = () => {
@@ -18,6 +17,7 @@ const StatusRoundCards = () => {
 
   const QUERY_LIMIT = 8;
   const [fetchingRelComms, setFetchingRelComms] = useState(false);
+  const [fetchingMoreRounds, setFetchingMoreRounds] = useState(false);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [roundsSkip, setRoundsSkip] = useState(0);
@@ -65,23 +65,36 @@ const StatusRoundCards = () => {
   });
 
   const fetchMoreRounds = async () => {
-    if (relevantCommunities === undefined) return;
+    setFetchingMoreRounds(true);
 
-    const newRounds =
-      relevantCommunities.length > 0
-        ? await wrapper.getActiveAuctionsForCommunities(
-            roundsSkip,
-            QUERY_LIMIT,
-            relevantCommunities,
-          )
-        : await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
-
+    let newRounds: StoredAuction[];
+    if (relevantCommunities && relevantCommunities.length > 0) {
+      newRounds = await wrapper.getActiveAuctionsForCommunities(
+        roundsSkip,
+        QUERY_LIMIT,
+        relevantCommunities,
+      );
+    } else {
+      newRounds = await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
+    }
+    setFetchingMoreRounds(false);
     if (newRounds.length === 0) return;
+
     setRounds(prev => {
       return !prev ? [...newRounds] : [...prev, ...newRounds];
     });
     setRoundsSkip(prev => prev + QUERY_LIMIT);
   };
+
+  const handleScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight && !fetchingMoreRounds) fetchMoreRounds();
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [fetchingMoreRounds]);
 
   return (
     <>
@@ -112,20 +125,9 @@ const StatusRoundCards = () => {
                 </>
               )}
             </Row>
-            {rounds && (
-              <Row>
-                <Col>
-                  <Button
-                    text="Load more rounds..."
-                    bgColor={ButtonColor.Green}
-                    onClick={() => fetchMoreRounds()}
-                    classNames={classes.loadMoreRoundsBtn}
-                  />
-                </Col>
-              </Row>
-            )}
           </>
         )}
+        {<Row>{fetchingMoreRounds && <LoadingIndicator />}</Row>}
       </Container>
     </>
   );
