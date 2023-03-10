@@ -103,6 +103,14 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+.backToAuction .profImg {
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+}
+.backToAuction .commTitle {
+  margin-left: 5px;
+}
 
 @media (max-width: 576px) {
   .backToAuction {

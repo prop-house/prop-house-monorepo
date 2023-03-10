@@ -4,7 +4,6 @@ import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builder
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
-import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
@@ -19,7 +18,7 @@ const RoundHeader: React.FC<{
   const { community, auction } = props;
   const navigate = useNavigate();
 
-  const roundDescription =
+  const roundDescription = (
     <>
       {/* support both markdown & html links in community's description.  */}
       <Markdown
@@ -31,7 +30,7 @@ const RoundHeader: React.FC<{
                 target: '_blank',
                 rel: 'noreferrer',
               },
-            }
+            },
           },
         }}
       >
@@ -40,7 +39,9 @@ const RoundHeader: React.FC<{
             a: ['href', 'target'],
           },
         })}
-      </Markdown></>
+      </Markdown>
+    </>
+  );
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -51,8 +52,16 @@ const RoundHeader: React.FC<{
             community && navigate(`/${nameToSlug(community.name)}`);
           }}
         >
-          <IoArrowBackCircleOutline size={'1.5rem'} />
-          <span>{community && community.name}</span>
+          {community && (
+            <>
+              <img
+                src={community.profileImageUrl}
+                alt="community profile"
+                className={classes.profImg}
+              />
+              <div className={classes.commTitle}>{community.name}</div>
+            </>
+          )}
         </div>
 
         <Col lg={12} className={classes.communityInfoCol}>

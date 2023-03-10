@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { verifySignedPayload } from 'src/utils/verifySignedPayload';
 import { Vote } from './vote.entity';
-import { CreateVoteDto } from './vote.types';
+import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { AuctionsService } from 'src/auction/auctions.service';
@@ -29,6 +30,11 @@ export class VotesController {
     return this.votesService.findAll();
   }
 
+  @Get('findWithOpts')
+  getVotesWithOpts(@Query() dto: GetVoteDto): Promise<Vote[]> {
+    return this.votesService.findAllWithOpts(dto);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Vote> {
     return this.votesService.findOne(id);
@@ -37,6 +43,24 @@ export class VotesController {
   @Get('by/:address')
   findByAddress(@Param('address') address: string) {
     return this.votesService.findByAddress(address);
+  }
+
+  @Get('numVotes/:account/:roundId')
+  numVotesCasted(
+    @Param('account') account: string,
+    @Param('roundId') roundId: number,
+  ) {
+    return this.votesService.getNumVotesByAccountAndRoundId(account, roundId);
+  }
+
+  @Get('byCommunities/:addresses')
+  findByCommunity(@Param('addresses') addresses: string) {
+    const votes = this.votesService.findAllByCommunityAddresses(
+      addresses.split(','),
+    );
+    if (!votes)
+      throw new HttpException('Votes not found', HttpStatus.NOT_FOUND);
+    return votes;
   }
 
   /**

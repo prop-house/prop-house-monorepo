@@ -8,6 +8,7 @@ import { useState } from 'react';
 import AdminTool from '../AdminTool';
 import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { isMobile } from 'web3modal';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -19,8 +20,12 @@ const NavBar = () => {
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>
-            <div className={classes.navbarBrand}>{t('propHouse')}</div>
-            <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
+            {!isMobile() && (
+              <>
+                <div className={classes.navbarBrand}>{t('propHouse')}</div>
+                <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
+              </>
+            )}
           </Navbar.Brand>
         </Link>
 

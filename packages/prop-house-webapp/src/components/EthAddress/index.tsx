@@ -9,9 +9,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 const EthAddress: React.FC<{
   address: string;
   className?: string;
+  containerClassName?: string;
   addAvatar?: boolean;
 }> = props => {
-  const { address, className, addAvatar } = props;
+  const { address, className, containerClassName, addAvatar } = props;
 
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -25,7 +26,10 @@ const EthAddress: React.FC<{
   const shortAddress = trimEthAddress(address as string);
 
   return (
-    <div onClick={(e: any) => e.stopPropagation()} className={classes.ethAddress}>
+    <div
+      onClick={(e: any) => e.stopPropagation()}
+      className={clsx(classes.ethAddress, containerClassName)}
+    >
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
         {addAvatar &&
           (avatar ? (

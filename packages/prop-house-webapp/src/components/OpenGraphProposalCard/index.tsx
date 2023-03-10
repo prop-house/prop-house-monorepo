@@ -36,7 +36,7 @@ const OpenGraphProposalCard: React.FC = () => {
     const fetch = async () => {
       const proposal = (await client.current.getProposal(Number(id))) as StoredProposalWithVotes;
       const round = await client.current.getAuction(proposal.auctionId);
-      const community = await client.current.getCommunityWithId(round.community);
+      const community = await client.current.getCommunityWithId(round.communityId);
 
       setProposal(proposal);
       setRound(round);
