@@ -1,53 +1,50 @@
-import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import Button, { ButtonColor } from '../../Button';
+import Modal from '../../Modal';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
-import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
-import Divider from '../../Divider';
-import DualSectionSelector from '../DualSectionSelector';
-import Group from '../Group';
-import Section from '../Section';
-import Text from '../Text';
+import { useDispatch } from 'react-redux';
 import TimedRound from '../TimedRound';
 import { getDayDifference } from '../utils/getDayDifference';
 
-const RoundDatesSelector = () => {
-  const [activeSection, setActiveSection] = useState(0);
+const EditDatesModal: React.FC<{
+  setShowEditDatesModal: Dispatch<SetStateAction<boolean>>;
+}> = props => {
+  const { setShowEditDatesModal } = props;
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const handleChange = (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => {
-    dispatch(updateRound({ ...round, [property]: value }));
-    dispatch(checkStepCriteria());
-  };
-
-  const dataToBeCleared = {
-    startTime: null,
-    proposalEndTime: null,
-    votingEndTime: null,
+  const handleDateSave = () => {
+    if (editedRoundTime.start && editedRoundTime.proposalEnd && editedRoundTime.votingEnd) {
+      dispatch(
+        updateRound({
+          ...round,
+          startTime: editedRoundTime.start,
+          proposalEndTime: editedRoundTime.proposalEnd,
+          votingEndTime: editedRoundTime.votingEnd,
+        }),
+      );
+      dispatch(checkStepCriteria());
+      setShowEditDatesModal(false);
+    }
   };
 
   const proposalPeriods = [5, 7, 14];
   const votingPeriods = [5, 7, 14];
 
-  const calculateCustomPeriodState = (
-    periodEnd: Date,
-    previousPeriodEnd: Date,
-    availablePeriods: number[],
-  ) => {
-    return !availablePeriods.includes(getDayDifference(periodEnd, previousPeriodEnd));
-  };
   const [isCustomProposalPeriod, setIsCustomProposalPeriod] = useState(
-    round.startTime && round.proposalEndTime
-      ? calculateCustomPeriodState(round.proposalEndTime, round.startTime, proposalPeriods)
+    round.startTime &&
+      round.proposalEndTime &&
+      !proposalPeriods.includes(getDayDifference(round.proposalEndTime, round.startTime))
+      ? true
       : false,
   );
   const [isCustomVotingPeriod, setIsCustomVotingPeriod] = useState(
-    round.votingEndTime && round.proposalEndTime
-      ? calculateCustomPeriodState(round.votingEndTime, round.proposalEndTime, votingPeriods)
+    round.votingEndTime &&
+      round.proposalEndTime &&
+      !votingPeriods.includes(getDayDifference(round.votingEndTime, round.proposalEndTime))
+      ? true
       : false,
   );
   const handlePeriodLengthChange = (length: number, isProposingPeriod: boolean) => {
@@ -68,8 +65,7 @@ const RoundDatesSelector = () => {
       setVotingPeriodLength(15);
     }
   };
-
-  const [roundTime, setRoundTime] = useState({
+  const [editedRoundTime, setEditedRoundTime] = useState({
     start: round.startTime ? round.startTime : null,
     proposalEnd: round.proposalEndTime ? round.proposalEndTime : null,
     votingEnd: round.votingEndTime ? round.votingEndTime : null,
@@ -91,8 +87,8 @@ const RoundDatesSelector = () => {
   const handleProposingStartTimeChange = (date: Date | null) => {
     if (date) {
       setProposingStartTime(date);
-      setRoundTime(prevRound => ({ ...prevRound, start: date }));
-      handleChange('startTime', date.toISOString());
+      setEditedRoundTime(prevRound => ({ ...prevRound, start: date }));
+      // handleChange('startTime', date.toISOString());
     }
   };
 
@@ -100,8 +96,8 @@ const RoundDatesSelector = () => {
     if (proposingStartTime && proposingPeriodLength !== null) {
       const proposingEndTime = new Date(proposingStartTime);
       proposingEndTime.setDate(proposingEndTime.getDate() + proposingPeriodLength);
-      setRoundTime(prevRound => ({ ...prevRound, proposalEnd: proposingEndTime }));
-      handleChange('proposalEndTime', proposingEndTime.toISOString());
+      setEditedRoundTime(prevRound => ({ ...prevRound, proposalEnd: proposingEndTime }));
+      // handleChange('proposalEndTime', proposingEndTime.toISOString()); // save to server
       dispatch(checkStepCriteria());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,74 +107,74 @@ const RoundDatesSelector = () => {
     if (proposingStartTime && proposingPeriodLength !== null && votingPeriodLength !== null) {
       const votingEndTime = new Date(proposingStartTime);
       votingEndTime.setDate(votingEndTime.getDate() + proposingPeriodLength + votingPeriodLength);
-      setRoundTime(prevRound => ({ ...prevRound, votingEnd: votingEndTime }));
-      handleChange('votingEndTime', votingEndTime.toISOString());
+      setEditedRoundTime(prevRound => ({ ...prevRound, votingEnd: votingEndTime }));
+      // handleChange('votingEndTime', votingEndTime.toISOString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposingStartTime, proposingPeriodLength, votingPeriodLength]);
 
-  useEffect(() => {
-    if (roundTime.start && roundTime.proposalEnd && roundTime.votingEnd) {
-      dispatch(
-        updateRound({
-          ...round,
-          startTime: roundTime.start,
-          proposalEndTime: roundTime.proposalEnd,
-          votingEndTime: roundTime.votingEnd,
-        }),
-      );
-      dispatch(checkStepCriteria());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roundTime]);
+  // useEffect(() => {
+  //   if (editedRoundTime.start && editedRoundTime.proposalEnd && editedRoundTime.votingEnd) {
+  //     // dispatch(
+  //     //   updateRound({
+  //     //     ...round,
+  //     //     startTime: roundTime.start,
+  //     //     proposalEndTime: roundTime.proposalEnd,
+  //     //     votingEndTime: roundTime.votingEnd,
+  //     //   }),
+  //     // );
+  //     // setEditedRoundTime({editedRoundTime.start, editedRoundTime.proposalEnd, editedRoundTime.votingEnd});
+  //     dispatch(checkStepCriteria());
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [editedRoundTime]);
 
   const disableVotingPeriod =
-    !round.startTime || !round.proposalEndTime || proposingPeriodLength === null;
+    !editedRoundTime.start || !editedRoundTime.proposalEnd || proposingPeriodLength === null;
 
   return (
-    <>
-      <Group gap={4}>
-        <Text type="subtitle">Select a round type</Text>
-        <DualSectionSelector dataToBeCleared={dataToBeCleared} setActiveSection={setActiveSection}>
-          <Section
-            id={0}
-            title="A time round"
-            text="Set a specific end date and time for your round."
-            activeSection={activeSection}
-          />
-          <Section
-            id={1}
-            title="Infinite round"
-            text="A round that never ends and acts as a permanent pool of rewards."
-            activeSection={activeSection}
-          />
-        </DualSectionSelector>
-      </Group>
-
-      <Divider />
-
-      {activeSection === 0 && (
+    <Modal
+      title="Edit round timing"
+      subtitle=""
+      body={
         <TimedRound
           isCustomProposalPeriodDisabled={!round.startTime}
-          roundTime={roundTime}
           proposalPeriods={proposalPeriods}
           votingPeriods={votingPeriods}
+          roundTime={editedRoundTime}
           proposingPeriodLength={proposingPeriodLength}
           proposingStartTime={proposingStartTime}
+          setProposingPeriodLength={setProposingPeriodLength}
           votingPeriodLength={votingPeriodLength}
+          setVotingPeriodLength={setVotingPeriodLength}
           isCustomProposalPeriod={isCustomProposalPeriod}
           isCustomVotingPeriod={isCustomVotingPeriod}
           disableVotingPeriod={disableVotingPeriod}
-          setProposingPeriodLength={setProposingPeriodLength}
-          setVotingPeriodLength={setVotingPeriodLength}
           handlePeriodLengthChange={handlePeriodLengthChange}
           handleSelectCustomPeriod={handleSelectCustomPeriod}
           handleProposingStartTimeChange={handleProposingStartTimeChange}
         />
-      )}
-      {activeSection === 1 && <div>infinite round</div>}
-    </>
+      }
+      setShowModal={setShowEditDatesModal}
+      button={
+        <Button
+          text={'Cancel'}
+          bgColor={ButtonColor.Black}
+          onClick={() => setShowEditDatesModal(false)}
+        />
+      }
+      secondButton={
+        <Button
+          text={'Save Changes'}
+          bgColor={ButtonColor.Pink}
+          onClick={handleDateSave}
+          disabled={
+            !(editedRoundTime.start && editedRoundTime.proposalEnd && editedRoundTime.votingEnd)
+          }
+        />
+      }
+    />
   );
 };
 
-export default RoundDatesSelector;
+export default EditDatesModal;
