@@ -11,7 +11,7 @@ import { isAddress } from 'ethers/lib/utils.js';
 import Bullet from '../Bullet';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
 import UploadCSVModal from '../UploadCSVModal';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
@@ -71,14 +71,31 @@ const VotingStrategies = () => {
     round.votingUsers.length ? round.votingUsers : [initialUserAddress],
   );
 
+  const [a, setA] = useState('');
+
+  // const { data, isLoading, isError } = useContractRead({
+  //   address: '0x905429be6e2e07b6a7df6b2acd7806090a8e8915',
+  //   abi: [
+  //     {
+  //       inputs: [{ internalType: 'address', name: 'addr', type: 'address' }],
+  //       name: 'getType',
+  //       outputs: [{ internalType: 'string', name: '', type: 'string' }],
+  //       stateMutability: 'view',
+  //       type: 'function',
+  //     },
+  //   ],
+  //   functionName: 'getType',
+  //   args: [a as `0x${string}`],
+  // });
+  // console.log('type:', useContractFunction(a));
+
+  const { data, isLoading, isError } = useAddressType(a);
+
   const verifiedAddresses = (addresses: AddressProps[]) =>
     addresses.filter(a => a.state === 'Success');
 
   // Update the server with round changes
-  const handleChange = (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => {
+  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
     dispatch(updateRound({ ...round, [property]: value }));
     dispatch(checkStepCriteria());
   };

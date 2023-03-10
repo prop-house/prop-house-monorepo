@@ -10,7 +10,7 @@ import { AddressProps } from '../../components/HouseManager/VotingStrategies';
 //   VotingStrategyType,
 // } from '@prophouse/sdk';
 
-export interface InitialRoundProps {
+export interface NewRound {
   title: string;
   startTime: Date | null;
   proposalEndTime: Date | null;
@@ -23,7 +23,7 @@ export interface InitialRoundProps {
   awards: AwardProps[];
 }
 
-export const initialRound: InitialRoundProps = {
+export const initialRound: NewRound = {
   title: '',
   startTime: null,
   proposalEndTime: null,
@@ -38,7 +38,7 @@ export const initialRound: InitialRoundProps = {
 
 interface RoundState {
   activeStep: number;
-  round: InitialRoundProps;
+  round: NewRound;
   stepDisabledArray: boolean[];
 }
 
@@ -71,7 +71,7 @@ export const roundSlice = createSlice({
     setPrevStep: state => {
       state.activeStep = Math.max(state.activeStep - 1, 1);
     },
-    updateRound: (state, action: PayloadAction<InitialRoundProps>) => {
+    updateRound: (state, action: PayloadAction<NewRound>) => {
       state.round = action.payload;
     },
   },

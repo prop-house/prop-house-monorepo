@@ -7,12 +7,11 @@ import RewardsSimple from '../RewardsSimple';
 import RewardsAdvanced from '../RewardsAdvanced';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { uuid } from 'uuidv4';
 import { isAddress } from 'ethers/lib/utils.js';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { changeAward } from '../utils/changeAward';
-import { fullRound } from '../Footer';
 
 export interface AwardProps {
   id: string;
@@ -34,10 +33,7 @@ const AwardsSelector = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const handleChange = (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => {
+  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
     // update round
     dispatch(updateRound({ ...round, [property]: value }));
 
@@ -57,15 +53,9 @@ const AwardsSelector = () => {
   };
 
   const [awardContracts, setAwardContracts] = useState<AwardProps[]>(
-    round.awards[0].state === 'Success' ? [...round.awards] : [initialAward],
+    round.awards.length ? [...round.awards] : [initialAward],
   );
-  console.log(
-    'awardContracts',
-    round.awards[0].state === 'Success',
-    round.awards,
-    fullRound.awards,
-    awardContracts,
-  );
+
   const dataToBeCleared = {};
 
   const clearAwards = () => {

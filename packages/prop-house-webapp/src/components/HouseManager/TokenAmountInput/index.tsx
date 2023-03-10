@@ -1,14 +1,11 @@
 import classes from './TokenAmountInput.module.css';
 import Text from '../Text';
 import Input from '../Input';
-import { InitialRoundProps } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 
 const TokenAmountInput: React.FC<{
   numOfAwards: number;
-  handleChange: (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => void;
+  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
 }> = props => {
   const { numOfAwards, handleChange } = props;
   return (

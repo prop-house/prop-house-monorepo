@@ -1,5 +1,5 @@
 import classes from './AwardByToken.module.css';
-import { InitialRoundProps } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import Button, { ButtonColor } from '../../Button';
 import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
@@ -20,10 +20,7 @@ const AwardByToken: React.FC<{
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
   handleInputTypeChange: (address: AwardProps) => void;
-  handleChange: (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => void;
+  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
 }> = props => {
   const {
     place,
