@@ -94,6 +94,7 @@ const StatusRoundCards = () => {
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+    // eslint-disable-next-line
   }, [fetchingMoreRounds]);
 
   return (
