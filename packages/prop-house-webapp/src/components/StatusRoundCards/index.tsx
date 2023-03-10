@@ -88,6 +88,9 @@ const StatusRoundCards = () => {
 
   const handleScroll = () => {
     const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+    console.log('scrollTop: ', scrollTop);
+    console.log('clientHeight: ', clientHeight);
+    console.log('scrollHeight: ', scrollHeight);
     if (scrollTop + clientHeight >= scrollHeight && !fetchingMoreRounds) fetchMoreRounds();
   };
 
