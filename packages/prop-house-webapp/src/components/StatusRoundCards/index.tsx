@@ -64,34 +64,39 @@ const StatusRoundCards = () => {
     getRounds();
   });
 
-  const fetchMoreRounds = async () => {
-    setFetchingMoreRounds(true);
+  useEffect(() => {
+    if (!fetchingMoreRounds) return;
 
-    let newRounds: StoredAuction[];
-    if (relevantCommunities && relevantCommunities.length > 0) {
-      newRounds = await wrapper.getActiveAuctionsForCommunities(
-        roundsSkip,
-        QUERY_LIMIT,
-        relevantCommunities,
-      );
-    } else {
-      newRounds = await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
-    }
-    setFetchingMoreRounds(false);
-    if (newRounds.length === 0) return;
+    const fetchMoreRounds = async () => {
+      try {
+        const newRounds =
+          relevantCommunities && relevantCommunities.length > 0
+            ? await wrapper.getActiveAuctionsForCommunities(
+                roundsSkip,
+                QUERY_LIMIT,
+                relevantCommunities,
+              )
+            : await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
+        setFetchingMoreRounds(false);
 
-    setRounds(prev => {
-      return !prev ? [...newRounds] : [...prev, ...newRounds];
-    });
-    setRoundsSkip(prev => prev + QUERY_LIMIT);
-  };
+        if (newRounds.length > 0) {
+          setRounds(prev => {
+            return !prev ? [...newRounds] : [...prev, ...newRounds];
+          });
+          setRoundsSkip(prev => prev + QUERY_LIMIT);
+        }
+      } catch (e) {
+        console.log('error fetching more rounds: ', e);
+      }
+    };
+
+    fetchMoreRounds();
+  }, [fetchingMoreRounds]);
 
   const handleScroll = () => {
     const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-    console.log('scrollTop: ', scrollTop);
-    console.log('clientHeight: ', clientHeight);
-    console.log('scrollHeight: ', scrollHeight);
-    if (scrollTop + clientHeight >= scrollHeight && !fetchingMoreRounds) fetchMoreRounds();
+    if (scrollTop + clientHeight >= scrollHeight && !fetchingMoreRounds)
+      setFetchingMoreRounds(true);
   };
 
   useEffect(() => {
