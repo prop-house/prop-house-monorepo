@@ -18,6 +18,7 @@ const StatusRoundCards = () => {
 
   const QUERY_LIMIT = 8;
   const [fetchingRelComms, setFetchingRelComms] = useState(false);
+  const [fetchingInitRounds, setFetchingInitRounds] = useState(false);
   const [hasMoreRounds, setHasMoreRounds] = useState(true);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
@@ -47,6 +48,7 @@ const StatusRoundCards = () => {
   useEffect(() => {
     if (rounds || fetchingRelComms || relevantCommunities === undefined) return;
     const getRounds = async () => {
+      setFetchingInitRounds(true);
       try {
         relevantCommunities.length > 0
           ? setRounds(
@@ -61,6 +63,7 @@ const StatusRoundCards = () => {
       } catch (e) {
         console.log(e);
       }
+      setFetchingInitRounds(false);
     };
     getRounds();
   });
@@ -103,7 +106,7 @@ const StatusRoundCards = () => {
             </div>
           </Col>
         </Row>
-        {fetchingRelComms ? (
+        {fetchingRelComms || fetchingInitRounds ? (
           <LoadingIndicator />
         ) : (
           rounds && (
