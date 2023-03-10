@@ -79,7 +79,7 @@ function App() {
                 {!noNavPath && <NavBar />}
 
                 <Routes>
-                  <Route path="/play" element={<StatusRoundCards />} />
+                  <Route path="/rounds" element={<StatusRoundCards />} />
                   <Route path="/" element={<Home />} />
                   <Route
                     path="/create"
