@@ -9,6 +9,7 @@ import { useAppSelector } from '../../hooks';
 import SimpleRoundCard from '../StatusRoundCard';
 import { BiBadgeCheck } from 'react-icons/bi';
 import LoadingIndicator from '../LoadingIndicator';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const StatusRoundCards = () => {
   const { address: account } = useAccount();
@@ -17,7 +18,7 @@ const StatusRoundCards = () => {
 
   const QUERY_LIMIT = 8;
   const [fetchingRelComms, setFetchingRelComms] = useState(false);
-  const [fetchingMoreRounds, setFetchingMoreRounds] = useState(false);
+  const [hasMoreRounds, setHasMoreRounds] = useState(true);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [roundsSkip, setRoundsSkip] = useState(0);
@@ -64,46 +65,29 @@ const StatusRoundCards = () => {
     getRounds();
   });
 
-  useEffect(() => {
-    if (!fetchingMoreRounds) return;
+  const fetchMoreRounds = async () => {
+    let newRounds: StoredAuction[];
 
-    const fetchMoreRounds = async () => {
-      try {
-        const newRounds =
-          relevantCommunities && relevantCommunities.length > 0
-            ? await wrapper.getActiveAuctionsForCommunities(
-                roundsSkip,
-                QUERY_LIMIT,
-                relevantCommunities,
-              )
-            : await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
-        setFetchingMoreRounds(false);
+    if (relevantCommunities && relevantCommunities.length > 0) {
+      newRounds = await wrapper.getActiveAuctionsForCommunities(
+        roundsSkip,
+        QUERY_LIMIT,
+        relevantCommunities,
+      );
+    } else {
+      newRounds = await wrapper.getActiveAuctions(roundsSkip, QUERY_LIMIT);
+    }
 
-        if (newRounds.length > 0) {
-          setRounds(prev => {
-            return !prev ? [...newRounds] : [...prev, ...newRounds];
-          });
-          setRoundsSkip(prev => prev + QUERY_LIMIT);
-        }
-      } catch (e) {
-        console.log('error fetching more rounds: ', e);
-      }
-    };
+    if (newRounds.length === 0) {
+      setHasMoreRounds(false);
+      return;
+    }
 
-    fetchMoreRounds();
-  }, [fetchingMoreRounds]);
-
-  const handleScroll = () => {
-    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight && !fetchingMoreRounds)
-      setFetchingMoreRounds(true);
+    setRounds(prev => {
+      return !prev ? [...newRounds] : [...prev, ...newRounds];
+    });
+    setRoundsSkip(prev => prev + QUERY_LIMIT);
   };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-    // eslint-disable-next-line
-  }, [fetchingMoreRounds]);
 
   return (
     <>
@@ -122,21 +106,28 @@ const StatusRoundCards = () => {
         {fetchingRelComms ? (
           <LoadingIndicator />
         ) : (
-          <>
-            <Row>
-              {rounds && (
-                <>
-                  {rounds.map(r => (
-                    <Col md={6}>
-                      <SimpleRoundCard round={r} />
-                    </Col>
-                  ))}
-                </>
-              )}
-            </Row>
-          </>
+          rounds && (
+            <InfiniteScroll
+              dataLength={rounds.length}
+              next={fetchMoreRounds}
+              hasMore={hasMoreRounds}
+              loader={<LoadingIndicator />}
+              endMessage={
+                <div className={classes.noMoreMsg}>
+                  <>v nounish, ⌐◨-◨</>
+                </div>
+              }
+            >
+              <Row>
+                {rounds.map(r => (
+                  <Col md={6}>
+                    <SimpleRoundCard round={r} />
+                  </Col>
+                ))}
+              </Row>
+            </InfiniteScroll>
+          )
         )}
-        {<Row>{fetchingMoreRounds && <LoadingIndicator />}</Row>}
       </Container>
     </>
   );

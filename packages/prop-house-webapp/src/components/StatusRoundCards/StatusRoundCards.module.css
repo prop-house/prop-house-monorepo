@@ -16,6 +16,12 @@
 .simpleRoundCardWrapper {
   margin: 0;
 }
+.noMoreMsg {
+  display: flex;
+  justify-content: center;
+  font-weight: 700;
+  margin: 3rem 0;
+}
 
 @media (max-width: 767px) {
   .simpleRoundCardWrapper {
