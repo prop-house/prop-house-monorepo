@@ -9,6 +9,7 @@ import { useAppSelector } from '../../hooks';
 import SimpleRoundCard from '../StatusRoundCard';
 import { BiBadgeCheck } from 'react-icons/bi';
 import Button, { ButtonColor } from '../Button';
+import LoadingIndicator from '../LoadingIndicator';
 
 const StatusRoundCards = () => {
   const { address: account } = useAccount();
@@ -16,7 +17,7 @@ const StatusRoundCards = () => {
   const provider = useProvider();
 
   const QUERY_LIMIT = 8;
-  const [loadingRelComms, setLoadingRelComms] = useState(false);
+  const [fetchingRelComms, setFetchingRelComms] = useState(false);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
   const [roundsSkip, setRoundsSkip] = useState(0);
@@ -28,7 +29,7 @@ const StatusRoundCards = () => {
     if (relevantCommunities !== undefined || !block) return;
 
     const getRelComms = async () => {
-      setLoadingRelComms(true);
+      setFetchingRelComms(true);
       try {
         setRelevantCommunites(
           account ? Object.keys(await getRelevantComms(account, provider, block)) : [],
@@ -37,13 +38,13 @@ const StatusRoundCards = () => {
         console.log('Error fetching relevant comms: ', e);
         setRelevantCommunites([]);
       }
-      setLoadingRelComms(false);
+      setFetchingRelComms(false);
     };
     getRelComms();
   }, [block, relevantCommunities, account, provider]);
 
   useEffect(() => {
-    if (rounds || loadingRelComms || relevantCommunities === undefined) return;
+    if (rounds || fetchingRelComms || relevantCommunities === undefined) return;
     const getRounds = async () => {
       try {
         relevantCommunities.length > 0
@@ -96,28 +97,34 @@ const StatusRoundCards = () => {
             </div>
           </Col>
         </Row>
-        <Row>
-          {rounds && (
-            <>
-              {rounds.map(r => (
-                <Col md={6}>
-                  <SimpleRoundCard round={r} />
+        {fetchingRelComms ? (
+          <LoadingIndicator />
+        ) : (
+          <>
+            <Row>
+              {rounds && (
+                <>
+                  {rounds.map(r => (
+                    <Col md={6}>
+                      <SimpleRoundCard round={r} />
+                    </Col>
+                  ))}
+                </>
+              )}
+            </Row>
+            {rounds && (
+              <Row>
+                <Col>
+                  <Button
+                    text="Load more rounds..."
+                    bgColor={ButtonColor.Green}
+                    onClick={() => fetchMoreRounds()}
+                    classNames={classes.loadMoreRoundsBtn}
+                  />
                 </Col>
-              ))}
-            </>
-          )}
-        </Row>
-        {rounds && (
-          <Row>
-            <Col>
-              <Button
-                text="Load more rounds..."
-                bgColor={ButtonColor.Green}
-                onClick={() => fetchMoreRounds()}
-                classNames={classes.loadMoreRoundsBtn}
-              />
-            </Col>
-          </Row>
+              </Row>
+            )}
+          </>
         )}
       </Container>
     </>
