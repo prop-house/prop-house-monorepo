@@ -186,8 +186,12 @@ const StatusRoundCard: React.FC<{
           <div className={classes.textContainer}>
             <div className={classes.topContainer}>
               <div className={classes.leftContainer}>
-                <img src={community?.profileImageUrl} alt="community profile" />
-                <div>{community?.name}</div>
+                {community && (
+                  <>
+                    <img src={community.profileImageUrl} alt="community profile" />
+                    <div>{community.name}</div>
+                  </>
+                )}
               </div>
               <StatusPill status={auctionStatus(round)} />
             </div>
