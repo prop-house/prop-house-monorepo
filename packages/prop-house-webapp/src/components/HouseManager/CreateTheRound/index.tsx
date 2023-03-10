@@ -17,13 +17,13 @@ import { useDispatch } from 'react-redux';
 import Modal from '../../Modal';
 import Button, { ButtonColor } from '../../Button';
 import { isRoundStepValid } from '../utils/isRoundStepValid';
-import RoundDatesSelector from '../RoundDatesSelector';
 import VotingStrategies from '../VotingStrategies';
 import AwardsSelector from '../AwardsSelector';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
+import EditDatesModal from '../EditDatesModal';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -39,13 +39,6 @@ const CreateTheRound = () => {
   const [editVotesModal, setShowVotesModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
-  const handleDateSave = () => {
-    // TODO: since we save onChange here, we don't need to save on the modal save button
-    // TODO: but that also means the user can save invalid data, which will disable the Create button
-    // TODO: but the user won't know why, so we need to do some error handling
-    console.log('save changes', round.title, round.description);
-    setShowEditDatesModal(false);
-  };
   const handleVotesSave = () => {
     // TODO: since we save onChange here, we don't need to save on the modal save button
     // TODO: but that also means the user can save invalid data, which will disable the Create button
@@ -63,30 +56,9 @@ const CreateTheRound = () => {
 
   return (
     <>
-      {editDatesModal && (
-        <Modal
-          title="Edit round timing"
-          subtitle=""
-          body={<RoundDatesSelector />}
-          setShowModal={setShowEditDatesModal}
-          button={
-            <Button
-              text={'Cancel'}
-              bgColor={ButtonColor.Black}
-              onClick={() => setShowEditDatesModal(false)}
-            />
-          }
-          secondButton={
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Pink}
-              onClick={handleDateSave}
-              disabled={!isRoundStepValid(round, 4)}
-            />
-          }
-        />
-      )}
+      {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
       {editNameModal && <EditNameDescriptionModal setShowEditNameModal={setShowEditNameModal} />}
+
       {editVotesModal && (
         <Modal
           title="Edit voting strategies"
