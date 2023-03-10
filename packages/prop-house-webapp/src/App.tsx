@@ -24,7 +24,7 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import Base from './pages/Base';
+import StatusRoundCards from './components/StatusRoundCards';
 
 const { chains, provider } = configureChains(
   [mainnet],
@@ -79,7 +79,7 @@ function App() {
                 {!noNavPath && <NavBar />}
 
                 <Routes>
-                  <Route path="/play" element={<Base />} />
+                  <Route path="/play" element={<StatusRoundCards />} />
                   <Route path="/" element={<Home />} />
                   <Route
                     path="/create"

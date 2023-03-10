@@ -1,4 +1,4 @@
-import classes from './SimpleRoundCard.module.css';
+import classes from './StatusRoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
@@ -27,7 +27,7 @@ import { InfuraProvider } from '@ethersproject/providers';
 import { getNumVotes } from 'prop-house-communities';
 import Countdown from '../Countdown';
 
-const SimpleRoundCard: React.FC<{
+const StatusRoundCard: React.FC<{
   round: StoredAuction;
 }> = props => {
   const { round } = props;
@@ -255,4 +255,4 @@ const SimpleRoundCard: React.FC<{
   );
 };
 
-export default SimpleRoundCard;
+export default StatusRoundCard;

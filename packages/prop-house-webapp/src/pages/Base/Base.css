@@ -1,9 +1,0 @@
-.swiper-ios {
-  height: 105%;
-}
-.swiper-pagination {
-  bottom: 0px !important;
-}
-.swiper-pagination-bullet-active {
-  background: var(--brand-purple) !important;
-}

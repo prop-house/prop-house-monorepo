@@ -1,5 +1,4 @@
-import classes from './Base.module.css';
-import './Base.css';
+import classes from './StatusRoundCards.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
@@ -7,16 +6,16 @@ import { useEffect, useState } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import { useAppSelector } from '../../hooks';
-import SimpleRoundCard from '../../components/SimpleRoundCard';
+import SimpleRoundCard from '../StatusRoundCard';
 import { BiBadgeCheck } from 'react-icons/bi';
-import Button, { ButtonColor } from '../../components/Button';
+import Button, { ButtonColor } from '../Button';
 
-const Base = () => {
+const StatusRoundCards = () => {
   const { address: account } = useAccount();
   const { data: block } = useBlockNumber();
   const provider = useProvider();
 
-  const QUERY_LIMIT = 6;
+  const QUERY_LIMIT = 8;
   const [loadingRelComms, setLoadingRelComms] = useState(false);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
   const [rounds, setRounds] = useState<StoredAuction[]>();
@@ -123,4 +122,4 @@ const Base = () => {
   );
 };
 
-export default Base;
+export default StatusRoundCards;
