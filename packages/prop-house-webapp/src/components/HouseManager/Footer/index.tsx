@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import {
   initialRound,
-  InitialRoundProps,
+  NewRound,
   setNextStep,
   setPrevStep,
   updateRound,
@@ -13,7 +13,7 @@ import {
 import { useAppSelector } from '../../../hooks';
 
 // TODO: to be removed, just for testing
-export const fullRound: InitialRoundProps = {
+export const fullRound: NewRound = {
   title: 'Dummy Round',
   startTime: new Date('2023-03-07T09:00:00Z'),
   proposalEndTime: new Date('2023-03-14T09:00:00Z'),

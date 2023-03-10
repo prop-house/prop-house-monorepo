@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { InitialRoundProps, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
@@ -16,10 +16,7 @@ const RoundDatesSelector = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const handleChange = (
-    property: keyof InitialRoundProps,
-    value: InitialRoundProps[keyof InitialRoundProps],
-  ) => {
+  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
     dispatch(updateRound({ ...round, [property]: value }));
     dispatch(checkStepCriteria());
   };
