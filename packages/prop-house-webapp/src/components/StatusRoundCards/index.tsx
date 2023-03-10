@@ -104,19 +104,21 @@ const StatusRoundCards = () => {
                   <SimpleRoundCard round={r} />
                 </Col>
               ))}
-              <Row>
-                <Col>
-                  <Button
-                    text="Load more rounds..."
-                    bgColor={ButtonColor.Green}
-                    onClick={() => fetchMoreRounds()}
-                    classNames={classes.loadMoreRoundsBtn}
-                  />
-                </Col>
-              </Row>
             </>
           )}
         </Row>
+        {rounds && (
+          <Row>
+            <Col>
+              <Button
+                text="Load more rounds..."
+                bgColor={ButtonColor.Green}
+                onClick={() => fetchMoreRounds()}
+                classNames={classes.loadMoreRoundsBtn}
+              />
+            </Col>
+          </Row>
+        )}
       </Container>
     </>
   );
