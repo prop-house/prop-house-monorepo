@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
+import { GetAuctionsDto, LatestDto } from './auction.types';
 
 @Injectable()
 export class AuctionsService {
@@ -31,6 +32,80 @@ export class AuctionsService {
       .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
       .groupBy('a.id')
       .getRawMany();
+  }
+  findAllActive(dto: GetAuctionsDto): Promise<Auction[]> {
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .groupBy('a.id')
+      .offset(dto.skip)
+      .limit(dto.limit)
+      .addSelect(
+        'CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime THEN 1 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime THEN 2 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime THEN 3 ELSE 4 END END END',
+        'auction_order',
+      )
+      .orderBy('auction_order', 'ASC')
+      .getRawMany();
+  }
+
+  findAllActiveForCommunities(dto: GetAuctionsDto): Promise<Auction[]> {
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .select('a.*')
+      .addSelect('SUM(p."numProposals")', 'numProposals')
+      .leftJoin(proposalCountSubquery, 'p', 'p."auctionId" = a.id')
+      .leftJoin('a.community', 'c')
+      .groupBy('a.id, c.contractAddress')
+      .offset(dto.skip)
+      .limit(dto.limit)
+      .addSelect(
+        'CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 1 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 2 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime AND LOWER(c.contractAddress) IN (:...addresses) THEN 3 ELSE CASE WHEN CURRENT_TIMESTAMP > a.proposalEndTime AND CURRENT_TIMESTAMP < a.votingEndTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 4 ELSE CASE WHEN CURRENT_TIMESTAMP > a.startTime AND CURRENT_TIMESTAMP < a.proposalEndTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 5 ELSE CASE WHEN CURRENT_TIMESTAMP < a.startTime AND LOWER(c.contractAddress) NOT IN (:...addresses) THEN 6 ELSE 7 END END END END END END',
+        'auction_order',
+      )
+      .setParameter('addresses', dto.addresses)
+      .orderBy('auction_order', 'ASC')
+      .addOrderBy('a.votingEndTime', 'DESC')
+      .getRawMany();
+  }
+
+  latestNumProps(dto: LatestDto): Promise<number> {
+    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp (ms) to Date object
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .leftJoin('a.proposals', 'p')
+      .select('COUNT(p.id)', 'numProposals')
+      .where('a.id = :auctionId AND p.createdDate > :timestamp', {
+        auctionId: dto.auctionId,
+        timestamp: timestamp,
+      })
+      .getRawOne()
+      .then((result) => result.numProposals);
+  }
+
+  latestNumVotes(dto: LatestDto): Promise<number> {
+    const timestamp = new Date(dto.timestamp); // Convert Unix timestamp (ms) to Date object
+    return this.auctionsRepository
+      .createQueryBuilder('a')
+      .leftJoinAndSelect('a.proposals', 'p')
+      .leftJoinAndSelect('p.votes', 'v')
+      .where('a.id = :auctionId AND v.createdDate > :timestamp', {
+        auctionId: dto.auctionId,
+        timestamp: timestamp,
+      })
+      .getOne()
+      .then((auction) => {
+        if (!auction) return 0; // Auction not found
+        return auction.proposals.reduce((totalVotes, proposal) => {
+          return (
+            totalVotes +
+            proposal.votes.reduce((totalWeight, vote) => {
+              return totalWeight + Number(vote.weight);
+            }, 0)
+          );
+        }, 0);
+      });
   }
 
   findWithNameForCommunity(name: string, id: number): Promise<Auction> {
