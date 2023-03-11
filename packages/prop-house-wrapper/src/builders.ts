@@ -86,7 +86,7 @@ export class Auction extends Signable {
     public readonly fundingAmount: number,
     public readonly currencyType: string,
     public readonly numWinners: number,
-    public readonly communityId: number,
+    public readonly community: number,
     public readonly balanceBlockTag: number,
     public readonly description: string,
   ) {
@@ -103,7 +103,7 @@ export class Auction extends Signable {
       fundingAmount: this.fundingAmount,
       currencyType: this.currencyType,
       numWinners: this.numWinners,
-      communityId: this.communityId,
+      community: this.community,
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
     };

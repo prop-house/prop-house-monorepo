@@ -31,7 +31,7 @@ const OpenGraphRoundCard: React.FC = () => {
 
     const fetch = async () => {
       const round = await client.current.getAuction(Number(id));
-      const community = await client.current.getCommunityWithId(round.communityId);
+      const community = await client.current.getCommunityWithId(round.community);
       setRound(round);
       setCommunity(community);
     };
