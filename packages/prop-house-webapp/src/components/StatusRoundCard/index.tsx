@@ -117,7 +117,7 @@ const StatusRoundCard: React.FC<{
   useEffect(() => {
     if (community !== undefined) return;
     const fetchCommunity = async () =>
-      setCommunity(await wrapper.getCommunityWithId(round.community));
+      setCommunity(await wrapper.getCommunityWithId(round.communityId));
     fetchCommunity();
   });
 
