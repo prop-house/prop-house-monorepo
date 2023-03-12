@@ -4,6 +4,7 @@ import Divider from '../../Divider';
 import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import {
+  checkStepCriteria,
   initialRound,
   NewRound,
   setNextStep,
@@ -103,12 +104,18 @@ const Footer: React.FC = () => {
         {activeStep > 1 && (
           <div className={classes.btns}>
             <Button
-              onClick={() => dispatch(updateRound({ ...initialRound }))}
+              onClick={() => {
+                dispatch(updateRound({ ...initialRound }));
+                dispatch(checkStepCriteria());
+              }}
               text="Clear"
               bgColor={ButtonColor.Red}
             />
             <Button
-              onClick={() => dispatch(updateRound({ ...round, ...fullRound }))}
+              onClick={() => {
+                dispatch(updateRound({ ...round, ...fullRound }));
+                dispatch(checkStepCriteria());
+              }}
               text="Full"
               bgColor={ButtonColor.Purple}
             />

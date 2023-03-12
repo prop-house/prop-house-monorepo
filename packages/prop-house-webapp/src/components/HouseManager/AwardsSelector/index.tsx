@@ -7,7 +7,7 @@ import RewardsSimple from '../RewardsSimple';
 import RewardsAdvanced from '../RewardsAdvanced';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { uuid } from 'uuidv4';
 import { isAddress } from 'ethers/lib/utils.js';
 import { getTokenInfo } from '../utils/getTokenInfo';
@@ -32,14 +32,6 @@ const AwardsSelector = () => {
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
-
-  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
-    // update round
-    dispatch(updateRound({ ...round, [property]: value }));
-
-    // check if step criteria is met
-    dispatch(checkStepCriteria());
-  };
 
   const initialAward: AwardProps = {
     id: uuid(),
@@ -76,7 +68,9 @@ const AwardsSelector = () => {
   const handleInputChange = (award: AwardProps, value: string) => {
     const updated = changeAward(award.id, awardContracts, { ...award, address: value });
     setAwardContracts(updated);
-    handleChange('awards', updated);
+
+    dispatch(updateRound({ ...round, awards: updated }));
+    dispatch(checkStepCriteria());
   };
 
   const verifiedAwards = (awards: AwardProps[]) => awards.filter(a => a.state === 'Success');
@@ -161,7 +155,8 @@ const AwardsSelector = () => {
       state: 'Input',
     });
     setAwardContracts(updated);
-    handleChange('awards', updated);
+    dispatch(updateRound({ ...round, awards: updated }));
+    dispatch(checkStepCriteria());
   };
 
   // change from success to input
@@ -173,10 +168,13 @@ const AwardsSelector = () => {
       // when Advanced setup, we calculate round.numWinners based off 'Success' state awards, meaning,
       // if we change from success to input, we need to subtract 1 from round.numWinners
       // but we don't want to do it when using the Simple setup since we track round.numWinners in another input field
-      handleChange('awards', verifiedAwards(updated).length);
+      // TODO:Check this logic
+      // handleChange('numWinners', verifiedAwards(updated).length);
+      dispatch(updateRound({ ...round, numWinners: verifiedAwards(updated).length }));
       dispatch(checkStepCriteria());
     } else {
-      handleChange('awards', updated);
+      dispatch(updateRound({ ...round, awards: updated }));
+      dispatch(checkStepCriteria());
     }
   };
 
@@ -201,7 +199,7 @@ const AwardsSelector = () => {
 
     setAwardContracts(updated);
 
-    handleChange('awards', updated);
+    dispatch(updateRound({ ...round, awards: updated }));
     dispatch(checkStepCriteria());
   };
 
@@ -220,7 +218,6 @@ const AwardsSelector = () => {
     setAwardContracts(updated);
 
     dispatch(updateRound({ ...round, awards: updated }));
-
     dispatch(checkStepCriteria());
   };
 
@@ -253,7 +250,6 @@ const AwardsSelector = () => {
             round={round}
             isTyping={isTyping}
             handleAmountInputChange={handleAmountInputChange}
-            handleChange={handleChange}
             handleClear={handleClearAward}
             setIsTyping={setIsTyping}
             handleBlur={handleOnBlur}
@@ -269,7 +265,6 @@ const AwardsSelector = () => {
           setIsTyping={setIsTyping}
           handleAdd={handleAddAward}
           handleRemove={handleRemoveAward}
-          handleChange={handleChange}
           handleClear={handleClearAward}
           handleBlur={handleOnBlur}
           handleInputChange={handleInputChange}

@@ -11,7 +11,7 @@ import { isAddress } from 'ethers/lib/utils.js';
 import Bullet from '../Bullet';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import UploadCSVModal from '../UploadCSVModal';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
@@ -94,12 +94,6 @@ const VotingStrategies = () => {
   const verifiedAddresses = (addresses: AddressProps[]) =>
     addresses.filter(a => a.state === 'Success');
 
-  // Update the server with round changes
-  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
-    dispatch(updateRound({ ...round, [property]: value }));
-    dispatch(checkStepCriteria());
-  };
-
   // Add a new address to the array
   const handleAddAddress = (arrayType: 'contract' | 'user') =>
     arrayType === 'contract'
@@ -114,11 +108,14 @@ const VotingStrategies = () => {
       ? contracts.filter(contract => contract.id !== address.id)
       : userAddresses.filter(userAddress => userAddress.id !== address.id);
 
+    // TODO: REFACTOR THIS SHIT
     return isContract
       ? (setContracts(updatedArray),
-        handleChange('votingContracts', verifiedAddresses(updatedArray)))
+        dispatch(updateRound({ ...round, votingContracts: verifiedAddresses(updatedArray) })),
+        dispatch(checkStepCriteria()))
       : (setUserAddresses(updatedArray),
-        handleChange('votingUsers', verifiedAddresses(updatedArray)));
+        dispatch(updateRound({ ...round, votingUsers: verifiedAddresses(updatedArray) })),
+        dispatch(checkStepCriteria()));
   };
 
   // Update the address value for each address
@@ -147,9 +144,14 @@ const VotingStrategies = () => {
     isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
 
     // Remove the reset address from the server state
-    handleChange(
-      isContract ? 'votingContracts' : 'votingUsers',
-      (isContract ? round.votingContracts : round.votingUsers).filter(a => a.id !== address.id),
+    dispatch(
+      updateRound({
+        ...round,
+        [isContract ? 'votingContracts' : 'votingUsers']: (isContract
+          ? round.votingContracts
+          : round.votingUsers
+        ).filter(a => a.id !== address.id),
+      }),
     );
   };
 
@@ -163,7 +165,13 @@ const VotingStrategies = () => {
     isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
 
     // Update the server state if the address is verified
-    handleChange(isContract ? 'votingContracts' : 'votingUsers', verifiedAddresses(updatedArray));
+    // TODO: Check this logic
+    dispatch(
+      updateRound({
+        ...round,
+        [isContract ? 'votingContracts' : 'votingUsers']: verifiedAddresses(updatedArray),
+      }),
+    );
   };
 
   // Clicking a successfully set address will change it back to an input
@@ -175,7 +183,13 @@ const VotingStrategies = () => {
     isContract ? setContracts(updatedArray) : setUserAddresses(updatedArray);
 
     // Since the address is no longer verified, remove it from the server state
-    handleChange(isContract ? 'votingContracts' : 'votingUsers', verifiedAddresses(updatedArray));
+    // TODO: Check this logic
+    dispatch(
+      updateRound({
+        ...round,
+        [isContract ? 'votingContracts' : 'votingUsers']: verifiedAddresses(updatedArray),
+      }),
+    );
   };
 
   // Generate a message that describes the voting power of each address
@@ -437,9 +451,11 @@ const VotingStrategies = () => {
     const updatedContracts = [...removedEmptyAddresses, ...csvAddresses];
     setAddress(updatedContracts);
 
-    handleChange(
-      isContract ? 'votingContracts' : 'votingUsers',
-      verifiedAddresses(updatedContracts),
+    dispatch(
+      updateRound({
+        ...round,
+        [isContract ? 'votingContracts' : 'votingUsers']: verifiedAddresses(updatedContracts),
+      }),
     );
   };
 

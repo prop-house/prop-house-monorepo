@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
@@ -15,11 +15,6 @@ const RoundDatesSelector = () => {
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
-
-  const handleChange = (property: keyof NewRound, value: NewRound[keyof NewRound]) => {
-    dispatch(updateRound({ ...round, [property]: value }));
-    dispatch(checkStepCriteria());
-  };
 
   const dataToBeCleared = {
     startTime: null,
@@ -89,7 +84,8 @@ const RoundDatesSelector = () => {
     if (date) {
       setProposingStartTime(date);
       setRoundTime(prevRound => ({ ...prevRound, start: date }));
-      handleChange('startTime', date.toISOString());
+      dispatch(updateRound({ ...round, startTime: date }));
+      dispatch(checkStepCriteria());
     }
   };
 
@@ -98,7 +94,7 @@ const RoundDatesSelector = () => {
       const proposingEndTime = new Date(proposingStartTime);
       proposingEndTime.setDate(proposingEndTime.getDate() + proposingPeriodLength);
       setRoundTime(prevRound => ({ ...prevRound, proposalEnd: proposingEndTime }));
-      handleChange('proposalEndTime', proposingEndTime.toISOString());
+      dispatch(updateRound({ ...round, proposalEndTime: proposingEndTime }));
       dispatch(checkStepCriteria());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,7 +105,8 @@ const RoundDatesSelector = () => {
       const votingEndTime = new Date(proposingStartTime);
       votingEndTime.setDate(votingEndTime.getDate() + proposingPeriodLength + votingPeriodLength);
       setRoundTime(prevRound => ({ ...prevRound, votingEnd: votingEndTime }));
-      handleChange('votingEndTime', votingEndTime.toISOString());
+      dispatch(updateRound({ ...round, votingEndTime: votingEndTime }));
+      dispatch(checkStepCriteria());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposingStartTime, proposingPeriodLength, votingPeriodLength]);

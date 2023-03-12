@@ -1,6 +1,6 @@
 import classes from './DualSectionSelector.module.css';
 import React, { Dispatch, ReactNode, SetStateAction } from 'react';
-import { updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 
@@ -23,7 +23,7 @@ const DualSectionSelector: React.FC<{
           onClick={() => {
             // Reset parts of the round's state when switching between sections
             clearRoundState();
-
+            dispatch(checkStepCriteria());
             setActiveSection(index);
           }}
         >
