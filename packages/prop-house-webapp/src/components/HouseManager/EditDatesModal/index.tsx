@@ -88,7 +88,6 @@ const EditDatesModal: React.FC<{
     if (date) {
       setProposingStartTime(date);
       setEditedRoundTime(prevRound => ({ ...prevRound, start: date }));
-      // handleChange('startTime', date.toISOString());
     }
   };
 
@@ -97,8 +96,6 @@ const EditDatesModal: React.FC<{
       const proposingEndTime = new Date(proposingStartTime);
       proposingEndTime.setDate(proposingEndTime.getDate() + proposingPeriodLength);
       setEditedRoundTime(prevRound => ({ ...prevRound, proposalEnd: proposingEndTime }));
-      // handleChange('proposalEndTime', proposingEndTime.toISOString()); // save to server
-      dispatch(checkStepCriteria());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposingStartTime, proposingPeriodLength]);
@@ -108,26 +105,9 @@ const EditDatesModal: React.FC<{
       const votingEndTime = new Date(proposingStartTime);
       votingEndTime.setDate(votingEndTime.getDate() + proposingPeriodLength + votingPeriodLength);
       setEditedRoundTime(prevRound => ({ ...prevRound, votingEnd: votingEndTime }));
-      // handleChange('votingEndTime', votingEndTime.toISOString());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proposingStartTime, proposingPeriodLength, votingPeriodLength]);
-
-  // useEffect(() => {
-  //   if (editedRoundTime.start && editedRoundTime.proposalEnd && editedRoundTime.votingEnd) {
-  //     // dispatch(
-  //     //   updateRound({
-  //     //     ...round,
-  //     //     startTime: roundTime.start,
-  //     //     proposalEndTime: roundTime.proposalEnd,
-  //     //     votingEndTime: roundTime.votingEnd,
-  //     //   }),
-  //     // );
-  //     // setEditedRoundTime({editedRoundTime.start, editedRoundTime.proposalEnd, editedRoundTime.votingEnd});
-  //     dispatch(checkStepCriteria());
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [editedRoundTime]);
 
   const disableVotingPeriod =
     !editedRoundTime.start || !editedRoundTime.proposalEnd || proposingPeriodLength === null;
