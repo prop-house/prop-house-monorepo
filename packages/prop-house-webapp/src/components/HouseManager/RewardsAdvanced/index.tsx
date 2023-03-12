@@ -1,5 +1,4 @@
 // import classes from './RewardsAdvanced.module.css';
-import { NewRound } from '../../../state/slices/round';
 import AwardByToken from '../AwardByToken';
 import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
@@ -11,7 +10,6 @@ const RewardsAdvanced: React.FC<{
   setIsTyping: (value: boolean) => void;
   handleAdd: () => void;
   handleRemove: (award: AwardProps) => void;
-  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
   handleBlur: (award: AwardProps) => void;
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
@@ -23,7 +21,6 @@ const RewardsAdvanced: React.FC<{
     setIsTyping,
     handleAdd,
     handleRemove,
-    handleChange,
     handleBlur,
     handleClear,
     handleInputTypeChange,
@@ -57,7 +54,6 @@ const RewardsAdvanced: React.FC<{
             handleBlur={handleBlur}
             handleRemove={handleRemove}
             handleClear={handleClear}
-            handleChange={handleChange}
             handleInputChange={handleInputChange}
             handleInputTypeChange={handleInputTypeChange}
           />

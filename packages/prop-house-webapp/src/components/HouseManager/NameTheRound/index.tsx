@@ -29,7 +29,7 @@ const NameTheRound = () => {
     setErrors({ ...errors, [field]: error });
   };
 
-  const handleChange = (field: 'title' | 'description', value: string) => {
+  const handleFieldChange = (field: 'title' | 'description', value: string) => {
     errors[field] && setErrors({ ...errors, [field]: undefined });
 
     field === 'title' ? setTitle(value) : setDescription(value);
@@ -40,7 +40,7 @@ const NameTheRound = () => {
 
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
-    handleChange('description', value);
+    handleFieldChange('description', value);
   };
 
   return (
@@ -52,7 +52,7 @@ const NameTheRound = () => {
         description={description}
         errors={errors}
         handleBlur={handleBlur}
-        handleChange={handleChange}
+        handleChange={handleFieldChange}
         handleDescriptionChange={handleDescriptionChange}
       />
 

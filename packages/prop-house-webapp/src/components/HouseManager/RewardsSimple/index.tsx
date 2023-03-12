@@ -1,12 +1,14 @@
 import classes from './RewardsSimple.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { NewRound } from '../../../state/slices/round';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import clsx from 'clsx';
 import Bullet from '../Bullet';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { capitalize } from '../../../utils/capitalize';
 import { AwardProps } from '../AwardsSelector';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 const RewardsSimple: React.FC<{
   round: NewRound;
@@ -15,7 +17,6 @@ const RewardsSimple: React.FC<{
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
   handleAmountInputChange: (e: React.ChangeEvent<HTMLInputElement>, award: AwardProps) => void;
-  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
   handleBlur: (award: AwardProps) => void;
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
@@ -26,7 +27,6 @@ const RewardsSimple: React.FC<{
     award,
     round,
     setIsTyping,
-    handleChange,
     handleAmountInputChange,
     handleBlur,
     handleClear,
@@ -52,7 +52,8 @@ const RewardsSimple: React.FC<{
     // ie. 1234 -> 123
     if (value.toString().length > 3) value = Number(value.toString().substring(0, 3));
 
-    handleChange('numWinners', value);
+    dispatch(updateRound({ ...round, numWinners: value }));
+    dispatch(checkStepCriteria());
 
     // const updated = changeAward(award.id, awardContracts, { ...awardContracts, amount: value });
     // dispatch(

@@ -20,7 +20,6 @@ const AwardByToken: React.FC<{
   handleClear(address: AwardProps): void;
   handleInputChange: (address: AwardProps, value: string) => void;
   handleInputTypeChange: (address: AwardProps) => void;
-  handleChange: (property: keyof NewRound, value: NewRound[keyof NewRound]) => void;
 }> = props => {
   const {
     place,
@@ -29,7 +28,6 @@ const AwardByToken: React.FC<{
     isTyping,
     setIsTyping,
     handleBlur,
-    // handleChange,
     handleClear,
     handleRemove,
     handleInputChange,
