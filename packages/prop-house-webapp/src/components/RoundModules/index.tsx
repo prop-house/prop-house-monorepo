@@ -77,14 +77,13 @@ const RoundModules: React.FC<{
       {isProposingWindow && <AcceptingPropsModule auction={auction} community={community} />}
 
       {/** Infinite rounds allow voting during proposing phase */}
-      {isVotingWindow ||
-        (isProposingWindow && isInfAuction(auction) && (
-          <VotingModule
-            communityName={community.name}
-            setShowVotingModal={setShowVotingModal}
-            totalVotes={getVoteTotal()}
-          />
-        ))}
+      {(isVotingWindow || (isProposingWindow && isInfAuction(auction))) && (
+        <VotingModule
+          communityName={community.name}
+          setShowVotingModal={setShowVotingModal}
+          totalVotes={getVoteTotal()}
+        />
+      )}
 
       {isRoundOver && (
         <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
