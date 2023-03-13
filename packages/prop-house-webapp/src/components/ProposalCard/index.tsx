@@ -22,6 +22,7 @@ import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getImageFromDescription from '../../utils/getImageFromDescription';
 import { useEffect, useState } from 'react';
+import { isInfAuction } from '../../utils/auctionType';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -35,12 +36,14 @@ const ProposalCard: React.FC<{
   const round = useAppSelector(state => state.propHouse.activeRound);
   const dispatch = useDispatch();
 
-  const roundIsVotingOrOver = () =>
-    auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
-
   const roundIsActive = () =>
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
+
+  const showVotesSection =
+    auctionStatus === AuctionStatus.AuctionVoting ||
+    auctionStatus === AuctionStatus.AuctionEnded ||
+    (auctionStatus === AuctionStatus.AuctionAcceptingProps && round && isInfAuction(round));
 
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
@@ -154,17 +157,11 @@ const ProposalCard: React.FC<{
               )}
             </div>
 
-            {(auctionStatus === AuctionStatus.AuctionVoting ||
-              auctionStatus === AuctionStatus.AuctionEnded) && (
+            {showVotesSection && (
               <div className={classes.timestampAndlinkContainer}>
-                <div
-                  className={clsx(
-                    classes.avatarAndPropNumber,
-                    !roundIsVotingOrOver() && classes.hideVoteModule,
-                  )}
-                >
+                <div className={clsx(classes.avatarAndPropNumber)}>
                   <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
-                    {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
+                    <VotesDisplay proposal={proposal} />
                     {cardStatus === ProposalCardStatus.Voting && (
                       <div className={classes.votingArrows}>
                         <span className={classes.plusArrow}>+</span>
