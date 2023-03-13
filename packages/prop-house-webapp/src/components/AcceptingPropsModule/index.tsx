@@ -1,79 +1,112 @@
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import clsx from 'clsx';
-import dayjs from 'dayjs';
-import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
-import { useTranslation } from 'react-i18next';
-
 import classes from './AcceptingPropsModule.module.css';
+import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { useDispatch } from 'react-redux';
+import { useEthers } from '@usedapp/core';
+import { clearProposal } from '../../state/slices/editor';
+import Button, { ButtonColor } from '../Button';
+import { useNavigate } from 'react-router-dom';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useTranslation } from 'react-i18next';
+import RoundModuleCard from '../RoundModuleCard';
+import clsx from 'clsx';
 import { isInfAuction } from '../../utils/auctionType';
+import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
+import dayjs from 'dayjs';
 
-export interface AcceptingPropsModuleProps {
+const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
-  communityName: string;
-}
-const AcceptingPropsModule: React.FC<AcceptingPropsModuleProps> = (
-  props: AcceptingPropsModuleProps,
-) => {
-  const { auction, communityName } = props;
+  community: Community;
+}> = props => {
+  const { auction, community } = props;
+
+  const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { account } = useEthers();
+  const connect = useWeb3Modal();
   const { t } = useTranslation();
 
-  return (
-    <>
-      <div className={classes.sideCardHeader}>
-        <div className={clsx(classes.icon, classes.greenIcon)}>
-          <BulbIcon />
-        </div>
-        <div className={classes.textContainer}>
-          <p className={classes.title}>{t('acceptingProposals')}</p>
-          <p className={classes.subtitle}>
-            Until{' '}
-            {isInfAuction(auction)
-              ? 'funding is depleted'
-              : dayjs(auction.proposalEndTime).format('MMMM D')}
-          </p>
-        </div>
-      </div>
-
-      <hr className={classes.divider} />
-
-      <p className={classes.sideCardBody}>
-        <b>{t('howProposingWorks')}:</b>
-
-        <div className={classes.bulletList}>
-          <div className={classes.bulletItem}>
-            <hr className={classes.bullet} />
-            <p>{t('anyoneCanSubmit')}.</p>
+  const content = (
+    <div className={classes.content}>
+      <>
+        <div className={classes.sideCardHeader}>
+          <div className={clsx(classes.icon, classes.greenIcon)}>
+            <BulbIcon />
           </div>
-
-          <div className={classes.bulletItem}>
-            <hr className={classes.bullet} />
-            <p>
-              {t('ownersOfThe')} <b>{communityName}</b> {t('tokenWillVote')}.
-            </p>
-          </div>
-
-          <div className={classes.bulletItem}>
-            <hr className={classes.bullet} />
-            <p>
-              {isInfAuction(auction) ? (
-                'Proposals that meet quorum will get funded.'
-              ) : (
-                <>
-                  {' '}
-                  {t('theTop')} <b>{auction.numWinners}</b>{' '}
-                  {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
-                  <b>
-                    {auction.fundingAmount} {auction.currencyType}{' '}
-                  </b>
-                  {t('each')}.
-                </>
-              )}
+          <div className={classes.textContainer}>
+            <p className={classes.title}>{t('acceptingProposals')}</p>
+            <p className={classes.subtitle}>
+              Until{' '}
+              {isInfAuction(auction)
+                ? 'funding is depleted'
+                : dayjs(auction.proposalEndTime).format('MMMM D')}
             </p>
           </div>
         </div>
-      </p>
-    </>
+
+        <hr className={classes.divider} />
+
+        <p className={classes.sideCardBody}>
+          <b>{t('howProposingWorks')}:</b>
+
+          <div className={classes.bulletList}>
+            <div className={classes.bulletItem}>
+              <hr className={classes.bullet} />
+              <p>{t('anyoneCanSubmit')}.</p>
+            </div>
+
+            <div className={classes.bulletItem}>
+              <hr className={classes.bullet} />
+              <p>
+                {t('ownersOfThe')} <b>{community.name}</b> {t('tokenWillVote')}.
+              </p>
+            </div>
+
+            <div className={classes.bulletItem}>
+              <hr className={classes.bullet} />
+              <p>
+                {isInfAuction(auction) ? (
+                  'Proposals that meet quorum will get funded.'
+                ) : (
+                  <>
+                    {' '}
+                    {t('theTop')} <b>{auction.numWinners}</b>{' '}
+                    {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
+                    <b>
+                      {auction.fundingAmount} {auction.currencyType}{' '}
+                    </b>
+                    {t('each')}.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+        </p>
+      </>
+    </div>
   );
+
+  const buttons = (
+    <div className={classes.btnContainer}>
+      {/* ACCEPTING PROPS */}
+      {isProposingWindow &&
+        (account ? (
+          <Button
+            text={t('createYourProposal')}
+            bgColor={ButtonColor.Green}
+            onClick={() => {
+              dispatch(clearProposal());
+              navigate('/create', { state: { auction, community } });
+            }}
+          />
+        ) : (
+          <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
+        ))}
+    </div>
+  );
+
+  return <RoundModuleCard content={content} buttons={buttons} />;
 };
 
 export default AcceptingPropsModule;

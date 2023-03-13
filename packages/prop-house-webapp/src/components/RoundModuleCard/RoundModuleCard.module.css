@@ -1,0 +1,21 @@
+.sidebarContainerCard {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between !important;
+}
+.sidebarContainerCard button {
+  width: 100%;
+  border-radius: 50px;
+  margin-top: 18px;
+}
+
+@media (max-width: 1200px) {
+  .sidebarContainerCard {
+    flex: 1;
+    min-width: 250px !important;
+    height: max-content !important;
+  }
+}

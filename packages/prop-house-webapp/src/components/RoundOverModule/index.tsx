@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
+import RoundModuleCard from '../RoundModuleCard';
 import classes from './RoundOverModule.module.css';
 
 export interface RoundOverModuleProps {
@@ -12,7 +13,7 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
   const { numOfProposals, totalVotes } = props;
   const { t } = useTranslation();
 
-  return (
+  const content = (
     <>
       <div className={classes.sideCardHeader}>
         <div className={clsx(classes.icon, classes.blackIcon)}>
@@ -25,7 +26,9 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
               {totalVotes?.toFixed()} {Number(totalVotes?.toFixed()) === 1 ? t('vote') : t('votes')}{' '}
               {t('castFor')} {numOfProposals} {numOfProposals === 1 ? t('prop') : t('props')}!
             </p>
-          ) : <></>}
+          ) : (
+            <></>
+          )}
         </div>
       </div>
 
@@ -36,6 +39,8 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
       </p>
     </>
   );
+
+  return <RoundModuleCard content={content} />;
 };
 
 export default RoundOverModule;

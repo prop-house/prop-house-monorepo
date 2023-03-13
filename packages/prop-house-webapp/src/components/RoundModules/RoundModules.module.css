@@ -4,20 +4,6 @@
   align-self: flex-start;
 }
 
-.sidebarContainerCard {
-  background: var(--bg-dark);
-  border: 1px solid var(--border-light);
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between !important;
-}
-.sidebarContainerCard button {
-  width: 100%;
-  border-radius: 50px;
-  margin-top: 18px;
-}
-
 @media (max-width: 1200px) {
   .sideCards {
     display: flex;
@@ -28,11 +14,6 @@
     position: relative;
     top: inherit;
     align-self: inherit;
-  }
-  .sidebarContainerCard {
-    flex: 1;
-    min-width: 250px !important;
-    height: max-content !important;
   }
   .carousel {
     display: flex;
