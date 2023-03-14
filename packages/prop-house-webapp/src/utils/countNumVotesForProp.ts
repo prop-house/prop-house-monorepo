@@ -6,4 +6,4 @@ import { SignatureState, StoredVote } from '@nouns/prop-house-wrapper/dist/build
 export const countNumVotesForProp = (votes: StoredVote[], proposalId: number) =>
   votes
     .filter(v => v.signatureState === SignatureState.VALIDATED && v.proposalId === proposalId)
-    .reduce((prev, current) => prev + current.weight, 0);
+    .reduce((prev, current) => prev + Number(current.weight), 0);
