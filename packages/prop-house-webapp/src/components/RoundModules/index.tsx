@@ -6,7 +6,6 @@ import {
 import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { useEthers } from '@usedapp/core';
 import clsx from 'clsx';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
@@ -16,6 +15,7 @@ import RoundOverModule from '../RoundOverModule';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { isInfAuction } from '../../utils/auctionType';
+import { useAccount } from 'wagmi';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -25,8 +25,7 @@ const RoundModules: React.FC<{
 }> = props => {
   const { auction, proposals, community, setShowVotingModal } = props;
 
-  const { account } = useEthers();
-
+  const { address: account } = useAccount();
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
 

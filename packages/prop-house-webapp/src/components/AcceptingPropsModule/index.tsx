@@ -2,17 +2,17 @@ import classes from './AcceptingPropsModule.module.css';
 import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useDispatch } from 'react-redux';
-import { useEthers } from '@usedapp/core';
 import { clearProposal } from '../../state/slices/editor';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useTranslation } from 'react-i18next';
 import RoundModuleCard from '../RoundModuleCard';
 import clsx from 'clsx';
 import { isInfAuction } from '../../utils/auctionType';
 import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
 import dayjs from 'dayjs';
+import ConnectButton from '../ConnectButton';
+import { useAccount } from 'wagmi';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -23,8 +23,7 @@ const AcceptingPropsModule: React.FC<{
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { account } = useEthers();
-  const connect = useWeb3Modal();
+  const { address: account } = useAccount();
   const { t } = useTranslation();
 
   const content = (
@@ -101,7 +100,7 @@ const AcceptingPropsModule: React.FC<{
             }}
           />
         ) : (
-          <Button text={t('connectToSubmit')} bgColor={ButtonColor.Pink} onClick={connect} />
+          <ConnectButton color={ButtonColor.Pink} />
         ))}
     </div>
   );

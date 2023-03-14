@@ -4,10 +4,10 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
-import { useEthers } from '@usedapp/core';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
+import { useAccount } from 'wagmi';
 
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -24,7 +24,8 @@ const ProposalWindowButtons: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { account } = useEthers();
+  const { address: account } = useAccount();
+
   const navigate = useNavigate();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);

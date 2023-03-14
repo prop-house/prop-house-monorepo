@@ -3,8 +3,6 @@ import { Row, Col } from 'react-bootstrap';
 import { ProposalFields } from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
-import { Link } from 'react-router-dom';
-import { nameToSlug } from '../../utils/communitySlugs';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
@@ -19,42 +17,23 @@ export interface RenderedProposalProps {
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
-  const { fields, address, proposalId, backButton, community, roundName } = props;
+  const { fields, address, proposalId, backButton } = props;
   const { t } = useTranslation();
 
   return (
     <>
       <Row>
-        <Col xl={12} className={classes.previewCol}>
+        <Col xl={12} className="proposalCopy">
           <div className={classes.headerContainer}>
-            <div className={classes.backBtnContainer}>
-              {backButton && backButton}
-
-              {community && roundName && (
-                <Link
-                  to={`/${nameToSlug(community.name)}`}
-                  className={classes.communityProfImgContainer}
-                >
-                  {community.name.charAt(0).toUpperCase() + community.name.slice(1)} {t('house')}:{' '}
-                  {roundName}
-                </Link>
-              )}
-            </div>
-
+            <div className={classes.backBtnContainer}>{backButton && backButton}</div>
             <div>
               {address && proposalId && (
                 <div className={classes.subinfo}>
-                  <div className={classes.communityAndPropNumber}>
-                    <span className={classes.propNumber}>
-                      {t('propCap')} #{proposalId}{' '}
-                    </span>
+                  <div className={classes.propBy}>
+                    <span>{t('propCap')}</span>
                     {t('by')}
                     <div className={classes.submittedBy}>
-                      <EthAddress
-                        address={address}
-                        hideDavatar={true}
-                        className={classes.submittedBy}
-                      />
+                      <EthAddress address={address} className={classes.submittedBy} />
                     </div>
                   </div>
                 </div>

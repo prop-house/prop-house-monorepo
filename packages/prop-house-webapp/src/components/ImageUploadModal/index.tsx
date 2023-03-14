@@ -1,13 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Modal from '../Modal';
 import Button, { ButtonColor } from '../Button';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
 import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
 import buildIpfsPath from '../../utils/buildIpfsPath';
+import { useSigner } from 'wagmi';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -43,13 +43,13 @@ const ImageUploadModal: React.FC<{
   const [uploadError, setUploadError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { library } = useEthers();
+  const { data: signer } = useSigner();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
   const signerless = new PropHouseWrapper('https://prod.backend.prop.house');
 
   const handleImageUpload = async () => {

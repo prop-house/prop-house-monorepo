@@ -3,13 +3,13 @@ import classes from './ProposalSuccessModal.module.css';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useEthers } from '@usedapp/core';
 import EthAddress from '../EthAddress';
 import { openInNewTab } from '../../utils/openInNewTab';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { TimedAuction, Community } from '@nouns/prop-house-wrapper/dist/builders';
+import { useAccount } from 'wagmi';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
@@ -21,7 +21,7 @@ const ProposalSuccessModal: React.FC<{
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { account } = useEthers();
+  const { address: account } = useAccount();
   const twitterContent = `Check out my @NounsPropHouse prop: https://prop.house/proposal/${proposalId}`;
 
   const backToRound = () => {

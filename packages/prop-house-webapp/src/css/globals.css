@@ -19,6 +19,9 @@
 body {
   background-color: rgb(250, 250, 250);
 }
+p {
+  margin-bottom: 0 !important;
+}
 .tooltip-inner {
   min-width: min-content;
 }
@@ -222,9 +225,6 @@ body {
     width: 38px;
   }
 }
-.web3modal-modal-lightbox {
-  z-index: 9999999 !important;
-}
 
 .scrollMoreContainer:before {
   content: '';
@@ -262,4 +262,76 @@ body {
 .dragover {
   background-color: var(--bg-dark) !important;
   border: 2px dashed var(--brand-green) !important;
+}
+/* Proposal styles */
+.proposalCopy {
+  word-break: break-word;
+}
+.proposalCopy h1 {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  line-height: 25px !important;
+  letter-spacing: 0.02em !important;
+}
+.proposalCopy h2 {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  line-height: 19px !important;
+  margin-top: 15px !important;
+  letter-spacing: 0.02em !important;
+  color: var(--brand-black) !important;
+}
+.proposalCopy img {
+  max-width: 100% !important;
+}
+.proposalCopy :is(p, li) {
+  font-family: 'PT Root UI' !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 0 !important;
+}
+
+.proposalCopy blockquote {
+  font-family: 'PT Root UI';
+  color: var(--brand-black) !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  font-size: 16px !important;
+  line-height: 21px !important;
+  letter-spacing: 0.02em !important;
+  margin: 0 !important;
+  margin-left: 20px !important;
+  margin-bottom: 10px !important;
+  border-left-color: rgba(102, 102, 102, 0.25) !important;
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  padding-left: 16px !important;
+}
+.proposalCopy a {
+  color: var(--brand-purple) !important;
+  text-decoration: underline !important;
+}
+.proposalCopy a:hover {
+  text-decoration: underline !important;
+}
+.proposalCopy :is(code, pre) {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace !important;
+  font-size: 13px !important;
+  background: #2f3136 !important;
+  color: white !important;
+  padding: 22px !important;
+  white-space: pre-wrap;
+}
+.proposalCopy ul {
+  margin-bottom: 0 !important;
+}
+.proposalCopy {
+  padding: 0 !important;
 }

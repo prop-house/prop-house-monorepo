@@ -5,7 +5,6 @@ import { useAppSelector } from '../../hooks';
 import NotFound from '../../components/NotFound';
 import { useEffect, useRef, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import { useDispatch } from 'react-redux';
 import {
   setActiveCommunity,
@@ -22,11 +21,13 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
+import { useSigner } from 'wagmi';
 
 const Proposal = () => {
   const params = useParams();
   const { id } = params;
-  const { library: provider } = useEthers();
+
+  const { data: signer } = useSigner();
   const navigate = useNavigate();
 
   const [failedFetch, setFailedFetch] = useState(false);
@@ -36,7 +37,7 @@ const Proposal = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -44,8 +45,8 @@ const Proposal = () => {
   };
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   // fetch proposal
   useEffect(() => {
@@ -97,7 +98,7 @@ const Proposal = () => {
           />
         )}
         {proposal ? (
-          <>
+          <Container>
             <RenderedProposalFields
               fields={proposalFields(proposal)}
               address={proposal.address}
@@ -106,11 +107,11 @@ const Proposal = () => {
               roundName={round && round?.title}
               backButton={
                 <div className={classes.backToAuction} onClick={() => handleBackClick()}>
-                  <IoArrowBackCircleOutline size={'1.5rem'} />
+                  <IoArrowBackCircleOutline size={'1.5rem'} /> View round
                 </div>
               }
             />
-          </>
+          </Container>
         ) : failedFetch ? (
           <NotFound />
         ) : (

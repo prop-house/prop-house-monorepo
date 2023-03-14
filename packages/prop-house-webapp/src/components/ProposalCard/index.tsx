@@ -20,9 +20,10 @@ import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
-import getImageFromDescription from '../../utils/getImageFromDescription';
+import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 import { isInfAuction } from '../../utils/auctionType';
+import { isMobile } from 'web3modal';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -45,10 +46,17 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionEnded ||
     (auctionStatus === AuctionStatus.AuctionAcceptingProps && round && isInfAuction(round));
 
-  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
+  const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
 
   useEffect(() => {
-    const getImg = async () => setImageUrl(await getImageFromDescription(proposal));
+    let imgUrl;
+
+    const getImg = async () => {
+      imgUrl = await getFirstImageFromProp(proposal);
+      setImgUrlFromProp(imgUrl);
+      setDisplayTldr(!isMobile() || (isMobile() && !imgUrl));
+    };
     getImg();
   }, [proposal]);
 
@@ -87,22 +95,24 @@ const ProposalCard: React.FC<{
                   <div className={classes.propTitle}>{proposal.title}</div>
                 </div>
 
-                <ReactMarkdown
-                  className={classes.truncatedTldr}
-                  children={proposal.tldr}
-                  disallowedElements={['img', '']}
-                  components={{
-                    h1: 'p',
-                    h2: 'p',
-                    h3: 'p',
-                  }}
-                ></ReactMarkdown>
+                {displayTldr && (
+                  <ReactMarkdown
+                    className={classes.truncatedTldr}
+                    children={proposal.tldr}
+                    disallowedElements={['img', '']}
+                    components={{
+                      h1: 'p',
+                      h2: 'p',
+                      h3: 'p',
+                    }}
+                  />
+                )}
               </div>
             </div>
 
-            {imageUrl && imageUrl && (
+            {imgUrlFromProp && (
               <div className={classes.propImgContainer}>
-                <img src={imageUrl} alt="propCardImage" />
+                <img src={imgUrlFromProp} alt="propCardImage" />
               </div>
             )}
           </div>
@@ -111,7 +121,7 @@ const ProposalCard: React.FC<{
 
           <div className={classes.submissionInfoContainer}>
             <div className={classes.addressAndTimestamp}>
-              <EthAddress address={proposal.address} truncate />
+              <EthAddress address={proposal.address} className={classes.truncate} addAvatar />
 
               <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
                 {' • '}

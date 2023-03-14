@@ -87,6 +87,7 @@ export class TimedAuction extends Signable {
     public readonly currencyType: string,
     public readonly numWinners: number,
     public readonly community: number,
+    public readonly communityId: number,
     public readonly balanceBlockTag: number,
     public readonly description: string,
   ) {
@@ -104,6 +105,7 @@ export class TimedAuction extends Signable {
       currencyType: this.currencyType,
       numWinners: this.numWinners,
       community: this.community,
+      communityId: this.communityId,
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
     };
@@ -314,6 +316,10 @@ export interface StoredVote extends Vote {
   address: string;
   signedData: string;
   id: number;
+}
+
+export interface StoredVoteWithProposal extends StoredVote {
+  proposal: StoredProposal;
 }
 
 export interface StoredFile {

@@ -51,6 +51,16 @@ export class ProposalsService {
     return proposal;
   }
 
+  findBetween(start: Date = new Date('1900-01-01'), end: Date) {
+    return this.proposalsRepository
+      .createQueryBuilder('proposal')
+      .where('proposal.createdDate > :start', { start: start.toISOString() })
+      .andWhere('proposal.createdDate <= :end', {
+        end: (end ?? new Date()).toISOString(),
+      })
+      .getMany();
+  }
+
   async remove(id: number): Promise<void> {
     await this.proposalsRepository.delete(id);
   }

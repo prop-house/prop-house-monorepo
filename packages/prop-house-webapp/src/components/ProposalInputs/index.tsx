@@ -6,13 +6,13 @@ import 'react-quill/dist/quill.snow.css';
 import '../../quill.css';
 import clsx from 'clsx';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useEthers } from '@usedapp/core';
 import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
 import { isInfAuction } from '../../utils/auctionType';
 import { useLocation } from 'react-router-dom';
+import { useSigner } from 'wagmi';
 
 const ProposalInputs: React.FC<{
   quill: any;
@@ -42,8 +42,9 @@ const ProposalInputs: React.FC<{
   const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
   const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
 
-  const { library } = useEthers();
   const data = useAppSelector(state => state.editor.proposal);
+  const { data: signer } = useSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -51,8 +52,8 @@ const ProposalInputs: React.FC<{
   const [selectedNumber, setSelectedNumber] = useState<number | null>(initReqAmount);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   return (
     <>

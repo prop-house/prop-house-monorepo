@@ -23,6 +23,7 @@ import TruncateThousands from '../TruncateThousands';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { countDecimals } from '../../utils/countDecimals';
 
 const RoundCard: React.FC<{
   round: StoredAuctionBase;
@@ -90,7 +91,10 @@ const RoundCard: React.FC<{
               <p className={classes.title}>{t('funding')}</p>
               <p className={classes.info}>
                 <span className="">
-                  <TruncateThousands amount={round.fundingAmount} decimals={2} />
+                  <TruncateThousands
+                    amount={round.fundingAmount}
+                    decimals={countDecimals(round.fundingAmount) === 3 ? 3 : 2}
+                  />
                   {` ${round.currencyType}`}
                 </span>
                 {isTimedAuction(round) && (

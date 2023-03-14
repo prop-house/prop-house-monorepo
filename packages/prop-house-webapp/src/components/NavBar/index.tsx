@@ -1,11 +1,14 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import classes from './NavBar.module.css';
-import Web3ModalButton from '../Web3ModalButton.tsx';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
+import AdminTool from '../AdminTool';
+import DevEnvDropDown from '../DevEnvDropdown';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { isMobile } from 'web3modal';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -17,8 +20,12 @@ const NavBar = () => {
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>
-            <div className={classes.navbarBrand}>{t('propHouse')}</div>
-            <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
+            {!isMobile() && (
+              <>
+                <div className={classes.navbarBrand}>{t('propHouse')}</div>
+                <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
+              </>
+            )}
           </Navbar.Brand>
         </Link>
 
@@ -39,8 +46,19 @@ const NavBar = () => {
               <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
               <Nav.Link as="div">
-                <Web3ModalButton classNames={classes.link} />
+                <ConnectButton
+                  showBalance={false}
+                  label={t('connect')}
+                  accountStatus={{
+                    smallScreen: 'avatar',
+                    largeScreen: 'full',
+                  }}
+                />
               </Nav.Link>
+
+              <AdminTool>
+                <DevEnvDropDown />
+              </AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>

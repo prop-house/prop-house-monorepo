@@ -1,17 +1,17 @@
 import clsx from 'clsx';
-import { useEthers } from '@usedapp/core';
+import classes from './VotingModule.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
-import classes from './VotingModule.module.css';
-import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../Button';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import RoundModuleCard from '../RoundModuleCard';
 import { countNumVotes } from '../../utils/countNumVotes';
+import ConnectButton from '../ConnectButton';
+import { useTranslation } from 'react-i18next';
+import { useAccount } from 'wagmi';
 
 export interface VotingModuleProps {
   communityName: string;
@@ -20,8 +20,7 @@ export interface VotingModuleProps {
 }
 const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
   const { communityName, totalVotes, setShowVotingModal } = props;
-  const { account } = useEthers();
-  const connect = useWeb3Modal();
+  const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
@@ -114,7 +113,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
   );
 
   const buttons = !account ? (
-    <Button text={t('connectToVote')} bgColor={ButtonColor.Pink} onClick={connect} />
+    <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
   ) : account && votingPower ? (
     <Button
       text={t('submitVotes')}

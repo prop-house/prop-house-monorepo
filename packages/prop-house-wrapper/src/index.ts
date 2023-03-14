@@ -1,4 +1,3 @@
-import { Signer } from '@ethersproject/abstract-signer';
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
@@ -15,6 +14,7 @@ import {
   StoredInfiniteAuction,
   StoredAuctionBase,
   InfiniteAuctionProposal,
+  StoredVoteWithProposal,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -28,11 +28,12 @@ import {
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
+import { Signer } from 'ethers';
 
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | undefined = undefined,
+    private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: TimedAuction): Promise<StoredTimedAuction[]> {
@@ -71,6 +72,81 @@ export class PropHouseWrapper {
       const infinite = rawInfAuctions.map(StoredInfiniteAuction.FromResponse);
 
       return timed.concat(infinite);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+  async getActiveAuctions(skip = 5, limit = 5): Promise<StoredTimedAuction[]> {
+    try {
+      const rawAuctions = (
+        await axios.get(`${this.host}/auctions/allActive/n`, {
+          params: {
+            limit,
+            skip,
+          },
+        })
+      ).data;
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+  async getActiveAuctionsForCommunities(
+    skip = 5,
+    limit = 5,
+    addresses: string[],
+  ): Promise<StoredTimedAuction[]> {
+    try {
+      const rawAuctions = (
+        await axios.get(`${this.host}/auctions/active/f`, {
+          params: {
+            limit,
+            skip,
+            addresses,
+          },
+        })
+      ).data;
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  /**
+   * number of proposals submitted to round id after given timestamp
+   * @param auctionId
+   * @param timestamp unix timestamp (ms)
+   */
+  async getLatestNumProps(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/latestNumProps/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  /**
+   * total vote weight submitted to round id after given timestamp
+   * @param auctionId
+   * @param timestamp unix timestamp (ms)
+   */
+  async getLatestNumVotes(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/latestNumVotes/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -169,6 +245,35 @@ export class PropHouseWrapper {
       return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
     } catch (e: any) {
       throw e;
+    }
+  }
+
+  async getVotes(
+    limit = 20,
+    skip = 0,
+    order: 'ASC' | 'DESC' = 'DESC',
+    addresses?: string[],
+  ): Promise<StoredVoteWithProposal[]> {
+    try {
+      const { data } = await axios.get(`${this.host}/votes/findWithOpts`, {
+        params: {
+          limit,
+          skip,
+          order,
+          addresses,
+        },
+      });
+      return data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getNumVotesCastedForRound(account: string, roundId: number) {
+    try {
+      return (await axios.get(`${this.host}/votes/numVotes/${account}/${roundId}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
     }
   }
 
@@ -276,6 +381,14 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
+  }
+
+  async getVotesForCommunities(addresses: string[]): Promise<StoredVoteWithProposal[]> {
+    try {
+      return (await axios.get(`${this.host}/votes/byCommunities/${addresses}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
   }
 
   async getCommunities(): Promise<CommunityWithAuctions[]> {

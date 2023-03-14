@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import Button from '@restart/ui/esm/Button';
@@ -7,6 +6,7 @@ import { StoredFile } from '@nouns/prop-house-wrapper/dist/builders';
 import buildIpfsPath from '../../utils/buildIpfsPath';
 import classes from './Upload.module.css';
 import { useTranslation } from 'react-i18next';
+import { useAccount, useSigner } from 'wagmi';
 
 /** commented out to silence warning (unused)
 function readFileDataAsBase64(e: any, i: number): Promise<string> {
@@ -29,13 +29,14 @@ function readFileDataAsBase64(e: any, i: number): Promise<string> {
  */
 
 const Upload = () => {
-  const { account } = useEthers();
+  const { address: account } = useAccount();
   // const [dataUrls, setDataUrls] = useState<string[]>([]);
   const [myFiles, setMyFiles] = useState<StoredFile[]>([]);
   const [file, setFile] = useState<File | undefined>(undefined);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const { library: provider } = useEthers();
-  let backendClient = new PropHouseWrapper(backendHost, provider?.getSigner());
+  const { data: signer } = useSigner();
+
+  let backendClient = new PropHouseWrapper(backendHost, signer);
   const { t } = useTranslation();
 
   const onFileChange = (event: any) => {

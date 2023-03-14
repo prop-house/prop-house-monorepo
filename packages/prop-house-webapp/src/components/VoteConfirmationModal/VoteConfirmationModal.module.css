@@ -1,3 +1,7 @@
+.propsContainer {
+  max-height: 240px;
+  overflow-y: auto;
+}
 .props {
   gap: 12px;
   display: flex;

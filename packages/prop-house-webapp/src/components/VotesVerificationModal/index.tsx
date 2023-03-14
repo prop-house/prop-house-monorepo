@@ -21,11 +21,7 @@ const VotesVerificationModal: React.FC<{
           <div key={index} className={classes.votesRow}>
             <div className={classes.voteRowTitle}>
               {`${vote.weight}  ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
-              <EthAddress
-                address={vote.address}
-                hideDavatar={true}
-                className={classes.vRowFontSize}
-              />
+              <EthAddress address={vote.address} />
             </div>
 
             {vote.signatureState === SignatureState.PENDING_VALIDATION && (

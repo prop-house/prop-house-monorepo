@@ -2,12 +2,12 @@ import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 're
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
+import { useSigner } from 'wagmi';
+import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
 
 const SaveProposalModal: React.FC<{
   propId: number;
@@ -27,13 +27,13 @@ const SaveProposalModal: React.FC<{
   } = props;
   const { t } = useTranslation();
 
-  const { library } = useEthers();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+  const { data: signer } = useSigner();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, library?.getSigner());
-  }, [library, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
   const [errorSaving, setErrorSaving] = useState(false);

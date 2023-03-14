@@ -9,11 +9,9 @@ import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { InfiniteAuctionProposal, Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
-import { useEthers } from '@usedapp/core';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../utils/isAuctionActive';
 import { ProposalFields } from '../../utils/proposalFields';
-import useWeb3Modal from '../../hooks/useWeb3Modal';
 import { useTranslation } from 'react-i18next';
 import DragAndDrop from '../../components/DragAndDrop';
 import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
@@ -26,9 +24,13 @@ import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import ConnectButton from '../../components/ConnectButton';
+import { useAccount, useSigner } from 'wagmi';
 
 const Create: React.FC<{}> = () => {
-  const { library: provider, account } = useEthers();
+  const { address: account } = useAccount();
+  const { data: signer } = useSigner();
+
   const { t } = useTranslation();
 
   // auction to submit prop to is passed via react-router from propse btn
@@ -42,14 +44,13 @@ const Create: React.FC<{}> = () => {
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
-  const connect = useWeb3Modal();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, provider?.getSigner()));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, provider?.getSigner());
-  }, [provider, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
@@ -263,11 +264,10 @@ const Create: React.FC<{}> = () => {
                         disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
                       />
                     ) : (
-                      <Button
+                      <ConnectButton
                         classNames={classes.actionBtn}
-                        bgColor={ButtonColor.Pink}
+                        color={ButtonColor.Pink}
                         text={t('connectWallet')}
-                        onClick={connect}
                       />
                     ))}
                 </Col>

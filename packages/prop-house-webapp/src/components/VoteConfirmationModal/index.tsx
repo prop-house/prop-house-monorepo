@@ -46,14 +46,16 @@ const VoteConfirmationModal: React.FC<{
         </>
       }
       body={
-        <div className={classes.props}>
-          {sortedVoteAllottments.map((prop: VoteAllotment) => (
-            <div key={prop.proposalId} className={classes.propCopy}>
-              <p className={classes.voteCount}>{prop.votes}</p>
-              <hr className={classes.line} />
-              <p className={classes.propTitle}>{prop.proposalTitle}</p>
-            </div>
-          ))}
+        <div className={classes.propsContainer}>
+          <div className={classes.props}>
+            {sortedVoteAllottments.map((prop: VoteAllotment) => (
+              <div key={prop.proposalId} className={classes.propCopy}>
+                <p className={classes.voteCount}>{prop.votes}</p>
+                <hr className={classes.line} />
+                <p className={classes.propTitle}>{prop.proposalTitle}</p>
+              </div>
+            ))}
+          </div>
         </div>
       }
       button={

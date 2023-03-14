@@ -4,7 +4,6 @@ import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/bui
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
-import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
@@ -55,8 +54,16 @@ const RoundHeader: React.FC<{
             community && navigate(`/${nameToSlug(community.name)}`);
           }}
         >
-          <IoArrowBackCircleOutline size={'1.5rem'} />
-          <span>{community && community.name}</span>
+          {community && (
+            <>
+              <img
+                src={community.profileImageUrl}
+                alt="community profile"
+                className={classes.profImg}
+              />
+              <div className={classes.commTitle}>{community.name}</div>
+            </>
+          )}
         </div>
 
         <Col lg={12} className={classes.communityInfoCol}>
