@@ -20,7 +20,7 @@ import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
-  setNumSubmittedVotes,
+  setVotesByUserInActiveRound,
   setVotingPower,
 } from '../../state/slices/voting';
 import { Row, Col } from 'react-bootstrap';
@@ -84,7 +84,11 @@ const RoundContent: React.FC<{
   // update submitted votes on proposal changes
   useEffect(() => {
     if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
+      dispatch(
+        setVotesByUserInActiveRound(
+          proposals.flatMap(p => p.votes).filter(v => v.address === account),
+        ),
+      );
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {

@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { votesForProp } from '../../utils/voteAllotment';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
+import { countNumVotes } from '../../utils/countNumVotes';
 
 const VotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -19,14 +20,15 @@ const VotingControls: React.FC<{
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+  const numVotesbyUserInActiveRound = countNumVotes(votesByUserInActiveRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
   const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
-  const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
-  const _votesRemaining = votesRemaining(votingPower, submittedVotes, voteAllotments);
+  const _canAllotVotes = canAllotVotes(votingPower, numVotesbyUserInActiveRound, voteAllotments);
+  const _votesRemaining = votesRemaining(votingPower, numVotesbyUserInActiveRound, voteAllotments);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
@@ -65,7 +67,10 @@ const VotingControls: React.FC<{
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (numVotesAllotting > votingPower - submittedVotes || numVotesAllotting > _votesRemaining) {
+    if (
+      numVotesAllotting > votingPower - numVotesbyUserInActiveRound ||
+      numVotesAllotting > _votesRemaining
+    ) {
       setAttemptedInputVotes(inputVotes);
       setDisplayWarningTooltip(true);
       setTimeout(() => {

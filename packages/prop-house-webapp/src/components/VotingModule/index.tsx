@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../Button';
 import useWeb3Modal from '../../hooks/useWeb3Modal';
 import RoundModuleCard from '../RoundModuleCard';
+import { countNumVotes } from '../../utils/countNumVotes';
 
 export interface VotingModuleProps {
   communityName: string;
@@ -24,7 +25,8 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
@@ -32,9 +34,9 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
   const { t } = useTranslation();
 
   useEffect(() => {
-    setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
+    setVotesLeftToAllot(votesRemaining(votingPower, numVotesByUserInActiveRound, voteAllotments));
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
-  }, [submittedVotes, voteAllotments, votingPower]);
+  }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 
   const content = (
     <>
@@ -61,7 +63,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
 
               <span className={classes.totalVotes}>{`${
                 votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} ${t('left')}`
+                  ? `${votingPower - numVotesByUserInActiveRound - numAllotedVotes} ${t('left')}`
                   : t('noVotesLeft')
               }`}</span>
             </h1>
@@ -69,10 +71,15 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
             <ProgressBar
               className={clsx(
                 classes.votingBar,
-                submittedVotes > 0 && votingPower !== submittedVotes && 'roundAllotmentBar',
+                numVotesByUserInActiveRound > 0 &&
+                  votingPower !== numVotesByUserInActiveRound &&
+                  'roundAllotmentBar',
               )}
             >
-              <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
+              <ProgressBar
+                variant="success"
+                now={(numVotesByUserInActiveRound / votingPower) * 100}
+              />
 
               <ProgressBar variant="warning" now={(numAllotedVotes / votingPower) * 100} key={2} />
             </ProgressBar>
@@ -111,7 +118,10 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
       text={t('submitVotes')}
       bgColor={ButtonColor.Purple}
       onClick={() => setShowVotingModal(true)}
-      disabled={voteWeightForAllottedVotes(voteAllotments) === 0 || submittedVotes === votingPower}
+      disabled={
+        voteWeightForAllottedVotes(voteAllotments) === 0 ||
+        numVotesByUserInActiveRound === votingPower
+      }
     />
   ) : (
     //  VOTING PERIOD, CONNECTED, HAS NO VOTES

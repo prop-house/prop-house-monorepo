@@ -10,11 +10,12 @@ import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
-import { setNumSubmittedVotes, setVotingPower } from '../../state/slices/voting';
+import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
+import { countNumVotes } from '../../utils/countNumVotes';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -33,7 +34,8 @@ const ProposalModalVotingModule: React.FC<{
 
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
@@ -60,13 +62,19 @@ const ProposalModalVotingModule: React.FC<{
   // update submitted votes on proposal changes
   useEffect(() => {
     if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
+      dispatch(
+        setVotesByUserInActiveRound(
+          proposals.flatMap(p => p.votes).filter(v => v.address === account),
+        ),
+      );
   }, [proposals, account, dispatch]);
 
   useEffect(() => {
-    setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
+    setVotesLeftToAllot(
+      votesRemaining(votingPower, countNumVotes(votesByUserInActiveRound), voteAllotments),
+    );
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
-  }, [submittedVotes, voteAllotments, votingPower]);
+  }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 
   return (
     <>
@@ -79,20 +87,26 @@ const ProposalModalVotingModule: React.FC<{
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${votesLeftToAllot > 0
-                  ? `${votingPower - submittedVotes - numAllotedVotes} left`
-                  : 'no votes left'
-                  }`}
+                {`${
+                  votesLeftToAllot > 0
+                    ? `${votingPower - numVotesByUserInActiveRound - numAllotedVotes} left`
+                    : 'no votes left'
+                }`}
               </span>
             </div>
 
             <ProgressBar
               className={clsx(
                 classes.votingBar,
-                submittedVotes > 0 && votingPower !== submittedVotes && 'roundAllotmentBar',
+                numVotesByUserInActiveRound > 0 &&
+                  votingPower !== numVotesByUserInActiveRound &&
+                  'roundAllotmentBar',
               )}
             >
-              <ProgressBar variant="success" now={(submittedVotes / votingPower) * 100} />
+              <ProgressBar
+                variant="success"
+                now={(numVotesByUserInActiveRound / votingPower) * 100}
+              />
 
               <ProgressBar variant="warning" now={(numAllotedVotes / votingPower) * 100} key={2} />
             </ProgressBar>
@@ -121,7 +135,8 @@ const ProposalModalVotingModule: React.FC<{
             text={'Submit votes'}
             bgColor={ButtonColor.Purple}
             disabled={
-              voteWeightForAllottedVotes(voteAllotments) === 0 || submittedVotes === votingPower
+              voteWeightForAllottedVotes(voteAllotments) === 0 ||
+              numVotesByUserInActiveRound === votingPower
             }
             onClick={() => setShowVotingModal(true)}
           />
