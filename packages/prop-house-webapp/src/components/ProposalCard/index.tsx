@@ -8,7 +8,7 @@ import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
-import PropCardVotingModule from '../PropCardVotingModule';
+import VotingControls from '../VotingControls';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
@@ -165,7 +165,7 @@ const ProposalCard: React.FC<{
                     {cardStatus === ProposalCardStatus.Voting && (
                       <div className={classes.votingArrows}>
                         <span className={classes.plusArrow}>+</span>
-                        <PropCardVotingModule proposal={proposal} />
+                        <VotingControls proposal={proposal} />
                       </div>
                     )}
                   </div>

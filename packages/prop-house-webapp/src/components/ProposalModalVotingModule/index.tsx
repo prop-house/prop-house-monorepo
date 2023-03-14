@@ -1,7 +1,7 @@
 import { ProgressBar } from 'react-bootstrap';
 import classes from './ProposalModalVotingModule.module.css';
 import clsx from 'clsx';
-import PropCardVotingModule from '../PropCardVotingModule';
+import VotingControls from '../VotingControls';
 import Button, { ButtonColor } from '../Button';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -111,7 +111,7 @@ const ProposalModalVotingModule: React.FC<{
           </div>
 
           <div className="mobileTooltipContainer">
-            <PropCardVotingModule proposal={proposal} />
+            <VotingControls proposal={proposal} />
 
             <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
           </div>

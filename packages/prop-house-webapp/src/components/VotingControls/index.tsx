@@ -1,5 +1,5 @@
 import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import classes from './PropCardVotingModule.module.css';
+import classes from './VotingControls.module.css';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
@@ -11,7 +11,7 @@ import { votesForProp } from '../../utils/voteAllotment';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
 
-const PropCardVotingModule: React.FC<{
+const VotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
   showVoteAllotmentModal?: boolean;
 }> = props => {
@@ -183,4 +183,4 @@ const PropCardVotingModule: React.FC<{
   );
 };
 
-export default PropCardVotingModule;
+export default VotingControls;
