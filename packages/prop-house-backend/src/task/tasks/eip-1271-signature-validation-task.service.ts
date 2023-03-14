@@ -120,7 +120,7 @@ export class EIP1271SignatureValidationTaskService {
       (dto) => dto.proposalId === proposal.id,
     );
 
-    const votingPower = await this._votesService.getNumVotes(
+    const votingPower = await this._votesService.getVotingPower(
       {
         address: vote.address,
         communityAddress: voteFromPayload.communityAddress,

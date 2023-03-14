@@ -5,7 +5,7 @@ import { Community } from './community.entity';
 import * as ethers from 'ethers';
 import { BigNumberish } from '@ethersproject/bignumber';
 import config from 'src/config/configuration';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import { ExtendedCommunity } from './community.types';
 
 @Injectable()
@@ -67,7 +67,12 @@ export class CommunitiesService {
     address: string,
   ): Promise<BigNumberish> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return getNumVotes(address, community.contractAddress, provider, blockTag);
+    return getVotingPower(
+      address,
+      community.contractAddress,
+      provider,
+      blockTag,
+    );
   }
 
   private extendedAuctionQuery(qb: SelectQueryBuilder<Community>) {

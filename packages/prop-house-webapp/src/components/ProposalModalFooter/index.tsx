@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import ProposalModalVotingModule from '../ProposalModalVotingModule';
@@ -62,7 +62,7 @@ const ProposalModalFooter: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const votes = await getNumVotes(
+        const votes = await getVotingPower(
           account,
           community.contractAddress,
           provider,

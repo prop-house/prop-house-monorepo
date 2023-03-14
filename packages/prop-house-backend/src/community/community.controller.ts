@@ -9,7 +9,6 @@ import { CommunitiesService } from './community.service';
 import { CommunityOverview, ExtendedCommunity } from './community.types';
 import { buildExtendedCommunity } from './community.utils';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { getNumVotes } from 'prop-house-communities';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { Community } from './community.entity';
 

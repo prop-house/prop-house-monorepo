@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
@@ -68,7 +68,7 @@ const RoundContent: React.FC<{
     const fetchVotes = async () => {
       try {
         const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-        const votes = await getNumVotes(
+        const votes = await getVotingPower(
           account,
           community.contractAddress,
           provider,

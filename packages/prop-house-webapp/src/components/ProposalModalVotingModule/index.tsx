@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
@@ -46,7 +46,7 @@ const ProposalModalVotingModule: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const votes = await getNumVotes(
+        const votes = await getVotingPower(
           account,
           community.contractAddress,
           provider,

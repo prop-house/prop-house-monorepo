@@ -11,7 +11,7 @@ import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { ethers } from 'ethers';
 import config from 'src/config/configuration';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Injectable()
@@ -99,12 +99,12 @@ export class VotesService {
     return votes.reduce((sum, vote) => sum + Number(vote.weight), 0);
   }
 
-  async getNumVotes(
+  async getVotingPower(
     dto: Pick<CreateVoteDto, 'address' | 'communityAddress'>,
     balanceblockTag: number,
   ): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return await getNumVotes(
+    return await getVotingPower(
       dto.address,
       dto.communityAddress,
       provider,

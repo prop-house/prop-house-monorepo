@@ -118,7 +118,7 @@ export class VotesController {
       );
 
     // Verify that signer has voting power
-    const votingPower = await this.votesService.getNumVotes(
+    const votingPower = await this.votesService.getVotingPower(
       createVoteDto,
       foundProposalAuction.balanceBlockTag,
     );
