@@ -2,12 +2,11 @@ import React, { Dispatch, SetStateAction } from 'react';
 import classes from './VoteConfirmationModal.module.css';
 import Button, { ButtonColor } from '../Button';
 import { useAppSelector } from '../../hooks';
-import { votesRemaining } from '../../utils/votesRemaining';
+import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { VoteAllotment } from '../../types/VoteAllotment';
 import { useTranslation } from 'react-i18next';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
 import Modal from '../Modal';
-import { countNumVotes } from '../../utils/countNumVotes';
 
 const VoteConfirmationModal: React.FC<{
   setShowVoteConfirmationModal: Dispatch<SetStateAction<boolean>>;
@@ -18,9 +17,9 @@ const VoteConfirmationModal: React.FC<{
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const votesLeft = votesRemaining(
+  const votesLeft = countVotesRemainingForTimedRound(
     votingPower,
-    countNumVotes(votesByUserInActiveRound),
+    votesByUserInActiveRound,
     voteAllotments,
   );
   const { t } = useTranslation();

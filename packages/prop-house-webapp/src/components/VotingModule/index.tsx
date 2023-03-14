@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
-import { votesRemaining } from '../../utils/votesRemaining';
+import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import classes from './VotingModule.module.css';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,9 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
   const { t } = useTranslation();
 
   useEffect(() => {
-    setVotesLeftToAllot(votesRemaining(votingPower, numVotesByUserInActiveRound, voteAllotments));
+    setVotesLeftToAllot(
+      countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
+    );
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 

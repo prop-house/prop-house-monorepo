@@ -7,7 +7,7 @@ import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
-import { votesRemaining } from '../../utils/votesRemaining';
+import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
@@ -70,7 +70,7 @@ const ProposalModalVotingModule: React.FC<{
 
   useEffect(() => {
     setVotesLeftToAllot(
-      votesRemaining(votingPower, countNumVotes(votesByUserInActiveRound), voteAllotments),
+      countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
     );
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
