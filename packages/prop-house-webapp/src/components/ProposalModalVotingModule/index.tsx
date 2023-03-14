@@ -3,7 +3,7 @@ import classes from './ProposalModalVotingModule.module.css';
 import clsx from 'clsx';
 import VotingControls from '../VotingControls';
 import Button, { ButtonColor } from '../Button';
-import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useEthers } from '@usedapp/core';
 import { useAppSelector } from '../../hooks';
@@ -72,7 +72,7 @@ const ProposalModalVotingModule: React.FC<{
     setVotesLeftToAllot(
       votesRemaining(votingPower, countNumVotes(votesByUserInActiveRound), voteAllotments),
     );
-    setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
+    setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 
   return (
@@ -134,7 +134,7 @@ const ProposalModalVotingModule: React.FC<{
             text={'Submit votes'}
             bgColor={ButtonColor.Purple}
             disabled={
-              voteWeightForAllottedVotes(voteAllotments) === 0 ||
+              countTotalVotesAlloted(voteAllotments) === 0 ||
               numVotesByUserInActiveRound === votingPower
             }
             onClick={() => setShowVotingModal(true)}

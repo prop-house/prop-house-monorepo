@@ -5,7 +5,7 @@ import { ProgressBar } from 'react-bootstrap';
 import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import { votesRemaining } from '../../utils/votesRemaining';
-import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
+import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import classes from './VotingModule.module.css';
 import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../Button';
@@ -35,7 +35,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
 
   useEffect(() => {
     setVotesLeftToAllot(votesRemaining(votingPower, numVotesByUserInActiveRound, voteAllotments));
-    setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
+    setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 
   const content = (
@@ -119,8 +119,7 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
       bgColor={ButtonColor.Purple}
       onClick={() => setShowVotingModal(true)}
       disabled={
-        voteWeightForAllottedVotes(voteAllotments) === 0 ||
-        numVotesByUserInActiveRound === votingPower
+        countTotalVotesAlloted(voteAllotments) === 0 || numVotesByUserInActiveRound === votingPower
       }
     />
   ) : (
