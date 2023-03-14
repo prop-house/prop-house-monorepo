@@ -7,7 +7,7 @@ import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
-import { votesForProp } from '../../utils/voteAllotment';
+import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { votesRemaining } from '../../utils/votesRemaining';
 import { useTranslation } from 'react-i18next';
 import { countNumVotes } from '../../utils/countNumVotes';
@@ -26,7 +26,7 @@ const VotingControls: React.FC<{
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
+  const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
   const _canAllotVotes = canAllotVotes(votingPower, numVotesbyUserInActiveRound, voteAllotments);
   const _votesRemaining = votesRemaining(votingPower, numVotesbyUserInActiveRound, voteAllotments);
 
