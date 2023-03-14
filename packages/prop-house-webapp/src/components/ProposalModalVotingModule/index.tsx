@@ -11,7 +11,6 @@ import { votesRemaining } from '../../utils/votesRemaining';
 import { useDispatch } from 'react-redux';
 import { getNumVotes } from 'prop-house-communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
-import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
