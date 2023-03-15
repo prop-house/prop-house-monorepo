@@ -32,14 +32,25 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
 
+  const infRoundBalance = () => {
+    if (!isInfAuction(auction) || !proposals) return auction.fundingAmount;
+
+    return (
+      auction.fundingAmount -
+      proposals.reduce((prev, prop) => {
+        const won = prop.voteCount > auction.quorum;
+        const reqAmount = Number(prop.reqAmount);
+        return !won && reqAmount !== null ? prev : prev + reqAmount;
+      }, 0)
+    );
+  };
+
   const allowSortByVotes = auctionVoting || auctionEnded;
 
   const [sortSelection, setSortSelection] = useState<number>(
     auctionEnded ? SortMethod.MostVotes : SortMethod.SortBy,
   );
   const { t } = useTranslation();
-
-  const progress = Number(55);
 
   return (
     <div className={classes.roundUtilityBar}>
@@ -103,7 +114,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
               </div>
               <div className={classes.itemData}>
                 <TruncateThousands
-                  amount={auction.fundingAmount}
+                  amount={isTimedAuction(auction) ? auction.fundingAmount : infRoundBalance()}
                   decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
                 />{' '}
                 {auction.currencyType} <span className={classes.xDivide} />
@@ -117,7 +128,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
             {isInfAuction(auction) && (
               <div className={classes.progressBar}>
-                <div className={classes.progress} style={{ height: `${progress}%` }}></div>
+                <div className={classes.progress} style={{ height: `${infRoundBalance()}%` }}></div>
               </div>
             )}
           </div>
