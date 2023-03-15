@@ -81,7 +81,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   }
                   tooltipContent={
                     isInfAuction(auction)
-                      ? 'Percentage of votes required to get funded'
+                      ? 'Votes required to get funded'
                       : `${dayjs(deadlineTime(auction)).tz().format('MMMM D, YYYY h:mm A z')}`
                   }
                 />
