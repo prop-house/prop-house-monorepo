@@ -21,6 +21,9 @@
   font-size: 14px;
   color: var(--brand-gray);
 }
+.subtitle b div {
+  display: inline;
+}
 .icon {
   width: 44px;
   height: 44px;
