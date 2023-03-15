@@ -75,9 +75,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                       </div>
 
                       <div className={classes.itemData}>
-                        {isInfAuction(auction)
-                          ? `${auction.quorum * 100}%`
-                          : diffTime(deadlineTime(auction))}
+                        {isInfAuction(auction) ? auction.quorum : diffTime(deadlineTime(auction))}
                       </div>
                     </>
                   }
