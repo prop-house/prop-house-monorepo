@@ -103,9 +103,7 @@ const RoundModules: React.FC<{
           )}
 
           {/* VOTING WINDOW */}
-          {isVotingWindow && (
-            <VotingModule communityName={community.name} totalVotes={getVoteTotal()} />
-          )}
+          {isVotingWindow && <VotingModule totalVotes={getVoteTotal()} />}
 
           {/* ROUND ENDED */}
           {isRoundOver && (

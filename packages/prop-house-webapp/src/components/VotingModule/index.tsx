@@ -7,22 +7,26 @@ import { votesRemaining } from '../../utils/votesRemaining';
 import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
 import classes from './VotingModule.module.css';
 import { useTranslation } from 'react-i18next';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
+import trimEthAddress from '../../utils/trimEthAddress';
+import { getName } from 'prop-house-communities';
 
 export interface VotingModuleProps {
-  communityName: string;
   totalVotes: number | undefined;
 }
 const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
-  const { communityName, totalVotes } = props;
+  const { totalVotes } = props;
   const { address: account } = useAccount();
+  const provider = useProvider();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const community = useAppSelector(state => state.propHouse.activeCommunity);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
+  const [tokenName, setTokenName] = useState<string>('');
 
   const { t } = useTranslation();
 
@@ -30,6 +34,23 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
     setVotesLeftToAllot(votesRemaining(votingPower, submittedVotes, voteAllotments));
     setNumAllotedVotes(voteWeightForAllottedVotes(voteAllotments));
   }, [submittedVotes, voteAllotments, votingPower]);
+
+  useEffect(() => {
+    if (!community) return;
+
+    const fetchTokenName = async () => {
+      let name;
+      const trimmedAddress = trimEthAddress(community.contractAddress);
+      try {
+        name = await getName(community.contractAddress, provider);
+        setTokenName(name ? name : trimmedAddress);
+      } catch (e) {
+        console.log('error fetching name: ', e);
+        setTokenName(trimmedAddress);
+      }
+    };
+    fetchTokenName();
+  }, [community, provider]);
 
   return (
     <>
@@ -75,7 +96,8 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
         ) : (
           <p className={classes.subtitle}>
             <b>
-              {t('youDontHaveAny')} {communityName} {t('requiredToVote')}.
+              {t('youDontHaveAny')}
+              {` ${tokenName} tokens`} {t('requiredToVote')}.
             </b>
           </p>
         )
