@@ -20,6 +20,7 @@ import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countDecimals } from '../../utils/countDecimals';
+import getWinningIds from '../../utils/getWinningIds';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuctionBase;
@@ -34,11 +35,11 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
   const infRoundBalance = () => {
     if (!isInfAuction(auction) || !proposals) return auction.fundingAmount;
-
+    const winners = getWinningIds(proposals, auction);
     return (
       auction.fundingAmount -
       proposals.reduce((prev, prop) => {
-        const won = prop.voteCount > auction.quorum;
+        const won = winners.includes(prop.id);
         const reqAmount = Number(prop.reqAmount);
         return !won && reqAmount !== null ? prev : prev + reqAmount;
       }, 0)
