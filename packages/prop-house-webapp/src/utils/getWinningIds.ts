@@ -6,12 +6,10 @@ import { AuctionStatus, auctionStatus } from './auctionStatus';
 import { isInfAuction } from './auctionType';
 import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
-const getWinningIds = (
-  proposals: StoredProposalWithVotes[] | undefined,
-  auction: StoredAuctionBase,
-) => {
+const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuctionBase) => {
   // TODO: ADAPT TO INF ROUNDS
-  if (isInfAuction(auction)) return [];
+  if (isInfAuction(auction))
+    return proposals.filter(p => p.voteCount > auction.quorum).map(p => p.id);
 
   // empty array to store winning ids
   const winningIds: number[] = [];

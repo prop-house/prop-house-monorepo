@@ -64,7 +64,7 @@ const ProposalModal = () => {
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
-  const winningIds = round && getWinningIds(proposals, round);
+  const winningIds = round && proposals && getWinningIds(proposals, round);
   const provider = useProvider();
 
   const handleClosePropModal = () => {
