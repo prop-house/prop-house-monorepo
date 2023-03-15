@@ -10,7 +10,7 @@ import {
 import diffTime from '../../utils/diffTime';
 import SortToggles from '../SortToggles';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { Col } from 'react-bootstrap';
+import { Col, ProgressBar } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import dayjs from 'dayjs';
@@ -38,6 +38,8 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
     auctionEnded ? SortMethod.MostVotes : SortMethod.SortBy,
   );
   const { t } = useTranslation();
+
+  const progress = Number(55);
 
   return (
     <div className={classes.roundUtilityBar}>
@@ -94,21 +96,30 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             )}
           </div>
 
-          <div className={classes.item}>
-            <div className={classes.itemTitle}>{t('funding')}</div>
-
-            <div className={classes.itemData}>
-              <TruncateThousands
-                amount={auction.fundingAmount}
-                decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
-              />{' '}
-              {auction.currencyType} <span className={classes.xDivide} />
-              {isTimedAuction(auction) && (
-                <>
-                  {' × '} {auction.numWinners}
-                </>
-              )}
+          <div className={clsx(classes.item, isInfAuction(auction) && classes.displayProgBar)}>
+            <div>
+              <div className={classes.itemTitle}>
+                {isInfAuction(auction) ? 'Balance' : t('funding')}
+              </div>
+              <div className={classes.itemData}>
+                <TruncateThousands
+                  amount={auction.fundingAmount}
+                  decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
+                />{' '}
+                {auction.currencyType} <span className={classes.xDivide} />
+                {isTimedAuction(auction) && (
+                  <>
+                    {' × '} {auction.numWinners}
+                  </>
+                )}
+              </div>
             </div>
+
+            {isInfAuction(auction) && (
+              <div className={classes.progressBar}>
+                <div className={classes.progress} style={{ height: `${progress}%` }}></div>
+              </div>
+            )}
           </div>
 
           <div className={classes.item}>

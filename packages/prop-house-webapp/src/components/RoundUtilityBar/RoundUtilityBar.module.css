@@ -7,6 +7,29 @@
   top: 0;
 }
 
+.displayProgBar {
+  display: flex;
+  flex-direction: row !important;
+}
+
+.progressBar {
+  width: 10px;
+  height: 90%;
+  background-color: var(--brand-green-semi-transparent);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.progress {
+  width: 100%;
+  background-color: var(--brand-green);
+  border-radius: 10px;
+  min-height: 0px;
+}
+
 @media (min-width: 767px) {
   .searchBar {
     padding-bottom: 12px;
