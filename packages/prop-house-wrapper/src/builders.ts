@@ -142,6 +142,7 @@ export class InfiniteAuction extends Signable {
     public readonly balanceBlockTag: number,
     public readonly description: string,
     public readonly quorum: number,
+    public readonly votingPeriod: number,
   ) {
     super();
   }
@@ -157,6 +158,7 @@ export class InfiniteAuction extends Signable {
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
       quorum: this.quorum,
+      votingPeriod: this.votingPeriod,
     };
   }
 }

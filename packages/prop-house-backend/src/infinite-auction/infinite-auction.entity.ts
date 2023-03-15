@@ -84,6 +84,10 @@ export class InfiniteAuction implements AuctionBase {
   @Field(() => String)
   balanceBlockTag: number;
 
+  @Column({ default: 0 })
+  @Field(() => Number)
+  votingPeriod: number;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
