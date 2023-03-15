@@ -117,14 +117,14 @@ const RoundCard: React.FC<{
                     </p>
                     <p className={classes.info}>
                       {isInfAuction(round)
-                        ? `${round.quorum * 100}%`
+                        ? round.quorum
                         : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
                   </>
                 }
                 tooltipContent={
                   isInfAuction(round)
-                    ? `The % of votes required for a prop to be funded`
+                    ? `The number of votes required for a prop to be funded`
                     : `${dayjs(deadlineTime(round)).tz().format('MMMM D, YYYY h:mm A z')}`
                 }
               />
