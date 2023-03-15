@@ -55,6 +55,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
   return (
     <div className={classes.roundUtilityBar}>
+      {/** FILTERS */}
       <div className={classes.utilitySection}>
         {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
           <div className={classes.sortToggles}>
@@ -73,26 +74,25 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
         </div>
       </div>
 
+      {/** ROUND DATA */}
       <div className={classes.utilitySection}>
         <Col className={classes.propHouseDataRow}>
-          <div className={classes.item}>
-            {auction ? (
-              <>
+          {/** TIMED AUCTION */}
+          {isTimedAuction(auction) && (
+            <>
+              {/** PROP DEADLINE  */}
+              <div className={classes.item}>
                 <Tooltip
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {isInfAuction(auction) ? 'Quorum' : deadlineCopy(auction)}{' '}
+                        {deadlineCopy(auction)}{' '}
                         <span className="infoSymbol">
                           <MdInfoOutline />
                         </span>
                       </div>
 
-                      <div className={classes.itemData}>
-                        {isInfAuction(auction)
-                          ? `${auction.quorum} votes`
-                          : diffTime(deadlineTime(auction))}
-                      </div>
+                      <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
                     </>
                   }
                   tooltipContent={
@@ -101,41 +101,69 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                       : `${dayjs(deadlineTime(auction)).tz().format('MMMM D, YYYY h:mm A z')}`
                   }
                 />
-              </>
-            ) : (
-              <>
-                <div className={classes.itemTitle}>Deadline</div>
-                <div className={classes.itemData}>-</div>
-              </>
-            )}
-          </div>
-
-          <div className={clsx(classes.item, isInfAuction(auction) && classes.displayProgBar)}>
-            <div>
-              <div className={classes.itemTitle}>
-                {isInfAuction(auction) ? 'Balance' : t('funding')}
               </div>
-              <div className={classes.itemData}>
-                <TruncateThousands
-                  amount={isTimedAuction(auction) ? auction.fundingAmount : infRoundBalance()}
-                  decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
-                />{' '}
-                {auction.currencyType} <span className={classes.xDivide} />
-                {isTimedAuction(auction) && (
-                  <>
+              {/** FUNDING */}
+              <div className={classes.item}>
+                <div>
+                  <div className={classes.itemTitle}>{t('funding')}</div>
+                  <div className={classes.itemData}>
+                    <TruncateThousands
+                      amount={auction.fundingAmount}
+                      decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
+                    />{' '}
+                    {auction.currencyType} <span className={classes.xDivide} />
                     {' × '} {auction.numWinners}
-                  </>
-                )}
+                  </div>
+                </div>
               </div>
-            </div>
+            </>
+          )}
 
-            {isInfAuction(auction) && (
-              <div className={classes.progressBar}>
-                <div className={classes.progress} style={{ height: `${infRoundBalance()}%` }}></div>
+          {/** INF AUCTION */}
+          {isInfAuction(auction) && (
+            <>
+              {/** QUORUM */}
+              <div className={classes.item}>
+                <Tooltip
+                  content={
+                    <>
+                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
+                        Quorum
+                        <span className="infoSymbol">
+                          <MdInfoOutline />
+                        </span>
+                      </div>
+
+                      <div className={classes.itemData}>{auction.quorum} votes</div>
+                    </>
+                  }
+                  tooltipContent={'Votes required to get funded'}
+                />
               </div>
-            )}
-          </div>
 
+              {/**  BALANCE  */}
+              <div className={clsx(classes.item, classes.displayProgBar)}>
+                <div>
+                  <div className={classes.itemTitle}>Balance</div>
+                  <div className={classes.itemData}>
+                    <TruncateThousands
+                      amount={infRoundBalance()}
+                      decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
+                    />{' '}
+                    {auction.currencyType} <span className={classes.xDivide} />
+                  </div>
+                </div>
+                <div className={classes.progressBar}>
+                  <div
+                    className={classes.progress}
+                    style={{ height: `${infRoundBalance()}%` }}
+                  ></div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/** NUMBER OF PROPS */}
           <div className={classes.item}>
             <div className={classes.itemTitle}>
               {proposals && proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
@@ -143,6 +171,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
             <div className={classes.itemData}>{proposals && proposals.length}</div>
           </div>
 
+          {/** SNAPSHOT */}
           {auction.balanceBlockTag !== 0 && (
             <div className={classes.item}>
               <Tooltip
