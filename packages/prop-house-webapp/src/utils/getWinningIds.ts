@@ -9,7 +9,7 @@ import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuctionBase) => {
   // TODO: ADAPT TO INF ROUNDS
   if (isInfAuction(auction))
-    return proposals.filter(p => p.voteCount > auction.quorum).map(p => p.id);
+    return proposals.filter(p => p.voteCount >= auction.quorum).map(p => p.id);
 
   // empty array to store winning ids
   const winningIds: number[] = [];
