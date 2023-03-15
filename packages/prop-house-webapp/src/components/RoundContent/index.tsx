@@ -22,15 +22,14 @@ import {
   setVotingPower,
 } from '../../state/slices/voting';
 import { Row, Col } from 'react-bootstrap';
-import ProposalCard from '../ProposalCard';
-import { cardStatus } from '../../utils/cardStatus';
-import getWinningIds from '../../utils/getWinningIds';
-import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
+import { isTimedAuction } from '../../utils/auctionType';
+import TimedRoundProps from '../TimedRoundProps';
+import InfRoundProps from '../InfRoundProps';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -48,12 +47,12 @@ const RoundContent: React.FC<{
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const votingPower = useAppSelector(state => state.voting.votingPower);
+
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
+
   const client = useRef(new PropHouseWrapper(host));
-  const winningIds = getWinningIds(proposals, auction);
   const { data: signer } = useSigner();
   const provider = useProvider();
 
@@ -165,19 +164,10 @@ const RoundContent: React.FC<{
                 {proposals &&
                   (proposals.length === 0 ? (
                     <ErrorMessageCard message={t('submittedProposals')} />
+                  ) : isTimedAuction(auction) ? (
+                    <TimedRoundProps proposals={proposals} auction={auction} />
                   ) : (
-                    proposals.map((proposal, index) => {
-                      return (
-                        <Col key={index}>
-                          <ProposalCard
-                            proposal={proposal}
-                            auctionStatus={auctionStatus(auction)}
-                            cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={isWinner(winningIds, proposal.id)}
-                          />
-                        </Col>
-                      );
-                    })
+                    <InfRoundProps proposals={proposals} auction={auction} />
                   ))}
               </Col>
               <RoundModules

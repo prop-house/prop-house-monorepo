@@ -10,7 +10,7 @@ import {
 import diffTime from '../../utils/diffTime';
 import SortToggles from '../SortToggles';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { Col, ProgressBar } from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import dayjs from 'dayjs';

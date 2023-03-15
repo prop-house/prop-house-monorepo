@@ -30,8 +30,9 @@ const ProposalCard: React.FC<{
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
   isWinner: boolean;
+  stale?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, isWinner } = props;
+  const { proposal, auctionStatus, cardStatus, isWinner, stale } = props;
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
@@ -81,6 +82,7 @@ const ProposalCard: React.FC<{
           classNames={clsx(
             classes.proposalCard,
             isWinner && auctionStatus === AuctionStatus.AuctionEnded && classes.winner,
+            stale && classes.stale,
           )}
         >
           <div className={classes.propInfo}>
