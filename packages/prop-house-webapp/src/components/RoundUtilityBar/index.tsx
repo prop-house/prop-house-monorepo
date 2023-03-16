@@ -21,6 +21,7 @@ import TruncateThousands from '../TruncateThousands';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countDecimals } from '../../utils/countDecimals';
 import getWinningIds from '../../utils/getWinningIds';
+import { timestampToDateUnit } from '../../utils/timestampToDateUnit';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuctionBase;
@@ -138,6 +139,27 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                     </>
                   }
                   tooltipContent={'Votes required to get funded'}
+                />
+              </div>
+
+              {/** VOTING PERIOD */}
+              <div className={classes.item}>
+                <Tooltip
+                  content={
+                    <>
+                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
+                        Voting period
+                        <span className="infoSymbol">
+                          <MdInfoOutline />
+                        </span>
+                      </div>
+
+                      <div className={classes.itemData}>
+                        {timestampToDateUnit(auction.votingPeriod)}
+                      </div>
+                    </>
+                  }
+                  tooltipContent={'Period of time each prop has to achieve quorum'}
                 />
               </div>
 
