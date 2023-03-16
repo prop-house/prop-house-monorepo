@@ -1,7 +1,7 @@
 import Footer from '../Footer';
 import Group from '../Group';
 import VotingStrategyModal from '../VotingStrategyModal';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Text from '../Text';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -141,6 +141,7 @@ const WhoCanParticipate = () => {
       }
 
       dispatch(updateRound({ ...round, strategies: updatedStrategies }));
+      dispatch(checkStepCriteria());
       setStrategies(updatedStrategies);
     }
 
@@ -280,41 +281,23 @@ const WhoCanParticipate = () => {
 
   const handleTokenIdChange = (tokenId: string) => setStrat({ ...strat, tokenId });
 
-  // const handleRemoveStrategy = (address: string, type: string) => {
-  //   if (type === VotingStrategyType.VANILLA) return;
-
-  //   let updatedStrategies;
-
-  //   if (type === VotingStrategyType.WHITELIST) {
-  //     updatedStrategies = strategies.map(s => {
-  //       if (s.strategyType === VotingStrategyType.WHITELIST) {
-  //         return {
-  //           ...s,
-  //           members: s.members.filter(m => m.address !== address),
-  //         };
-  //       } else {
-  //         return s;
-  //       }
-  //     });
-  //   } else {
-  //     updatedStrategies = strategies.filter(s => 'address' in s && s.address !== address);
-  //   }
-
-  //   dispatch(updateRound({ ...round, strategies: updatedStrategies }));
-  //   setStrategies(updatedStrategies);
-  // };
   const handleRemoveStrategy = (address: string, type: string) => {
     if (type === VotingStrategyType.VANILLA) return;
 
     let updatedStrategies;
 
     if (type === VotingStrategyType.WHITELIST) {
-      updatedStrategies = strategies.map(s => {
+      updatedStrategies = strategies.flatMap(s => {
         if (s.strategyType === VotingStrategyType.WHITELIST) {
-          return {
-            ...s,
-            members: s.members.filter(m => m.address !== address),
-          };
+          // If there's only one member left, remove the entire strategy
+          if (s.members.length === 1) {
+            return [];
+          } else {
+            return {
+              ...s,
+              members: s.members.filter(m => m.address !== address),
+            };
+          }
         } else {
           return s;
         }
@@ -330,6 +313,7 @@ const WhoCanParticipate = () => {
     }
 
     dispatch(updateRound({ ...round, strategies: updatedStrategies }));
+    dispatch(checkStepCriteria());
     setStrategies(updatedStrategies);
   };
 

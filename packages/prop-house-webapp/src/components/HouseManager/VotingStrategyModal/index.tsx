@@ -67,7 +67,7 @@ const VotingStrategyModal: React.FC<{
   };
 
   const handleTokenId = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = parseInt(e.target.value);
+    let value = parseInt(e.target.value, 10);
     // If value is NaN or negative, set to 0
     if (isNaN(value) || value < 0) value = 0;
 

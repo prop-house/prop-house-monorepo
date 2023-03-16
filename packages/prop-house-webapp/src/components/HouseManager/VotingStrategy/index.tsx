@@ -36,16 +36,21 @@ const VotingStrategy: React.FC<{
           </Group>
         ) : (
           <div className={classes.addressImgAndTitle}>
-            <img src={tokenInfo.image} alt={tokenInfo.name} />
+            <img
+              src={
+                tokenInfo.image || 'https://nouns.wtf/static/media/loading-skull-noun.d7293d44.gif'
+              }
+              alt={tokenInfo.name}
+            />
 
             <span>{tokenInfo.name} holders</span>
           </div>
         )}
 
         <div className={classes.votesText}>
-          {type === VotingStrategyType.WHITELIST
-            ? `${multiplier} ${multiplier === 1 ? 'vote' : 'votes'}`
-            : `${multiplier} ${multiplier === 1 ? 'vote' : 'votes'} / token`}
+          {`${multiplier} vote${multiplier === 1 ? '' : 's'}${
+            type !== VotingStrategyType.WHITELIST ? ' / token' : ''
+          }`}
         </div>
       </div>
 
