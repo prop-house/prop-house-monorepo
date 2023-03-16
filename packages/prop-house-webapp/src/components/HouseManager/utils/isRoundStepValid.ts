@@ -3,9 +3,7 @@ import { NewRound } from '../../../state/slices/round';
 export const isRoundStepValid = (round: NewRound, step: number) => {
   const isStep1Valid =
     5 <= round.title.length && round.title.length <= 255 && 20 <= round.description.length;
-  const isStep2Valid =
-    round.votingContracts.some(c => c.state === 'Success' && c.votesPerToken > 0) ||
-    round.votingUsers.some(u => u.state === 'Success' && u.votesPerToken > 0);
+  const isStep2Valid = round.strategies.length > 0;
   const isStep3Valid =
     round.awards.some(a => a.state === 'Success' && a.amount !== 0) && round.numWinners !== 0;
   const isStep4Valid =
