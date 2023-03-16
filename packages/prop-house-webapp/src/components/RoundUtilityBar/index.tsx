@@ -107,6 +107,12 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   </>
                 }
               />
+              {/** SNAPSHOT */}
+              <RoundUtilBarItemTooltip
+                title={t('Snapshot')}
+                content={auction.balanceBlockTag.toString()}
+                tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
+              />
             </>
           )}
 
@@ -151,13 +157,6 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
               content={proposals.length.toString()}
             />
           )}
-
-          {/** SNAPSHOT */}
-          <RoundUtilBarItemTooltip
-            title={t('Snapshot')}
-            content={auction.balanceBlockTag.toString()}
-            tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
-          />
         </Col>
       </div>
     </div>
