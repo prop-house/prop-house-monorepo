@@ -7,7 +7,7 @@ import Text from '../Text';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import UploadCSVModal from '../UploadCSVModal';
-import { updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import {
@@ -73,109 +73,6 @@ const WhoCanParticipate = () => {
 
   const dispatch = useAppDispatch();
 
-  // const handleAddVotingStrategy = () => {
-  //   let s: VotingStrategyInfo | null = null;
-
-  //   if (strat.type === VotingStrategyType.BALANCE_OF) {
-  //     if (strat.asset === AssetType.ERC1155) {
-  //       s = {
-  //         strategyType: strat.type,
-  //         assetType: strat.asset,
-  //         address: strat.address,
-  //         tokenId: strat.tokenId,
-  //         multiplier: strat.multiplier,
-  //       };
-  //     } else {
-  //       s = {
-  //         strategyType: VotingStrategyType.BALANCE_OF,
-  //         assetType: AssetType.ERC20,
-  //         address: strat.address,
-  //         multiplier: strat.multiplier,
-  //       };
-  //     }
-  //   } else if (strat.type === VotingStrategyType.WHITELIST) {
-  //     const newMember: WhitelistMember = {
-  //       address: strat.address,
-  //       votingPower: strat.multiplier.toString(),
-  //     };
-  //     s={
-  //       strategyType: VotingStrategyType.WHITELIST,
-  //       members:  [newMember]
-  //     }
-
-  //     // const existingStrategies = round.strategies.filter(
-  //     //   s => s.strategyType === VotingStrategyType.WHITELIST,
-  //     // );
-
-  //     //   if (existingStrategies.length > 0) {
-  //     //     // Whitelist strategy already exists; add the new member to it
-  //     //     const whitelistStrategy = existingStrategies[0];
-  //     //     if ('members' in whitelistStrategy) {
-  //     //       whitelistStrategy.members.push(newMember);
-  //     //       s = whitelistStrategy;
-  //     //     } else {
-  //     //       console.error('Invalid strategy type');
-  //     //     }
-  //     //   } else {
-  //     //     // Create a new Whitelist strategy with the new member
-  //     //     s = {
-  //     //       strategyType: VotingStrategyType.WHITELIST,
-  //     //       members: [newMember],
-  //     //     };
-  //     //   }
-  //     // } else {
-  //     //   console.error('Invalid strategy type');
-  //     // }
-
-  //     const existingWhitelistIndex = round.strategies.findIndex(
-  //       s => s.strategyType === VotingStrategyType.WHITELIST,
-  //     );
-  //     if (existingWhitelistIndex !== -1) {
-  //       const whitelistStrategy = round.strategies[existingWhitelistIndex];
-  //       if ('members' in whitelistStrategy) {
-  //         // // Directly update the members array with the new member
-  //         // whitelistStrategy.members = [...whitelistStrategy.members, newMember];
-  //         s = {
-  //           ...whitelistStrategy,
-  //           members: [...whitelistStrategy.members, newMember],
-  //         };
-  //       } else {
-  //         console.error('Invalid strategy type');
-  //       }
-  //     } else {
-  //       // Create a new Whitelist strategy with the new member
-  //       s = {
-  //         strategyType: VotingStrategyType.WHITELIST,
-  //         members: [newMember],
-  //       };
-  //     }
-  //   } else {
-  //     console.error('Invalid strategy type');
-  //   }
-
-  //   if (s) {
-  //     const updatedStrategies = round.strategies.filter(
-  //       s => s.strategyType !== VotingStrategyType.WHITELIST,
-  //     );
-  //     updatedStrategies.push(s);
-  //     dispatch(updateRound({ ...round, strategies: updatedStrategies }));
-
-  //     setStrategies(updatedStrategies);
-  //   }
-
-  //   // if (s) {
-  //   //   const updatedStrategies = round.strategies.filter(
-  //   //     s => s.strategyType !== VotingStrategyType.WHITELIST,
-  //   //   );
-  //   //   updatedStrategies.push(s);
-  //   //   console.log(updatedStrategies);
-  //   //   dispatch(updateRound({ ...round, strategies: updatedStrategies }));
-  //   //   setStrategies([...strategies, s]);
-  //   // }
-
-  //   setStrat(newStrategy);
-  //   handleCloseModal();
-  // };
   const handleAddVotingStrategy = () => {
     let s: VotingStrategyInfo | null = null;
 
@@ -243,7 +140,6 @@ const WhoCanParticipate = () => {
         updatedStrategies = [...round.strategies, s];
       }
 
-      // Update the state or dispatch an action with the updated strategies
       dispatch(updateRound({ ...round, strategies: updatedStrategies }));
       setStrategies(updatedStrategies);
     }
@@ -471,6 +367,7 @@ const WhoCanParticipate = () => {
     const updatedStrategies = [...strategies, ...dummyStrategies];
     setStrategies(updatedStrategies);
     dispatch(updateRound({ ...round, strategies: updatedStrategies }));
+    dispatch(checkStepCriteria());
   };
 
   return (
