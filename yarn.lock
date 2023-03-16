@@ -5352,10 +5352,10 @@
   dependencies:
     parchment "^1.1.2"
 
-"@types/quill@^2.0.9":
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/@types/quill/-/quill-2.0.9.tgz#71e2cd9069690eeb01b0c7318ff7eb2bb9e2044a"
-  integrity sha512-/n40Ypp+jF3GDLqB/5z1P+Odq1K98txXbBgRDkG6Z90LGC1AwQPtZWNeOdDg0yUlgBSUASmpeDn3eBPUuPXtuw==
+"@types/quill@^2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@types/quill/-/quill-2.0.10.tgz#bd3df7b59e0cfeb90f3d38892e4d1866261e7c0e"
+  integrity sha512-L6OHONEj2v4NRbWQOsn7j1N0SyzhRR3M4g1M6j/uuIwIsIW2ShWHhwbqNvH8hSmVktzqu0lITfdnqVOQ4qkrhA==
   dependencies:
     parchment "^1.1.2"
     quill-delta "^4.0.1"
@@ -22547,9 +22547,9 @@ zen-observable@0.8.15:
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
 
-zustand@^4.1.4:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.3.5.tgz#011d2997534f8a187ea7b1d75db56df31f58453d"
-  integrity sha512-2iPUzfwx+g3f0PagOMz2vDO9mZzEp2puFpNe7vrAymVPOEIEUjCPkC4/zy84eAscxIWmTU4j9g6upXYkJdzEFQ==
+zustand@^4.3.1:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.3.6.tgz#ce7804eb75361af0461a2d0536b65461ec5de86f"
+  integrity sha512-6J5zDxjxLE+yukC2XZWf/IyWVKnXT9b9HUv09VJ/bwGCpKNcaTqp7Ws28Xr8jnbvnZcdRaidztAPsXFBIqufiw==
   dependencies:
     use-sync-external-store "1.2.0"

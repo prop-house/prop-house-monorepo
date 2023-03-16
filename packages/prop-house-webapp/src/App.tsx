@@ -24,15 +24,8 @@ import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-<<<<<<< HEAD
-<<<<<<< HEAD
 import StatusRoundCards from './components/StatusRoundCards';
-=======
-import HouseManager from './components/pages/HouseManager';
->>>>>>> 8400ca52 (new path for house manager page)
-=======
 import HouseManager from './pages/HouseManager';
->>>>>>> 1aceb3f4 (black button option)
 
 const { chains, provider } = configureChains(
   [mainnet],

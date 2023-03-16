@@ -17,11 +17,11 @@ import { nameToSlug } from '../../utils/communitySlugs';
 import { useDispatch } from 'react-redux';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
-import { MdInfoOutline } from 'react-icons/md';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 import { isMobile } from 'web3modal';
+import InfoSymbol from '../InfoSymbol';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -131,9 +131,7 @@ const ProposalCard: React.FC<{
                     >
                       {diffTime(proposal.createdDate)}
 
-                      <span className="infoSymbol">
-                        <MdInfoOutline />
-                      </span>
+                      <InfoSymbol />
                     </div>
                   }
                   tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}

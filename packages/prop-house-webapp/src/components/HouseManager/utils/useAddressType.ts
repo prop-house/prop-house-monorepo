@@ -20,13 +20,5 @@ export default function useAddressType(address: string) {
     args: [address as `0x${string}`],
   });
 
-  if (isLoading) {
-    console.log('loading...');
-  } else if (isError) {
-    console.log('ERRROR');
-  } else if (data) {
-    console.log('data', data);
-  }
-
   return { data, isLoading, isError };
 }

@@ -15,10 +15,10 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import dayjs from 'dayjs';
 import Tooltip from '../Tooltip';
-import { MdInfoOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
 import { countDecimals } from '../../utils/countDecimals';
+import InfoSymbol from '../InfoSymbol';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuction;
@@ -67,10 +67,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   content={
                     <>
                       <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {deadlineCopy(auction)}{' '}
-                        <span className="infoSymbol">
-                          <MdInfoOutline />
-                        </span>
+                        {deadlineCopy(auction)} <InfoSymbol />
                       </div>
 
                       <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
@@ -115,9 +112,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                 <>
                   <div className={classes.itemTitle}>
                     {t('Snapshot')}
-                    <span className="infoSymbol">
-                      <MdInfoOutline />
-                    </span>
+                    <InfoSymbol />
                   </div>
 
                   <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
