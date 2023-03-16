@@ -7,27 +7,30 @@
   top: 0;
 }
 
-.displayProgBar {
+.propHouseDataRow {
   display: flex;
-  flex-direction: row !important;
+  padding-bottom: 12px;
 }
 
-.progressBar {
-  width: 10px;
-  height: 90%;
-  background-color: var(--brand-green-semi-transparent);
-  border-radius: 10px;
+.infoBar {
+  padding-top: 2rem;
   display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  overflow: hidden;
+  justify-content: space-between;
+  position: sticky !important;
+  position: fixed;
+  top: 0px !important;
+  align-self: flex-start;
+  height: auto;
+}
+.propHouseDataRow > *:not([style*='display:none']):last-child {
+  border-right: none;
 }
 
-.progress {
-  width: 100%;
-  background-color: var(--brand-green);
-  border-radius: 10px;
-  min-height: 0px;
+@media (max-width: 992px) {
+  .propHouseDataRow {
+    padding-bottom: 0px;
+    padding-bottom: 12px !important;
+  }
 }
 
 @media (min-width: 767px) {
@@ -37,8 +40,6 @@
   .searchBar input {
     min-width: 312px;
   }
-}
-@media (min-width: 768px) {
   .dropdown {
     display: none;
   }
@@ -60,100 +61,21 @@
   .sortToggles {
     display: none;
   }
-  .item:nth-child(3),
-  .item:nth-child(4) {
+  .propHouseDataRow {
+    justify-content: flex-end;
+  }
+  .propHouseDataRow :nth-child(n + 2) {
+    border-right: none;
+  }
+  .propHouseDataRow :nth-child(n + 3) {
     display: none;
   }
-  .item:nth-child(2) {
-    border-right: none !important;
-  }
 }
 
-.propHouseDataRow {
-  display: flex;
-  padding-bottom: 12px;
-}
-.propHouseDataRow .item:nth-child(1) {
-  margin-left: 0;
-}
-.propHouseDataRow .item {
-  margin-right: 2rem;
-}
-
-.item {
-  display: flex;
-  font-size: large;
-  flex-direction: column;
-}
-.item:not(:last-child) {
-  border-right: 1px solid var(--border-light);
-  padding-right: 25px;
-}
-
-.itemTitle {
-  color: var(--brand-gray);
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.purpleText {
-  color: var(--brand-purple);
-}
-.itemData {
-  font-weight: bold;
-  font-size: 18px;
-  margin-right: 0.5rem;
-}
-.xDivide {
-  color: var(--brand-gray-transparent);
-  font-weight: 500;
-}
-.infoBar {
-  padding-top: 2rem;
-  display: flex;
-  justify-content: space-between;
-  position: sticky !important;
-  position: fixed;
-  top: 0px !important;
-  align-self: flex-start;
-  height: auto;
-}
 @media (max-width: 576px) {
   .infoBar {
     flex-direction: column;
   }
-}
-
-.leftSectionContainer {
-  align-self: flex-end;
-}
-.rightSectionContainer {
-  display: flex;
-  padding-bottom: 10px;
-  gap: 50px;
-}
-
-@media (max-width: 992px) {
-  .propHouseDataRow .item {
-    margin-right: 0.75rem;
-  }
-  .propHouseDataRow {
-    padding-bottom: 0px;
-    padding-bottom: 12px !important;
-  }
-}
-
-@media (max-width: 700px) {
-  .item:first-child {
-    padding-right: 6px !important;
-  }
-  .propHouseDataRow {
-    justify-content: flex-end;
-  }
-}
-@media (max-width: 550px) {
   .roundUtilityBar {
     flex-direction: column-reverse;
     height: auto;
@@ -162,15 +84,15 @@
     width: 100%;
   }
   .propHouseDataRow {
-    justify-content: inherit;
+    justify-content: start;
   }
-  .item:nth-child(3) {
-    display: block;
+  .propHouseDataRow > *:nth-child(2) {
+    border-right: 1px solid var(--border-light);
   }
-  .item:nth-child(2) {
-    border-right: 1px solid var(--border-light) !important;
+  .propHouseDataRow :nth-child(n + 3) {
+    display: flex;
   }
-  .item:nth-child(3) {
-    border-right: none !important;
+  .propHouseDataRow :nth-child(n + 4) {
+    display: none;
   }
 }

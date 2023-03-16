@@ -14,14 +14,17 @@ import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import Tooltip from '../Tooltip';
-import { MdInfoOutline } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countDecimals } from '../../utils/countDecimals';
 import getWinningIds from '../../utils/getWinningIds';
 import { timestampToDateUnit } from '../../utils/timestampToDateUnit';
+import {
+  RoundUtilBarItem,
+  RoundUtilBarItemBalance,
+  RoundUtilBarItemTooltip,
+} from '../RoundUtilBarItem';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuctionBase;
@@ -82,41 +85,28 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
           {isTimedAuction(auction) && (
             <>
               {/** PROP DEADLINE  */}
-              <div className={classes.item}>
-                <Tooltip
-                  content={
-                    <>
-                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        {deadlineCopy(auction)}{' '}
-                        <span className="infoSymbol">
-                          <MdInfoOutline />
-                        </span>
-                      </div>
-
-                      <div className={classes.itemData}>{diffTime(deadlineTime(auction))}</div>
-                    </>
-                  }
-                  tooltipContent={
-                    isInfAuction(auction)
-                      ? 'Votes required to get funded'
-                      : `${dayjs(deadlineTime(auction)).tz().format('MMMM D, YYYY h:mm A z')}`
-                  }
-                />
-              </div>
+              <RoundUtilBarItemTooltip
+                title={deadlineCopy(auction)}
+                content={diffTime(deadlineTime(auction))}
+                tooltipContent={`${dayjs(deadlineTime(auction))
+                  .tz()
+                  .format('MMMM D, YYYY h:mm A z')}`}
+                titleColor="purple"
+              />
               {/** FUNDING */}
-              <div className={classes.item}>
-                <div>
-                  <div className={classes.itemTitle}>{t('funding')}</div>
-                  <div className={classes.itemData}>
+              <RoundUtilBarItem
+                title={t('funding')}
+                content={
+                  <>
                     <TruncateThousands
                       amount={auction.fundingAmount}
                       decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
                     />{' '}
                     {auction.currencyType} <span className={classes.xDivide} />
                     {' × '} {auction.numWinners}
-                  </div>
-                </div>
-              </div>
+                  </>
+                }
+              />
             </>
           )}
 
@@ -124,95 +114,50 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
           {isInfAuction(auction) && (
             <>
               {/** QUORUM */}
-              <div className={classes.item}>
-                <Tooltip
-                  content={
-                    <>
-                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        Quorum
-                        <span className="infoSymbol">
-                          <MdInfoOutline />
-                        </span>
-                      </div>
-
-                      <div className={classes.itemData}>{auction.quorum} votes</div>
-                    </>
-                  }
-                  tooltipContent={'Votes required to get funded'}
-                />
-              </div>
+              <RoundUtilBarItemTooltip
+                title="Quorum"
+                content={`${auction.quorum} votes`}
+                tooltipContent={'Votes required to get funded'}
+              />
 
               {/** VOTING PERIOD */}
-              <div className={classes.item}>
-                <Tooltip
-                  content={
-                    <>
-                      <div className={clsx(classes.itemTitle, classes.purpleText)}>
-                        Voting period
-                        <span className="infoSymbol">
-                          <MdInfoOutline />
-                        </span>
-                      </div>
-
-                      <div className={classes.itemData}>
-                        {timestampToDateUnit(auction.votingPeriod)}
-                      </div>
-                    </>
-                  }
-                  tooltipContent={'Period of time each prop has to achieve quorum'}
-                />
-              </div>
+              <RoundUtilBarItemTooltip
+                title="Voting period"
+                content={timestampToDateUnit(auction.votingPeriod)}
+                tooltipContent={'Period of time each prop has to achieve quorum'}
+                titleColor="purple"
+              />
 
               {/**  BALANCE  */}
-              <div className={clsx(classes.item, classes.displayProgBar)}>
-                <div>
-                  <div className={classes.itemTitle}>Balance</div>
-                  <div className={classes.itemData}>
+              <RoundUtilBarItemBalance
+                content={
+                  <>
                     <TruncateThousands
                       amount={infRoundBalance()}
                       decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
                     />{' '}
-                    {auction.currencyType} <span className={classes.xDivide} />
-                  </div>
-                </div>
-                <div className={classes.progressBar}>
-                  <div
-                    className={classes.progress}
-                    style={{ height: `${infRoundBalance()}%` }}
-                  ></div>
-                </div>
-              </div>
+                    {auction.currencyType}
+                  </>
+                }
+                progress={infRoundBalance()}
+              />
             </>
           )}
 
           {/** NUMBER OF PROPS */}
-          <div className={classes.item}>
-            <div className={classes.itemTitle}>
-              {proposals && proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
-            </div>
-            <div className={classes.itemData}>{proposals && proposals.length}</div>
-          </div>
+          {proposals && (
+            <RoundUtilBarItem
+              title={proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
+              content={proposals.length.toString()}
+            />
+          )}
 
           {/** SNAPSHOT */}
-          {auction.balanceBlockTag !== 0 && (
-            <div className={classes.item}>
-              <Tooltip
-                content={
-                  <>
-                    <div className={classes.itemTitle}>
-                      {t('Snapshot')}
-                      <span className="infoSymbol">
-                        <MdInfoOutline />
-                      </span>
-                    </div>
-
-                    <div className={classes.itemData}>{auction.balanceBlockTag.toString()}</div>
-                  </>
-                }
-                tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
-              />
-            </div>
-          )}
+          <RoundUtilBarItemTooltip
+            title={t('Snapshot')}
+            content={auction.balanceBlockTag.toString()}
+            tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
+          />
         </Col>
       </div>
     </div>
