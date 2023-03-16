@@ -4,7 +4,8 @@ import {
   StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SortProps, SortType, _sortProps } from '../../utils/sortingProposals';
+import dayjs from 'dayjs';
+import { sortByVotesAndHandleTies } from '../../utils/sortByVotesAndHandleTies';
 
 export interface PropHouseSlice {
   activeRound?: StoredAuctionBase;
@@ -15,6 +16,38 @@ export interface PropHouseSlice {
 }
 
 const initialState: PropHouseSlice = { modalActive: false };
+
+interface TimedRoundSortProps {
+  sortType: TimedRoundSortType;
+  ascending: boolean;
+}
+
+export enum TimedRoundSortType {
+  VoteCount,
+  CreatedAt,
+  Random,
+}
+
+const sortHelper = (a: any, b: any, ascending: boolean) => {
+  return ascending ? (a < b ? -1 : 1) : a < b ? 1 : -1;
+};
+
+const _sortProps = (proposals: StoredProposalWithVotes[], props: TimedRoundSortProps) => {
+  switch (props.sortType) {
+    case TimedRoundSortType.VoteCount:
+      return sortByVotesAndHandleTies(proposals, props.ascending);
+    case TimedRoundSortType.Random:
+      return proposals.sort(() => Math.random() - 0.5);
+    case TimedRoundSortType.CreatedAt:
+      return proposals.sort((a, b) =>
+        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+      );
+    default:
+      return proposals.sort((a, b) =>
+        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+      );
+  }
+};
 
 export const propHouseSlice = createSlice({
   name: 'propHouse',
@@ -28,14 +61,14 @@ export const propHouseSlice = createSlice({
     },
     setActiveProposals: (state, action: PayloadAction<StoredProposalWithVotes[]>) => {
       state.activeProposals = _sortProps(action.payload, {
-        sortType: SortType.CreatedAt,
+        sortType: TimedRoundSortType.CreatedAt,
         ascending: false,
       });
     },
     appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
-    sortProposals: (state, action: PayloadAction<SortProps>) => {
+    sortTimedRoundProposals: (state, action: PayloadAction<TimedRoundSortProps>) => {
       if (!state.activeProposals) return;
       state.activeProposals = _sortProps(state.activeProposals, action.payload);
     },
@@ -54,7 +87,7 @@ export const {
   setActiveProposal,
   setActiveProposals,
   appendProposal,
-  sortProposals,
+  sortTimedRoundProposals,
   setActiveCommunity,
   setModalActive,
 } = propHouseSlice.actions;

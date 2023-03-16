@@ -1,8 +1,8 @@
 import { Dropdown } from 'react-bootstrap';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import classes from './RoundDropdown.module.css';
 import { useDispatch } from 'react-redux';
 import { Dispatch, SetStateAction } from 'react';
+import { sortTimedRoundProposals, TimedRoundSortType } from '../../state/slices/propHouse';
 
 interface SortOptionProps {
   id: SortMethod;
@@ -50,11 +50,20 @@ const RoundDropdown = ({
   const handleClick = (id: number) => {
     setSortSelection(id);
 
-    if (id === SortMethod.CreatedDate) {
-      dispatchSortProposals(dispatch, SortType.CreatedAt, false);
-    } else if (id === SortMethod.MostVotes) {
-      dispatchSortProposals(dispatch, SortType.VoteCount, false);
-    }
+    id === SortMethod.CreatedDate
+      ? dispatch(
+          sortTimedRoundProposals({
+            sortType: TimedRoundSortType.CreatedAt,
+            ascending: false,
+          }),
+        )
+      : dispatch(
+          sortTimedRoundProposals({
+            sortType: TimedRoundSortType.VoteCount,
+            ascending: false,
+          }),
+        );
+
     return;
   };
 

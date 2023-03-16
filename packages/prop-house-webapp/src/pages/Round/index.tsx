@@ -8,13 +8,14 @@ import {
   setActiveProposals,
   setActiveRound,
   setModalActive,
+  sortTimedRoundProposals,
+  TimedRoundSortType,
 } from '../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import RoundContent from '../../components/RoundContent';
 import { nameToSlug, slugToName } from '../../utils/communitySlugs';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
@@ -110,9 +111,15 @@ const Round = () => {
         dispatch(setActiveProposals(proposals));
 
         // if the round is in voting state or over we sort by votes, otherwise we sort by created date
-        isVotingWindow || isRoundOver
-          ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
-          : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+        dispatch(
+          sortTimedRoundProposals({
+            sortType:
+              isVotingWindow || isRoundOver
+                ? TimedRoundSortType.VoteCount
+                : TimedRoundSortType.CreatedAt,
+            ascending: false,
+          }),
+        );
 
         setLoadingProps(false);
       } catch (e) {
