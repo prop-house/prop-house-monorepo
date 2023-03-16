@@ -20,7 +20,6 @@ import {
   setModalActive,
 } from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
-import { MdInfoOutline } from 'react-icons/md';
 import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
@@ -28,8 +27,12 @@ import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
+<<<<<<< HEAD
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
+=======
+import InfoSymbol from '../InfoSymbol';
+>>>>>>> 0b749e7f (prehaul Voting Strategies)
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -151,9 +154,7 @@ const ProposalCard: React.FC<{
                     >
                       {diffTime(proposal.createdDate)}
 
-                      <span className="infoSymbol">
-                        <MdInfoOutline />
-                      </span>
+                      <InfoSymbol />
                     </div>
                   }
                   tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}

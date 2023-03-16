@@ -3,12 +3,6 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.stratBtnContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: 1;
-}
 .modal {
   font-family: 'PT Root UI', sans-serif;
   background: white;
@@ -96,6 +90,7 @@
 :is(.votesInput, .tokenIdInput) {
   -moz-appearance: textfield !important;
 }
+
 .footer {
   position: sticky !important;
   bottom: -1px;
@@ -130,78 +125,27 @@
 .buttons {
   flex-wrap: wrap;
 }
-.btnContainer {
+.container {
   display: flex;
   flex: 1;
-  display: flex;
-  justify-content: space-between;
 }
 .strategyButton {
   width: 100%;
   border-radius: 10px !important;
-}
-.tokenButton {
-  border-radius: 10px;
-  padding: 6px 12px !important;
-  white-space: normal;
-  text-align: center;
-  font-size: 14px !important;
-  font-weight: bold;
-  line-height: 140%;
-  gap: 5px;
-  display: flex;
-  align-items: center !important;
-}
-.tokenButton div {
-  margin: auto;
-}
-.tokenImage {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-}
-.tokenButton:disabled {
-  background-color: var(--brand-gray);
-}
-.btnPurpleBg {
-  background-color: var(--brand-purple);
-  color: white !important;
-  border: none;
-}
-.btnWhiteBg {
-  background-color: white;
-  color: black;
-  border-color: rgba(0, 0, 0, 0.1);
-}
-.btnWhiteBg:hover {
-  color: gray;
-  background-color: white !important;
-  border-color: rgba(0, 0, 0, 0.1) !important;
-}
-.btnWhiteBg:active,
-.btnWhiteBg:focus {
-  color: gray !important;
-  background-color: var(--brand-gray-semi-transparent);
-  border-color: rgba(0, 0, 0, 0.1) !important;
-}
-.btnWhiteBg:disabled {
-  background-color: white;
-  color: var(--brand-gray-transparent);
-  border: 1px solid var(--border-med);
 }
 @media (max-width: 575px) {
   .modal {
     width: 90%;
     min-width: 300px;
   }
-}
-@media (max-width: 500px) {
-  .strategyButton {
-    min-width: 120px;
+  @media (max-width: 500px) {
+    .strategyButton {
+      min-width: 120px;
+    }
   }
-}
-@media (max-width: 450px) {
-  .strategyButton {
-    min-width: 100px;
+  @media (max-width: 450px) {
+    .strategyButton {
+      min-width: 100px;
+    }
   }
 }
