@@ -7,8 +7,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
-import { isTimedAuction } from '../../utils/auctionType';
-import { sortTimedRoundProposals, TimedRoundSortType } from '../../state/slices/propHouse';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import {
+  filterInfRoundProposals,
+  InfRoundFilterType,
+  sortTimedRoundProposals,
+  TimedRoundSortType,
+} from '../../state/slices/propHouse';
 
 const SortToggles: React.FC<{
   auction: StoredAuctionBase;
@@ -29,6 +34,10 @@ const SortToggles: React.FC<{
   const [votesSorted, setVotesSorted] = useState(auctionEnded || auctionVoting ? true : false);
   const [votesAscending, setVotesAscending] = useState(
     auctionEnded || auctionVoting ? true : false,
+  );
+
+  const [infRoundFilter, setInfRoundFilter] = useState<InfRoundFilterType>(
+    InfRoundFilterType.Active,
   );
 
   const dispatch = useDispatch();
@@ -57,6 +66,18 @@ const SortToggles: React.FC<{
     setDateAscending(!dateAscending);
     setDatesSorted(true);
     setVotesSorted(false);
+  };
+
+  const handleFilterInfRoundProps = (type: InfRoundFilterType) => {
+    if (!isInfAuction(auction)) return;
+
+    dispatch(
+      filterInfRoundProposals({
+        type,
+        round: auction,
+      }),
+    );
+    setInfRoundFilter(type);
   };
 
   return (
@@ -90,6 +111,38 @@ const SortToggles: React.FC<{
             >
               <div className={classes.sortLabel}>{t('created')}</div>
               {dateAscending ? <IoArrowDown size={'1.5rem'} /> : <IoArrowUp size={'1.5rem'} />}
+            </div>
+          </>
+        )}
+
+        {isInfAuction(auction) && (
+          <>
+            <div
+              onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Active)}
+              className={clsx(
+                classes.sortItem,
+                infRoundFilter === InfRoundFilterType.Active && classes.active,
+              )}
+            >
+              <div className={classes.sortLabel}>Active</div>
+            </div>
+            <div
+              onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Winners)}
+              className={clsx(
+                classes.sortItem,
+                infRoundFilter === InfRoundFilterType.Winners && classes.active,
+              )}
+            >
+              <div className={classes.sortLabel}>Winners</div>
+            </div>
+            <div
+              onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Stale)}
+              className={clsx(
+                classes.sortItem,
+                infRoundFilter === InfRoundFilterType.Stale && classes.active,
+              )}
+            >
+              <div className={classes.sortLabel}>Stale</div>
             </div>
           </>
         )}

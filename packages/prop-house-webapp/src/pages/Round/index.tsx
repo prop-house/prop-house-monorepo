@@ -4,6 +4,8 @@ import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useRef, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
+  filterInfRoundProposals,
+  InfRoundFilterType,
   setActiveCommunity,
   setActiveProposals,
   setActiveRound,
@@ -26,6 +28,7 @@ import { useSigner } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const Round = () => {
   const location = useLocation();
@@ -37,6 +40,9 @@ const Round = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const infRoundFilteredProposals = useAppSelector(
+    state => state.propHouse.infRoundFilteredProposals,
+  );
   const host = useAppSelector(state => state.configuration.backendHost);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const client = useRef(new PropHouseWrapper(host));
@@ -110,16 +116,18 @@ const Round = () => {
         const proposals = await client.current.getAuctionProposals(round.id);
         dispatch(setActiveProposals(proposals));
 
-        // if the round is in voting state or over we sort by votes, otherwise we sort by created date
-        dispatch(
-          sortTimedRoundProposals({
-            sortType:
-              isVotingWindow || isRoundOver
-                ? TimedRoundSortType.VoteCount
-                : TimedRoundSortType.CreatedAt,
-            ascending: false,
-          }),
-        );
+        // set initial state for props (sorted in timed round / filtered in inf round)
+        isTimedAuction(round)
+          ? dispatch(
+              sortTimedRoundProposals({
+                sortType:
+                  isVotingWindow || isRoundOver
+                    ? TimedRoundSortType.VoteCount
+                    : TimedRoundSortType.CreatedAt,
+                ascending: false,
+              }),
+            )
+          : dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round }));
 
         setLoadingProps(false);
       } catch (e) {
@@ -177,10 +185,23 @@ const Round = () => {
               <div className={classes.loader}>
                 <LoadingIndicator />
               </div>
-            ) : !loadingProps && propsFailedFetch ? (
+            ) : propsFailedFetch ? (
               <NotFound />
             ) : (
-              round && proposals && <RoundContent auction={round} proposals={proposals} />
+              round && (
+                <RoundContent
+                  auction={round}
+                  proposals={
+                    isInfAuction(round)
+                      ? infRoundFilteredProposals
+                        ? infRoundFilteredProposals
+                        : []
+                      : proposals
+                      ? proposals
+                      : []
+                  }
+                />
+              )
             )}
           </div>
         </Container>

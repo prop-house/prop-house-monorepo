@@ -27,9 +27,10 @@ import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
-import { isTimedAuction } from '../../utils/auctionType';
-import TimedRoundProps from '../TimedRoundProps';
-import InfRoundProps from '../InfRoundProps';
+import ProposalCard from '../ProposalCard';
+import { cardStatus } from '../../utils/cardStatus';
+import isWinner from '../../utils/isWinner';
+import getWinningIds from '../../utils/getWinningIds';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -47,6 +48,7 @@ const RoundContent: React.FC<{
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
@@ -164,10 +166,19 @@ const RoundContent: React.FC<{
                 {proposals &&
                   (proposals.length === 0 ? (
                     <ErrorMessageCard message={t('submittedProposals')} />
-                  ) : isTimedAuction(auction) ? (
-                    <TimedRoundProps proposals={proposals} auction={auction} />
                   ) : (
-                    <InfRoundProps proposals={proposals} auction={auction} />
+                    <>
+                      {proposals.map((prop, index) => (
+                        <Col key={index}>
+                          <ProposalCard
+                            proposal={prop}
+                            auctionStatus={auctionStatus(auction)}
+                            cardStatus={cardStatus(votingPower > 0, auction)}
+                            isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
+                          />
+                        </Col>
+                      ))}
+                    </>
                   ))}
               </Col>
               <RoundModules
