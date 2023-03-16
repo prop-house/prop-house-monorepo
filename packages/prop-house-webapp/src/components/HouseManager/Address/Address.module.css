@@ -3,6 +3,7 @@
   width: 100%;
   justify-content: space-between;
   gap: 10px;
+  flex-direction: column;
 }
 .addressContainer {
   flex: 1;
@@ -31,7 +32,6 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 65%;
 }
 .voteInput {
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
