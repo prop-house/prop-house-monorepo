@@ -16,7 +16,6 @@
   overflow: hidden;
   background: #fff;
   border-radius: 12%;
-  /* outline: 1px solid var(--border-light) !important; */
 }
 .image {
   height: 42px;
@@ -38,14 +37,12 @@
   font-weight: 700 !important;
   color: var(--brand-gray-transparent);
 }
-
 @media (max-width: 1280px) {
   .container {
     flex-basis: calc(33.33% - 8px);
     width: calc(33.33% - 8px);
   }
 }
-
 @media (max-width: 768px) {
   .container {
     flex-basis: calc(50% - 8px);
