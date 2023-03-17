@@ -31,6 +31,7 @@ import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
+import { InfRoundFilterType } from '../../state/slices/propHouse';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -49,6 +50,7 @@ const RoundContent: React.FC<{
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const votingPower = useAppSelector(state => state.voting.votingPower);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
@@ -175,6 +177,7 @@ const RoundContent: React.FC<{
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
                             isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
+                            stale={infRoundFilter === InfRoundFilterType.Stale}
                           />
                         </Col>
                       ))}
