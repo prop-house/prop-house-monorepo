@@ -1,0 +1,6 @@
+.editModeButtons {
+  flex-direction: row-reverse !important;
+}
+.editModeButtons button {
+  width: 100% !important;
+}

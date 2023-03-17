@@ -1,14 +1,15 @@
 import classes from './UploadCSVModal.module.css';
 import React, { Dispatch, SetStateAction, CSSProperties, useState } from 'react';
-// import Button, { ButtonColor } from '../Button';
-// import { useTranslation } from 'react-i18next';
 import Modal from '../../Modal';
 import { NounImage } from '../../../utils/getNounImage';
-import { CSVRow } from '../VotingStrategies';
 import Text from '../Text';
-// @ts-ignore
 import { useCSVReader, lightenDarkenColor, formatFileSize } from 'react-papaparse';
 import Group from '../Group';
+
+export interface CSVRow {
+  address: string;
+  votes: number;
+}
 
 const GREY = '#CCC';
 const GREY_LIGHT = 'rgba(255, 255, 255, 0.4)';
