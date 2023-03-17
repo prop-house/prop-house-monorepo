@@ -12,12 +12,11 @@ export interface PropHouseSlice {
   activeRound?: StoredAuctionBase;
   activeProposal?: StoredProposalWithVotes;
   activeProposals?: StoredProposalWithVotes[];
-  infRoundFilteredProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
   modalActive: boolean;
+  infRoundFilteredProposals?: StoredProposalWithVotes[];
+  infRoundFilterType: InfRoundFilterType;
 }
-
-const initialState: PropHouseSlice = { modalActive: false };
 
 interface TimedRoundSortProps {
   sortType: TimedRoundSortType;
@@ -35,6 +34,11 @@ export enum InfRoundFilterType {
   Winners,
   Stale,
 }
+
+const initialState: PropHouseSlice = {
+  modalActive: false,
+  infRoundFilterType: InfRoundFilterType.Active,
+};
 
 const sortHelper = (a: any, b: any, ascending: boolean) => {
   return ascending ? (a < b ? -1 : 1) : a < b ? 1 : -1;
@@ -119,6 +123,9 @@ export const propHouseSlice = createSlice({
         action.payload.round,
       );
     },
+    setInfRoundFilterType: (state, action: PayloadAction<InfRoundFilterType>) => {
+      state.infRoundFilterType = action.payload;
+    },
     setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
       state.activeCommunity = action.payload;
     },
@@ -138,6 +145,7 @@ export const {
   filterInfRoundProposals,
   setActiveCommunity,
   setModalActive,
+  setInfRoundFilterType,
 } = propHouseSlice.actions;
 
 export default propHouseSlice.reducer;

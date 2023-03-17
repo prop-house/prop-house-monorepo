@@ -11,6 +11,7 @@ import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import {
   filterInfRoundProposals,
   InfRoundFilterType,
+  setInfRoundFilterType,
   sortTimedRoundProposals,
   TimedRoundSortType,
 } from '../../state/slices/propHouse';
@@ -22,6 +23,7 @@ const SortToggles: React.FC<{
   const { auction } = props;
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
 
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
@@ -34,10 +36,6 @@ const SortToggles: React.FC<{
   const [votesSorted, setVotesSorted] = useState(auctionEnded || auctionVoting ? true : false);
   const [votesAscending, setVotesAscending] = useState(
     auctionEnded || auctionVoting ? true : false,
-  );
-
-  const [infRoundFilter, setInfRoundFilter] = useState<InfRoundFilterType>(
-    InfRoundFilterType.Active,
   );
 
   const dispatch = useDispatch();
@@ -77,7 +75,7 @@ const SortToggles: React.FC<{
         round: auction,
       }),
     );
-    setInfRoundFilter(type);
+    dispatch(setInfRoundFilterType(type));
   };
 
   return (
