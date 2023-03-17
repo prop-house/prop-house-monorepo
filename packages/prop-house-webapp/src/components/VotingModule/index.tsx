@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import classes from './VotingModule.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
-import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
@@ -41,27 +40,11 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
 
   const content = (
     <>
-      <div className={classes.sideCardHeader}>
-        <div className={clsx(classes.icon, classes.purpleIcon)}>
-          <VoteIcon />
-        </div>
-        <div className={classes.textContainer}>
-          <p className={classes.title}>{t('votingInProgress')}</p>
-          <p className={classes.subtitle}>
-            <span className={classes.purpleText}>{totalVotes}</span>{' '}
-            {totalVotes === 1 ? t('vote') : t('votes')} {t('castSoFar')}!
-          </p>
-        </div>
-      </div>
-
-      <hr className={classes.divider} />
-
       {account ? (
         votingPower > 0 ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
               <span>{t('castYourVotes')}</span>
-
               <span className={classes.totalVotes}>{`${
                 votesLeftToAllot > 0
                   ? `${votingPower - numVotesByUserInActiveRound - numAllotedVotes} ${t('left')}`
@@ -109,26 +92,35 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
           </div>
         </p>
       )}
+      {!account ? (
+        <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
+      ) : account && votingPower ? (
+        <Button
+          text={t('submitVotes')}
+          bgColor={ButtonColor.Purple}
+          onClick={() => setShowVotingModal(true)}
+          disabled={
+            countTotalVotesAlloted(voteAllotments) === 0 ||
+            numVotesByUserInActiveRound === votingPower
+          }
+        />
+      ) : null}
     </>
   );
 
-  const buttons = !account ? (
-    <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
-  ) : account && votingPower ? (
-    <Button
-      text={t('submitVotes')}
-      bgColor={ButtonColor.Purple}
-      onClick={() => setShowVotingModal(true)}
-      disabled={
-        countTotalVotesAlloted(voteAllotments) === 0 || numVotesByUserInActiveRound === votingPower
+  return (
+    <RoundModuleCard
+      title={t('votingInProgress')}
+      subtitle={
+        <>
+          <span className={classes.purpleText}>{totalVotes}</span>{' '}
+          {totalVotes === 1 ? t('vote') : t('votes')} {t('castSoFar')}!
+        </>
       }
+      content={content}
+      type="voting"
     />
-  ) : (
-    //  VOTING PERIOD, CONNECTED, HAS NO VOTES
-    <></>
   );
-
-  return <RoundModuleCard content={content} buttons={buttons} />;
 };
 
 export default VotingModule;

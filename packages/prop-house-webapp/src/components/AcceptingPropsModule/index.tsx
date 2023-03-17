@@ -7,9 +7,7 @@ import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import RoundModuleCard from '../RoundModuleCard';
-import clsx from 'clsx';
 import { isInfAuction } from '../../utils/auctionType';
-import { MdOutlineLightbulb as BulbIcon } from 'react-icons/md';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
@@ -27,68 +25,41 @@ const AcceptingPropsModule: React.FC<{
   const { t } = useTranslation();
 
   const content = (
-    <div className={classes.content}>
-      <>
-        <div className={classes.sideCardHeader}>
-          <div className={clsx(classes.icon, classes.greenIcon)}>
-            <BulbIcon />
-          </div>
-          <div className={classes.textContainer}>
-            <p className={classes.title}>{t('acceptingProposals')}</p>
-            <p className={classes.subtitle}>
-              Until{' '}
-              {isInfAuction(auction)
-                ? 'funding is depleted'
-                : dayjs(auction.proposalEndTime).format('MMMM D')}
-            </p>
-          </div>
+    <>
+      <b>{t('howProposingWorks')}:</b>
+      <div className={classes.bulletList}>
+        <div className={classes.bulletItem}>
+          <hr className={classes.bullet} />
+          <p>{t('anyoneCanSubmit')}.</p>
         </div>
 
-        <hr className={classes.divider} />
+        <div className={classes.bulletItem}>
+          <hr className={classes.bullet} />
+          <p>
+            {t('ownersOfThe')} <b>{community.name}</b> {t('tokenWillVote')}.
+          </p>
+        </div>
 
-        <p className={classes.sideCardBody}>
-          <b>{t('howProposingWorks')}:</b>
+        <div className={classes.bulletItem}>
+          <hr className={classes.bullet} />
+          <p>
+            {isInfAuction(auction) ? (
+              'Proposals that meet quorum will get funded.'
+            ) : (
+              <>
+                {' '}
+                {t('theTop')} <b>{auction.numWinners}</b>{' '}
+                {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
+                <b>
+                  {auction.fundingAmount} {auction.currencyType}{' '}
+                </b>
+                {t('each')}.
+              </>
+            )}
+          </p>
+        </div>
+      </div>
 
-          <div className={classes.bulletList}>
-            <div className={classes.bulletItem}>
-              <hr className={classes.bullet} />
-              <p>{t('anyoneCanSubmit')}.</p>
-            </div>
-
-            <div className={classes.bulletItem}>
-              <hr className={classes.bullet} />
-              <p>
-                {t('ownersOfThe')} <b>{community.name}</b> {t('tokenWillVote')}.
-              </p>
-            </div>
-
-            <div className={classes.bulletItem}>
-              <hr className={classes.bullet} />
-              <p>
-                {isInfAuction(auction) ? (
-                  'Proposals that meet quorum will get funded.'
-                ) : (
-                  <>
-                    {' '}
-                    {t('theTop')} <b>{auction.numWinners}</b>{' '}
-                    {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
-                    <b>
-                      {auction.fundingAmount} {auction.currencyType}{' '}
-                    </b>
-                    {t('each')}.
-                  </>
-                )}
-              </p>
-            </div>
-          </div>
-        </p>
-      </>
-    </div>
-  );
-
-  const buttons = (
-    <div className={classes.btnContainer}>
-      {/* ACCEPTING PROPS */}
       {isProposingWindow &&
         (account ? (
           <Button
@@ -102,10 +73,24 @@ const AcceptingPropsModule: React.FC<{
         ) : (
           <ConnectButton color={ButtonColor.Pink} />
         ))}
-    </div>
+    </>
   );
 
-  return <RoundModuleCard content={content} buttons={buttons} />;
+  return (
+    <RoundModuleCard
+      title={t('acceptingProposals')}
+      subtitle={
+        <>
+          Until{' '}
+          {isInfAuction(auction)
+            ? 'funding is depleted'
+            : dayjs(auction.proposalEndTime).format('MMMM D')}
+        </>
+      }
+      content={content}
+      type="proposing"
+    />
+  );
 };
 
 export default AcceptingPropsModule;
