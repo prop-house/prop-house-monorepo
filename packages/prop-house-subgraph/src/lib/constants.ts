@@ -17,7 +17,6 @@ export namespace VotingStrategyType {
   export const VANILLA = 'VANILLA';
   export const WHITELIST = 'WHITELIST';
   export const BALANCE_OF = 'BALANCE_OF';
-  export const BALANCE_OF_WITH_MULTIPLIER = 'BALANCE_OF_WITH_MULTIPLIER';
   export const UNKNOWN = 'UNKNOWN';
 }
 

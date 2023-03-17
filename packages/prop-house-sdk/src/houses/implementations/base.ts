@@ -1,14 +1,7 @@
-import { getContractAddressesForChainOrThrow, HouseImpls } from '@prophouse/contracts';
-import { ChainConfig, HouseConfig, HouseContract, HouseType } from '../../types';
+import { HouseConfig, HouseContract, HouseType } from '../../types';
+import { ChainBase } from '../../chain-base';
 
-export abstract class HouseBase<HT extends HouseType> {
-  protected readonly _impls: HouseImpls;
-
-  constructor(protected readonly _config: ChainConfig) {
-    const { evm } = getContractAddressesForChainOrThrow(this._config.chainId);
-    this._impls = evm.house;
-  }
-
+export abstract class HouseBase<HT extends HouseType> extends ChainBase {
   /**
    * The house type
    */
@@ -29,7 +22,7 @@ export abstract class HouseBase<HT extends HouseType> {
    * Given a house address, return a house contract instance
    * @param address The house contract address
    */
-  public abstract getContractInstance(address: string): HouseContract[HT];
+  public abstract getContract(address: string): HouseContract[HT];
 
   /**
    * Determine if the passed `uri` is valid

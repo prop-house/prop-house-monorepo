@@ -606,6 +606,37 @@
   {
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "impl",
+            "type": "address"
+          },
+          {
+            "internalType": "bytes",
+            "name": "config",
+            "type": "bytes"
+          }
+        ],
+        "internalType": "struct IPropHouse.House",
+        "name": "newHouse",
+        "type": "tuple"
+      }
+    ],
+    "name": "createHouse",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "house",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "house",
         "type": "address"

@@ -7,12 +7,6 @@ export const TimedFundingRoundConfigParts = graphql(`
     proposalPeriodDuration
     votePeriodStartTimestamp
     votePeriodDuration
-    votingStrategies {
-      id
-      type
-      address
-      params
-    }
     awards {
       asset {
         assetType
@@ -157,6 +151,14 @@ export const RoundQuery = graphql(`
       manager {
         id
       }
+      votingStrategies {
+        votingStrategy {
+          id
+          type
+          address
+          params
+        }
+      }
       timedFundingConfig {
         ...TimedFundingRoundConfigParts
       }
@@ -187,6 +189,29 @@ export const ManyRoundBalancesQuery = graphql(`
       }
       balance
       updatedAt
+    }
+  }
+`);
+
+export const ManyRoundVotingStrategiesQuery = graphql(`
+  query manyRoundVotingStrategies(
+    $round: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: VotingStrategy_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    votingStrategies(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: { rounds_: { round: $round } }
+    ) {
+      id
+      type
+      address
+      params
     }
   }
 `);

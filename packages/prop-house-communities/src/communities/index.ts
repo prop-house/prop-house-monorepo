@@ -7,7 +7,7 @@ import {
 } from '../strategies';
 import { lilNouns } from '../strategies/lilNouns';
 import { nouns } from '../strategies/nouns';
-import { onchainMonkey } from '../strategies/onchainMonkey';
+import { onchainMonkey } from '../strategies/onchainmonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**

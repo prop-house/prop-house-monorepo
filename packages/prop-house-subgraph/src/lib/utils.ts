@@ -106,9 +106,6 @@ export function getVotingStrategyType(addr: string): string {
   if (addr == '0x7a281ea19f75f25d3e08c9c3e4ec77c389e09395fd7d7f8074a86814ce14b2c') {
     return VotingStrategyType.BALANCE_OF;
   }
-  if (addr == '0x453c5443124262957245ce62a9a3edf587772dc04fc7480eeeab6f299cc1db5') {
-    return VotingStrategyType.BALANCE_OF_WITH_MULTIPLIER;
-  }
   if (addr == '0x1438cb91d5f4f8fa36a53db08253a264db15cbeac572e8ba3b20f0bdaa25601') {
     return VotingStrategyType.WHITELIST;
   }

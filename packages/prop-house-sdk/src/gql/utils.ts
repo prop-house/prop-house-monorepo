@@ -23,9 +23,7 @@ export const GRAPHQL_APIS: Record<number, GraphQL> = {
  */
 export const getGraphQlApiUrlsForChainOrThrow = (chainId: number) => {
   if (!GRAPHQL_APIS[chainId]) {
-    throw new Error(
-      `Unknown chain id (${chainId}). No known GraphQL APIs exist have been deployed for this chain.`,
-    );
+    throw new Error(`Unknown chain id (${chainId}). No known GraphQL APIs exist for this chain.`);
   }
   return GRAPHQL_APIS[chainId];
 };

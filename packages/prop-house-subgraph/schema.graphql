@@ -9,7 +9,6 @@ enum VotingStrategyType {
   VANILLA
   WHITELIST
   BALANCE_OF
-  BALANCE_OF_WITH_MULTIPLIER
   UNKNOWN
 }
 
@@ -134,6 +133,9 @@ type Round @entity {
   "The configuration for a timed funding round (Null if type != TIMED_FUNDING)"
   timedFundingConfig: TimedFundingRoundConfig
 
+  "The selected voting strategies"
+  votingStrategies: [RoundVotingStrategy!]! @derivedFrom(field: "round")
+
   "Up-to-date round balances"
   balances: [Balance!]! @derivedFrom(field: "round")
 
@@ -171,8 +173,11 @@ type Balance @entity {
 }
 
 type TimedFundingRoundConfig @entity {
-  "A concatenation of the registration tx hash and the the event log index"
+  "A concatenation of the round address and '-config'"
   id: ID!
+
+  "The round that the config belongs to"
+  round: Round!
     
   "The number of possible round winners"
   winnerCount: Int!
@@ -188,9 +193,12 @@ type TimedFundingRoundConfig @entity {
 
   "The vote period duration in seconds"
   votePeriodDuration: BigInt
+  
+  "The unix timestamp when the round configuration was registered"
+  registeredAt: BigInt!
 
-  "The selected voting strategies"
-  votingStrategies: [VotingStrategy!]!
+  "The registration transaction hash"
+  registrationTx: Bytes!
 
   "The awards offered in the round"
   awards: [Award!]! @derivedFrom(field: "round")
@@ -208,6 +216,17 @@ type RoundCreator @entity {
 
   "The number of passes that the creator holds"
   passCount: Int!
+}
+
+type RoundVotingStrategy @entity {
+  "A concatenation of the round address and strategy ID"
+  id: ID!
+
+  "The round that the voting strategy belongs to"
+  round: Round!
+
+  "The voting strategy"
+  votingStrategy: VotingStrategy!
 }
 
 type Account @entity {
@@ -340,6 +359,9 @@ type VotingStrategy @entity {
 
   "The voting strategy params"
   params: [BigInt!]!
+
+  "Rounds that use this voting strategy"
+  rounds: [RoundVotingStrategy!]! @derivedFrom(field: "votingStrategy")
 }
 
 type Asset @entity {

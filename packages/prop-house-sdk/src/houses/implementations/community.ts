@@ -5,7 +5,7 @@ import { CommunityHouse__factory } from '@prophouse/contracts';
 
 export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
   /**
-   * Returns a `CommunityHouse` instance for the provided chain ID
+   * Returns a `CommunityHouse` instance for the provided chain configuration
    * @param chainId
    */
   public static for(config: ChainConfig) {
@@ -23,7 +23,7 @@ export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
    * The house implementation contract address
    */
   public get impl() {
-    return this._impls.community;
+    return this._addresses.evm.house.community;
   }
 
   /**
@@ -41,7 +41,7 @@ export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
    * Given a house address, return a `CommunityHouse` contract instance
    * @param address The house address
    */
-  public getContractInstance(address: string) {
-    return CommunityHouse__factory.connect(address, this._config.signerOrProvider);
+  public getContract(address: string) {
+    return CommunityHouse__factory.connect(address, this._evm);
   }
 }

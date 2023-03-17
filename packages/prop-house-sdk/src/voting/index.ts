@@ -1,7 +1,7 @@
 export {
-  VotingStrategyBase,
-  BalanceOfVotingStrategy,
-  VanillaVotingStrategy,
-  WhitelistVotingStrategy,
-} from './strategies';
+  StrategyHandlerBase,
+  BalanceOfHandler,
+  VanillaHandler,
+  WhitelistHandler,
+} from './handlers';
 export { Voting } from './voting';

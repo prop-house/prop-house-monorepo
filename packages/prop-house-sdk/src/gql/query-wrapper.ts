@@ -5,6 +5,7 @@ import {
   Deposit_OrderBy,
   House_OrderBy,
   Round_OrderBy,
+  VotingStrategy_OrderBy,
 } from './evm/graphql';
 import {
   ManyClaimsByAccountQuery,
@@ -17,6 +18,7 @@ import {
   ManyRoundsSimpleManagedByAccountQuery,
   ManyRoundsSimpleQuery,
   ManyRoundsSimpleWhereTitleContainsQuery,
+  ManyRoundVotingStrategiesQuery,
   RoundQuery,
 } from './queries.evm';
 import { getDefaultConfig, getGraphQlClientsForChainOrThrow, toPaginated } from './utils';
@@ -147,6 +149,21 @@ export class QueryWrapper {
     config = getDefaultConfig(Balance_OrderBy.UpdatedAt),
   ) {
     return this._gql.evm.request(ManyRoundBalancesQuery, {
+      ...toPaginated(config),
+      round: round.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get voting strategy information for a single round
+   * @param round The round address
+   * @param config Pagination and ordering configuration
+   */
+  public async getRoundVotingStrategies(
+    round: string,
+    config = getDefaultConfig(VotingStrategy_OrderBy.Id),
+  ) {
+    return this._gql.evm.request(ManyRoundVotingStrategiesQuery, {
       ...toPaginated(config),
       round: round.toLowerCase(),
     });

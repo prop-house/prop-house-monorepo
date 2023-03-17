@@ -358,6 +358,8 @@ export enum Award_OrderBy {
   RoundId = 'round__id',
   RoundProposalPeriodDuration = 'round__proposalPeriodDuration',
   RoundProposalPeriodStartTimestamp = 'round__proposalPeriodStartTimestamp',
+  RoundRegisteredAt = 'round__registeredAt',
+  RoundRegistrationTx = 'round__registrationTx',
   RoundVotePeriodDuration = 'round__votePeriodDuration',
   RoundVotePeriodStartTimestamp = 'round__votePeriodStartTimestamp',
   RoundWinnerCount = 'round__winnerCount',
@@ -1157,6 +1159,8 @@ export type Query = {
   roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
+  roundVotingStrategies: Array<RoundVotingStrategy>;
+  roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
   timedFundingRoundConfig?: Maybe<TimedFundingRoundConfig>;
   timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
@@ -1382,6 +1386,22 @@ export type QueryRoundImplementationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<RoundImplementation_Filter>;
+};
+
+export type QueryRoundVotingStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundVotingStrategy_Filter>;
+};
+
+export type QueryRoundVotingStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 export type QueryRoundsArgs = {
@@ -1777,6 +1797,8 @@ export type Round = {
   transfers: Array<Transfer>;
   /** The round type (TIMED_FUNDING) */
   type: Scalars['String'];
+  /** The selected voting strategies */
+  votingStrategies: Array<RoundVotingStrategy>;
 };
 
 export type RoundBalancesArgs = {
@@ -1825,6 +1847,14 @@ export type RoundTransfersArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<Transfer_Filter>;
+};
+
+export type RoundVotingStrategiesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundVotingStrategy_Filter>;
 };
 
 export type RoundCreator = {
@@ -2007,6 +2037,89 @@ export enum RoundState {
   Cancelled = 'CANCELLED',
   Finalized = 'FINALIZED',
   Registered = 'REGISTERED',
+}
+
+export type RoundVotingStrategy = {
+  __typename?: 'RoundVotingStrategy';
+  /** A concatenation of the round address and strategy ID */
+  id: Scalars['ID'];
+  /** The round that the voting strategy belongs to */
+  round: Round;
+  /** The voting strategy */
+  votingStrategy: VotingStrategy;
+};
+
+export type RoundVotingStrategy_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RoundVotingStrategy_Filter>>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  or?: InputMaybe<Array<InputMaybe<RoundVotingStrategy_Filter>>>;
+  round?: InputMaybe<Scalars['String']>;
+  round_?: InputMaybe<Round_Filter>;
+  round_contains?: InputMaybe<Scalars['String']>;
+  round_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_ends_with?: InputMaybe<Scalars['String']>;
+  round_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_gt?: InputMaybe<Scalars['String']>;
+  round_gte?: InputMaybe<Scalars['String']>;
+  round_in?: InputMaybe<Array<Scalars['String']>>;
+  round_lt?: InputMaybe<Scalars['String']>;
+  round_lte?: InputMaybe<Scalars['String']>;
+  round_not?: InputMaybe<Scalars['String']>;
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_not_ends_with?: InputMaybe<Scalars['String']>;
+  round_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_not_in?: InputMaybe<Array<Scalars['String']>>;
+  round_not_starts_with?: InputMaybe<Scalars['String']>;
+  round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  round_starts_with?: InputMaybe<Scalars['String']>;
+  round_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy?: InputMaybe<Scalars['String']>;
+  votingStrategy_?: InputMaybe<VotingStrategy_Filter>;
+  votingStrategy_contains?: InputMaybe<Scalars['String']>;
+  votingStrategy_contains_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy_ends_with?: InputMaybe<Scalars['String']>;
+  votingStrategy_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy_gt?: InputMaybe<Scalars['String']>;
+  votingStrategy_gte?: InputMaybe<Scalars['String']>;
+  votingStrategy_in?: InputMaybe<Array<Scalars['String']>>;
+  votingStrategy_lt?: InputMaybe<Scalars['String']>;
+  votingStrategy_lte?: InputMaybe<Scalars['String']>;
+  votingStrategy_not?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_contains?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_ends_with?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_in?: InputMaybe<Array<Scalars['String']>>;
+  votingStrategy_not_starts_with?: InputMaybe<Scalars['String']>;
+  votingStrategy_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategy_starts_with?: InputMaybe<Scalars['String']>;
+  votingStrategy_starts_with_nocase?: InputMaybe<Scalars['String']>;
+};
+
+export enum RoundVotingStrategy_OrderBy {
+  Id = 'id',
+  Round = 'round',
+  RoundCreatedAt = 'round__createdAt',
+  RoundCreationTx = 'round__creationTx',
+  RoundDescription = 'round__description',
+  RoundId = 'round__id',
+  RoundState = 'round__state',
+  RoundTitle = 'round__title',
+  RoundType = 'round__type',
+  VotingStrategy = 'votingStrategy',
+  VotingStrategyAddress = 'votingStrategy__address',
+  VotingStrategyId = 'votingStrategy__id',
+  VotingStrategyType = 'votingStrategy__type',
 }
 
 export type Round_Filter = {
@@ -2194,6 +2307,7 @@ export type Round_Filter = {
   type_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   type_starts_with?: InputMaybe<Scalars['String']>;
   type_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  votingStrategies_?: InputMaybe<RoundVotingStrategy_Filter>;
 };
 
 export enum Round_OrderBy {
@@ -2224,12 +2338,15 @@ export enum Round_OrderBy {
   TimedFundingConfigId = 'timedFundingConfig__id',
   TimedFundingConfigProposalPeriodDuration = 'timedFundingConfig__proposalPeriodDuration',
   TimedFundingConfigProposalPeriodStartTimestamp = 'timedFundingConfig__proposalPeriodStartTimestamp',
+  TimedFundingConfigRegisteredAt = 'timedFundingConfig__registeredAt',
+  TimedFundingConfigRegistrationTx = 'timedFundingConfig__registrationTx',
   TimedFundingConfigVotePeriodDuration = 'timedFundingConfig__votePeriodDuration',
   TimedFundingConfigVotePeriodStartTimestamp = 'timedFundingConfig__votePeriodStartTimestamp',
   TimedFundingConfigWinnerCount = 'timedFundingConfig__winnerCount',
   Title = 'title',
   Transfers = 'transfers',
   Type = 'type',
+  VotingStrategies = 'votingStrategies',
 }
 
 export type Subscription = {
@@ -2263,6 +2380,8 @@ export type Subscription = {
   roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
+  roundVotingStrategies: Array<RoundVotingStrategy>;
+  roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
   timedFundingRoundConfig?: Maybe<TimedFundingRoundConfig>;
   timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
@@ -2490,6 +2609,22 @@ export type SubscriptionRoundImplementationsArgs = {
   where?: InputMaybe<RoundImplementation_Filter>;
 };
 
+export type SubscriptionRoundVotingStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundVotingStrategy_Filter>;
+};
+
+export type SubscriptionRoundVotingStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
 export type SubscriptionRoundsArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
@@ -2552,18 +2687,22 @@ export type TimedFundingRoundConfig = {
   __typename?: 'TimedFundingRoundConfig';
   /** The awards offered in the round */
   awards: Array<Award>;
-  /** A concatenation of the registration tx hash and the the event log index */
+  /** A concatenation of the round address and '-config' */
   id: Scalars['ID'];
   /** The proposal period duration in seconds */
   proposalPeriodDuration?: Maybe<Scalars['BigInt']>;
   /** The timestamp at which the proposal period starts */
   proposalPeriodStartTimestamp?: Maybe<Scalars['BigInt']>;
+  /** The unix timestamp when the round configuration was registered */
+  registeredAt: Scalars['BigInt'];
+  /** The registration transaction hash */
+  registrationTx: Scalars['Bytes'];
+  /** The round that the config belongs to */
+  round: Round;
   /** The vote period duration in seconds */
   votePeriodDuration?: Maybe<Scalars['BigInt']>;
   /** The timestamp at which the vote period starts */
   votePeriodStartTimestamp?: Maybe<Scalars['BigInt']>;
-  /** The selected voting strategies */
-  votingStrategies: Array<VotingStrategy>;
   /** The number of possible round winners */
   winnerCount: Scalars['Int'];
 };
@@ -2574,14 +2713,6 @@ export type TimedFundingRoundConfigAwardsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<Award_Filter>;
-};
-
-export type TimedFundingRoundConfigVotingStrategiesArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VotingStrategy_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<VotingStrategy_Filter>;
 };
 
 export type TimedFundingRoundConfig_Filter = {
@@ -2614,6 +2745,45 @@ export type TimedFundingRoundConfig_Filter = {
   proposalPeriodStartTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodStartTimestamp_not?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodStartTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  registeredAt?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_gt?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_gte?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  registeredAt_lt?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_lte?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_not?: InputMaybe<Scalars['BigInt']>;
+  registeredAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  registrationTx?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_contains?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_gt?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_gte?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  registrationTx_lt?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_lte?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_not?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
+  registrationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  round?: InputMaybe<Scalars['String']>;
+  round_?: InputMaybe<Round_Filter>;
+  round_contains?: InputMaybe<Scalars['String']>;
+  round_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_ends_with?: InputMaybe<Scalars['String']>;
+  round_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_gt?: InputMaybe<Scalars['String']>;
+  round_gte?: InputMaybe<Scalars['String']>;
+  round_in?: InputMaybe<Array<Scalars['String']>>;
+  round_lt?: InputMaybe<Scalars['String']>;
+  round_lte?: InputMaybe<Scalars['String']>;
+  round_not?: InputMaybe<Scalars['String']>;
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_not_ends_with?: InputMaybe<Scalars['String']>;
+  round_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_not_in?: InputMaybe<Array<Scalars['String']>>;
+  round_not_starts_with?: InputMaybe<Scalars['String']>;
+  round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  round_starts_with?: InputMaybe<Scalars['String']>;
+  round_starts_with_nocase?: InputMaybe<Scalars['String']>;
   votePeriodDuration?: InputMaybe<Scalars['BigInt']>;
   votePeriodDuration_gt?: InputMaybe<Scalars['BigInt']>;
   votePeriodDuration_gte?: InputMaybe<Scalars['BigInt']>;
@@ -2630,13 +2800,6 @@ export type TimedFundingRoundConfig_Filter = {
   votePeriodStartTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   votePeriodStartTimestamp_not?: InputMaybe<Scalars['BigInt']>;
   votePeriodStartTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  votingStrategies?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategies_?: InputMaybe<VotingStrategy_Filter>;
-  votingStrategies_contains?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategies_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategies_not?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategies_not_contains?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategies_not_contains_nocase?: InputMaybe<Array<Scalars['String']>>;
   winnerCount?: InputMaybe<Scalars['Int']>;
   winnerCount_gt?: InputMaybe<Scalars['Int']>;
   winnerCount_gte?: InputMaybe<Scalars['Int']>;
@@ -2652,9 +2815,18 @@ export enum TimedFundingRoundConfig_OrderBy {
   Id = 'id',
   ProposalPeriodDuration = 'proposalPeriodDuration',
   ProposalPeriodStartTimestamp = 'proposalPeriodStartTimestamp',
+  RegisteredAt = 'registeredAt',
+  RegistrationTx = 'registrationTx',
+  Round = 'round',
+  RoundCreatedAt = 'round__createdAt',
+  RoundCreationTx = 'round__creationTx',
+  RoundDescription = 'round__description',
+  RoundId = 'round__id',
+  RoundState = 'round__state',
+  RoundTitle = 'round__title',
+  RoundType = 'round__type',
   VotePeriodDuration = 'votePeriodDuration',
   VotePeriodStartTimestamp = 'votePeriodStartTimestamp',
-  VotingStrategies = 'votingStrategies',
   WinnerCount = 'winnerCount',
 }
 
@@ -2834,8 +3006,18 @@ export type VotingStrategy = {
   id: Scalars['ID'];
   /** The voting strategy params */
   params: Array<Scalars['BigInt']>;
+  /** Rounds that use this voting strategy */
+  rounds: Array<RoundVotingStrategy>;
   /** The voting strategy type (UNKNOWN if it cannot be determined) */
   type: VotingStrategyType;
+};
+
+export type VotingStrategyRoundsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundVotingStrategy_Filter>;
 };
 
 export enum VotingStrategyType {
@@ -2873,6 +3055,7 @@ export type VotingStrategy_Filter = {
   params_not?: InputMaybe<Array<Scalars['BigInt']>>;
   params_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
   params_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  rounds_?: InputMaybe<RoundVotingStrategy_Filter>;
   type?: InputMaybe<VotingStrategyType>;
   type_in?: InputMaybe<Array<VotingStrategyType>>;
   type_not?: InputMaybe<VotingStrategyType>;
@@ -2883,6 +3066,7 @@ export enum VotingStrategy_OrderBy {
   Address = 'address',
   Id = 'id',
   Params = 'params',
+  Rounds = 'rounds',
   Type = 'type',
 }
 
@@ -2927,13 +3111,6 @@ export type TimedFundingRoundConfigPartsFragment = {
   proposalPeriodDuration?: any | null;
   votePeriodStartTimestamp?: any | null;
   votePeriodDuration?: any | null;
-  votingStrategies: Array<{
-    __typename?: 'VotingStrategy';
-    id: string;
-    type: VotingStrategyType;
-    address: any;
-    params: Array<any>;
-  }>;
   awards: Array<{
     __typename?: 'Award';
     amount: any;
@@ -3077,6 +3254,16 @@ export type RoundQuery = {
     createdAt: any;
     state: RoundState;
     manager?: { __typename?: 'Account'; id: string } | null;
+    votingStrategies: Array<{
+      __typename?: 'RoundVotingStrategy';
+      votingStrategy: {
+        __typename?: 'VotingStrategy';
+        id: string;
+        type: VotingStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
     timedFundingConfig?:
       | ({ __typename?: 'TimedFundingRoundConfig' } & {
           ' $fragmentRefs'?: {
@@ -3103,6 +3290,25 @@ export type ManyRoundBalancesQuery = {
     balance: any;
     updatedAt: any;
     asset: { __typename?: 'Asset'; assetType: AssetType; token: any; identifier: any };
+  }>;
+};
+
+export type ManyRoundVotingStrategiesQueryVariables = Exact<{
+  round: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<VotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyRoundVotingStrategiesQuery = {
+  __typename?: 'Query';
+  votingStrategies: Array<{
+    __typename?: 'VotingStrategy';
+    id: string;
+    type: VotingStrategyType;
+    address: any;
+    params: Array<any>;
   }>;
 };
 
@@ -3169,7 +3375,7 @@ export type ManyClaimsByAccountQuery = {
   }>;
 };
 
-export const TimedFundingRoundConfigPartsFragmentDoc = ({
+export const TimedFundingRoundConfigPartsFragmentDoc = {
   kind: 'Document',
   definitions: [
     {
@@ -3187,19 +3393,6 @@ export const TimedFundingRoundConfigPartsFragmentDoc = ({
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
           { kind: 'Field', name: { kind: 'Name', value: 'votePeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'votePeriodDuration' } },
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'votingStrategies' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'params' } },
-              ],
-            },
-          },
           {
             kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
@@ -3226,8 +3419,8 @@ export const TimedFundingRoundConfigPartsFragmentDoc = ({
       },
     },
   ],
-} as unknown) as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
-export const ManyHousesSimpleDocument = ({
+} as unknown as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
+export const ManyHousesSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3305,8 +3498,8 @@ export const ManyHousesSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
-export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
+} as unknown as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
+export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3395,11 +3588,11 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables
 >;
-export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
+export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3479,11 +3672,11 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyHousesSimpleWhereAccountIsOwnerQueryVariables
 >;
-export const ManyRoundsSimpleDocument = ({
+export const ManyRoundsSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3562,8 +3755,8 @@ export const ManyRoundsSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
-export const ManyRoundsSimpleForHouseDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
+export const ManyRoundsSimpleForHouseDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3664,11 +3857,8 @@ export const ManyRoundsSimpleForHouseDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
-  ManyRoundsSimpleForHouseQuery,
-  ManyRoundsSimpleForHouseQueryVariables
->;
-export const ManyRoundsSimpleWhereTitleContainsDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleForHouseQuery, ManyRoundsSimpleForHouseQueryVariables>;
+export const ManyRoundsSimpleWhereTitleContainsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3769,11 +3959,11 @@ export const ManyRoundsSimpleWhereTitleContainsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleWhereTitleContainsQuery,
   ManyRoundsSimpleWhereTitleContainsQueryVariables
 >;
-export const RoundDocument = ({
+export const RoundDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3822,6 +4012,28 @@ export const RoundDocument = ({
                 },
                 {
                   kind: 'Field',
+                  name: { kind: 'Name', value: 'votingStrategies' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'votingStrategy' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'params' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
                   name: { kind: 'Name', value: 'timedFundingConfig' },
                   selectionSet: {
                     kind: 'SelectionSet',
@@ -3856,19 +4068,6 @@ export const RoundDocument = ({
           { kind: 'Field', name: { kind: 'Name', value: 'votePeriodDuration' } },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'votingStrategies' },
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'params' } },
-              ],
-            },
-          },
-          {
-            kind: 'Field',
             name: { kind: 'Name', value: 'awards' },
             selectionSet: {
               kind: 'SelectionSet',
@@ -3893,8 +4092,8 @@ export const RoundDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<RoundQuery, RoundQueryVariables>;
-export const ManyRoundBalancesDocument = ({
+} as unknown as DocumentNode<RoundQuery, RoundQueryVariables>;
+export const ManyRoundBalancesDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4004,8 +4203,120 @@ export const ManyRoundBalancesDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
-export const ManyRoundsSimpleManagedByAccountDocument = ({
+} as unknown as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
+export const ManyRoundVotingStrategiesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyRoundVotingStrategies' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'votingStrategies' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'first' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'skip' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderBy' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderDirection' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'rounds_' },
+                      value: {
+                        kind: 'ObjectValue',
+                        fields: [
+                          {
+                            kind: 'ObjectField',
+                            name: { kind: 'Name', value: 'round' },
+                            value: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'params' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ManyRoundVotingStrategiesQuery,
+  ManyRoundVotingStrategiesQueryVariables
+>;
+export const ManyRoundsSimpleManagedByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4106,11 +4417,11 @@ export const ManyRoundsSimpleManagedByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleManagedByAccountQuery,
   ManyRoundsSimpleManagedByAccountQueryVariables
 >;
-export const ManyDepositsByAccountDocument = ({
+export const ManyDepositsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4228,8 +4539,8 @@ export const ManyDepositsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
-export const ManyClaimsByAccountDocument = ({
+} as unknown as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
+export const ManyClaimsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4349,4 +4660,4 @@ export const ManyClaimsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;
+} as unknown as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;
