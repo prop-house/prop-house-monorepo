@@ -10,12 +10,14 @@ import clsx from 'clsx';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
-import VotingModule from '../VotingModule';
+import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
-import { isInfAuction } from '../../utils/auctionType';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
+import InfRoundVotingModule from '../InfRoundVotingModule';
+import { useAppSelector } from '../../hooks';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -26,6 +28,7 @@ const RoundModules: React.FC<{
   const { auction, proposals, community, setShowVotingModal } = props;
 
   const { address: account } = useAccount();
+  const votingPower = useAppSelector(state => state.voting.votingPower);
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
 
@@ -73,15 +76,21 @@ const RoundModules: React.FC<{
           />
         )}
 
-      {isProposingWindow && <AcceptingPropsModule auction={auction} community={community} />}
+      {(isTimedAuction(auction) && isProposingWindow) ||
+        (isInfAuction(auction) && votingPower === 0 && (
+          <AcceptingPropsModule auction={auction} community={community} />
+        ))}
 
-      {/** Infinite rounds allow voting during proposing phase */}
-      {(isVotingWindow || (isProposingWindow && isInfAuction(auction))) && (
-        <VotingModule
+      {isTimedAuction(auction) && isVotingWindow && (
+        <TimedRoundVotingModule
           communityName={community.name}
           setShowVotingModal={setShowVotingModal}
           totalVotes={getVoteTotal()}
         />
+      )}
+
+      {isInfAuction(auction) && (!account || votingPower > 0) && (
+        <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
       )}
 
       {isRoundOver && (

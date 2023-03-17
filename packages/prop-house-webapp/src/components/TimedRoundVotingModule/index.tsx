@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import classes from './VotingModule.module.css';
+import classes from './TimedRoundVotingModule.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
@@ -12,12 +12,14 @@ import ConnectButton from '../ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
-export interface VotingModuleProps {
+export interface TimedRoundVotingModuleProps {
   communityName: string;
   totalVotes: number | undefined;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }
-const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => {
+const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
+  props: TimedRoundVotingModuleProps,
+) => {
   const { communityName, totalVotes, setShowVotingModal } = props;
   const { address: account } = useAccount();
 
@@ -123,4 +125,4 @@ const VotingModule: React.FC<VotingModuleProps> = (props: VotingModuleProps) => 
   );
 };
 
-export default VotingModule;
+export default TimedRoundVotingModule;

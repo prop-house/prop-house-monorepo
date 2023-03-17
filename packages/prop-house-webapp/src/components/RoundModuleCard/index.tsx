@@ -7,7 +7,7 @@ import clsx from 'clsx';
 
 const RoundModuleCard: React.FC<{
   title: string | ReactElement;
-  subtitle: string | ReactElement;
+  subtitle?: string | ReactElement;
   content: ReactElement;
   type: 'proposing' | 'voting' | 'ended';
 }> = props => {
