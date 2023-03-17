@@ -17,17 +17,20 @@ import { useDispatch } from 'react-redux';
 import Modal from '../../Modal';
 import Button, { ButtonColor } from '../../Button';
 import { isRoundStepValid } from '../utils/isRoundStepValid';
-import VotingStrategies from '../VotingStrategies';
 import AwardsSelector from '../AwardsSelector';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
+import { VotingStrategyInfo, VotingStrategyType } from '@prophouse/sdk/dist/types';
+import NewStrategyModal from '../VotingStrategyModal';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
-  const addresses = [...round.votingContracts, ...round.votingUsers];
+  const [strategies, setStrategies] = useState<VotingStrategyInfo[]>(
+    round.strategies.length ? round.strategies : [],
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -36,16 +39,9 @@ const CreateTheRound = () => {
 
   const [editDatesModal, setShowEditDatesModal] = useState(false);
   const [editNameModal, setShowEditNameModal] = useState(false);
-  const [editVotesModal, setShowVotesModal] = useState(false);
+  const [editStrategiesModal, setShowStrategiesModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
-  const handleVotesSave = () => {
-    // TODO: since we save onChange here, we don't need to save on the modal save button
-    // TODO: but that also means the user can save invalid data, which will disable the Create button
-    // TODO: but the user won't know why, so we need to do some error handling
-    console.log('save changes', round.title, round.description);
-    setShowVotesModal(false);
-  };
   const handleAwardsSave = () => {
     // TODO: since we save onChange here, we don't need to save on the modal save button
     // TODO: but that also means the user can save invalid data, which will disable the Create button
@@ -59,29 +55,15 @@ const CreateTheRound = () => {
       {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
       {editNameModal && <EditNameDescriptionModal setShowEditNameModal={setShowEditNameModal} />}
 
-      {editVotesModal && (
-        <Modal
-          title="Edit voting strategies"
-          subtitle=""
-          body={<VotingStrategies />}
-          setShowModal={setShowVotesModal}
-          button={
-            <Button
-              text={'Cancel'}
-              bgColor={ButtonColor.Black}
-              onClick={() => setShowVotesModal(false)}
-            />
-          }
-          secondButton={
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Pink}
-              onClick={handleVotesSave}
-              disabled={!isRoundStepValid(round, 2)}
-            />
-          }
+      {editStrategiesModal && (
+        <NewStrategyModal
+          editMode
+          strategies={strategies}
+          setStrategies={setStrategies}
+          setShowVotingStrategyModal={setShowStrategiesModal}
         />
       )}
+
       {editAwardsModal && (
         <Modal
           title="Edit awards"
@@ -147,11 +129,29 @@ const CreateTheRound = () => {
       <Divider narrow />
 
       <Group gap={16}>
-        <EditSection section="votes" onClick={() => setShowVotesModal(true)} />
+        <EditSection section="votes" onClick={() => setShowStrategiesModal(true)} />
         <CardWrapper>
-          {addresses.map(a => (
-            <StrategyCard address={a} />
-          ))}
+          {strategies.map((s, idx) =>
+            s.strategyType === VotingStrategyType.VANILLA ? (
+              <></>
+            ) : s.strategyType === VotingStrategyType.WHITELIST ? (
+              s.members.map((m, idx) => (
+                <StrategyCard
+                  key={idx}
+                  type={s.strategyType}
+                  address={m.address}
+                  multiplier={Number(m.votingPower)}
+                />
+              ))
+            ) : (
+              <StrategyCard
+                key={idx}
+                type={s.strategyType}
+                address={s.address}
+                multiplier={s.multiplier}
+              />
+            ),
+          )}
         </CardWrapper>
       </Group>
 

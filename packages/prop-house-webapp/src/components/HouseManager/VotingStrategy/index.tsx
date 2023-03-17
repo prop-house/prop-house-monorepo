@@ -11,9 +11,10 @@ const VotingStrategy: React.FC<{
   type: string;
   address: string;
   multiplier?: number;
+  isDisabled?: boolean;
   removeStrategy: (address: string, type: string) => void;
 }> = props => {
-  const { type, address, multiplier, removeStrategy } = props;
+  const { type, address, multiplier, isDisabled, removeStrategy } = props;
 
   const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });
 
@@ -58,12 +59,14 @@ const VotingStrategy: React.FC<{
         text="&#x2715;"
         classNames={classes.xButtonMobile}
         bgColor={ButtonColor.White}
+        disabled={isDisabled}
         onClick={() => removeStrategy(address, type)}
       />
       <Button
         text="Remove"
         classNames={classes.xButtonDesktop}
         bgColor={ButtonColor.White}
+        disabled={isDisabled}
         onClick={() => removeStrategy(address, type)}
       />
     </Group>
