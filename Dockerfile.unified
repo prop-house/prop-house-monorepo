@@ -1,0 +1,51 @@
+FROM ubuntu:focal
+
+SHELL ["/bin/bash", "-c"]
+ENV TZ=UTC
+ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /app
+
+RUN apt-get update && \
+    apt-get install -y curl git python3.9 python3-pip \
+        python3.9-venv python3.9-dev libgmp3-dev && \
+    pip3 install --upgrade pip && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - &&\
+    apt-get install -y nodejs
+
+RUN npm i -g yarn
+
+RUN curl -L https://raw.githubusercontent.com/foundry-rs/foundry/master/foundryup/install | bash
+
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.foundry/bin
+
+RUN foundryup
+
+ADD . .
+
+RUN yarn
+
+WORKDIR /app/packages/prop-house-contracts
+
+RUN pip3 install wheel && \
+    pip3 install cairo-lang && \
+    pip3 install -r requirements.txt
+
+RUN git submodule update --init --recursive
+
+RUN yarn build
+
+WORKDIR /app/packages/prop-house-sdk
+
+RUN yarn build
+
+WORKDIR /app/packages/prop-house-checkpoint
+
+RUN yarn build
+
+WORKDIR /app/packages/prop-house-subgraph
+
+RUN yarn codegen
+RUN yarn build
