@@ -77,9 +77,9 @@ const RoundModules: React.FC<{
         )}
 
       {(isTimedAuction(auction) && isProposingWindow) ||
-        (isInfAuction(auction) && votingPower === 0 && (
-          <AcceptingPropsModule auction={auction} community={community} />
-        ))}
+      (isInfAuction(auction) && votingPower === 0) ? (
+        <AcceptingPropsModule auction={auction} community={community} />
+      ) : null}
 
       {isTimedAuction(auction) && isVotingWindow && (
         <TimedRoundVotingModule
