@@ -1,15 +1,14 @@
+.form {
+  margin-top: 3rem;
+}
 .inputLabel {
   font-size: 18px;
   font-weight: 700;
   color: var(--brand-black-transparent);
 }
 .inputGroup {
-  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
-.inputSection {
-  margin: 3rem 0rem;
-}
-
 .inputInfo {
   display: flex;
   justify-content: space-between;
@@ -25,6 +24,14 @@
   padding: 0.5rem 0rem;
   margin-bottom: 0rem;
 }
+.infRoundSectionsContainer {
+  display: flex;
+}
+.infRoundTitleSection {
+  width: 100%;
+  padding-right: 3rem;
+}
+
 .input {
   border: none;
   font-size: 20px;
@@ -62,4 +69,14 @@
 :global(.editPropContainer) .inputGroup,
 :global(.editPropContainer) .inputSection:first-child {
   margin-top: 0 !important;
+}
+
+@media (max-width: 767px) {
+  .infRoundSectionsContainer {
+    display: flex;
+    flex-direction: column;
+  }
+  .infRoundTitleSection {
+    padding-right: 0rem;
+  }
 }

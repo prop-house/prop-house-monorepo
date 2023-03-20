@@ -49,109 +49,117 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(initReqAmount);
+  const [fundReq, setFundReq] = useState(initReqAmount);
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
+  const maxFundingReq = 100;
   return (
     <>
       <Row>
-        {isInfRound && (
-          <div>
-            <label>
-              Fund request:
-              <br />
-              <select
-                value={selectedNumber || ''}
-                onChange={e => {
-                  setSelectedNumber(Number(e.target.value));
-                  onDataChange({ reqAmount: Number(e.target.value) });
-                }}
-              >
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        )}
         <Col xl={12}>
-          <Form>
-            <Form.Group className={classes.inputGroup}>
-              {formData.map((input: FormDataType) => {
-                return (
-                  <div className={classes.inputSection} key={input.title}>
-                    <div className={classes.inputInfo}>
-                      <Form.Label className={classes.inputLabel}>{input.title}</Form.Label>
-                      <Form.Label className={classes.inputChars}>
-                        {input.maxCount
-                          ? `${input.fieldValue.length}/${input.maxCount}`
-                          : input.fieldValue.length}
-                      </Form.Label>
-                    </div>
-
-                    <Form.Control
-                      as={input.type as any}
-                      autoFocus={input.focus}
-                      maxLength={input.maxCount && input.maxCount}
-                      placeholder={input.placeholder}
-                      className={clsx(
-                        classes.input,
-                        input.fieldName === 'what' && classes.descriptionInput,
-                      )}
-                      onChange={e => {
-                        setBlurred(false);
-                        onDataChange({ [input.fieldName]: e.target.value });
-                      }}
-                      value={data && input.fieldValue}
-                      onBlur={() => {
-                        setBlurred(true);
-                      }}
-                    />
-
-                    {blurred && validateInput(input.minCount, input.fieldValue.length) && (
-                      <p className={classes.inputError}>{input.error}</p>
+          <Form className={classes.form}>
+            {formData.map((input: FormDataType, index: number) => {
+              return (
+                <div className={isInfRound && index === 0 ? classes.infRoundSectionsContainer : ''}>
+                  <Form.Group
+                    className={clsx(
+                      classes.inputGroup,
+                      isInfRound && index === 0 ? classes.infRoundTitleSection : '',
                     )}
-                  </div>
-                );
-              })}
+                  >
+                    <div className={classes.inputSection} key={input.title}>
+                      <div className={classes.inputInfo}>
+                        <Form.Label className={classes.inputLabel}>{input.title}</Form.Label>
+                        <Form.Label className={classes.inputChars}>
+                          {input.maxCount
+                            ? `${input.fieldValue.length}/${input.maxCount}`
+                            : input.fieldValue.length}
+                        </Form.Label>
+                      </div>
+
+                      <Form.Control
+                        as={input.type as any}
+                        autoFocus={input.focus}
+                        maxLength={input.maxCount && input.maxCount}
+                        placeholder={input.placeholder}
+                        className={clsx(
+                          classes.input,
+                          input.fieldName === 'what' && classes.descriptionInput,
+                        )}
+                        onChange={e => {
+                          setBlurred(false);
+                          onDataChange({ [input.fieldName]: e.target.value });
+                        }}
+                        value={data && input.fieldValue}
+                        onBlur={() => {
+                          setBlurred(true);
+                        }}
+                      />
+
+                      {blurred && validateInput(input.minCount, input.fieldValue.length) && (
+                        <p className={classes.inputError}>{input.error}</p>
+                      )}
+                    </div>
+                  </Form.Group>
+                  {isInfRound && index === 0 && (
+                    <Form.Group className={classes.inputGroup}>
+                      <div className={classes.inputSection} key={input.title}>
+                        <div className={classes.inputInfo}>
+                          <Form.Label className={classes.inputLabel}>Funds Request</Form.Label>
+                        </div>
+                        <Form.Control
+                          type="number"
+                          className={clsx(classes.input, classes.reqAmountInput)}
+                          value={fundReq || ''}
+                          onChange={e => {
+                            setFundReq(Number(e.target.value));
+                            onDataChange({ reqAmount: Number(e.target.value) });
+                          }}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          Exceeds max amount of {1}
+                        </Form.Control.Feedback>
+                      </div>
+                    </Form.Group>
+                  )}
+                </div>
+              );
+            })}
+
+            <Form.Group>
+              <div className={classes.inputInfo}>
+                <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>
+                  {descriptionData.title}
+                </Form.Label>
+
+                <Form.Label className={classes.inputChars}>
+                  {quill && quill.getText().length - 1}
+                </Form.Label>
+              </div>
 
               <>
-                <div className={classes.inputInfo}>
-                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>
-                    {descriptionData.title}
-                  </Form.Label>
-
-                  <Form.Label className={classes.inputChars}>
-                    {quill && quill.getText().length - 1}
-                  </Form.Label>
-                </div>
-
-                <>
-                  {/* 
+                {/* 
                     When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
                   */}
-                  <div className="hideBorderBox"></div>
-                  <div
-                    ref={quillRef}
-                    onDrop={onFileDrop}
-                    placeholder={descriptionData.placeholder}
-                    onBlur={() => {
-                      setEditorBlurred(true);
-                    }}
-                  />
+                <div className="hideBorderBox"></div>
+                <div
+                  ref={quillRef}
+                  onDrop={onFileDrop}
+                  placeholder={descriptionData.placeholder}
+                  onBlur={() => {
+                    setEditorBlurred(true);
+                  }}
+                />
 
-                  {editorBlurred &&
-                    quill &&
-                    !inputHasImage(descriptionData.fieldValue) &&
-                    validateInput(descriptionData.minCount, quill.getText().length - 1) && (
-                      <p className={classes.inputError}>{descriptionData.error}</p>
-                    )}
-                </>
+                {editorBlurred &&
+                  quill &&
+                  !inputHasImage(descriptionData.fieldValue) &&
+                  validateInput(descriptionData.minCount, quill.getText().length - 1) && (
+                    <p className={classes.inputError}>{descriptionData.error}</p>
+                  )}
               </>
             </Form.Group>
           </Form>
