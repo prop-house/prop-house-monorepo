@@ -1,16 +1,32 @@
-import { Signer } from '@ethersproject/abstract-signer';
-import { Provider } from '@ethersproject/providers';
+import { Provider as StarknetProvider, ProviderOptions as StarknetProviderOptions } from 'starknet';
+import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/contracts';
+import { Web3Provider, JsonRpcProvider } from '@ethersproject/providers';
 import { BigNumberish } from '@ethersproject/bignumber';
-import { Call, Provider as StarknetProvider } from 'starknet';
-import { TimedFundingRoundEnvelope } from './rounds';
-import { VotingStrategyBase } from './voting';
+import { StrategyHandlerBase, Voting } from './voting';
+import { Wallet } from '@ethersproject/wallet';
+import { QueryWrapper } from './gql';
 
 //#region Prop House
 
-export interface PropHouseConfig<CVS extends Custom | void = void> {
-  chainId: number;
-  signerOrProvider: Signer | Provider;
-  customVotingStrategies?: Newable<VotingStrategyBase<VotingStrategyInfo<CVS>>>[];
+/**
+ * EVM provider/connection information and optional signer
+ */
+export type EVM = Web3Provider | JsonRpcProvider | Wallet | string;
+
+/**
+ * Starknet connection information
+ */
+export type Starknet = StarknetProvider | StarknetProviderOptions;
+
+export interface ChainConfig {
+  evmChainId: number;
+  evm: EVM;
+  starknet?: Starknet;
+}
+
+export interface PropHouseConfig<CS extends Custom | void = void> extends ChainConfig {
+  customStrategies?: Newable<StrategyHandlerBase<VotingStrategyConfig<CS>>>[];
+  customStarknetRelayer?: string;
 }
 
 //#endregion
@@ -73,6 +89,10 @@ export interface HouseConfig {
   [HouseType.COMMUNITY]: CommunityHouseConfig;
 }
 
+export interface HouseContract {
+  [HouseType.COMMUNITY]: CommunityHouseContract;
+}
+
 export interface HouseInfo<T extends HouseType> {
   houseType: T;
   config: HouseConfig[T];
@@ -80,37 +100,128 @@ export interface HouseInfo<T extends HouseType> {
 
 //#endregion
 
-//#region Rounds
+//#region Timed Funding Round
+
+export namespace TimedFunding {
+  export interface Config<CS extends Custom | void> {
+    awards: Asset[];
+    strategies: VotingStrategyConfig<CS>[];
+    proposalPeriodStartUnixTimestamp: number;
+    proposalPeriodDurationSecs: number;
+    votePeriodDurationSecs: number;
+    winnerCount: number;
+  }
+  export interface ProposalVote {
+    proposalId: number;
+    votingPower: BigNumberish;
+  }
+  export interface ProposeMessage {
+    round: string;
+    authStrategy: string;
+    metadataUri: string;
+  }
+  export interface VoteMessage {
+    round: string;
+    authStrategy: string;
+    votingStrategyIds: string[];
+    votingStrategyParams: string[][];
+    proposalVotes: ProposalVote[];
+  }
+  export interface EVMSigProposeMessage extends ProposeMessage {
+    proposerAddress: string;
+    salt: string | number;
+  }
+  export interface EVMSigVoteMessage extends VoteMessage {
+    round: string;
+    authStrategy: string;
+    voterAddress: string;
+    proposalVotesHash: string;
+    votingStrategiesHash: string;
+    votingStrategyParamsHash: string;
+    salt: string | number;
+  }
+  export interface VoteConfig {
+    round: string;
+    votes: TimedFunding.ProposalVote[];
+  }
+  export interface ProposeConfig {
+    round: string;
+    metadataUri: string;
+  }
+  export enum Action {
+    Propose = 'PROPOSE',
+    Vote = 'VOTE',
+  }
+  export interface ActionData {
+    [Action.Propose]: EVMSigProposeMessage;
+    [Action.Vote]: EVMSigVoteMessage;
+  }
+  export interface RequestParams<A extends Action = Action> {
+    address: string;
+    signature: string;
+    action: Action;
+    data: ActionData[A];
+  }
+  export type Contract = TimedFundingRoundContract;
+  export interface Award {
+    assetId: Uint256;
+    amount: Uint256;
+  }
+  export interface ProposeCalldataConfig {
+    proposer: string;
+    metadataUri: string;
+  }
+  export interface VoteCalldataConfig {
+    voter: string;
+    votingStrategyIds: string[];
+    votingStrategyParams: string[][];
+    proposalVotes: ProposalVote[];
+  }
+  export interface FinalizationConfig {
+    round: string;
+    awards: Award[];
+  }
+}
+
+//#endregion
+
+//#region Round
 
 export enum RoundType {
   TIMED_FUNDING = 'TIMED_FUNDING',
 }
 
-export interface TimedFundingRoundConfig {
-  awards: Asset[];
-  strategies: VotingStrategyInfo[];
-  proposalPeriodStartTimestamp: number;
-  proposalPeriodDuration: number;
-  votePeriodDuration: number;
-  winnerCount: number;
+export interface RoundConfig<CS extends Custom | void = void> {
+  [RoundType.TIMED_FUNDING]: TimedFunding.Config<CS>;
 }
 
-export interface RoundConfig {
-  [RoundType.TIMED_FUNDING]: TimedFundingRoundConfig;
+export interface RoundContract {
+  [RoundType.TIMED_FUNDING]: TimedFunding.Contract;
 }
 
-export interface RoundInfo<T extends RoundType> {
+export interface RoundInfo<T extends RoundType, CS extends Custom | void = void> {
   roundType: T;
-  config: RoundConfig[T];
+  config: RoundConfig<CS>[T];
   title: string;
   description: string;
+}
+
+export interface RoundChainConfig<CS extends void | Custom = void> extends ChainConfig {
+  voting?: Voting<CS>;
+  query?: QueryWrapper;
+  customStarknetRelayer?: string;
 }
 
 //#endregion
 
 //#region Voting Strategies
 
+export interface VotingChainConfig<CS extends Custom | void> extends ChainConfig {
+  customStrategies?: Newable<StrategyHandlerBase<VotingStrategyConfig<CS>>>[];
+}
+
 export enum VotingStrategyType {
+  ERC1155_BALANCE_OF = 'ERC1155_BALANCE_OF',
   BALANCE_OF = 'BALANCE_OF',
   WHITELIST = 'WHITELIST',
   VANILLA = 'VANILLA',
@@ -123,8 +234,8 @@ export interface BalanceOf {
   multiplier?: number;
 }
 
-export interface BalanceOfWithTokenID {
-  strategyType: VotingStrategyType.BALANCE_OF;
+export interface ERC1155BalanceOf {
+  strategyType: VotingStrategyType.ERC1155_BALANCE_OF;
   assetType: AssetType.ERC1155;
   address: string;
   tokenId: string;
@@ -149,59 +260,43 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultVotingStrategies = BalanceOf | BalanceOfWithTokenID | Whitelist | Vanilla;
+export type DefaultVotingConfigs = BalanceOf | ERC1155BalanceOf | Whitelist | Vanilla;
 
 // prettier-ignore
-export type VotingStrategyInfo<C extends Custom | void = void> = C extends void ? DefaultVotingStrategies : DefaultVotingStrategies;
+export type VotingStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultVotingConfigs : DefaultVotingConfigs | C;
 
-export interface StarknetVotingStrategy {
-  addr: BigNumberish;
-  params: BigNumberish[];
-}
-
-//#endregion
-
-//#region Starknet
-
-export interface ClientConfig {
-  ethUrl: string;
-  starkProvider: StarknetProvider;
-}
-
-export interface IEnvelope<Message, SignatureMessage, Action> {
+export interface VotingStrategy {
   address: string;
-  signature: Message extends SignatureMessage ? string : null;
-  data: {
-    action: Action;
-    message: Message;
-  };
+  params: (string | number)[];
 }
 
-export interface AuthStrategy<Message, SignatureMessage, Action> {
-  type: string;
-  createCall(
-    envelope: IEnvelope<Message, SignatureMessage, Action>,
-    selector: string,
-    calldata: string[],
-  ): Call;
+export interface VotingStrategyWithID extends VotingStrategy {
+  id: string;
 }
 
-export type Envelope = TimedFundingRoundEnvelope;
-
-export interface VotingStrategy<E extends Envelope> {
-  type: string;
-  getParams(
-    address: string,
-    index: number,
-    envelope: E,
-    clientConfig: ClientConfig,
-  ): Promise<string[]>;
+export interface VotingConfig {
+  voter: string;
+  timestamp: string;
+  address: string;
+  params: (string | number)[];
 }
-
-//#endregion
 
 //#region Helpers
 
 export type Newable<T> = new (...args: any[]) => T;
+
+export interface Uint256 {
+  low: string;
+  high: string;
+}
+
+//#endregion
+
+//#region GraphQL
+
+export interface GraphQL<T = string> {
+  evm: T;
+  starknet: T;
+}
 
 //#endregion

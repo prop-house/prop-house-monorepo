@@ -65,6 +65,31 @@ dataSources:
         - event: BatchDepositToRound(address,address,(uint8,address,uint256,uint256)[])
           handler: handleBatchDepositToRound
     network: goerli
+  - kind: ethereum
+    name: CreatorPassIssuer
+    source:
+      abi: CreatorPassIssuer
+      address: "0x8Ca0CD6B7e76deDD93793C79D5E904529306Ef85"
+      startBlock: 8584976
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/creator-pass-issuer.ts
+      entities:
+        - Account
+        - House
+      abis:
+        - name: CreatorPassIssuer
+          file: ./abis/CreatorPassIssuer.json
+      eventHandlers:
+        - event: TransferSingle(indexed address,indexed address,indexed
+            address,uint256,uint256)
+          handler: handleSingleTransfer
+        - event: TransferBatch(indexed address,indexed address,indexed
+            address,uint256[],uint256[])
+          handler: handleBatchTransfer
+    network: goerli
 templates:
   - name: CommunityHouse
     kind: ethereum/contract

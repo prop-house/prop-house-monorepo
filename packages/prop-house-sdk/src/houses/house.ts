@@ -1,46 +1,56 @@
-import { HouseInfo, HouseType } from '../types';
-import { HouseBase } from './base';
-import { CommunityHouse } from './community';
+import { ChainConfig, HouseInfo, HouseType } from '../types';
+import { HouseBase, CommunityHouse } from './implementations';
 
 export class House {
-  private readonly _houses: Map<HouseType, HouseBase<HouseType>>;
+  private readonly _community: CommunityHouse;
+  private readonly _all: Map<HouseType, HouseBase<HouseType>>;
 
-  constructor(chainId: number) {
-    this._houses = new Map([[HouseType.COMMUNITY, CommunityHouse.for(chainId)]]);
+  constructor(config: ChainConfig) {
+    this._community = CommunityHouse.for(config);
+    this._all = new Map([[this._community.type, this._community]]);
   }
 
   /**
-   * Returns a `House` instance for the provided chain ID
-   * @param chainId
+   * Returns a `House` instance for the provided chain configuration
+   * @param config The chain configuration
    */
-  public static for(chainId: number) {
-    return new House(chainId);
+  public static for(config: ChainConfig) {
+    return new House(config);
   }
 
   /**
-   * House helpers
+   * Community house utilities
    */
-  public get houses() {
-    return this._houses;
+  public get community() {
+    return this._community;
   }
 
   /**
-   * @notice Get the house helper for the provided house type
-   * @param houseType The house type
+   * Get a house utility class instance
+   * @param type The house type
    */
-  public getHouse(houseType: HouseType) {
-    if (!this.houses.has(houseType)) {
-      throw new Error(`Unknown house type: ${houseType}`);
+  public get(type: HouseType) {
+    if (!this._all.has(type)) {
+      throw new Error(`Unknown house type: ${type}`);
     }
-    return this.houses.get(houseType)!;
+    return this._all.get(type)!;
   }
 
   /**
-   * @notice Returns the implementation contract address for the provided house type
-   * @param houseType The house type
+   * @notice Get a house contract instance
+   * @param type The house type
+   * @param address The house address
    */
-  public getImplForType(houseType: HouseType) {
-    return this.getHouse(houseType).impl;
+  public getContract(type: HouseType, address: string) {
+    return this.get(type).getContract(address);
+  }
+
+  /**
+   * @notice Get the implementation contract address for the provided house type
+   * @param type The house type
+   */
+  public getImplAddressForType(type: HouseType) {
+    return this.get(type).impl;
   }
 
   /**
@@ -48,6 +58,6 @@ export class House {
    * @param house The house information
    */
   public getABIEncodedConfig<HT extends HouseType>(house: HouseInfo<HT>) {
-    return this.getHouse(house.houseType).getABIEncodedConfig(house.config);
+    return this.get(house.houseType).getABIEncodedConfig(house.config);
   }
 }

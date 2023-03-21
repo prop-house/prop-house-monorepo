@@ -9,7 +9,6 @@ enum VotingStrategyType {
   VANILLA
   WHITELIST
   BALANCE_OF
-  BALANCE_OF_WITH_MULTIPLIER
   UNKNOWN
 }
 
@@ -93,11 +92,11 @@ type House @entity {
   "The creation transaction hash"
   creationTx: Bytes!
 
-  "Accounts that hold creator pass(es) on the house"
-  creators: [Account!]
-
   "All rounds on the house"
   rounds: [Round!]! @derivedFrom(field: "house")
+
+  "All accounts who currently have permission to create rounds on the house (in addition to the owner)"
+  roundCreators: [RoundCreator!]! @derivedFrom(field: "house")
 }
 
 type Round @entity {
@@ -133,6 +132,9 @@ type Round @entity {
 
   "The configuration for a timed funding round (Null if type != TIMED_FUNDING)"
   timedFundingConfig: TimedFundingRoundConfig
+
+  "The selected voting strategies"
+  votingStrategies: [RoundVotingStrategy!]! @derivedFrom(field: "round")
 
   "Up-to-date round balances"
   balances: [Balance!]! @derivedFrom(field: "round")
@@ -171,8 +173,11 @@ type Balance @entity {
 }
 
 type TimedFundingRoundConfig @entity {
-  "A concatenation of the registration tx hash and the the event log index"
+  "A concatenation of the round address and '-config'"
   id: ID!
+
+  "The round that the config belongs to"
+  round: Round!
     
   "The number of possible round winners"
   winnerCount: Int!
@@ -188,12 +193,40 @@ type TimedFundingRoundConfig @entity {
 
   "The vote period duration in seconds"
   votePeriodDuration: BigInt
+  
+  "The unix timestamp when the round configuration was registered"
+  registeredAt: BigInt!
 
-  "The selected voting strategies"
-  votingStrategies: [VotingStrategy!]!
+  "The registration transaction hash"
+  registrationTx: Bytes!
 
   "The awards offered in the round"
   awards: [Award!]! @derivedFrom(field: "round")
+}
+
+type RoundCreator @entity {
+  "A concatenation of the house address and creator account id"
+  id: ID!
+
+  "The house that the creator belongs to"
+  house: House!
+
+  "The creator account"
+  creator: Account!
+
+  "The number of passes that the creator holds"
+  passCount: Int!
+}
+
+type RoundVotingStrategy @entity {
+  "A concatenation of the round address and strategy ID"
+  id: ID!
+
+  "The round that the voting strategy belongs to"
+  round: Round!
+
+  "The voting strategy"
+  votingStrategy: VotingStrategy!
 }
 
 type Account @entity {
@@ -201,10 +234,13 @@ type Account @entity {
   id: ID!
 
   "Houses owned by the account"
-  house: [House!]! @derivedFrom(field: "owner")
+  ownedHouses: [House!]! @derivedFrom(field: "owner")
+
+  "Houses on which the account can create rounds"
+  creatorOnHouses: [RoundCreator!]! @derivedFrom(field: "creator")
 
   "Rounds created by the account"
-  rounds: [Round!]! @derivedFrom(field: "creator")
+  createdRounds: [Round!]! @derivedFrom(field: "creator")
 
   "Deposits made by the account"
   deposits: [Deposit!]! @derivedFrom(field: "depositor")
@@ -323,6 +359,9 @@ type VotingStrategy @entity {
 
   "The voting strategy params"
   params: [BigInt!]!
+
+  "Rounds that use this voting strategy"
+  rounds: [RoundVotingStrategy!]! @derivedFrom(field: "votingStrategy")
 }
 
 type Asset @entity {

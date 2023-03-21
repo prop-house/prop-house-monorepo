@@ -16,9 +16,18 @@ export interface RoundImpls {
 
 export interface VotingStrategies {
   balanceOf: string;
-  balanceOfMultiplier: string;
   whitelist: string;
   vanilla: string;
+}
+
+export interface AuthStrategies {
+  timedFundingEthSig: string;
+  timedFundingEthTx: string;
+}
+
+export interface FossilContracts {
+  factRegistry: string;
+  l1HeadersStore: string;
 }
 
 export interface ClassHashes {
@@ -32,7 +41,10 @@ export interface EVMContracts {
 }
 
 export interface StarknetContracts {
+  votingRegistry: string;
   voting: VotingStrategies;
+  auth: AuthStrategies;
+  fossil: FossilContracts;
   classHashes: ClassHashes;
 }
 
@@ -53,11 +65,19 @@ export const contracts: Record<number, ContractAddresses> = {
       },
     },
     starknet: {
+      votingRegistry: goerli.starknet.address.votingStrategyRegistry,
       voting: {
         balanceOf: goerli.starknet.address.ethereumBalanceOfVotingStrategy,
-        balanceOfMultiplier: goerli.starknet.address.ethereumBalanceOfMultiplierVotingStrategy,
         whitelist: goerli.starknet.address.merkleWhitelistVotingStrategy,
         vanilla: goerli.starknet.address.vanillaVotingStrategy,
+      },
+      auth: {
+        timedFundingEthSig: goerli.starknet.address.timedFundingRoundEthSigAuthStrategy,
+        timedFundingEthTx: goerli.starknet.address.timedFundingRoundEthTxAuthStrategy,
+      },
+      fossil: {
+        factRegistry: goerli.starknet.address.fossil.factRegistry,
+        l1HeadersStore: goerli.starknet.address.fossil.l1HeadersStore,
       },
       classHashes: {
         timedFunding: goerli.starknet.classHash.timedFundingRound,

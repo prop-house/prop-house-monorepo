@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "0.1.0-alpha.8",
+  "version": "0.1.0-alpha.9",
   "description": "Useful tooling for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -12,7 +12,10 @@
     "build": "tsc -p tsconfig.build.json",
     "prepare": "yarn build",
     "test": "mocha -r ts-node/register \"test/**/*.test.ts\"",
-    "format": "prettier --write '{,*/**/}*.ts'"
+    "format": "prettier --write '{,*/**/}*.ts' '!dist/**'",
+    "codegen": "yarn codegen:evm && yarn codegen:starknet",
+    "codegen:evm": "graphql-codegen --config scripts/gql-codegen.evm.ts",
+    "codegen:starknet": "graphql-codegen --config scripts/gql-codegen.starknet.ts"
   },
   "dependencies": {
     "@ethereumjs/block": "~3.6.3",
@@ -26,13 +29,16 @@
     "@ethersproject/keccak256": "~5.5.0",
     "@ethersproject/providers": "~5.5.0",
     "@ethersproject/solidity": "~5.5.0",
-    "@prophouse/contracts": "^0.1.0-alpha.7",
+    "@prophouse/contracts": "^0.1.0-alpha.8",
     "bn.js": "^5.2.1",
+    "graphql-request": "^5.2.0",
     "randombytes": "^2.1.0",
-    "starknet": "4.19.3",
+    "starknet": "4.22.0",
     "time-ts": "^0.1.0"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^3.2.1",
+    "@graphql-codegen/client-preset": "^2.1.0",
     "@types/bn.js": "^5.1.1",
     "@types/randombytes": "^2.0.0"
   }

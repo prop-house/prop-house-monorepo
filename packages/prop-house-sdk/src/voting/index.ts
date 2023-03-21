@@ -1,5 +1,7 @@
-export { VotingStrategyBase } from './base';
-export { BalanceOfVotingStrategy } from './balance-of';
-export { VanillaVotingStrategy } from './vanilla';
-export { WhitelistVotingStrategy } from './whitelist';
+export {
+  StrategyHandlerBase,
+  BalanceOfHandler,
+  VanillaHandler,
+  WhitelistHandler,
+} from './handlers';
 export { Voting } from './voting';
