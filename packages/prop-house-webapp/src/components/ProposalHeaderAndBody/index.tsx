@@ -28,6 +28,7 @@ interface ProposalHeaderAndBodyProps {
   showVoteAllotmentModal: boolean;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
+  proposals: StoredProposalWithVotes[];
 }
 
 const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
@@ -43,12 +44,11 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     showVoteAllotmentModal,
     editProposalMode,
     setEditProposalMode,
+    proposals,
   } = props;
 
   const dispatch = useAppDispatch();
-
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const isFirstProp = currentPropIndex === 1;
   const isLastProp = proposals && currentPropIndex === proposals.length;
