@@ -44,7 +44,6 @@ const SplitAwards: React.FC<{
   const { editMode, awards, setAwards, winnerCount, setWinnerCount } = props;
 
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
-  // const [award, setAward] = useState(newAward);
 
   const [award, setAward] = useState({ ...newAward, price: 0 });
 
@@ -95,7 +94,6 @@ const SplitAwards: React.FC<{
           address: erc20TokenAddresses[token],
           type,
         });
-    console.log('changed!', price, erc20Name[token], erc20TokenAddresses[token]);
     setAward({ ...award, ...updated });
   };
 
@@ -200,10 +198,22 @@ const SplitAwards: React.FC<{
   };
 
   const handleModalClose = () => {
-    // TODO - if a selection has been made & saved, then they open it back up, make a selection but dont save, then close the modal, the selection is still saved. Need to reset the state to the original selection.
+    // set the award back to awards[0] which is the server data since we're not saving the changes
+    setAward(awards[0]);
 
     setShowSplitAwardModal(false);
   };
+
+  const getAwardMessage = (
+    <>
+      <TruncateThousands amount={editMode ? winnerCount! : round.numWinners} decimals={2} /> winner
+      {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : 's'} will receive{' '}
+      <TruncateThousands amount={awards[0].amount} decimals={2} />{' '}
+      {awards[0].symbol || awards[0].name} ($
+      {formatCommaNum(awards[0].price * awards[0].amount)})
+      {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : ' each'}.
+    </>
+  );
 
   return (
     <>
@@ -263,7 +273,7 @@ const SplitAwards: React.FC<{
                 </Group>
               </div>
 
-              {!editMode && <div>${formatCommaNum(award.price * award.amount)}</div>}
+              {!editMode && <div>${formatCommaNum(awards[0].price * awards[0].amount)}</div>}
             </div>
           </Group>
 
@@ -285,15 +295,7 @@ const SplitAwards: React.FC<{
         </Group>
       </Group>
 
-      <Text type="body">
-        <TruncateThousands amount={editMode ? winnerCount! : round.numWinners} decimals={2} />{' '}
-        winner
-        {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : 's'} will receive{' '}
-        <TruncateThousands amount={awards[0].amount} decimals={2} />{' '}
-        {awards[0].symbol || awards[0].name} ($
-        {formatCommaNum(award.price * award.amount)})
-        {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : ' each'}.
-      </Text>
+      <Text type="body">{getAwardMessage}</Text>
     </>
   );
 };
