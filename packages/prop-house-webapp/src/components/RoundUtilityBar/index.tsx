@@ -25,6 +25,7 @@ import {
   RoundUtilBarItemBalance,
   RoundUtilBarItemTooltip,
 } from '../RoundUtilBarItem';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 export interface RoundUtilityBarProps {
   auction: StoredAuctionBase;
@@ -36,19 +37,6 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-
-  const infRoundBalance = () => {
-    if (!isInfAuction(auction) || !proposals) return auction.fundingAmount;
-    const winners = getWinningIds(proposals, auction);
-    return (
-      auction.fundingAmount -
-      proposals.reduce((prev, prop) => {
-        const won = winners.includes(prop.id);
-        const reqAmount = Number(prop.reqAmount);
-        return !won && reqAmount !== null ? prev : prev + reqAmount;
-      }, 0)
-    );
-  };
 
   const allowSortByVotes = auctionVoting || auctionEnded;
 
@@ -139,13 +127,17 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                 content={
                   <>
                     <TruncateThousands
-                      amount={infRoundBalance()}
+                      amount={
+                        isInfAuction(auction) && proposals ? infRoundBalance(proposals, auction) : 0
+                      }
                       decimals={countDecimals(auction.fundingAmount) === 3 ? 3 : 2}
                     />{' '}
                     {auction.currencyType}
                   </>
                 }
-                progress={infRoundBalance()}
+                progress={
+                  isInfAuction(auction) && proposals ? infRoundBalance(proposals, auction) : 0
+                }
               />
             </>
           )}
