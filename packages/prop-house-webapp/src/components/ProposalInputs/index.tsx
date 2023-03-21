@@ -25,6 +25,7 @@ const ProposalInputs: React.FC<{
   editorBlurred: boolean;
   setEditorBlurred: (blurred: boolean) => void;
   initReqAmount: number | null;
+  remainingBal: number | null;
 }> = ({
   quill,
   quillRef,
@@ -35,13 +36,19 @@ const ProposalInputs: React.FC<{
   setEditorBlurred,
   onFileDrop,
   initReqAmount,
+  remainingBal,
 }) => {
+  console.log(remainingBal);
   const location = useLocation();
   // active round comes from two diff places depending on where inputs are being displayed
   const roundFromLoc = location.state && location.state.auction; // creating new prop
   const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
   const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
-  const remainingBal = 100;
+  const roundCurrency = roundFromLoc
+    ? roundFromLoc.currencyType
+    : roundFromStore
+    ? roundFromStore.currencyType
+    : '';
 
   const data = useAppSelector(state => state.editor.proposal);
   const { data: signer } = useSigner();
@@ -55,8 +62,6 @@ const ProposalInputs: React.FC<{
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
-
-  const maxFundingReq = 100;
 
   const titleAndTldrInputs = (data: any, isTitleSection: boolean = false) => (
     <InputFormGroup
@@ -105,20 +110,21 @@ const ProposalInputs: React.FC<{
                   content={
                     <>
                       <Form.Control
-                        type="number"
                         className={clsx(classes.input, classes.reqAmountInput)}
+                        placeholder={roundCurrency}
                         value={fundReq || ''}
                         onChange={e => {
                           setFundReq(Number(e.target.value));
                           onDataChange({ reqAmount: Number(e.target.value) });
                         }}
-                        isInvalid={fundReq ? fundReq > remainingBal : false}
+                        isInvalid={fundReq && remainingBal ? fundReq > remainingBal : false}
                       />
                       <Form.Control.Feedback type="invalid">
-                        Exceeds max amount of {remainingBal}
+                        Exceeds max remaining balance of {remainingBal} {roundCurrency}
                       </Form.Control.Feedback>
                     </>
                   }
+                  formGroupClasses={classes.fundReqFormGroup}
                 />
               )}
             </div>

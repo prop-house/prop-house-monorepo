@@ -36,6 +36,7 @@ const ProposalEditor: React.FC<{
   setInvalidFileMessage: Dispatch<SetStateAction<string>>;
   duplicateFile: { error: boolean; name: string };
   setDuplicateFile: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
+  remainingBal?: number;
 }> = props => {
   const {
     fields,
@@ -51,6 +52,7 @@ const ProposalEditor: React.FC<{
     duplicateFile,
     setDuplicateFile,
     onFileDrop,
+    remainingBal,
   } = props;
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
@@ -186,6 +188,7 @@ const ProposalEditor: React.FC<{
         editorBlurred={editorBlurred}
         setEditorBlurred={setEditorBlurred}
         initReqAmount={data.reqAmount}
+        remainingBal={remainingBal ? remainingBal : null}
       />
 
       {showImageUploadModal && (

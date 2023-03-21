@@ -11,6 +11,7 @@ import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
+import { useAppSelector } from '../../hooks';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -18,6 +19,7 @@ const AcceptingPropsModule: React.FC<{
 }> = props => {
   const { auction, community } = props;
 
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -67,7 +69,7 @@ const AcceptingPropsModule: React.FC<{
             bgColor={ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create', { state: { auction, community } });
+              navigate('/create', { state: { auction, community, proposals } });
             }}
           />
         ) : (

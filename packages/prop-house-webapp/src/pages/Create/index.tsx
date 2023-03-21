@@ -26,6 +26,7 @@ import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount, useSigner } from 'wagmi';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
@@ -37,6 +38,8 @@ const Create: React.FC<{}> = () => {
   const location = useLocation();
   const activeAuction = location.state.auction;
   const activeCommunity = location.state.community;
+  const activeProps = location.state.proposals;
+  const remainingBal = infRoundBalance(activeProps, activeAuction);
 
   const [showPreview, setShowPreview] = useState(false);
   const [propId, setPropId] = useState<null | number>(null);
@@ -236,6 +239,7 @@ const Create: React.FC<{}> = () => {
                       setInvalidFileMessage={setInvalidFileMessage}
                       duplicateFile={duplicateFile}
                       setDuplicateFile={setDuplicateFile}
+                      remainingBal={remainingBal}
                     />
                   )}
                 </Col>
