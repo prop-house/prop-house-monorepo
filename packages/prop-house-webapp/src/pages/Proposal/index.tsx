@@ -11,8 +11,6 @@ import {
   setActiveProposal,
   setActiveRound,
 } from '../../state/slices/propHouse';
-
-import proposalFields from '../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';

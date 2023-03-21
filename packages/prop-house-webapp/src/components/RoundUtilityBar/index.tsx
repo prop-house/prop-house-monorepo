@@ -18,7 +18,6 @@ import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countDecimals } from '../../utils/countDecimals';
-import getWinningIds from '../../utils/getWinningIds';
 import { timestampToDateUnit } from '../../utils/timestampToDateUnit';
 import {
   RoundUtilBarItem,

@@ -1,6 +1,6 @@
 import classes from './RenderedProposalFields.module.css';
 import { Row, Col } from 'react-bootstrap';
-import proposalFields, { ProposalFields } from '../../utils/proposalFields';
+import proposalFields from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';

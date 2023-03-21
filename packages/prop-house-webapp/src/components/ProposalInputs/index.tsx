@@ -50,7 +50,6 @@ const ProposalInputs: React.FC<{
     ? roundFromStore.currencyType
     : '';
 
-  const data = useAppSelector(state => state.editor.proposal);
   const { data: signer } = useSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
