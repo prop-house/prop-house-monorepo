@@ -64,18 +64,27 @@ export class PropHouseWrapper {
 
   async getAuctionsForCommunity(id: number): Promise<StoredAuctionBase[]> {
     try {
-      const rawTimedAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
-      const rawInfAuctions = (await axios.get(`${this.host}/infinite-auctions/forCommunity/${id}`))
-        .data;
+      const [rawTimedAuctions, rawInfAuctions] = await Promise.allSettled([
+        axios.get(`${this.host}/auctions/forCommunity/${id}`),
+        axios.get(`${this.host}/infinite-auctions/forCommunity/${id}`),
+      ]);
 
-      const timed = rawTimedAuctions.map(StoredInfiniteAuction.FromResponse);
-      const infinite = rawInfAuctions.map(StoredInfiniteAuction.FromResponse);
+      const timed =
+        rawTimedAuctions.status === 'fulfilled'
+          ? rawTimedAuctions.value.data.map(StoredTimedAuction.FromResponse)
+          : [];
+
+      const infinite =
+        rawInfAuctions.status === 'fulfilled'
+          ? rawInfAuctions.value.data.map(StoredInfiniteAuction.FromResponse)
+          : [];
 
       return timed.concat(infinite);
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e.response?.data?.message ?? 'Error occurred while fetching auctions for community';
     }
   }
+
   async getActiveAuctions(skip = 5, limit = 5): Promise<StoredTimedAuction[]> {
     try {
       const rawAuctions = (
