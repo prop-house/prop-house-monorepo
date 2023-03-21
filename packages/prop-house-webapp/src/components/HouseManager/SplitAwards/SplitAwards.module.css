@@ -67,6 +67,7 @@
   width: 100%;
   border: 1px solid var(--border-med) !important;
   font-size: 14px;
+  gap: 6px;
 }
 .award span {
   color: var(--brand-black);
@@ -76,9 +77,9 @@
   font-weight: 700;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 6px;
   max-width: 75%;
+  width: inherit;
   word-break: break-all;
 }
 .awardAmount {
