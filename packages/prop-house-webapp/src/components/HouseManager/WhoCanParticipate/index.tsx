@@ -20,6 +20,7 @@ export enum ERC20 {
   WETH = 'WETH',
   USDC = 'USDC',
   APE = 'APE',
+  OTHER = 'Other',
 }
 
 export interface NewStrategy {

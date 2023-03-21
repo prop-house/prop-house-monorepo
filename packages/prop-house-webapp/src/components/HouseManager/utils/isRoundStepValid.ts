@@ -4,8 +4,7 @@ export const isRoundStepValid = (round: NewRound, step: number) => {
   const isStep1Valid =
     5 <= round.title.length && round.title.length <= 255 && 20 <= round.description.length;
   const isStep2Valid = round.strategies.length > 0;
-  const isStep3Valid =
-    round.awards.some(a => a.state === 'Success' && a.amount !== 0) && round.numWinners !== 0;
+  const isStep3Valid = round.awards.length > 0;
   const isStep4Valid =
     round.startTime !== null && round.proposalEndTime !== null && round.votingEndTime !== null;
   const isStep5Valid = isStep1Valid && isStep2Valid && isStep3Valid && isStep4Valid;
