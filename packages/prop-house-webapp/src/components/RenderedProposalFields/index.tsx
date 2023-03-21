@@ -1,24 +1,27 @@
 import classes from './RenderedProposalFields.module.css';
 import { Row, Col } from 'react-bootstrap';
-import { ProposalFields } from '../../utils/proposalFields';
+import proposalFields, { ProposalFields } from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
+import { StoredAuctionBase, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { BiAward } from 'react-icons/bi';
 
 export interface RenderedProposalProps {
-  fields: ProposalFields;
-  address?: string;
-  proposalId?: number;
+  proposal: StoredProposal;
   backButton?: React.ReactNode;
   community?: any;
-  roundName?: string;
+  round?: StoredAuctionBase;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
-  const { fields, address, proposalId, backButton } = props;
+  const { proposal, backButton, round } = props;
   const { t } = useTranslation();
+  const fields = proposalFields(proposal);
+
+  console.log('round from rednered fields:  ', round);
 
   return (
     <>
@@ -26,20 +29,27 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
         <Col xl={12} className="proposalCopy">
           <div className={classes.headerContainer}>
             <div className={classes.backBtnContainer}>{backButton && backButton}</div>
-            <div>
-              {address && proposalId && (
-                <div className={classes.subinfo}>
-                  <div className={classes.propBy}>
-                    <span>{t('propCap')}</span>
-                    {t('by')}
-                    <div className={classes.submittedBy}>
-                      <EthAddress address={address} className={classes.submittedBy} />
+            <div className={classes.headerBottomContainer}>
+              <div>
+                {proposal.address && proposal.id && (
+                  <div className={classes.subinfo}>
+                    <div className={classes.propBy}>
+                      <span>{t('propCap')}</span>
+                      {t('by')}
+                      <div className={classes.submittedBy}>
+                        <EthAddress address={proposal.address} className={classes.submittedBy} />
+                      </div>
                     </div>
                   </div>
+                )}
+                <h1>{fields.title}</h1>
+              </div>
+              {proposal.reqAmount && round && (
+                <div className={classes.fundReq}>
+                  <BiAward size={'1.8rem'} />
+                  {`${proposal.reqAmount} ${round?.currencyType}`}
                 </div>
               )}
-
-              <h1>{fields.title}</h1>
             </div>
           </div>
 
