@@ -572,6 +572,19 @@
   {
     "inputs": [
       {
+        "internalType": "string",
+        "name": "_contractURI",
+        "type": "string"
+      }
+    ],
+    "name": "setContractURI",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bytes4",
         "name": "interfaceId",
         "type": "bytes4"

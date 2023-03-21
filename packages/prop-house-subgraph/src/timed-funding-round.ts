@@ -1,6 +1,6 @@
 import { log } from '@graphprotocol/graph-ts';
 import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedFundingRound/TimedFundingRound';
-import { Account, Asset, Award, Balance, Claim, Deposit, Reclaim, Rescue, Round, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
+import { Account, Asset, Award, Balance, Claim, Deposit, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getVotingStrategyType } from './lib/utils';
 import { RoundState, BIGINT_ONE, ZERO_ADDRESS } from './lib/constants';
 
@@ -15,10 +15,9 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   }
   round.state = RoundState.REGISTERED;
 
-  const config = new TimedFundingRoundConfig(
-    `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
-  );
+  const config = new TimedFundingRoundConfig(`${round.id}-timed-funding-round-config`);
 
+  config.round = round.id;
   config.winnerCount = event.params.winnerCount;
   config.proposalPeriodStartTimestamp = event.params.proposalPeriodStartTimestamp;
   config.proposalPeriodDuration = event.params.proposalPeriodDuration;
@@ -26,9 +25,11 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     event.params.proposalPeriodDuration
   ).plus(BIGINT_ONE);
   config.votePeriodDuration = event.params.votePeriodDuration;
+  config.registeredAt = event.block.timestamp;
+  config.registrationTx = event.transaction.hash;
+  config.save();
 
   // Store voting strategies
-  const votingStrategyIds: string[] = []; 
   const params2D = get2DArray(event.params.votingStrategyParamsFlat);
   for (let i = 0; i < event.params.votingStrategies.length; i++) {
     const address = event.params.votingStrategies[i];
@@ -36,7 +37,6 @@ export function handleRoundRegistered(event: RoundRegistered): void {
       address,
       params2D[i],
     );
-    votingStrategyIds.push(strategyId);
 
     let strategy = VotingStrategy.load(strategyId);
     if (!strategy) {
@@ -45,6 +45,15 @@ export function handleRoundRegistered(event: RoundRegistered): void {
       strategy.address = address;
       strategy.params = params2D[i];
       strategy.save();
+    }
+
+    const roundVotingStrategyId = `${round.id}-${strategy.id}`;
+    let roundVotingStrategy = RoundVotingStrategy.load(roundVotingStrategyId);
+    if (!roundVotingStrategy) {
+      roundVotingStrategy = new RoundVotingStrategy(roundVotingStrategyId);
+      roundVotingStrategy.round = round.id;
+      roundVotingStrategy.votingStrategy = strategy.id;
+      roundVotingStrategy.save();
     }
   }
 
@@ -68,9 +77,6 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     award.round = config.id;
     award.save();
   }
-
-  config.votingStrategies = votingStrategyIds;
-  config.save();
 
   round.timedFundingConfig = config.id;
   round.save();

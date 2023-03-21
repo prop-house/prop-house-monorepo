@@ -1,53 +1,63 @@
-import { RoundInfo, RoundType } from '../types';
-import { RoundBase } from './base';
-import { TimedFundingRound } from './timed-funding';
+import { Custom, RoundInfo, RoundType, RoundChainConfig } from '../types';
+import { RoundBase, TimedFundingRound } from './implementations';
 
-export class Round {
-  private readonly _rounds: Map<RoundType, RoundBase<RoundType>>;
+export class Round<CS extends void | Custom = void> {
+  private readonly _timedFunding: TimedFundingRound<CS>;
+  private readonly _all: Map<RoundType, RoundBase<RoundType, CS>>;
 
-  constructor(chainId: number) {
-    this._rounds = new Map([[RoundType.TIMED_FUNDING, TimedFundingRound.for(chainId)]]);
+  constructor(config: RoundChainConfig<CS>) {
+    this._timedFunding = TimedFundingRound.for<CS>(config);
+    this._all = new Map([[this._timedFunding.type, this._timedFunding]]);
   }
 
   /**
    * Returns a `Round` instance for the provided chain ID
-   * @param chainId
+   * @param config The chain config
    */
-  public static for(chainId: number) {
-    return new Round(chainId);
+  public static for<CS extends void | Custom = void>(config: RoundChainConfig<CS>) {
+    return new Round(config);
   }
 
   /**
-   * Round helpers
+   * Timed funding round utilities
    */
-  public get rounds() {
-    return this._rounds;
+  public get timedFunding() {
+    return this._timedFunding;
   }
 
   /**
-   * @notice Get the round helper for the provided round type
-   * @param roundType The round type
+   * Get a round utility class instance
+   * @param type The round type
    */
-  public getRound(roundType: RoundType) {
-    if (!this.rounds.has(roundType)) {
-      throw new Error(`Unknown round type: ${roundType}`);
+  public get(type: RoundType) {
+    if (!this._all.has(type)) {
+      throw new Error(`Unknown round type: ${type}`);
     }
-    return this.rounds.get(roundType)!;
+    return this._all.get(type)!;
+  }
+
+  /**
+   * @notice Get a round contract instance
+   * @param type The round type
+   * @param address The round address
+   */
+  public getContract(type: RoundType, address: string) {
+    return this.get(type).getContract(address);
   }
 
   /**
    * @notice Returns the implementation contract address for the provided round type
-   * @param roundType The round type
+   * @param type The round type
    */
-  public getImplForType(roundType: RoundType) {
-    return this.getRound(roundType).impl;
+  public getImplAddressForType(type: RoundType) {
+    return this.get(type).impl;
   }
 
   /**
    * @notice ABI-encode the provided round configuration
    * @param round The round information
    */
-  public async getABIEncodedConfig<RT extends RoundType>(round: RoundInfo<RT>) {
-    return this.getRound(round.roundType).getABIEncodedConfig(round.config);
+  public async getABIEncodedConfig<RT extends RoundType>(round: RoundInfo<RT, CS>) {
+    return this.get(round.roundType).getABIEncodedConfig(round.config);
   }
 }

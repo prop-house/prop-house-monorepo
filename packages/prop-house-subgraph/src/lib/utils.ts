@@ -103,16 +103,13 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The voting strategy address
  */
 export function getVotingStrategyType(addr: string): string {
-  if (addr == '0x7a281ea19f75f25d3e08c9c3e4ec77c389e09395fd7d7f8074a86814ce14b2c') {
+  if (addr == '0x3ce65f3ef02cacbe133ddd180d30531a8d0fe71a68ef4ce205d1c95870f20d4') {
     return VotingStrategyType.BALANCE_OF;
   }
-  if (addr == '0x453c5443124262957245ce62a9a3edf587772dc04fc7480eeeab6f299cc1db5') {
-    return VotingStrategyType.BALANCE_OF_WITH_MULTIPLIER;
-  }
-  if (addr == '0x1438cb91d5f4f8fa36a53db08253a264db15cbeac572e8ba3b20f0bdaa25601') {
+  if (addr == '0x3ddc284c671a4003c525f6511fe7f1e672d4b7b1d9f8cad1a4e3f13d2b35a5e') {
     return VotingStrategyType.WHITELIST;
   }
-  if (addr == '0x71d90d5a74e1cc922d1bd864459985d732e3500808b28a694c66695c85f203b') {
+  if (addr == '0x3b26651c941224c866e14295e7dd2165d229bef389d4ec781a5e1fb7813b7b4') {
     return VotingStrategyType.VANILLA;
   }
   return VotingStrategyType.UNKNOWN;

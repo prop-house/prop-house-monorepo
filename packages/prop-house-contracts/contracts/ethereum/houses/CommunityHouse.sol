@@ -80,7 +80,7 @@ contract CommunityHouse is IHouse, ERC721 {
     /// @dev Updates the contract URI
     /// @param _contractURI The new contract URI
     /// @dev This function is only callable by the house owner
-    function setContractURI(string memory _contractURI) internal onlyHouseOwner {
+    function setContractURI(string memory _contractURI) external onlyHouseOwner {
         _setContractURI(_contractURI);
     }
 

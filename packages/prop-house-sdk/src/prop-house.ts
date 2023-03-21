@@ -10,20 +10,21 @@ import {
   RoundInfo,
   RoundType,
 } from './types';
-import { ContractAddresses, getContractAddressesForChainOrThrow } from '@prophouse/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
+import { ChainBase } from './chain-base';
+import { QueryWrapper } from './gql';
 import { encoding } from './utils';
+import { Voting } from './voting';
 import { House } from './houses';
 import { Round } from './rounds';
-import { Voting } from './voting';
 
-export class PropHouse<CVS extends Custom | void = void> {
+export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   private readonly _contract: PropHouseContract;
-  private readonly _addresses: ContractAddresses;
+  private readonly _voting: Voting<CS>;
   private readonly _house: House;
-  private readonly _round: Round;
-  private readonly _voting: Voting<CVS>;
+  private readonly _round: Round<CS>;
+  private readonly _query: QueryWrapper;
 
   /**
    * The prop house contract instance
@@ -40,35 +41,63 @@ export class PropHouse<CVS extends Custom | void = void> {
   }
 
   /**
-   * Shared house helper
+   * Voting helper methods and utilities
+   */
+  public get voting() {
+    return this._voting;
+  }
+
+  /**
+   * House helper methods and utilities
    */
   public get house() {
     return this._house;
   }
 
   /**
-   * Shared round helper
+   * Round helper methods and utilities
    */
   public get round() {
     return this._round;
   }
 
   /**
-   * Shared voting helper
+   * The GraphQL query wrapper
    */
-  public get voting() {
-    return this._voting;
+  public get query() {
+    return this._query;
   }
 
-  constructor(config: PropHouseConfig<CVS>) {
-    this._addresses = getContractAddressesForChainOrThrow(config.chainId);
-    this._contract = PropHouse__factory.connect(
-      this.addresses.evm.prophouse,
-      config.signerOrProvider,
-    );
-    this._house = House.for(config.chainId);
-    this._round = Round.for(config.chainId);
-    this._voting = Voting.for<CVS>(config.chainId);
+  constructor(config: PropHouseConfig<CS>) {
+    super(config);
+
+    this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, this._evm);
+    this._query = QueryWrapper.for(config.evmChainId);
+    this._voting = Voting.for<CS>(config);
+    this._house = House.for(config);
+    this._round = Round.for<CS>({
+      ...config,
+      voting: this._voting,
+      query: this._query,
+    });
+  }
+
+  /**
+   * Get a house contract instance
+   * @param type The house type
+   * @param address The house address
+   */
+  public getHouseContract(type: HouseType, address: string) {
+    return this.house.getContract(type, address);
+  }
+
+  /**
+   * Get a round contract instance
+   * @param type The house type
+   * @param address The house address
+   */
+  public getRoundContract(type: RoundType, address: string) {
+    return this.round.getContract(type, address);
   }
 
   /**
@@ -112,7 +141,7 @@ export class PropHouse<CVS extends Custom | void = void> {
    */
   public async createRoundOnExistingHouse<RT extends RoundType>(
     houseAddress: string,
-    round: RoundInfo<RT>,
+    round: RoundInfo<RT, CS>,
     overrides: Overrides = {},
   ) {
     return this.contract.createRoundOnExistingHouse(
@@ -120,7 +149,7 @@ export class PropHouse<CVS extends Custom | void = void> {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
@@ -136,7 +165,7 @@ export class PropHouse<CVS extends Custom | void = void> {
    */
   public async createAndFundRoundOnExistingHouse<RT extends RoundType>(
     houseAddress: string,
-    round: RoundInfo<RT>,
+    round: RoundInfo<RT, CS>,
     funding: Asset[],
     overrides: Overrides = {},
   ) {
@@ -146,7 +175,7 @@ export class PropHouse<CVS extends Custom | void = void> {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       assets,
@@ -165,18 +194,18 @@ export class PropHouse<CVS extends Custom | void = void> {
    */
   public async createRoundOnNewHouse<HT extends HouseType, RT extends RoundType>(
     house: HouseInfo<HT>,
-    round: RoundInfo<RT>,
+    round: RoundInfo<RT, CS>,
     overrides: Overrides = {},
   ) {
     return this.contract.createRoundOnNewHouse(
       {
-        impl: this.house.getImplForType(house.houseType),
+        impl: this.house.getImplAddressForType(house.houseType),
         config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       overrides,
@@ -192,20 +221,20 @@ export class PropHouse<CVS extends Custom | void = void> {
    */
   public async createAndFundRoundOnNewHouse<HT extends HouseType, RT extends RoundType>(
     house: HouseInfo<HT>,
-    round: RoundInfo<RT>,
+    round: RoundInfo<RT, CS>,
     funding: Asset[],
     overrides: Overrides = {},
   ) {
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnNewHouse(
       {
-        impl: this.house.getImplForType(house.houseType),
+        impl: this.house.getImplAddressForType(house.houseType),
         config: this.house.getABIEncodedConfig(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplForType(round.roundType),
+        impl: this.round.getImplAddressForType(round.roundType),
         config: await this.round.getABIEncodedConfig(round),
       },
       assets,

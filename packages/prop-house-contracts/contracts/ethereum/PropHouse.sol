@@ -132,6 +132,15 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         IRound(round).initialize(newRound.config);
     }
 
+    /// @notice Create a new house
+    /// @param newHouse The house creation data
+    function createHouse(House calldata newHouse) external returns (address house) {
+        if (!manager.isHouseRegistered(newHouse.impl)) {
+            revert INVALID_HOUSE_IMPL();
+        }
+        house = _createHouse(newHouse);
+    }
+
     /// @notice Create and initialize a new house contract
     /// @param newHouse The house creation data
     function _createHouse(House memory newHouse) internal returns (address house) {

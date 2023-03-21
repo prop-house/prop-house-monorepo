@@ -1,4 +1,5 @@
 import { starknet } from 'hardhat';
+import { Account, Provider } from 'starknet';
 import { commonL1Setup } from './common';
 import { CommunityHouse__factory, TimedFundingRound__factory } from '../../../typechain';
 import { constants } from 'ethers';
@@ -11,6 +12,12 @@ export const communityHouseSetup = async () => {
     address,
     private_key,
   );
+  const starknetProvider = new Provider({
+    sequencer: {
+      baseUrl: 'http://127.0.0.1:5050',
+    },
+  });
+  const starknetAccount = new Account(starknetProvider, address, starknetSigner.keyPair);
 
   const roundDeployerFactory = await starknet.getContractFactory(
     './contracts/starknet/round_factory.cairo',
@@ -46,6 +53,7 @@ export const communityHouseSetup = async () => {
   return {
     ...config,
     starknetSigner,
+    starknetAccount,
     communityHouseImpl,
     roundFactory,
     votingStrategyRegistry,

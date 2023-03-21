@@ -1,4 +1,6 @@
 specVersion: 0.0.4
+features:
+  - ipfsOnEthereumContracts
 schema:
   file: ./schema.graphql
 dataSources:
@@ -6,8 +8,8 @@ dataSources:
     name: Manager
     source:
       abi: Manager
-      address: "0x4020a49e3B1AC879d4cF68BCedcB70891b1151b4"
-      startBlock: 8584975
+      address: "0x02878761A9e78772B87160f117BCc0c55FB4057d"
+      startBlock: 8665683
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -36,8 +38,8 @@ dataSources:
     name: PropHouse
     source:
       abi: PropHouse
-      address: "0x8a2c125D95ED3d28C23B0825cD0C086FF3088528"
-      startBlock: 8584975
+      address: "0xEDcE99366916990C2Ef2E3f1A4Cbf9BF5534DE10"
+      startBlock: 8665683
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -62,6 +64,31 @@ dataSources:
           handler: handleDepositToRound
         - event: BatchDepositToRound(address,address,(uint8,address,uint256,uint256)[])
           handler: handleBatchDepositToRound
+    network: goerli
+  - kind: ethereum
+    name: CreatorPassIssuer
+    source:
+      abi: CreatorPassIssuer
+      address: "0x92C579D58A997f94E777606A9446897F15A453aB"
+      startBlock: 8665683
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/creator-pass-issuer.ts
+      entities:
+        - Account
+        - House
+      abis:
+        - name: CreatorPassIssuer
+          file: ./abis/CreatorPassIssuer.json
+      eventHandlers:
+        - event: TransferSingle(indexed address,indexed address,indexed
+            address,uint256,uint256)
+          handler: handleSingleTransfer
+        - event: TransferBatch(indexed address,indexed address,indexed
+            address,uint256[],uint256[])
+          handler: handleBatchTransfer
     network: goerli
 templates:
   - name: CommunityHouse

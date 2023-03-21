@@ -1,56 +1,100 @@
-import { Custom, Newable, VotingStrategyInfo, VotingStrategyType } from '../types';
-import { BalanceOfVotingStrategy } from './balance-of';
-import { VanillaVotingStrategy } from './vanilla';
-import { WhitelistVotingStrategy } from './whitelist';
-import { VotingStrategyBase } from './base';
+import {
+  Custom,
+  VotingChainConfig,
+  VotingStrategy,
+  VotingStrategyConfig,
+  VotingStrategyWithID,
+} from '../types';
+import { BigNumber } from '@ethersproject/bignumber';
+import {
+  BalanceOfHandler,
+  VanillaHandler,
+  WhitelistHandler,
+  StrategyHandlerBase,
+} from './handlers';
 
-export class Voting<CVS extends Custom | void = void> {
-  private readonly _strategies: Map<string, VotingStrategyBase<VotingStrategyInfo<CVS>>>;
+export class Voting<CS extends Custom | void = void> {
+  private readonly _defaults = [BalanceOfHandler, VanillaHandler, WhitelistHandler];
+  private readonly _all: StrategyHandlerBase<VotingStrategyConfig<CS>>[];
 
-  constructor(
-    chainId: number,
-    customStrategies: Newable<VotingStrategyBase<VotingStrategyInfo<CVS>>>[] = [],
-  ) {
-    this._strategies = new Map<string, VotingStrategyBase<VotingStrategyInfo<CVS>>>([
-      [VotingStrategyType.BALANCE_OF, BalanceOfVotingStrategy.for(chainId)],
-      [VotingStrategyType.VANILLA, VanillaVotingStrategy.for(chainId)],
-      [VotingStrategyType.WHITELIST, WhitelistVotingStrategy.for(chainId)],
-      ...customStrategies.map<[string, VotingStrategyBase<VotingStrategyInfo<CVS>>]>(
-        CustomStrategy => {
-          const strategy = new CustomStrategy(chainId);
-          return [strategy.type, strategy];
-        },
-      ),
-    ]);
+  constructor(private readonly _config: VotingChainConfig<CS>) {
+    this._all = [...this._defaults, ...(this._config.customStrategies || [])].map(
+      Handler => new Handler(this._config) as StrategyHandlerBase<VotingStrategyConfig<CS>>,
+    );
   }
 
   /**
-   * Returns a `Voting` instance for the provided chain ID
-   * @param chainId The chain ID
-   * @param customStrategies Optional custom voting strategies
+   * Returns a `Voting` instance for the provided chain configuration
+   * @param config The prop house voting config
    */
-  public static for<CVS extends Custom | void = void>(
-    chainId: number,
-    customStrategies: Newable<VotingStrategyBase<VotingStrategyInfo<CVS>>>[] = [],
-  ) {
-    return new Voting<CVS>(chainId, customStrategies);
+  public static for<CS extends Custom | void = void>(config: VotingChainConfig<CS>) {
+    return new Voting<CS>(config);
   }
 
   /**
-   * Voting strategy helper contracts
+   * Get a voting utility class instance
+   * @param typeOrAddress The voting strategy type or address
    */
-  public get strategies() {
-    return this._strategies;
+  public get(typeOrAddress: string) {
+    const strategy = this._all.find(s =>
+      [s.type.toLowerCase(), s.address.toLowerCase()].includes(typeOrAddress.toLowerCase()),
+    );
+    if (!strategy) {
+      throw new Error(`Unknown voting strategy type or address: ${typeOrAddress}`);
+    }
+    return strategy;
   }
 
   /**
-   * @notice Get the address and low-level parameter information for the provided voting strategy
+   * @notice Get the address and parameter information for the provided voting strategy
    * @param strategy The strategy information
    */
-  public async getStarknetStrategy(strategy: VotingStrategyInfo<CVS>) {
-    if (!this.strategies.has(strategy.strategyType)) {
-      throw new Error(`Unknown voting strategy type: ${strategy.strategyType}`);
+  public async getStrategyAddressAndParams(strategy: VotingStrategyConfig<CS>) {
+    const util = this.get(strategy.strategyType)!;
+    return {
+      address: util?.address,
+      params: await util.getStrategyParams(strategy),
+    };
+  }
+
+  public async getUserParamsForStrategies(
+    account: string,
+    timestamp: string,
+    strategies: VotingStrategyWithID[],
+  ): Promise<string[][]> {
+    return Promise.all(
+      strategies.map(async strategy =>
+        this.get(strategy.address).getUserParams(account, timestamp, strategy.id),
+      ),
+    );
+  }
+
+  public async getVotingPowerForStrategies<VS extends VotingStrategy>(
+    voter: string,
+    timestamp: string,
+    strategies: VS[],
+    filterZeroVotingPower = true,
+  ) {
+    const results = await Promise.all(
+      strategies.map(async strategy => {
+        return {
+          strategy,
+          votingPower: await this.get(strategy.address).getVotingPower({
+            ...strategy,
+            voter,
+            timestamp,
+          }),
+        };
+      }),
+    );
+    if (filterZeroVotingPower) {
+      return results.filter(({ votingPower }) => !votingPower.eq(0));
     }
-    return this.strategies.get(strategy.strategyType)!.getStarknetStrategy(strategy);
+    return results;
+  }
+
+  public async getTotalVotingPower(voter: string, timestamp: string, strategies: VotingStrategy[]) {
+    const results = await this.getVotingPowerForStrategies(voter, timestamp, strategies);
+    return results.reduce((acc, curr) => acc.add(curr.votingPower), BigNumber.from(0));
   }
 }
