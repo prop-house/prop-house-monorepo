@@ -3022,7 +3022,6 @@ export type VotingStrategyRoundsArgs = {
 
 export enum VotingStrategyType {
   BalanceOf = 'BALANCE_OF',
-  BalanceOfWithMultiplier = 'BALANCE_OF_WITH_MULTIPLIER',
   Unknown = 'UNKNOWN',
   Vanilla = 'VANILLA',
   Whitelist = 'WHITELIST',
