@@ -1,6 +1,6 @@
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from './auctionStatus';
-import { isInfAuction } from './auctionType';
+import { isInfAuction, isTimedAuction } from './auctionType';
 
 /**
  * Sort rounds, or groups of rounds, by their status.
@@ -10,7 +10,9 @@ export const sortRoundByStatus = (rounds: StoredAuctionBase[]) => [
   ...rounds.filter(
     round => auctionStatus(round) === AuctionStatus.AuctionAcceptingProps && isInfAuction(round),
   ),
-  ...rounds.filter(round => auctionStatus(round) === AuctionStatus.AuctionAcceptingProps),
+  ...rounds.filter(
+    round => auctionStatus(round) === AuctionStatus.AuctionAcceptingProps && isTimedAuction(round),
+  ),
   ...rounds.filter(round => auctionStatus(round) === AuctionStatus.AuctionVoting),
   ...rounds.filter(round => auctionStatus(round) === AuctionStatus.AuctionNotStarted),
   ...rounds
