@@ -201,9 +201,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                       <IoClose size={'1.5rem'} />
                     </div>
                   }
-                  fieldTitle={proposalFields(currentProposal).title}
-                  address={currentProposal.address}
-                  proposalId={currentProposal.id}
                   propIndex={currentPropIndex}
                   numberOfProps={proposals.length}
                   handleDirectionalArrowClick={handleDirectionalArrowClick}
