@@ -255,10 +255,12 @@ const SplitAwards: React.FC<{
               <div className={classes.awardImgAndAmount}>
                 <img src={awards[0].image} alt={awards[0].name} />
 
-                <span className={classes.awardAmount}>
-                  <TruncateThousands amount={awards[0].amount} decimals={2} />
-                </span>
-                <span className={classes.awardName}>{awards[0].symbol || awards[0].name}</span>
+                <Group row gap={3}>
+                  <span className={classes.awardAmount}>
+                    <TruncateThousands amount={awards[0].amount} decimals={2} />
+                  </span>
+                  <span className={classes.awardName}>{awards[0].symbol || awards[0].name}</span>
+                </Group>
               </div>
 
               {!editMode && <div>${formatCommaNum(award.price * award.amount)}</div>}
@@ -290,7 +292,7 @@ const SplitAwards: React.FC<{
         <TruncateThousands amount={awards[0].amount} decimals={2} />{' '}
         {awards[0].symbol || awards[0].name} ($
         {formatCommaNum(award.price * award.amount)})
-        {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : 'each'}.
+        {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : ' each'}.
       </Text>
     </>
   );

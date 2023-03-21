@@ -24,7 +24,7 @@ const AwardCard: React.FC<{ award: Award; place: number }> = props => {
         </Group>
 
         <Text type="body">
-          <TruncateThousands amount={award.amount} decimals={1} /> {award.symbol}
+          <TruncateThousands amount={award.amount} decimals={1} /> {award.symbol || award.name}
         </Text>
       </Group>
     </div>
