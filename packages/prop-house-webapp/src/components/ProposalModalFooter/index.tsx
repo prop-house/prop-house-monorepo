@@ -15,6 +15,8 @@ import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
 import { useAccount, useProvider } from 'wagmi';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { isActiveProp } from '../../utils/isActiveProp';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -110,16 +112,17 @@ const ProposalModalFooter: React.FC<{
                   </div>
                 )}
 
-                {/* PROPOSING WINDOW */}
-                {isProposingWindow && (
-                  <ProposalWindowButtons
-                    proposal={proposal}
-                    editProposalMode={editProposalMode}
-                    setEditProposalMode={setEditProposalMode}
-                    setShowSavePropModal={setShowSavePropModal}
-                    setShowDeletePropModal={setShowDeletePropModal}
-                  />
-                )}
+                {/* PROPOSING WINDOW || INFROUND && ACTIVE PROP */}
+                {(round && isTimedAuction(round) && isProposingWindow) ||
+                  (round && isInfAuction(round) && isActiveProp(proposal, round) && (
+                    <ProposalWindowButtons
+                      proposal={proposal}
+                      editProposalMode={editProposalMode}
+                      setEditProposalMode={setEditProposalMode}
+                      setShowSavePropModal={setShowSavePropModal}
+                      setShowDeletePropModal={setShowDeletePropModal}
+                    />
+                  ))}
 
                 <>
                   {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
