@@ -14,6 +14,10 @@ export const GRAPHQL_APIS: Record<number, GraphQL> = {
     evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house-goerli',
     starknet: 'https://checkpoint-820u.onrender.com',
   },
+  [ChainId.EthereumHardhat]: {
+    evm: 'http://localhost:8020',
+    starknet: 'http://localhost:3000',
+  },
 };
 
 /**

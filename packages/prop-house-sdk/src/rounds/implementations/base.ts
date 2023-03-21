@@ -28,7 +28,9 @@ export abstract class RoundBase<
   public readonly DOMAIN = {
     name: 'prop-house',
     version: '1',
-    chainId: this._evmChainId.toString(),
+    // TODO: Replace with `this._evmChainId.toString()` once using a
+    // deployment-time-constant on the Starknet side.
+    chainId: ChainId.EthereumGoerli.toString(),
   };
 
   /**

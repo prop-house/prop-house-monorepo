@@ -40,12 +40,7 @@ func get_voting_power{
 
     let single_slot_params_len = 2;
     let (voting_power) = SingleSlotProof.get_storage_slot(
-        timestamp,
-        voter_address,
-        single_slot_params_len,
-        params,
-        user_params_len,
-        user_params,
+        timestamp, voter_address, single_slot_params_len, params, user_params_len, user_params
     );
     if (params_len == 2) {
         return (voting_power,);

@@ -157,10 +157,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
-   * Sign a proposal and submit it to the Starknet relayer
+   * Sign a propose message and return the proposer, signature, and signed message
    * @param config The round address and proposal metadata URI
    */
-  public async proposeViaSignature(config: TimedFunding.ProposeConfig) {
+  public async signProposeMessage(config: TimedFunding.ProposeConfig) {
     const address = await this.signer.getAddress();
     const message = {
       round: encoding.hexPadRight(config.round),
@@ -174,6 +174,19 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       TimedFundingRound.PROPOSE_TYPES,
       message,
     );
+    return {
+      address,
+      signature,
+      message,
+    };
+  }
+
+  /**
+   * Sign a propose message and submit it to the Starknet relayer
+   * @param config The round address and proposal metadata URI
+   */
+  public async proposeViaSignature(config: TimedFunding.ProposeConfig) {
+    const { address, signature, message } = await this.signProposeMessage(config);
     return this.sendToRelayer<TimedFunding.RequestParams>({
       address,
       signature,
@@ -183,10 +196,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
-   * Sign proposal votes and submit them to the Starknet relayer
+   * Sign proposal votes and return the voter, signature, and signed message
    * @param config The round address and proposal vote(s)
    */
-  public async voteViaSignature(config: TimedFunding.VoteConfig) {
+  public async signVoteMessage(config: TimedFunding.VoteConfig) {
     const address = await this.signer.getAddress();
     const suppliedVotingPower = config.votes.reduce(
       (acc, { votingPower }) => acc.add(votingPower),
@@ -213,7 +226,6 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       throw new Error('Not enough voting power remaining');
     }
 
-    // Fundamental issue is that the strategies may require outside data
     const userParams = await this._voting.getUserParamsForStrategies(
       address,
       timestamp,
@@ -226,7 +238,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       proposalVotes: config.votes,
       votingStrategyParams: userParams,
       authStrategy: encoding.hexPadRight(this._addresses.starknet.auth.timedFundingEthSig),
-      voterAddress: encoding.hexPadRight(address),
+      voterAddress: address,
       proposalVotesHash: encoding.hexPadRight(this.hashProposalVotes(config.votes)),
       votingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(votingStrategyIds)),
       votingStrategyParamsHash: encoding.hexPadRight(
@@ -239,6 +251,19 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       TimedFundingRound.VOTE_TYPES,
       message,
     );
+    return {
+      address,
+      message,
+      signature,
+    };
+  }
+
+  /**
+   * Sign proposal votes and submit them to the Starknet relayer
+   * @param config The round address and proposal vote(s)
+   */
+  public async voteViaSignature(config: TimedFunding.VoteConfig) {
+    const { address, signature, message } = await this.signVoteMessage(config);
     return this.sendToRelayer<TimedFunding.RequestParams>({
       address,
       signature,
@@ -254,10 +279,17 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedProposePayload(
     account: Account,
-    params: TimedFunding.RequestParams<TimedFunding.Action.Propose>,
+    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.Propose>, 'action'>,
   ) {
-    const calldata = this.getProposeCalldata(params);
-    const call = this.createEVMSigAuthCall(params, hash.getSelectorFromName('propose'), calldata);
+    const payload = {
+      ...params,
+      action: TimedFunding.Action.Propose,
+    };
+    const calldata = this.getProposeCalldata({
+      proposer: payload.address,
+      metadataUri: payload.data.metadataUri,
+    });
+    const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('propose'), calldata);
     const fee = await account.estimateFee(call);
     return account.execute(call, undefined, {
       maxFee: fee.suggestedMaxFee,
@@ -271,10 +303,37 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedVotePayload(
     account: Account,
-    params: TimedFunding.RequestParams<TimedFunding.Action.Vote>,
+    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.Vote>, 'action'>,
   ) {
-    const calldata = this.getVoteCalldata(params);
-    const call = this.createEVMSigAuthCall(params, hash.getSelectorFromName('vote'), calldata);
+    const payload = {
+      ...params,
+      action: TimedFunding.Action.Vote,
+    };
+    const calldata = this.getVoteCalldata({
+      voter: params.address,
+      ...params.data,
+    });
+    const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('vote'), calldata);
+    const fee = await account.estimateFee(call);
+    return account.execute(call, undefined, {
+      maxFee: fee.suggestedMaxFee,
+    });
+  }
+
+  /**
+   * Finalize the round by tallying votes and submitting a result via the execution strategy
+   * @param account The Starknet account used to submit the transaction
+   * @param config The round finalization config
+   */
+  public async finalizeRound(account: Account, config: TimedFunding.FinalizationConfig) {
+    const calldata = [config.awards.length.toString()].concat(
+      config.awards.map(a => [a.assetId.low, a.assetId.high, a.amount.low, a.amount.high]).flat(),
+    );
+    const call = {
+      contractAddress: config.round,
+      entrypoint: 'finalize_round',
+      calldata: calldata,
+    };
     const fee = await account.estimateFee(call);
     return account.execute(call, undefined, {
       maxFee: fee.suggestedMaxFee,
@@ -283,14 +342,12 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 
   /**
    * Generates a calldata array used to submit a proposal through an authenticator
-   * @param params The vote request params
+   * @param config The information required to generate the propose calldata
    */
-  public getProposeCalldata(
-    params: TimedFunding.RequestParams<TimedFunding.Action.Propose>,
-  ): string[] {
-    const metadataUri = intsSequence.IntsSequence.LEFromString(params.data.metadataUri);
+  public getProposeCalldata(config: TimedFunding.ProposeCalldataConfig): string[] {
+    const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     return [
-      params.address,
+      config.proposer,
       `0x${metadataUri.bytesLength.toString(16)}`,
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
@@ -299,10 +356,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 
   /**
    * Generates a calldata array used to cast a vote through an authenticator
-   * @param params The vote request params
+   * @param config The information required to generate the vote calldata
    */
-  public getVoteCalldata(params: TimedFunding.RequestParams<TimedFunding.Action.Vote>): string[] {
-    const { voterAddress, votingStrategyIds, votingStrategyParams, proposalVotes } = params.data;
+  public getVoteCalldata(config: TimedFunding.VoteCalldataConfig): string[] {
+    const { votingStrategyIds, votingStrategyParams, proposalVotes } = config;
     const flattenedVotingStrategyParams = encoding.flatten2DArray(votingStrategyParams);
     const flattenedProposalVotes = proposalVotes
       .map(vote => {
@@ -317,7 +374,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       })
       .flat();
     return [
-      voterAddress,
+      config.voter,
       `0x${proposalVotes.length.toString(16)}`,
       ...flattenedProposalVotes,
       `0x${votingStrategyIds.length.toString(16)}`,
@@ -387,21 +444,19 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param votes The voting power to allocate to one or more proposals
    */
   protected hashProposalVotes(votes: TimedFunding.ProposalVote[]) {
-    return encoding.hexPadRight(
-      hash.computeHashOnElements(
-        votes
-          .map(vote => {
-            const { low, high } = splitUint256.SplitUint256.fromUint(
-              BigInt(vote.votingPower.toString()),
-            );
-            return [
-              `0x${vote.proposalId.toString(16)}`,
-              BigNumber.from(low).toHexString(),
-              BigNumber.from(high).toHexString(),
-            ];
-          })
-          .flat(),
-      ),
+    return hash.computeHashOnElements(
+      votes
+        .map(vote => {
+          const { low, high } = splitUint256.SplitUint256.fromUint(
+            BigInt(vote.votingPower.toString()),
+          );
+          return [
+            `0x${vote.proposalId.toString(16)}`,
+            BigNumber.from(low).toHexString(),
+            BigNumber.from(high).toHexString(),
+          ];
+        })
+        .flat(),
     );
   }
 }

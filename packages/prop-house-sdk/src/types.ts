@@ -163,6 +163,24 @@ export namespace TimedFunding {
     data: ActionData[A];
   }
   export type Contract = TimedFundingRoundContract;
+  export interface Award {
+    assetId: Uint256;
+    amount: Uint256;
+  }
+  export interface ProposeCalldataConfig {
+    proposer: string;
+    metadataUri: string;
+  }
+  export interface VoteCalldataConfig {
+    voter: string;
+    votingStrategyIds: string[];
+    votingStrategyParams: string[][];
+    proposalVotes: ProposalVote[];
+  }
+  export interface FinalizationConfig {
+    round: string;
+    awards: Award[];
+  }
 }
 
 //#endregion
@@ -266,6 +284,11 @@ export interface VotingConfig {
 //#region Helpers
 
 export type Newable<T> = new (...args: any[]) => T;
+
+export interface Uint256 {
+  low: string;
+  high: string;
+}
 
 //#endregion
 

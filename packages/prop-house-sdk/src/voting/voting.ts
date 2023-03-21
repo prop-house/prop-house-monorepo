@@ -37,7 +37,7 @@ export class Voting<CS extends Custom | void = void> {
    */
   public get(typeOrAddress: string) {
     const strategy = this._all.find(s =>
-      [s.type, s.address.toLowerCase()].includes(typeOrAddress.toLowerCase()),
+      [s.type.toLowerCase(), s.address.toLowerCase()].includes(typeOrAddress.toLowerCase()),
     );
     if (!strategy) {
       throw new Error(`Unknown voting strategy type or address: ${typeOrAddress}`);

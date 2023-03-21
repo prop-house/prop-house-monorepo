@@ -33,7 +33,7 @@
     "bn.js": "^5.2.1",
     "graphql-request": "^5.2.0",
     "randombytes": "^2.1.0",
-    "starknet": "4.19.3",
+    "starknet": "4.22.0",
     "time-ts": "^0.1.0"
   },
   "devDependencies": {

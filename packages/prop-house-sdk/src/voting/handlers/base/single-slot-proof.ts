@@ -78,18 +78,4 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
     // 1 block offset due to https://tinyurl.com/nzz5dyyx
     return block - 1;
   }
-
-  /**
-   * Get the strategy address and params for the provided strategy ID
-   * @param strategyId The strategy ID
-   */
-  protected async getStrategyAddressAndParams(strategyId: string) {
-    // [strategy_addr, strategy_params_len, ...strategy_params]
-    const { result } = await this._starknet.callContract({
-      contractAddress: this._addresses.starknet.votingRegistry,
-      entrypoint: hash.getSelectorFromName('get_voting_strategy'),
-      calldata: [strategyId],
-    });
-    return { addr: result[0], params: result.slice(2) };
-  }
 }
