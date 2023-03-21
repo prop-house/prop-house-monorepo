@@ -52,9 +52,9 @@ const VotingStrategyModal: React.FC<{
                 strategies={strategies}
                 selectedStrategy={selectedStrategy}
                 setStrat={setStrat}
-                handleCancel={() => handleCancel('showStrategies')}
                 setStrategies={setStrategies}
                 setSelectedStrategy={setSelectedStrategy}
+                handleCancel={() => handleCancel('showStrategies')}
               />
             )}
 

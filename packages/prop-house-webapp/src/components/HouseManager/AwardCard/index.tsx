@@ -1,16 +1,12 @@
 import classes from './AwardCard.module.css';
 import Text from '../Text';
-import { AwardProps } from '../AwardsSelector';
 import Group from '../Group';
 import AwardWithPlace from '../AwardWithPlace';
 import TruncateThousands from '../../TruncateThousands';
+import { Award } from '../AssetSelector';
 
-const AwardCard: React.FC<{
-  amount: number;
-  award: AwardProps;
-  place: number;
-}> = props => {
-  const { amount, award, place } = props;
+const AwardCard: React.FC<{ award: Award; place: number }> = props => {
+  const { award, place } = props;
 
   return (
     <div className={classes.container}>
@@ -27,9 +23,8 @@ const AwardCard: React.FC<{
           <Text type="subtitle">{award.name}</Text>
         </Group>
 
-        {/* // TODO: where are we getting currency type from on single award? */}
         <Text type="body">
-          <TruncateThousands amount={amount} decimals={1} /> {award.symbol}
+          <TruncateThousands amount={award.amount} decimals={1} /> {award.symbol}
         </Text>
       </Group>
     </div>

@@ -10,21 +10,17 @@ import CardWrapper from '../CardWrapper';
 import EditSection from '../EditSection';
 import Footer from '../Footer';
 import Group from '../Group';
-// import InstructionBox from '../InstructionBox';
 import StrategyCard from '../StrategyCard';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
-import Modal from '../../Modal';
-import Button, { ButtonColor } from '../../Button';
-import { isRoundStepValid } from '../utils/isRoundStepValid';
-import AwardsSelector from '../AwardsSelector';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
+import { VotingStrategyInfo, VotingStrategyType } from '@prophouse/sdk/dist/types';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
-import { VotingStrategyInfo, VotingStrategyType } from '@prophouse/sdk/dist/types';
-import NewStrategyModal from '../VotingStrategyModal';
+import VotingStrategyModal from '../VotingStrategyModal';
+import EditAwardsModal from '../EditAwardsModal';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -42,51 +38,19 @@ const CreateTheRound = () => {
   const [editStrategiesModal, setShowStrategiesModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
-  const handleAwardsSave = () => {
-    // TODO: since we save onChange here, we don't need to save on the modal save button
-    // TODO: but that also means the user can save invalid data, which will disable the Create button
-    // TODO: but the user won't know why, so we need to do some error handling
-    console.log('save changes', round.title, round.description);
-    setShowAwardsModal(false);
-  };
-
   return (
     <>
       {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
       {editNameModal && <EditNameDescriptionModal setShowEditNameModal={setShowEditNameModal} />}
-
       {editStrategiesModal && (
-        <NewStrategyModal
+        <VotingStrategyModal
           editMode
           strategies={strategies}
           setStrategies={setStrategies}
           setShowVotingStrategyModal={setShowStrategiesModal}
         />
       )}
-
-      {editAwardsModal && (
-        <Modal
-          title="Edit awards"
-          subtitle=""
-          body={<AwardsSelector />}
-          setShowModal={setShowAwardsModal}
-          button={
-            <Button
-              text={'Cancel'}
-              bgColor={ButtonColor.Black}
-              onClick={() => setShowAwardsModal(false)}
-            />
-          }
-          secondButton={
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Pink}
-              onClick={handleAwardsSave}
-              disabled={!isRoundStepValid(round, 3)}
-            />
-          }
-        />
-      )}
+      {editAwardsModal && <EditAwardsModal setShowAwardsModal={setShowAwardsModal} />}
 
       <Group row gap={10}>
         <DeadlineDates round={round} />
@@ -160,9 +124,15 @@ const CreateTheRound = () => {
       <Group gap={16}>
         <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
         <CardWrapper>
-          {[...Array(round.numWinners)].map((award, idx) => (
-            // TODO: changed fundingAmount because now we're using the amount from the award
-            <AwardCard amount={2} award={round.awards[0]} place={idx + 1} />
+          {/* // if there's one award that means all the numWinners get the same award
+            // if there's more than one award, then each award is for a different place */}
+
+          {[...Array(round.numWinners)].map((_, idx) => (
+            <AwardCard
+              // amount={round.awards[round.awards.length === 1 ? 0 : idx].amount}
+              award={round.awards[round.awards.length === 1 ? 0 : idx]}
+              place={idx + 1}
+            />
           ))}
         </CardWrapper>
       </Group>
