@@ -30,7 +30,7 @@ const InfRoundVotingModule: React.FC<InfRoundVotingModuleProps> = (
   const subtitle = !account
     ? 'Props meeting quorum will be awarded'
     : account && votingPower > 0
-    ? 'You have 100 votes per prop'
+    ? `You have ${votingPower} votes per prop`
     : '';
 
   const content = (
