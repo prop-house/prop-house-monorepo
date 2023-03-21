@@ -2,8 +2,8 @@ import Divider from '../../Divider';
 import Header from '../Header';
 import { useAppSelector } from '../../../hooks';
 import Text from '../Text';
-import AwardsSelector from '../AwardsSelector';
 import Footer from '../Footer';
+import AssetSelector from '../AssetSelector';
 
 const SetTheAwards = () => {
   const round = useAppSelector(state => state.round.round);
@@ -18,7 +18,7 @@ const SetTheAwards = () => {
         subtitle="Specify the awards paid out for the winning props. Any ties will go to the prop created first."
       />
 
-      <AwardsSelector />
+      <AssetSelector />
 
       <Footer />
     </>

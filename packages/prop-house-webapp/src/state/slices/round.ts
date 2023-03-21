@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
-import { AwardProps } from '../../components/HouseManager/AwardsSelector';
 import { VotingStrategyInfo } from '@prophouse/sdk';
+import { Award, newAward } from '../../components/HouseManager/AssetSelector';
 
 export interface NewRound {
   title: string;
@@ -12,7 +12,7 @@ export interface NewRound {
   currencyType: string;
   description: string;
   strategies: VotingStrategyInfo[];
-  awards: AwardProps[];
+  awards: Award[];
 }
 
 export const initialRound: NewRound = {
@@ -20,11 +20,11 @@ export const initialRound: NewRound = {
   startTime: null,
   proposalEndTime: null,
   votingEndTime: null,
-  numWinners: 0,
+  numWinners: 1,
   currencyType: '',
   description: '',
   strategies: [],
-  awards: [],
+  awards: [newAward],
 };
 
 interface RoundState {

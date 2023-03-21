@@ -1,0 +1,41 @@
+.inputContainer {
+  width: 100%;
+  justify-content: space-between;
+}
+.votesInput {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  height: 32px;
+  width: 73px;
+  border: 1px solid var(--border-med);
+  width: 100%;
+}
+.votesInput::placeholder {
+  color: var(--brand-gray-transparent) !important;
+}
+.allotButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+}
+.button {
+  border-radius: 8px !important;
+  line-height: 19px;
+  height: 32px;
+  font-weight: 900;
+  font-size: 20px !important;
+}
+/* Chrome, Safari, Edge, Opera */
+.votesInput::-webkit-outer-spin-button,
+.votesInput::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+/* Firefox */
+.votesInput {
+  -moz-appearance: textfield !important;
+}

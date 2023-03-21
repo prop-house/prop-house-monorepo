@@ -1,32 +1,25 @@
-import classes from './VotingStrategyModal.module.css';
-import React, { useState } from 'react';
-import Button, { ButtonColor } from '../../Button';
+import classes from './ERC20Buttons.module.css';
+import React from 'react';
+
 import Group from '../Group';
-import { ERC20 } from '../WhoCanParticipate';
-// import Address from '../Address';
-// import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
-
+import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
+import { getERC20Image } from '../utils/getERC20Image';
+import { ERC20 } from '../WhoCanParticipate';
+import { Award } from '../AssetSelector';
+import Divider from '../../Divider';
 
-const VotingStrategyModal: React.FC<{}> = props => {
-  // const {} = props;
+export const erc20Tokens: ERC20[] = [ERC20.ETH, ERC20.WETH, ERC20.USDC, ERC20.APE, ERC20.OTHER];
 
-  const erc20Tokens: ERC20[] = [ERC20.ETH, ERC20.WETH, ERC20.USDC, ERC20.APE];
-
-  const getTokenImage = (token: ERC20) => {
-    switch (token) {
-      case ERC20.ETH:
-        return '/manager/eth.png';
-      case ERC20.WETH:
-        return '/manager/weth.svg';
-      case ERC20.USDC:
-        return '/manager/usdc.svg';
-      case ERC20.APE:
-        return '/manager/ape.png';
-      default:
-        return '';
-    }
-  };
+const ERC20Buttons: React.FC<{
+  award: Award;
+  isTyping: boolean;
+  handleBlur: () => void;
+  handleSwitch: () => void;
+  handleChange: (value: string) => void;
+  handleSelectAward: (token: ERC20) => void;
+}> = props => {
+  const { award, isTyping, handleBlur, handleChange, handleSwitch, handleSelectAward } = props;
 
   const renderTokenButtons = () => {
     return erc20Tokens.map(token => (
@@ -35,57 +28,42 @@ const VotingStrategyModal: React.FC<{}> = props => {
           className={clsx(
             classes.strategyButton,
             classes.tokenButton,
-            selectedERC20 === token ? classes.btnPurpleBg : classes.btnWhiteBg,
+            award.selectedAsset === token ? classes.btnPurpleBg : classes.btnWhiteBg,
           )}
-          onClick={() => {
-            setCustomERC20(false);
-            setSelectedERC20(token);
-          }}
-          // onClick={() => handleSelectStrategy(token)}
+          onClick={() => handleSelectAward(token)}
         >
-          <img className={classes.tokenImage} src={getTokenImage(token)} alt="token" />
+          {token !== ERC20.OTHER && (
+            <img className={classes.tokenImage} src={getERC20Image(token)} alt="token" />
+          )}
           <span>{token}</span>
         </button>
       </Group>
     ));
   };
 
-  const [customERC20, setCustomERC20] = useState<boolean>(false);
-  const [selectedERC20, setSelectedERC20] = useState<string>(ERC20.ETH);
-
   return (
     <>
       <Group row gap={8} classNames={classes.buttons}>
         {renderTokenButtons()}
-
-        <div className={classes.container}>
-          <Button
-            classNames={classes.strategyButton}
-            text={'Other'}
-            bgColor={customERC20 ? ButtonColor.Purple : ButtonColor.White}
-            onClick={() => {
-              setCustomERC20(true);
-              setSelectedERC20('');
-            }}
-          />
-        </div>
       </Group>
 
-      {customERC20 && (
+      {award.selectedAsset === ERC20.OTHER && (
         <>
-          {/* <Address
-            strategy={strategy}
-            isTyping={isTyping}
-            handleBlur={handleBlur}
-            handleClear={handleClear}
-            handleSwitch={handleSwitch}
-            handleChange={handleOnChange}
-          /> */}
-          {/* <ViewOnEtherscanButton address={strategy.address} isDisabled={!verifiedAddress} /> */}
+          <Divider />
+          <Group gap={6}>
+            <AwardAddress
+              award={award}
+              isTyping={isTyping}
+              handleBlur={handleBlur}
+              handleSwitch={handleSwitch}
+              // handleClear={handleClear}
+              handleChange={handleChange}
+            />
+          </Group>
         </>
       )}
     </>
   );
 };
 
-export default VotingStrategyModal;
+export default ERC20Buttons;
