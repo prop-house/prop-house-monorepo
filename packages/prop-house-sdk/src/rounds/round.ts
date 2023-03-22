@@ -1,4 +1,4 @@
-import { Custom, RoundInfo, RoundType, RoundChainConfig } from '../types';
+import { Custom, RoundInfo, RoundType, RoundChainConfig, RoundConfigStruct } from '../types';
 import { RoundBase, TimedFundingRound } from './implementations';
 
 export class Round<CS extends void | Custom = void> {
@@ -49,15 +49,36 @@ export class Round<CS extends void | Custom = void> {
    * @notice Returns the implementation contract address for the provided round type
    * @param type The round type
    */
-  public getImplAddressForType(type: RoundType) {
+  public impl(type: RoundType) {
     return this.get(type).impl;
   }
 
   /**
-   * @notice ABI-encode the provided round configuration
+   * Convert the provided round configuration to a config struct
    * @param round The round information
    */
-  public async getABIEncodedConfig<RT extends RoundType>(round: RoundInfo<RT, CS>) {
-    return this.get(round.roundType).getABIEncodedConfig(round.config);
+  public async getConfigStruct<RT extends RoundType>(round: RoundInfo<RT, CS>) {
+    return this.get(round.roundType).getConfigStruct(round.config);
+  }
+
+  /**
+   * Estimate the round registration message fee cost (in wei)
+   * @param type The round type
+   * @param configStruct The round configuration struct
+   */
+  public async estimateMessageFee<RT extends RoundType>(
+    type: RoundType,
+    configStruct: RoundConfigStruct[RT],
+  ) {
+    return this.get(type).estimateMessageFee(configStruct);
+  }
+
+  /**
+   * ABI-encode the provided round configuration struct
+   * @param type The round type
+   * @param configStruct The round configuration struct
+   */
+  public encode<RT extends RoundType>(type: RT, configStruct: RoundConfigStruct[RT]) {
+    return this.get(type).encode(configStruct);
   }
 }

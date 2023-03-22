@@ -36,11 +36,13 @@ export interface ClassHashes {
 
 export interface EVMContracts {
   prophouse: string;
+  messenger: string;
   house: HouseImpls;
   round: RoundImpls;
 }
 
 export interface StarknetContracts {
+  roundFactory: string;
   votingRegistry: string;
   voting: VotingStrategies;
   auth: AuthStrategies;
@@ -57,6 +59,7 @@ export const contracts: Record<number, ContractAddresses> = {
   [ChainId.EthereumGoerli]: {
     evm: {
       prophouse: goerli.ethereum.address.propHouse,
+      messenger: goerli.ethereum.address.messenger,
       house: {
         community: goerli.ethereum.address.communityHouseImpl,
       },
@@ -65,6 +68,7 @@ export const contracts: Record<number, ContractAddresses> = {
       },
     },
     starknet: {
+      roundFactory: goerli.starknet.address.roundFactory,
       votingRegistry: goerli.starknet.address.votingStrategyRegistry,
       voting: {
         balanceOf: goerli.starknet.address.ethereumBalanceOfVotingStrategy,

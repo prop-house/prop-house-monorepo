@@ -1,6 +1,14 @@
 import { ChainId } from '@prophouse/contracts';
+import { Interface } from '@ethersproject/abi';
 import { QueryWrapper } from '../../gql';
-import { Custom, RoundChainConfig, RoundConfig, RoundContract, RoundType } from '../../types';
+import {
+  Custom,
+  RoundChainConfig,
+  RoundConfig,
+  RoundConfigStruct,
+  RoundContract,
+  RoundType,
+} from '../../types';
 import { bytes, splitUint256 } from '../../utils';
 import { ChainBase } from '../../chain-base';
 import { Voting } from '../../voting';
@@ -58,10 +66,27 @@ export abstract class RoundBase<
   public abstract get impl(): string;
 
   /**
-   * ABI-encode the provided round configuration
+   * The round implementation contract interface
+   */
+  public abstract get interface(): Interface;
+
+  /**
+   * Convert the provided round configuration to a config struct
    * @param config The round configuration
    */
-  public abstract getABIEncodedConfig(config: RoundConfig<CS>[RT]): Promise<string>;
+  public abstract getConfigStruct(config: RoundConfig<CS>[RT]): Promise<RoundConfigStruct[RT]>;
+
+  /**
+   * Estimate the round registration message fee cost (in wei)
+   * @param configStruct The round configuration struct
+   */
+  public abstract estimateMessageFee(configStruct: RoundConfigStruct[RT]): Promise<string>;
+
+  /**
+   * ABI-encode the provided round configuration struct
+   * @param configStruct The round configuration struct
+   */
+  public abstract encode(configStruct: RoundConfigStruct[RT]): string;
 
   /**
    * Given a round address, return a round contract instance

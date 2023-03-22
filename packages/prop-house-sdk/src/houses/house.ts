@@ -49,7 +49,7 @@ export class House {
    * @notice Get the implementation contract address for the provided house type
    * @param type The house type
    */
-  public getImplAddressForType(type: HouseType) {
+  public impl(type: HouseType) {
     return this.get(type).impl;
   }
 
@@ -57,7 +57,7 @@ export class House {
    * @notice ABI-encode the provided house configuration
    * @param house The house information
    */
-  public getABIEncodedConfig<HT extends HouseType>(house: HouseInfo<HT>) {
-    return this.get(house.houseType).getABIEncodedConfig(house.config);
+  public encode<HT extends HouseType>(house: HouseInfo<HT>) {
+    return this.get(house.houseType).encode(house.config);
   }
 }

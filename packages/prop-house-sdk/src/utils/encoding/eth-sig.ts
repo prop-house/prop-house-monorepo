@@ -7,7 +7,7 @@ export const hexPadLeft = (s: string) => {
   }
   const numZeroes = 64 - s.length;
   return `0x${'0'.repeat(numZeroes)}${s}`;
-}
+};
 
 export const hexPadRight = (s: string) => {
   // Remove prefix

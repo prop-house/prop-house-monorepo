@@ -1,11 +1,12 @@
-import { defaultAbiCoder } from '@ethersproject/abi';
 import { BigNumber } from '@ethersproject/bignumber';
 import { AssetType, Custom, RoundType, TimedFunding, RoundChainConfig } from '../../types';
 import { TimedFundingRound__factory } from '@prophouse/contracts';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
+import { defaultAbiCoder } from '@ethersproject/abi';
 import { Account, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
+import BN from 'bn.js';
 
 export class TimedFundingRound<CS extends void | Custom = void> extends RoundBase<
   RoundType.TIMED_FUNDING,
@@ -19,7 +20,21 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * The `RoundConfig` struct type
    */
   // prettier-ignore
-  public static CONFIG_STRUCT_TYPE = 'tuple(tuple(uint8,address,uint256,uint256)[],uint256[],uint256[],uint40,uint40,uint40,uint16)';
+  public static CONFIG_STRUCT_TYPE = `
+    tuple(
+      tuple(
+        uint8 assetType,
+        address token,
+        uint256 identifier,
+        uint256 amount
+      )[] awards,
+      uint256[] votingStrategies,
+      uint256[] votingStrategyParamsFlat,
+      uint40 proposalPeriodStartTimestamp,
+      uint40 proposalPeriodDuration,
+      uint40 votePeriodDuration,
+      uint16 winnerCount
+  )`;
 
   /**
    * The minimum proposal submission period duration
@@ -87,10 +102,19 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
-   * ABI-encode the timed funding round configuration
+   * The round implementation contract interface
+   */
+  public get interface() {
+    return TimedFundingRound__factory.createInterface();
+  }
+
+  /**
+   * Convert the provided round configuration to a config struct
    * @param config The timed funding round config
    */
-  public async getABIEncodedConfig(config: TimedFunding.Config<CS>): Promise<string> {
+  public async getConfigStruct(
+    config: TimedFunding.Config<CS>,
+  ): Promise<TimedFunding.ConfigStruct> {
     const now = Math.floor(Date.now() / 1000);
 
     // prettier-ignore
@@ -129,23 +153,41 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       config.strategies.map(s => this._voting.getStrategyAddressAndParams(s)),
     );
 
-    return defaultAbiCoder.encode(
-      [TimedFundingRound.CONFIG_STRUCT_TYPE],
-      [
-        [
-          config.awards.map(award => {
-            const struct = encoding.getAssetStruct(award);
-            return [struct.assetType, struct.token, struct.identifier, struct.amount];
-          }),
-          strategies.map(s => s.address),
-          encoding.flatten2DArray(strategies.map(s => s.params)),
-          config.proposalPeriodStartUnixTimestamp,
-          config.proposalPeriodDurationSecs,
-          config.votePeriodDurationSecs,
-          config.winnerCount,
-        ],
-      ],
-    );
+    return {
+      awards: config.awards.map(award => encoding.getAssetStruct(award)),
+      votingStrategies: strategies.map(s => s.address),
+      votingStrategyParamsFlat: encoding.flatten2DArray(strategies.map(s => s.params)),
+      proposalPeriodStartTimestamp: config.proposalPeriodStartUnixTimestamp,
+      proposalPeriodDuration: config.proposalPeriodDurationSecs,
+      votePeriodDuration: config.votePeriodDurationSecs,
+      winnerCount: config.winnerCount,
+    };
+  }
+
+  /**
+   * Estimate the round registration message fee cost (in wei)
+   * @param configStruct The round configuration struct
+   */
+  public async estimateMessageFee(configStruct: TimedFunding.ConfigStruct) {
+    const payload = await this.getContract(this.impl).getL2Payload(configStruct);
+    const response = (await this._starknet.estimateMessageFee({
+      from_address: this._addresses.evm.messenger,
+      to_address: this._addresses.starknet.roundFactory,
+      entry_point_selector: hash.getSelectorFromName('register_round'),
+      payload: payload.map(p => p.toString()),
+    })) as { amount: BN; unit: string };
+    if (!response.amount || response.unit !== 'wei') {
+      throw new Error(`Unexpected message fee response: ${response}`);
+    }
+    return response.amount.toString();
+  }
+
+  /**
+   * ABI-encode the timed funding round configuration
+   * @param config The timed funding round config
+   */
+  public encode(configStruct: TimedFunding.ConfigStruct): string {
+    return defaultAbiCoder.encode([TimedFundingRound.CONFIG_STRUCT_TYPE], [configStruct]);
   }
 
   /**

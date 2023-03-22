@@ -1,16 +1,16 @@
 {
   "goerli": {
     "Manager": {
-      "address": "0x02878761A9e78772B87160f117BCc0c55FB4057d",
-      "startBlock": 8665683      
+      "address": "0x964a45ee7e77eE07f69d0D58257260795e0F5108",
+      "startBlock": 8700519      
     },
     "PropHouse": {
-      "address": "0xEDcE99366916990C2Ef2E3f1A4Cbf9BF5534DE10",
-      "startBlock": 8665683
+      "address": "0x6729322986e0fA03987db74cf09e991FCB8308C1",
+      "startBlock": 8700519
     },
     "CreatorPassIssuer": {
-      "address": "0x92C579D58A997f94E777606A9446897F15A453aB",
-      "startBlock": 8665683
+      "address": "0xeB453bB501a4EB56a69D0253aEA4f9046F2364ee",
+      "startBlock": 8700519
     }
   }
 }
