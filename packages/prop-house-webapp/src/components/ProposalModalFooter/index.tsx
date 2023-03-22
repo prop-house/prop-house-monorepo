@@ -114,52 +114,57 @@ const ProposalModalFooter: React.FC<{
 
                 {/* PROPOSING WINDOW || INFROUND && ACTIVE PROP */}
                 {(round && isTimedAuction(round) && isProposingWindow) ||
-                  (round && isInfAuction(round) && isActiveProp(proposal, round) && (
-                    <ProposalWindowButtons
-                      proposal={proposal}
-                      editProposalMode={editProposalMode}
-                      setEditProposalMode={setEditProposalMode}
-                      setShowSavePropModal={setShowSavePropModal}
-                      setShowDeletePropModal={setShowDeletePropModal}
-                    />
-                  ))}
+                  (round &&
+                    isInfAuction(round) &&
+                    isActiveProp(proposal, round) &&
+                    votingPower === 0 && (
+                      <ProposalWindowButtons
+                        proposal={proposal}
+                        editProposalMode={editProposalMode}
+                        setEditProposalMode={setEditProposalMode}
+                        setShowSavePropModal={setShowSavePropModal}
+                        setShowDeletePropModal={setShowDeletePropModal}
+                      />
+                    ))}
 
                 <>
                   {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                  {account &&
-                    isVotingWindow &&
-                    (votingPower > 0 ? (
-                      <ProposalModalVotingModule
-                        proposal={proposal}
-                        setShowVotingModal={setShowVotingModal}
-                        setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                        isWinner={isWinner && isWinner}
-                      />
-                    ) : (
-                      // VOTING PERIOD, CONNECTED, NO VOTES
-                      <>
-                        <div className={classes.noVotesContainer}>
-                          <p className={classes.noVotesMessage}>
-                            <b>
-                              {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
-                              {t('requiredToVote')}.
-                            </b>
-                          </p>
+                  {(round && isTimedAuction(round) && isVotingWindow && votingPower > 0) ||
+                  (round &&
+                    isInfAuction(round) &&
+                    isActiveProp(proposal, round) &&
+                    votingPower > 0) ? (
+                    <ProposalModalVotingModule
+                      proposal={proposal}
+                      setShowVotingModal={setShowVotingModal}
+                      setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                      isWinner={isWinner && isWinner}
+                    />
+                  ) : (
+                    // VOTING PERIOD, CONNECTED, NO VOTES
+                    <>
+                      <div className={classes.noVotesContainer}>
+                        <p className={classes.noVotesMessage}>
+                          <b>
+                            {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
+                            {t('requiredToVote')}.
+                          </b>
+                        </p>
 
-                          <div className={classes.voteCount}>
-                            {isWinner && (
-                              <div className={classes.crownNoun}>
-                                <img src="/heads/crown.png" alt="crown" />
-                              </div>
-                            )}
-
-                            <div className={classes.icon}>
-                              <VotesDisplay proposal={proposal} />
+                        <div className={classes.voteCount}>
+                          {isWinner && (
+                            <div className={classes.crownNoun}>
+                              <img src="/heads/crown.png" alt="crown" />
                             </div>
+                          )}
+
+                          <div className={classes.icon}>
+                            <VotesDisplay proposal={proposal} />
                           </div>
                         </div>
-                      </>
-                    ))}
+                      </div>
+                    </>
+                  )}
                 </>
               </div>
             )}
