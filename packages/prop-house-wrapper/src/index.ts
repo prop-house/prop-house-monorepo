@@ -46,10 +46,19 @@ export class PropHouseWrapper {
 
   async getAuction(id: number): Promise<StoredTimedAuction> {
     try {
-      const rawAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
-      return StoredTimedAuction.FromResponse(rawAuction);
+      const rawTimedAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
+      return StoredTimedAuction.FromResponse(rawTimedAuction);
     } catch (e: any) {
-      throw e.response.data.message;
+      if (e.response && e.response.status === 404) {
+        try {
+          const rawTimedAuction = (await axios.get(`${this.host}/infinite-auctions/${id}`)).data;
+          return StoredTimedAuction.FromResponse(rawTimedAuction);
+        } catch (e: any) {
+          throw e.response.data.message;
+        }
+      } else {
+        throw e.response.data.message;
+      }
     }
   }
 
