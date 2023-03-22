@@ -1,5 +1,4 @@
 import classes from './RoundUtilityBar.module.css';
-import { SortMethod } from '../RoundDropdown';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -12,7 +11,6 @@ import SortToggles from '../SortToggles';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 import dayjs from 'dayjs';
 import { useAppSelector } from '../../hooks';
 import TruncateThousands from '../TruncateThousands';
@@ -31,17 +29,9 @@ export interface RoundUtilityBarProps {
 }
 
 const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
-  const auctionEnded = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
-  const auctionVoting = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
-
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
 
-  const allowSortByVotes = auctionVoting || auctionEnded;
-
-  const [sortSelection, setSortSelection] = useState<number>(
-    auctionEnded ? SortMethod.MostVotes : SortMethod.SortBy,
-  );
   const { t } = useTranslation();
 
   return (

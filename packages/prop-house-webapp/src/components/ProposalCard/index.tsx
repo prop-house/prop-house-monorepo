@@ -26,7 +26,7 @@ import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 
 const ProposalCard: React.FC<{
