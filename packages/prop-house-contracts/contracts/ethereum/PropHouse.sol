@@ -30,7 +30,8 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         _setContractURI(PROP_HOUSE_URI);
     }
 
-    /// @notice Deposit an asset to the provided round
+    /// @notice Deposit an asset to the provided round and return any remaining
+    /// ether to the caller.
     /// @param round The round to deposit to
     /// @param asset The asset to transfer to the round
     /// @dev For safety, this function validates the round before the transfer
@@ -45,7 +46,8 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         }
     }
 
-    /// @notice Deposit many assets to the provided round
+    /// @notice Deposit many assets to the provided round and return any remaining
+    /// ether to the caller.
     /// @param round The round to deposit to
     /// @param assets The assets to transfer to the round
     /// @dev For safety, this function validates the round before the transfer
