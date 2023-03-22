@@ -75,6 +75,9 @@ interface ITimedFundingRound is IRound {
     /// @notice Thrown when the address of a provided voting strategy is zero
     error INVALID_VOTING_STRATEGY();
 
+    /// @notice Thrown when the operation would leave an excess ETH balance in the contract
+    error EXCESS_ETH_PROVIDED();
+
     /// @notice Thrown when an asset rescue is attempted, but there is no excess balance in the contract
     error NO_EXCESS_BALANCE();
 

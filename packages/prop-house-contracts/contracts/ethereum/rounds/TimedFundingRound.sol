@@ -156,16 +156,19 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
     /// @notice Initialize the round by optionally defining the
     /// rounds configuration and registering it on L2.
     /// @dev This function is only callable by the prop house contract
-    function initialize(bytes calldata data) external onlyPropHouse {
+    function initialize(bytes calldata data) external payable onlyPropHouse {
         if (data.length != 0) {
-            _register(abi.decode(data, (RoundConfig)));
+            return _register(abi.decode(data, (RoundConfig)));
+        }
+        if (msg.value != 0) {
+            revert EXCESS_ETH_PROVIDED();
         }
     }
 
     /// @notice Define the configuration and register the round on L2.
     /// @param config The round configuration
     /// @dev This function is only callable by the round manager
-    function register(RoundConfig calldata config) external onlyRoundManager {
+    function register(RoundConfig calldata config) external payable onlyRoundManager {
         _register(config);
     }
 
@@ -350,7 +353,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         state = RoundState.Registered;
 
         // Register the round on L2
-        messenger.sendMessageToL2(roundFactory, REGISTER_ROUND_SELECTOR, _getL2Payload(config));
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, REGISTER_ROUND_SELECTOR, _getL2Payload(config));
 
         emit RoundRegistered(
             config.awards,

@@ -38,7 +38,11 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         if (!isRound(round)) {
             revert INVALID_ROUND();
         }
-        _depositTo(msg.sender, round, asset);
+
+        uint256 etherRemaining = _depositTo(msg.sender, round, asset);
+        if (etherRemaining != 0) {
+            _transferETH(payable(msg.sender), etherRemaining);
+        }
     }
 
     /// @notice Deposit many assets to the provided round
@@ -49,13 +53,20 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         if (!isRound(round)) {
             revert INVALID_ROUND();
         }
-        _batchDepositTo(msg.sender, round, assets);
+
+        uint256 etherRemaining = _batchDepositTo(msg.sender, round, assets);
+        if (etherRemaining != 0) {
+            _transferETH(payable(msg.sender), etherRemaining);
+        }
     }
 
     /// @notice Create a round on an existing house
     /// @param house The house to create the round on
     /// @param newRound The round creation data
-    function createRoundOnExistingHouse(address house, Round calldata newRound) external returns (address round) {
+    function createRoundOnExistingHouse(
+        address house,
+        Round calldata newRound
+    ) external payable returns (address round) {
         if (!isHouse(house)) {
             revert INVALID_HOUSE();
         }
@@ -64,7 +75,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         }
 
         round = _createRound(house, newRound);
-        IRound(round).initialize(newRound.config);
+        IRound(round).initialize{ value: msg.value }(newRound.config);
     }
 
     /// @notice Create a round on an existing house and deposit assets to the round
@@ -84,9 +95,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         }
 
         round = _createRound(house, newRound);
-        _batchDepositTo(msg.sender, payable(round), assets);
 
-        IRound(round).initialize(newRound.config);
+        uint256 etherRemaining = _batchDepositTo(msg.sender, payable(round), assets);
+        IRound(round).initialize{ value: etherRemaining }(newRound.config);
     }
 
     /// @notice Create a round on a new house
@@ -95,7 +106,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     function createRoundOnNewHouse(
         House calldata newHouse,
         Round calldata newRound
-    ) external returns (address house, address round) {
+    ) external payable returns (address house, address round) {
         if (!manager.isHouseRegistered(newHouse.impl)) {
             revert INVALID_HOUSE_IMPL();
         }
@@ -106,7 +117,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         house = _createHouse(newHouse);
         round = _createRound(house, newRound);
 
-        IRound(round).initialize(newRound.config);
+        IRound(round).initialize{ value: msg.value }(newRound.config);
     }
 
     /// @notice Create a round on a new house and deposit assets to the round
@@ -127,9 +138,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         house = _createHouse(newHouse);
         round = _createRound(house, newRound);
-        _batchDepositTo(msg.sender, payable(round), assets);
 
-        IRound(round).initialize(newRound.config);
+        uint256 etherRemaining = _batchDepositTo(msg.sender, payable(round), assets);
+        IRound(round).initialize{ value: etherRemaining }(newRound.config);
     }
 
     /// @notice Create a new house
@@ -181,7 +192,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     /// @param user The user depositing the asset
     /// @param round The round address
     /// @param asset The asset to transfer to the round
-    function _depositTo(address user, address payable round, Asset memory asset) internal {
+    function _depositTo(address user, address payable round, Asset memory asset) internal returns (uint256) {
         uint256 etherRemaining = msg.value;
 
         // Reduce amount of remaining ether, if necessary
@@ -205,18 +216,14 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
             IReceiptIssuer(round).issueReceipt(user, asset.toID(), asset.amount);
         }
-
-        // Return any remaining ether to the caller
-        if (etherRemaining != 0) {
-            _transferETH(payable(user), etherRemaining);
-        }
+        return etherRemaining;
     }
 
     /// @notice Deposit many assets to the provided round
     /// @param user The user depositing the assets
     /// @param round The round address
     /// @param assets The assets to transfer to the strategy
-    function _batchDepositTo(address user, address payable round, Asset[] memory assets) internal {
+    function _batchDepositTo(address user, address payable round, Asset[] memory assets) internal returns (uint256) {
         uint256 assetCount = assets.length;
 
         uint256 etherRemaining = msg.value;
@@ -255,11 +262,7 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
             IReceiptIssuer(round).issueReceipts(user, assetIds, assetAmounts);
         }
-
-        // Return any remaining ether to the caller
-        if (etherRemaining != 0) {
-            _transferETH(payable(user), etherRemaining);
-        }
+        return etherRemaining;
     }
 
     /// @notice Returns the implementation address for the provided `clone`
