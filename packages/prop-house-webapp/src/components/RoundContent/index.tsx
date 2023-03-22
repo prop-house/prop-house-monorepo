@@ -32,7 +32,7 @@ import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
-import { isInfAuction } from '../../utils/auctionType';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -61,6 +61,13 @@ const RoundContent: React.FC<{
   const { data: signer } = useSigner();
   const provider = useProvider();
   const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
+  const warningMessage = isTimedAuction(auction)
+    ? t('submittedProposals')
+    : infRoundFilter === InfRoundFilterType.Active
+    ? 'Active proposals will show up here.'
+    : InfRoundFilterType.Winners
+    ? 'Proposals that meet quorum will show up here.'
+    : 'Proposals that did not meet quorum before voting period ended will show up here.';
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -169,7 +176,7 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProposals')} />
+                    <ErrorMessageCard message={warningMessage} />
                   ) : (
                     <>
                       {proposals.map((prop, index) => (
