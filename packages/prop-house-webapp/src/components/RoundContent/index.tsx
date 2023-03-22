@@ -32,6 +32,7 @@ import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
+import { isInfAuction } from '../../utils/auctionType';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -177,7 +178,9 @@ const RoundContent: React.FC<{
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
                             isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
-                            stale={infRoundFilter === InfRoundFilterType.Stale}
+                            stale={
+                              isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale
+                            }
                           />
                         </Col>
                       ))}
