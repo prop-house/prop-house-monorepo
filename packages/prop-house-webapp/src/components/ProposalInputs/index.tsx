@@ -8,10 +8,8 @@ import clsx from 'clsx';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
-import { FormDataType } from '../ProposalEditor';
+import { FormDataType, FundReqDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
-import { isInfAuction } from '../../utils/auctionType';
-import { useLocation } from 'react-router-dom';
 import { useSigner } from 'wagmi';
 import InputFormGroup from '../InputFormGroup';
 
@@ -20,43 +18,29 @@ const ProposalInputs: React.FC<{
   quillRef: any;
   formData: FormDataType[];
   descriptionData: any;
+  fundReqData: FundReqDataType;
   onDataChange: (data: Partial<ProposalFields>) => void;
   onFileDrop: any;
   editorBlurred: boolean;
   setEditorBlurred: (blurred: boolean) => void;
-  initReqAmount: number | null;
-  remainingBal: number | null;
 }> = ({
   quill,
   quillRef,
   formData,
   descriptionData,
+  fundReqData,
   onDataChange,
   editorBlurred,
   setEditorBlurred,
   onFileDrop,
-  initReqAmount,
-  remainingBal,
 }) => {
-  console.log(remainingBal);
-  const location = useLocation();
-  // active round comes from two diff places depending on where inputs are being displayed
-  const roundFromLoc = location.state && location.state.auction; // creating new prop
-  const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
-  const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
-  const roundCurrency = roundFromLoc
-    ? roundFromLoc.currencyType
-    : roundFromStore
-    ? roundFromStore.currencyType
-    : '';
-
   const { data: signer } = useSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [fundReq, setFundReq] = useState(initReqAmount);
+  const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -99,27 +83,27 @@ const ProposalInputs: React.FC<{
       <Row>
         <Col xl={12}>
           <Form className={classes.form}>
-            <div className={clsx(isInfRound && classes.infRoundSectionsContainer)}>
+            <div className={clsx(fundReqData.isInfRound && classes.infRoundSectionsContainer)}>
               {/** TITLE */}
               {titleAndTldrInputs(formData[0], true)}
               {/** FUNDS REQ */}
-              {isInfRound && (
+              {fundReqData.isInfRound && (
                 <InputFormGroup
                   titleLabel="Funds Request"
                   content={
                     <>
                       <Form.Control
                         className={clsx(classes.input, classes.reqAmountInput)}
-                        placeholder={roundCurrency}
+                        placeholder={fundReqData.roundCurrency}
                         value={fundReq || ''}
                         onChange={e => {
                           setFundReq(Number(e.target.value));
                           onDataChange({ reqAmount: Number(e.target.value) });
                         }}
-                        isInvalid={fundReq && remainingBal ? fundReq > remainingBal : false}
+                        isInvalid={fundReq ? fundReq > fundReqData.remainingBal : false}
                       />
                       <Form.Control.Feedback type="invalid">
-                        Exceeds max remaining balance of {remainingBal} {roundCurrency}
+                        {fundReqData.error}
                       </Form.Control.Feedback>
                     </>
                   }
