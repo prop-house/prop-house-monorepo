@@ -41,3 +41,11 @@
   color: var(--brand-purple) !important;
   background: var(--brand-purple-hint) !important;
 }
+@media (max-width: 767px) {
+  .sortContainer {
+    border-top: 0.5px var(--brand-gray-semi-transparent) solid;
+    padding-top: 10px;
+    justify-content: space-evenly;
+    margin: 0 -0.75rem;
+  }
+}

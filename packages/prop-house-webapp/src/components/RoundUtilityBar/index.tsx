@@ -1,5 +1,5 @@
 import classes from './RoundUtilityBar.module.css';
-import RoundDropdown, { SortMethod } from '../RoundDropdown';
+import { SortMethod } from '../RoundDropdown';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -49,20 +49,15 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
       {/** FILTERS */}
       <div className={classes.utilitySection}>
         {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
-          <div className={classes.sortToggles}>
+          <div
+            className={clsx(
+              classes.sortToggles,
+              isInfAuction(auction) && classes.displaySortToggles,
+            )}
+          >
             <SortToggles auction={auction} />
           </div>
         )}
-
-        <div className={clsx(classes.dropdown, 'houseDropdown')}>
-          {auctionStatus(auction) !== AuctionStatus.AuctionNotStarted && (
-            <RoundDropdown
-              sortSelection={sortSelection}
-              setSortSelection={setSortSelection}
-              allowSortByVotes={allowSortByVotes}
-            />
-          )}
-        </div>
       </div>
 
       {/** ROUND DATA */}
