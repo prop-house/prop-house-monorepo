@@ -9,6 +9,7 @@ import {
   setActiveCommunity,
   setActiveProposals,
   setActiveRound,
+  setInfRoundFilterType,
   setModalActive,
   sortTimedRoundProposals,
   TimedRoundSortType,
@@ -139,6 +140,7 @@ const Round = () => {
     fetchAuctionProposals();
 
     return () => {
+      dispatch(setInfRoundFilterType(InfRoundFilterType.Active));
       dispatch(setModalActive(false));
       dispatch(setActiveCommunity());
       dispatch(setActiveRound());
