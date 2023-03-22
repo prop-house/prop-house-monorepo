@@ -163,10 +163,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   public async signProposeMessage(config: TimedFunding.ProposeConfig) {
     const address = await this.signer.getAddress();
     const message = {
-      round: encoding.hexPadRight(config.round),
+      round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
       proposerAddress: address,
-      authStrategy: encoding.hexPadRight(this._addresses.starknet.auth.timedFundingEthSig),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
@@ -233,11 +233,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     );
     const votingStrategyIds = nonZeroStrategyVotingPowers.map(({ strategy }) => strategy.id);
     const message = {
-      round: encoding.hexPadRight(config.round),
+      round: encoding.hexPadLeft(config.round),
       votingStrategyIds,
       proposalVotes: config.votes,
       votingStrategyParams: userParams,
-      authStrategy: encoding.hexPadRight(this._addresses.starknet.auth.timedFundingEthSig),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
       voterAddress: address,
       proposalVotesHash: encoding.hexPadRight(this.hashProposalVotes(config.votes)),
       votingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(votingStrategyIds)),
