@@ -15,14 +15,18 @@ import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
 import { useDispatch } from 'react-redux';
-import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
+import {
+  InfRoundFilterType,
+  setActiveProposal,
+  setModalActive,
+} from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
 import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
-import { isInfAuction } from '../../utils/auctionType';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 
 const ProposalCard: React.FC<{
@@ -36,6 +40,7 @@ const ProposalCard: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const dispatch = useDispatch();
 
   const roundIsActive = () =>
@@ -43,9 +48,10 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionVoting;
 
   const showVotesSection =
-    auctionStatus === AuctionStatus.AuctionVoting ||
-    auctionStatus === AuctionStatus.AuctionEnded ||
-    (auctionStatus === AuctionStatus.AuctionAcceptingProps && round && isInfAuction(round));
+    round && isTimedAuction(round)
+      ? auctionStatus === AuctionStatus.AuctionVoting ||
+        auctionStatus === AuctionStatus.AuctionEnded
+      : infRoundFilter === InfRoundFilterType.Active;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
