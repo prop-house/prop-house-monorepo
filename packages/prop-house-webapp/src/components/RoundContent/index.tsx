@@ -138,7 +138,7 @@ const RoundContent: React.FC<{
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(client.current, auction.id, dispatch);
+      refreshActiveProposals(client.current, auction, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {

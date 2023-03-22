@@ -87,7 +87,7 @@ const DeleteProposalModal: React.FC<{
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowDeletePropModal(false);
-              refreshActiveProposals(client.current, round!.id, dispatch);
+              refreshActiveProposals(client.current, round!, dispatch);
               refreshActiveProposal(client.current, activeProposal!, dispatch);
               handleClosePropModal();
             }}

@@ -77,7 +77,7 @@ const ProposalModal = () => {
   };
 
   const dismissModalAndRefreshProps = () => {
-    refreshActiveProposals(backendClient.current, round!.id, dispatch);
+    refreshActiveProposals(backendClient.current, round!, dispatch);
     refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
     handleClosePropModal();
   };
@@ -181,7 +181,7 @@ const ProposalModal = () => {
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round!.id, dispatch);
+      refreshActiveProposals(backendClient.current, round!, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);

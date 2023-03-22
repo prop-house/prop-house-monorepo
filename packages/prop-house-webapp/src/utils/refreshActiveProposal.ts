@@ -1,7 +1,16 @@
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredAuctionBase,
+  StoredProposalWithVotes,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { Dispatch } from 'redux';
-import { setActiveProposal, setActiveProposals } from '../state/slices/propHouse';
+import {
+  filterInfRoundProposals,
+  InfRoundFilterType,
+  setActiveProposal,
+  setActiveProposals,
+} from '../state/slices/propHouse';
+import { isInfAuction } from './auctionType';
 
 const refreshActiveProposal = (
   client: PropHouseWrapper,
@@ -11,12 +20,15 @@ const refreshActiveProposal = (
   client.getProposal(activeProposal.id).then(proposal => dispatch(setActiveProposal(proposal)));
 };
 
-export const refreshActiveProposals = (
+export const refreshActiveProposals = async (
   client: PropHouseWrapper,
-  auctionId: number,
+  auction: StoredAuctionBase,
   dispatch: Dispatch,
 ) => {
-  client.getAuctionProposals(auctionId).then(proposals => dispatch(setActiveProposals(proposals)));
+  const proposals = await client.getAuctionProposals(auction.id);
+  dispatch(setActiveProposals(proposals));
+  if (isInfAuction(auction))
+    dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round: auction }));
 };
 
 export default refreshActiveProposal;
