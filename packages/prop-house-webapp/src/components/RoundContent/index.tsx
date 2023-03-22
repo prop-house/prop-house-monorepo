@@ -60,6 +60,7 @@ const RoundContent: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
   const { data: signer } = useSigner();
   const provider = useProvider();
+  const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -178,9 +179,7 @@ const RoundContent: React.FC<{
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
                             isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
-                            stale={
-                              isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale
-                            }
+                            stale={staleProp}
                           />
                         </Col>
                       ))}
