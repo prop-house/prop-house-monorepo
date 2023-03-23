@@ -53,9 +53,10 @@ export class InfiniteAuction implements AuctionBase {
   @Field(() => String)
   description: string;
 
-  @Column({ type: 'numeric' })
-  @Field(() => Float, {
-    description: 'The minimum score that a proposal must have to be funded',
+  @Column({ type: 'integer' })
+  @Field(() => Int, {
+    description:
+      'The minimum vote count that a proposal must have to be funded',
   })
   quorum: number;
 
