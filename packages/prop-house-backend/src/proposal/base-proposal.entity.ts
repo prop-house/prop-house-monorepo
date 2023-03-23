@@ -46,8 +46,8 @@ export abstract class BaseProposal extends SignedEntity {
   @Field(() => [Vote])
   votes: Vote[];
 
-  @Column({ type: 'numeric', default: 0 })
-  @Field(() => Float)
+  @Column({ type: 'integer', default: 0 })
+  @Field(() => Int)
   voteCount: number;
 
   @BeforeUpdate()
