@@ -20,7 +20,7 @@
       "vanillaVotingStrategy": "0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9",
       "merkleWhitelistVotingStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
       "ethereumBalanceOfVotingStrategy": "0x1b60e1d89c75630e8e64d93dd27a808ad1586a0ae738afd87503e431139d0",
-      "fossil": {
+      "herodotus": {
         "factRegistry": "0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f",
         "l1HeadersStore": "0x1d9b36a00d7d5300e5da456c56d09c46dfefbc91b3a6b1552b6f2a34d6e34c4"
       }

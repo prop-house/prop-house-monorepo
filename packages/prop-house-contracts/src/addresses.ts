@@ -80,8 +80,8 @@ export const contracts: Record<number, ContractAddresses> = {
         timedFundingEthTx: goerli.starknet.address.timedFundingRoundEthTxAuthStrategy,
       },
       herodotus: {
-        factRegistry: goerli.starknet.address.fossil.factRegistry,
-        l1HeadersStore: goerli.starknet.address.fossil.l1HeadersStore,
+        factRegistry: goerli.starknet.address.herodotus.factRegistry,
+        l1HeadersStore: goerli.starknet.address.herodotus.l1HeadersStore,
       },
       classHashes: {
         timedFunding: goerli.starknet.classHash.timedFundingRound,
