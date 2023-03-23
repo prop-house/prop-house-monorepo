@@ -8,7 +8,7 @@ import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
 const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuctionBase) => {
   if (isInfAuction(auction))
-    return proposals.filter(p => Number(p.voteCount) >= Number(auction.quorum)).map(p => p.id);
+    return proposals.filter(p => p.voteCount >= Number(auction.quorum)).map(p => p.id);
 
   // empty array to store winning ids
   const winningIds: number[] = [];
@@ -28,7 +28,7 @@ const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuct
     sortedProposals.slice(0, auction.numWinners).map(p =>
       auctionStatus(auction) === AuctionStatus.AuctionVoting
         ? // skip proposals with 0 votes if auction is in voting phase
-          Number(p.voteCount) !== 0 && winningIds.push(p.id)
+          p.voteCount !== 0 && winningIds.push(p.id)
         : winningIds.push(p.id),
     );
 

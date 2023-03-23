@@ -7,8 +7,8 @@ export const sortByVotesAndHandleTies = (
   ascending: boolean,
 ) =>
   proposals.sort((a, b) => {
-    const gt = Number(a.voteCount) > Number(b.voteCount);
-    const eq = Number(a.voteCount) === Number(b.voteCount);
+    const gt = a.voteCount > b.voteCount;
+    const eq = a.voteCount === b.voteCount;
     const sortedByUpdatedAsc =
       (dayjs(getLastUpdatedDate(b)) as any) - (dayjs(getLastUpdatedDate(a)) as any);
     const sortedByUpdatedDes =

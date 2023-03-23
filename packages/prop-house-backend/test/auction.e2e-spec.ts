@@ -164,7 +164,7 @@ describe('Auctions (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/proposals/${proposal.id}`)
       .expect(200)
-      .expect(parsedBodyTest<Proposal>((r) => Number(r.voteCount) === 0));
+      .expect(parsedBodyTest<Proposal>((r) => r.voteCount === 0));
 
     // This isn't enforced on the backend any longer, should it be?
     // try {
@@ -200,7 +200,7 @@ describe('Auctions (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/proposals/${proposal.id}`)
       .expect(200)
-      .expect(parsedBodyTest<Proposal>((r) => Number(r.voteCount) === 10));
+      .expect(parsedBodyTest<Proposal>((r) => r.voteCount === 10));
 
     try {
       await wrapper.logVotes([
@@ -240,7 +240,7 @@ describe('Auctions (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/proposals/${proposal.id}`)
       .expect(200)
-      .expect(parsedBodyTest<Proposal>((r) => Number(r.voteCount) === 10));
+      .expect(parsedBodyTest<Proposal>((r) => r.voteCount === 10));
   });
 
   afterEach(async () => {
