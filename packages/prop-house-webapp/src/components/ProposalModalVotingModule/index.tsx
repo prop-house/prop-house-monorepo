@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import VotingControls from '../VotingControls';
 import Button, { ButtonColor } from '../Button';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
@@ -15,6 +15,10 @@ import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount, useProvider } from 'wagmi';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
+import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
+import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -36,10 +40,26 @@ const ProposalModalVotingModule: React.FC<{
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
-  const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
-  const [numAllotedVotes, setNumAllotedVotes] = useState(0);
+  const numVotesCasted =
+    round && isTimedAuction(round)
+      ? countNumVotes(votesByUserInActiveRound)
+      : countNumVotesForProp(votesByUserInActiveRound, proposal.id);
+
+  const votesRemaining =
+    round && isInfAuction(round)
+      ? countVotesRemainingForInfRound(
+          proposal.id,
+          votingPower,
+          votesByUserInActiveRound,
+          voteAllotments,
+        )
+      : countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments);
+
+  const votesAlloted =
+    round && isTimedAuction(round)
+      ? countTotalVotesAlloted(voteAllotments)
+      : countVotesAllottedToProp(voteAllotments, proposal.id);
 
   useEffect(() => {
     if (!account || !provider || !community) return;
@@ -70,13 +90,6 @@ const ProposalModalVotingModule: React.FC<{
       );
   }, [proposals, account, dispatch]);
 
-  useEffect(() => {
-    setVotesLeftToAllot(
-      countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
-    );
-    setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
-  }, [votesByUserInActiveRound, voteAllotments, votingPower]);
-
   return (
     <>
       <div className={classes.votingContainer}>
@@ -88,28 +101,19 @@ const ProposalModalVotingModule: React.FC<{
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
 
-                {`${
-                  votesLeftToAllot > 0
-                    ? `${votingPower - numVotesByUserInActiveRound - numAllotedVotes} left`
-                    : 'no votes left'
-                }`}
+                {`${votesRemaining > 0 ? `${votesRemaining} left` : 'no votes left'}`}
               </span>
             </div>
 
             <ProgressBar
               className={clsx(
                 classes.votingBar,
-                numVotesByUserInActiveRound > 0 &&
-                  votingPower !== numVotesByUserInActiveRound &&
-                  'roundAllotmentBar',
+                numVotesCasted > 0 && votingPower !== numVotesCasted && 'roundAllotmentBar',
               )}
             >
-              <ProgressBar
-                variant="success"
-                now={(numVotesByUserInActiveRound / votingPower) * 100}
-              />
+              <ProgressBar variant="success" now={(numVotesCasted / votingPower) * 100} />
 
-              <ProgressBar variant="warning" now={(numAllotedVotes / votingPower) * 100} key={2} />
+              <ProgressBar variant="warning" now={(votesAlloted / votingPower) * 100} key={2} />
             </ProgressBar>
           </div>
         </div>
@@ -136,8 +140,7 @@ const ProposalModalVotingModule: React.FC<{
             text={'Submit votes'}
             bgColor={ButtonColor.Purple}
             disabled={
-              countTotalVotesAlloted(voteAllotments) === 0 ||
-              numVotesByUserInActiveRound === votingPower
+              countTotalVotesAlloted(voteAllotments) === 0 || numVotesCasted === votingPower
             }
             onClick={() => setShowVotingModal(true)}
           />

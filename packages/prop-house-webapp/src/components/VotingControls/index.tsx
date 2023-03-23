@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
-import { countNumVotes } from '../../utils/countNumVotes';
 import { isInfAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 
@@ -23,7 +22,6 @@ const VotingControls: React.FC<{
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const numVotesbyUserInActiveRound = countNumVotes(votesByUserInActiveRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const dispatch = useAppDispatch();
@@ -74,15 +72,11 @@ const VotingControls: React.FC<{
     if (!proposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
-    const numVotesAllotting = inputVotes - allottedVotesForProp;
 
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (
-      numVotesAllotting > votingPower - numVotesbyUserInActiveRound ||
-      numVotesAllotting > votesRemaining
-    ) {
+    if (inputVotes > votesRemaining + allottedVotesForProp) {
       setAttemptedInputVotes(inputVotes);
       setDisplayWarningTooltip(true);
       setTimeout(() => {
