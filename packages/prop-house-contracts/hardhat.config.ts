@@ -31,7 +31,6 @@ const config: HardhatUserConfig = {
   paths: {
     sources: 'contracts',
     cache: 'cache_hardhat', // Use a different cache for Hardhat than Foundry
-    cairoPaths: ['lib/fossil/contracts'],
   },
   // This fully resolves paths for imports in the ./lib directory for Hardhat
   preprocess: {

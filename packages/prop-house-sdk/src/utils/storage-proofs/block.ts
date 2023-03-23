@@ -10,7 +10,7 @@ export interface ProcessBlockInputs {
 }
 
 /**
- * Produces the input data for the process_block function in Fossil
+ * Produces the input data for the process_block function in Herodotus
  * @param block Block object from RPC call
  * @param chain EVM chain identifier
  * @param hardfork Hardfork identifier

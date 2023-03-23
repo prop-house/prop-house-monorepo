@@ -5,7 +5,7 @@ export interface ProofInputs {
   blockNumber: number;
   accountOptions: number;
   ethAddress: IntsSequence;
-  ethAddressFelt: string; // Fossil treats eth addresses two different ways for some reason, it will be changed soon but now this works
+  ethAddressFelt: string; // Herodotus treats eth addresses two different ways for some reason, it will be changed soon but now this works
   accountProofSizesBytes: string[];
   accountProofSizesWords: string[];
   accountProof: string[];
@@ -64,10 +64,10 @@ export const decodeParams = (params: string[]): string[][] => {
 };
 
 /**
- * Produces the input data for the account and storage proof verification methods in Fossil
+ * Produces the input data for the account and storage proof verification methods in Herodotus
  * @param blockNumber Block Number that the proof targets
  * @param proofs Proofs object from RPC call
- * @param accountOptions Config for Fossil to encode which of the values proved by the account proof get stored. Default 15 is all of them.
+ * @param accountOptions Config for Herodotus to encode which of the values proved by the account proof get stored. Default 15 is all of them.
  * @returns ProofInputs object
  */
 export const getProofInputs = (

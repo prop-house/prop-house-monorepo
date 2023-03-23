@@ -25,7 +25,7 @@ export interface AuthStrategies {
   timedFundingEthTx: string;
 }
 
-export interface FossilContracts {
+export interface HetodotusContracts {
   factRegistry: string;
   l1HeadersStore: string;
 }
@@ -46,7 +46,7 @@ export interface StarknetContracts {
   votingRegistry: string;
   voting: VotingStrategies;
   auth: AuthStrategies;
-  fossil: FossilContracts;
+  herodotus: HetodotusContracts;
   classHashes: ClassHashes;
 }
 
@@ -79,7 +79,7 @@ export const contracts: Record<number, ContractAddresses> = {
         timedFundingEthSig: goerli.starknet.address.timedFundingRoundEthSigAuthStrategy,
         timedFundingEthTx: goerli.starknet.address.timedFundingRoundEthTxAuthStrategy,
       },
-      fossil: {
+      herodotus: {
         factRegistry: goerli.starknet.address.fossil.factRegistry,
         l1HeadersStore: goerli.starknet.address.fossil.l1HeadersStore,
       },
