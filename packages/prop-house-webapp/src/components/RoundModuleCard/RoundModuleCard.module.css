@@ -58,6 +58,14 @@
 .purpleIcon svg {
   color: var(--brand-purple);
 }
+
+.grayIcon {
+  background: var(--brand-gray-hint);
+  border: 1px solid var(--brand-gray-semi-transparent);
+}
+.grayIcon svg {
+  color: var(--brand-gray);
+}
 .blackIcon {
   border: 1px solid var(--border-med);
 }

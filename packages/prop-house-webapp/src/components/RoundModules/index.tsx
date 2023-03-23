@@ -18,6 +18,9 @@ import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
 import InfRoundVotingModule from '../InfRoundVotingModule';
 import { useAppSelector } from '../../hooks';
+import { InfRoundFilterType } from '../../state/slices/propHouse';
+import RoundModuleWinner from '../RoundModuleWinner';
+import RoundModuleStale from '../RoundModuleStale';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -29,6 +32,7 @@ const RoundModules: React.FC<{
 
   const { address: account } = useAccount();
   const votingPower = useAppSelector(state => state.voting.votingPower);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
 
@@ -75,10 +79,12 @@ const RoundModules: React.FC<{
           />
         )}
 
-      {(isTimedAuction(auction) && isProposingWindow) ||
-      (isInfAuction(auction) && votingPower === 0) ? (
+      {((isTimedAuction(auction) && isProposingWindow) ||
+        (isInfAuction(auction) &&
+          votingPower === 0 &&
+          infRoundFilter === InfRoundFilterType.Active)) && (
         <AcceptingPropsModule auction={auction} community={community} />
-      ) : null}
+      )}
 
       {isTimedAuction(auction) && isVotingWindow && (
         <TimedRoundVotingModule
@@ -88,8 +94,18 @@ const RoundModules: React.FC<{
         />
       )}
 
-      {isInfAuction(auction) && (!account || votingPower > 0) && (
-        <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+      {isInfAuction(auction) &&
+        (!account || votingPower > 0) &&
+        infRoundFilter === InfRoundFilterType.Active && (
+          <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+        )}
+
+      {isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Winners && (
+        <RoundModuleWinner auction={auction} />
+      )}
+
+      {isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
+        <RoundModuleStale auction={auction} />
       )}
 
       {isRoundOver && (
