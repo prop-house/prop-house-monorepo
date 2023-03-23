@@ -74,7 +74,9 @@ const ProposalInputs: React.FC<{
       charsLabel={
         data.maxCount ? `${data.fieldValue.length}/${data.maxCount}` : data.fieldValue.length
       }
-      formGroupClasses={isTitleSection ? classes.infRoundTitleSection : ''}
+      formGroupClasses={
+        isTitleSection && fundReqData.isInfRound ? classes.infRoundTitleSection : ''
+      }
     />
   );
 
