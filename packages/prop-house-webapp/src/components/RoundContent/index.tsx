@@ -65,7 +65,7 @@ const RoundContent: React.FC<{
     ? t('submittedProposals')
     : infRoundFilter === InfRoundFilterType.Active
     ? 'Active proposals will show up here.'
-    : InfRoundFilterType.Winners
+    : infRoundFilter === InfRoundFilterType.Winners
     ? 'Proposals that meet quorum will show up here.'
     : 'Proposals that did not meet quorum before voting period ended will show up here.';
 
