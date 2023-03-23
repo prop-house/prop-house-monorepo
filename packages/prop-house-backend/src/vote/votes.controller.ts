@@ -117,6 +117,23 @@ export class VotesController {
         HttpStatus.BAD_REQUEST,
       );
 
+    // verify that inf-auction proposals are within their round's voting period
+    if (
+      foundProposal.parentType === 'infinite-auction' &&
+      'votingPeriod' in foundProposalAuction
+    ) {
+      const expirationTimeMs =
+        foundProposal.createdDate.getTime() +
+        foundProposalAuction.votingPeriod * 1000;
+      const isActive = expirationTimeMs > Date.now();
+
+      if (!isActive)
+        throw new HttpException(
+          'Votes are being casted outisde of round voting period',
+          HttpStatus.BAD_REQUEST,
+        );
+    }
+
     // Verify that signer has voting power
     const votingPower = await this.votesService.getVotingPower(
       createVoteDto,
