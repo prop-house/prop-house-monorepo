@@ -5,7 +5,7 @@ import RoundModuleCard from '../RoundModuleCard';
 const RoundModuleStale: React.FC<{ auction: StoredInfiniteAuction }> = ({ auction }) => {
   return (
     <RoundModuleCard
-      title={'Stale Props'}
+      title={'Stale'}
       content={
         <>
           <p style={{ fontWeight: 'bold' }}>What is a stale proposal?</p>
