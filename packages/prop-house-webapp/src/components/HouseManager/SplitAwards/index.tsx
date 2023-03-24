@@ -40,8 +40,9 @@ const SplitAwards: React.FC<{
   setAwards: React.Dispatch<SetStateAction<Award[]>>;
   winnerCount?: number;
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
+  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
 }> = props => {
-  const { editMode, awards, setAwards, winnerCount, setWinnerCount } = props;
+  const { editMode, awards, setAwards, winnerCount, setWinnerCount, setEditedAwards } = props;
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
 
   const [award, setAward] = useState({ ...NewAward, price: 0 });
@@ -157,7 +158,12 @@ const SplitAwards: React.FC<{
 
     setAward({ ...award, ...updated });
     setAwards([{ ...award, ...updated }]);
-    dispatch(updateRound({ ...round, awards: [{ ...award, ...updated }] }));
+    if (editMode) {
+      setEditedAwards!([{ ...award, ...updated }]);
+    } else {
+      dispatch(updateRound({ ...round, awards: [{ ...award, ...updated }] }));
+    }
+
     setShowSplitAwardModal(false);
   };
 

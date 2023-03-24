@@ -4,7 +4,7 @@ import Modal from '../../Modal';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import AssetSelector from '../AssetSelector';
+import AssetSelector, { Award } from '../AssetSelector';
 
 const EditAwardsModal: React.FC<{
   setShowAwardsModal: Dispatch<SetStateAction<boolean>>;
@@ -14,9 +14,15 @@ const EditAwardsModal: React.FC<{
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
   const [winnerCount, setWinnerCount] = useState(round.numWinners);
+  const [editedAwards, setEditedAwards] = useState<Award[]>(round.awards);
 
   const handleEditModeSave = () => {
-    dispatch(updateRound({ ...round, numWinners: winnerCount }));
+    if (!round.splitAwards) {
+      const filteredAwards = round.awards.filter(award => award.state === 'success');
+      setEditedAwards(filteredAwards);
+      setWinnerCount(filteredAwards.length);
+    }
+    dispatch(updateRound({ ...round, awards: editedAwards, numWinners: winnerCount }));
     dispatch(checkStepCriteria());
     setShowAwardsModal(false);
   };
@@ -25,7 +31,14 @@ const EditAwardsModal: React.FC<{
     <Modal
       title="Edit awards"
       subtitle=""
-      body={<AssetSelector editMode winnerCount={winnerCount} setWinnerCount={setWinnerCount} />}
+      body={
+        <AssetSelector
+          editMode
+          setEditedAwards={setEditedAwards}
+          winnerCount={winnerCount}
+          setWinnerCount={setWinnerCount}
+        />
+      }
       setShowModal={setShowAwardsModal}
       button={
         <Button

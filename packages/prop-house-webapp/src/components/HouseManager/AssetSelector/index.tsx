@@ -46,8 +46,9 @@ const AssetSelector: FC<{
   editMode?: boolean;
   winnerCount?: number;
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
+  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
 }> = props => {
-  const { editMode, winnerCount, setWinnerCount } = props;
+  const { editMode, winnerCount, setWinnerCount, setEditedAwards } = props;
 
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
@@ -108,14 +109,15 @@ const AssetSelector: FC<{
           setAwards={setSplitAwards}
           winnerCount={winnerCount}
           setWinnerCount={setWinnerCount}
+          setEditedAwards={setEditedAwards}
         />
       ) : (
         <IndividualAwards
           editMode={editMode}
           awards={individualAwards}
           setAwards={setIndividualAwards}
-          winnerCount={winnerCount}
           setWinnerCount={setWinnerCount}
+          setEditedAwards={setEditedAwards}
         />
       )}
     </>
