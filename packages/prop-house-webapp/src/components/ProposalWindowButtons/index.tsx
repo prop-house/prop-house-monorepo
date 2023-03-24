@@ -9,6 +9,9 @@ import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
 
+/**
+ * New, Edit and Delete buttons
+ */
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
   editProposalMode: boolean;
