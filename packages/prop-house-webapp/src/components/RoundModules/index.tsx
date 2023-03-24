@@ -12,7 +12,7 @@ import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
