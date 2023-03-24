@@ -12,7 +12,9 @@ export interface NewRound {
   currencyType: string;
   description: string;
   strategies: VotingStrategyInfo[];
+  timedRound: boolean;
   awards: Award[];
+  splitAwards: boolean;
 }
 
 export const initialRound: NewRound = {
@@ -24,7 +26,9 @@ export const initialRound: NewRound = {
   currencyType: '',
   description: '',
   strategies: [],
+  timedRound: true,
   awards: [NewAward],
+  splitAwards: true,
 };
 
 interface RoundState {
@@ -37,6 +41,13 @@ const initialState: RoundState = {
   activeStep: 1,
   round: initialRound,
   stepDisabledArray: [true, true, true, true, true],
+};
+
+const removeIncompleteAwards = (round: NewRound) => {
+  if (!round.splitAwards) {
+    const filteredAwards = round.awards.filter(award => award.state === 'success');
+    round.awards = filteredAwards;
+  }
 };
 
 export const roundSlice = createSlice({
@@ -57,9 +68,11 @@ export const roundSlice = createSlice({
       );
     },
     setNextStep: state => {
+      removeIncompleteAwards(state.round);
       state.activeStep = Math.min(state.activeStep + 1, 5);
     },
     setPrevStep: state => {
+      removeIncompleteAwards(state.round);
       state.activeStep = Math.max(state.activeStep - 1, 1);
     },
     updateRound: (state, action: PayloadAction<NewRound>) => {
