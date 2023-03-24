@@ -260,6 +260,8 @@ const IndividualAwards: React.FC<{
   const [awardIdx, setAwardIdx] = useState(0);
 
   const handleTokenBlur = async (id: string) => {
+    if (award.tokenId === '') return;
+
     const image_url = await getTokenIDImage(award.address, id);
 
     const isDuplicate = awards.some(
@@ -277,11 +279,8 @@ const IndividualAwards: React.FC<{
       return;
     } else {
       setAward({ ...award, error: '', image: image_url });
+      return;
     }
-
-    // const data = await res.json();
-
-    // const { image_url } = data;
   };
 
   return (
