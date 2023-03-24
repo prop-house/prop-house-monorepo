@@ -81,6 +81,7 @@ const SplitAwards: React.FC<{
             ],
           }),
         );
+        dispatch(checkStepCriteria());
       };
       fetchEthPrice();
     } else {
