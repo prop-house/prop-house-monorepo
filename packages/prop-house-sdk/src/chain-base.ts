@@ -3,7 +3,7 @@ import {
   ContractAddresses,
   getContractAddressesForChainOrThrow,
 } from '@prophouse/contracts';
-import { constants, Provider as StarknetProvider, SequencerProvider } from 'starknet';
+import { constants, SequencerProvider } from 'starknet';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { ChainConfig } from './types';

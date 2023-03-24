@@ -67,7 +67,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
     const block = parseInt(
       (
         await this._starknet.getStorageAt(
-          this._addresses.starknet.hetodotus.l1HeadersStore,
+          this._addresses.starknet.herodotus.l1HeadersStore,
           encoding.getStorageVarAddress(this._L1_LATEST_BLOCK_STORE),
         )
       ).toString(),
