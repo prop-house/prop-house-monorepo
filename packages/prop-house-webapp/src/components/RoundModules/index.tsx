@@ -12,7 +12,7 @@ import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
@@ -21,6 +21,9 @@ import { useAppSelector } from '../../hooks';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import RoundModuleWinner from '../RoundModuleWinner';
 import RoundModuleStale from '../RoundModuleStale';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.min.css';
+import { isMobile } from 'web3modal';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -63,53 +66,70 @@ const RoundModules: React.FC<{
     }
   }, [account, proposals]);
 
+  const userPropCardModule = !auctionNotStarted &&
+    account &&
+    userProposals &&
+    userProposals.length > 0 &&
+    fetchedUserProps && (
+      <UserPropCard
+        userProps={userProposals}
+        proposals={proposals}
+        numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
+        status={auctionStatus(auction)}
+        winningIds={winningIds && winningIds}
+      />
+    );
+
+  const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
+    (isInfAuction(auction) &&
+      votingPower === 0 &&
+      infRoundFilter === InfRoundFilterType.Active)) && (
+    <AcceptingPropsModule auction={auction} community={community} />
+  );
+
+  const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
+    <TimedRoundVotingModule
+      communityName={community.name}
+      setShowVotingModal={setShowVotingModal}
+      totalVotes={getVoteTotal()}
+    />
+  );
+
+  const infRoundVotingModule = isInfAuction(auction) &&
+    (!account || votingPower > 0) &&
+    infRoundFilter === InfRoundFilterType.Active && (
+      <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+    );
+
+  const roundWinnerModule = isInfAuction(auction) &&
+    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+
+  const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
+    <RoundModuleStale auction={auction} />
+  );
+
+  const roundOverModule = isRoundOver && (
+    <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
+  );
+
+  const modules = [
+    userPropCardModule,
+    acceptingPropsModule,
+    timedRoundVotingModule,
+    infRoundVotingModule,
+    roundWinnerModule,
+    roundStaleModule,
+    roundOverModule,
+  ];
+
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-      {!auctionNotStarted &&
-        account &&
-        userProposals &&
-        userProposals.length > 0 &&
-        fetchedUserProps && (
-          <UserPropCard
-            userProps={userProposals}
-            proposals={proposals}
-            numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
-            status={auctionStatus(auction)}
-            winningIds={winningIds && winningIds}
-          />
-        )}
-
-      {((isTimedAuction(auction) && isProposingWindow) ||
-        (isInfAuction(auction) &&
-          votingPower === 0 &&
-          infRoundFilter === InfRoundFilterType.Active)) && (
-        <AcceptingPropsModule auction={auction} community={community} />
-      )}
-
-      {isTimedAuction(auction) && isVotingWindow && (
-        <TimedRoundVotingModule
-          communityName={community.name}
-          setShowVotingModal={setShowVotingModal}
-          totalVotes={getVoteTotal()}
-        />
-      )}
-
-      {isInfAuction(auction) &&
-        (!account || votingPower > 0) &&
-        infRoundFilter === InfRoundFilterType.Active && (
-          <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
-        )}
-
-      {isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Winners && (
-        <RoundModuleWinner auction={auction} />
-      )}
-
-      {isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
-        <RoundModuleStale auction={auction} />
-      )}
-
-      {isRoundOver && (
-        <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
+      {isMobile() ? (
+        <Swiper spaceBetween={0} slidesPerView={1}>
+          {modules.map(m => React.isValidElement(m) && <SwiperSlide>{m}</SwiperSlide>)}
+        </Swiper>
+      ) : (
+        modules.map(m => m)
       )}
     </Col>
   );
