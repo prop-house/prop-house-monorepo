@@ -11,16 +11,8 @@ import TimedRound from '../TimedRound';
 import { getDayDifference } from '../utils/getDayDifference';
 
 const RoundDatesSelector = () => {
-  const [activeSection, setActiveSection] = useState(0);
-
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
-
-  const dataToBeCleared = {
-    startTime: null,
-    proposalEndTime: null,
-    votingEndTime: null,
-  };
 
   const proposalPeriods = [5, 7, 14];
   const votingPeriods = [5, 7, 14];
@@ -126,6 +118,22 @@ const RoundDatesSelector = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roundTime]);
 
+  const [isTimedRound, setIsTimedRound] = useState(round.timedRound);
+
+  const changeTimingType = () => {
+    const updated = {
+      ...round,
+      timedRound: !round.timedRound,
+      startTime: null,
+      proposalEndTime: null,
+      votingEndTime: null,
+    };
+
+    setIsTimedRound(!isTimedRound);
+    dispatch(updateRound(updated));
+    dispatch(checkStepCriteria());
+  };
+
   const disableVotingPeriod =
     !round.startTime || !round.proposalEndTime || proposingPeriodLength === null;
 
@@ -133,25 +141,23 @@ const RoundDatesSelector = () => {
     <>
       <Group gap={4}>
         <Text type="subtitle">Select a round type</Text>
-        <DualSectionSelector dataToBeCleared={dataToBeCleared} setActiveSection={setActiveSection}>
+        <DualSectionSelector onChange={changeTimingType}>
           <Section
-            id={0}
+            active={isTimedRound}
             title="A time round"
             text="Set a specific end date and time for your round."
-            activeSection={activeSection}
           />
           <Section
-            id={1}
+            active={!isTimedRound}
             title="Infinite round"
             text="A round that never ends and acts as a permanent pool of rewards."
-            activeSection={activeSection}
           />
         </DualSectionSelector>
       </Group>
 
       <Divider />
 
-      {activeSection === 0 && (
+      {isTimedRound ? (
         <TimedRound
           isCustomProposalPeriodDisabled={!round.startTime}
           roundTime={roundTime}
@@ -169,8 +175,9 @@ const RoundDatesSelector = () => {
           handleSelectCustomPeriod={handleSelectCustomPeriod}
           handleProposingStartTimeChange={handleProposingStartTimeChange}
         />
+      ) : (
+        !isTimedRound && <div>infinite round</div>
       )}
-      {activeSection === 1 && <div>infinite round</div>}
     </>
   );
 };
