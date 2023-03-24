@@ -98,6 +98,7 @@
   width: 100%;
   border: 1px solid var(--border-med) !important;
   font-size: 14px;
+  border-radius: 12px !important;
 }
 .addressSuccess span {
   color: var(--brand-black);

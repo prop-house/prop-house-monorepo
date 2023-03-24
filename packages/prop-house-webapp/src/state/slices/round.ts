@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
 import { VotingStrategyInfo } from '@prophouse/sdk';
-import { Award, newAward } from '../../components/HouseManager/AssetSelector';
+import { Award, NewAward } from '../../components/HouseManager/AssetSelector';
 
 export interface NewRound {
   title: string;
@@ -24,7 +24,7 @@ export const initialRound: NewRound = {
   currencyType: '',
   description: '',
   strategies: [],
-  awards: [newAward],
+  awards: [NewAward],
 };
 
 interface RoundState {

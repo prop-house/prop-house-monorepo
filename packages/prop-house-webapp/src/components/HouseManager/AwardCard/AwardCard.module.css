@@ -34,6 +34,7 @@
 .image {
   height: 14px;
   width: 14px;
+  border-radius: 0.761905px !important;
 }
 .text {
   text-align: center;
