@@ -124,9 +124,6 @@ const CreateTheRound = () => {
       <Group gap={16}>
         <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
         <CardWrapper>
-          {/* // if there's one award that means all the numWinners get the same award
-            // if there's more than one award, then each award is for a different place */}
-
           {[...Array(round.numWinners)].map((_, idx) => (
             <AwardCard award={round.awards[round.awards.length === 1 ? 0 : idx]} place={idx + 1} />
           ))}
