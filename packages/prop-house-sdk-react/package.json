@@ -1,0 +1,25 @@
+{
+  "name": "@prophouse/sdk-react",
+  "version": "0.1.0-alpha",
+  "description": "Useful tooling for interacting with the Prop House protocol from React applications",
+  "author": "solimander",
+  "homepage": "https://prop.house",
+  "license": "GPL-3.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist tsconfig.build.tsbuildinfo",
+    "build": "tsc",
+    "prepare": "yarn build",
+    "format": "prettier --write '{,*/**/}*.ts' '!dist/**'"
+  },
+  "peerDependencies": {
+    "react": ">=16.13.1"
+  },
+  "dependencies": {
+    "@prophouse/sdk": "~0.1.0-alpha.14"
+  },
+  "devDependencies": {
+    "react": "^17.0.2"
+  }
+}
