@@ -1,6 +1,6 @@
-import { Provider as StarknetProvider, ProviderOptions as StarknetProviderOptions } from 'starknet';
 import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/contracts';
 import { Web3Provider, JsonRpcProvider } from '@ethersproject/providers';
+import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { StrategyHandlerBase, Voting } from './voting';
 import { Wallet } from '@ethersproject/wallet';
@@ -16,7 +16,7 @@ export type EVM = Web3Provider | JsonRpcProvider | Wallet | string;
 /**
  * Starknet connection information
  */
-export type Starknet = StarknetProvider | StarknetProviderOptions;
+export type Starknet = SequencerProvider | SequencerProviderOptions;
 
 export interface ChainConfig {
   evmChainId: number;
@@ -111,6 +111,15 @@ export namespace TimedFunding {
     votePeriodDurationSecs: number;
     winnerCount: number;
   }
+  export interface ConfigStruct {
+    awards: AssetStruct[];
+    votingStrategies: BigNumberish[];
+    votingStrategyParamsFlat: BigNumberish[];
+    proposalPeriodStartTimestamp: BigNumberish;
+    proposalPeriodDuration: BigNumberish;
+    votePeriodDuration: BigNumberish;
+    winnerCount: BigNumberish;
+  }
   export interface ProposalVote {
     proposalId: number;
     votingPower: BigNumberish;
@@ -193,6 +202,10 @@ export enum RoundType {
 
 export interface RoundConfig<CS extends Custom | void = void> {
   [RoundType.TIMED_FUNDING]: TimedFunding.Config<CS>;
+}
+
+export interface RoundConfigStruct {
+  [RoundType.TIMED_FUNDING]: TimedFunding.ConfigStruct;
 }
 
 export interface RoundContract {

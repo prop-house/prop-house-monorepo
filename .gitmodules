@@ -1,6 +1,3 @@
 [submodule "packages/prop-house-contracts/lib/forge-std"]
 	path = packages/prop-house-contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
-[submodule "packages/prop-house-contracts/lib/fossil"]
-	path = packages/prop-house-contracts/lib/fossil
-	url = https://github.com/OilerNetwork/fossil

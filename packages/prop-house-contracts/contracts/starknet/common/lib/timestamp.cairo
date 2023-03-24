@@ -29,11 +29,11 @@ namespace Timestamp {
     ) -> (number: felt) {
         let (number) = Timestamp_timestamp_to_eth_block_number.read(timestamp);
         if (number != 0) {
-            // The timestamp has already be queried in fossil and stored. Therefore we can just return the stored value
+            // The timestamp has already be queried in herodotus and stored. Therefore we can just return the stored value
             // This branch will be taken whenever a vote is cast as the mapping value would be set at proposal creation.
             return (number,);
         } else {
-            // The timestamp has not yet been queried in fossil. Therefore we must query Fossil for the latest eth block
+            // The timestamp has not yet been queried in herodotus. Therefore we must query Herodotus for the latest eth block
             // number stored there and store it here in the mapping indexed by the timestamp provided.
             // This branch will be taken whenever a proposal is created, except for the (rare) case of multiple proposals
             // being created in the same block.

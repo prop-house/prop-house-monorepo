@@ -69,7 +69,7 @@ namespace SingleSlotProof {
         let (fact_registry_addr) = SingleSlotProof_fact_registry_store.read();
 
         let (eth_block_number) = Timestamp.get_eth_block_number(timestamp);
-        let eth_block_number = eth_block_number - 1;  // temp shift - waiting for Fossil fix
+        let eth_block_number = eth_block_number - 1;  // temp shift - waiting for Herodotus fix
 
         // Decoding voting strategy parameters
         let (
@@ -99,7 +99,7 @@ namespace SingleSlotProof {
         with_attr error_message("SingleSlotProof: Invalid slot proof provided") {
             // Checking that the slot proof corresponds to the correct slot
             assert valid_slot = slot_uint256;
-            // Calling Fossil Fact Registry to verify the storage proof of the slot value
+            // Calling Herodotus Fact Registry to verify the storage proof of the slot value
             let (storage_slot) = IFactsRegistry.get_storage_uint(
                 fact_registry_addr,
                 eth_block_number,

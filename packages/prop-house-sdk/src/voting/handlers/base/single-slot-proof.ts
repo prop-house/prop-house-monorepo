@@ -1,8 +1,6 @@
-import { VotingStrategyConfig } from '../../../types';
 import { encoding, storageProofs } from '../../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { StrategyHandlerBase } from './base';
-import { hash } from 'starknet';
 
 // prettier-ignore
 export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS> {
@@ -69,7 +67,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
     const block = parseInt(
       (
         await this._starknet.getStorageAt(
-          this._addresses.starknet.fossil.l1HeadersStore,
+          this._addresses.starknet.herodotus.l1HeadersStore,
           encoding.getStorageVarAddress(this._L1_LATEST_BLOCK_STORE),
         )
       ).toString(),

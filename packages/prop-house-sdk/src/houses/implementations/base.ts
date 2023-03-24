@@ -16,7 +16,7 @@ export abstract class HouseBase<HT extends HouseType> extends ChainBase {
    * ABI-encode the provided house configuration
    * @param config The house configuration
    */
-  public abstract getABIEncodedConfig(config: HouseConfig[HT]): string;
+  public abstract encode(config: HouseConfig[HT]): string;
 
   /**
    * Given a house address, return a house contract instance

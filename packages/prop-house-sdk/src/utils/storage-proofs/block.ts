@@ -1,5 +1,8 @@
-import Common, { Chain, Hardfork } from '@ethereumjs/common';
-import blockFromRpc from '@ethereumjs/block/dist/from-rpc';
+import { Chain, Common, Hardfork } from 'ethereumjs-fork-common';
+import { blockFromRpc } from 'ethereumjs-fork-block/dist/from-rpc';
+import { Block, JsonRpcBlock } from 'ethereumjs-fork-block';
+import { JsonRpcProvider } from '@ethersproject/providers';
+import { BigNumber } from '@ethersproject/bignumber';
 import { IntsSequence } from '../ints-sequence';
 import { hexToBytes } from '../bytes';
 
@@ -10,25 +13,49 @@ export interface ProcessBlockInputs {
 }
 
 /**
- * Produces the input data for the process_block function in Fossil
+ * Produces the input data for the process_block function in Herodotus
+ * using a JSON RPC block
  * @param block Block object from RPC call
  * @param chain EVM chain identifier
  * @param hardfork Hardfork identifier
  */
-export const getProcessBlockInputs = (
-  block: any,
-  chain: Chain = Chain.Mainnet,
-  hardfork: Hardfork = Hardfork.London,
-): ProcessBlockInputs => {
-  block.difficulty = `0x${BigInt(block.difficulty).toString(16)}`;
-  block.totalDifficulty = `0x${BigInt(block.totalDifficulty).toString(16)}`;
-  const common = new Common({ chain: chain, hardfork: hardfork });
-  const header = blockFromRpc(block, [], { common }).header;
+export const getProcessBlockInputsForRpcBlock = async (
+  block: JsonRpcBlock,
+  chain = Chain.Mainnet,
+  hardfork = Hardfork.Shanghai,
+): Promise<ProcessBlockInputs> => {
+  const header = blockFromRpc(block, [], { common: new Common({ chain, hardfork }) });
   const headerRlp = `0x${header.serialize().toString('hex')}`;
   const headerInts = IntsSequence.fromBytes(hexToBytes(headerRlp));
   return {
-    blockNumber: block.number as number,
-    blockOptions: 8 as number,
+    blockNumber: BigNumber.from(block.number).toNumber(),
+    blockOptions: 8,
+    headerInts: headerInts as IntsSequence,
+  };
+};
+
+/**
+ * Produces the input data for the process_block function in Herodotus
+ * using a block number.
+ * @param block Block object from RPC call
+ * @param chain EVM chain identifier
+ * @param hardfork Hardfork identifier
+ */
+export const getProcessBlockInputsForBlockNumber = async (
+  provider: JsonRpcProvider | string,
+  blockNumber: number,
+  chain = Chain.Mainnet,
+  hardfork = Hardfork.Shanghai,
+): Promise<ProcessBlockInputs> => {
+  const block = await Block.fromEthersProvider(provider, BigInt(blockNumber), {
+    common: new Common({ chain, hardfork }),
+  });
+  const headerRlp = `0x${block.header.serialize().toString('hex')}`;
+  const headerInts = IntsSequence.fromBytes(hexToBytes(headerRlp));
+
+  return {
+    blockNumber,
+    blockOptions: 8,
     headerInts: headerInts as IntsSequence,
   };
 };

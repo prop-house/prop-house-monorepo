@@ -3,7 +3,7 @@ import {
   ContractAddresses,
   getContractAddressesForChainOrThrow,
 } from '@prophouse/contracts';
-import { constants, Provider as StarknetProvider, SequencerProvider } from 'starknet';
+import { constants, SequencerProvider } from 'starknet';
 import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { ChainConfig } from './types';
@@ -12,7 +12,7 @@ export class ChainBase {
   protected readonly _evmChainId: number;
   protected readonly _addresses: ContractAddresses;
   protected readonly _evm: JsonRpcProvider | Wallet;
-  protected readonly _starknet: StarknetProvider;
+  protected readonly _starknet: SequencerProvider;
 
   /**
    * EVM to Starknet chain ID mappings
@@ -53,10 +53,8 @@ export class ChainBase {
     this._evmChainId = config.evmChainId;
     this._addresses = getContractAddressesForChainOrThrow(config.evmChainId);
     this._evm = typeof config.evm === 'string' ? new JsonRpcProvider(config.evm) : config.evm;
-    this._starknet = new StarknetProvider(
-      config.starknet ?? new SequencerProvider({
-        network: ChainBase.EVM_TO_STARKNET_CHAIN_ID[config.evmChainId],
-      }),
-    );
+    this._starknet = config.starknet instanceof SequencerProvider ? config.starknet : new SequencerProvider(config.starknet ?? {
+      network: ChainBase.EVM_TO_STARKNET_CHAIN_ID[config.evmChainId],
+    });
   }
 }

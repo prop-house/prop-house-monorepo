@@ -30,7 +30,7 @@ export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
    * ABI-encode the community house configuration
    * @param config The community house config
    */
-  public getABIEncodedConfig(config: CommunityHouseConfig): string {
+  public encode(config: CommunityHouseConfig): string {
     if (!this.isValidURI(config.contractURI)) {
       throw new Error(`Invalid contract URI: ${config.contractURI}`);
     }

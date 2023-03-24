@@ -22,7 +22,7 @@ interface NetworkConfig {
   starknet: {
     core: string;
   };
-  fossil?: {
+  herodotus?: {
     factRegistry: string;
     l1HeadersStore: string;
   };
@@ -38,9 +38,9 @@ const networkConfig: Record<number, NetworkConfig> = {
     starknet: {
       core: '0xde29d060D45901Fb19ED6C6e959EB22d8626708e',
     },
-    fossil: {
-      factRegistry: '0x363108ac1521a47b4f7d82f8ba868199bc1535216bbedfc1b071ae93cc406fd',
-      l1HeadersStore: '0x6ca3d25e901ce1fff2a7dd4079a24ff63ca6bbf8ba956efc71c1467975ab78f',
+    herodotus: {
+      factRegistry: '0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f',
+      l1HeadersStore: '0x1d9b36a00d7d5300e5da456c56d09c46dfefbc91b3a6b1552b6f2a34d6e34c4',
     },
   },
 };
@@ -77,14 +77,14 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
   .addOptionalParam('manager', 'The manager address', undefined, types.string)
   .addOptionalParam('starknetCore', 'The Starknet core contract address', undefined, types.string)
   .addOptionalParam(
-    'fossilFactRegistry',
-    'The Fossil fact registry contract address',
+    'herodotusFactRegistry',
+    'The Herodotus fact registry contract address',
     undefined,
     types.string,
   )
   .addOptionalParam(
-    'fossilL1HeadersStore',
-    'The Fossil L1 headers store contract address',
+    'herodotusL1HeadersStore',
+    'The Herodotus L1 headers store contract address',
     undefined,
     types.string,
   )
@@ -109,21 +109,21 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       }
       args.starknetCore = config.starknet.core;
     }
-    if (!args.fossilFactRegistry) {
-      if (!config.fossil?.factRegistry) {
+    if (!args.herodotusFactRegistry) {
+      if (!config.herodotus?.factRegistry) {
         throw new Error(
-          `Can not auto-detect Fossil fact registry contract on chain ${ethNetwork.name}. Provide it with the --fossil-fact-registry arg.`,
+          `Can not auto-detect Herodotus fact registry contract on chain ${ethNetwork.name}. Provide it with the --herodotus-fact-registry arg.`,
         );
       }
-      args.fossilFactRegistry = config.fossil.factRegistry;
+      args.herodotusFactRegistry = config.herodotus.factRegistry;
     }
-    if (!args.fossilL1HeadersStore) {
-      if (!config.fossil?.l1HeadersStore) {
+    if (!args.herodotusL1HeadersStore) {
+      if (!config.herodotus?.l1HeadersStore) {
         throw new Error(
-          `Can not auto-detect Fossil L1 headers store contract on chain ${ethNetwork.name}. Provide it with the --fossil-l1-headers-store arg.`,
+          `Can not auto-detect Herodotus L1 headers store contract on chain ${ethNetwork.name}. Provide it with the --herodotus-l1-headers-store arg.`,
         );
       }
-      args.fossilL1HeadersStore = config.fossil.l1HeadersStore;
+      args.herodotusL1HeadersStore = config.herodotus.l1HeadersStore;
     }
 
     // L1 factories
@@ -280,8 +280,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const ethereumBalanceOfVotingStrategy = await starknetDeployer.deploy(
       ethereumBalanceOfVotingStrategyFactory,
       {
-        fact_registry_address: args.fossilFactRegistry,
-        l1_headers_store_address: args.fossilL1HeadersStore,
+        fact_registry_address: args.herodotusFactRegistry,
+        l1_headers_store_address: args.herodotusL1HeadersStore,
       },
       { maxFee: MAX_FEE },
     );
@@ -312,7 +312,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           vanillaVotingStrategy: vanillaVotingStrategy.address,
           merkleWhitelistVotingStrategy: merkleWhitelistVotingStrategy.address,
           ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.address,
-          fossil: config.fossil,
+          herodotus: config.herodotus,
         },
         classHash: {
           timedFundingRound: timedFundingRoundClassHash,

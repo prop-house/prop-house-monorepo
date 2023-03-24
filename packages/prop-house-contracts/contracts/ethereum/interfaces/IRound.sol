@@ -9,8 +9,8 @@ interface IRound is IERC165 {
     function kind() external view returns (bytes32);
 
     /// @notice Initialize the round
-    /// @param data The optional round data. If empty, round creation is deferred.
-    function initialize(bytes calldata data) external;
+    /// @param data The optional round data. If empty, round registration is deferred.
+    function initialize(bytes calldata data) external payable;
 
     /// @notice The house that the round belongs to
     function house() external view returns (address);
