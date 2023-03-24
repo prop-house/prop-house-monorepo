@@ -78,97 +78,110 @@ const ProposalModalFooter: React.FC<{
     fetchVotes();
   }, [account, provider, dispatch, community, round]);
 
+  const noVotesDiv = proposal && (
+    <div className={classes.noVotesContainer}>
+      <p className={classes.noVotesMessage}>
+        <b>
+          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
+        </b>
+      </p>
+
+      <div className={classes.voteCount}>
+        {isWinner && (
+          <div className={classes.crownNoun}>
+            <img src="/heads/crown.png" alt="crown" />
+          </div>
+        )}
+
+        <div className={classes.icon}>
+          <VotesDisplay proposal={proposal} />
+        </div>
+      </div>
+    </div>
+  );
+
+  const connectDiv = proposal && (
+    <div className={classes.connectContainer}>
+      <ConnectButton
+        classNames={classes.fullWidthButton}
+        text={isVotingWindow ? t('connectToVote') : t('connectToSubmit')}
+        color={ButtonColor.Purple}
+      />
+
+      <div className={classes.voteCount}>
+        {isWinner && (
+          <div className={classes.crownNoun}>
+            <img src="/heads/crown.png" alt="crown" />
+          </div>
+        )}
+
+        {!isProposingWindow && (
+          <div className={classes.icon}>
+            <VotesDisplay proposal={proposal} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <>
       {proposal && (
         <div className={clsx(classes.footerContainer, 'footer')}>
-          <>
-            {isRoundOver && isWinner ? (
-              <WinningProposalBanner numOfVotes={proposal.voteCount} />
-            ) : (
-              <div className={classes.footerPadding}>
-                {/* ACTIVE ROUND, NOT CONNECTED */}
-                {!isRoundOver && !account && (
-                  <div className={classes.connectContainer}>
-                    <ConnectButton
-                      classNames={classes.fullWidthButton}
-                      text={isVotingWindow ? t('connectToVote') : t('connectToSubmit')}
-                      color={ButtonColor.Purple}
-                    />
+          <div className={classes.footerPadding}>
+            {/** TIMED ROUND */}
+            {round &&
+              isTimedAuction(round) &&
+              (isRoundOver && isWinner ? (
+                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+              ) : !isRoundOver && !account ? (
+                connectDiv
+              ) : isProposingWindow ? (
+                <ProposalWindowButtons
+                  proposal={proposal}
+                  editProposalMode={editProposalMode}
+                  setEditProposalMode={setEditProposalMode}
+                  setShowSavePropModal={setShowSavePropModal}
+                  setShowDeletePropModal={setShowDeletePropModal}
+                />
+              ) : isVotingWindow && votingPower > 0 ? (
+                <ProposalModalVotingModule
+                  proposal={proposal}
+                  setShowVotingModal={setShowVotingModal}
+                  setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                  isWinner={isWinner && isWinner}
+                />
+              ) : (
+                noVotesDiv
+              ))}
 
-                    <div className={classes.voteCount}>
-                      {isWinner && (
-                        <div className={classes.crownNoun}>
-                          <img src="/heads/crown.png" alt="crown" />
-                        </div>
-                      )}
-
-                      {!isProposingWindow && (
-                        <div className={classes.icon}>
-                          <VotesDisplay proposal={proposal} />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* PROPOSING WINDOW || INFROUND && ACTIVE PROP */}
-                {(round && isTimedAuction(round) && isProposingWindow) ||
-                  (round &&
-                    isInfAuction(round) &&
-                    isActiveProp(proposal, round) &&
-                    votingPower === 0 && (
-                      <ProposalWindowButtons
-                        proposal={proposal}
-                        editProposalMode={editProposalMode}
-                        setEditProposalMode={setEditProposalMode}
-                        setShowSavePropModal={setShowSavePropModal}
-                        setShowDeletePropModal={setShowDeletePropModal}
-                      />
-                    ))}
-
-                <>
-                  {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-                  {(round && isTimedAuction(round) && isVotingWindow && votingPower > 0) ||
-                  (round &&
-                    isInfAuction(round) &&
-                    isActiveProp(proposal, round) &&
-                    votingPower > 0) ? (
-                    <ProposalModalVotingModule
-                      proposal={proposal}
-                      setShowVotingModal={setShowVotingModal}
-                      setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                      isWinner={isWinner && isWinner}
-                    />
-                  ) : (
-                    // VOTING PERIOD, CONNECTED, NO VOTES
-                    <>
-                      <div className={classes.noVotesContainer}>
-                        <p className={classes.noVotesMessage}>
-                          <b>
-                            {t('youDontHaveAny')} {community?.name ?? 'tokens'}{' '}
-                            {t('requiredToVote')}.
-                          </b>
-                        </p>
-
-                        <div className={classes.voteCount}>
-                          {isWinner && (
-                            <div className={classes.crownNoun}>
-                              <img src="/heads/crown.png" alt="crown" />
-                            </div>
-                          )}
-
-                          <div className={classes.icon}>
-                            <VotesDisplay proposal={proposal} />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </>
-              </div>
-            )}
-          </>
+            {/** INF ROUND */}
+            {round &&
+              isInfAuction(round) &&
+              (isWinner ? (
+                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+              ) : !isRoundOver && !account ? (
+                connectDiv
+              ) : (
+                isActiveProp(proposal, round) &&
+                (votingPower === 0 ? (
+                  <ProposalWindowButtons
+                    proposal={proposal}
+                    editProposalMode={editProposalMode}
+                    setEditProposalMode={setEditProposalMode}
+                    setShowSavePropModal={setShowSavePropModal}
+                    setShowDeletePropModal={setShowDeletePropModal}
+                  />
+                ) : (
+                  <ProposalModalVotingModule
+                    proposal={proposal}
+                    setShowVotingModal={setShowVotingModal}
+                    setShowVoteAllotmentModal={setShowVoteAllotmentModal}
+                    isWinner={isWinner && isWinner}
+                  />
+                ))
+              ))}
+          </div>
 
           <ProposalModalNavButtons
             editProposalMode={editProposalMode}
