@@ -38,11 +38,12 @@ export const erc20Name: { [key in ERC20]: string } = {
 const IndividualAwards: React.FC<{
   editMode?: boolean;
   awards: Award[];
+  editedAwards?: Award[];
   setAwards: React.Dispatch<SetStateAction<Award[]>>;
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
   setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
 }> = props => {
-  const { editMode, awards, setAwards, setWinnerCount, setEditedAwards } = props;
+  const { editMode, editedAwards, awards, setAwards, setWinnerCount, setEditedAwards } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
 
@@ -315,9 +316,13 @@ const IndividualAwards: React.FC<{
 
       <Group gap={16}>
         {awards.map((award, idx) => {
-          const isSaved = round.awards.some(
-            savedAward => savedAward.id === award.id && savedAward.state === 'success',
-          );
+          const isSaved = editMode
+            ? editedAwards!.some(
+                savedAward => savedAward.id === award.id && savedAward.state === 'success',
+              )
+            : round.awards.some(
+                savedAward => savedAward.id === award.id && savedAward.state === 'success',
+              );
 
           return (
             <Group key={award.id} gap={8}>

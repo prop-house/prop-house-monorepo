@@ -44,11 +44,12 @@ export const NewAward: Award = {
 
 const AssetSelector: FC<{
   editMode?: boolean;
+  editedAwards?: Award[];
   winnerCount?: number;
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
   setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
 }> = props => {
-  const { editMode, winnerCount, setWinnerCount, setEditedAwards } = props;
+  const { editMode, editedAwards, winnerCount, setWinnerCount, setEditedAwards } = props;
 
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
@@ -115,6 +116,7 @@ const AssetSelector: FC<{
         <IndividualAwards
           editMode={editMode}
           awards={individualAwards}
+          editedAwards={editedAwards}
           setAwards={setIndividualAwards}
           setWinnerCount={setWinnerCount}
           setEditedAwards={setEditedAwards}
