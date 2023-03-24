@@ -224,7 +224,7 @@ const Create: React.FC<{}> = () => {
               <Row>
                 <Col xl={12}>
                   {showPreview ? (
-                    <Preview />
+                    <Preview roundCurrency={activeAuction.currencyType} />
                   ) : (
                     <ProposalEditor
                       onDataChange={onDataChange}
