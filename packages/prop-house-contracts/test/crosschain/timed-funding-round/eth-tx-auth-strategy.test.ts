@@ -111,6 +111,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       return {
         evm: {
           prophouse: config.propHouse.address,
+          messenger: config.messenger.address,
           house: {
             community: config.communityHouseImpl.address,
           },
@@ -119,6 +120,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
           },
         },
         starknet: {
+          roundFactory: config.roundFactory.address,
           votingRegistry: config.votingStrategyRegistry.address,
           voting: {
             balanceOf: '',
@@ -129,7 +131,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
             timedFundingEthSig: config.timedFundingRoundEthSigAuthStrategy.address,
             timedFundingEthTx: config.timedFundingRoundEthTxAuthStrategy.address,
           },
-          fossil: {
+          herodotus: {
             factRegistry: '',
             l1HeadersStore: '',
           },

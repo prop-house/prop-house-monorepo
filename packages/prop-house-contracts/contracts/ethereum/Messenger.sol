@@ -38,8 +38,8 @@ contract Messenger is IMessenger {
         uint256 toAddress,
         uint256 selector,
         uint256[] calldata payload
-    ) external onlyRound returns (bytes32) {
-        return starknet.sendMessageToL2(toAddress, selector, _insertCaller(payload));
+    ) external payable onlyRound returns (bytes32) {
+        return starknet.sendMessageToL2{ value: msg.value }(toAddress, selector, _insertCaller(payload));
     }
 
     /// @notice Starts the cancellation of an L1 to L2 message

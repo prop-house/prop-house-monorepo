@@ -25,7 +25,7 @@ export interface AuthStrategies {
   timedFundingEthTx: string;
 }
 
-export interface FossilContracts {
+export interface HetodotusContracts {
   factRegistry: string;
   l1HeadersStore: string;
 }
@@ -36,15 +36,17 @@ export interface ClassHashes {
 
 export interface EVMContracts {
   prophouse: string;
+  messenger: string;
   house: HouseImpls;
   round: RoundImpls;
 }
 
 export interface StarknetContracts {
+  roundFactory: string;
   votingRegistry: string;
   voting: VotingStrategies;
   auth: AuthStrategies;
-  fossil: FossilContracts;
+  herodotus: HetodotusContracts;
   classHashes: ClassHashes;
 }
 
@@ -57,6 +59,7 @@ export const contracts: Record<number, ContractAddresses> = {
   [ChainId.EthereumGoerli]: {
     evm: {
       prophouse: goerli.ethereum.address.propHouse,
+      messenger: goerli.ethereum.address.messenger,
       house: {
         community: goerli.ethereum.address.communityHouseImpl,
       },
@@ -65,6 +68,7 @@ export const contracts: Record<number, ContractAddresses> = {
       },
     },
     starknet: {
+      roundFactory: goerli.starknet.address.roundFactory,
       votingRegistry: goerli.starknet.address.votingStrategyRegistry,
       voting: {
         balanceOf: goerli.starknet.address.ethereumBalanceOfVotingStrategy,
@@ -75,9 +79,9 @@ export const contracts: Record<number, ContractAddresses> = {
         timedFundingEthSig: goerli.starknet.address.timedFundingRoundEthSigAuthStrategy,
         timedFundingEthTx: goerli.starknet.address.timedFundingRoundEthTxAuthStrategy,
       },
-      fossil: {
-        factRegistry: goerli.starknet.address.fossil.factRegistry,
-        l1HeadersStore: goerli.starknet.address.fossil.l1HeadersStore,
+      herodotus: {
+        factRegistry: goerli.starknet.address.herodotus.factRegistry,
+        l1HeadersStore: goerli.starknet.address.herodotus.l1HeadersStore,
       },
       classHashes: {
         timedFunding: goerli.starknet.classHash.timedFundingRound,

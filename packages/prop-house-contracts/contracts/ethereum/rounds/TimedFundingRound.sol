@@ -156,16 +156,19 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
     /// @notice Initialize the round by optionally defining the
     /// rounds configuration and registering it on L2.
     /// @dev This function is only callable by the prop house contract
-    function initialize(bytes calldata data) external onlyPropHouse {
+    function initialize(bytes calldata data) external payable onlyPropHouse {
         if (data.length != 0) {
-            _register(abi.decode(data, (RoundConfig)));
+            return _register(abi.decode(data, (RoundConfig)));
+        }
+        if (msg.value != 0) {
+            revert EXCESS_ETH_PROVIDED();
         }
     }
 
     /// @notice Define the configuration and register the round on L2.
     /// @param config The round configuration
     /// @dev This function is only callable by the round manager
-    function register(RoundConfig calldata config) external onlyRoundManager {
+    function register(RoundConfig calldata config) external payable onlyRoundManager {
         _register(config);
     }
 
@@ -332,64 +335,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         }
     }
 
-    /// @notice Define the configuration and register the round on L2.
-    /// Duplicate voting strategies are handled on L2.
-    /// @param config The round configuration
-    function _register(RoundConfig memory config) internal {
-        if (state != RoundState.AwaitingRegistration) {
-            revert ROUND_ALREADY_REGISTERED();
-        }
-        _requireConfigValid(config);
-
-        // Write round metadata to storage. This will be consumed by the token URI later.
-        proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
-        proposalPeriodDuration = config.proposalPeriodDuration;
-        votePeriodDuration = config.votePeriodDuration;
-        winnerCount = config.winnerCount;
-
-        state = RoundState.Registered;
-
-        // Register the round on L2
-        messenger.sendMessageToL2(roundFactory, REGISTER_ROUND_SELECTOR, _getL2Payload(config));
-
-        emit RoundRegistered(
-            config.awards,
-            config.votingStrategies,
-            config.votingStrategyParamsFlat,
-            config.proposalPeriodStartTimestamp,
-            config.proposalPeriodDuration,
-            config.votePeriodDuration,
-            config.winnerCount
-        );
-    }
-
-    // prettier-ignore
-    /// @notice Revert if the round configuration is invalid
-    /// @param config The round configuration
-    function _requireConfigValid(RoundConfig memory config) internal view {
-        if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
-            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
-            revert VOTE_PERIOD_DURATION_TOO_SHORT();
-        }
-        if (config.winnerCount == 0 || config.winnerCount > MAX_WINNER_COUNT) {
-            revert WINNER_COUNT_OUT_OF_RANGE();
-        }
-        if (config.awards.length != 1 && config.awards.length != config.winnerCount) {
-            revert AWARD_LENGTH_MISMATCH();
-        }
-        if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
-            revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
-        }
-        if (config.votingStrategies.length == 0) {
-            revert NO_STRATEGIES_PROVIDED();
-        }
-    }
-
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
-    function _getL2Payload(RoundConfig memory config) internal view returns (uint256[] memory payload) {
+    function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
         uint256 strategyCount = config.votingStrategies.length;
         uint256 strategyParamsFlatCount = config.votingStrategyParamsFlat.length;
 
@@ -426,6 +374,61 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
             }
         }
         return payload;
+    }
+
+    /// @notice Define the configuration and register the round on L2.
+    /// Duplicate voting strategies are handled on L2.
+    /// @param config The round configuration
+    function _register(RoundConfig memory config) internal {
+        if (state != RoundState.AwaitingRegistration) {
+            revert ROUND_ALREADY_REGISTERED();
+        }
+        _requireConfigValid(config);
+
+        // Write round metadata to storage. This will be consumed by the token URI later.
+        proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
+        proposalPeriodDuration = config.proposalPeriodDuration;
+        votePeriodDuration = config.votePeriodDuration;
+        winnerCount = config.winnerCount;
+
+        state = RoundState.Registered;
+
+        // Register the round on L2
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, REGISTER_ROUND_SELECTOR, getL2Payload(config));
+
+        emit RoundRegistered(
+            config.awards,
+            config.votingStrategies,
+            config.votingStrategyParamsFlat,
+            config.proposalPeriodStartTimestamp,
+            config.proposalPeriodDuration,
+            config.votePeriodDuration,
+            config.winnerCount
+        );
+    }
+
+    // prettier-ignore
+    /// @notice Revert if the round configuration is invalid
+    /// @param config The round configuration
+    function _requireConfigValid(RoundConfig memory config) internal view {
+        if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
+            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
+            revert VOTE_PERIOD_DURATION_TOO_SHORT();
+        }
+        if (config.winnerCount == 0 || config.winnerCount > MAX_WINNER_COUNT) {
+            revert WINNER_COUNT_OUT_OF_RANGE();
+        }
+        if (config.awards.length != 1 && config.awards.length != config.winnerCount) {
+            revert AWARD_LENGTH_MISMATCH();
+        }
+        if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
+            revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
+        }
+        if (config.votingStrategies.length == 0) {
+            revert NO_STRATEGIES_PROVIDED();
+        }
     }
 
     /// @notice Mark an award as 'claimed' for the provided proposal ID

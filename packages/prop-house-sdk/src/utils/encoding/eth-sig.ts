@@ -1,5 +1,14 @@
 import { SplitUint256 } from '../split-uint256';
 
+export const hexPadLeft = (s: string) => {
+  // Remove prefix
+  if (s.startsWith('0x')) {
+    s = s.substring(2);
+  }
+  const numZeroes = 64 - s.length;
+  return `0x${'0'.repeat(numZeroes)}${s}`;
+};
+
 export const hexPadRight = (s: string) => {
   // Remove prefix
   if (s.startsWith('0x')) {

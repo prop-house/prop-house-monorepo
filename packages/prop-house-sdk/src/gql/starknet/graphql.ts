@@ -583,7 +583,7 @@ export type ManyVotesByAccountQuery = {
   } | null> | null;
 };
 
-export const ManyProposalsForRoundDocument = {
+export const ManyProposalsForRoundDocument = ({
   kind: 'Document',
   definitions: [
     {
@@ -696,8 +696,8 @@ export const ManyProposalsForRoundDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyProposalsForRoundQuery, ManyProposalsForRoundQueryVariables>;
-export const ManyProposalsByAccountDocument = {
+} as unknown) as DocumentNode<ManyProposalsForRoundQuery, ManyProposalsForRoundQueryVariables>;
+export const ManyProposalsByAccountDocument = ({
   kind: 'Document',
   definitions: [
     {
@@ -802,8 +802,8 @@ export const ManyProposalsByAccountDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyProposalsByAccountQuery, ManyProposalsByAccountQueryVariables>;
-export const ManyVotesByAccountDocument = {
+} as unknown) as DocumentNode<ManyProposalsByAccountQuery, ManyProposalsByAccountQueryVariables>;
+export const ManyVotesByAccountDocument = ({
   kind: 'Document',
   definitions: [
     {
@@ -918,4 +918,4 @@ export const ManyVotesByAccountDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyVotesByAccountQuery, ManyVotesByAccountQueryVariables>;
+} as unknown) as DocumentNode<ManyVotesByAccountQuery, ManyVotesByAccountQueryVariables>;

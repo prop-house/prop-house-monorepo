@@ -8,8 +8,8 @@ dataSources:
     name: Manager
     source:
       abi: Manager
-      address: "0x02878761A9e78772B87160f117BCc0c55FB4057d"
-      startBlock: 8665683
+      address: "0xAa2e7b86176B854260E967Ce04896a65b8a419D6"
+      startBlock: 8701532
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -38,8 +38,8 @@ dataSources:
     name: PropHouse
     source:
       abi: PropHouse
-      address: "0xEDcE99366916990C2Ef2E3f1A4Cbf9BF5534DE10"
-      startBlock: 8665683
+      address: "0x04c161DE5370620b275FC3d4734d65213d5273bf"
+      startBlock: 8701532
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -69,8 +69,8 @@ dataSources:
     name: CreatorPassIssuer
     source:
       abi: CreatorPassIssuer
-      address: "0x92C579D58A997f94E777606A9446897F15A453aB"
-      startBlock: 8665683
+      address: "0x76D4c1B098D2e729e1cD2cFcaF6c1fB8828C5588"
+      startBlock: 8701532
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6

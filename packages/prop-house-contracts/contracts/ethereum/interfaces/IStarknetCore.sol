@@ -10,7 +10,7 @@ interface IStarknetCore {
         uint256 toAddress,
         uint256 selector,
         uint256[] calldata payload
-    ) external returns (bytes32);
+    ) external payable returns (bytes32);
 
     /// @notice Starts the cancellation of an L1 to L2 message
     /// @param toAddress The callee address

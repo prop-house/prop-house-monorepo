@@ -144,15 +144,19 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     round: RoundInfo<RT, CS>,
     overrides: Overrides = {},
   ) {
+    const struct = await this.round.getConfigStruct(round);
     return this.contract.createRoundOnExistingHouse(
       houseAddress,
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplAddressForType(round.roundType),
-        config: await this.round.getABIEncodedConfig(round),
+        impl: this.round.impl(round.roundType),
+        config: this.round.encode(round.roundType, struct),
       },
-      overrides,
+      {
+        ...overrides,
+        value: await this.round.estimateMessageFee(round.roundType, struct),
+      },
     );
   }
 
@@ -169,19 +173,22 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     funding: Asset[],
     overrides: Overrides = {},
   ) {
+    const struct = await this.round.getConfigStruct(round);
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnExistingHouse(
       houseAddress,
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplAddressForType(round.roundType),
-        config: await this.round.getABIEncodedConfig(round),
+        impl: this.round.impl(round.roundType),
+        config: this.round.encode(round.roundType, struct),
       },
       assets,
       {
         ...overrides,
-        value,
+        value: BigNumber.from(value).add(
+          await this.round.estimateMessageFee(round.roundType, struct),
+        ),
       },
     );
   }
@@ -197,18 +204,22 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     round: RoundInfo<RT, CS>,
     overrides: Overrides = {},
   ) {
+    const struct = await this.round.getConfigStruct(round);
     return this.contract.createRoundOnNewHouse(
       {
-        impl: this.house.getImplAddressForType(house.houseType),
-        config: this.house.getABIEncodedConfig(house),
+        impl: this.house.impl(house.houseType),
+        config: this.house.encode(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplAddressForType(round.roundType),
-        config: await this.round.getABIEncodedConfig(round),
+        impl: this.round.impl(round.roundType),
+        config: this.round.encode(round.roundType, struct),
       },
-      overrides,
+      {
+        ...overrides,
+        value: await this.round.estimateMessageFee(round.roundType, struct),
+      },
     );
   }
 
@@ -225,22 +236,25 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     funding: Asset[],
     overrides: Overrides = {},
   ) {
+    const struct = await this.round.getConfigStruct(round);
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnNewHouse(
       {
-        impl: this.house.getImplAddressForType(house.houseType),
-        config: this.house.getABIEncodedConfig(house),
+        impl: this.house.impl(house.houseType),
+        config: this.house.encode(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.getImplAddressForType(round.roundType),
-        config: await this.round.getABIEncodedConfig(round),
+        impl: this.round.impl(round.roundType),
+        config: this.round.encode(round.roundType, struct),
       },
       assets,
       {
         ...overrides,
-        value,
+        value: BigNumber.from(value).add(
+          await this.round.estimateMessageFee(round.roundType, struct),
+        ),
       },
     );
   }
