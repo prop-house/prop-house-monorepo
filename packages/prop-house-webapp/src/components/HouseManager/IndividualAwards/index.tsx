@@ -1,3 +1,4 @@
+import classes from './IndividualAwards.module.css';
 import Text from '../Text';
 import Group from '../Group';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
@@ -38,16 +39,10 @@ const IndividualAwards: React.FC<{
   editMode?: boolean;
   awards: Award[];
   setAwards: React.Dispatch<SetStateAction<Award[]>>;
-  winnerCount?: number;
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
+  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
 }> = props => {
-  const {
-    editMode,
-    awards,
-    setAwards,
-    // winnerCount,
-    setWinnerCount,
-  } = props;
+  const { editMode, awards, setAwards, setWinnerCount, setEditedAwards } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
 
@@ -138,7 +133,9 @@ const IndividualAwards: React.FC<{
     setAwards(updatedAwards);
 
     if (editMode) {
-      setWinnerCount!(updatedAwards.length);
+      const filteredAwards = updatedAwards.filter(award => award.state === 'success');
+      setEditedAwards!(filteredAwards);
+      setWinnerCount!(filteredAwards.length);
     } else {
       dispatch(
         updateRound({
@@ -150,17 +147,10 @@ const IndividualAwards: React.FC<{
       dispatch(checkStepCriteria());
     }
 
+    setSelectedAward(AwardType.ERC20);
+    setAwardIdx(0);
     setShowIndividualAwardModal(false);
   };
-
-  // const handleNumWinnersChange = (amount: number) => {
-  //   if (editMode) {
-  //     setWinnerCount!(amount);
-  //   } else {
-  //     dispatch(updateRound({ ...round, numWinners: amount }));
-  //     dispatch(checkStepCriteria());
-  //   }
-  // };
 
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
@@ -215,12 +205,6 @@ const IndividualAwards: React.FC<{
 
   const handleModalClose = () => {
     setAwardIdx(0);
-    // todo: set the award back to awards[0] which is the server data since we're not saving the changes
-    // setAward({ ...NewAward, id: type: AssetType.ERC20 });
-
-    // TODO - reset the award to what it was pre-edit
-    // setAward({ ...NewAward, id: award.id, type: AssetType.ERC721 });
-    // TODO
 
     setSelectedAward(AwardType.ERC20);
     setShowIndividualAwardModal(false);
@@ -232,8 +216,14 @@ const IndividualAwards: React.FC<{
     let updated: Award[] = awards.filter(award => award.id !== id);
 
     setAwards(updated);
-    dispatch(updateRound({ ...round, numWinners: updated.length, awards: updated }));
-    dispatch(checkStepCriteria());
+    if (editMode) {
+      const filteredAwards = updated.filter(award => award.state === 'success');
+      setEditedAwards!(filteredAwards);
+      setWinnerCount!(filteredAwards.length);
+    } else {
+      dispatch(updateRound({ ...round, numWinners: updated.length, awards: updated }));
+      dispatch(checkStepCriteria());
+    }
   };
 
   // TODO: This is a bit of a hack, but it works for now
@@ -287,7 +277,9 @@ const IndividualAwards: React.FC<{
     <>
       {showIndividualAwardModal && (
         <Modal
-          title={editMode ? `${getNumberWithOrdinal(awardIdx)} place` : 'Add award'}
+          title={
+            award.state === 'success' ? `Edit ${getNumberWithOrdinal(awardIdx)} place` : 'Add award'
+          }
           subtitle=""
           onRequestClose={handleModalClose}
           body={
@@ -336,6 +328,7 @@ const IndividualAwards: React.FC<{
                     <AwardRow award={award} />
                     <Button
                       text="Edit"
+                      classNames={classes.awardBtn}
                       bgColor={ButtonColor.White}
                       onClick={() => {
                         setAwardIdx(idx + 1);
@@ -347,6 +340,7 @@ const IndividualAwards: React.FC<{
                   <Button
                     text="Add award"
                     bgColor={ButtonColor.White}
+                    classNames={classes.awardBtn}
                     onClick={() => {
                       setShowIndividualAwardModal(true);
                       setAward(awards[idx]);
