@@ -47,6 +47,7 @@ const removeIncompleteAwards = (round: NewRound) => {
   if (!round.splitAwards) {
     const filteredAwards = round.awards.filter(award => award.state === 'success');
     round.awards = filteredAwards;
+    round.numWinners = filteredAwards.length;
   }
 };
 
