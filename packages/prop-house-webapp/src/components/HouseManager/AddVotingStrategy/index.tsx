@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { AddressType, newStrategy, NewStrategy } from '../WhoCanParticipate';
+import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
 import Address from '../Address';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
@@ -121,25 +121,25 @@ const AddVotingStrategy: React.FC<{
 
   const handleCloseModal = () => {
     handleCancel();
-    setSelectedStrategy(AddressType.ERC721);
+    setSelectedStrategy(StrategyType.ERC721);
   };
 
-  const handleSelectStrategy = (selectedType: AddressType) => {
+  const handleSelectStrategy = (selectedType: StrategyType) => {
     setSelectedStrategy(selectedType);
 
-    if (selectedType === AddressType.ERC721 || selectedType === AddressType.ERC20) {
+    if (selectedType === StrategyType.ERC721 || selectedType === StrategyType.ERC20) {
       setStrat({
         ...newStrategy,
         type: VotingStrategyType.BALANCE_OF,
-        asset: selectedType === AddressType.ERC721 ? AssetType.ERC721 : AssetType.ERC20,
+        asset: selectedType === StrategyType.ERC721 ? AssetType.ERC721 : AssetType.ERC20,
       });
-    } else if (selectedType === AddressType.ERC1155) {
+    } else if (selectedType === StrategyType.ERC1155) {
       setStrat({
         ...newStrategy,
         type: VotingStrategyType.BALANCE_OF,
         asset: AssetType.ERC1155,
       });
-    } else if (selectedType === AddressType.Allowlist) {
+    } else if (selectedType === StrategyType.Allowlist) {
       setStrat({
         ...newStrategy,
         type: VotingStrategyType.WHITELIST,
@@ -260,11 +260,11 @@ const AddVotingStrategy: React.FC<{
     }
   };
 
-  const addressTypes: AddressType[] = [
-    AddressType.ERC721,
-    AddressType.ERC1155,
-    AddressType.ERC20,
-    AddressType.Allowlist,
+  const addressTypes: StrategyType[] = [
+    StrategyType.ERC721,
+    StrategyType.ERC1155,
+    StrategyType.ERC20,
+    StrategyType.Allowlist,
   ];
 
   const verifiedAddress = strat.state === 'success';
@@ -291,7 +291,7 @@ const AddVotingStrategy: React.FC<{
   };
 
   const strategyContent = {
-    [AddressType.ERC721]: (
+    [StrategyType.ERC721]: (
       <Group gap={8}>
         <Address
           strategy={strat}
@@ -308,7 +308,7 @@ const AddVotingStrategy: React.FC<{
         />
       </Group>
     ),
-    [AddressType.ERC1155]: (
+    [StrategyType.ERC1155]: (
       <Group gap={8}>
         <Group row gap={6}>
           <Address
@@ -351,7 +351,7 @@ const AddVotingStrategy: React.FC<{
         />
       </Group>
     ),
-    [AddressType.ERC20]: (
+    [StrategyType.ERC20]: (
       <Group gap={8}>
         <Address
           strategy={strat}
@@ -368,7 +368,7 @@ const AddVotingStrategy: React.FC<{
         />
       </Group>
     ),
-    [AddressType.Allowlist]: (
+    [StrategyType.Allowlist]: (
       <Group gap={8}>
         <Address
           strategy={strat}
@@ -387,7 +387,7 @@ const AddVotingStrategy: React.FC<{
     ),
   };
 
-  const renderContent = () => strategyContent[selectedStrategy as AddressType];
+  const renderContent = () => strategyContent[selectedStrategy as StrategyType];
 
   return (
     <div className={classes.container}>
