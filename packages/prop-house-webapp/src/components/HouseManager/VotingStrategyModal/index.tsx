@@ -1,7 +1,7 @@
 import classes from './VotingStrategyModal.module.css';
 import React, { SetStateAction, useState } from 'react';
 import ReactModal from 'react-modal';
-import { AddressType, newStrategy, NewStrategy } from '../WhoCanParticipate';
+import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
 import { VotingStrategyInfo } from '@prophouse/sdk';
 import VotingStrategies from '../VotingStrategies';
 import AddVotingStrategy from '../AddVotingStrategy';
@@ -15,7 +15,7 @@ const VotingStrategyModal: React.FC<{
 }> = props => {
   const { editMode, strategies, setStrategies, setShowVotingStrategyModal } = props;
   const [strat, setStrat] = useState<NewStrategy>(newStrategy);
-  const [selectedStrategy, setSelectedStrategy] = useState<string>(AddressType.ERC721);
+  const [selectedStrategy, setSelectedStrategy] = useState<string>(StrategyType.ERC721);
   const [currentView, setCurrentView] = useState<'showStrategies' | 'addStrategies'>(
     'showStrategies',
   );
@@ -24,7 +24,7 @@ const VotingStrategyModal: React.FC<{
   const handleCloseModal = () => {
     setStrat(newStrategy);
     setShowVotingStrategyModal(false);
-    setSelectedStrategy(AddressType.ERC721);
+    setSelectedStrategy(StrategyType.ERC721);
   };
 
   // TODO: This is a bit of a hack, but it works for now
