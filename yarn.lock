@@ -19684,7 +19684,7 @@ swiper@*:
   dependencies:
     ssr-window "^4.0.2"
 
-swiper@^9.1.1:
+swiper@^9.1.0:
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/swiper/-/swiper-9.1.1.tgz#8e8d49a3667d9ef8997cddb023d913c422e72142"
   integrity sha512-D1zArOwI6XCXCYBULPA4jTxpqp5SQtvntjinbXNZwXzj6P3KS51zSWuMarCLXq5oRISay4nX+TuShpxz8qhtbw==
