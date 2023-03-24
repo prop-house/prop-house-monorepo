@@ -1,9 +1,9 @@
 import classes from './AddAward.module.css';
-import React, { SetStateAction } from 'react';
+import React, { SetStateAction, useRef } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { StrategyType, AwardType, ERC20 } from '../WhoCanParticipate';
+import { AwardType, ERC20 } from '../WhoCanParticipate';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -45,6 +45,8 @@ const AddAward: React.FC<{
     handleSelectAward,
     handleERC20AddressBlur,
   } = props;
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectAwardType = (selectedType: AwardType) => {
     setSelectedAward(selectedType);
@@ -112,8 +114,6 @@ const AddAward: React.FC<{
     setAward({ ...award, amount: value });
   };
 
-  const handleTokenIdChange = (tokenId: string) => setAward({ ...award, tokenId });
-
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
     let value = parseInt(clipboardData, 10);
@@ -142,13 +142,14 @@ const AddAward: React.FC<{
 
   const handleTokenId = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseInt(e.target.value, 10);
+
     // If value is NaN or negative, set to 0
     if (isNaN(value) || value < 0) value = 0;
-    handleTokenIdChange(value.toString());
+    setAward({ ...award, tokenId: value.toString() });
   };
 
-  const strategyContent = {
-    [StrategyType.ERC20]: (
+  const awardContent = {
+    [AwardType.ERC20]: (
       <Group gap={16}>
         <Group gap={6}>
           <ERC20Buttons
@@ -173,7 +174,6 @@ const AddAward: React.FC<{
             placeholder="1"
             type="number"
             onChange={handleAmountChange}
-            onBlur={() => award.tokenId !== '' && handleTokenBlur(award.tokenId!)}
             onPaste={handleInputPaste}
           />
 
@@ -181,7 +181,7 @@ const AddAward: React.FC<{
         </Group>
       </Group>
     ),
-    [StrategyType.ERC721]: (
+    [AwardType.ERC721]: (
       <Group gap={16}>
         <Group gap={6}>
           <Group row gap={6}>
@@ -205,13 +205,20 @@ const AddAward: React.FC<{
               />
 
               <input
+                ref={inputRef}
                 className={classes.tokenIdInput}
                 disabled={!verifiedAddress}
                 value={!verifiedAddress ? '' : award.tokenId}
                 placeholder="000"
                 type="number"
                 onChange={e => handleTokenId(e)}
-                onBlur={() => award.tokenId !== '' && handleTokenBlur(award.tokenId!)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    handleTokenBlur(award.tokenId!);
+                    inputRef.current?.blur();
+                  }
+                }}
+                onBlur={() => handleTokenBlur(award.tokenId!)}
                 onPaste={handleInputPaste}
               />
             </Group>
@@ -220,7 +227,7 @@ const AddAward: React.FC<{
         </Group>
       </Group>
     ),
-    [StrategyType.ERC1155]: (
+    [AwardType.ERC1155]: (
       <Group gap={16}>
         <Group gap={6}>
           <Group row gap={6}>
@@ -261,7 +268,7 @@ const AddAward: React.FC<{
     ),
   };
 
-  const renderContent = () => strategyContent[selectedAward as AwardType];
+  const renderContent = () => awardContent[selectedAward as AwardType];
 
   return (
     <div className={classes.container}>
