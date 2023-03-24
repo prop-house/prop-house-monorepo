@@ -9,11 +9,17 @@ import { VotingStrategyType, AssetType, VotingStrategyInfo } from '@prophouse/sd
 import VotingStrategyModal from '../VotingStrategyModal';
 import VotingStrategies from '../VotingStrategies';
 
+// TODO: change to `StrategyType`
 export enum AddressType {
   ERC721 = 'ERC-721',
   ERC1155 = 'ERC-1155',
   ERC20 = 'ERC-20',
   Allowlist = 'Allowlist',
+}
+export enum AwardType {
+  ERC721 = 'ERC-721',
+  ERC1155 = 'ERC-1155',
+  ERC20 = 'ERC-20',
 }
 export enum ERC20 {
   ETH = 'ETH',

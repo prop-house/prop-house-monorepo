@@ -4,6 +4,7 @@ import Group from '../Group';
 import AwardWithPlace from '../AwardWithPlace';
 import TruncateThousands from '../../TruncateThousands';
 import { Award } from '../AssetSelector';
+import { AssetType } from '@prophouse/sdk/dist/types';
 
 const AwardCard: React.FC<{ award: Award; place: number }> = props => {
   const { award, place } = props;
@@ -24,7 +25,14 @@ const AwardCard: React.FC<{ award: Award; place: number }> = props => {
         </Group>
 
         <Text type="body">
-          <TruncateThousands amount={award.amount} decimals={1} /> {award.symbol || award.name}
+          {award.type === AssetType.ERC721 || award.type === AssetType.ERC1155 ? (
+            `#${award.tokenId}`
+          ) : (
+            <>
+              <TruncateThousands amount={award.amount} decimals={1} />{' '}
+              {award.type === AssetType.ETH ? award.name : award.symbol || award.name}
+            </>
+          )}
         </Text>
       </Group>
     </div>

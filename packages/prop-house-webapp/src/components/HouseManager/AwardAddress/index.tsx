@@ -2,7 +2,6 @@ import classes from './AwardAddress.module.css';
 import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
-// import Bullet from '../Bullet';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { Award } from '../AssetSelector';
 
@@ -21,19 +20,8 @@ const AwardAddress: React.FC<{
   return (
     <>
       <div className={classes.container}>
-        <Group gap={4} classNames={classes.addressAndTitle}>
-          <Group row>
-            <Text type="subtitle">Contract Address</Text>
-
-            {/* {verifiedAddress && (
-              <>
-                <Bullet />
-                <Text type="link" onClick={handleClear} classNames={classes.clear}>
-                  clear
-                </Text>
-              </>
-            )} */}
-          </Group>
+        <Group gap={6} classNames={classes.addressAndTitle}>
+          <Text type="subtitle">Contract Address</Text>
 
           <Group>
             {verifiedAddress ? (

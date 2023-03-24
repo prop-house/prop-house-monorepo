@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
@@ -7,27 +7,35 @@ import { useAppSelector } from '../../../hooks';
 import { AssetType } from '@prophouse/sdk';
 import SplitAwards from '../SplitAwards';
 import { ERC20 } from '../WhoCanParticipate';
+import IndividualAwards from '../IndividualAwards';
+import { uuid } from 'uuidv4';
+import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { useDispatch } from 'react-redux';
 
 export interface Award {
+  id: string;
   type: AssetType;
   address: string;
+  tokenId?: string;
   image: string;
   name: string;
   symbol: string;
   amount: number;
-  selectedAsset: ERC20;
+  selectedAsset: ERC20 | null;
   price: number;
-  state: 'input' | 'success' | 'error';
+  state: 'input' | 'success' | 'error' | 'dummy';
   error?: string;
 }
 
-export const newAward: Award = {
+export const NewAward: Award = {
+  id: uuid(),
   type: AssetType.ETH,
   address: '',
+  tokenId: '',
   image: '/manager/eth.png',
   name: 'ETH',
   symbol: 'ETH',
-  selectedAsset: ERC20.ETH,
+  selectedAsset: null,
   amount: 1,
   state: 'input',
   price: 0,
@@ -43,26 +51,34 @@ const AssetSelector: FC<{
 
   const [activeSection, setActiveSection] = useState(0);
   const isSplitAward = activeSection === 0;
-  // const isAdvancedAward = activeSection === 1;
+  const isIndividualAward = activeSection === 1;
 
   const round = useAppSelector(state => state.round.round);
+  const dispatch = useDispatch();
 
-  const [awards, setAwards] = useState<Award[]>(round.awards.length ? [...round.awards] : []);
+  const initialIndividualAwards: Award[] = [
+    { ...NewAward, id: uuid(), state: 'dummy' },
+    { ...NewAward, id: uuid(), state: 'dummy' },
+    { ...NewAward, id: uuid(), state: 'dummy' },
+  ];
+
+  const [splitAwards, setSplitAwards] = useState<Award[]>(
+    round.awards.length ? [...round.awards] : [],
+  );
+  const [individualAwards, setIndividualAwards] = useState<Award[]>(
+    round.awards[0] && round.awards[0].id !== NewAward.id ? round.awards : initialIndividualAwards,
+  );
 
   const dataToBeCleared = {};
 
-  // const clearAwards = () => {
-  //   setAwardContracts([initialAward]);
-  //   dispatch(updateRound({ ...round, numWinners: 0, awards: [initialAward] }));
-  //   // TODO: still need this here idk why
-  //   dispatch(checkStepCriteria());
-  // };
-
-  // //TODO: This is a hack to clear the awards when the user goes back to the previous step
-  // useEffect(() => {
-  //   clearAwards();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [activeSection]);
+  useEffect(() => {
+    // reset each award config when switching between types
+    dispatch(updateRound({ ...round, numWinners: 1, awards: [] }));
+    if (activeSection === 0) setIndividualAwards(initialIndividualAwards);
+    if (activeSection === 1) setSplitAwards([NewAward]);
+    dispatch(checkStepCriteria());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection]);
 
   return (
     <>
@@ -88,8 +104,18 @@ const AssetSelector: FC<{
       {isSplitAward && (
         <SplitAwards
           editMode={editMode}
-          awards={awards}
-          setAwards={setAwards}
+          awards={splitAwards}
+          setAwards={setSplitAwards}
+          winnerCount={winnerCount}
+          setWinnerCount={setWinnerCount}
+        />
+      )}
+
+      {isIndividualAward && (
+        <IndividualAwards
+          editMode={editMode}
+          awards={individualAwards}
+          setAwards={setIndividualAwards}
           winnerCount={winnerCount}
           setWinnerCount={setWinnerCount}
         />
