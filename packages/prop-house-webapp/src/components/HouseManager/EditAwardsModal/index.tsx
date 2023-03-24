@@ -34,6 +34,7 @@ const EditAwardsModal: React.FC<{
       body={
         <AssetSelector
           editMode
+          editedAwards={editedAwards}
           setEditedAwards={setEditedAwards}
           winnerCount={winnerCount}
           setWinnerCount={setWinnerCount}
