@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
@@ -49,10 +49,6 @@ const AssetSelector: FC<{
 }> = props => {
   const { editMode, winnerCount, setWinnerCount } = props;
 
-  const [activeSection, setActiveSection] = useState(0);
-  const isSplitAward = activeSection === 0;
-  const isIndividualAward = activeSection === 1;
-
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
 
@@ -69,39 +65,43 @@ const AssetSelector: FC<{
     round.awards[0] && round.awards[0].id !== NewAward.id ? round.awards : initialIndividualAwards,
   );
 
-  const dataToBeCleared = {};
+  const [isSplitAward, setIsSplitAward] = useState(round.splitAwards);
 
-  useEffect(() => {
-    // reset each award config when switching between types
-    dispatch(updateRound({ ...round, numWinners: 1, awards: [] }));
-    if (activeSection === 0) setIndividualAwards(initialIndividualAwards);
-    if (activeSection === 1) setSplitAwards([NewAward]);
-    dispatch(checkStepCriteria());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSection]);
+  const changeAwardType = () => {
+    setIsSplitAward(!isSplitAward);
+    const updated = { ...round, splitAwards: !isSplitAward, numWinners: 1, awards: [] };
+
+    if (isSplitAward) {
+      setIndividualAwards(initialIndividualAwards);
+    } else {
+      setSplitAwards([NewAward]);
+    }
+    if (!editMode) {
+      dispatch(updateRound(updated));
+      dispatch(checkStepCriteria());
+    }
+  };
 
   return (
     <>
       <Group>
-        <DualSectionSelector dataToBeCleared={dataToBeCleared} setActiveSection={setActiveSection}>
+        <DualSectionSelector onChange={changeAwardType}>
           <Section
-            id={0}
+            active={isSplitAward}
             title="Split Awards"
             text="Choose the number of winners and the total payment to split between them."
-            activeSection={activeSection}
           />
           <Section
-            id={1}
+            active={!isSplitAward}
             title="Inidividual Awards"
             text="Choose a reward individually for each of the winners."
-            activeSection={activeSection}
           />
         </DualSectionSelector>
       </Group>
 
       <Divider />
 
-      {isSplitAward && (
+      {isSplitAward ? (
         <SplitAwards
           editMode={editMode}
           awards={splitAwards}
@@ -109,9 +109,7 @@ const AssetSelector: FC<{
           winnerCount={winnerCount}
           setWinnerCount={setWinnerCount}
         />
-      )}
-
-      {isIndividualAward && (
+      ) : (
         <IndividualAwards
           editMode={editMode}
           awards={individualAwards}

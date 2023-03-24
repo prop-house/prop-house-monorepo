@@ -128,11 +128,7 @@ const CreateTheRound = () => {
             // if there's more than one award, then each award is for a different place */}
 
           {[...Array(round.numWinners)].map((_, idx) => (
-            <AwardCard
-              // amount={round.awards[round.awards.length === 1 ? 0 : idx].amount}
-              award={round.awards[round.awards.length === 1 ? 0 : idx]}
-              place={idx + 1}
-            />
+            <AwardCard award={round.awards[round.awards.length === 1 ? 0 : idx]} place={idx + 1} />
           ))}
         </CardWrapper>
       </Group>
