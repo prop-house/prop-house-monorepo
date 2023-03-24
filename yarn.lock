@@ -2435,6 +2435,13 @@
   dependencies:
     "@chainsafe/as-sha256" "^0.3.1"
 
+"@chainsafe/persistent-merkle-tree@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@chainsafe/persistent-merkle-tree/-/persistent-merkle-tree-0.5.0.tgz#2b4a62c9489a5739dedd197250d8d2f5427e9f63"
+  integrity sha512-l0V1b5clxA3iwQLXP40zYjyZYospQLZXzBVIhhr9kDg/1qHZfzzHw0jj4VPBijfYCArZDlPkRi1wZaV2POKeuw==
+  dependencies:
+    "@chainsafe/as-sha256" "^0.3.1"
+
 "@chainsafe/ssz@0.9.4":
   version "0.9.4"
   resolved "https://registry.npmjs.org/@chainsafe/ssz/-/ssz-0.9.4.tgz#696a8db46d6975b600f8309ad3a12f7c0e310497"
@@ -2443,6 +2450,14 @@
     "@chainsafe/as-sha256" "^0.3.1"
     "@chainsafe/persistent-merkle-tree" "^0.4.2"
     case "^1.6.3"
+
+"@chainsafe/ssz@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.npmjs.org/@chainsafe/ssz/-/ssz-0.10.2.tgz#c782929e1bb25fec66ba72e75934b31fd087579e"
+  integrity sha512-/NL3Lh8K+0q7A3LsiFq09YXS9fPE+ead2rr7vM2QK8PLzrNsw3uqrif9bpRX5UxgeRjM+vYi+boCM3+GM4ovXg==
+  dependencies:
+    "@chainsafe/as-sha256" "^0.3.1"
+    "@chainsafe/persistent-merkle-tree" "^0.5.0"
 
 "@cloudnouns/factory@^0.1.3":
   version "0.1.3"
@@ -2656,14 +2671,6 @@
     crc-32 "^1.2.0"
     ethereumjs-util "^7.1.5"
 
-"@ethereumjs/common@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/@ethereumjs/common/-/common-3.1.1.tgz#6f754c8933727ad781f63ca3929caab542fe184e"
-  integrity sha512-iEl4gQtcrj2udNhEizs04z7WA15ez1QoXL0XzaCyaNgwRyXezIg1DnfNeZUUpJnkrOF/0rYXyq2UFSLxt1NPQg==
-  dependencies:
-    "@ethereumjs/util" "^8.0.5"
-    crc-32 "^1.2.0"
-
 "@ethereumjs/rlp@^4.0.1":
   version "4.0.1"
   resolved "https://registry.npmjs.org/@ethereumjs/rlp/-/rlp-4.0.1.tgz#626fabfd9081baab3d0a3074b0c7ecaf674aaa41"
@@ -2687,18 +2694,6 @@
   dependencies:
     "@ethereumjs/common" "^2.6.4"
     ethereumjs-util "^7.1.5"
-
-"@ethereumjs/tx@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.npmjs.org/@ethereumjs/tx/-/tx-4.1.1.tgz#d1b5bf2c4fd3618f2f333b66e262848530d4686a"
-  integrity sha512-QDj7nuROfoeyK83RObMA0XCZ+LUDdneNkSCIekO498uEKTY25FxI4Whduc/6j0wdd4IqpQvkq+/7vxSULjGIBQ==
-  dependencies:
-    "@chainsafe/ssz" "0.9.4"
-    "@ethereumjs/common" "^3.1.1"
-    "@ethereumjs/rlp" "^4.0.1"
-    "@ethereumjs/util" "^8.0.5"
-    "@ethersproject/providers" "^5.7.2"
-    ethereum-cryptography "^1.1.2"
 
 "@ethereumjs/util@^8.0.5":
   version "8.0.5"
@@ -13639,26 +13634,38 @@ ethereumjs-common@^1.1.0, ethereumjs-common@^1.3.2, ethereumjs-common@^1.5.0:
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.5.2.tgz#2065dbe9214e850f2e955a80e650cb6999066979"
   integrity sha512-hTfZjwGX52GS2jcVO6E2sx4YuFnf0Fhp5ylo4pEPhEffNln7vS59Hr5sLnp3/QCazFLluuBZ+FZ6J5HTp0EqCA==
 
-ethereumjs-fork-block@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.npmjs.org/ethereumjs-fork-block/-/ethereumjs-fork-block-4.2.2.tgz#066e20f30cbbd211be8aaba6083c1f9c06023373"
-  integrity sha512-CEhuJeVSZs6vUAX1eqWB8M0R+uYnVU1hf3CCcti/vHEAKXHPhA/gXma3ftmOKsGRPTSg8E9bKAjdgKERA3uRfQ==
+ethereumjs-fork-block@^4.2.4:
+  version "4.2.4"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-block/-/ethereumjs-fork-block-4.2.4.tgz#3de172af61bdc1dd6b5e383b562cb5c271d59ed7"
+  integrity sha512-ll7dnpt36dlhD4YKj+9vSKyT7L7ErgRMvTZENcB46EtYcwSQIe+iRGKvKaqfTrnudy4mHXLbgnBsXeQfHd6ikA==
   dependencies:
     "@ethereumjs/rlp" "^4.0.1"
     "@ethereumjs/trie" "^5.0.4"
-    "@ethereumjs/tx" "^4.1.1"
     "@ethereumjs/util" "^8.0.5"
     ethereum-cryptography "^1.1.2"
-    ethereumjs-fork-common "^3.1.2"
+    ethereumjs-fork-common "^3.1.3"
+    ethereumjs-fork-tx "^4.1.2"
     ethers "^5.7.1"
 
-ethereumjs-fork-common@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.npmjs.org/ethereumjs-fork-common/-/ethereumjs-fork-common-3.1.2.tgz#d6e4b0df3731086879d2b683e2ef5bd82bc29d08"
-  integrity sha512-3pfiaGSvcY65Yfk1TPsBVAMPiLqHXWxiCsWHV53w/CPFZPVG9/nEMoepJ3Ib8MWq+4aa6vNghuxHYuw6Qs227w==
+ethereumjs-fork-common@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-common/-/ethereumjs-fork-common-3.1.3.tgz#66c862fea9121b07ac6c9fcae40f3da57d549426"
+  integrity sha512-NRQGd4bhkdxUeVilJctG0JFkDLaMyPJ8LhbAKz34CAZ4BrO4x1bC9BdHANI4FTw94OL4Hn/Ui3yz0AuVCNdyQg==
   dependencies:
     "@ethereumjs/util" "^8.0.5"
     crc-32 "^1.2.0"
+
+ethereumjs-fork-tx@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.npmjs.org/ethereumjs-fork-tx/-/ethereumjs-fork-tx-4.1.2.tgz#ab0c313dfc765fab60a96f2982e006346bbced48"
+  integrity sha512-Q9+sOlDr39yCRdCtDKpaqTSGdq3rDVnGFDXyvdjWR5ycx3LLpX9d9OAd4b9VbxNJ+6AOqZ1jhm602wZVXdbfXw==
+  dependencies:
+    "@chainsafe/ssz" "^0.10.2"
+    "@ethereumjs/rlp" "^4.0.1"
+    "@ethereumjs/util" "^8.0.5"
+    "@ethersproject/providers" "^5.7.2"
+    ethereum-cryptography "^1.1.2"
+    ethereumjs-fork-common "^3.1.3"
 
 ethereumjs-tx@2.1.2, ethereumjs-tx@^2.1.1, ethereumjs-tx@^2.1.2:
   version "2.1.2"
@@ -15422,12 +15429,7 @@ graphql-ws@5.5.5:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.5.5.tgz#f375486d3f196e2a2527b503644693ae3a8670a9"
   integrity sha512-hvyIS71vs4Tu/yUYHPvGXsTgo0t3arU820+lT5VjZS2go0ewp2LqyCgxEN56CzOG7Iys52eRhHBiD1gGRdiQtw==
 
-graphql@15.5.0:
-  version "15.5.0"
-  resolved "https://registry.npmjs.org/graphql/-/graphql-15.5.0.tgz#39d19494dbe69d1ea719915b578bf920344a69d5"
-  integrity sha512-OmaM7y0kaK31NKG31q4YbD2beNYa6jBBKtMFT6gLYJljHLJr42IqJ8KX08u3Li/0ifzTU5HjmoOOrwa5BRLeDA==
-
-graphql@^16.5.0:
+graphql@15.5.0, graphql@16.5.0, graphql@^16.5.0:
   version "16.5.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-16.5.0.tgz#41b5c1182eaac7f3d47164fb247f61e4dfb69c85"
   integrity sha512-qbHgh8Ix+j/qY+a/ZcJnFQ+j8ezakqPiHwPiZhV/3PgGlgf96QMBB5/f2rkiC9sgLoy/xvT6TSiaf2nTHJh5iA==
