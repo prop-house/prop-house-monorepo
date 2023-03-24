@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk';
 import NumberOfWinners from '../NumberOfWinners';
 import Button, { ButtonColor } from '../../Button';
-import { Award, newAward } from '../AssetSelector';
+import { Award, NewAward } from '../AssetSelector';
 import { SetStateAction, useEffect, useState } from 'react';
 import Modal from '../../Modal';
 import ERC20Buttons from '../ERC20Buttons';
@@ -42,10 +42,9 @@ const SplitAwards: React.FC<{
   setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
 }> = props => {
   const { editMode, awards, setAwards, winnerCount, setWinnerCount } = props;
-
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
 
-  const [award, setAward] = useState({ ...newAward, price: 0 });
+  const [award, setAward] = useState({ ...NewAward, price: 0 });
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
@@ -60,10 +59,27 @@ const SplitAwards: React.FC<{
         const ethPrice = await fetch(
           `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`,
         ).then(res => res.json());
-        setAward(prevAward => ({ ...prevAward, price: ethPrice.ethereum.usd }));
-        setAwards([{ ...award, price: ethPrice.ethereum.usd }]);
+        setAward(prevAward => ({
+          ...prevAward,
+          price: ethPrice.ethereum.usd,
+          selectedAsset: ERC20.ETH,
+          state: 'success',
+        }));
+        setAwards([
+          { ...award, price: ethPrice.ethereum.usd, selectedAsset: ERC20.ETH, state: 'success' },
+        ]);
         dispatch(
-          updateRound({ ...round, awards: [{ ...awards[0], price: ethPrice.ethereum.usd }] }),
+          updateRound({
+            ...round,
+            awards: [
+              {
+                ...awards[0],
+                price: ethPrice.ethereum.usd,
+                selectedAsset: ERC20.ETH,
+                state: 'success',
+              },
+            ],
+          }),
         );
       };
       fetchEthPrice();
@@ -134,8 +150,8 @@ const SplitAwards: React.FC<{
       symbol: award.symbol,
       name: award.name,
       selectedAsset: award.selectedAsset,
-      address: erc20TokenAddresses[award.selectedAsset] || award.address,
-      image: getERC20Image(award.selectedAsset) || award.image,
+      address: erc20TokenAddresses[award.selectedAsset!] || award.address,
+      image: getERC20Image(award.selectedAsset!) || award.image,
     };
 
     setAward({ ...award, ...updated });
@@ -257,7 +273,7 @@ const SplitAwards: React.FC<{
               text={'Save Changes'}
               bgColor={ButtonColor.Purple}
               onClick={handleAwardsSave}
-              disabled={!(award.state === 'success')}
+              disabled={!(award.state === 'success' && award.amount > 0)}
             />
           }
           setShowModal={setShowSplitAwardModal}

@@ -1,6 +1,5 @@
 import classes from './ERC20Buttons.module.css';
 import React from 'react';
-
 import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
@@ -49,14 +48,13 @@ const ERC20Buttons: React.FC<{
 
       {award.selectedAsset === ERC20.OTHER && (
         <>
-          <Divider />
+          <Divider narrow />
           <Group gap={6}>
             <AwardAddress
               award={award}
               isTyping={isTyping}
               handleBlur={handleBlur}
               handleSwitch={handleSwitch}
-              // handleClear={handleClear}
               handleChange={handleChange}
             />
           </Group>
