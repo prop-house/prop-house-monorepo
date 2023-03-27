@@ -25,6 +25,7 @@ import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
+import Banner from './components/Banner';
 
 const { chains, provider } = configureChains(
   [mainnet],
@@ -76,6 +77,7 @@ function App() {
           >
             <Suspense fallback={<LoadingIndicator />}>
               <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+                {location.pathname === '/' && <Banner />}
                 {!noNavPath && <NavBar />}
 
                 <Routes>
