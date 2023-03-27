@@ -1,10 +1,10 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import AssetSelector, { Award } from '../AssetSelector';
+import AssetSelector from '../AssetSelector';
 
 const EditAwardsModal: React.FC<{
   setShowAwardsModal: Dispatch<SetStateAction<boolean>>;
@@ -13,16 +13,14 @@ const EditAwardsModal: React.FC<{
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
-  const [winnerCount, setWinnerCount] = useState(round.numWinners);
-  const [editedAwards, setEditedAwards] = useState<Award[]>(round.awards);
+  const [editedRound, setEditedRound] = useState<NewRound>(round);
 
   const handleEditModeSave = () => {
-    if (!round.splitAwards) {
-      const filteredAwards = round.awards.filter(award => award.state === 'success');
-      setEditedAwards(filteredAwards);
-      setWinnerCount(filteredAwards.length);
-    }
-    dispatch(updateRound({ ...round, awards: editedAwards, numWinners: winnerCount }));
+    const filteredAwards = editedRound.awards.filter(award => award.state === 'success');
+    const updated = { ...editedRound, numWinners: filteredAwards.length, awards: filteredAwards };
+
+    setEditedRound!(updated);
+    dispatch(updateRound(updated));
     dispatch(checkStepCriteria());
     setShowAwardsModal(false);
   };
@@ -31,15 +29,7 @@ const EditAwardsModal: React.FC<{
     <Modal
       title="Edit awards"
       subtitle=""
-      body={
-        <AssetSelector
-          editMode
-          editedAwards={editedAwards}
-          setEditedAwards={setEditedAwards}
-          winnerCount={winnerCount}
-          setWinnerCount={setWinnerCount}
-        />
-      }
+      body={<AssetSelector editMode editedRound={editedRound} setEditedRound={setEditedRound} />}
       setShowModal={setShowAwardsModal}
       button={
         <Button
@@ -53,7 +43,7 @@ const EditAwardsModal: React.FC<{
           text={'Save Changes'}
           bgColor={ButtonColor.Pink}
           onClick={handleEditModeSave}
-          disabled={winnerCount < 1}
+          disabled={editedRound.numWinners < 1}
         />
       }
     />

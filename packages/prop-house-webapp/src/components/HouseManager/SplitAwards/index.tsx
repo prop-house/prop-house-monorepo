@@ -1,7 +1,7 @@
 import classes from './SplitAwards.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk';
 import NumberOfWinners from '../NumberOfWinners';
@@ -38,11 +38,10 @@ const SplitAwards: React.FC<{
   editMode?: boolean;
   awards: Award[];
   setAwards: React.Dispatch<SetStateAction<Award[]>>;
-  winnerCount?: number;
-  setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
-  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
+  editedRound?: NewRound;
+  setEditedRound?: React.Dispatch<React.SetStateAction<NewRound>>;
 }> = props => {
-  const { editMode, awards, setAwards, winnerCount, setWinnerCount, setEditedAwards } = props;
+  const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
 
   const [award, setAward] = useState({ ...NewAward, price: 0 });
@@ -52,7 +51,6 @@ const SplitAwards: React.FC<{
 
   useEffect(() => {
     const shouldFetchEthPrice = !awards.length || awards[0].price === 0;
-
     // If there are no awards, or the award price is 0, fetch the ETH price
     // Called once to fetch the ETH price of the initial award
     if (shouldFetchEthPrice) {
@@ -97,8 +95,6 @@ const SplitAwards: React.FC<{
     let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
 
     const { price } = await getUSDPrice(type, erc20TokenAddresses[token], award.amount);
-
-    // TODO: when we select, we're changing UI under then modal, if we cancel, it persists, not good if we cancelled
 
     // when selecting a new asset, reset the amount to 1
     token === ERC20.OTHER
@@ -158,8 +154,9 @@ const SplitAwards: React.FC<{
 
     setAward({ ...award, ...updated });
     setAwards([{ ...award, ...updated }]);
+
     if (editMode) {
-      setEditedAwards!([{ ...award, ...updated }]);
+      setEditedRound!({ ...editedRound!, awards: [{ ...award, ...updated }] });
     } else {
       dispatch(updateRound({ ...round, awards: [{ ...award, ...updated }] }));
     }
@@ -169,7 +166,7 @@ const SplitAwards: React.FC<{
 
   const handleNumWinnersChange = (amount: number) => {
     if (editMode) {
-      setWinnerCount!(amount);
+      setEditedRound!({ ...editedRound!, splitAwards: true, numWinners: amount });
     } else {
       dispatch(updateRound({ ...round, numWinners: amount }));
       dispatch(checkStepCriteria());
@@ -236,12 +233,16 @@ const SplitAwards: React.FC<{
 
   const getAwardMessage = (
     <>
-      <TruncateThousands amount={editMode ? winnerCount! : round.numWinners} decimals={2} /> winner
-      {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : 's'} will receive{' '}
+      <TruncateThousands
+        amount={editMode ? editedRound!.numWinners! : round.numWinners}
+        decimals={2}
+      />{' '}
+      winner
+      {(editMode ? editedRound!.numWinners === 1 : round.numWinners === 1) ? '' : 's'} will receive{' '}
       <TruncateThousands amount={awards[0].amount} decimals={2} />{' '}
       {awards[0].symbol || awards[0].name} ($
       {formatCommaNum(awards[0].price * awards[0].amount)})
-      {(editMode ? winnerCount === 1 : round.numWinners === 1) ? '' : ' each'}.
+      {(editMode ? editedRound!.numWinners === 1 : round.numWinners === 1) ? '' : ' each'}.
     </>
   );
 
@@ -319,7 +320,7 @@ const SplitAwards: React.FC<{
         <Group classNames={classes.fullWidth}>
           <NumberOfWinners
             editMode
-            winners={editMode ? winnerCount! : round.numWinners}
+            winners={editMode ? editedRound!.numWinners! : round.numWinners}
             disabled={false}
             handleNumWinnersChange={handleNumWinnersChange}
           />
