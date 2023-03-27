@@ -95,15 +95,20 @@ const ProposalInputs: React.FC<{
                   content={
                     <>
                       <Form.Control
+                        type="number"
+                        step="0.1"
                         className={clsx(classes.input, classes.reqAmountInput)}
                         placeholder={fundReqData.roundCurrency}
                         value={fundReq || ''}
                         onChange={e => {
-                          setFundReq(Number(e.target.value));
-                          onDataChange({ reqAmount: Number(e.target.value) });
+                          const value = Number(e.target.value);
+                          const formattedValue = value.toFixed(1);
+                          setFundReq(Number(formattedValue));
+                          onDataChange({ reqAmount: Number(formattedValue) });
                         }}
                         isInvalid={fundReq ? fundReq > fundReqData.remainingBal : false}
                       />
+
                       <Form.Control.Feedback type="invalid">
                         {fundReqData.error}
                       </Form.Control.Feedback>

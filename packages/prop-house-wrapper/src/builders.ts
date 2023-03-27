@@ -16,7 +16,12 @@ export abstract class Signable {
     eip712MessageType: Record<string, TypedDataField[]>,
   ) {
     const typedSigner = signer as Signer & TypedDataSigner;
-    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, this.toPayload());
+
+    // parse reqAmount to support decimal values when signing an uint256 type
+    let payload = this.toPayload();
+    if (payload.hasOwnProperty('reqAmount')) payload.reqAmount = payload.reqAmount.toString();
+
+    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, payload);
   }
 
   async signedPayload(

@@ -30,7 +30,7 @@ export const InfiniteAuctionProposalMessageTypes: Record<string, TypedDataField[
     { name: 'tldr', type: 'string' },
     { name: 'what', type: 'string' },
     { name: 'parentAuctionId', type: 'uint256' },
-    { name: 'reqAmount', type: 'uint256' },
+    { name: 'reqAmount', type: 'string' },
   ],
 };
 
