@@ -92,6 +92,9 @@ type House @entity {
   "The creation transaction hash"
   creationTx: Bytes!
 
+  "The number of rounds that have been created on the house"
+  roundCount: Int!
+
   "All rounds on the house"
   rounds: [Round!]! @derivedFrom(field: "house")
 

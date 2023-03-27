@@ -1,9 +1,9 @@
 import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/contracts';
-import { Web3Provider, JsonRpcProvider } from '@ethersproject/providers';
 import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
+import { Signer } from '@ethersproject/abstract-signer';
+import { Provider } from '@ethersproject/providers';
 import { StrategyHandlerBase, Voting } from './voting';
-import { Wallet } from '@ethersproject/wallet';
 import { QueryWrapper } from './gql';
 
 //#region Prop House
@@ -11,7 +11,7 @@ import { QueryWrapper } from './gql';
 /**
  * EVM provider/connection information and optional signer
  */
-export type EVM = Web3Provider | JsonRpcProvider | Wallet | string;
+export type EVM = Signer | Provider | string;
 
 /**
  * Starknet connection information

@@ -811,6 +811,8 @@ export type House = {
   name?: Maybe<Scalars['String']>;
   /** The account who currently owns the house */
   owner?: Maybe<Account>;
+  /** The number of rounds that have been created on the house */
+  roundCount: Scalars['Int'];
   /** All accounts who currently have permission to create rounds on the house (in addition to the owner) */
   roundCreators: Array<RoundCreator>;
   /** All rounds on the house */
@@ -1081,6 +1083,14 @@ export type House_Filter = {
   owner_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   owner_starts_with?: InputMaybe<Scalars['String']>;
   owner_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  roundCount?: InputMaybe<Scalars['Int']>;
+  roundCount_gt?: InputMaybe<Scalars['Int']>;
+  roundCount_gte?: InputMaybe<Scalars['Int']>;
+  roundCount_in?: InputMaybe<Array<Scalars['Int']>>;
+  roundCount_lt?: InputMaybe<Scalars['Int']>;
+  roundCount_lte?: InputMaybe<Scalars['Int']>;
+  roundCount_not?: InputMaybe<Scalars['Int']>;
+  roundCount_not_in?: InputMaybe<Array<Scalars['Int']>>;
   roundCreators_?: InputMaybe<RoundCreator_Filter>;
   rounds_?: InputMaybe<Round_Filter>;
   type?: InputMaybe<Scalars['String']>;
@@ -1117,6 +1127,7 @@ export enum House_OrderBy {
   Name = 'name',
   Owner = 'owner',
   OwnerId = 'owner__id',
+  RoundCount = 'roundCount',
   RoundCreators = 'roundCreators',
   Rounds = 'rounds',
   Type = 'type',
@@ -1945,6 +1956,7 @@ export enum RoundCreator_OrderBy {
   HouseId = 'house__id',
   HouseImageUri = 'house__imageURI',
   HouseName = 'house__name',
+  HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
   PassCount = 'passCount',
@@ -2327,6 +2339,7 @@ export enum Round_OrderBy {
   HouseId = 'house__id',
   HouseImageUri = 'house__imageURI',
   HouseName = 'house__name',
+  HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
   Manager = 'manager',
@@ -3133,6 +3146,7 @@ export type ManyHousesSimpleQuery = {
     description?: string | null;
     imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
   }>;
 };
 
@@ -3153,6 +3167,7 @@ export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = {
     description?: string | null;
     imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
   }>;
 };
 
@@ -3173,6 +3188,7 @@ export type ManyHousesSimpleWhereAccountIsOwnerQuery = {
     description?: string | null;
     imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
   }>;
 };
 
@@ -3374,7 +3390,7 @@ export type ManyClaimsByAccountQuery = {
   }>;
 };
 
-export const TimedFundingRoundConfigPartsFragmentDoc = ({
+export const TimedFundingRoundConfigPartsFragmentDoc = {
   kind: 'Document',
   definitions: [
     {
@@ -3418,8 +3434,8 @@ export const TimedFundingRoundConfigPartsFragmentDoc = ({
       },
     },
   ],
-} as unknown) as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
-export const ManyHousesSimpleDocument = ({
+} as unknown as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
+export const ManyHousesSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3490,6 +3506,7 @@ export const ManyHousesSimpleDocument = ({
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3497,8 +3514,8 @@ export const ManyHousesSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
-export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
+} as unknown as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
+export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3580,6 +3597,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3587,11 +3605,11 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables
 >;
-export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
+export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3664,6 +3682,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3671,11 +3690,11 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyHousesSimpleWhereAccountIsOwnerQueryVariables
 >;
-export const ManyRoundsSimpleDocument = ({
+export const ManyRoundsSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3754,8 +3773,8 @@ export const ManyRoundsSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
-export const ManyRoundsSimpleForHouseDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
+export const ManyRoundsSimpleForHouseDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3856,11 +3875,8 @@ export const ManyRoundsSimpleForHouseDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
-  ManyRoundsSimpleForHouseQuery,
-  ManyRoundsSimpleForHouseQueryVariables
->;
-export const ManyRoundsSimpleWhereTitleContainsDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleForHouseQuery, ManyRoundsSimpleForHouseQueryVariables>;
+export const ManyRoundsSimpleWhereTitleContainsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3961,11 +3977,11 @@ export const ManyRoundsSimpleWhereTitleContainsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleWhereTitleContainsQuery,
   ManyRoundsSimpleWhereTitleContainsQueryVariables
 >;
-export const RoundDocument = ({
+export const RoundDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4094,8 +4110,8 @@ export const RoundDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<RoundQuery, RoundQueryVariables>;
-export const ManyRoundBalancesDocument = ({
+} as unknown as DocumentNode<RoundQuery, RoundQueryVariables>;
+export const ManyRoundBalancesDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4205,8 +4221,8 @@ export const ManyRoundBalancesDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
-export const ManyRoundVotingStrategiesDocument = ({
+} as unknown as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
+export const ManyRoundVotingStrategiesDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4314,11 +4330,11 @@ export const ManyRoundVotingStrategiesDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundVotingStrategiesQuery,
   ManyRoundVotingStrategiesQueryVariables
 >;
-export const ManyRoundsSimpleManagedByAccountDocument = ({
+export const ManyRoundsSimpleManagedByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4419,11 +4435,11 @@ export const ManyRoundsSimpleManagedByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleManagedByAccountQuery,
   ManyRoundsSimpleManagedByAccountQueryVariables
 >;
-export const ManyDepositsByAccountDocument = ({
+export const ManyDepositsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4541,8 +4557,8 @@ export const ManyDepositsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
-export const ManyClaimsByAccountDocument = ({
+} as unknown as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
+export const ManyClaimsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4662,4 +4678,4 @@ export const ManyClaimsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;
+} as unknown as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;

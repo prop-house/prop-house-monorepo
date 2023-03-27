@@ -22,6 +22,7 @@ export function handleHouseCreated(event: HouseCreated): void {
   house.owner = creator.id;
   house.createdAt = event.block.timestamp;
   house.creationTx = event.transaction.hash;
+  house.roundCount = 0;
 
   CommunityHouseTemplate.create(event.params.house);
 
@@ -37,6 +38,9 @@ export function handleRoundCreated(event: RoundCreated): void {
     ]);
     return;
   }
+
+  house.roundCount += 1;
+  house.save();
 
   let creator = Account.load(event.params.creator.toHex());
   if (!creator) {

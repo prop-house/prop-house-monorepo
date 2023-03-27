@@ -31,6 +31,7 @@ export const ManyHousesSimpleQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);
@@ -49,6 +50,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);
@@ -67,6 +69,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);
