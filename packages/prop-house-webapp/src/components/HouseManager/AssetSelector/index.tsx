@@ -9,7 +9,7 @@ import SplitAwards from '../SplitAwards';
 import { ERC20 } from '../WhoCanParticipate';
 import IndividualAwards from '../IndividualAwards';
 import { uuid } from 'uuidv4';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 
 export interface Award {
@@ -44,12 +44,10 @@ export const NewAward: Award = {
 
 const AssetSelector: FC<{
   editMode?: boolean;
-  editedAwards?: Award[];
-  winnerCount?: number;
-  setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
-  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
+  editedRound?: NewRound;
+  setEditedRound?: React.Dispatch<React.SetStateAction<NewRound>>;
 }> = props => {
-  const { editMode, editedAwards, winnerCount, setWinnerCount, setEditedAwards } = props;
+  const { editMode, editedRound, setEditedRound } = props;
 
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
@@ -70,18 +68,37 @@ const AssetSelector: FC<{
   const [isSplitAward, setIsSplitAward] = useState(round.splitAwards);
 
   const changeAwardType = () => {
-    setIsSplitAward(!isSplitAward);
-    const updated = { ...round, splitAwards: !isSplitAward, numWinners: 1, awards: [] };
+    if (editMode && editedRound) {
+      const newAwards = Array.from({ length: editedRound.numWinners }, () => ({
+        ...editedRound.awards[0],
+        id: uuid(),
+      }));
 
-    if (isSplitAward) {
-      setIndividualAwards(initialIndividualAwards);
+      // Find an existing ETH or ERC20 award in the individual awards array
+      const baseAward = editedRound.awards.find(
+        award => award.type === AssetType.ETH || award.type === AssetType.ERC20,
+      );
+
+      setEditedRound!({
+        ...editedRound,
+        splitAwards: !editedRound.splitAwards,
+        awards: editedRound.splitAwards ? newAwards : [baseAward || NewAward],
+      });
     } else {
-      setSplitAwards([NewAward]);
-    }
-    if (!editMode) {
+      const updated = { ...round, splitAwards: !isSplitAward, numWinners: 1, awards: [] };
+
+      if (isSplitAward) {
+        setIndividualAwards(initialIndividualAwards);
+      } else {
+        setSplitAwards([NewAward]);
+      }
+
       dispatch(updateRound(updated));
       dispatch(checkStepCriteria());
     }
+
+    // Toggle the isSplitAward state at the end of the function
+    setIsSplitAward(!isSplitAward);
   };
 
   return (
@@ -106,20 +123,18 @@ const AssetSelector: FC<{
       {isSplitAward ? (
         <SplitAwards
           editMode={editMode}
-          awards={splitAwards}
+          awards={editMode ? editedRound!.awards : splitAwards}
           setAwards={setSplitAwards}
-          winnerCount={winnerCount}
-          setWinnerCount={setWinnerCount}
-          setEditedAwards={setEditedAwards}
+          editedRound={editedRound}
+          setEditedRound={setEditedRound}
         />
       ) : (
         <IndividualAwards
           editMode={editMode}
-          awards={individualAwards}
-          editedAwards={editedAwards}
+          awards={editMode ? editedRound!.awards : individualAwards}
           setAwards={setIndividualAwards}
-          setWinnerCount={setWinnerCount}
-          setEditedAwards={setEditedAwards}
+          setEditedRound={setEditedRound}
+          editedRound={editedRound}
         />
       )}
     </>

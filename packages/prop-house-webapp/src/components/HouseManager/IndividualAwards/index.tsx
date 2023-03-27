@@ -1,7 +1,7 @@
 import classes from './IndividualAwards.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk';
 import Button, { ButtonColor } from '../../Button';
@@ -15,7 +15,6 @@ import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { getUSDPrice } from '../utils/getUSDPrice';
 import AwardWithPlace from '../AwardWithPlace';
-import { uuid } from 'uuidv4';
 import AddAward from '../AddAward';
 import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
 import AwardRow from '../AwardRow';
@@ -38,12 +37,11 @@ export const erc20Name: { [key in ERC20]: string } = {
 const IndividualAwards: React.FC<{
   editMode?: boolean;
   awards: Award[];
-  editedAwards?: Award[];
   setAwards: React.Dispatch<SetStateAction<Award[]>>;
-  setWinnerCount?: React.Dispatch<React.SetStateAction<number>>;
-  setEditedAwards?: React.Dispatch<React.SetStateAction<Award[]>>;
+  editedRound?: NewRound;
+  setEditedRound?: React.Dispatch<React.SetStateAction<NewRound>>;
 }> = props => {
-  const { editMode, editedAwards, awards, setAwards, setWinnerCount, setEditedAwards } = props;
+  const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
 
@@ -131,13 +129,15 @@ const IndividualAwards: React.FC<{
       }
     });
 
-    setAwards(updatedAwards);
-
     if (editMode) {
       const filteredAwards = updatedAwards.filter(award => award.state === 'success');
-      setEditedAwards!(filteredAwards);
-      setWinnerCount!(filteredAwards.length);
+      setEditedRound!({
+        ...editedRound!,
+        numWinners: filteredAwards.length,
+        awards: filteredAwards,
+      });
     } else {
+      setAwards(updatedAwards);
       dispatch(
         updateRound({
           ...round,
@@ -152,11 +152,10 @@ const IndividualAwards: React.FC<{
     setAwardIdx(0);
     setShowIndividualAwardModal(false);
   };
-
+  console.log('awards', awards);
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
 
-  //  TODO
   const [isTyping, setIsTyping] = useState(false);
 
   const handleERC20AddressBlur = async () => {
@@ -211,19 +210,37 @@ const IndividualAwards: React.FC<{
     setShowIndividualAwardModal(false);
   };
 
-  const addNewAward = () => setAwards([...awards, { ...NewAward, id: uuid() }]);
+  const addNewAward = () => {
+    const updatedAwards = [...awards, NewAward];
+
+    if (editMode) {
+      setEditedRound!({
+        ...editedRound!,
+        splitAwards: false,
+        numWinners: updatedAwards.length,
+        awards: updatedAwards,
+      });
+    } else {
+      setAwards(updatedAwards);
+    }
+  };
 
   const removeAward = (id: string) => {
     let updated: Award[] = awards.filter(award => award.id !== id);
 
-    setAwards(updated);
     if (editMode) {
       const filteredAwards = updated.filter(award => award.state === 'success');
-      setEditedAwards!(filteredAwards);
-      setWinnerCount!(filteredAwards.length);
+
+      setEditedRound!({
+        ...editedRound!,
+        splitAwards: false,
+        numWinners: filteredAwards.length,
+        awards: filteredAwards,
+      });
     } else {
       dispatch(updateRound({ ...round, numWinners: updated.length, awards: updated }));
       dispatch(checkStepCriteria());
+      setAwards(updated);
     }
   };
 
@@ -317,7 +334,7 @@ const IndividualAwards: React.FC<{
       <Group gap={16}>
         {awards.map((award, idx) => {
           const isSaved = editMode
-            ? editedAwards!.some(
+            ? awards.some(
                 savedAward => savedAward.id === award.id && savedAward.state === 'success',
               )
             : round.awards.some(
@@ -338,6 +355,7 @@ const IndividualAwards: React.FC<{
                       onClick={() => {
                         setAwardIdx(idx + 1);
                         setShowIndividualAwardModal(true);
+                        setAward(awards[idx]);
                       }}
                     />
                   </>
