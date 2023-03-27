@@ -106,5 +106,7 @@ export const communities = new CaseInsensitiveMap(
     '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': erc1155(1, 50),
     // Explorer Grants
     '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100),
+    // Trait works
+    '0xe8f0b57a805b9a15fee874fdd8f6bc250a0d2c55': balanceOfErc721(10),
   }),
 );
