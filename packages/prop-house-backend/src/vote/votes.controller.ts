@@ -159,10 +159,15 @@ export class VotesController {
       .filter((vote) => vote.proposal.auctionId === foundProposal.auctionId)
       .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
 
-    const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
-      (agg, current) => Number(agg) + Number(current.weight),
-      0,
-    );
+    const signerVotesForProp = validatedSignerVotes
+      .filter((vote) => vote.proposalId === foundProposal.id)
+      .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
+
+    const aggVoteWeightSubmitted = (
+      foundProposal.parentType === 'auction'
+        ? signerVotesForAuction
+        : signerVotesForProp
+    ).reduce((agg, current) => Number(agg) + Number(current.weight), 0);
 
     // Check that user won't exceed voting power by casting vote
     if (aggVoteWeightSubmitted + voteFromPayload.weight > votingPower) {
