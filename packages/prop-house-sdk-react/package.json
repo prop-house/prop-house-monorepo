@@ -17,7 +17,7 @@
     "react": ">=16.13.1"
   },
   "dependencies": {
-    "@prophouse/sdk": "~0.1.0-alpha.14"
+    "@prophouse/sdk": "~0.1.0-alpha.15"
   },
   "devDependencies": {
     "react": "^17.0.2"
