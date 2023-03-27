@@ -128,7 +128,7 @@ const RoundModules: React.FC<{
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
       {isMobile() ? (
-        <Swiper spaceBetween={0} slidesPerView={1}>
+        <Swiper spaceBetween={0} slidesPerView={1} style={{ zIndex: 0 }}>
           {modules.map(m => React.isValidElement(m) && <SwiperSlide>{m}</SwiperSlide>)}
         </Swiper>
       ) : (
