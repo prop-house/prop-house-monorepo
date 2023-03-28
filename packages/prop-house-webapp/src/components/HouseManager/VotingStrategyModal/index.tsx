@@ -2,15 +2,15 @@ import classes from './VotingStrategyModal.module.css';
 import React, { SetStateAction, useState } from 'react';
 import ReactModal from 'react-modal';
 import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
-import { VotingStrategyInfo } from '@prophouse/sdk';
+import { VotingStrategyConfig } from '@prophouse/sdk';
 import VotingStrategies from '../VotingStrategies';
 import AddVotingStrategy from '../AddVotingStrategy';
 import Divider from '../../Divider';
 
 const VotingStrategyModal: React.FC<{
   editMode?: boolean;
-  strategies: VotingStrategyInfo[];
-  setStrategies: (strategies: VotingStrategyInfo[]) => void;
+  strategies: VotingStrategyConfig[];
+  setStrategies: (strategies: VotingStrategyConfig[]) => void;
   setShowVotingStrategyModal: (show: boolean) => void;
 }> = props => {
   const { editMode, strategies, setStrategies, setShowVotingStrategyModal } = props;

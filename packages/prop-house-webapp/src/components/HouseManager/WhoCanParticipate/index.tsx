@@ -5,7 +5,7 @@ import Text from '../Text';
 import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import UploadCSVModal from '../UploadCSVModal';
-import { VotingStrategyType, AssetType, VotingStrategyInfo } from '@prophouse/sdk/dist/types';
+import { VotingStrategyType, AssetType, VotingStrategyConfig } from '@prophouse/sdk/dist/types';
 import VotingStrategyModal from '../VotingStrategyModal';
 import VotingStrategies from '../VotingStrategies';
 
@@ -57,7 +57,7 @@ const WhoCanParticipate = () => {
   const [showVotingStrategyModal, setShowVotingStrategyModal] = useState(false);
 
   const round = useAppSelector(state => state.round.round);
-  const [strategies, setStrategies] = useState<VotingStrategyInfo[]>(
+  const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
     round.strategies.length ? round.strategies : [],
   );
 
