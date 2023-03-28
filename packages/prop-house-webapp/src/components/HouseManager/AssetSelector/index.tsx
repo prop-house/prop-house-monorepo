@@ -8,7 +8,7 @@ import { AssetType } from '@prophouse/sdk';
 import SplitAwards from '../SplitAwards';
 import { ERC20 } from '../WhoCanParticipate';
 import IndividualAwards from '../IndividualAwards';
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 
@@ -28,7 +28,7 @@ export interface Award {
 }
 
 export const NewAward: Award = {
-  id: uuid(),
+  id: uuidv4(),
   type: AssetType.ETH,
   address: '',
   tokenId: '',
@@ -53,9 +53,9 @@ const AssetSelector: FC<{
   const dispatch = useDispatch();
 
   const initialIndividualAwards: Award[] = [
-    { ...NewAward, id: uuid(), state: 'dummy' },
-    { ...NewAward, id: uuid(), state: 'dummy' },
-    { ...NewAward, id: uuid(), state: 'dummy' },
+    { ...NewAward, id: uuidv4(), state: 'dummy' },
+    { ...NewAward, id: uuidv4(), state: 'dummy' },
+    { ...NewAward, id: uuidv4(), state: 'dummy' },
   ];
 
   const [splitAwards, setSplitAwards] = useState<Award[]>(
@@ -71,7 +71,7 @@ const AssetSelector: FC<{
     if (editMode && editedRound) {
       const newAwards = Array.from({ length: editedRound.numWinners }, () => ({
         ...editedRound.awards[0],
-        id: uuid(),
+        id: uuidv4(),
       }));
 
       // Find an existing ETH or ERC20 award in the individual awards array
