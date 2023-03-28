@@ -4,3 +4,18 @@
   border-radius: 8px;
   padding: 10px;
 }
+.imgContainer {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 6px;
+  border: 1px solid var(--border-med);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.img {
+  width: 20px;
+  height: 20px;
+}

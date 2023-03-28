@@ -12,7 +12,12 @@ import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { AssetType, VotingStrategyInfo, VotingStrategyType, WhitelistMember } from '@prophouse/sdk';
+import {
+  AssetType,
+  VotingStrategyConfig,
+  VotingStrategyType,
+  WhitelistMember,
+} from '@prophouse/sdk';
 import { updateRound, checkStepCriteria } from '../../../state/slices/round';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';

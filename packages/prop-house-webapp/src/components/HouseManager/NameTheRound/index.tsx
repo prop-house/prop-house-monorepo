@@ -6,6 +6,10 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { capitalize } from '../../../utils/capitalize';
+import HouseSelection, { FetchedHouse } from '../HouseSelection';
+import { ChainId, PropHouse } from '@prophouse/sdk';
+import CreateNewHouse from '../CreateNewHouse';
+import { Wallet } from 'ethers';
 
 const NameTheRound = () => {
   const dispatch = useDispatch();
@@ -43,20 +47,55 @@ const NameTheRound = () => {
     handleFieldChange('description', value);
   };
 
+  // todo
+  // todo
+  // todo
+  // todo
+  // todo
+
+  const propHouse = new PropHouse({
+    evmChainId: ChainId.EthereumGoerli,
+    evm: Wallet.createRandom(),
+  });
+
+  const [selectedHouse, setSelectedHouse] = useState<FetchedHouse | null>(null);
+
+  const [creatingNewHouse, setCreatingNewHouse] = useState(false);
+  const handleCreateNewHouseClick = () => setCreatingNewHouse(true);
+
+  const handleHouseSelection = (house: FetchedHouse) => setSelectedHouse(house);
+
   return (
     <>
-      <Header title="What's your round about?" />
-
-      <NameAndDescriptionFields
-        title={title}
-        description={description}
-        errors={errors}
-        handleBlur={handleBlur}
-        handleChange={handleFieldChange}
-        handleDescriptionChange={handleDescriptionChange}
-      />
-
-      <Footer />
+      {selectedHouse ? (
+        <>
+          <Header title="What's your round about?" />
+          <NameAndDescriptionFields
+            title={title}
+            description={description}
+            errors={errors}
+            handleBlur={handleBlur}
+            handleChange={handleFieldChange}
+            handleDescriptionChange={handleDescriptionChange}
+          />
+          <Footer />
+        </>
+      ) : (
+        <>
+          {creatingNewHouse ? (
+            <CreateNewHouse />
+          ) : (
+            <>
+              <Header title="Which house is the round for?" />
+              <HouseSelection
+                propHouse={propHouse}
+                onSelectHouse={handleHouseSelection}
+                handleCreateNewHouseClick={handleCreateNewHouseClick}
+              />
+            </>
+          )}
+        </>
+      )}
     </>
   );
 };
