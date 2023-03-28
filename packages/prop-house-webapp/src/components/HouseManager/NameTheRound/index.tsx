@@ -7,13 +7,13 @@ import { useAppSelector } from '../../../hooks';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { capitalize } from '../../../utils/capitalize';
 import HouseSelection, { FetchedHouse } from '../HouseSelection';
-import { ChainId, PropHouse } from '@prophouse/sdk';
+import { usePropHouse } from '@prophouse/sdk-react';
 import CreateNewHouse from '../CreateNewHouse';
-import { Wallet } from 'ethers';
 
 const NameTheRound = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
+  const propHouse = usePropHouse();
 
   const [title, setTitle] = useState(round.title || '');
   const [description, setDescription] = useState(round.description || '');
@@ -46,17 +46,6 @@ const NameTheRound = () => {
     setDescription(value);
     handleFieldChange('description', value);
   };
-
-  // todo
-  // todo
-  // todo
-  // todo
-  // todo
-
-  const propHouse = new PropHouse({
-    evmChainId: ChainId.EthereumGoerli,
-    evm: Wallet.createRandom(),
-  });
 
   const [selectedHouse, setSelectedHouse] = useState<FetchedHouse | null>(null);
 

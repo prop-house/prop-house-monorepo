@@ -1,6 +1,6 @@
 import classes from './HouseSelection.module.css';
 import React, { useState, useEffect } from 'react';
-import { PropHouse } from '@prophouse/sdk';
+import { PropHouse } from '@prophouse/sdk-react';
 
 import Group from '../Group';
 import clsx from 'clsx';
@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import trimEthAddress from '../../../utils/trimEthAddress';
 
 interface HouseSelectionProps {
-  propHouse: PropHouse;
+  propHouse: PropHouse | undefined;
   onSelectHouse: (house: FetchedHouse) => void;
   handleCreateNewHouseClick: () => void;
 }
@@ -38,9 +38,9 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
   useEffect(() => {
     async function fetchHouses() {
       try {
-        const fetchedHouses = await propHouse.query.getHouses().then(data => data.houses);
-        if (fetchedHouses) console.log('fetchedHouses', fetchedHouses);
-        if (fetchedHouses) setHouses(fetchedHouses);
+        const { houses } = await propHouse?.query.getHouses() ?? {};
+        if (houses) console.log('fetchedHouses', houses);
+        if (houses) setHouses(houses);
 
         // if (fetchedHouses) {
         //   const updatedHouses = await Promise.all(

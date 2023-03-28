@@ -1,4 +1,4 @@
-import { AssetType } from '@prophouse/sdk/dist/types';
+import { AssetType } from '@prophouse/sdk-react';
 
 export const getUSDPrice = async (type: AssetType, address: string, amount: number) => {
   // handle case when "Other" is selected but no address is provided yet

@@ -5,7 +5,7 @@ import Text from '../Text';
 import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import UploadCSVModal from '../UploadCSVModal';
-import { VotingStrategyType, AssetType, VotingStrategyConfig } from '@prophouse/sdk/dist/types';
+import { VotingStrategyType, AssetType, VotingStrategyConfig } from '@prophouse/sdk-react';
 import VotingStrategyModal from '../VotingStrategyModal';
 import VotingStrategies from '../VotingStrategies';
 
