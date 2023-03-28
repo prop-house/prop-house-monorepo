@@ -3175,7 +3175,7 @@ export type ManyHousesSimpleWhereAccountIsOwnerQueryVariables = Exact<{
   owner: Scalars['String'];
   first: Scalars['Int'];
   skip: Scalars['Int'];
-  orderBy?: InputMaybe<Round_OrderBy>;
+  orderBy?: InputMaybe<House_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
@@ -3644,7 +3644,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
         },
         {
           kind: 'VariableDefinition',

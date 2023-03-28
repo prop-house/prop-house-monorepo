@@ -60,7 +60,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
     $owner: String!
     $first: Int!
     $skip: Int!
-    $orderBy: Round_orderBy
+    $orderBy: House_orderBy
     $orderDirection: OrderDirection
   ) {
     houses(where: { owner: $owner }) {
