@@ -21,13 +21,16 @@ export const PropHouseProvider = <CS extends Custom | void = void>({ children, .
   useEffect(() => {
     if ((!provider && !signer) || !chain) return;
 
-    setPropHouse(
-      new PropHouse<CS>({
-        ...props,
-        evmChainId: chain.id,
-        evm: signer || provider,
-      })
-    );
+    // Prop house instantiation will throw if the user is on an unsupported network
+    try {
+      setPropHouse(
+        new PropHouse<CS>({
+          ...props,
+          evmChainId: chain.id,
+          evm: signer || provider,
+        })
+      );
+    } catch {}
   }, [provider, signer, chain]);
 
   return (
