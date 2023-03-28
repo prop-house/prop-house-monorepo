@@ -23,9 +23,7 @@
     width: 0; /* Remove scrollbar space */
     background: transparent; /* Optional: just make scrollbar invisible */
   }
-  .carousel {
-    padding: 0px 24px;
-  }
+
   .breakOut {
     width: 100vw;
     max-width: none !important;
