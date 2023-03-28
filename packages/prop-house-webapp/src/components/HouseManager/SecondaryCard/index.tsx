@@ -44,14 +44,13 @@ const SecondaryCard: React.FC = () => {
         classNames={clsx(classes.secondaryCard, classes.hideOnMobile)}
       >
         {steps.map((step, idx) => (
-          <>
-            <CreateRoundStep
-              activeStep={activeStep}
-              stepNumber={idx + 1}
-              title={step.title}
-              text={step.text}
-            />
-          </>
+          <CreateRoundStep
+            activeStep={activeStep}
+            stepNumber={idx + 1}
+            title={step.title}
+            text={step.text}
+            key={idx}
+          />
         ))}
       </Card>
 
@@ -61,14 +60,13 @@ const SecondaryCard: React.FC = () => {
         classNames={clsx(classes.secondaryCard, classes.fullCard)}
       >
         {displayedSteps.map((step, idx) => (
-          <>
-            <CreateRoundStep
-              activeStep={activeStep}
-              stepNumber={start + idx + 1}
-              title={step.title}
-              text={step.text}
-            />
-          </>
+          <CreateRoundStep
+            activeStep={activeStep}
+            stepNumber={start + idx + 1}
+            title={step.title}
+            text={step.text}
+            key={idx}
+          />
         ))}
       </Card>
     </>
