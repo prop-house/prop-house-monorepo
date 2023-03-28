@@ -1,7 +1,7 @@
 import classes from './VotingStrategy.module.css';
 import Group from '../Group';
 import EthAddress from '../../EthAddress';
-import { VotingStrategyType } from '@prophouse/sdk';
+import { VotingStrategyType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';

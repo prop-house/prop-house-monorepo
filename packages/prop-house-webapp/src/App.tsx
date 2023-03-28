@@ -23,6 +23,7 @@ import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
@@ -81,43 +82,45 @@ function App() {
             <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
           </Routes>
         ) : (
-          <RainbowKitProvider
-            chains={chains}
-            theme={lightTheme({
-              accentColor: 'var(--brand-purple)',
-            })}
-          >
-            <Suspense fallback={<LoadingIndicator />}>
-              <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-                {location.pathname === '/' && <Banner content={bannerContent} />}
-                {!noNavPath && <NavBar />}
+          <PropHouseProvider>
+            <RainbowKitProvider
+              chains={chains}
+              theme={lightTheme({
+                accentColor: 'var(--brand-purple)',
+              })}
+            >
+              <Suspense fallback={<LoadingIndicator />}>
+                <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
+                  {location.pathname === '/' && <Banner content={bannerContent} />}
+                  {!noNavPath && <NavBar />}
 
-                <Routes>
-                  <Route path="/rounds" element={<StatusRoundCards />} />
-                  <Route path="/" element={<Home />} />
-                  <Route
-                    path="/create"
-                    element={
-                      <ProtectedRoute noActiveCommunity={noActiveCommunity}>
-                        <Create />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/create-round" element={<CreateRound />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/admin" element={<HouseManager />} />
-                  <Route path="/proposal/:id" element={<Proposal />} />
-                  <Route path="/:house" element={<House />} />
-                  <Route path="/:house/:title" element={<Round />} />
-                  <Route path="/:house/:title/:id" element={<Proposal />} />
+                  <Routes>
+                    <Route path="/rounds" element={<StatusRoundCards />} />
+                    <Route path="/" element={<Home />} />
+                    <Route
+                      path="/create"
+                      element={
+                        <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                          <Create />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/create-round" element={<CreateRound />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/admin" element={<HouseManager />} />
+                    <Route path="/proposal/:id" element={<Proposal />} />
+                    <Route path="/:house" element={<House />} />
+                    <Route path="/:house/:title" element={<Round />} />
+                    <Route path="/:house/:title/:id" element={<Proposal />} />
 
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
 
-                <Footer />
-              </div>
-            </Suspense>
-          </RainbowKitProvider>
+                  <Footer />
+                </div>
+              </Suspense>
+            </RainbowKitProvider>
+          </PropHouseProvider>
         )}
       </WagmiConfig>
     </>

@@ -1,6 +1,6 @@
 import classes from './VotingStrategies.module.css';
 import Group from '../Group';
-import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk';
+import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
 import VotingStrategy from '../VotingStrategy';
 import { FC } from 'react';

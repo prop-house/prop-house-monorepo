@@ -8,7 +8,7 @@ import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
 import InfoSymbol from '../../InfoSymbol';
-import { AssetType } from '@prophouse/sdk';
+import { AssetType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { Award, NewAward } from '../AssetSelector';

@@ -6,7 +6,7 @@ import Bullet from '../Bullet';
 import { NewStrategy } from '../WhoCanParticipate';
 import EthAddress from '../../EthAddress';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { VotingStrategyType } from '@prophouse/sdk';
+import { VotingStrategyType } from '@prophouse/sdk-react';
 
 const Address: React.FC<{
   isTyping: boolean;

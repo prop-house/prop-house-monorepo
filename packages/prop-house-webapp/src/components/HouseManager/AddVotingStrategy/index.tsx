@@ -17,7 +17,7 @@ import {
   VotingStrategyConfig,
   VotingStrategyType,
   WhitelistMember,
-} from '@prophouse/sdk';
+} from '@prophouse/sdk-react';
 import { updateRound, checkStepCriteria } from '../../../state/slices/round';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';

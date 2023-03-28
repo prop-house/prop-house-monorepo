@@ -4,7 +4,7 @@ import Button, { ButtonColor } from '../../Button';
 import Group from '../Group';
 import { NewStrategy } from '../WhoCanParticipate';
 import Text from '../Text';
-import { AssetType, VotingStrategyType } from '@prophouse/sdk';
+import { AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 
 const VotesPerAddress: React.FC<{
   strategy: NewStrategy;

@@ -4,7 +4,7 @@ import Group from '../Group';
 import AwardWithPlace from '../AwardWithPlace';
 import TruncateThousands from '../../TruncateThousands';
 import { Award } from '../AssetSelector';
-import { AssetType } from '@prophouse/sdk/dist/types';
+import { AssetType } from '@prophouse/sdk-react';
 
 const AwardCard: React.FC<{ award: Award; place: number }> = props => {
   const { award, place } = props;
