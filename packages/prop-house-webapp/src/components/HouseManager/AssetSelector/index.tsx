@@ -4,7 +4,7 @@ import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
 import Section from '../Section';
 import { useAppSelector } from '../../../hooks';
-import { AssetType } from '@prophouse/sdk';
+import { AssetType } from '@prophouse/sdk-react';
 import SplitAwards from '../SplitAwards';
 import { ERC20 } from '../WhoCanParticipate';
 import IndividualAwards from '../IndividualAwards';

@@ -3,7 +3,7 @@ import Text from '../Text';
 import Group from '../Group';
 import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
-import { AssetType } from '@prophouse/sdk';
+import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
 import { Award, NewAward } from '../AssetSelector';
 import { SetStateAction, useState } from 'react';

@@ -3,7 +3,7 @@ import Text from '../Text';
 import AddressAvatar from '../../AddressAvatar';
 import { useEnsName } from 'wagmi';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { VotingStrategyType } from '@prophouse/sdk';
+import { VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 
