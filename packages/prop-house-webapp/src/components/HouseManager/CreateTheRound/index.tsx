@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
-import { VotingStrategyInfo, VotingStrategyType } from '@prophouse/sdk/dist/types';
+import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk/dist/types';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
@@ -24,7 +24,7 @@ import EditAwardsModal from '../EditAwardsModal';
 
 const CreateTheRound = () => {
   const round = useAppSelector(state => state.round.round);
-  const [strategies, setStrategies] = useState<VotingStrategyInfo[]>(
+  const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
     round.strategies.length ? round.strategies : [],
   );
   const dispatch = useDispatch();

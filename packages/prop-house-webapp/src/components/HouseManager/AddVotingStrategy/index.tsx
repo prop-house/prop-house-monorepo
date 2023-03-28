@@ -25,9 +25,9 @@ import useAddressType from '../utils/useAddressType';
 const AddVotingStrategy: React.FC<{
   strat: NewStrategy;
   selectedStrategy: string;
-  strategies: VotingStrategyInfo[];
+  strategies: VotingStrategyConfig[];
   setStrat: (strat: NewStrategy) => void;
-  setStrategies: (strategies: VotingStrategyInfo[]) => void;
+  setStrategies: (strategies: VotingStrategyConfig[]) => void;
   setSelectedStrategy: (selectedStrategy: string) => void;
   handleCancel: () => void;
 }> = props => {
@@ -49,25 +49,23 @@ const AddVotingStrategy: React.FC<{
   const dispatch = useAppDispatch();
 
   const handleAddVotingStrategy = () => {
-    let s: VotingStrategyInfo | null = null;
+    let s: VotingStrategyConfig | null = null;
 
-    if (strat.type === VotingStrategyType.BALANCE_OF) {
-      if (strat.asset === AssetType.ERC1155) {
-        s = {
-          strategyType: strat.type,
-          assetType: strat.asset,
-          address: strat.address,
-          tokenId: strat.tokenId,
-          multiplier: strat.multiplier,
-        };
-      } else {
-        s = {
-          strategyType: VotingStrategyType.BALANCE_OF,
-          assetType: AssetType.ERC20,
-          address: strat.address,
-          multiplier: strat.multiplier,
-        };
-      }
+    if (strat.type === VotingStrategyType.ERC1155_BALANCE_OF) {
+      s = {
+        strategyType: strat.type,
+        assetType: AssetType.ERC1155,
+        address: strat.address,
+        tokenId: strat.tokenId,
+        multiplier: strat.multiplier,
+      };
+    } else if (strat.type === VotingStrategyType.BALANCE_OF) {
+      s = {
+        strategyType: VotingStrategyType.BALANCE_OF,
+        assetType: AssetType.ERC20,
+        address: strat.address,
+        multiplier: strat.multiplier,
+      };
     } else if (strat.type === VotingStrategyType.WHITELIST) {
       const newMember: WhitelistMember = {
         address: strat.address,
@@ -80,7 +78,7 @@ const AddVotingStrategy: React.FC<{
     }
 
     if (s) {
-      let updatedStrategies: VotingStrategyInfo[] = [];
+      let updatedStrategies: VotingStrategyConfig[] = [];
 
       if (s.strategyType === VotingStrategyType.WHITELIST) {
         // Find existing Whitelist strategy

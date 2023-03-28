@@ -1,6 +1,6 @@
 import classes from './VotingStrategies.module.css';
 import Group from '../Group';
-import { VotingStrategyInfo, VotingStrategyType } from '@prophouse/sdk';
+import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk';
 import Button, { ButtonColor } from '../../Button';
 import VotingStrategy from '../VotingStrategy';
 import { FC } from 'react';
@@ -10,8 +10,8 @@ import clsx from 'clsx';
 
 const VotingStrategies: FC<{
   editMode?: boolean;
-  strategies: VotingStrategyInfo[];
-  setStrategies: (strategies: VotingStrategyInfo[]) => void;
+  strategies: VotingStrategyConfig[];
+  setStrategies: (strategies: VotingStrategyConfig[]) => void;
   setCurrentView?: (view: 'showStrategies' | 'addStrategies') => void;
   setShowVotingStrategyModal?: (show: boolean) => void;
 }> = props => {
