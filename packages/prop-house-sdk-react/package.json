@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk-react",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Useful tooling for interacting with the Prop House protocol from React applications",
   "author": "solimander",
   "homepage": "https://prop.house",
