@@ -31,6 +31,7 @@ export const ManyHousesSimpleQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);
@@ -49,6 +50,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);
@@ -58,7 +60,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
     $owner: String!
     $first: Int!
     $skip: Int!
-    $orderBy: Round_orderBy
+    $orderBy: House_orderBy
     $orderDirection: OrderDirection
   ) {
     houses(where: { owner: $owner }) {
@@ -67,6 +69,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
       description
       imageURI
       createdAt
+      roundCount
     }
   }
 `);

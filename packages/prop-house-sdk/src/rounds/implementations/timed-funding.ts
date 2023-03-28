@@ -3,10 +3,10 @@ import { AssetType, Custom, RoundType, TimedFunding, RoundChainConfig } from '..
 import { TimedFundingRound__factory } from '@prophouse/contracts';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
+import { ADDRESS_ONE } from '../../constants';
 import { Account, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
-import BN from 'bn.js';
 
 export class TimedFundingRound<CS extends void | Custom = void> extends RoundBase<
   RoundType.TIMED_FUNDING,
@@ -169,17 +169,26 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param configStruct The round configuration struct
    */
   public async estimateMessageFee(configStruct: TimedFunding.ConfigStruct) {
-    const payload = await this.getContract(this.impl).getL2Payload(configStruct);
+    const rawPayload = await this.getContract(this.impl).getL2Payload(configStruct);
+    const payload = [
+      encoding.hexPadLeft(ADDRESS_ONE).toLowerCase(),
+      ...rawPayload.slice(1).map(p => p.toString()),
+    ];
+    payload[5] = configStruct.proposalPeriodStartTimestamp.toString();
+    payload[6] = configStruct.proposalPeriodDuration.toString();
+    payload[7] = configStruct.votePeriodDuration.toString();
+    payload[8] = configStruct.winnerCount.toString();
+
     const response = (await this._starknet.estimateMessageFee({
       from_address: this._addresses.evm.messenger,
       to_address: this._addresses.starknet.roundFactory,
       entry_point_selector: hash.getSelectorFromName('register_round'),
       payload: payload.map(p => p.toString()),
-    })) as { amount: BN; unit: string };
-    if (!response.amount || response.unit !== 'wei') {
+    })) as unknown as { overall_fee: number; unit: string };
+    if (!response.overall_fee || response.unit !== 'wei') {
       throw new Error(`Unexpected message fee response: ${response}`);
     }
-    return response.amount.toString();
+    return response.overall_fee.toString();
   }
 
   /**

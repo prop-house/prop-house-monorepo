@@ -66,7 +66,7 @@ export const getDefaultConfig = <OB>(orderBy: OB) => ({
  * @param config The query config
  */
 export const toPaginated = <OB>(config: QueryConfig<OB>) => ({
-  first: config.page,
+  first: config.page * config.perPage,
   skip: (config.page - 1) * config.perPage,
   orderBy: config.orderBy,
   orderDirection: config.orderDirection,
