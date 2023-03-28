@@ -9,6 +9,7 @@ import {
   InfRoundFilterType,
   setInfRoundFilterType,
 } from '../../state/slices/propHouse';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const SortToggles: React.FC<{
   auction: StoredAuctionBase;
@@ -16,6 +17,10 @@ const SortToggles: React.FC<{
   const { auction } = props;
 
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const isInfRoundOver =
+    proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0;
+
   const dispatch = useDispatch();
 
   const handleFilterInfRoundProps = (type: InfRoundFilterType) => {
@@ -35,15 +40,18 @@ const SortToggles: React.FC<{
       <div className={classes.sortContainer}>
         {isInfAuction(auction) && (
           <>
-            <div
-              onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Active)}
-              className={clsx(
-                classes.sortItem,
-                infRoundFilter === InfRoundFilterType.Active && classes.active,
-              )}
-            >
-              <div className={classes.sortLabel}>Active</div>
-            </div>
+            {!isInfRoundOver && (
+              <div
+                onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Active)}
+                className={clsx(
+                  classes.sortItem,
+                  infRoundFilter === InfRoundFilterType.Active && classes.active,
+                )}
+              >
+                <div className={classes.sortLabel}>Active</div>
+              </div>
+            )}
+
             <div
               onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Winners)}
               className={clsx(

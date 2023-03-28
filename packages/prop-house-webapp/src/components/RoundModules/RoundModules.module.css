@@ -3,6 +3,10 @@
   top: 4rem;
   align-self: flex-start;
 }
+.swiper {
+  z-index: 0;
+  width: 100%;
+}
 
 @media (max-width: 1200px) {
   .sideCards {

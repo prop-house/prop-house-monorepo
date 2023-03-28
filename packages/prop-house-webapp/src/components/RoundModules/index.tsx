@@ -24,6 +24,7 @@ import RoundModuleStale from '../RoundModuleStale';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -43,7 +44,9 @@ const RoundModules: React.FC<{
   const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
-  const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
+  const isRoundOver =
+    auctionStatus(auction) === AuctionStatus.AuctionEnded ||
+    (isInfAuction(auction) && infRoundBalance(proposals, auction) === 0);
 
   const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + prop.voteCount), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
@@ -66,6 +69,45 @@ const RoundModules: React.FC<{
     }
   }, [account, proposals]);
 
+  const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
+    (isInfAuction(auction) &&
+      !isRoundOver &&
+      votingPower === 0 &&
+      infRoundFilter === InfRoundFilterType.Active)) && (
+    <AcceptingPropsModule auction={auction} community={community} />
+  );
+
+  const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
+    <TimedRoundVotingModule
+      communityName={community.name}
+      setShowVotingModal={setShowVotingModal}
+      totalVotes={getVoteTotal()}
+    />
+  );
+
+  const infRoundVotingModule = isInfAuction(auction) &&
+    (!account || votingPower > 0) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Active && (
+      <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+    );
+
+  const roundWinnerModule = isInfAuction(auction) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+
+  const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
+    <RoundModuleStale auction={auction} />
+  );
+
+  const roundOverModule = isRoundOver && (
+    <RoundOverModule
+      numOfProposals={proposals.length}
+      totalVotes={getVoteTotal()}
+      round={auction}
+    />
+  );
+
   const userPropCardModule = (isInfAuction(auction)
     ? infRoundFilter === InfRoundFilterType.Active
     : true) &&
@@ -83,38 +125,6 @@ const RoundModules: React.FC<{
       />
     );
 
-  const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
-    (isInfAuction(auction) &&
-      votingPower === 0 &&
-      infRoundFilter === InfRoundFilterType.Active)) && (
-    <AcceptingPropsModule auction={auction} community={community} />
-  );
-
-  const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
-    <TimedRoundVotingModule
-      communityName={community.name}
-      setShowVotingModal={setShowVotingModal}
-      totalVotes={getVoteTotal()}
-    />
-  );
-
-  const infRoundVotingModule = isInfAuction(auction) &&
-    (!account || votingPower > 0) &&
-    infRoundFilter === InfRoundFilterType.Active && (
-      <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
-    );
-
-  const roundWinnerModule = isInfAuction(auction) &&
-    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
-
-  const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
-    <RoundModuleStale auction={auction} />
-  );
-
-  const roundOverModule = isRoundOver && (
-    <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
-  );
-
   const modules = [
     acceptingPropsModule,
     timedRoundVotingModule,
@@ -128,7 +138,7 @@ const RoundModules: React.FC<{
   return (
     <Col xl={4} className={clsx(classes.sideCards, classes.breakOut)}>
       {isMobile() ? (
-        <Swiper slidesPerView={1} style={{ zIndex: 0 }}>
+        <Swiper slidesPerView={1} className={classes.swiper}>
           {modules.map(
             m =>
               React.isValidElement(m) && (

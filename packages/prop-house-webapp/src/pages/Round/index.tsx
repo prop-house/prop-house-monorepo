@@ -30,6 +30,7 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const Round = () => {
   const location = useLocation();
@@ -118,17 +119,22 @@ const Round = () => {
         dispatch(setActiveProposals(proposals));
 
         // set initial state for props (sorted in timed round / filtered in inf round)
-        isTimedAuction(round)
-          ? dispatch(
-              sortTimedRoundProposals({
-                sortType:
-                  isVotingWindow || isRoundOver
-                    ? TimedRoundSortType.VoteCount
-                    : TimedRoundSortType.CreatedAt,
-                ascending: false,
-              }),
-            )
-          : dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round }));
+        if (isTimedAuction(round)) {
+          dispatch(
+            sortTimedRoundProposals({
+              sortType:
+                isVotingWindow || isRoundOver
+                  ? TimedRoundSortType.VoteCount
+                  : TimedRoundSortType.CreatedAt,
+              ascending: false,
+            }),
+          );
+        } else {
+          const infRoundOver = infRoundBalance(proposals, round) === 0;
+          const filterType = infRoundOver ? InfRoundFilterType.Winners : InfRoundFilterType.Active;
+          dispatch(setInfRoundFilterType(filterType));
+          dispatch(filterInfRoundProposals({ type: filterType, round }));
+        }
 
         setLoadingProps(false);
       } catch (e) {
