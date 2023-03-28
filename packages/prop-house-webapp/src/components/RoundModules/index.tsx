@@ -116,13 +116,13 @@ const RoundModules: React.FC<{
   );
 
   const modules = [
-    userPropCardModule,
     acceptingPropsModule,
     timedRoundVotingModule,
     infRoundVotingModule,
     roundWinnerModule,
     roundStaleModule,
     roundOverModule,
+    userPropCardModule,
   ];
 
   return (
