@@ -1,0 +1,16 @@
+.imgContainer {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  background: var(--bg-med);
+  border: 1px solid var(--border-med);
+}
+
+.img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+}
