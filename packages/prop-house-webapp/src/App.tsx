@@ -19,7 +19,7 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
-import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { createClient, configureChains, WagmiConfig, goerli } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -29,7 +29,7 @@ import StatusRoundCards from './components/StatusRoundCards';
 import HouseManager from './pages/HouseManager';
 
 const { chains, provider } = configureChains(
-  [mainnet],
+  [goerli],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 
