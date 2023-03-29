@@ -4214,10 +4214,10 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.1.0-alpha.5":
-  version "0.1.0-alpha.5"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.5.tgz#0d8d258e275e3ef127e744c337f9fdd37f3fe94a"
-  integrity sha512-kbCgaWdByN4dsJxx8JomQQ4kGJzc8tyf9pCuTvxNRq8vUMKhoqKvg5Pw2TupdoW8E0MsaLNKCBybhLdmbVF1+Q==
+"@prophouse/sdk-react@0.1.0-alpha.6":
+  version "0.1.0-alpha.6"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.6.tgz#a842862bd93b3c5c9279ed18202a7525aac04a39"
+  integrity sha512-7Us1kvOlKfoXmFRR3mGNx2fjru3Ab+LiPNDSXIgWtdTjorjBUsAMzacAJLlBHoaeJX7hzdyDpWR3Sgv5zLr78w==
   dependencies:
     "@prophouse/sdk" "~0.1.0-alpha.17"
 
