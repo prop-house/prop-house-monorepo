@@ -41,7 +41,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
       }
     }
     fetchHouses();
-  }, [propHouse?.query]);
+  }, [propHouse.query]);
 
   return (
     <>
