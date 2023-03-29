@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk-react",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Useful tooling for interacting with the Prop House protocol from React applications",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -15,8 +15,7 @@
   },
   "peerDependencies": {
     "react": ">=16.13.1",
-    "wagmi": ">=0.10.11",
-    "@wamig/core": ">0.9.5"
+    "wagmi": ">=0.9.2"
   },
   "dependencies": {
     "@prophouse/sdk": "~0.1.0-alpha.17"
