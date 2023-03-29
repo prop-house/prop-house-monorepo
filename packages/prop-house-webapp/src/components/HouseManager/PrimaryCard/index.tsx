@@ -1,11 +1,12 @@
 import classes from './PrimaryCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { useAppSelector } from '../../../hooks';
-import NameTheRound from '../NameTheRound';
-import WhoCanParticipate from '../WhoCanParticipate';
-import SetTheAwards from '../SetTheAwards';
-import RoundTiming from '../RoundTiming';
-import CreateTheRound from '../CreateTheRound';
+import HouseInfoConfig from '../HouseInfoConfig';
+import RoundInfoConfig from '../RoundInfoConfig';
+import StrategiesConfig from '../StrategiesConfig';
+import AwardsConfig from '../AwardsConfig';
+import DatesConfig from '../DatesConfig';
+import CreateRound from '../CreateRound';
 
 const PrimaryCard: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
@@ -13,15 +14,17 @@ const PrimaryCard: React.FC = () => {
   const renderStep = () => {
     switch (activeStep) {
       case 1:
-        return <NameTheRound />;
+        return <HouseInfoConfig />;
       case 2:
-        return <WhoCanParticipate />;
+        return <RoundInfoConfig />;
       case 3:
-        return <SetTheAwards />;
+        return <StrategiesConfig />;
       case 4:
-        return <RoundTiming />;
+        return <AwardsConfig />;
       case 5:
-        return <CreateTheRound />;
+        return <DatesConfig />;
+      case 6:
+        return <CreateRound />;
       default:
         return null;
     }

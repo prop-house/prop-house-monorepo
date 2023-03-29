@@ -6,7 +6,7 @@ import Section from '../Section';
 import { useAppSelector } from '../../../hooks';
 import { AssetType } from '@prophouse/sdk-react';
 import SplitAwards from '../SplitAwards';
-import { ERC20 } from '../WhoCanParticipate';
+import { ERC20 } from '../StrategiesConfig';
 import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
 import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';

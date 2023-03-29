@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
+import { StrategyType, newStrategy, NewStrategy } from '../StrategiesConfig';
 import Address from '../Address';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
