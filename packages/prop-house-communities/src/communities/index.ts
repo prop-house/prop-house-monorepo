@@ -108,5 +108,13 @@ export const communities = new CaseInsensitiveMap(
     '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100),
     // Trait works
     '0xe8f0b57a805b9a15fee874fdd8f6bc250a0d2c55': balanceOfErc721(10),
+    // Own the Doge
+    '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D': balanceOfErc721(),
+    // Noun 40
+    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100),
+    // Ed Cruz
+    '0x7426B39865D11207B8F795b10D70843FC3289051': fixedVotes(100),
+    // Eu
+    '0xa47f60564085b8792BaE197BE7762C7f7930eC67': fixedVotes(100),
   }),
 );
