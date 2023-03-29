@@ -4390,17 +4390,44 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.1.0-alpha.3":
-  version "0.1.0-alpha.3"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.3.tgz#b1094e375de0c8c573ba6569a52d9f33e0aca32d"
-  integrity sha512-LFhbtMISMQlwFhro/9BinKx2JwSDvCjHNH21c1o2J5l1KInVu2w737PexCs8B3TZUaXCTpCsOAgZgHHMhQU/Cw==
+"@prophouse/sdk-react@0.1.0-alpha.5":
+  version "0.1.0-alpha.5"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.5.tgz#0d8d258e275e3ef127e744c337f9fdd37f3fe94a"
+  integrity sha512-kbCgaWdByN4dsJxx8JomQQ4kGJzc8tyf9pCuTvxNRq8vUMKhoqKvg5Pw2TupdoW8E0MsaLNKCBybhLdmbVF1+Q==
   dependencies:
-    "@prophouse/sdk" "~0.1.0-alpha.16"
+    "@prophouse/sdk" "~0.1.0-alpha.17"
 
-"@prophouse/sdk@^0.1.0-alpha.8", "@prophouse/sdk@~0.1.0-alpha.16":
+"@prophouse/sdk@^0.1.0-alpha.8":
   version "0.1.0-alpha.16"
   resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.1.0-alpha.16.tgz#1a0fda58e5ed48e22d6b786daf48e60c85b23ee0"
   integrity sha512-Q12wSE5vA4lrCvOA8EQkPVZ5WxpTUPled8zD4mH1Kg3c/dFQvuNndCZYYcBxLU4PXi0+r8VGmCNcdkclTNpWfw==
+  dependencies:
+    "@ethersproject/abi" "~5.7.0"
+    "@ethersproject/abstract-provider" "~5.7.0"
+    "@ethersproject/abstract-signer" "~5.7.0"
+    "@ethersproject/address" "~5.7.0"
+    "@ethersproject/bignumber" "~5.7.0"
+    "@ethersproject/bytes" "~5.7.0"
+    "@ethersproject/constants" "~5.7.0"
+    "@ethersproject/contracts" "~5.7.0"
+    "@ethersproject/keccak256" "~5.7.0"
+    "@ethersproject/providers" "~5.7.0"
+    "@ethersproject/solidity" "~5.7.0"
+    "@ethersproject/wallet" "^5.7.0"
+    "@prophouse/contracts" "^0.1.0-alpha.10"
+    bn.js "^5.2.1"
+    ethereumjs-fork-block "^4.2.4"
+    ethereumjs-fork-common "^3.1.3"
+    graphql "^16.5.0"
+    graphql-request "5.0.0"
+    randombytes "^2.1.0"
+    starknet "4.22.0"
+    time-ts "^0.1.0"
+
+"@prophouse/sdk@~0.1.0-alpha.17":
+  version "0.1.0-alpha.17"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.1.0-alpha.17.tgz#9b08b6d064a20b77cf0d0b2a47a6f5bd89ae731f"
+  integrity sha512-rOXRlN1akJPC3OPpnN0KhbbtoKDr5WbvCLxpLRMJhOYotIQECH4euWfo1xPZ+5yTmqhSNMiYzu/IGLsGw+Gf+w==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
