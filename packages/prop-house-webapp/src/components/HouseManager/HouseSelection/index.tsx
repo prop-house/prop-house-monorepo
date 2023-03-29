@@ -63,8 +63,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
       }
     }
     fetchHouses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [propHouse?.query]);
 
   function ipfsToHttpsURL(ipfsURI: string, gateway: string = 'https://ipfs.io'): string {
     if (!ipfsURI.startsWith('ipfs://')) {
