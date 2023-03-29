@@ -1,11 +1,12 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
 import { capitalize } from '../../../utils/capitalize';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import NameAndDescriptionFields from '../NameAndDescriptionFields';
+import RoundFields from '../RoundFields';
+import removeTags from '../../../utils/removeTags';
 
 const EditNameDescriptionModal: React.FC<{
   setShowEditNameModal: Dispatch<SetStateAction<boolean>>;

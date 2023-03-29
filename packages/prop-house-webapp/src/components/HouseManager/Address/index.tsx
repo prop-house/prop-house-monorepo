@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
 import Bullet from '../Bullet';
-import { NewStrategy } from '../WhoCanParticipate';
+import { NewStrategy } from '../StrategiesConfig';
 import EthAddress from '../../EthAddress';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';

@@ -4,7 +4,7 @@ import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../utils/getERC20Image';
-import { ERC20 } from '../WhoCanParticipate';
+import { ERC20 } from '../StrategiesConfig';
 import { Award } from '../AssetSelector';
 import Divider from '../../Divider';
 
