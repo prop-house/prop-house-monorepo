@@ -9,6 +9,10 @@ const SecondaryCard: React.FC = () => {
 
   const steps = [
     {
+      title: 'Select the house',
+      text: 'Set the name and description',
+    },
+    {
       title: 'Name the round',
       text: 'Set the name and description',
     },
