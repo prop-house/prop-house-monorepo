@@ -1,6 +1,6 @@
 import { PropHouse, Custom, Starknet, Newable, StrategyHandlerBase, VotingStrategyConfig } from '@prophouse/sdk';
 import React, { createContext, useEffect, useState } from 'react';
-import { useNetwork, useProvider, useSigner } from 'wagmi';
+import { useProvider, useSigner } from 'wagmi';
 
 export type PropHouseProps<CS extends Custom | void = void> = {
   children: React.ReactNode;
@@ -14,24 +14,25 @@ export const PropHouseContext = createContext<PropHouse | undefined>(undefined);
 export const PropHouseProvider = <CS extends Custom | void = void>({ children, ...props }: PropHouseProps<CS>) => {
   const provider = useProvider();
   const { data: signer } = useSigner();
-  const { chain } = useNetwork();
   
   const [propHouse, setPropHouse] = useState<PropHouse<CS>>();
 
   useEffect(() => {
-    if ((!provider && !signer) || !chain) return;
+    if (!provider && !signer) return;
 
     // Prop house instantiation will throw if the user is on an unsupported network
     try {
       setPropHouse(
-        new PropHouse<CS>({
+        propHouse?.attach(signer || provider) ?? new PropHouse<CS>({
           ...props,
-          evmChainId: chain.id,
+          evmChainId: provider.network.chainId,
           evm: signer || provider,
         })
       );
-    } catch {}
-  }, [provider, signer, chain]);
+    } catch (error: unknown) {
+      console.warn(`Failed to populate \`PropHouseProvider\` with error: ${error}`);
+    }
+  }, [provider, signer]);
 
   return (
     <PropHouseContext.Provider value={propHouse as PropHouse}>

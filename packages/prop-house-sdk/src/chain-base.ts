@@ -8,13 +8,13 @@ import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
 import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
 import { Wallet } from '@ethersproject/wallet';
-import { ChainConfig } from './types';
+import { ChainConfig, EVM } from './types';
 
 export class ChainBase {
   protected readonly _evmChainId: number;
   protected readonly _addresses: ContractAddresses;
-  protected readonly _evm: Signer | Provider;
   protected readonly _starknet: SequencerProvider;
+  protected _evm: Signer | Provider;
 
   /**
    * EVM to Starknet chain ID mappings
@@ -57,9 +57,17 @@ export class ChainBase {
   constructor(config: ChainConfig) {
     this._evmChainId = config.evmChainId;
     this._addresses = getContractAddressesForChainOrThrow(config.evmChainId);
-    this._evm = typeof config.evm === 'string' ? new JsonRpcProvider(config.evm) : config.evm;
+    this._evm = this.toEVMSignerOrProvider(config.evm);
     this._starknet = config.starknet instanceof SequencerProvider ? config.starknet : new SequencerProvider(config.starknet ?? {
       network: ChainBase.EVM_TO_STARKNET_CHAIN_ID[config.evmChainId],
     });
+  }
+
+  /**
+   * Convert the provided EVM config value to a signer or provider
+   * @param evm The provided evm config value
+   */
+  protected toEVMSignerOrProvider(evm: EVM) {
+    return typeof evm === 'string' ? new JsonRpcProvider(evm) : evm;
   }
 }

@@ -4,6 +4,7 @@ import {
   AssetStruct,
   AssetType,
   Custom,
+  EVM,
   HouseInfo,
   HouseType,
   PropHouseConfig,
@@ -12,6 +13,7 @@ import {
 } from './types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { ChainBase } from './chain-base';
 import { QueryWrapper } from './gql';
 import { encoding } from './utils';
@@ -80,6 +82,15 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
       voting: this._voting,
       query: this._query,
     });
+  }
+
+  /**
+   * Attach the `PropHouse` instance to a new EVM provider or signer
+   * @param evm EVM provider/connection information and optional signer
+   */
+  public attach(evm: EVM) {
+    this._evm = this.toEVMSignerOrProvider(evm);
+    return this;
   }
 
   /**
