@@ -52,7 +52,7 @@ export const newStrategy: NewStrategy = {
   error: '',
 };
 
-const WhoCanParticipate = () => {
+const StrategiesConfig = () => {
   const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
   const [showVotingStrategyModal, setShowVotingStrategyModal] = useState(false);
 
@@ -101,4 +101,4 @@ const WhoCanParticipate = () => {
   );
 };
 
-export default WhoCanParticipate;
+export default StrategiesConfig;

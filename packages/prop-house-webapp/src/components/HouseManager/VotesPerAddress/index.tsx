@@ -2,7 +2,7 @@ import classes from './VotesPerAddress.module.css';
 import React from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Group from '../Group';
-import { NewStrategy } from '../WhoCanParticipate';
+import { NewStrategy } from '../StrategiesConfig';
 import Text from '../Text';
 import { AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 

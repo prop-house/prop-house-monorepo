@@ -1,4 +1,4 @@
-import classes from './CreateTheRound.module.css';
+import classes from './CreateRound.module.css';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { checkStepCriteria } from '../../../state/slices/round';
@@ -22,7 +22,7 @@ import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
 import EditAwardsModal from '../EditAwardsModal';
 
-const CreateTheRound = () => {
+const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
   const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
     round.strategies.length ? round.strategies : [],
@@ -58,7 +58,7 @@ const CreateTheRound = () => {
       </Group>
 
       <Group gap={6} mb={-10}>
-        <Group row classNames={classes.titleAndEditIcon}>
+        <Group row classNames={classes.titleAndEditIcon} gap={10}>
           <Text type="heading">{round.title}</Text>
           <EditSection onClick={() => setShowEditNameModal(true)} />
         </Group>
@@ -156,4 +156,4 @@ const CreateTheRound = () => {
   );
 };
 
-export default CreateTheRound;
+export default CreateRound;

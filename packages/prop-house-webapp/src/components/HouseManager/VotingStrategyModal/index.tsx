@@ -1,7 +1,7 @@
 import classes from './VotingStrategyModal.module.css';
 import React, { SetStateAction, useState } from 'react';
 import ReactModal from 'react-modal';
-import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
+import { StrategyType, newStrategy, NewStrategy } from '../StrategiesConfig';
 import { VotingStrategyConfig } from '@prophouse/sdk-react';
 import VotingStrategies from '../VotingStrategies';
 import AddVotingStrategy from '../AddVotingStrategy';

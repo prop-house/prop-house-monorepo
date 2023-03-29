@@ -5,7 +5,7 @@ import Text from '../Text';
 import Footer from '../Footer';
 import AssetSelector from '../AssetSelector';
 
-const SetTheAwards = () => {
+const AwardsConfig = () => {
   const round = useAppSelector(state => state.round.round);
 
   return (
@@ -25,4 +25,4 @@ const SetTheAwards = () => {
   );
 };
 
-export default SetTheAwards;
+export default AwardsConfig;

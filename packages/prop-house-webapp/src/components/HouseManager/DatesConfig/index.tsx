@@ -6,7 +6,7 @@ import RoundDatesSelector from '../RoundDatesSelector';
 
 import Text from '../Text';
 
-const RoundTiming = () => {
+const DatesConfig = () => {
   const round = useAppSelector(state => state.round.round);
 
   return (
@@ -26,4 +26,4 @@ const RoundTiming = () => {
   );
 };
 
-export default RoundTiming;
+export default DatesConfig;

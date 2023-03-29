@@ -1,11 +1,12 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
 import { capitalize } from '../../../utils/capitalize';
 import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-import NameAndDescriptionFields from '../NameAndDescriptionFields';
+import RoundFields from '../RoundFields';
+import removeTags from '../../../utils/removeTags';
 
 const EditNameDescriptionModal: React.FC<{
   setShowEditNameModal: Dispatch<SetStateAction<boolean>>;
@@ -23,6 +24,7 @@ const EditNameDescriptionModal: React.FC<{
 
   const [editedTitle, setEditedTitle] = useState(round.title || '');
   const [editedDescription, setEditedDescription] = useState(round.description || '');
+  const [descriptionLength, setDescriptionLength] = useState(0);
 
   const handleTitleChange = (field: 'title' | 'description', value: string) => {
     field === 'title' ? setEditedTitle(value) : setEditedDescription(value);
@@ -31,17 +33,22 @@ const EditNameDescriptionModal: React.FC<{
 
   const handleBlur = (field: 'title' | 'description') => {
     const value = field === 'title' ? editedTitle : editedDescription;
+    const length = value === editedDescription ? descriptionLength : value.length;
     const minLen = field === 'title' ? 5 : 20;
     const maxLen = field === 'title' ? 255 : undefined;
     const error =
-      value && value.length < minLen
+      length < minLen
         ? `${capitalize(field)} must be at least ${minLen} characters.`
-        : maxLen && value.length > maxLen
+        : maxLen && length > maxLen
         ? `${capitalize(field)} must be less than ${maxLen} characters.`
         : undefined;
 
     setErrors({ ...errors, [field]: error });
   };
+
+  useEffect(() => {
+    setDescriptionLength(removeTags(round.description).length);
+  }, [round.description]);
 
   const handleDescriptionChange = (value: string) => setEditedDescription(value);
 
@@ -50,9 +57,10 @@ const EditNameDescriptionModal: React.FC<{
       title="Edit round name and description"
       subtitle=""
       body={
-        <NameAndDescriptionFields
+        <RoundFields
           title={editedTitle}
           description={editedDescription}
+          descriptionLength={descriptionLength}
           errors={errors}
           handleBlur={handleBlur}
           handleChange={handleTitleChange}

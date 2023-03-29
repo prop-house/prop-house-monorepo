@@ -25,10 +25,10 @@ const Footer: React.FC = () => {
     <>
       <Divider />
 
-      <div className={clsx(classes.footer, activeStep === 1 && classes.justifyEnd)}>
-        {activeStep > 1 && <Button text="Back" bgColor={ButtonColor.Black} onClick={handlePrev} />}
+      <div className={clsx(classes.footer, activeStep < 3 && classes.justifyEnd)}>
+        {activeStep > 2 && <Button text="Back" bgColor={ButtonColor.Black} onClick={handlePrev} />}
 
-        {activeStep < 5 && (
+        {activeStep < 6 && (
           <Button
             text="Next"
             disabled={stepDisabledArray[activeStep - 1]}
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
             onClick={handleNext}
           />
         )}
-        {activeStep === 5 && (
+        {activeStep === 6 && (
           <Button
             text="Create"
             disabled={stepDisabledArray[4]}

@@ -1,4 +1,4 @@
-import classes from './NewHouseFields.module.css';
+import classes from './RoundFields.module.css';
 import Group from '../Group';
 import Text from '../Text';
 import { FC, useMemo, useRef } from 'react';
@@ -7,15 +7,24 @@ import { capitalize } from '../../../utils/capitalize';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const NewHouseFields: FC<{
+const RoundFields: FC<{
   title: string;
   description: string;
   errors: { title?: string; description?: string };
+  descriptionLength: number;
   handleBlur: (field: 'title' | 'description') => void;
   handleChange: (field: 'title' | 'description', value: string) => void;
   handleDescriptionChange: (value: string) => void;
 }> = props => {
-  const { title, description, errors, handleBlur, handleChange, handleDescriptionChange } = props;
+  const {
+    title,
+    description,
+    errors,
+    descriptionLength,
+    handleBlur,
+    handleChange,
+    handleDescriptionChange,
+  } = props;
 
   let quillRef = useRef<ReactQuill>(null);
   var icons = Quill.import('ui/icons');
@@ -62,17 +71,17 @@ const NewHouseFields: FC<{
   const formats = ['bold', 'italic', 'link'];
 
   return (
-    <Group classNames={classes.container}>
+    <>
       <Group gap={8} mb={16}>
         <div className={classes.descriptionTitile}>
-          <Text type="subtitle">House name</Text>
+          <Text type="subtitle">Round name</Text>
           <Text type="body">{title.length}/255</Text>
         </div>
 
         <input
           className={clsx(classes.input, errors.title && classes.inputError)}
           type="text"
-          placeholder={'Nouns'}
+          placeholder={'Hack-a-thon'}
           maxLength={255}
           id="title"
           value={title}
@@ -89,8 +98,8 @@ const NewHouseFields: FC<{
 
       <Group gap={8}>
         <div className={classes.descriptionTitile}>
-          <Text type="subtitle">Describe your house</Text>
-          <Text type="body">{description.length}</Text>
+          <Text type="subtitle">Describe your round</Text>
+          <Text type="body">{descriptionLength || description.length}</Text>
         </div>
 
         <Group classNames={classes.houseManagerEditor} mt={20}>
@@ -100,7 +109,7 @@ const NewHouseFields: FC<{
             onChange={handleDescriptionChange}
             onBlur={() => handleBlur('description')}
             placeholder={
-              'Describe the House. Think about the goals, timeline and how you will encourage builders to participate.'
+              'Describe the round. Think about the goals, timeline and how you will encourage builders to participate.'
             }
             modules={modules}
             formats={formats}
@@ -114,8 +123,8 @@ const NewHouseFields: FC<{
           </Group>
         )}
       </Group>
-    </Group>
+    </>
   );
 };
 
-export default NewHouseFields;
+export default RoundFields;
