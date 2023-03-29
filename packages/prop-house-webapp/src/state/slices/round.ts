@@ -4,24 +4,24 @@ import { HouseType, VotingStrategyConfig } from '@prophouse/sdk';
 import { Award, NewAward } from '../../components/HouseManager/AssetSelector';
 
 export interface HouseProps {
+  existingHouse: boolean;
   houseType: HouseType;
   address: string;
-  name: string;
+  title: string;
   description: string;
   image: string;
   roundCount: number;
-  proposalCount: number;
   contractURI?: string;
 }
 export const HouseForRound: HouseProps = {
+  existingHouse: true,
   houseType: HouseType.COMMUNITY,
   address: '',
-  name: '',
+  title: '',
   description: '',
   image: '',
   roundCount: 0,
-  proposalCount: 0,
-  contractURI: 'string',
+  contractURI: '',
 };
 
 export interface NewRound {
