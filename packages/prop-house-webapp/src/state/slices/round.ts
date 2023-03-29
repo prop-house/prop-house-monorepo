@@ -63,7 +63,7 @@ interface RoundState {
 const initialState: RoundState = {
   activeStep: 1,
   round: initialRound,
-  stepDisabledArray: [true, true, true, true, true],
+  stepDisabledArray: [true, true, true, true, true, true],
 };
 
 const removeIncompleteAwards = (round: NewRound) => {
@@ -82,18 +82,23 @@ export const roundSlice = createSlice({
       state.activeStep = action.payload;
     },
     checkStepCriteria: state => {
-      const { round } = state;
+      const { round, activeStep } = state;
+      const stepIndex = activeStep - 1;
 
-      // Call isRoundStepValid to calculate the disabled state for the current step (i + 1).
-      // If the step is not valid (isRoundStepValid returns false), set the disabled state to true by negating the result.
-      state.stepDisabledArray = Array.from(
-        { length: 5 },
-        (_, i) => !isRoundStepValid(round, i + 1),
-      );
+      state.stepDisabledArray[stepIndex] = !isRoundStepValid(round, activeStep);
+
+      // If the user is on step 1 and they select an existing house, move to step 2
+      if (
+        activeStep === 1 &&
+        round.house.existingHouse &&
+        state.stepDisabledArray[stepIndex] === false
+      ) {
+        state.activeStep = 2;
+      }
     },
     setNextStep: state => {
       removeIncompleteAwards(state.round);
-      state.activeStep = Math.min(state.activeStep + 1, 5);
+      state.activeStep = Math.min(state.activeStep + 1, 6);
     },
     setPrevStep: state => {
       removeIncompleteAwards(state.round);
