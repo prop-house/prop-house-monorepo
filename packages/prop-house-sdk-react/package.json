@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk-react",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "Useful tooling for interacting with the Prop House protocol from React applications",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -11,7 +11,7 @@
     "clean": "rimraf dist tsconfig.build.tsbuildinfo",
     "build": "tsc",
     "prepare": "yarn build",
-    "format": "prettier --write '{,*/**/}*.ts' '!dist/**'"
+    "format": "prettier --write '{,*/**/}*.ts(x)?' '!dist/**'"
   },
   "peerDependencies": {
     "react": ">=16.13.1",

@@ -1,4 +1,11 @@
-import { PropHouse, Custom, Starknet, Newable, StrategyHandlerBase, VotingStrategyConfig } from '@prophouse/sdk';
+import {
+  PropHouse,
+  Custom,
+  Starknet,
+  Newable,
+  StrategyHandlerBase,
+  VotingStrategyConfig,
+} from '@prophouse/sdk';
 import React, { createContext, useEffect, useState } from 'react';
 import { useProvider, useSigner } from 'wagmi';
 
@@ -11,32 +18,28 @@ export type PropHouseProps<CS extends Custom | void = void> = {
 
 export const PropHouseContext = createContext<PropHouse | undefined>(undefined);
 
-export const PropHouseProvider = <CS extends Custom | void = void>({ children, ...props }: PropHouseProps<CS>) => {
+export const PropHouseProvider = <CS extends Custom | void = void>({
+  children,
+  ...props
+}: PropHouseProps<CS>) => {
   const provider = useProvider();
   const { data: signer } = useSigner();
-  
-  const [propHouse, setPropHouse] = useState<PropHouse<CS>>();
+
+  const [propHouse, setPropHouse] = useState(
+    new PropHouse({
+      ...props,
+      evmChainId: provider.network.chainId,
+      evm: signer || provider,
+    }),
+  );
 
   useEffect(() => {
     if (!provider && !signer) return;
 
-    // Prop house instantiation will throw if the user is on an unsupported network
-    try {
-      setPropHouse(
-        propHouse?.attach(signer || provider) ?? new PropHouse<CS>({
-          ...props,
-          evmChainId: provider.network.chainId,
-          evm: signer || provider,
-        })
-      );
-    } catch (error: unknown) {
-      console.warn(`Failed to populate \`PropHouseProvider\` with error: ${error}`);
-    }
+    setPropHouse(propHouse.attach(signer || provider));
   }, [provider, signer]);
 
   return (
-    <PropHouseContext.Provider value={propHouse as PropHouse}>
-      {children}
-    </PropHouseContext.Provider>
+    <PropHouseContext.Provider value={propHouse as PropHouse}>{children}</PropHouseContext.Provider>
   );
 };
