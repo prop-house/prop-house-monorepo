@@ -1,4 +1,4 @@
-import { ERC20 } from '../WhoCanParticipate';
+import { ERC20 } from '../StrategiesConfig';
 
 export const getERC20Image = (token: ERC20) => {
   switch (token) {

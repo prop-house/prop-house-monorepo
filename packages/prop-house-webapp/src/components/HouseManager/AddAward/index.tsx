@@ -3,7 +3,7 @@ import React, { SetStateAction, useRef } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { AwardType, ERC20 } from '../WhoCanParticipate';
+import { AwardType, ERC20 } from '../StrategiesConfig';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';

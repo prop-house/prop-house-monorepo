@@ -12,7 +12,7 @@ import Modal from '../../Modal';
 import ERC20Buttons from '../ERC20Buttons';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../utils/getERC20Image';
-import { ERC20 } from '../WhoCanParticipate';
+import { ERC20 } from '../StrategiesConfig';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import TruncateThousands from '../../TruncateThousands';

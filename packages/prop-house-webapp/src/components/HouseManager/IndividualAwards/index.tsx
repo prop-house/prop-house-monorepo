@@ -10,7 +10,7 @@ import { SetStateAction, useState } from 'react';
 import Modal from '../../Modal';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../utils/getERC20Image';
-import { AwardType, ERC20 } from '../WhoCanParticipate';
+import { AwardType, ERC20 } from '../StrategiesConfig';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { getUSDPrice } from '../utils/getUSDPrice';
