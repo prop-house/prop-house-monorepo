@@ -10,41 +10,150 @@ import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import NumberInput from '../NumberInput';
 import Bullet from '../Bullet';
 import formatDateTime from '../../../utils/formatDateTime';
+import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
+import { getSecondsFromDays } from '../utils/getSecondsFromDays';
+import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { useState } from 'react';
+import { getDateFromDuration } from '../utils/getDateFromDuration';
+import { getDaysFromSeconds } from '../utils/getDaysFromSeconds';
+import { getDurationBetweenDatesInSeconds } from '../utils/getDurationBetweenDatesInSeconds';
+import { getTimestampFromDate } from '../utils/getTimestampFromDate';
+import { useDispatch } from 'react-redux';
 
 const TimedRound: React.FC<{
-  isCustomProposalPeriodDisabled: boolean;
-  proposalPeriods: number[];
-  votingPeriods: number[];
-  roundTime: { start: Date | null; proposalEnd: Date | null; votingEnd: Date | null };
-  proposingStartTime: Date | null;
-  proposingPeriodLength: number | null;
-  votingPeriodLength: number | null;
-  isCustomProposalPeriod: boolean;
-  isCustomVotingPeriod: boolean;
-  disableVotingPeriod: boolean;
-  setProposingPeriodLength: (length: number) => void;
-  setVotingPeriodLength: (length: number) => void;
-  handlePeriodLengthChange: (length: number, isProposingPeriod: boolean) => void;
-  handleSelectCustomPeriod: (isProposingPeriod: boolean) => void;
-  handleProposingStartTimeChange: (date: Date) => void;
+  round: NewRound;
+  editMode?: boolean;
+  setEditedRound?: (round: NewRound) => void;
 }> = props => {
-  const {
-    isCustomProposalPeriodDisabled,
-    proposalPeriods,
-    roundTime,
-    proposingPeriodLength,
-    votingPeriodLength,
-    votingPeriods,
-    proposingStartTime,
-    isCustomProposalPeriod,
-    isCustomVotingPeriod,
-    disableVotingPeriod,
-    handlePeriodLengthChange,
-    handleSelectCustomPeriod,
-    setProposingPeriodLength,
-    setVotingPeriodLength,
-    handleProposingStartTimeChange,
-  } = props;
+  const { round, editMode, setEditedRound } = props;
+  const dispatch = useDispatch();
+
+  const [startTime, setStartTime] = useState(round.proposalPeriodStartUnixTimestamp);
+  const [proposingDuration, setProposingDuartion] = useState(
+    getDaysFromSeconds(round.proposalPeriodDurationSecs),
+  );
+  const [votingDuration, setVotingDuration] = useState(
+    getDaysFromSeconds(round.votePeriodDurationSecs),
+  );
+  const propEndDate = getDateFromDuration(
+    getDateFromTimestamp(startTime),
+    getSecondsFromDays(proposingDuration),
+  );
+  const voteEndDate = getDateFromDuration(propEndDate, getSecondsFromDays(votingDuration));
+
+  const periods = [5, 7, 14];
+
+  const [customProposingPeriod, setCustomProposingPeriod] = useState(
+    startTime === 0
+      ? false
+      : !periods.includes(
+          getDaysFromSeconds(
+            getDurationBetweenDatesInSeconds(
+              getDateFromTimestamp(startTime),
+              getDateFromDuration(
+                getDateFromTimestamp(startTime),
+                getSecondsFromDays(proposingDuration),
+              ),
+            ),
+          ),
+        ),
+  );
+
+  const [customVotingPeriod, setCustomVotingPeriod] = useState(
+    proposingDuration === 0
+      ? false
+      : !periods.includes(
+          getDaysFromSeconds(
+            getDurationBetweenDatesInSeconds(
+              getDateFromDuration(
+                getDateFromTimestamp(startTime),
+                getSecondsFromDays(proposingDuration),
+              ),
+              getDateFromDuration(
+                getDateFromTimestamp(startTime),
+                getSecondsFromDays(proposingDuration + votingDuration),
+              ),
+            ),
+          ),
+        ),
+  );
+
+  const handleSelectStartTime = (date: Date) => {
+    setStartTime(getTimestampFromDate(date));
+    if (editMode) {
+      setEditedRound!({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) });
+    } else {
+      dispatch(
+        updateRound({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) }),
+      );
+      dispatch(checkStepCriteria());
+    }
+  };
+
+  const handleDurationChange = (duration: number, isProposingPeriod: boolean) => {
+    if (isProposingPeriod) {
+      setCustomProposingPeriod(false);
+      setProposingDuartion(duration);
+      if (editMode) {
+        setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) });
+      } else {
+        dispatch(
+          updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }),
+        );
+        dispatch(checkStepCriteria());
+      }
+    } else {
+      setCustomVotingPeriod(false);
+      setVotingDuration(duration);
+      if (editMode) {
+        setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) });
+      } else {
+        dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
+        dispatch(checkStepCriteria());
+      }
+    }
+  };
+
+  const handleProposalInputChange = (duration: number) => {
+    setProposingDuartion(duration);
+    if (editMode) {
+      setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) });
+    } else {
+      dispatch(updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }));
+      dispatch(checkStepCriteria());
+    }
+  };
+  const handleVotingInputChange = (duration: number) => {
+    setVotingDuration(duration);
+    if (editMode) {
+      setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) });
+    } else {
+      dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
+      dispatch(checkStepCriteria());
+    }
+  };
+
+  const handleSelectCustomPeriod = (isProposingPeriod: boolean) => {
+    if (isProposingPeriod) {
+      setCustomProposingPeriod(true);
+      setProposingDuartion(15);
+      if (editMode) {
+        setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) });
+      } else {
+        dispatch(updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) }));
+        dispatch(checkStepCriteria());
+      }
+    } else {
+      setCustomVotingPeriod(true);
+      setVotingDuration(15);
+      if (editMode) {
+        setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(15) });
+      } else {
+        dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(15) }));
+        dispatch(checkStepCriteria());
+      }
+    }
+  };
 
   return (
     <>
@@ -56,10 +165,11 @@ const TimedRound: React.FC<{
         <Text type="subtitle">Round start time</Text>
 
         <DateTimeInput
-          selectedDate={proposingStartTime}
-          onDateChange={handleProposingStartTimeChange}
+          onDateChange={handleSelectStartTime}
+          selectedDate={startTime === 0 ? null : getDateFromTimestamp(startTime)}
           isValidDate={validStartDate}
         />
+
         <Text type="body">Round will need to be started manually</Text>
       </Group>
 
@@ -69,33 +179,33 @@ const TimedRound: React.FC<{
         <Group row>
           <Text type="subtitle">Proposal Period</Text>
 
-          {proposingPeriodLength !== 0 && roundTime.proposalEnd && (
+          {startTime !== 0 && proposingDuration !== 0 && (
             <>
               <Bullet />
-              <p className={classes.date}>{formatDateTime(roundTime.proposalEnd)}</p>
+              <p className={classes.date}>{formatDateTime(propEndDate)}</p>
             </>
           )}
         </Group>
 
         <Group row gap={6} classNames={classes.buttons}>
-          {proposalPeriods.map(length => (
+          {periods.map(length => (
             <TimePeriod
               key={length}
-              disabled={!proposingStartTime}
+              disabled={startTime === 0}
               days={length}
-              selectedPeriod={!isCustomProposalPeriod && proposingPeriodLength === length}
-              onClick={() => handlePeriodLengthChange(length, true)}
+              selectedPeriod={!customProposingPeriod && proposingDuration === length}
+              onClick={() => handleDurationChange(length, true)}
             />
           ))}
           <CustomPeriod
-            selectedPeriod={isCustomProposalPeriod}
-            disabled={isCustomProposalPeriodDisabled}
+            selectedPeriod={customProposingPeriod}
+            disabled={startTime === 0}
             onClick={() => handleSelectCustomPeriod(true)}
           />
           <NumberInput
-            value={isCustomProposalPeriod ? proposingPeriodLength! : 15}
-            setValue={setProposingPeriodLength}
-            disabled={!isCustomProposalPeriod}
+            value={customProposingPeriod ? proposingDuration : 15}
+            handleInputChange={handleProposalInputChange}
+            disabled={!customProposingPeriod}
             classNames={classes.customNumberInput}
           />
         </Group>
@@ -104,33 +214,34 @@ const TimedRound: React.FC<{
       <Group gap={6} margin={8} classNames={classes.votingPeriod}>
         <Group row>
           <Text type="subtitle">Voting Period</Text>
-          {votingPeriodLength !== 0 && roundTime.votingEnd && (
+
+          {startTime !== 0 && proposingDuration !== 0 && votingDuration !== 0 && (
             <>
               <Bullet />
-              <p className={classes.date}>{formatDateTime(roundTime.votingEnd)}</p>
+              <p className={classes.date}>{formatDateTime(voteEndDate)}</p>
             </>
           )}
         </Group>
 
         <Group row gap={6} classNames={classes.buttons}>
-          {votingPeriods.map(length => (
+          {periods.map(length => (
             <TimePeriod
               key={length}
-              disabled={!proposingStartTime || proposingPeriodLength === null}
+              disabled={proposingDuration === 0}
               days={length}
-              selectedPeriod={!isCustomVotingPeriod && votingPeriodLength === length}
-              onClick={() => handlePeriodLengthChange(length, false)}
+              selectedPeriod={!customVotingPeriod && votingDuration === length}
+              onClick={() => handleDurationChange(length, false)}
             />
           ))}
           <CustomPeriod
-            selectedPeriod={isCustomVotingPeriod}
-            disabled={disableVotingPeriod}
+            selectedPeriod={customVotingPeriod}
+            disabled={proposingDuration === 0}
             onClick={() => handleSelectCustomPeriod(false)}
           />
           <NumberInput
-            value={isCustomVotingPeriod ? votingPeriodLength! : 15}
-            setValue={setVotingPeriodLength}
-            disabled={!isCustomVotingPeriod}
+            value={customVotingPeriod ? votingDuration : 15}
+            handleInputChange={handleVotingInputChange}
+            disabled={!customVotingPeriod}
             classNames={classes.customNumberInput}
           />
         </Group>

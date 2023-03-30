@@ -18,7 +18,9 @@ const isStep4Valid = (round: NewRound) =>
   round.awards.length > 0 && round.awards.some(a => a.state === 'success');
 
 const isStep5Valid = (round: NewRound) =>
-  round.startTime !== null && round.proposalEndTime !== null && round.votingEndTime !== null;
+  round.proposalPeriodStartUnixTimestamp !== 0 &&
+  round.proposalPeriodDurationSecs !== 0 &&
+  round.votePeriodDurationSecs !== 0;
 
 const isAllStepsValid = (round: NewRound) =>
   isStep1Valid(round) &&
