@@ -51,14 +51,15 @@
   content: '';
   position: absolute;
   left: 11px;
-  top: 20px;
+  top: 25px;
   width: 2px;
-  height: 100%;
+  height: 60%;
   border: 1px dashed var(--brand-pink);
 }
 .completedStep::after {
   border: 1px dashed var(--brand-gray-transparent) !important;
 }
+
 @media (max-width: 991px) {
   .step:not(:last-child)::after {
     display: none;

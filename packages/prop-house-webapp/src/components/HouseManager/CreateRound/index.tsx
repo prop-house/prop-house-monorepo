@@ -21,6 +21,8 @@ import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
 import EditAwardsModal from '../EditAwardsModal';
+import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
+import { getDateFromDuration } from '../utils/getDateFromDuration';
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -38,6 +40,12 @@ const CreateRound = () => {
   const [editStrategiesModal, setShowStrategiesModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
+  const startDate = getDateFromTimestamp(round.proposalPeriodStartUnixTimestamp);
+  const endDate = getDateFromDuration(
+    startDate,
+    round.proposalPeriodDurationSecs + round.votePeriodDurationSecs,
+  );
+
   return (
     <>
       {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
@@ -53,7 +61,7 @@ const CreateRound = () => {
       {editAwardsModal && <EditAwardsModal setShowAwardsModal={setShowAwardsModal} />}
 
       <Group row gap={10}>
-        <DeadlineDates round={round} />
+        <DeadlineDates start={startDate} end={endDate} />
         <EditSection onClick={() => setShowEditDatesModal(true)} />
       </Group>
 

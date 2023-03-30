@@ -30,6 +30,9 @@ export interface NewRound {
   startTime: Date | null;
   proposalEndTime: Date | null;
   votingEndTime: Date | null;
+  proposalPeriodStartUnixTimestamp: number;
+  proposalPeriodDurationSecs: number;
+  votePeriodDurationSecs: number;
   numWinners: number;
   currencyType: string;
   description: string;
@@ -45,6 +48,9 @@ export const initialRound: NewRound = {
   startTime: null,
   proposalEndTime: null,
   votingEndTime: null,
+  proposalPeriodStartUnixTimestamp: 0,
+  proposalPeriodDurationSecs: 0,
+  votePeriodDurationSecs: 0,
   numWinners: 1,
   currencyType: '',
   description: '',
