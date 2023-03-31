@@ -1,7 +1,12 @@
 // Get contract Name and Image from OpenSea API
 export const getTokenInfo = async (contractAddress: string) => {
   try {
-    const response = await fetch(`https://api.opensea.io/api/v1/asset_contract/${contractAddress}`);
+    // !Mainnet
+    // const response = await fetch(`https://api.opensea.io/api/v1/asset_contract/${contractAddress}`);
+    // !Goerli
+    const response = await fetch(
+      `https://testnets-api.opensea.io/api/v1/asset_contract/${contractAddress}`,
+    );
     if (!response.ok) {
       throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
     }

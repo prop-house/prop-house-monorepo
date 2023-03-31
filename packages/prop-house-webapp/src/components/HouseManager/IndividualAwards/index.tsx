@@ -80,7 +80,13 @@ const IndividualAwards: React.FC<{
   };
 
   const getTokenIDImage = async (address: string, tokenId: string) => {
-    const res = await fetch(`https://api.opensea.io/api/v1/asset/${address}/${tokenId}`);
+    // !Mainnet
+    // const res = await fetch(`https://api.opensea.io/api/v1/asset/${address}/${tokenId}`);
+    // !Goerli
+    const res = await fetch(
+      `https://testnets-api.opensea.io/api/v1/asset_contract/${address}/${tokenId}`,
+    );
+
     if (!res.ok) {
       return null;
     }
@@ -152,7 +158,7 @@ const IndividualAwards: React.FC<{
     setAwardIdx(0);
     setShowIndividualAwardModal(false);
   };
-  console.log('awards', awards);
+
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
 

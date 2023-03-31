@@ -37,7 +37,6 @@ const AddAward: React.FC<{
     isTyping,
     setIsTyping,
     setAward,
-    // handleCancel,
     handleTokenBlur,
     setSelectedAward,
     handleAddressChange,
@@ -65,7 +64,6 @@ const AddAward: React.FC<{
 
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
-
   const handleAddressBlur = async () => {
     setIsTyping(false);
     // if address is empty, dont do anything

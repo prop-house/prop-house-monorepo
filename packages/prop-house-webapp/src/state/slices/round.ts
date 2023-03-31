@@ -11,7 +11,7 @@ export interface HouseProps {
   description: string;
   image: string;
   roundCount: number;
-  contractURI?: string;
+  contractURI: string;
 }
 export const HouseForRound: HouseProps = {
   existingHouse: true,
