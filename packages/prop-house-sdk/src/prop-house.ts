@@ -13,7 +13,6 @@ import {
 } from './types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Overrides } from '@ethersproject/contracts';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { ChainBase } from './chain-base';
 import { QueryWrapper } from './gql';
 import { encoding } from './utils';
@@ -22,7 +21,7 @@ import { House } from './houses';
 import { Round } from './rounds';
 
 export class PropHouse<CS extends Custom | void = void> extends ChainBase {
-  private readonly _contract: PropHouseContract;
+  private _contract: PropHouseContract;
   private readonly _voting: Voting<CS>;
   private readonly _house: House;
   private readonly _round: Round<CS>;
@@ -90,6 +89,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
    */
   public attach(evm: EVM) {
     this._evm = this.toEVMSignerOrProvider(evm);
+    this._contract = this.contract.connect(this._evm);
     return this;
   }
 
