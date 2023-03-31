@@ -22,7 +22,7 @@ const SecondaryCard: React.FC = () => {
     },
     {
       title: 'Set the awards',
-      text: 'Specific the number of winners and their rewards for the round',
+      text: 'Define number of winners and awards',
     },
     {
       title: 'Round timing',
@@ -30,7 +30,7 @@ const SecondaryCard: React.FC = () => {
     },
     {
       title: 'Create the round 🎉',
-      text: 'Review the settings for the round and create it',
+      text: 'Review the round settings and create it',
     },
   ];
 

@@ -1,6 +1,9 @@
 import { useContractRead } from 'wagmi';
 
-const contractAddress = '0x905429be6e2e07b6a7df6b2acd7806090a8e8915';
+// !Mainnet
+// const contractAddress = '0x905429be6e2e07b6a7df6b2acd7806090a8e8915';
+// !Goerli
+const contractAddress = '0xbA17ADA91737eE7530CA846183611c70B63bfB2c';
 const abi = [
   {
     inputs: [{ internalType: 'address', name: 'addr', type: 'address' }],
@@ -11,7 +14,6 @@ const abi = [
   },
 ];
 const functionName = 'getType';
-
 export default function useAddressType(address: string) {
   const { data, isLoading, isError } = useContractRead({
     address: contractAddress,
