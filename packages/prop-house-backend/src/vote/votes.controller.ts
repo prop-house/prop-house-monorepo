@@ -16,6 +16,7 @@ import { VotesService } from './votes.service';
 import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { SignatureState } from 'src/types/signature';
+import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
 
 @Controller('votes')
 export class VotesController {
@@ -23,6 +24,7 @@ export class VotesController {
     private readonly votesService: VotesService,
     private readonly proposalService: ProposalsService,
     private readonly auctionService: AuctionsService,
+    private readonly infiniteAuctionService: InfiniteAuctionService,
   ) {}
 
   @Get()
@@ -102,9 +104,10 @@ export class VotesController {
       );
 
     // Verify that prop being voted on matches community address of signed vote
-    const foundProposalAuction = await this.auctionService.findOneWithCommunity(
-      foundProposal.auction.id,
-    );
+    const foundProposalAuction = await (foundProposal.parentType === 'auction'
+      ? this.auctionService
+      : this.infiniteAuctionService
+    ).findOneWithCommunity(foundProposal.auctionId);
     if (
       voteFromPayload.communityAddress !==
       foundProposalAuction.community.contractAddress
@@ -114,10 +117,27 @@ export class VotesController {
         HttpStatus.BAD_REQUEST,
       );
 
+    // verify that inf-auction proposals are within their round's voting period
+    if (
+      foundProposal.parentType === 'infinite-auction' &&
+      'votingPeriod' in foundProposalAuction
+    ) {
+      const expirationTimeMs =
+        foundProposal.createdDate.getTime() +
+        foundProposalAuction.votingPeriod * 1000;
+      const isActive = expirationTimeMs > Date.now();
+
+      if (!isActive)
+        throw new HttpException(
+          'Votes are being casted outisde of round voting period',
+          HttpStatus.BAD_REQUEST,
+        );
+    }
+
     // Verify that signer has voting power
-    const votingPower = await this.votesService.getNumVotes(
+    const votingPower = await this.votesService.getVotingPower(
       createVoteDto,
-      foundProposal.auction.balanceBlockTag,
+      foundProposalAuction.balanceBlockTag,
     );
 
     if (votingPower === 0) {
@@ -139,10 +159,15 @@ export class VotesController {
       .filter((vote) => vote.proposal.auctionId === foundProposal.auctionId)
       .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
 
-    const aggVoteWeightSubmitted = signerVotesForAuction.reduce(
-      (agg, current) => Number(agg) + Number(current.weight),
-      0,
-    );
+    const signerVotesForProp = validatedSignerVotes
+      .filter((vote) => vote.proposalId === foundProposal.id)
+      .sort((a, b) => (a.createdDate < b.createdDate ? -1 : 1));
+
+    const aggVoteWeightSubmitted = (
+      foundProposal.parentType === 'auction'
+        ? signerVotesForAuction
+        : signerVotesForProp
+    ).reduce((agg, current) => Number(agg) + Number(current.weight), 0);
 
     // Check that user won't exceed voting power by casting vote
     if (aggVoteWeightSubmitted + voteFromPayload.weight > votingPower) {

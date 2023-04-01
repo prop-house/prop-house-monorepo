@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
 import { erc1155 } from '../src/strategies';
-import { getNumVotes } from '../src/actions';
+import { getVotingPower } from '../src/actions';
 
 describe('erc1155 votes', () => {
   let apiKey;
@@ -22,7 +22,7 @@ describe('erc1155 votes', () => {
     apiKey = process.env.INFURA_PROJECT_ID;
     if (!apiKey) return;
     const provider = new providers.JsonRpcProvider(infuraEndpoint(apiKey));
-    const votes = await getNumVotes(holderAddress, nounsSquareTeamAddress, provider, 15435382);
+    const votes = await getVotingPower(holderAddress, nounsSquareTeamAddress, provider, 15435382);
     expect(votes).to.be.eq(100);
   });
 });

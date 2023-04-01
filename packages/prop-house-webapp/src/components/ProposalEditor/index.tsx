@@ -8,6 +8,8 @@ import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
 import { useSigner } from 'wagmi';
+import { useLocation } from 'react-router-dom';
+import { isInfAuction } from '../../utils/auctionType';
 
 export interface FormDataType {
   title: string;
@@ -19,6 +21,15 @@ export interface FormDataType {
   value: string;
   minCount: number;
   maxCount: number;
+  error: string;
+}
+
+export interface FundReqDataType {
+  isInfRound: boolean;
+  title: string;
+  roundCurrency: string;
+  initReqAmount: number;
+  remainingBal: number;
   error: string;
 }
 
@@ -36,6 +47,7 @@ const ProposalEditor: React.FC<{
   setInvalidFileMessage: Dispatch<SetStateAction<string>>;
   duplicateFile: { error: boolean; name: string };
   setDuplicateFile: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
+  remainingBal?: number;
 }> = props => {
   const {
     fields,
@@ -51,6 +63,7 @@ const ProposalEditor: React.FC<{
     duplicateFile,
     setDuplicateFile,
     onFileDrop,
+    remainingBal,
   } = props;
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
@@ -59,6 +72,17 @@ const ProposalEditor: React.FC<{
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+
+  const location = useLocation();
+  // active round comes from two diff places depending on where inputs are being displayed
+  const roundFromLoc = location.state && location.state.auction; // creating new prop
+  const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
+  const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
+  const roundCurrency = roundFromLoc
+    ? roundFromLoc.currencyType
+    : roundFromStore
+    ? roundFromStore.currencyType
+    : '';
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -99,6 +123,15 @@ const ProposalEditor: React.FC<{
     value: '',
     minCount: 50,
     error: t('descriptionError'),
+  };
+
+  const fundReqData: FundReqDataType = {
+    isInfRound: isInfRound,
+    title: 'Funds Request',
+    roundCurrency: roundCurrency,
+    initReqAmount: 0,
+    remainingBal: remainingBal ? remainingBal : 0,
+    error: `Exceeds remaining round balance of ${remainingBal} ${roundCurrency}`,
   };
 
   const formats = [
@@ -183,6 +216,7 @@ const ProposalEditor: React.FC<{
         onFileDrop={onFileDrop}
         formData={formData}
         descriptionData={descriptionData}
+        fundReqData={fundReqData}
         editorBlurred={editorBlurred}
         setEditorBlurred={setEditorBlurred}
       />

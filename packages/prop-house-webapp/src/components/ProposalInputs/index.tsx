@@ -8,96 +8,125 @@ import clsx from 'clsx';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
-import { FormDataType } from '../ProposalEditor';
+import { FormDataType, FundReqDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
 import { useSigner } from 'wagmi';
+import InputFormGroup from '../InputFormGroup';
 
 const ProposalInputs: React.FC<{
   quill: any;
   quillRef: any;
-  formData: any;
+  formData: FormDataType[];
   descriptionData: any;
+  fundReqData: FundReqDataType;
   onDataChange: (data: Partial<ProposalFields>) => void;
   onFileDrop: any;
   editorBlurred: boolean;
   setEditorBlurred: (blurred: boolean) => void;
-}> = props => {
-  const {
-    quill,
-    quillRef,
-    formData,
-    descriptionData,
-    onDataChange,
-    editorBlurred,
-    setEditorBlurred,
-    onFileDrop,
-  } = props;
-  const data = useAppSelector(state => state.editor.proposal);
-  const [blurred, setBlurred] = useState(false);
-
+}> = ({
+  quill,
+  quillRef,
+  formData,
+  descriptionData,
+  fundReqData,
+  onDataChange,
+  editorBlurred,
+  setEditorBlurred,
+  onFileDrop,
+}) => {
   const { data: signer } = useSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
+
+  const [blurred, setBlurred] = useState(false);
+  const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
+  const titleAndTldrInputs = (data: any, isTitleSection: boolean = false) => (
+    <InputFormGroup
+      titleLabel={data.title}
+      content={
+        <>
+          <Form.Control
+            as={data.type as any}
+            autoFocus={data.focus}
+            maxLength={data.maxCount && data.maxCount}
+            placeholder={data.placeholder}
+            className={clsx(classes.input, data.fieldName === 'what' && classes.descriptionInput)}
+            onChange={e => {
+              setBlurred(false);
+              onDataChange({ [data.fieldName]: e.target.value });
+            }}
+            value={data && data.fieldValue}
+            onBlur={() => {
+              setBlurred(true);
+            }}
+          />
+          {blurred && validateInput(data.minCount, data.fieldValue.length) && (
+            <p className={classes.inputError}>{data.error}</p>
+          )}
+        </>
+      }
+      charsLabel={
+        data.maxCount ? `${data.fieldValue.length}/${data.maxCount}` : data.fieldValue.length
+      }
+      formGroupClasses={
+        isTitleSection && fundReqData.isInfRound ? classes.infRoundTitleSection : ''
+      }
+    />
+  );
+
   return (
     <>
       <Row>
         <Col xl={12}>
-          <Form>
-            <Form.Group className={classes.inputGroup}>
-              {formData.map((input: FormDataType) => {
-                return (
-                  <div className={classes.inputSection} key={input.title}>
-                    <div className={classes.inputInfo}>
-                      <Form.Label className={classes.inputLabel}>{input.title}</Form.Label>
-                      <Form.Label className={classes.inputChars}>
-                        {input.maxCount
-                          ? `${input.fieldValue.length}/${input.maxCount}`
-                          : input.fieldValue.length}
-                      </Form.Label>
-                    </div>
+          <Form className={classes.form}>
+            <div className={clsx(fundReqData.isInfRound && classes.infRoundSectionsContainer)}>
+              {/** TITLE */}
+              {titleAndTldrInputs(formData[0], true)}
+              {/** FUNDS REQ */}
+              {fundReqData.isInfRound && (
+                <InputFormGroup
+                  titleLabel="Funds Request"
+                  content={
+                    <>
+                      <Form.Control
+                        type="number"
+                        step="0.1"
+                        className={clsx(classes.input, classes.reqAmountInput)}
+                        placeholder={fundReqData.roundCurrency}
+                        value={fundReq || ''}
+                        onChange={e => {
+                          const value = Number(e.target.value);
+                          const formattedValue = value.toFixed(1);
+                          setFundReq(Number(formattedValue));
+                          onDataChange({ reqAmount: Number(formattedValue) });
+                        }}
+                        isInvalid={fundReq ? fundReq > fundReqData.remainingBal : false}
+                      />
 
-                    <Form.Control
-                      as={input.type as any}
-                      autoFocus={input.focus}
-                      maxLength={input.maxCount && input.maxCount}
-                      placeholder={input.placeholder}
-                      className={clsx(
-                        classes.input,
-                        input.fieldName === 'what' && classes.descriptionInput,
-                      )}
-                      onChange={e => {
-                        setBlurred(false);
-                        onDataChange({ [input.fieldName]: e.target.value });
-                      }}
-                      value={data && input.fieldValue}
-                      onBlur={() => {
-                        setBlurred(true);
-                      }}
-                    />
+                      <Form.Control.Feedback type="invalid">
+                        {fundReqData.error}
+                      </Form.Control.Feedback>
+                    </>
+                  }
+                  formGroupClasses={classes.fundReqFormGroup}
+                />
+              )}
+            </div>
 
-                    {blurred && validateInput(input.minCount, input.fieldValue.length) && (
-                      <p className={classes.inputError}>{input.error}</p>
-                    )}
-                  </div>
-                );
-              })}
+            {/** TLDR */}
+            {titleAndTldrInputs(formData[1])}
 
-              <>
-                <div className={classes.inputInfo}>
-                  <Form.Label className={clsx(classes.inputLabel, classes.descriptionLabel)}>
-                    {descriptionData.title}
-                  </Form.Label>
+            {/** DESCRIPTION */}
 
-                  <Form.Label className={classes.inputChars}>
-                    {quill && quill.getText().length - 1}
-                  </Form.Label>
-                </div>
-
+            <InputFormGroup
+              titleLabel={descriptionData.title}
+              content={
                 <>
                   {/* 
                     When scrolling past the window height the sticky Card header activates, but the header has rounded borders so you still see the borders coming up from the Card body. `hideBorderBox` is a sticky, empty div with a fixed height that hides these borders. 
@@ -119,8 +148,9 @@ const ProposalInputs: React.FC<{
                       <p className={classes.inputError}>{descriptionData.error}</p>
                     )}
                 </>
-              </>
-            </Form.Group>
+              }
+              charsLabel={quill && quill.getText().length - 1}
+            />
           </Form>
         </Col>
       </Row>

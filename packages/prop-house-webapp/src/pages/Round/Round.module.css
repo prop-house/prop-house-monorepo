@@ -15,9 +15,7 @@
   .propCards {
     padding-top: 0px;
   }
-  .stickyContainer {
-    padding: 12px 0px;
-  }
+
   .stickyContainer .container {
     max-width: none !important;
   }

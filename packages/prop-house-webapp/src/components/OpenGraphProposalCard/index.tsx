@@ -1,6 +1,6 @@
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
-  Auction,
+  TimedAuction,
   Community,
   StoredProposalWithVotes,
 } from '@nouns/prop-house-wrapper/dist/builders';
@@ -18,7 +18,7 @@ const OpenGraphProposalCard: React.FC = () => {
   const { id } = params;
 
   const [proposal, setProposal] = useState<StoredProposalWithVotes>();
-  const [round, setRound] = useState<Auction>();
+  const [round, setRound] = useState<TimedAuction>();
   const [community, setCommunity] = useState<Community>();
   const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [ens, setEns] = useState<null | string>(null);

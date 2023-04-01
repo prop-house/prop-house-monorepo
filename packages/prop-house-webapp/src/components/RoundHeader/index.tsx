@@ -1,6 +1,6 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './RoundHeader.module.css';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
@@ -10,10 +10,12 @@ import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
+import { isInfAuction } from '../../utils/auctionType';
+import dayjs from 'dayjs';
 
 const RoundHeader: React.FC<{
   community: Community;
-  auction: StoredAuction;
+  auction: StoredAuctionBase;
 }> = props => {
   const { community, auction } = props;
   const navigate = useNavigate();
@@ -66,7 +68,11 @@ const RoundHeader: React.FC<{
 
         <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
-            {auction && `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
+            {isInfAuction(auction)
+              ? `${dayjs().isBefore(auction.startTime) ? `Starts` : `Started`} ${formatTime(
+                  auction.startTime,
+                )}`
+              : `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
           </div>
           <Col
             className={clsx(

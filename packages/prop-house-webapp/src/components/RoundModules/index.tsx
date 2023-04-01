@@ -1,32 +1,33 @@
 import {
   Community,
-  StoredAuction,
   StoredProposalWithVotes,
+  StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import Button, { ButtonColor } from '../Button';
-import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
 import AcceptingPropsModule from '../AcceptingPropsModule';
-import VotingModule from '../VotingModule';
+import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { isSameAddress } from '../../utils/isSameAddress';
-import { voteWeightForAllottedVotes } from '../../utils/voteWeightForAllottedVotes';
-import { useTranslation } from 'react-i18next';
-import { clearProposal } from '../../state/slices/editor';
-import { useDispatch } from 'react-redux';
-import ConnectButton from '../ConnectButton';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
+import InfRoundVotingModule from '../InfRoundVotingModule';
+import { useAppSelector } from '../../hooks';
+import { InfRoundFilterType } from '../../state/slices/propHouse';
+import RoundModuleWinner from '../RoundModuleWinner';
+import RoundModuleStale from '../RoundModuleStale';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.min.css';
+import { isMobile } from 'web3modal';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const RoundModules: React.FC<{
-  auction: StoredAuction;
+  auction: StoredAuctionBase;
   proposals: StoredProposalWithVotes[];
   community: Community;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -34,27 +35,21 @@ const RoundModules: React.FC<{
   const { auction, proposals, community, setShowVotingModal } = props;
 
   const { address: account } = useAccount();
-
-  const navigate = useNavigate();
-
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
-
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const winningIds = getWinningIds(proposals, auction);
   const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
-  const { t } = useTranslation();
 
   // auction statuses
   const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
-  const isRoundOver = auctionStatus(auction) === AuctionStatus.AuctionEnded;
+  const isRoundOver =
+    auctionStatus(auction) === AuctionStatus.AuctionEnded ||
+    (isInfAuction(auction) && infRoundBalance(proposals, auction) === 0);
 
-  const getVoteTotal = () =>
-    proposals.reduce((total, prop) => (total = total + Number(prop.voteCount)), 0);
+  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + prop.voteCount), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!account || !proposals) return;
@@ -66,7 +61,7 @@ const RoundModules: React.FC<{
         proposals
           .filter(p => isSameAddress(p.address, account))
           .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-            Number(a.voteCount) < Number(b.voteCount) ? 1 : -1,
+            a.voteCount < b.voteCount ? 1 : -1,
           ),
       );
 
@@ -74,81 +69,86 @@ const RoundModules: React.FC<{
     }
   }, [account, proposals]);
 
+  const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
+    (isInfAuction(auction) &&
+      !isRoundOver &&
+      votingPower === 0 &&
+      infRoundFilter === InfRoundFilterType.Active)) && (
+    <AcceptingPropsModule auction={auction} community={community} />
+  );
+
+  const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
+    <TimedRoundVotingModule
+      communityName={community.name}
+      setShowVotingModal={setShowVotingModal}
+      totalVotes={getVoteTotal()}
+    />
+  );
+
+  const infRoundVotingModule = isInfAuction(auction) &&
+    (!account || votingPower > 0) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Active && (
+      <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+    );
+
+  const roundWinnerModule = isInfAuction(auction) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+
+  const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
+    <RoundModuleStale auction={auction} />
+  );
+
+  const roundOverModule = isRoundOver && (
+    <RoundOverModule
+      numOfProposals={proposals.length}
+      totalVotes={getVoteTotal()}
+      round={auction}
+    />
+  );
+
+  const userPropCardModule = (isInfAuction(auction)
+    ? infRoundFilter === InfRoundFilterType.Active
+    : true) &&
+    !auctionNotStarted &&
+    account &&
+    userProposals &&
+    userProposals.length > 0 &&
+    fetchedUserProps && (
+      <UserPropCard
+        userProps={userProposals}
+        proposals={proposals}
+        numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
+        status={auctionStatus(auction)}
+        winningIds={winningIds && winningIds}
+      />
+    );
+
+  const modules = [
+    acceptingPropsModule,
+    timedRoundVotingModule,
+    infRoundVotingModule,
+    roundWinnerModule,
+    roundStaleModule,
+    roundOverModule,
+    userPropCardModule,
+  ];
+
   return (
-    <Col xl={4} className={clsx(classes.sideCards, classes.carousel, classes.breakOut)}>
-      {!auctionNotStarted &&
-        account &&
-        userProposals &&
-        userProposals.length > 0 &&
-        fetchedUserProps && (
-          <UserPropCard
-            userProps={userProposals}
-            proposals={proposals}
-            numOfWinners={auction.numWinners}
-            status={auctionStatus(auction)}
-            winningIds={winningIds && winningIds}
-          />
-        )}
-
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.thirty}
-        classNames={classes.sidebarContainerCard}
-      >
-        {/* CONTENT */}
-        <div className={classes.content}>
-          {/* ACCEPTING PROPS */}
-          {isProposingWindow && (
-            <AcceptingPropsModule auction={auction} communityName={community.name} />
+    <Col xl={4} className={clsx(classes.sideCards, classes.breakOut)}>
+      {isMobile() ? (
+        <Swiper slidesPerView={1} className={classes.swiper}>
+          {modules.map(
+            m =>
+              React.isValidElement(m) && (
+                <SwiperSlide style={{ paddingLeft: '24px', paddingRight: '24px' }}>{m}</SwiperSlide>
+              ),
           )}
-
-          {/* VOTING WINDOW */}
-          {isVotingWindow && <VotingModule totalVotes={getVoteTotal()} />}
-
-          {/* ROUND ENDED */}
-          {isRoundOver && (
-            <RoundOverModule numOfProposals={proposals.length} totalVotes={getVoteTotal()} />
-          )}
-        </div>
-
-        {/* BUTTONS */}
-        <div className={classes.btnContainer}>
-          {/* ACCEPTING PROPS */}
-          {isProposingWindow &&
-            (account ? (
-              <Button
-                text={t('createYourProposal')}
-                bgColor={ButtonColor.Green}
-                onClick={() => {
-                  dispatch(clearProposal());
-                  navigate('/create', { state: { auction, community } });
-                }}
-              />
-            ) : (
-              <ConnectButton text={t('connectToSubmit')} color={ButtonColor.Pink} />
-            ))}
-
-          {/* VOTING WINDOW, NOT CONNECTED */}
-          {isVotingWindow && !account && (
-            <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
-          )}
-
-          {/* VOTING PERIOD, CONNECTED, HAS VOTES */}
-          {isVotingWindow && account && votingPower ? (
-            <Button
-              text={t('submitVotes')}
-              bgColor={ButtonColor.Purple}
-              onClick={() => setShowVotingModal(true)}
-              disabled={
-                voteWeightForAllottedVotes(voteAllotments) === 0 || submittedVotes === votingPower
-              }
-            />
-          ) : (
-            //  VOTING PERIOD, CONNECTED, HAS NO VOTES
-            <></>
-          )}
-        </div>
-      </Card>
+        </Swiper>
+      ) : (
+        modules.map(m => m)
+      )}
     </Col>
   );
 };

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { BigNumber, Contract, providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
-import { getNumVotes } from '../src/actions';
+import { getVotingPower } from '../src/actions';
 import BalanceOfABI from '../src/abi/BalanceOfABI.json';
 import { strategyForCommunity } from '../src/utils/strategyForCommunity';
 
@@ -42,7 +42,7 @@ describe('Lil Nouns delegation', () => {
     const numBalanceOf = BigNumber.from(balanceOf).toNumber();
 
     // delegatedVotes
-    const delegatedVotes = await getNumVotes(
+    const delegatedVotes = await getVotingPower(
       lilNounsHolder,
       lilNounsTokenAddress,
       provider,

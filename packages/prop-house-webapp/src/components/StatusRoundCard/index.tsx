@@ -1,6 +1,6 @@
 import classes from './StatusRoundCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import {
   auctionStatus,
@@ -24,11 +24,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 import Countdown from '../Countdown';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const StatusRoundCard: React.FC<{
-  round: StoredAuction;
+  round: StoredAuctionBase;
 }> = props => {
   const { round } = props;
 
@@ -66,7 +67,7 @@ const StatusRoundCard: React.FC<{
     const fetchVotesData = async () => {
       try {
         const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
-        const votingPower = await getNumVotes(
+        const votingPower = await getVotingPower(
           account,
           community.contractAddress,
           new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
@@ -152,10 +153,15 @@ const StatusRoundCard: React.FC<{
       setStatusCopy(`Round set to begin in `);
     } else if (auctionStatus(round) === AuctionStatus.AuctionEnded && numVotes) {
       const decimals = round.fundingAmount.toString().split('.')[1]?.length || 0;
-      const amount = (round.fundingAmount * round.numWinners).toFixed(decimals);
+
+      const amount = (round.fundingAmount * (isTimedAuction(round) ? round.numWinners : 1)).toFixed(
+        decimals,
+      );
 
       setStatusCopy(
-        `${numVotes} votes awarded ${amount} ${round.currencyType} to ${round.numWinners} builders`,
+        `${numVotes} votes awarded ${amount} ${round.currencyType} ${
+          isTimedAuction(round) && `to ${round.numWinners} builders`
+        }`,
       );
     }
   }, [votingPower, numVotesCasted, numProps, round, numVotes]);
@@ -206,8 +212,12 @@ const StatusRoundCard: React.FC<{
                   <TruncateThousands amount={round.fundingAmount} decimals={2} />
                   {` ${round.currencyType}`}
                 </span>
-                <span className={classes.xDivide}>{' × '}</span>
-                <span className="">{round.numWinners}</span>
+                {isTimedAuction(round) && (
+                  <>
+                    <span className={classes.xDivide}>{' × '}</span>
+                    <span className="">{round.numWinners}</span>
+                  </>
+                )}
               </p>
             </div>
 
@@ -217,15 +227,21 @@ const StatusRoundCard: React.FC<{
               <Tooltip
                 content={
                   <>
-                    <p className={classes.title}>{deadlineCopy(round)}</p>
+                    <p className={classes.title}>
+                      {isInfAuction(round) ? 'Quorum' : deadlineCopy(round)}
+                    </p>
                     <p className={classes.info}>
-                      {diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
+                      {isInfAuction(round)
+                        ? `${round.quorum * 100}%`
+                        : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
                   </>
                 }
-                tooltipContent={`${dayjs(deadlineTime(round))
-                  .tz()
-                  .format('MMMM D, YYYY h:mm A z')}`}
+                tooltipContent={
+                  isInfAuction(round)
+                    ? `The % of votes required for a prop to be funded`
+                    : `${dayjs(deadlineTime(round)).tz().format('MMMM D, YYYY h:mm A z')}`
+                }
               />
             </div>
 

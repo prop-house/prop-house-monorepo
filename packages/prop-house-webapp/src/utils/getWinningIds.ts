@@ -1,11 +1,15 @@
-import { StoredAuction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  StoredProposalWithVotes,
+  StoredAuctionBase,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { AuctionStatus, auctionStatus } from './auctionStatus';
+import { isInfAuction } from './auctionType';
 import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
-const getWinningIds = (
-  proposals: StoredProposalWithVotes[] | undefined,
-  auction: StoredAuction,
-) => {
+const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuctionBase) => {
+  if (isInfAuction(auction))
+    return proposals.filter(p => p.voteCount >= auction.quorum).map(p => p.id);
+
   // empty array to store winning ids
   const winningIds: number[] = [];
 
@@ -24,7 +28,7 @@ const getWinningIds = (
     sortedProposals.slice(0, auction.numWinners).map(p =>
       auctionStatus(auction) === AuctionStatus.AuctionVoting
         ? // skip proposals with 0 votes if auction is in voting phase
-          Number(p.voteCount) !== 0 && winningIds.push(p.id)
+          p.voteCount !== 0 && winningIds.push(p.id)
         : winningIds.push(p.id),
     );
 

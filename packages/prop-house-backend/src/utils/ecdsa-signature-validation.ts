@@ -11,11 +11,17 @@ export const verifyAccountSignature = (
   value: SignedEntity,
 ) => {
   let actualSigner: string | undefined;
+
+  // parse reqAmount to support decimal values when signing an uint256 type
+  let payload = JSON.parse(message);
+  if (payload.hasOwnProperty('reqAmount'))
+    payload.reqAmount = payload.reqAmount.toString();
+
   try {
     actualSigner = verifyTypedData(
       value.domainSeparator,
       value.messageTypes,
-      JSON.parse(message),
+      payload,
       value.signedData.signature,
     );
   } catch (error) {

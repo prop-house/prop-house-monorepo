@@ -1,5 +1,6 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import dayjs from 'dayjs';
+import { isInfAuction } from './auctionType';
 
 export enum AuctionStatus {
   AuctionNotStarted,
@@ -12,9 +13,13 @@ export enum AuctionStatus {
  * Calculates auction state
  * @param auction Auction to check status of.
  */
-export const auctionStatus = (auction: StoredAuction): AuctionStatus => {
+export const auctionStatus = (auction: StoredAuctionBase): AuctionStatus => {
   const _now = dayjs();
   const _auctionStartTime = dayjs(auction.startTime);
+
+  if (_now.isBefore(_auctionStartTime)) return AuctionStatus.AuctionNotStarted;
+  if (isInfAuction(auction)) return AuctionStatus.AuctionAcceptingProps;
+
   const _proposalEndTime = dayjs(auction.proposalEndTime);
   const _votingEndTime = dayjs(auction.votingEndTime);
 
@@ -35,7 +40,7 @@ export const auctionStatus = (auction: StoredAuction): AuctionStatus => {
 /**
  * Returns copy for deadline corresponding to auction status
  */
-export const deadlineCopy = (auction: StoredAuction) => {
+export const deadlineCopy = (auction: StoredAuctionBase) => {
   const status = auctionStatus(auction);
   return status === AuctionStatus.AuctionNotStarted
     ? 'Round starts'
@@ -51,7 +56,7 @@ export const deadlineCopy = (auction: StoredAuction) => {
 /**
  * Returns deadline date for corresponding to auction status
  */
-export const deadlineTime = (auction: StoredAuction) =>
+export const deadlineTime = (auction: StoredTimedAuction) =>
   auctionStatus(auction) === AuctionStatus.AuctionNotStarted
     ? auction.startTime
     : auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
