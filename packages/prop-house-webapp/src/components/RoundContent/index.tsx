@@ -96,12 +96,9 @@ const RoundContent: React.FC<{
 
   // update submitted votes on proposal changes
   useEffect(() => {
-    if (proposals && account)
-      dispatch(
-        setVotesByUserInActiveRound(
-          proposals.flatMap(p => p.votes).filter(v => v.address === account),
-        ),
-      );
+    const votes = proposals.flatMap(p => (p.votes ? p.votes : []));
+    if (proposals && account && votes.length > 0)
+      dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {

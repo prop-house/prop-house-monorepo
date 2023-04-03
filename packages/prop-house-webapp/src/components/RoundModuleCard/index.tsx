@@ -45,13 +45,13 @@ const RoundModuleCard: React.FC<{
             )}
           </div>
           <div className={classes.textContainer}>
-            <p className={classes.title}>{title}</p>
-            <p className={classes.subtitle}>{subtitle}</p>
+            <div className={classes.title}>{title}</div>
+            <div className={classes.subtitle}>{subtitle}</div>
           </div>
         </div>
         <hr className={classes.divider} />
       </>
-      <p className={classes.sideCardBody}>{content}</p>
+      <div className={classes.sideCardBody}>{content}</div>
     </Card>
   );
 };

@@ -140,9 +140,11 @@ const RoundModules: React.FC<{
       {isMobile() ? (
         <Swiper slidesPerView={1} className={classes.swiper}>
           {modules.map(
-            m =>
-              React.isValidElement(m) && (
-                <SwiperSlide style={{ paddingLeft: '24px', paddingRight: '24px' }}>{m}</SwiperSlide>
+            (module, index) =>
+              React.isValidElement(module) && (
+                <SwiperSlide style={{ paddingLeft: '24px', paddingRight: '24px' }} key={index}>
+                  {module}
+                </SwiperSlide>
               ),
           )}
         </Swiper>
