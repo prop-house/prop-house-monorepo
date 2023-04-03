@@ -9,6 +9,7 @@ export const emptyProposal = () => ({
   title: '',
   what: '',
   tldr: '',
+  reqAmount: null,
 });
 
 const initialState: EditorSlice = {

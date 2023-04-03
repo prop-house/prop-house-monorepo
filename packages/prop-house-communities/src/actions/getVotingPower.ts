@@ -5,7 +5,7 @@ import { strategyForCommunity } from '../utils/strategyForCommunity';
 /**
  * Gets number of votes for an address given a communityAddress:
  */
-export const getNumVotes = async (
+export const getVotingPower = async (
   userAddress: string,
   communityAddress: string,
   provider: Provider,

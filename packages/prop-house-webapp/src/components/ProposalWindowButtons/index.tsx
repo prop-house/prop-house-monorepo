@@ -6,8 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
+import { isInfAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
 
+/**
+ * New, Edit and Delete buttons
+ */
 const ProposalWindowButtons: React.FC<{
   proposal: StoredProposalWithVotes;
   editProposalMode: boolean;
@@ -37,7 +41,7 @@ const ProposalWindowButtons: React.FC<{
       {account &&
         (isSameAddress(proposal.address, account) ? (
           <div className={classes.proposalWindowButtons}>
-            {editProposalMode ? (
+            {editProposalMode && round ? (
               <>
                 <div></div>
                 <div className={classes.editModeButtons}>
@@ -53,7 +57,7 @@ const ProposalWindowButtons: React.FC<{
                     text={'Save'}
                     bgColor={ButtonColor.Purple}
                     onClick={() => setShowSavePropModal(true)}
-                    disabled={!isValidPropData(proposalEditorData)}
+                    disabled={!isValidPropData(isInfAuction(round), proposalEditorData)}
                   />
                 </div>
               </>

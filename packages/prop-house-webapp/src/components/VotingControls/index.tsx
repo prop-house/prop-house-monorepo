@@ -1,17 +1,18 @@
 import { Row, Col, Tooltip, OverlayTrigger } from 'react-bootstrap';
-import classes from './PropCardVotingModule.module.css';
+import classes from './VotingControls.module.css';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { canAllotVotes } from '../../utils/canAllotVotes';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
-import { votesForProp } from '../../utils/voteAllotment';
-import { votesRemaining } from '../../utils/votesRemaining';
+import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
+import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
+import { isInfAuction } from '../../utils/auctionType';
+import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 
-const PropCardVotingModule: React.FC<{
+const VotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
   showVoteAllotmentModal?: boolean;
 }> = props => {
@@ -19,19 +20,30 @@ const PropCardVotingModule: React.FC<{
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const submittedVotes = useAppSelector(state => state.voting.numSubmittedVotes);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
+
   const dispatch = useAppDispatch();
   const { t } = useTranslation();
 
-  const allottedVotesForProp = proposal && votesForProp(voteAllotments, proposal.id);
-  const _canAllotVotes = canAllotVotes(votingPower, submittedVotes, voteAllotments);
-  const _votesRemaining = votesRemaining(votingPower, submittedVotes, voteAllotments);
+  const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
   const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
   const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
+
+  const votesRemaining =
+    round && isInfAuction(round)
+      ? countVotesRemainingForInfRound(
+          proposal.id,
+          votingPower,
+          votesByUserInActiveRound,
+          voteAllotments,
+        )
+      : countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments);
+  const canAllotVotes = votesRemaining > 0;
 
   const isAllotting = () => (allottedVotesForProp && allottedVotesForProp > 0) || inputIsInFocus;
 
@@ -60,12 +72,11 @@ const PropCardVotingModule: React.FC<{
     if (!proposal) return;
     const value = e.currentTarget.value;
     const inputVotes = Number(value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1'));
-    const numVotesAllotting = inputVotes - allottedVotesForProp;
 
     if (inputVotes > 100000) return; // prevent overflow
 
     // if attempting to input more than allowed total votes
-    if (numVotesAllotting > votingPower - submittedVotes || numVotesAllotting > _votesRemaining) {
+    if (inputVotes > votesRemaining + allottedVotesForProp) {
       setAttemptedInputVotes(inputVotes);
       setDisplayWarningTooltip(true);
       setTimeout(() => {
@@ -110,7 +121,7 @@ const PropCardVotingModule: React.FC<{
           : undefined;
 
       if (direction === undefined || !proposal) return;
-      if (direction === Direction.Up && !_canAllotVotes) return;
+      if (direction === Direction.Up && !canAllotVotes) return;
       if (direction === Direction.Down && allottedVotesForProp === 0) return;
 
       event.preventDefault();
@@ -125,7 +136,7 @@ const PropCardVotingModule: React.FC<{
         }),
       );
     },
-    [modalActive, showVoteAllotmentModal, proposal, _canAllotVotes, allottedVotesForProp, dispatch],
+    [modalActive, showVoteAllotmentModal, proposal, canAllotVotes, allottedVotesForProp, dispatch],
   );
 
   useEffect(() => {
@@ -175,7 +186,7 @@ const PropCardVotingModule: React.FC<{
             bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClickVote(e, Direction.Up)}
-            disabled={!_canAllotVotes}
+            disabled={!canAllotVotes}
           />
         </div>
       </Col>
@@ -183,4 +194,4 @@ const PropCardVotingModule: React.FC<{
   );
 };
 
-export default PropCardVotingModule;
+export default VotingControls;

@@ -41,13 +41,11 @@
   color: var(--brand-purple) !important;
   background: var(--brand-purple-hint) !important;
 }
-
-.disabled {
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.disabled svg {
-  background: var(--border-light);
-  color: #666666;
+@media (max-width: 767px) {
+  .sortContainer {
+    border-top: 0.5px var(--brand-gray-semi-transparent) solid;
+    padding-top: 10px;
+    justify-content: space-evenly;
+    margin: 0 -0.75rem;
+  }
 }

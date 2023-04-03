@@ -8,19 +8,25 @@ import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
-import PropCardVotingModule from '../PropCardVotingModule';
+import VotingControls from '../VotingControls';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { nameToSlug } from '../../utils/communitySlugs';
 import { useDispatch } from 'react-redux';
-import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
+import {
+  InfRoundFilterType,
+  setActiveProposal,
+  setModalActive,
+} from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
 import { MdInfoOutline } from 'react-icons/md';
+import { BiAward } from 'react-icons/bi';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
+import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 
 const ProposalCard: React.FC<{
@@ -28,19 +34,24 @@ const ProposalCard: React.FC<{
   auctionStatus: AuctionStatus;
   cardStatus: ProposalCardStatus;
   isWinner: boolean;
+  stale?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, isWinner } = props;
+  const { proposal, auctionStatus, cardStatus, isWinner, stale } = props;
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const dispatch = useDispatch();
-
-  const roundIsVotingOrOver = () =>
-    auctionStatus === AuctionStatus.AuctionVoting || auctionStatus === AuctionStatus.AuctionEnded;
 
   const roundIsActive = () =>
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
+
+  const showVotesSection =
+    round && isTimedAuction(round)
+      ? auctionStatus === AuctionStatus.AuctionVoting ||
+        auctionStatus === AuctionStatus.AuctionEnded
+      : infRoundFilter === InfRoundFilterType.Active;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
@@ -77,6 +88,7 @@ const ProposalCard: React.FC<{
           classNames={clsx(
             classes.proposalCard,
             isWinner && auctionStatus === AuctionStatus.AuctionEnded && classes.winner,
+            stale && classes.stale,
           )}
         >
           <div className={classes.propInfo}>
@@ -146,23 +158,32 @@ const ProposalCard: React.FC<{
                   {diffTime(proposal.createdDate)}
                 </div>
               )}
+              {proposal.reqAmount && (
+                <>
+                  {' '}
+                  <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
+                    {' • '}
+                  </span>
+                  <div
+                    className={clsx(classes.date, roundIsActive() && classes.hideDate)}
+                    title={detailedTime(proposal.createdDate)}
+                  >
+                    <BiAward />
+                    {`${proposal.reqAmount} ${round?.currencyType}`}
+                  </div>
+                </>
+              )}
             </div>
 
-            {(auctionStatus === AuctionStatus.AuctionVoting ||
-              auctionStatus === AuctionStatus.AuctionEnded) && (
+            {showVotesSection && (
               <div className={classes.timestampAndlinkContainer}>
-                <div
-                  className={clsx(
-                    classes.avatarAndPropNumber,
-                    !roundIsVotingOrOver() && classes.hideVoteModule,
-                  )}
-                >
+                <div className={clsx(classes.avatarAndPropNumber)}>
                   <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
-                    {roundIsVotingOrOver() && <VotesDisplay proposal={proposal} />}
+                    <VotesDisplay proposal={proposal} />
                     {cardStatus === ProposalCardStatus.Voting && (
                       <div className={classes.votingArrows}>
                         <span className={classes.plusArrow}>+</span>
-                        <PropCardVotingModule proposal={proposal} />
+                        <VotingControls proposal={proposal} />
                       </div>
                     )}
                   </div>

@@ -11,9 +11,10 @@ import {
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
 import { CreateAuctionDto, GetAuctionsDto, LatestDto } from './auction.types';
-import { AuctionsService } from './auctions.service';
+import { AuctionsService, AuctionWithProposalCount } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
+import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Controller('auctions')
 export class AuctionsController {
@@ -49,7 +50,9 @@ export class AuctionsController {
   }
 
   @Get('/forCommunity/:id')
-  async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
+  async findAllForCommunity(
+    @Param('id') id: number,
+  ): Promise<AuctionWithProposalCount[]> {
     const auctions = await this.auctionsService.findAllForCommunity(id);
     if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
@@ -72,7 +75,9 @@ export class AuctionsController {
   }
 
   @Get(':id/proposals')
-  async find(@Param('id') id: number): Promise<Proposal[]> {
+  async find(
+    @Param('id') id: number,
+  ): Promise<(Proposal | InfiniteAuctionProposal)[]> {
     const foundProposals = await this.proposalService.findAllWithAuctionId(id);
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
@@ -81,7 +86,9 @@ export class AuctionsController {
   l;
 
   @Get(':id/rollUpProposals')
-  async findAll(@Param('id') id: number): Promise<Proposal[]> {
+  async findAll(
+    @Param('id') id: number,
+  ): Promise<(Proposal | InfiniteAuctionProposal)[]> {
     const foundProposals = await this.proposalService.findAllWithAuctionId(id);
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);

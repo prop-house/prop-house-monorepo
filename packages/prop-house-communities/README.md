@@ -19,9 +19,9 @@ yarn build
 ## Usage
 
 ```ts
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from 'prop-house-communities';
 
-const votes = await getNumVotes(address, communityAddress, provider, blockTag);
+const votes = await getVotingPower(address, communityAddress, provider, blockTag);
 ```
 
 ## Strategies

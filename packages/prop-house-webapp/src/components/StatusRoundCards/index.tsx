@@ -1,6 +1,6 @@
 import classes from './StatusRoundCards.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from 'prop-house-communities';
 import { useEffect, useState } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
@@ -21,7 +21,7 @@ const StatusRoundCards = () => {
   const [fetchingInitRounds, setFetchingInitRounds] = useState(false);
   const [hasMoreRounds, setHasMoreRounds] = useState(true);
   const [relevantCommunities, setRelevantCommunites] = useState<string[] | undefined>(undefined);
-  const [rounds, setRounds] = useState<StoredAuction[]>();
+  const [rounds, setRounds] = useState<StoredAuctionBase[]>();
   const [roundsSkip, setRoundsSkip] = useState(0);
 
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -69,7 +69,7 @@ const StatusRoundCards = () => {
   });
 
   const fetchMoreRounds = async () => {
-    let newRounds: StoredAuction[];
+    let newRounds: StoredAuctionBase[];
 
     if (relevantCommunities && relevantCommunities.length > 0) {
       newRounds = await wrapper.getActiveAuctionsForCommunities(
