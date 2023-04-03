@@ -1,13 +1,8 @@
+import { ReactElement } from 'react-markdown/lib/react-markdown';
 import classes from './Banner.module.css';
-const Banner: React.FC<{}> = () => {
-  return (
-    <div className={classes.banner}>
-      <a href="https://hackweek.wtf/" target="_blank" rel="noreferrer">
-        Hack Week is here! Nouns is giving 99 ETH in prizes to builders and creators of all
-        backgrounds. <b>Make something Nounish this week →</b>
-      </a>
-    </div>
-  );
+
+const Banner: React.FC<{ content: ReactElement }> = props => {
+  return <div className={classes.banner}>{props.content}</div>;
 };
 
 export default Banner;
