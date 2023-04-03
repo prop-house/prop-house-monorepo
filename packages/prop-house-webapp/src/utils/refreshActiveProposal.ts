@@ -9,7 +9,10 @@ import {
   InfRoundFilterType,
   setActiveProposal,
   setActiveProposals,
+  sortTimedRoundProposals,
+  TimedRoundSortType,
 } from '../state/slices/propHouse';
+import { AuctionStatus, auctionStatus } from './auctionStatus';
 import { isInfAuction } from './auctionType';
 
 const refreshActiveProposal = (
@@ -27,8 +30,21 @@ export const refreshActiveProposals = async (
 ) => {
   const proposals = await client.getAuctionProposals(auction.id);
   dispatch(setActiveProposals(proposals));
-  if (isInfAuction(auction))
+  if (isInfAuction(auction)) {
     dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round: auction }));
+  } else {
+    const isRoundOver = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
+    const isVotingWindow = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
+    dispatch(
+      sortTimedRoundProposals({
+        sortType:
+          isVotingWindow || isRoundOver
+            ? TimedRoundSortType.VoteCount
+            : TimedRoundSortType.CreatedAt,
+        ascending: false,
+      }),
+    );
+  }
 };
 
 export default refreshActiveProposal;
