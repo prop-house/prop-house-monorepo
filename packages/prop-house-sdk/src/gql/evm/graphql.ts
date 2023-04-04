@@ -801,14 +801,10 @@ export type House = {
   creationTx: Scalars['Bytes'];
   /** The account who created the house */
   creator?: Maybe<Account>;
-  /** The house description, parsed from the contract URI */
-  description?: Maybe<Scalars['String']>;
   /** The address of the house contract */
   id: Scalars['ID'];
-  /** The house image URI, parsed from the contract URI */
-  imageURI?: Maybe<Scalars['String']>;
-  /** The house name, parsed from the contract URI */
-  name?: Maybe<Scalars['String']>;
+  /** The house metadata (stored on IPFS) */
+  metadata?: Maybe<HouseMetadata>;
   /** The account who currently owns the house */
   owner?: Maybe<Account>;
   /** The number of rounds that have been created on the house */
@@ -930,69 +926,22 @@ export enum HouseImplementation_OrderBy {
   Type = 'type',
 }
 
-export type House_Filter = {
+export type HouseMetadata = {
+  __typename?: 'HouseMetadata';
+  /** The house description, pulled from the contract URI */
+  description: Scalars['String'];
+  /** The IPFS content hash that contains the house metadata */
+  id: Scalars['ID'];
+  /** The house image URI, pulled from the contract URI */
+  imageURI: Scalars['String'];
+  /** The house name, pulled from the contract URI */
+  name: Scalars['String'];
+};
+
+export type HouseMetadata_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<House_Filter>>>;
-  contractURI?: InputMaybe<Scalars['String']>;
-  contractURI_contains?: InputMaybe<Scalars['String']>;
-  contractURI_contains_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_ends_with?: InputMaybe<Scalars['String']>;
-  contractURI_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_gt?: InputMaybe<Scalars['String']>;
-  contractURI_gte?: InputMaybe<Scalars['String']>;
-  contractURI_in?: InputMaybe<Array<Scalars['String']>>;
-  contractURI_lt?: InputMaybe<Scalars['String']>;
-  contractURI_lte?: InputMaybe<Scalars['String']>;
-  contractURI_not?: InputMaybe<Scalars['String']>;
-  contractURI_not_contains?: InputMaybe<Scalars['String']>;
-  contractURI_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_not_ends_with?: InputMaybe<Scalars['String']>;
-  contractURI_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_not_in?: InputMaybe<Array<Scalars['String']>>;
-  contractURI_not_starts_with?: InputMaybe<Scalars['String']>;
-  contractURI_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_starts_with?: InputMaybe<Scalars['String']>;
-  contractURI_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
-  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
-  createdAt_not?: InputMaybe<Scalars['BigInt']>;
-  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  creationTx?: InputMaybe<Scalars['Bytes']>;
-  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creator?: InputMaybe<Scalars['String']>;
-  creator_?: InputMaybe<Account_Filter>;
-  creator_contains?: InputMaybe<Scalars['String']>;
-  creator_contains_nocase?: InputMaybe<Scalars['String']>;
-  creator_ends_with?: InputMaybe<Scalars['String']>;
-  creator_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_gt?: InputMaybe<Scalars['String']>;
-  creator_gte?: InputMaybe<Scalars['String']>;
-  creator_in?: InputMaybe<Array<Scalars['String']>>;
-  creator_lt?: InputMaybe<Scalars['String']>;
-  creator_lte?: InputMaybe<Scalars['String']>;
-  creator_not?: InputMaybe<Scalars['String']>;
-  creator_not_contains?: InputMaybe<Scalars['String']>;
-  creator_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  creator_not_ends_with?: InputMaybe<Scalars['String']>;
-  creator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_not_in?: InputMaybe<Array<Scalars['String']>>;
-  creator_not_starts_with?: InputMaybe<Scalars['String']>;
-  creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_starts_with?: InputMaybe<Scalars['String']>;
-  creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  and?: InputMaybe<Array<InputMaybe<HouseMetadata_Filter>>>;
   description?: InputMaybe<Scalars['String']>;
   description_contains?: InputMaybe<Scalars['String']>;
   description_contains_nocase?: InputMaybe<Scalars['String']>;
@@ -1061,6 +1010,108 @@ export type House_Filter = {
   name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   name_starts_with?: InputMaybe<Scalars['String']>;
   name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  or?: InputMaybe<Array<InputMaybe<HouseMetadata_Filter>>>;
+};
+
+export enum HouseMetadata_OrderBy {
+  Description = 'description',
+  Id = 'id',
+  ImageUri = 'imageURI',
+  Name = 'name',
+}
+
+export type House_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<House_Filter>>>;
+  contractURI?: InputMaybe<Scalars['String']>;
+  contractURI_contains?: InputMaybe<Scalars['String']>;
+  contractURI_contains_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_ends_with?: InputMaybe<Scalars['String']>;
+  contractURI_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_gt?: InputMaybe<Scalars['String']>;
+  contractURI_gte?: InputMaybe<Scalars['String']>;
+  contractURI_in?: InputMaybe<Array<Scalars['String']>>;
+  contractURI_lt?: InputMaybe<Scalars['String']>;
+  contractURI_lte?: InputMaybe<Scalars['String']>;
+  contractURI_not?: InputMaybe<Scalars['String']>;
+  contractURI_not_contains?: InputMaybe<Scalars['String']>;
+  contractURI_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_not_ends_with?: InputMaybe<Scalars['String']>;
+  contractURI_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contractURI_not_starts_with?: InputMaybe<Scalars['String']>;
+  contractURI_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_starts_with?: InputMaybe<Scalars['String']>;
+  contractURI_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  creationTx?: InputMaybe<Scalars['Bytes']>;
+  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
+  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
+  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
+  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creator?: InputMaybe<Scalars['String']>;
+  creator_?: InputMaybe<Account_Filter>;
+  creator_contains?: InputMaybe<Scalars['String']>;
+  creator_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_ends_with?: InputMaybe<Scalars['String']>;
+  creator_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_gt?: InputMaybe<Scalars['String']>;
+  creator_gte?: InputMaybe<Scalars['String']>;
+  creator_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_lt?: InputMaybe<Scalars['String']>;
+  creator_lte?: InputMaybe<Scalars['String']>;
+  creator_not?: InputMaybe<Scalars['String']>;
+  creator_not_contains?: InputMaybe<Scalars['String']>;
+  creator_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_not_starts_with?: InputMaybe<Scalars['String']>;
+  creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_starts_with?: InputMaybe<Scalars['String']>;
+  creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  metadata?: InputMaybe<Scalars['String']>;
+  metadata_?: InputMaybe<HouseMetadata_Filter>;
+  metadata_contains?: InputMaybe<Scalars['String']>;
+  metadata_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadata_ends_with?: InputMaybe<Scalars['String']>;
+  metadata_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_gt?: InputMaybe<Scalars['String']>;
+  metadata_gte?: InputMaybe<Scalars['String']>;
+  metadata_in?: InputMaybe<Array<Scalars['String']>>;
+  metadata_lt?: InputMaybe<Scalars['String']>;
+  metadata_lte?: InputMaybe<Scalars['String']>;
+  metadata_not?: InputMaybe<Scalars['String']>;
+  metadata_not_contains?: InputMaybe<Scalars['String']>;
+  metadata_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadata_not_ends_with?: InputMaybe<Scalars['String']>;
+  metadata_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_not_in?: InputMaybe<Array<Scalars['String']>>;
+  metadata_not_starts_with?: InputMaybe<Scalars['String']>;
+  metadata_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_starts_with?: InputMaybe<Scalars['String']>;
+  metadata_starts_with_nocase?: InputMaybe<Scalars['String']>;
   or?: InputMaybe<Array<InputMaybe<House_Filter>>>;
   owner?: InputMaybe<Scalars['String']>;
   owner_?: InputMaybe<Account_Filter>;
@@ -1121,10 +1172,12 @@ export enum House_OrderBy {
   CreationTx = 'creationTx',
   Creator = 'creator',
   CreatorId = 'creator__id',
-  Description = 'description',
   Id = 'id',
-  ImageUri = 'imageURI',
-  Name = 'name',
+  Metadata = 'metadata',
+  MetadataDescription = 'metadata__description',
+  MetadataId = 'metadata__id',
+  MetadataImageUri = 'metadata__imageURI',
+  MetadataName = 'metadata__name',
   Owner = 'owner',
   OwnerId = 'owner__id',
   RoundCount = 'roundCount',
@@ -1160,6 +1213,7 @@ export type Query = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
+  houseMetadata: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -1317,6 +1371,16 @@ export type QueryHouseImplementationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<HouseImplementation_Filter>;
+};
+
+export type QueryHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<HouseMetadata_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<HouseMetadata_Filter>;
 };
 
 export type QueryHousesArgs = {
@@ -1952,10 +2016,7 @@ export enum RoundCreator_OrderBy {
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
   HouseCreationTx = 'house__creationTx',
-  HouseDescription = 'house__description',
   HouseId = 'house__id',
-  HouseImageUri = 'house__imageURI',
-  HouseName = 'house__name',
   HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
@@ -2335,10 +2396,7 @@ export enum Round_OrderBy {
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
   HouseCreationTx = 'house__creationTx',
-  HouseDescription = 'house__description',
   HouseId = 'house__id',
-  HouseImageUri = 'house__imageURI',
-  HouseName = 'house__name',
   HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
@@ -2383,6 +2441,7 @@ export type Subscription = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
+  houseMetadata: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -2540,6 +2599,16 @@ export type SubscriptionHouseImplementationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<HouseImplementation_Filter>;
+};
+
+export type SubscriptionHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<HouseMetadata_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<HouseMetadata_Filter>;
 };
 
 export type SubscriptionHousesArgs = {
@@ -3142,11 +3211,14 @@ export type ManyHousesSimpleQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
     roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3163,11 +3235,14 @@ export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
     roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3184,11 +3259,14 @@ export type ManyHousesSimpleWhereAccountIsOwnerQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
     roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3502,9 +3580,18 @@ export const ManyHousesSimpleDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
@@ -3593,9 +3680,18 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
@@ -3678,9 +3774,18 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],

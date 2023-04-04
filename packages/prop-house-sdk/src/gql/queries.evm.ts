@@ -27,9 +27,11 @@ export const ManyHousesSimpleQuery = graphql(`
   ) {
     houses(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
       roundCount
     }
@@ -46,9 +48,11 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
   ) {
     houses(where: { roundCreators_: { creator: $creator } }) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
       roundCount
     }
@@ -65,9 +69,11 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
   ) {
     houses(where: { owner: $owner }) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
       roundCount
     }
