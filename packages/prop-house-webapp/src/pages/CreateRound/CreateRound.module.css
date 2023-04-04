@@ -7,6 +7,8 @@
 }
 .card {
   margin: 2rem 0;
+  padding: 10px !important;
+  border: 1px rgba(0, 0, 0, 0.1) solid;
 }
 .card h2 {
   font-size: 14px;
@@ -21,12 +23,12 @@
   margin: 1rem 0;
 }
 .step h2 {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: bold;
 }
 
 .step p {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: medium;
 }
 .step p a {
