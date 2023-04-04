@@ -1,5 +1,5 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
@@ -9,10 +9,13 @@ import AdminTool from '../AdminTool';
 import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
+import Button, { ButtonColor } from '../Button';
 
 const NavBar = () => {
   const { t } = useTranslation();
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <Container>
@@ -46,12 +49,19 @@ const NavBar = () => {
               <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
+                <Button
+                  text="Create a round"
+                  bgColor={ButtonColor.Purple}
+                  onClick={() => navigate('/create-round')}
+                  classNames={classes.createRoundBtn}
+                />
+              </Nav.Link>
+
+              <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <ConnectButton showBalance={false} label={t('connect')} />
               </Nav.Link>
 
-              <AdminTool>
-                <DevEnvDropDown />
-              </AdminTool>
+              <AdminTool>{/* <DevEnvDropDown /> */}</AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>
