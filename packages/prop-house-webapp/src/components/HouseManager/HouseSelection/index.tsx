@@ -8,6 +8,9 @@ import { HiOutlineChevronRight as ArrowIcon } from 'react-icons/hi';
 import Divider from '../../Divider';
 import { v4 as uuidv4 } from 'uuid';
 import { buildImageURL } from '../utils/buildImageURL';
+import sanitizeHtml from 'sanitize-html';
+import Markdown from 'markdown-to-jsx';
+import { changeTagToParagraph, changeTagToSpan } from '../../RoundCard';
 
 interface HouseSelectionProps {
   propHouse: PropHouse;
@@ -16,12 +19,13 @@ interface HouseSelectionProps {
 }
 
 export interface FetchedHouse {
-  __typename?: 'House' | undefined;
   id: string;
-  name?: string | null | undefined;
-  description?: string | null | undefined;
-  imageURI?: string | null | undefined;
-  createdAt: any;
+  metadata?: {
+    name?: string | null;
+    description?: string | null;
+    imageURI?: string | null;
+  } | null;
+  createdAt: string;
   roundCount: number;
 }
 
@@ -53,15 +57,32 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
                 <Group row gap={8}>
                   <img
                     className={classes.img}
-                    src={house.imageURI ? buildImageURL(house.imageURI) : ''}
-                    alt={house.name ? house.name : ''}
+                    src={house.metadata?.imageURI ? buildImageURL(house.metadata.imageURI) : ''}
+                    alt={house.metadata?.name ?? ''}
                   />
                   <Group classNames={classes.textContainer} gap={2}>
                     <Text type="subtitle" classNames={classes.houseName}>
-                      {house.name} • {house.roundCount} round{house.roundCount === 1 ? '' : 's'}
+                      {house.metadata?.name ?? 'Untitled House'} • {house.roundCount} round
+                      {house.roundCount === 1 ? '' : 's'}
                     </Text>
                     <Text type="body" classNames={classes.houseInfo}>
-                      {house.description}{' '}
+                      <Markdown
+                        options={{
+                          overrides: {
+                            h1: changeTagToParagraph,
+                            h2: changeTagToParagraph,
+                            h3: changeTagToParagraph,
+                            a: changeTagToSpan,
+                            br: changeTagToSpan,
+                          },
+                        }}
+                      >
+                        {sanitizeHtml(house.metadata.description as any, {
+                          allowedAttributes: {
+                            a: ['href', 'target'],
+                          },
+                        })}
+                      </Markdown>
                     </Text>
                   </Group>
                 </Group>

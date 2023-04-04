@@ -14,6 +14,7 @@ export const getUSDPrice = async (type: AssetType, address: string, amount: numb
     const data = await response.json();
 
     const price = type === AssetType.ETH ? data.ethereum.usd : data[address!.toLowerCase()].usd;
+
     return { price };
   } catch (error) {
     console.error(error);

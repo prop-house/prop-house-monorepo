@@ -18,6 +18,7 @@ import useAddressType from '../utils/useAddressType';
 import TruncateThousands from '../../TruncateThousands';
 import { getUSDPrice } from '../utils/getUSDPrice';
 import { formatCommaNum } from '../utils/formatCommaNum';
+import useGetDecimals from '../utils/useGetDecimals';
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -127,18 +128,6 @@ const SplitAwards: React.FC<{
     setAward({ ...award, amount: value });
   };
 
-  // const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-  //   const clipboardData = e.clipboardData.getData('text');
-  //   let value = parseInt(clipboardData, 10);
-
-  //   if (isNaN(value) || value < 1) {
-  //     e.preventDefault();
-  //     return;
-  //   }
-  // };
-
-  // const inputHasError = award.state === 'Error';
-
   const handleAwardsSave = () => {
     let updated: Partial<Award>;
 
@@ -176,7 +165,9 @@ const SplitAwards: React.FC<{
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
 
-  //  TODO
+  // Get decimals of ERC20 token
+  const { data: decimals } = useGetDecimals(award.address);
+
   const [isTyping, setIsTyping] = useState(false);
 
   const handleAwardAddressBlur = async () => {
@@ -200,20 +191,18 @@ const SplitAwards: React.FC<{
       const { name, collectionName, image, symbol } = tokenInfo;
       const { price } = await getUSDPrice(award.type, award.address, award.amount);
 
-      if (!name || !image) {
-        setAward({ ...award, state: 'error', error: 'Unidentifed address' });
-
-        return;
-      } else {
-        setAward({
-          ...award,
-          state: 'success',
-          name: name === 'Unidentified contract' ? collectionName : name,
-          image,
-          symbol,
-          price,
-        });
-      }
+      //TODO
+      setAward({
+        ...award,
+        state: 'success',
+        name: name ? name : collectionName ? collectionName : 'Unidentified contract',
+        decimals:
+          award.type === AssetType.ERC20 && decimals !== undefined ? (decimals as number) : 0,
+        image: image ? image : '/manager/loading.gif',
+        symbol,
+        price,
+      });
+      // }
     }
   };
 

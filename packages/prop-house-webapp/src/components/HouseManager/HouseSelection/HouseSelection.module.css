@@ -31,6 +31,7 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
   line-break: anywhere;
+  line-height: normal !important;
 }
 .createNew p {
   align-self: center;
