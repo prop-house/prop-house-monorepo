@@ -21,11 +21,7 @@ import {
   setModalActive,
 } from '../../state/slices/propHouse';
 import Tooltip from '../Tooltip';
-<<<<<<< HEAD
-import { MdInfoOutline } from 'react-icons/md';
 import { BiAward } from 'react-icons/bi';
-=======
->>>>>>> 55902eeb (rehaul Voting Strategies)
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
