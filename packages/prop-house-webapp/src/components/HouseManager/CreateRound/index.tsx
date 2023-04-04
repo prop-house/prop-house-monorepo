@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
-import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk/dist/types';
+import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
