@@ -40,8 +40,6 @@ const ProposalInputs: React.FC<{
     onFileDrop,
   } = props;
 
-  // const data = useAppSelector(state => state.editor.proposal);
-
   const { data: signer } = useSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
