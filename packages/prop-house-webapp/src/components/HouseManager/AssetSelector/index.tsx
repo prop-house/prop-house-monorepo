@@ -21,6 +21,7 @@ export interface Award {
   name: string;
   symbol: string;
   amount: number;
+  decimals: number;
   selectedAsset: ERC20 | null;
   price: number;
   state: 'input' | 'success' | 'error' | 'dummy';
@@ -37,6 +38,7 @@ export const NewAward: Award = {
   symbol: 'ETH',
   selectedAsset: null,
   amount: 1,
+  decimals: 18,
   state: 'input',
   price: 0,
   error: '',

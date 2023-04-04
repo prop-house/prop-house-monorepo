@@ -14,6 +14,7 @@ const abi = [
   },
 ];
 const functionName = 'getType';
+
 export default function useAddressType(address: string) {
   const { data, isLoading, isError } = useContractRead({
     address: contractAddress,
