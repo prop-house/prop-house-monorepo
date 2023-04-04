@@ -21,7 +21,6 @@ export class AssetStruct extends ethereum.Tuple {
   }
 }
 
-
 /**
  * Convert the flattened voting strategy params to a 2D-array
  * @param votingStrategyParamsFlat The flattened voting strategy param array
