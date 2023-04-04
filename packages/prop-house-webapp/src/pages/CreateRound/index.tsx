@@ -43,7 +43,7 @@ const CreateRound: React.FC<{}> = () => {
             <h2>Questions?</h2>
             <p>
               If you're not sure what to do, or have any questions, please reach out to us via our
-              <a href="" target="_blank">
+              <a href="https://discord.com/invite/SKPzM8GHts" target="_blank" rel="noreferrer">
                 {' '}
                 Discord server
               </a>

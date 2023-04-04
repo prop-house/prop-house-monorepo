@@ -1,5 +1,5 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
@@ -15,7 +15,6 @@ const NavBar = () => {
   const { t } = useTranslation();
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   return (
     <Container>
@@ -61,7 +60,9 @@ const NavBar = () => {
                 <ConnectButton showBalance={false} label={t('connect')} />
               </Nav.Link>
 
-              <AdminTool>{/* <DevEnvDropDown /> */}</AdminTool>
+              <AdminTool>
+                <DevEnvDropDown />
+              </AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>
