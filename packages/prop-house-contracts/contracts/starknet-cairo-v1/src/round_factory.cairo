@@ -1,5 +1,6 @@
 use starknet::ContractAddress;
 
+#[abi]
 trait IRoundFactory {
     fn origin_round(starknet_round: ContractAddress) -> ContractAddress;
     fn origin_messenger() -> ContractAddress;
@@ -68,7 +69,6 @@ mod RoundFactory {
 
         RoundRegistered(origin_round, starknet_round, round_class_hash);
     }
-
 
     ///
     /// Internals
