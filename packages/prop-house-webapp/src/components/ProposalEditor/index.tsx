@@ -211,6 +211,7 @@ const ProposalEditor: React.FC<{
     <>
       <ProposalInputs
         quill={quill}
+        Quill={Quill}
         quillRef={quillRef}
         onDataChange={onDataChange}
         onFileDrop={onFileDrop}

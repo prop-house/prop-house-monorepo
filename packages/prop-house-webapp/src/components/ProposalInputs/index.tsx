@@ -12,9 +12,12 @@ import { FormDataType, FundReqDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
 import { useSigner } from 'wagmi';
 import InputFormGroup from '../InputFormGroup';
+import buildIpfsPath from '../../utils/buildIpfsPath';
+import LoadingIndicator from '../LoadingIndicator';
 
 const ProposalInputs: React.FC<{
   quill: any;
+  Quill: any;
   quillRef: any;
   formData: FormDataType[];
   descriptionData: any;
@@ -23,17 +26,20 @@ const ProposalInputs: React.FC<{
   onFileDrop: any;
   editorBlurred: boolean;
   setEditorBlurred: (blurred: boolean) => void;
-}> = ({
-  quill,
-  quillRef,
-  formData,
-  descriptionData,
-  fundReqData,
-  onDataChange,
-  editorBlurred,
-  setEditorBlurred,
-  onFileDrop,
-}) => {
+}> = props => {
+  const {
+    quill,
+    Quill,
+    quillRef,
+    formData,
+    fundReqData,
+    descriptionData,
+    onDataChange,
+    editorBlurred,
+    setEditorBlurred,
+    onFileDrop,
+  } = props;
+
   const { data: signer } = useSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
@@ -79,6 +85,49 @@ const ProposalInputs: React.FC<{
       }
     />
   );
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const uploadImageToServer = async (file: File) => {
+    // upload the image to the server
+    const res = await client.current.postFile(file, file.name);
+
+    // insert the image into the editor
+    quill.setSelection(quill.getLength(), 0);
+    quill.insertEmbed(
+      quill.getSelection()!.index,
+      'image',
+      buildIpfsPath(res.data.ipfsHash),
+      Quill.sources.USER,
+    );
+
+    // insert a newline after the image
+    quill.insertText(quill.getSelection()!.index + 1, '\n\n', Quill.sources.USER);
+  };
+
+  // handle images being pasted into the editor by uploading them to the server and inserting the new image url into the editor
+  const onPaste = async (event: React.ClipboardEvent<HTMLDivElement>) => {
+    // if the user pastes text, don't do anything
+    if (!event.clipboardData.files.length) return;
+
+    // get the files that were pasted
+    const pastedFiles = Array.from(event.clipboardData.files);
+
+    // prevents the original, encoded image from being pasted
+    event.preventDefault();
+
+    setLoading(true);
+
+    const imagePromises = pastedFiles
+      // filter out non-image files
+      .filter(file => file.type.startsWith('image'))
+      // upload the image to the server
+      .map(uploadImageToServer);
+
+    await Promise.all(imagePromises);
+
+    setLoading(false);
+  };
 
   return (
     <>
@@ -135,11 +184,17 @@ const ProposalInputs: React.FC<{
                   <div
                     ref={quillRef}
                     onDrop={onFileDrop}
+                    onPaste={onPaste}
                     placeholder={descriptionData.placeholder}
                     onBlur={() => {
                       setEditorBlurred(true);
                     }}
                   />
+                  {loading && (
+                    <div className={classes.loadingOverlay}>
+                      <LoadingIndicator />
+                    </div>
+                  )}
 
                   {editorBlurred &&
                     quill &&
