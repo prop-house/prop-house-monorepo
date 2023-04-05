@@ -20,9 +20,7 @@ const DevEnvDropDown = () => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          {process.env.REACT_APP_NODE_ENV === BackendHost.Local && (
-            <Dropdown.Item onClick={() => handleClick(BackendHost.Local)}>local</Dropdown.Item>
-          )}
+          <Dropdown.Item onClick={() => handleClick(BackendHost.Local)}>local</Dropdown.Item>
           <Dropdown.Item onClick={() => handleClick(BackendHost.Dev)}>dev</Dropdown.Item>
           <Dropdown.Item onClick={() => handleClick(BackendHost.Prod)}>prod</Dropdown.Item>
         </Dropdown.Menu>
