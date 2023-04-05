@@ -23,6 +23,23 @@
 .houseName {
   font-size: 16px;
 }
+.houseContainer {
+  max-height: 380px;
+  overflow-y: scroll;
+}
+.houseContainer::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+.houseContainer::-webkit-scrollbar-track {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.houseContainer::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: white;
+  background: var(--brand-gray-semi-transparent);
+}
 .houseInfo {
   font-size: 14px;
   overflow: hidden;

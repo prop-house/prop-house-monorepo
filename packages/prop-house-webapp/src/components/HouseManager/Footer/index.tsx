@@ -8,10 +8,10 @@ import { useAppSelector } from '../../../hooks';
 import { Asset, AssetType, HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
 import { usePropHouse } from '@prophouse/sdk-react';
 import { BigNumber, ethers } from 'ethers';
-import { useSigner } from 'wagmi';
-import { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { Award } from '../AssetSelector';
+// import { useState } from 'react';
+// import CreateRoundModal from '../CreateRoundModal';
+// import { useWaitForTransaction } from 'wagmi';
 
 const Footer: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
@@ -19,6 +19,24 @@ const Footer: React.FC = () => {
   const round = useAppSelector(state => state.round.round);
 
   const dispatch = useDispatch();
+  const propHouse = usePropHouse();
+
+  // const [createRoundModal, setShowCreateRoundModal] = useState(false);
+  // const [transactionHash, setTransactionHash] = useState<string | null>(null);
+
+  // const waitForTransaction = useWaitForTransaction({
+  //   hash: transactionHash as `0x${string}`,
+  //   onSettled: (data, error) => {
+  //     if (error) {
+  //       console.log('Error', error);
+
+  //       // Handle error case, e.g. show a notification
+  //     } else {
+  //       console.log('Success', data);
+  //       // Handle success case, e.g. navigate to a different page
+  //     }
+  //   },
+  // });
 
   const handleNext = () => {
     const isDisabled = stepDisabledArray[activeStep - 1];
@@ -29,76 +47,12 @@ const Footer: React.FC = () => {
 
   const handlePrev = () => dispatch(setPrevStep());
 
-  const propHouse = usePropHouse();
-
-  const { data: signer } = useSigner();
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  const [contractURIString, setContractURIString] = useState<string>('');
-
   const handleCreateRound = async (round: NewRound) => {
-    const contractURIObject = {
-      name: round.house.title,
-      description: round.house.description,
-      image: round.house.image,
-      external_link: `https://prop.house/${round.house.address}`,
-      seller_fee_basis_points: 0,
-      fee_recipient: '0x0000000000000000000000000000000000000000',
-    };
-
-    const jsonString = JSON.stringify(contractURIObject);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const file = new File([blob], 'metadata.json', { type: 'application/json' });
-
-    try {
-      const res = await client.current.postFile(file, file.name);
-      setContractURIString(`ipfs://${res.data.ipfsHash}`);
-    } catch (e) {
-      console.log(e);
-    }
-
     const houseInfo: HouseInfo<HouseType> = {
       houseType: HouseType.COMMUNITY,
-      config: {
-        contractURI: contractURIString,
-      },
+      config: { contractURI: round.house.contractURI },
     };
 
-    // const awards: Asset[] = round.awards.map(award => {
-    //   switch (award.type) {
-    //     case AssetType.ETH:
-    //       return {
-    //         assetType: AssetType.ETH,
-    //         amount: ethers.utils.parseEther(award.amount.toString()),
-    //       } as Asset;
-    //     case AssetType.ERC20:
-    //       return {
-    //         assetType: AssetType.ERC20,
-    //         address: award.address,
-    //         amount: ethers.utils.parseUnits(award.amount.toString(), award.decimals).toString(),
-    //       } as Asset;
-    //     case AssetType.ERC721:
-    //       return {
-    //         assetType: AssetType.ERC721,
-    //         address: award.address,
-    //         tokenId: BigNumber.from(award.tokenId || 0),
-    //       } as Asset;
-    //     case AssetType.ERC1155:
-    //       return {
-    //         assetType: AssetType.ERC1155,
-    //         address: award.address,
-    //         tokenId: BigNumber.from(award.tokenId || 0),
-    //         amount: BigNumber.from(award.amount),
-    //       } as Asset;
-    //     default:
-    //       throw new Error('Invalid award type');
-    //   }
-    // });
     const createAward = (award: Award) => {
       switch (award.type) {
         case AssetType.ETH:
@@ -163,13 +117,14 @@ const Footer: React.FC = () => {
         console.log('error', e);
       }
     } else {
-      if (contractURIString !== '') {
+      if (round.house.contractURI !== '') {
         try {
           const response = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
-
+          // setTransactionHash(response.hash);
           return response;
         } catch (e) {
           console.log('error', e);
+          // Handle error case, e.g. show a notification
         }
       }
     }
@@ -177,6 +132,18 @@ const Footer: React.FC = () => {
 
   return (
     <>
+      {/* {createRoundModal && (
+        <CreateRoundModal
+          status={{
+            isLoading: waitForTransaction.isLoading,
+            isSuccess: waitForTransaction.isSuccess,
+            isError: waitForTransaction.isError,
+            error: waitForTransaction.error,
+          }}
+          setShowCreateRoundModal={setShowCreateRoundModal}
+        />
+      )} */}
+
       <Divider />
 
       <div className={clsx(classes.footer, activeStep < 3 && classes.justifyEnd)}>

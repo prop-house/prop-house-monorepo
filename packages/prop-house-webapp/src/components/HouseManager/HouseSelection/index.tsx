@@ -46,50 +46,51 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
     }
     fetchHouses();
   }, [propHouse.query]);
-
+  console.log('houses', houses);
   return (
     <>
       <Group>
         {houses.length ? (
           <Group gap={8} mt={6}>
-            {houses.map(house => (
-              <button key={uuidv4()} onClick={() => onSelectHouse(house)} className={classes.row}>
-                <Group row gap={8}>
-                  <img
-                    className={classes.img}
-                    src={house.metadata?.imageURI ? buildImageURL(house.metadata.imageURI) : ''}
-                    alt={house.metadata?.name ?? ''}
-                  />
-                  <Group classNames={classes.textContainer} gap={2}>
-                    <Text type="subtitle" classNames={classes.houseName}>
-                      {house.metadata?.name ?? 'Untitled House'} • {house.roundCount} round
-                      {house.roundCount === 1 ? '' : 's'}
-                    </Text>
-                    <Text type="body" classNames={classes.houseInfo}>
-                      <Markdown
-                        options={{
-                          overrides: {
-                            h1: changeTagToParagraph,
-                            h2: changeTagToParagraph,
-                            h3: changeTagToParagraph,
-                            a: changeTagToSpan,
-                            br: changeTagToSpan,
-                          },
-                        }}
-                      >
-                        {sanitizeHtml(house.metadata.description as any, {
-                          allowedAttributes: {
-                            a: ['href', 'target'],
-                          },
-                        })}
-                      </Markdown>
-                    </Text>
+            <Group gap={8} classNames={classes.houseContainer}>
+              {houses.map(house => (
+                <button key={uuidv4()} onClick={() => onSelectHouse(house)} className={classes.row}>
+                  <Group row gap={8}>
+                    <img
+                      className={classes.img}
+                      src={house.metadata?.imageURI ? buildImageURL(house.metadata.imageURI) : ''}
+                      alt={house.metadata?.name ?? ''}
+                    />
+                    <Group classNames={classes.textContainer} gap={2}>
+                      <Text type="subtitle" classNames={classes.houseName}>
+                        {house.metadata?.name ?? 'Untitled House'} • {house.roundCount} round
+                        {house.roundCount === 1 ? '' : 's'}
+                      </Text>
+                      <Text type="body" classNames={classes.houseInfo}>
+                        <Markdown
+                          options={{
+                            overrides: {
+                              h1: changeTagToParagraph,
+                              h2: changeTagToParagraph,
+                              h3: changeTagToParagraph,
+                              a: changeTagToSpan,
+                              br: changeTagToSpan,
+                            },
+                          }}
+                        >
+                          {sanitizeHtml(house.metadata?.description as any, {
+                            allowedAttributes: { a: ['href', 'target'] },
+                          })}
+                        </Markdown>
+                      </Text>
+                    </Group>
                   </Group>
-                </Group>
 
-                <ArrowIcon className={classes.icon} />
-              </button>
-            ))}
+                  <ArrowIcon className={classes.icon} />
+                </button>
+              ))}
+            </Group>
+
             <Group>
               <span className={classes.message}>
                 Not seeing a house? You need to have a{' '}
