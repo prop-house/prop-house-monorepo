@@ -87,11 +87,7 @@ const CreateRound = () => {
                   },
                 }}
               >
-                {sanitizeHtml(round.description, {
-                  allowedAttributes: {
-                    a: ['href', 'target'],
-                  },
-                })}
+                {sanitizeHtml(round.description, { allowedAttributes: { a: ['href', 'target'] } })}
               </Markdown>
             </Text>
           }

@@ -18,14 +18,14 @@ const HouseInfoConfig = () => {
   };
 
   const handleHouseSelection = (house: FetchedHouse) => {
-    if (house.name && house.description && house.id) {
+    if (house.metadata) {
       const updated = {
         ...round,
         house: {
           ...round.house,
-          title: house.name,
-          description: house.description,
-          image: house.imageURI as string,
+          title: house.metadata.name as string,
+          description: house.metadata.description as string,
+          image: house.metadata.imageURI as string,
           address: house.id,
         },
       };
