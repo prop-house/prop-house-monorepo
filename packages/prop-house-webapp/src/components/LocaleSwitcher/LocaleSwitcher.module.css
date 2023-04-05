@@ -8,6 +8,7 @@
   }
   .langBtn button {
     min-width: 80px !important;
+    width: 100%;
   }
 }
 
@@ -45,7 +46,7 @@
   border-color: rgba(0, 0, 0, 0.1) !important;
 }
 .langBtn .show > button:active {
-  background-color: rgba(0, 0, 0, 0.1) !important;
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 0px !important;
 }
 .langBtn button:focus-visible {
