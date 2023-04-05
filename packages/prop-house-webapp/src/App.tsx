@@ -25,6 +25,7 @@ import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
+import CreateRound from './pages/CreateRound';
 
 const { chains, provider } = configureChains(
   [mainnet],
@@ -89,7 +90,7 @@ function App() {
                       </ProtectedRoute>
                     }
                   />
-
+                  <Route path="/create-round" element={<CreateRound />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/proposal/:id" element={<Proposal />} />
                   <Route path="/:house" element={<House />} />
