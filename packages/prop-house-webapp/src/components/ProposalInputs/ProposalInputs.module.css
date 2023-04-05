@@ -9,6 +9,9 @@
 .inputGroup {
   margin-bottom: 2rem;
 }
+.inputSection {
+  margin: 3rem 0rem;
+}
 .inputInfo {
   display: flex;
   justify-content: space-between;
@@ -59,7 +62,6 @@
 .input:focus::-webkit-input-placeholder {
   opacity: 0 !important;
 }
-
 .descriptionLabel {
   margin-bottom: 0;
 }
@@ -82,4 +84,16 @@
   .infRoundTitleSection {
     padding-right: 0rem;
   }
+}
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
