@@ -6,6 +6,7 @@ import classes from './DevEnvDropdown.module.css';
 
 const DevEnvDropDown = () => {
   const navigate = useNavigate();
+  const selectedDevEnv = localStorage.getItem('devEnv');
 
   const handleClick = (env: BackendHost) => {
     localStorage.setItem('devEnv', env.toString());
@@ -16,7 +17,7 @@ const DevEnvDropDown = () => {
     <div className={clsx(classes.dropdown, 'houseDropdown')}>
       <Dropdown>
         <Dropdown.Toggle variant="success" id="dropdown-basic" className={classes.dropDownBtn}>
-          ENV
+          {selectedDevEnv ? selectedDevEnv : 'ENV'}
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
