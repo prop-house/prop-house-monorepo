@@ -28,13 +28,17 @@ const backendHostURI = (b: BackendHost) => {
   }
 };
 
-const envToUri = (env: BackendHost | undefined) => {
-  const devEnv = localStorage.getItem('devEnv');
+const envToUri = (processEnv: BackendHost | undefined) => {
+  const devEnvSelected = localStorage.getItem('devEnv');
 
-  if ((!env || env === BackendHost.Dev) && devEnv) return backendHostURI(devEnv as BackendHost); // localhost && dev set env
-  if (!env) return backendHostURI(BackendHost.Local); // localhost
+  if (devEnvSelected)
+    return devEnvSelected === 'local'
+      ? backendHostURI(BackendHost.Local)
+      : devEnvSelected === 'development'
+      ? backendHostURI(BackendHost.Dev)
+      : backendHostURI(BackendHost.Prod);
 
-  return backendHostURI(env as BackendHost); // development | prod environments
+  return processEnv ? backendHostURI(processEnv as BackendHost) : backendHostURI(BackendHost.Local);
 };
 
 const initialState: ConfigurationSlice = {
