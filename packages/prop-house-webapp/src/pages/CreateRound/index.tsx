@@ -26,7 +26,7 @@ const CreateRound: React.FC<{}> = () => {
             <p>
               Simply fill out our form with some basic information about your round. You’ll need to
               know the basics like the round timing, award amount, round and house name. Once filled
-              out, you can expect your round to go live within the 24 hours (usually much less).
+              out, you can expect your round to go live within 24 hours (usually much less).
             </p>
             <Button
               text="Timed Round"
