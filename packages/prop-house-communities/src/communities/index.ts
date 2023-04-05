@@ -118,5 +118,7 @@ export const communities = new CaseInsensitiveMap(
     '0xa47f60564085b8792BaE197BE7762C7f7930eC67': fixedVotes(100),
     // Juicebox
     '0x3abF2A4f8452cCC2CF7b4C1e4663147600646f66': balanceOfErc20(18),
+    // Retro Grants
+    '0x5EBFd1CAC809F947164F558a606c29e685c754d3': balanceOfErc721(),
   }),
 );
