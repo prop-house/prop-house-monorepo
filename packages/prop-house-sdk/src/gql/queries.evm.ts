@@ -43,7 +43,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
     $creator: String!
     $first: Int!
     $skip: Int!
-    $orderBy: Round_orderBy
+    $orderBy: House_orderBy
     $orderDirection: OrderDirection
   ) {
     houses(where: { roundCreators_: { creator: $creator } }) {
@@ -68,6 +68,29 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
     $orderDirection: OrderDirection
   ) {
     houses(where: { owner: $owner }) {
+      id
+      metadata {
+        name
+        description
+        imageURI
+      }
+      createdAt
+      roundCount
+    }
+  }
+`);
+
+export const ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery = graphql(`
+  query manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions(
+    $ownerOrCreator: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: House_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    houses(
+      where: { or: [{ roundCreators_: { creator: $ownerOrCreator } }, { owner: $ownerOrCreator }] }
+    ) {
       id
       metadata {
         name

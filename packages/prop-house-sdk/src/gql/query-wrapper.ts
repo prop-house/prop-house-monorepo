@@ -12,6 +12,7 @@ import {
   ManyDepositsByAccountQuery,
   ManyHousesSimpleQuery,
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery,
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyRoundBalancesQuery,
   ManyRoundsSimpleForHouseQuery,
@@ -78,10 +79,10 @@ export class QueryWrapper {
    */
   public async getHousesWhereAccountHasCreatorPermissions(
     account: string,
-    config: Partial<QueryConfig<Round_OrderBy>> = {},
+    config: Partial<QueryConfig<House_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery, {
-      ...toPaginated(this.merge(getDefaultConfig(Round_OrderBy.CreatedAt), config)),
+      ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
       creator: account.toLowerCase(),
     });
   }
@@ -98,6 +99,22 @@ export class QueryWrapper {
     return this._gql.evm.request(ManyHousesSimpleWhereAccountIsOwnerQuery, {
       ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
       owner: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated houses where the provided account is the house owner
+   * or has creator permissions
+   * @param account The account address
+   * @param config Pagination and ordering configuration
+   */
+  public async getHousesWhereAccountIsOwnerOrHasCreatorPermissions(
+    account: string,
+    config: Partial<QueryConfig<House_OrderBy>> = {},
+  ) {
+    return this._gql.evm.request(ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery, {
+      ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
+      ownerOrCreator: account.toLowerCase(),
     });
   }
 

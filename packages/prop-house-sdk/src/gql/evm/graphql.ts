@@ -3226,7 +3226,7 @@ export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables = Ex
   creator: Scalars['String'];
   first: Scalars['Int'];
   skip: Scalars['Int'];
-  orderBy?: InputMaybe<Round_OrderBy>;
+  orderBy?: InputMaybe<House_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
@@ -3255,6 +3255,30 @@ export type ManyHousesSimpleWhereAccountIsOwnerQueryVariables = Exact<{
 }>;
 
 export type ManyHousesSimpleWhereAccountIsOwnerQuery = {
+  __typename?: 'Query';
+  houses: Array<{
+    __typename?: 'House';
+    id: string;
+    createdAt: any;
+    roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
+  }>;
+};
+
+export type ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQueryVariables = Exact<{
+  ownerOrCreator: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<House_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery = {
   __typename?: 'Query';
   houses: Array<{
     __typename?: 'House';
@@ -3637,7 +3661,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
         },
         {
           kind: 'VariableDefinition',
@@ -3798,6 +3822,139 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
 } as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyHousesSimpleWhereAccountIsOwnerQueryVariables
+>;
+export const ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'ownerOrCreator' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'houses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'or' },
+                      value: {
+                        kind: 'ListValue',
+                        values: [
+                          {
+                            kind: 'ObjectValue',
+                            fields: [
+                              {
+                                kind: 'ObjectField',
+                                name: { kind: 'Name', value: 'roundCreators_' },
+                                value: {
+                                  kind: 'ObjectValue',
+                                  fields: [
+                                    {
+                                      kind: 'ObjectField',
+                                      name: { kind: 'Name', value: 'creator' },
+                                      value: {
+                                        kind: 'Variable',
+                                        name: { kind: 'Name', value: 'ownerOrCreator' },
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            kind: 'ObjectValue',
+                            fields: [
+                              {
+                                kind: 'ObjectField',
+                                name: { kind: 'Name', value: 'owner' },
+                                value: {
+                                  kind: 'Variable',
+                                  name: { kind: 'Name', value: 'ownerOrCreator' },
+                                },
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQueryVariables
 >;
 export const ManyRoundsSimpleDocument = {
   kind: 'Document',

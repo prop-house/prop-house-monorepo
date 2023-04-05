@@ -17,10 +17,12 @@ const documents = {
     types.TimedFundingRoundConfigPartsFragmentDoc,
   '\n  query manyHousesSimple(\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n':
     types.ManyHousesSimpleDocument,
-  '\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: Round_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n':
+  '\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n':
     types.ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument,
   '\n  query manyHousesSimpleWhereAccountIsOwner(\n    $owner: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { owner: $owner }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n':
     types.ManyHousesSimpleWhereAccountIsOwnerDocument,
+  '\n  query manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions(\n    $ownerOrCreator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(\n      where: { or: [{ roundCreators_: { creator: $ownerOrCreator } }, { owner: $ownerOrCreator }] }\n    ) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n':
+    types.ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsDocument,
   '\n  query manyRoundsSimple(\n    $first: Int!\n    $skip: Int!\n    $orderBy: Round_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    rounds(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {\n      id\n      type\n      title\n      description\n      createdAt\n      state\n    }\n  }\n':
     types.ManyRoundsSimpleDocument,
   '\n  query manyRoundsSimpleForHouse(\n    $house: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: Round_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    rounds(\n      first: $first\n      skip: $skip\n      orderBy: $orderBy\n      orderDirection: $orderDirection\n      where: { house: $house }\n    ) {\n      id\n      type\n      title\n      description\n      createdAt\n      state\n    }\n  }\n':
@@ -71,14 +73,20 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: '\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: Round_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n',
-): (typeof documents)['\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: Round_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n'];
+  source: '\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n',
+): (typeof documents)['\n  query manyHousesSimpleWhereAccountHasCreatorPermissions(\n    $creator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { roundCreators_: { creator: $creator } }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
   source: '\n  query manyHousesSimpleWhereAccountIsOwner(\n    $owner: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { owner: $owner }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n',
 ): (typeof documents)['\n  query manyHousesSimpleWhereAccountIsOwner(\n    $owner: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(where: { owner: $owner }) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n'];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: '\n  query manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions(\n    $ownerOrCreator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(\n      where: { or: [{ roundCreators_: { creator: $ownerOrCreator } }, { owner: $ownerOrCreator }] }\n    ) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n',
+): (typeof documents)['\n  query manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions(\n    $ownerOrCreator: String!\n    $first: Int!\n    $skip: Int!\n    $orderBy: House_orderBy\n    $orderDirection: OrderDirection\n  ) {\n    houses(\n      where: { or: [{ roundCreators_: { creator: $ownerOrCreator } }, { owner: $ownerOrCreator }] }\n    ) {\n      id\n      metadata {\n        name\n        description\n        imageURI\n      }\n      createdAt\n      roundCount\n    }\n  }\n'];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
