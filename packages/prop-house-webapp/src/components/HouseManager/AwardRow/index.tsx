@@ -12,7 +12,7 @@ const AwardRow: React.FC<{ award: Award }> = props => {
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
         <div className={classes.addressImgAndTitle}>
-          <img src={award.image || '/manager/loading.gif'} alt={award.name} />
+          <img src={award.image} alt={award.name} />
 
           <span>
             {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&

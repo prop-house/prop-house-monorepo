@@ -19,6 +19,7 @@ import TruncateThousands from '../../TruncateThousands';
 import { getUSDPrice } from '../utils/getUSDPrice';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import useGetDecimals from '../utils/useGetDecimals';
+import { useProvider } from 'wagmi';
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -44,9 +45,9 @@ const SplitAwards: React.FC<{
 }> = props => {
   const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
-
   const [award, setAward] = useState({ ...NewAward, price: 0 });
 
+  const provider = useProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
@@ -95,7 +96,7 @@ const SplitAwards: React.FC<{
     let updated: Partial<Award>;
     let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
 
-    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], award.amount);
+    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
 
     // when selecting a new asset, reset the amount to 1
     token === ERC20.OTHER
@@ -187,22 +188,20 @@ const SplitAwards: React.FC<{
       return;
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const tokenInfo = await getTokenInfo(award.address);
-      const { name, collectionName, image, symbol } = tokenInfo;
-      const { price } = await getUSDPrice(award.type, award.address, award.amount);
+      const { name, image, symbol } = await getTokenInfo(award.address, provider);
+      const { price } = await getUSDPrice(award.type, award.address, provider);
 
       //TODO
       setAward({
         ...award,
         state: 'success',
-        name: name ? name : collectionName ? collectionName : 'Unidentified contract',
+        name,
+        symbol,
+        image,
+        price,
         decimals:
           award.type === AssetType.ERC20 && decimals !== undefined ? (decimals as number) : 0,
-        image: image ? image : '/manager/loading.gif',
-        symbol,
-        price,
       });
-      // }
     }
   };
 

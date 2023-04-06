@@ -46,7 +46,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
     }
     fetchHouses();
   }, [propHouse.query]);
-  console.log('houses', houses);
+
   return (
     <>
       <Group>

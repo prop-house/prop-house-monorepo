@@ -18,6 +18,8 @@ import AwardWithPlace from '../AwardWithPlace';
 import AddAward from '../AddAward';
 import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
 import AwardRow from '../AwardRow';
+import { useProvider } from 'wagmi';
+import { getTokenIdImage } from '../utils/getTokenIdImage';
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -48,6 +50,7 @@ const IndividualAwards: React.FC<{
   const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
   const [selectedAward, setSelectedAward] = useState<string>(AwardType.ERC20);
 
+  const provider = useProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
@@ -55,7 +58,7 @@ const IndividualAwards: React.FC<{
     let updated: Partial<Award>;
     let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
 
-    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], award.amount);
+    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
 
     // when selecting a new asset, reset the state
     token === ERC20.OTHER
@@ -79,27 +82,13 @@ const IndividualAwards: React.FC<{
     setAward({ ...award, ...updated });
   };
 
-  const getTokenIDImage = async (address: string, tokenId: string) => {
-    // !Mainnet
-    // const res = await fetch(`https://api.opensea.io/api/v1/asset/${address}/${tokenId}`);
-    // !Goerli
-    const res = await fetch(
-      `https://testnets-api.opensea.io/api/v1/asset_contract/${address}/${tokenId}`,
-    );
-
-    if (!res.ok) {
-      return null;
-    }
-    const data = await res.json();
-    return data.image_url;
-  };
-
   const handleSaveAward = async () => {
     let image_url = null;
 
     if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
       try {
-        image_url = await getTokenIDImage(award.address, award.tokenId!);
+        const { image } = await getTokenIdImage(award.address, award.tokenId!, provider);
+        image_url = image;
       } catch (error) {
         console.error('Error fetching image', error);
       }
@@ -181,24 +170,9 @@ const IndividualAwards: React.FC<{
       return;
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const tokenInfo = await getTokenInfo(award.address);
-      const { name, collectionName, image, symbol } = tokenInfo;
-      const { price } = await getUSDPrice(award.type, award.address, award.amount);
-
-      if (!name || !image) {
-        setAward({ ...award, state: 'error', error: 'Unidentifed address' });
-
-        return;
-      } else {
-        setAward({
-          ...award,
-          state: 'success',
-          name: name === 'Unidentified contract' ? collectionName : name,
-          image,
-          symbol,
-          price,
-        });
-      }
+      const { name, image, symbol } = await getTokenInfo(award.address, provider);
+      const { price } = await getUSDPrice(award.type, award.address, provider);
+      setAward({ ...award, state: 'success', name, image, symbol, price });
     }
   };
 
@@ -250,15 +224,6 @@ const IndividualAwards: React.FC<{
     }
   };
 
-  // TODO: This is a bit of a hack, but it works for now
-  const handleCancel = (type?: SetStateAction<'showStrategies' | 'addStrategies'>) => {
-    // if (editMode && type) {
-    //   setCurrentView(type);
-    // } else {
-    //   setShowVotingStrategyModal(false);
-    // }
-  };
-
   const isDisabled = () => {
     if (award.state !== 'success') {
       return true;
@@ -276,15 +241,13 @@ const IndividualAwards: React.FC<{
   const handleTokenBlur = async (id: string) => {
     if (award.tokenId === '') return;
 
-    const image_url = await getTokenIDImage(award.address, id);
+    const { image } = await getTokenIdImage(award.address, id, provider);
 
     const isDuplicate = awards.some(
       a => a.address === award.address && a.tokenId === award.tokenId,
     );
-    if (!image_url) {
-      setAward({ ...award, error: 'invalid token id' });
-      return;
-    } else if (isDuplicate) {
+
+    if (isDuplicate) {
       setAward({
         ...award,
         state: 'error',
@@ -292,7 +255,7 @@ const IndividualAwards: React.FC<{
       });
       return;
     } else {
-      setAward({ ...award, error: '', image: image_url });
+      setAward({ ...award, error: '', image });
       return;
     }
   };
@@ -315,7 +278,6 @@ const IndividualAwards: React.FC<{
                 selectedAward={selectedAward}
                 setAward={setAward}
                 setSelectedAward={setSelectedAward}
-                handleCancel={handleCancel}
                 handleAddressChange={handleAddressChange}
                 handleTokenBlur={handleTokenBlur}
                 handleSelectAward={handleSelectAward}

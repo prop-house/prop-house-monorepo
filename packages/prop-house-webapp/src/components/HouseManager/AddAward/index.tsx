@@ -16,6 +16,7 @@ import AwardAddress from '../AwardAddress';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
 import ERC20Buttons from '../ERC20Buttons';
+import { useProvider } from 'wagmi';
 
 const AddAward: React.FC<{
   award: Award;
@@ -24,7 +25,6 @@ const AddAward: React.FC<{
   setIsTyping: React.Dispatch<SetStateAction<boolean>>;
   setAward: (award: Award) => void;
   setSelectedAward: (selectedAward: string) => void;
-  handleCancel: () => void;
   handleAddressChange: (value: string) => void;
   handleTokenBlur: (id: string) => void;
   handleSelectAward: (token: ERC20) => void;
@@ -46,6 +46,7 @@ const AddAward: React.FC<{
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const provider = useProvider();
 
   const handleSelectAwardType = (selectedType: AwardType) => {
     setSelectedAward(selectedType);
@@ -85,21 +86,8 @@ const AddAward: React.FC<{
       return;
     } else {
       // address is valid, and matches the expected type, so get token info
-      const tokenInfo = await getTokenInfo(award.address);
-      const { name, collectionName, image, symbol } = tokenInfo;
-
-      if (!name || !image) {
-        setAward({ ...award, state: 'error', error: 'Unidentifed address' });
-        return;
-      } else {
-        setAward({
-          ...award,
-          state: 'success',
-          name: name === 'Unidentified contract' ? collectionName : name,
-          image,
-          symbol,
-        });
-      }
+      const { name, image, symbol } = await getTokenInfo(award.address, provider);
+      setAward({ ...award, state: 'success', name, image, symbol });
     }
   };
 
@@ -270,16 +258,6 @@ const AddAward: React.FC<{
 
   return (
     <div className={classes.container}>
-      {/* <div>
-        <div className={classes.titleContainer}>
-          <p className={classes.modalTitle}>
-            {editMode === 'Allowlist' ? 'Add a voter' : 'Add contract'}
-            Add award
-          </p>
-        </div>
-      </div>
-      <Divider /> */}
-
       <Group row gap={8} classNames={classes.buttons}>
         {renderAwardButtons()}
       </Group>
@@ -287,19 +265,6 @@ const AddAward: React.FC<{
       <Divider />
 
       <Group>{renderContent()}</Group>
-
-      {/* {editMode &&  <div className={classes.footer}>
-        <div className={classes.buttonContainer}>
-          <Button text={t('Cancel')} bgColor={ButtonColor.White} onClick={handleCancel} />
-
-          <Button
-            text={'Add'}
-            disabled={!verifiedAddress}
-            bgColor={ButtonColor.Purple}
-            onClick={handleAddAward}
-          />
-        </div>
-      </div>} */}
     </div>
   );
 };

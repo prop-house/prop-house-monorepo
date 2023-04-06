@@ -6,6 +6,7 @@ import { getTokenInfo } from '../utils/getTokenInfo';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';
+import { useProvider } from 'wagmi';
 
 const VotingStrategy: React.FC<{
   type: string;
@@ -16,14 +17,16 @@ const VotingStrategy: React.FC<{
 }> = props => {
   const { type, address, multiplier, isDisabled, removeStrategy } = props;
 
+  const provider = useProvider();
   const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });
 
   useEffect(() => {
     const fetchTokenInfo = async () => {
-      const { name, collectionName, image } = await getTokenInfo(address);
-      setTokenInfo({ name: name === 'Unidentified contract' ? collectionName : name, image });
+      const { name, image } = await getTokenInfo(address, provider);
+      setTokenInfo({ name, image });
     };
     if (type !== VotingStrategyType.WHITELIST) fetchTokenInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, type]);
 
   return (
@@ -37,12 +40,7 @@ const VotingStrategy: React.FC<{
           </Group>
         ) : (
           <div className={classes.addressImgAndTitle}>
-            <img
-              src={
-                tokenInfo.image || 'https://nouns.wtf/static/media/loading-skull-noun.d7293d44.gif'
-              }
-              alt={tokenInfo.name}
-            />
+            <img src={tokenInfo.image} alt={tokenInfo.name} />
 
             <span>{tokenInfo.name} holders</span>
           </div>
