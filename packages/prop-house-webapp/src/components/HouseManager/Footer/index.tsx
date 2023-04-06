@@ -9,9 +9,9 @@ import { Asset, AssetType, HouseInfo, HouseType, RoundInfo, RoundType } from '@p
 import { usePropHouse } from '@prophouse/sdk-react';
 import { BigNumber, ethers } from 'ethers';
 import { Award } from '../AssetSelector';
-// import { useState } from 'react';
-// import CreateRoundModal from '../CreateRoundModal';
-// import { useWaitForTransaction } from 'wagmi';
+import { useState } from 'react';
+import CreateRoundModal from '../CreateRoundModal';
+import { useWaitForTransaction } from 'wagmi';
 
 const Footer: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
@@ -21,22 +21,22 @@ const Footer: React.FC = () => {
   const dispatch = useDispatch();
   const propHouse = usePropHouse();
 
-  // const [createRoundModal, setShowCreateRoundModal] = useState(false);
-  // const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [createRoundModal, setShowCreateRoundModal] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
-  // const waitForTransaction = useWaitForTransaction({
-  //   hash: transactionHash as `0x${string}`,
-  //   onSettled: (data, error) => {
-  //     if (error) {
-  //       console.log('Error', error);
+  const waitForTransaction = useWaitForTransaction({
+    hash: transactionHash as `0x${string}`,
+    onSettled: (data, error) => {
+      if (error) {
+        console.log('Tx error', error);
 
-  //       // Handle error case, e.g. show a notification
-  //     } else {
-  //       console.log('Success', data);
-  //       // Handle success case, e.g. navigate to a different page
-  //     }
-  //   },
-  // });
+        // Handle error case, e.g. show a notification
+      } else {
+        console.log('Tx success', data);
+        // Handle success case, e.g. navigate to a different page
+      }
+    },
+  });
 
   const handleNext = () => {
     const isDisabled = stepDisabledArray[activeStep - 1];
@@ -48,6 +48,7 @@ const Footer: React.FC = () => {
   const handlePrev = () => dispatch(setPrevStep());
 
   const handleCreateRound = async (round: NewRound) => {
+    setShowCreateRoundModal(true);
     const houseInfo: HouseInfo<HouseType> = {
       houseType: HouseType.COMMUNITY,
       config: { contractURI: round.house.contractURI },
@@ -120,7 +121,7 @@ const Footer: React.FC = () => {
       if (round.house.contractURI !== '') {
         try {
           const response = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
-          // setTransactionHash(response.hash);
+          setTransactionHash(response.hash);
           return response;
         } catch (e) {
           console.log('error', e);
@@ -132,7 +133,7 @@ const Footer: React.FC = () => {
 
   return (
     <>
-      {/* {createRoundModal && (
+      {createRoundModal && (
         <CreateRoundModal
           status={{
             isLoading: waitForTransaction.isLoading,
@@ -142,7 +143,7 @@ const Footer: React.FC = () => {
           }}
           setShowCreateRoundModal={setShowCreateRoundModal}
         />
-      )} */}
+      )}
 
       <Divider />
 
