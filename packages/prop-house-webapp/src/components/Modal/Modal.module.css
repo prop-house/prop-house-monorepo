@@ -53,6 +53,11 @@
 .imgContainer img {
   height: 80px;
 }
+
+.noScroll {
+  overflow: hidden;
+}
+
 @media (max-width: 575px) {
   .modal {
     width: 90%;

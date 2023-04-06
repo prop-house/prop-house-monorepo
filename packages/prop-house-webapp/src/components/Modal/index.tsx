@@ -1,5 +1,5 @@
 import classes from './Modal.module.css';
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
@@ -32,6 +32,14 @@ const Modal: React.FC<{
 
   const closeModal = () => setShowModal(false);
   const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
+
+  useEffect(() => {
+    document.body.classList.add(classes.noScroll);
+
+    return () => {
+      document.body.classList.remove(classes.noScroll);
+    };
+  }, []);
 
   return (
     <ReactModal
