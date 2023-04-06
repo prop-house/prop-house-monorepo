@@ -25,7 +25,6 @@ import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-
 import CreateRound from './pages/CreateRound';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';

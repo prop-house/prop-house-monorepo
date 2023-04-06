@@ -21,6 +21,7 @@ import {
 import { updateRound, checkStepCriteria } from '../../../state/slices/round';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
+import { useProvider } from 'wagmi';
 
 const AddVotingStrategy: React.FC<{
   strat: NewStrategy;
@@ -41,6 +42,7 @@ const AddVotingStrategy: React.FC<{
     setSelectedStrategy,
   } = props;
   const { t } = useTranslation();
+  const provider = useProvider();
 
   const round = useAppSelector(state => state.round.round);
 
@@ -214,20 +216,8 @@ const AddVotingStrategy: React.FC<{
       return;
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const tokenInfo = await getTokenInfo(strat.address);
-      const { name, collectionName, image } = tokenInfo;
-
-      if (!name || !image) {
-        setStrat({ ...strat, state: 'error', error: 'Unidentifed address' });
-        return;
-      } else {
-        setStrat({
-          ...strat,
-          state: 'success',
-          name: name === 'Unidentified contract' ? collectionName : name,
-          image,
-        });
-      }
+      const { name, image } = await getTokenInfo(strat.address, provider);
+      setStrat({ ...strat, state: 'success', name, image });
     }
   };
 

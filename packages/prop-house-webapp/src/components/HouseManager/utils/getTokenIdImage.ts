@@ -1,35 +1,33 @@
 import { Provider } from '@wagmi/core';
 
 // Get contract Name and Image from OpenSea API
-export const getTokenInfo = async (contractAddress: string, provider: Provider) => {
+export const getTokenIdImage = async (address: string, tokenId: string, provider: Provider) => {
   try {
     const network = await provider.getNetwork();
     let baseURL;
 
     // Mainnet
     if (network.chainId === 1) {
-      baseURL = 'https://api.opensea.io/api/v1';
+      baseURL = 'https://api.opensea.io/api/v1/asset';
     }
     // Goerli
     else if (network.chainId === 5) {
-      baseURL = 'https://testnets-api.opensea.io/api/v1';
+      baseURL = 'https://testnets-api.opensea.io/api/v1/asset_contract';
     } else {
       throw new Error(`Unsupported chain ID: ${network.chainId}`);
     }
 
-    const response = await fetch(`${baseURL}/asset_contract/${contractAddress}`);
+    const response = await fetch(`${baseURL}/${address}/${tokenId}`);
 
     if (!response.ok) {
       throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
     }
-    const data = await response.json();
-    const { name, image_url, symbol, collection } = data;
 
-    return {
-      name: name || collection.name,
-      image: image_url || '/manager/fallback.png',
-      symbol: symbol || '',
-    };
+    const data = await response.json();
+
+    const { image_url } = data;
+
+    return { image: image_url || '/manager/fallback.png' };
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching contract info: ${error}`);
