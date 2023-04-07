@@ -69,19 +69,25 @@ const filterInfRoundProps = (
   const now = dayjs();
   switch (type) {
     case InfRoundFilterType.Active:
-      return props.filter(
-        p =>
-          p.voteCount < round.quorum &&
-          dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
-      );
+      return props
+        .filter(
+          p =>
+            p.voteCount < round.quorum &&
+            dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
+        )
+        .sort((a, b) => sortHelper(a.voteCount, b.voteCount, false));
     case InfRoundFilterType.Winners:
-      return props.filter(p => p.voteCount >= round.quorum);
+      return props
+        .filter(p => p.voteCount >= round.quorum)
+        .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
     case InfRoundFilterType.Stale:
-      return props.filter(
-        p =>
-          p.voteCount < round.quorum &&
-          dayjs(p.createdDate).isBefore(now.subtract(round.votingPeriod, 's')),
-      );
+      return props
+        .filter(
+          p =>
+            p.voteCount < round.quorum &&
+            dayjs(p.createdDate).isBefore(now.subtract(round.votingPeriod, 's')),
+        )
+        .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
     default:
       return props;
   }
