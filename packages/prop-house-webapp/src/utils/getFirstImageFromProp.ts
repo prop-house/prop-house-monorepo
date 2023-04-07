@@ -15,7 +15,7 @@ const getFirstImageFromProp = async (proposal: StoredProposalWithVotes) => {
 
   // check if there's an image in the description or it is a ph pinata upload
   return (await isImage(match[1])) || match[1].includes('prophouse.mypinata')
-    ? match[1]
+    ? match[1].replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')
     : undefined;
 };
 
