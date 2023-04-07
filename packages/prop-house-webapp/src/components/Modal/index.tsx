@@ -1,5 +1,5 @@
 import classes from './Modal.module.css';
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
@@ -30,28 +30,40 @@ const Modal: React.FC<{
   } = props;
   const { t } = useTranslation();
 
+  const modalContainerRef = useRef<HTMLDivElement>(null);
   const closeModal = () => setShowModal(false);
   const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
 
   useEffect(() => {
     const disableScroll = () => {
       document.body.style.overflow = 'hidden';
-      document.addEventListener('touchmove', preventTouchMove, { passive: false } as any); // Use 'any' type
     };
 
     const enableScroll = () => {
       document.body.style.overflow = 'auto';
-      document.removeEventListener('touchmove', preventTouchMove, { passive: false } as any); // Use 'any' type
     };
 
-    // Prevent touchmove event on mobile devices
-    const preventTouchMove = (e: TouchEvent) => {
-      e.preventDefault();
+    const stopTouchMovePropagation: EventListener = e => {
+      e.stopPropagation();
     };
+
+    const modalContainerElement = modalContainerRef.current;
+    if (modalContainerElement) {
+      modalContainerElement.addEventListener('touchmove', stopTouchMovePropagation, {
+        passive: false,
+      } as any);
+    }
 
     disableScroll();
 
-    return () => enableScroll();
+    return () => {
+      if (modalContainerElement) {
+        modalContainerElement.removeEventListener('touchmove', stopTouchMovePropagation, {
+          passive: false,
+        } as any);
+      }
+      enableScroll();
+    };
   }, []);
 
   return (
@@ -62,7 +74,7 @@ const Modal: React.FC<{
       className={classes.modal}
     >
       <>
-        <div className={classes.container}>
+        <div ref={modalContainerRef} className={classes.container}>
           <div>
             {loading ? (
               <LoadingIndicator width={150} height={125} />
