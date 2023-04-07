@@ -5,7 +5,7 @@ import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
 import { StrategyType, newStrategy, NewStrategy } from '../StrategiesConfig';
-import Address from '../Address';
+import StrategyAddress from '../StrategyAddress';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -286,7 +286,7 @@ const AddVotingStrategy: React.FC<{
   const strategyContent = {
     [StrategyType.ERC721]: (
       <Group gap={8}>
-        <Address
+        <StrategyAddress
           strategy={strat}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}
@@ -304,7 +304,7 @@ const AddVotingStrategy: React.FC<{
     [StrategyType.ERC1155]: (
       <Group gap={8}>
         <Group row gap={6}>
-          <Address
+          <StrategyAddress
             strategy={strat}
             isTyping={isTyping}
             handleBlur={handleAddressBlur}
@@ -346,7 +346,7 @@ const AddVotingStrategy: React.FC<{
     ),
     [StrategyType.ERC20]: (
       <Group gap={8}>
-        <Address
+        <StrategyAddress
           strategy={strat}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}
@@ -363,7 +363,7 @@ const AddVotingStrategy: React.FC<{
     ),
     [StrategyType.Allowlist]: (
       <Group gap={8}>
-        <Address
+        <StrategyAddress
           strategy={strat}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}

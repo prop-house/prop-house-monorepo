@@ -1,4 +1,4 @@
-import classes from './Address.module.css';
+import classes from './StrategyAddress.module.css';
 import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
@@ -8,7 +8,7 @@ import EthAddress from '../../EthAddress';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
 
-const Address: React.FC<{
+const StrategyAddress: React.FC<{
   isTyping: boolean;
   strategy: NewStrategy;
   placeholder?: string;
@@ -87,4 +87,4 @@ const Address: React.FC<{
   );
 };
 
-export default Address;
+export default StrategyAddress;
