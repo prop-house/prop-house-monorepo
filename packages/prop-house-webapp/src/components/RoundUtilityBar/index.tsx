@@ -52,7 +52,12 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
 
       {/** ROUND DATA */}
       <div className={classes.utilitySection}>
-        <Col className={classes.propHouseDataRow}>
+        <Col
+          className={clsx(
+            classes.propHouseDataRow,
+            isInfAuction(auction) ? classes.hideFourthItemOnMobile : classes.hideThirdItemOnMobile,
+          )}
+        >
           {/** TIMED AUCTION */}
           {isTimedAuction(auction) && (
             <>
