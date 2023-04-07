@@ -61,7 +61,7 @@
     display: block;
   }
   .propHouseDataRow {
-    justify-content: flex-end;
+    justify-content: start;
   }
   .propHouseDataRow :nth-child(n + 2) {
     border-right: none;
@@ -85,13 +85,19 @@
   .propHouseDataRow {
     justify-content: start;
   }
-  .propHouseDataRow > *:nth-child(2) {
+  .propHouseDataRow.hideThirdItemOnMobile > *:nth-child(2) {
+    border-right: none;
+  }
+  .propHouseDataRow.hideFourthItemOnMobile > *:nth-child(2) {
     border-right: 1px solid var(--border-light);
   }
   .propHouseDataRow :nth-child(n + 3) {
     display: flex;
   }
-  .propHouseDataRow :nth-child(n + 4) {
+  .propHouseDataRow.hideThirdItemOnMobile :nth-child(n + 3) {
+    display: none;
+  }
+  .propHouseDataRow.hideFourthItemOnMobile :nth-child(n + 4) {
     display: none;
   }
 }
