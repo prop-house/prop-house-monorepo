@@ -49,11 +49,13 @@ const Footer: React.FC = () => {
 
   const handleCreateRound = async (round: NewRound) => {
     setShowCreateRoundModal(true);
+
     const houseInfo: HouseInfo<HouseType> = {
       houseType: HouseType.COMMUNITY,
       config: { contractURI: round.house.contractURI },
     };
 
+    // Takes our Award type and converts it to an Asset type
     const createAward = (award: Award) => {
       switch (award.type) {
         case AssetType.ETH:
@@ -65,6 +67,8 @@ const Footer: React.FC = () => {
           return {
             assetType: AssetType.ERC20,
             address: award.address,
+            // ERC20 token amounts are represented in base units (the smallest sub-division of the token),
+            // and need to be parsed using the token decimals to be handled correctly
             amount: ethers.utils.parseUnits(award.amount.toString(), award.decimals).toString(),
           } as Asset;
         case AssetType.ERC721:
@@ -87,11 +91,14 @@ const Footer: React.FC = () => {
 
     let awards: Asset[] = [];
 
+    // Split Awards: each winner gets the same award
     if (round.splitAwards) {
-      for (let i = 0; i < round.numWinners; i++) {
-        awards = awards.concat(round.awards.map(createAward));
-      }
+      awards = Array.from({ length: round.numWinners }, () => round.awards)
+        .flat()
+        .map(createAward);
     } else {
+      // Individual Awards: map each award to an Asset
+      // the number of winners is equal to the number of awards
       awards = round.awards.map(createAward);
     }
 
