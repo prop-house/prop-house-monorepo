@@ -34,11 +34,24 @@ const Modal: React.FC<{
   const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
 
   useEffect(() => {
-    document.body.classList.add(classes.noScroll);
-
-    return () => {
-      document.body.classList.remove(classes.noScroll);
+    const disableScroll = () => {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('touchmove', preventTouchMove, { passive: false } as any); // Use 'any' type
     };
+
+    const enableScroll = () => {
+      document.body.style.overflow = 'auto';
+      document.removeEventListener('touchmove', preventTouchMove, { passive: false } as any); // Use 'any' type
+    };
+
+    // Prevent touchmove event on mobile devices
+    const preventTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    disableScroll();
+
+    return () => enableScroll();
   }, []);
 
   return (
