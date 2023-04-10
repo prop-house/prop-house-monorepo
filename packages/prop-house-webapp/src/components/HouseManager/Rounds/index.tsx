@@ -67,8 +67,6 @@ const Rounds: React.FC = () => {
     fetchRounds();
   }, [account, propHouse.query]);
 
-  console.log('rounds', rounds);
-
   return (
     <>
       <Container>
