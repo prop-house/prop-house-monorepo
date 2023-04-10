@@ -4,8 +4,14 @@ const bgColorForFooter = (path: string) => {
   const isProposalPath = new RegExp('.*/.*/.*/.+').test(path) || path.includes('/proposal/');
 
   if (isProposalPath) return 'bgWhite';
-  if (isHousePath || '/' || isCreateRoundPath) return 'bgGray';
-
+  if (
+    isHousePath ||
+    path === '/' ||
+    path === '/admin' ||
+    path === '/admin/rounds' ||
+    isCreateRoundPath
+  )
+    return 'bgGray';
   return 'bgWhite';
 };
 
