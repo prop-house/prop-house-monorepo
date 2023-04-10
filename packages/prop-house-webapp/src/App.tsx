@@ -28,6 +28,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import CreateRound from './pages/CreateRound';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
+import Rounds from './components/HouseManager/Rounds';
 
 const { chains, provider } = configureChains(
   [goerli],
@@ -96,6 +97,7 @@ function App() {
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/admin" element={<HouseManager />} />
+                    <Route path="/admin/rounds" element={<Rounds />} />
                     <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="/:house" element={<House />} />
                     <Route path="/:house/:title" element={<Round />} />

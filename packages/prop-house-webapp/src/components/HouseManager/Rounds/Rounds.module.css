@@ -1,0 +1,41 @@
+.cardsContainer {
+  width: 100%;
+}
+.house {
+  align-items: center;
+  justify-content: space-between;
+}
+.house p {
+  color: var(--brand-gray) !important;
+}
+.house img {
+  width: 24px;
+  height: 24px;
+}
+.title {
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 28px;
+}
+.description {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 120%;
+  letter-spacing: 0.01em;
+  color: var(--brand-gray);
+}
+
+/* .primaryCard {
+  width: 66.666667%;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-low);
+  height: max-content;
+  min-height: 200px;
+}
+@media (max-width: 991px) {
+  .primaryCard {
+    width: 100%;
+    margin-top: 8px;
+  }
+} */
