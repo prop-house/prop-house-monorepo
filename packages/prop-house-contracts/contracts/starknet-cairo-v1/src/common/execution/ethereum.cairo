@@ -1,21 +1,26 @@
-use starknet::ContractAddress;
-
 #[contract]
-mod ETHStrategy {
-    use starknet::get_caller_address;
+mod EthereumExecutionStrategy {
     use starknet::ContractAddress;
-    use starknet::ContractAddressIntoFelt252;
+    use starknet::get_caller_address;
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::syscalls::send_message_to_l1_syscall;
     use prop_house::round_factory::IRoundFactory;
     use prop_house::round_factory::IRoundFactoryDispatcher;
     use prop_house::round_factory::IRoundFactoryDispatcherTrait;
+    use prop_house::common::lib::traits::IExecutionStrategy;
     use zeroable::Zeroable;
     use array::ArrayTrait;
-    use traits::Into;
 
     struct Storage {
-        _round_factory: ContractAddress,
+        _round_factory: ContractAddress, 
+    }
+
+    impl EthereumExecutionStrategy of IExecutionStrategy {
+        fn execute(params: Array<felt252>) {
+            send_message_to_l1_syscall(
+                to_address: _origin_round_for_caller(), payload: params.span()
+            );
+        }
     }
 
     #[constructor]
@@ -25,9 +30,7 @@ mod ETHStrategy {
 
     #[external]
     fn execute(params: Array<felt252>) {
-        send_message_to_l1_syscall(
-            to_address: _origin_round_for_caller().into(), payload: params.span()
-        );
+        EthereumExecutionStrategy::execute(params);
     }
 
     ///
@@ -38,7 +41,7 @@ mod ETHStrategy {
         _round_factory::write(round_factory_);
     }
 
-    fn _origin_round_for_caller() -> ContractAddress {
+    fn _origin_round_for_caller() -> felt252 {
         let round_factory = _round_factory::read();
         let caller = get_caller_address();
 

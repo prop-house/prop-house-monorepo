@@ -1,1 +1,1 @@
-mod eth_strategy;
+mod ethereum;
