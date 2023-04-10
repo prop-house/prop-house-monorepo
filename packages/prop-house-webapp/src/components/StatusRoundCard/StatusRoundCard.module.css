@@ -81,7 +81,6 @@
   gap: 5px;
   width: 50%;
   justify-content: flex-end;
-  /* height: 24px; */
 }
 
 .address {
@@ -89,17 +88,14 @@
 }
 
 .proposalCard {
-  /* min-height: 12.5rem; */
   display: flex;
   flex-direction: column;
   transition: all 0.1s ease-in-out;
-  /* justify-content: space-between; */
 }
 
 .proposalCard:hover {
   border: 1px solid var(--brand-purple);
   cursor: pointer;
-  /* transform: scale(1.01); */
   transition: all 0.15s ease-in-out;
 }
 
@@ -138,11 +134,8 @@
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
-  /* number of lines to show */
   line-height: X;
-  /* fallback */
   max-height: X * N;
-  /* fallback */
 }
 .tooltipTitle {
   cursor: help;
@@ -228,7 +221,6 @@
 .roundInfo {
   display: flex;
   justify-content: space-between;
-  /* background: linear-gradient(180deg, #fcfcfc 0%, #ffffff 100%); */
   border-bottom: 1px solid var(--border-light);
   padding: 1.125rem 1.5rem 1.375rem 1.5rem;
   border-bottom-left-radius: 24px;
