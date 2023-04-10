@@ -14,6 +14,7 @@ export const NounImage = {
   Heart: { src: '/heads/heart.png', alt: 'heart' },
   House: { src: '/heads/house.png', alt: 'house' },
   Laptop: { src: '/heads/laptop.png', alt: 'laptop' },
+  Pencil: { src: '/heads/pencil.png', alt: 'pencil' },
   Thumbsup: { src: '/heads/thumbsup.png', alt: 'thumbsup' },
   Trashcan: { src: '/heads/trashcan.png', alt: 'trashcan' },
   Wallet: { src: '/heads/wallet.png', alt: 'wallet' },
