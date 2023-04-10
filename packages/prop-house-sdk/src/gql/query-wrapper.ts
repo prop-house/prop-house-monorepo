@@ -21,6 +21,7 @@ import {
   ManyRoundsSimpleWhereTitleContainsQuery,
   ManyRoundVotingStrategiesQuery,
   RoundQuery,
+  RoundWithHouseInfoQuery,
 } from './queries.evm';
 import {
   getDefaultConfig,
@@ -162,6 +163,14 @@ export class QueryWrapper {
    */
   public async getRound(round: string) {
     return this._gql.evm.request(RoundQuery, { id: round.toLowerCase() });
+  }
+
+  /**
+   * Get detailed information for a single round, including house information
+   * @param round The round address
+   */
+  public async getRoundWithHouseInfo(round: string) {
+    return this._gql.evm.request(RoundWithHouseInfoQuery, { id: round.toLowerCase() });
   }
 
   /**

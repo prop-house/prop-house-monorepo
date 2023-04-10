@@ -198,6 +198,43 @@ export const RoundQuery = graphql(`
   }
 `);
 
+export const RoundWithHouseInfoQuery = graphql(`
+  query roundWithHouseInfo($id: ID!) {
+    round(id: $id) {
+      id
+      type
+      title
+      description
+      createdAt
+      state
+      manager {
+        id
+      }
+      votingStrategies {
+        votingStrategy {
+          id
+          type
+          address
+          params
+        }
+      }
+      timedFundingConfig {
+        ...TimedFundingRoundConfigParts
+      }
+      house {
+        id
+        metadata {
+          name
+          description
+          imageURI
+        }
+        createdAt
+        roundCount
+      }
+    }
+  }
+`);
+
 export const ManyRoundBalancesQuery = graphql(`
   query manyRoundBalances(
     $round: String!
