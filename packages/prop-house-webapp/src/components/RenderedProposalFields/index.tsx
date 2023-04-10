@@ -80,8 +80,11 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
                   code: ['language-*', 'lang-*'],
                   pre: ['language-*', 'lang-*'],
                 },
+              })
                 // edge case: handle ampersands in img links encoded from sanitization
-              }).replaceAll('&amp;', '&')}
+                .replaceAll('&amp;', '&')
+                // Pinata requires crossorigin attribute on images
+                .replaceAll(/<img/g, '<img crossorigin="anonymous"')}
             </Markdown>
           </span>
         </Col>
