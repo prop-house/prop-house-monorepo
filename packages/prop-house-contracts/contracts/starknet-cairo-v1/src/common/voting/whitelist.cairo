@@ -54,6 +54,7 @@ mod WhitelistVotingStrategy {
                 break ();
             }
             proof.append(*user_params.at(i));
+            i = i + 1;
         };
 
         let merkle_root = *params.at(0_u32);
