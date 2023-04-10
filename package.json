@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": "true",
   "scripts": {
-    "build": "yarn workspace prop-house-communities build && yarn workspace @nouns/prop-house-wrapper build"
+    "build": "yarn workspace @prophouse/communities build && yarn workspace @nouns/prop-house-wrapper build"
   },
   "workspaces": {
     "packages": [

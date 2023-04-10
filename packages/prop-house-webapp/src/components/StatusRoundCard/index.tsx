@@ -24,7 +24,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
-import { getVotingPower } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
 import Countdown from '../Countdown';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 

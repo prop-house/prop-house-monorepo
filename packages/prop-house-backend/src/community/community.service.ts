@@ -5,7 +5,7 @@ import { Community } from './community.entity';
 import * as ethers from 'ethers';
 import { BigNumberish } from '@ethersproject/bignumber';
 import config from 'src/config/configuration';
-import { getVotingPower } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
 import { ExtendedCommunity } from './community.types';
 
 @Injectable()

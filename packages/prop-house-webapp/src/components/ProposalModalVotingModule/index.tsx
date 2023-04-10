@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
-import { getVotingPower } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
