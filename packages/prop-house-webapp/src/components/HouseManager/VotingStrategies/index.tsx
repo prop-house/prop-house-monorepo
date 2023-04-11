@@ -88,8 +88,6 @@ const VotingStrategies: FC<{
       <Group row gap={6} mb={18} classNames={clsx(editMode && classes.editModeButtons)}>
         <Button
           onClick={() => {
-            // setShowModal(true);
-            // setCurrentView('addStrategies');
             setCurrentView ? setCurrentView('addStrategies') : setShowVotingStrategyModal!(true);
           }}
           text={'Add a strategy'}
@@ -104,8 +102,7 @@ const VotingStrategies: FC<{
           />
         ) : (
           <Button
-            // TODO
-            // onClick={() => setShowModal(true)}
+            // TODO: Add CSV upload functionality
             text={'Upload CSV'}
             bgColor={ButtonColor.White}
           />

@@ -191,7 +191,6 @@ const SplitAwards: React.FC<{
       const { name, image, symbol } = await getTokenInfo(award.address, provider);
       const { price } = await getUSDPrice(award.type, award.address, provider);
 
-      //TODO
       setAward({
         ...award,
         state: 'success',
