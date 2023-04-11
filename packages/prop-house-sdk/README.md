@@ -305,23 +305,195 @@ const query = new QueryWrapper(ChainId.EthereumGoerli);
 
 #### Methods
 
-* **getHouses**: Get high-level house information for many houses. Accepts an optional pagination and ordering configuration.
-* **getHousesWhereAccountHasCreatorPermissions**: Get paginated houses where the provided account has creator permissions. Accepts the account address, and an optional pagination and ordering configuration.
-* **getHousesWhereAccountIsOwner**: Get paginated houses where the provided account is the house owner. Accepts the account address, and an optional pagination and ordering configuration.
-* **getHousesWhereAccountIsOwnerOrHasCreatorPermissions**: Get paginated houses where the provided account is the house owner or has creator permissions. Accepts the account address, and an optional pagination and ordering configuration.
-* **getRounds**: Get high-level round information for many rounds. Accepts an optional pagination and ordering configuration.
-* **getRoundsForHouse**: Get high-level round information for many rounds on the provided house. Accepts the house address, and an optional pagination and ordering configuration.
-* **getRoundsWhereTitleContains**: Get high-level round information for many rounds where the title contains the provided partial title text. Accepts the partial title text, and an optional pagination and ordering configuration.
-* **getRound**: Get detailed information for a single round. Accepts the round address.
-* **getRoundWithHouseInfo**: Get detailed information for a single round, including house information. Accepts the round address.
-* **getRoundBalances**: Get balance information for a single round. Accepts the round address, and an optional pagination and ordering configuration.
-* **getRoundVotingStrategies**: Get voting strategy information for a single round. Accepts the round address, and an optional pagination and ordering configuration.
-* **getRoundsManagedByAccount**: Get paginated rounds currently managed by the provided account address. Accepts the account address, and an optional pagination and ordering configuration.
-* **getRoundDepositsByAccount**: Get paginated round deposits by the provided account address. Accepts the depositor address, and an optional pagination and ordering configuration.
-* **getRoundClaimsByAccount**: Get paginated round claims by the provided account address. Accepts the claimer address, and an optional pagination and ordering configuration.
-* **getProposalsByAccount**: Get paginated proposals by the provided account address. Accepts the account address, and an optional pagination and ordering configuration.
-* **getVotesByAccount**: Get paginated votes by the provided account address. Accepts the account address, and an optional pagination and ordering configuration.
-* **getProposalsForRound**: Get paginated proposals for the provided round address. Accepts the round address, and an optional pagination and ordering configuration.
+<details>
+  <summary>Get houses</summary>
+
+  Get high-level house information for many houses. Accepts an optional pagination and ordering configuration.
+
+  ```ts
+  const { houses } = await propHouse.query.getHouses();
+  ```
+</details>
+
+<details>
+  <summary>Get houses where account has creator permissions</summary>
+
+  Get paginated houses where the provided account has creator permissions. Accepts the account address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { houses } = await propHouse.query.getHousesWhereAccountHasCreatorPermissions(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get houses where account is owner</summary>
+
+  Get paginated houses where the provided account is the house owner. Accepts the account address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { houses } = await propHouse.query.getHousesWhereAccountIsOwner(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get houses where account is owner or has creator permissions</summary>
+
+  Get paginated houses where the provided account is the house owner or has creator permissions. Accepts the account address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { houses } = await propHouse.query.getHousesWhereAccountIsOwnerOrHasCreatorPermissions(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get rounds</summary>
+
+  Get high-level round information for many rounds. Accepts an optional pagination and ordering configuration.
+
+  ```ts
+  const { rounds } = await propHouse.query.getRounds();
+  ```
+</details>
+
+<details>
+  <summary>Get rounds for house</summary>
+
+  Get high-level round information for many rounds on the provided house. Accepts the house address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { rounds } = await propHouse.query.getRoundsForHouse(houseAddress);
+  ```
+</details>
+
+<details>
+  <summary>Get rounds where title contains</summary>
+
+  Get high-level round information for many rounds where the title contains the provided partial title text. Accepts the partial title text, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { rounds } = await propHouse.query.getRoundsWhereTitleContains(
+    partialTitleText,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get round</summary>
+
+  Get detailed information for a single round. Accepts the round address.
+
+  ```ts
+  const round = await propHouse.query.getRound(roundAddress);
+  ```
+</details>
+
+<details>
+  <summary>Get round with house info</summary>
+
+  Get detailed information for a single round, including house information. Accepts the round address.
+
+  ```ts
+  const round = await propHouse.query.getRoundWithHouseInfo(roundAddress);
+  ```
+</details>
+
+<details>
+  <summary>Get round balances</summary>
+
+  Get balance information for a single round. Accepts the round address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { balances } = await propHouse.query.getRoundBalances(roundAddress);
+  ```
+</details>
+
+<details>
+  <summary>Get round voting strategies</summary>
+
+  Get voting strategy information for a single round. Accepts the round address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { votingStrategies } = await propHouse.query.getRoundVotingStrategies(
+    roundAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get rounds managed by account</summary>
+
+  Get paginated rounds currently managed by the provided account address. Accepts the account address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { rounds } = await propHouse.query.getRoundsManagedByAccount(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get round deposits by account</summary>
+
+  Get paginated round deposits by the provided account address. Accepts the depositor address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { deposits } = await propHouse.query.getRoundDepositsByAccount(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get round claims by account</summary>
+
+  Get paginated round claims by the provided account address. Accepts the claimer address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { claims } = await propHouse.query.getRoundClaimsByAccount(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get round proposals by account</summary>
+
+  Get paginated round proposals by the provided account address. Accepts the proposer address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { proposals } = await propHouse.query.getRoundProposalsByAccount(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get round votes by account</summary>
+
+  Get paginated round votes by the provided account address. Accepts the voter address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { votes } = await propHouse.query.getRoundVotesByAccount(
+    accountAddress,
+  );
+  ```
+</details>
+
+<details>
+  <summary>Get proposals for round</summary>
+
+  Get paginated proposals for the provided round address. Accepts the round address, and an optional pagination and ordering configuration.
+
+  ```ts
+  const { proposals } = await propHouse.query.getProposalsForRound(roundAddress);
+  ```
+</details>
 
 In addition, you make custom queries using the underlying `EVM` and `Starknet` GraphQL clients:
 
