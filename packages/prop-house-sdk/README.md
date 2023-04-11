@@ -15,14 +15,16 @@ yarn add @prophouse/sdk
 ## Usage
 
 ### Entrypoint
+---
 
 The [PropHouse](src/prop-house.ts) class acts as the entrypoint for all Prop House protocol interactions.
 
 #### Features
 
 - House and round creation
-- Proposal and vote submission
+- Round asset depositing
 - Querying of house and round state
+- Proposal and vote submission
 
 To create a prop house instance, provide the chain ID and a signer/provider:
 
@@ -36,10 +38,13 @@ const propHouse = new PropHouse({
 ```
 
 ### House & Round Creation
+---
 
 A round can be created on new or existing house in a single transaction. The round can be fully funded, partially funded, or not funded at all at this time.
 
 When funding a round, the `PropHouse` contract must be approved to spend included tokens prior to the transfer. If funding with ETH, no approval is necessary.
+
+#### Examples
 
 <details>
   <summary>Create a round on a new house</summary>
@@ -210,10 +215,13 @@ When funding a round, the `PropHouse` contract must be approved to spend include
 </details>
 
 ### Round Asset Deposits
+---
 
 If a round is not fully funded during creation, it can be funded by **anyone** at any time. This is useful when multiple parties are funding a round, or when a round is funded by someone other than the round creator, such as a DAO.
 
 Upon deposit, a receipt is issued to the depositor. This receipt can be used to reclaim assets while the round is awaiting registration, or in the event of a round cancellation. The receipt is transferrable.
+
+#### Examples
 
 <details>
   <summary>Deposit an asset to a round</summary>
@@ -283,6 +291,7 @@ Upon deposit, a receipt is issued to the depositor. This receipt can be used to 
 </details>
 
 ### House & Round Queries
+---
 
 A `query` property is exposed on the `PropHouse` instance, which exposes a variety of methods for querying house and round state.
 
