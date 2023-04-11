@@ -98,8 +98,14 @@ const Rounds: React.FC = () => {
                 <Group gap={12}>
                   <Group row classNames={classes.house}>
                     <Group gap={6} row classNames={classes.house}>
-                      <img src={'/manager/fallback.png'} alt={'fallback'} />
-                      <Text type="subtitle">{`House title`}</Text>
+                      <img
+                        src={round.house.metadata.imageURI.replace(
+                          /prophouse.mypinata.cloud/g,
+                          'cloudflare-ipfs.com',
+                        )}
+                        alt={'fallback'}
+                      />
+                      <Text type="subtitle">{round.house.metadata.name}</Text>
                     </Group>
 
                     <StatusLabel state={round.state} />
