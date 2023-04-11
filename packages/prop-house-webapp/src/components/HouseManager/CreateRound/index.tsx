@@ -134,27 +134,6 @@ const CreateRound = () => {
         </CardWrapper>
       </Group>
 
-      {/* // TODO: add this back in when we have the tokens and NFTs sections */}
-      {/*
-      <Divider />
-       <Group gap={16} mb={16}>
-        <Text type="title">Deposit funds for the round</Text>
-        <InstructionBox
-          title="Funding now vs later"
-          text="You can add either contract addresses allowing anyone that holds the relevant ERC20/ERC721 to participate, or add any specific wallet addresses for individual access to the round."
-        />
-      </Group>
-
-       <Group>
-        <Text type="title">Tokens</Text>
-      </Group>
-
-      <Divider />
-
-      <Group>
-        <Text type="title">NFTs</Text>
-      </Group> */}
-
       <Footer />
     </>
   );
