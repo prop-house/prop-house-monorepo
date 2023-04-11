@@ -1,5 +1,6 @@
 .cardsContainer {
-  width: 100%;
+  width: 75%;
+  margin: auto;
 }
 .house {
   align-items: center;
@@ -11,6 +12,7 @@
 .house img {
   width: 24px;
   height: 24px;
+  border-radius: 4px;
 }
 .title {
   font-weight: 700;
@@ -25,17 +27,8 @@
   letter-spacing: 0.01em;
   color: var(--brand-gray);
 }
-
-/* .primaryCard {
-  width: 66.666667%;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-low);
-  height: max-content;
-  min-height: 200px;
-}
-@media (max-width: 991px) {
-  .primaryCard {
+@media (max-width: 768px) {
+  .cardsContainer {
     width: 100%;
-    margin-top: 8px;
   }
-} */
+}
