@@ -28,9 +28,19 @@ type Round = {
   description: string;
   createdAt: any;
   state: RoundState;
+  house: {
+    id: string;
+    metadata: {
+      name: string;
+      description: string;
+      imageURI: string;
+    };
+    createdAt: string;
+    roundCount: number;
+  };
 };
 
-type ManyRoundsSimpleManagedByAccountQuery = {
+type RoundsWithHouseInfo = {
   __typename?: 'Query';
   rounds: Round[];
 };
@@ -43,17 +53,23 @@ const Rounds: React.FC = () => {
   useEffect(() => {
     async function fetchRounds() {
       try {
-        const data: ManyRoundsSimpleManagedByAccountQuery =
-          await propHouse.query.getRoundsManagedByAccount(account as string, {
+        // @ts-ignore
+        const data: RoundsWithHouseInfo = await propHouse.query.getRoundsManagedByAccount(
+          account as string,
+          {
             page: 1,
             perPage: 10,
-          });
-        propHouse.query.getHouses().then(data => console.log(data.houses));
+          },
+        );
 
-        const roundDetailsPromises = data.rounds.map(round => propHouse.query.getRound(round.id));
+        // const roundDetailsPromises = data.rounds.map(round => propHouse.query.getRound(round.id));
+        const roundDetailsPromises = data.rounds.map(round =>
+          propHouse.query.getRoundWithHouseInfo(round.id),
+        );
 
         const roundDetailsArray = await Promise.all(roundDetailsPromises);
 
+        // @ts-ignore
         const combinedRounds: Round[] = data.rounds.map((round, index) => ({
           ...round,
           ...roundDetailsArray[index].round,
