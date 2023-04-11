@@ -44,7 +44,8 @@ const CreateRoundModal: React.FC<{
     ''
   ) : status.isSuccess ? (
     <>
-      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b> house.
+      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b>. Click
+      the button below to view your rounds. The new one will show up shortly.
     </>
   ) : status.isError ? (
     'There was a problem creating your round. Please try again.'
