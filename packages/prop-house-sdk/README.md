@@ -219,7 +219,7 @@ When funding a round, the `PropHouse` contract must be approved to spend include
 
 If a round is not fully funded during creation, it can be funded by **anyone** at any time. This is useful when multiple parties are funding a round, or when a round is funded by someone other than the round creator, such as a DAO.
 
-Upon deposit, a receipt is issued to the depositor. This receipt can be used to reclaim assets while the round is awaiting registration, or in the event of a round cancellation. The receipt is transferrable.
+Upon deposit, a receipt is issued to the depositor. This receipt can be used to reclaim assets while the round is awaiting registration, or in the event of a round cancellation. Receipts are transferrable.
 
 #### Examples
 
