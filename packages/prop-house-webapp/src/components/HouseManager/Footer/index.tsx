@@ -170,7 +170,13 @@ const Footer: React.FC = () => {
 
         {activeStep === 6 && (
           <Button
-            text="Create"
+            text={
+              waitForTransaction.isLoading
+                ? 'Pending'
+                : waitForTransaction.isSuccess
+                ? 'Success'
+                : 'Create'
+            }
             disabled={stepDisabledArray[5]}
             bgColor={ButtonColor.Pink}
             onClick={() => handleCreateRound(round)}

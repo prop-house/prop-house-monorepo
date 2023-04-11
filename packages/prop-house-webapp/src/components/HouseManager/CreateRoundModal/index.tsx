@@ -83,16 +83,15 @@ const CreateRoundModal: React.FC<{
       image={image}
       setShowModal={setShowCreateRoundModal}
       button={
-        <Button
-          text="Close"
-          bgColor={ButtonColor.White}
-          disabled={!(status.isError || status.isSuccess)}
-          onClick={() => setShowCreateRoundModal(false)}
-        />
-      }
-      secondButton={
-        status.isSuccess && (
+        status.isSuccess ? (
           <Button text="View my rounds" bgColor={ButtonColor.Pink} onClick={handleClick} />
+        ) : (
+          <Button
+            text="Close"
+            bgColor={ButtonColor.White}
+            disabled={!(status.isError || status.isSuccess)}
+            onClick={() => setShowCreateRoundModal(false)}
+          />
         )
       }
     />
