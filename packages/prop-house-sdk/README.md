@@ -21,9 +21,9 @@ The [PropHouse](src/prop-house.ts) class acts as the entrypoint for all Prop Hou
 
 #### Features
 
-- House and round creation
-- Round asset depositing
-- Querying of house and round state
+- [House and round creation](#house--round-creation)
+- [Round asset depositing](#round-asset-deposits)
+- [Querying of house and round state](#house--round-queries)
 - Proposal and vote submission
 
 To create a prop house instance, provide the chain ID and a signer/provider:
