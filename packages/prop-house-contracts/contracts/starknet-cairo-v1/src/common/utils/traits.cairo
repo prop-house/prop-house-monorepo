@@ -14,3 +14,8 @@ trait IVotingStrategy {
         user_params: Array<felt252>,
     ) -> u256;
 }
+
+#[abi]
+trait IAuthStrategy {
+    fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>);
+}

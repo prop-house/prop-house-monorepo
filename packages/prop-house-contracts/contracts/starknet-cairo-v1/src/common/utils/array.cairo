@@ -1,6 +1,6 @@
-use array::ArrayTrait;
-
 use quaireaux_utils::check_gas;
+use array::ArrayTrait;
+use hash::LegacyHash;
 
 // Fill an array with a value.
 /// * `dst` - The array to fill.
@@ -12,7 +12,7 @@ fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
 ) {
     check_gas();
 
-    if count == 0_u32 {
+    if count == 0 {
         return ();
     }
     if index >= src.len() {
@@ -21,7 +21,7 @@ fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     let element = src.at(index);
     dst.append(*element);
 
-    fill_array(ref dst, src, index + 1_u32, count - 1_u32)
+    fill_array(ref dst, src, index + 1, count - 1)
 }
 
 /// Returns the slice of an array.
@@ -36,4 +36,25 @@ fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     let mut slice = ArrayTrait::<T>::new();
     fill_array(ref dst: slice, :src, index: begin, count: end);
     slice
+}
+
+/// Returns the pedersen hash of an array.
+/// * `arr` - The array to hash.
+fn array_hash(arr: @Array::<felt252>) -> felt252 {
+    _array_hash_internal(arr, *arr.at(0), 1)
+}
+
+/// Recursively hashes an array.
+/// * `arr` - The array to hash.
+/// * `state` - The current hash state.
+/// * `index` - The current index.
+fn _array_hash_internal(arr: @Array::<felt252>, mut state: felt252, index: u32, ) -> felt252 {
+    check_gas();
+
+    if (index == arr.len()) {
+        return state;
+    }
+    state = LegacyHash::hash(state, *arr.at(index));
+
+    _array_hash_internal(arr, state, index + 1)
 }
