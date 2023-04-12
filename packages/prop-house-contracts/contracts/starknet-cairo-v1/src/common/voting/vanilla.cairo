@@ -9,8 +9,8 @@ mod VanillaVotingStrategy {
             voter_address: ContractAddress,
             params: Array<felt252>,
             user_params: Array<felt252>,
-        ) -> felt252 {
-            1
+        ) -> u256 {
+            u256 { low: 1, high: 0 }
         }
     }
 
@@ -20,7 +20,7 @@ mod VanillaVotingStrategy {
         voter_address: ContractAddress,
         params: Array<felt252>,
         user_params: Array<felt252>,
-    ) -> felt252 {
+    ) -> u256 {
         VanillaVotingStrategy::get_voting_power(timestamp, voter_address, params, user_params)
     }
 }

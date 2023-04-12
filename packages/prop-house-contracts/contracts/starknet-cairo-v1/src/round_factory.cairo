@@ -8,10 +8,10 @@ trait IRoundFactory {
 
 #[contract]
 mod RoundFactory {
-    use prop_house::round_factory::IRoundFactory;
     use starknet::syscalls::deploy_syscall;
     use starknet::ContractAddress;
     use starknet::ClassHash;
+    use super::IRoundFactory;
     use array::ArrayTrait;
 
     struct Storage {

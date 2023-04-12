@@ -12,5 +12,5 @@ trait IVotingStrategy {
         voter_address: ContractAddress,
         params: Array<felt252>,
         user_params: Array<felt252>,
-    ) -> felt252;
+    ) -> u256;
 }
