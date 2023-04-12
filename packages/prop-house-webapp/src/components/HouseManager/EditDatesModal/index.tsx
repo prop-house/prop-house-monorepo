@@ -1,11 +1,10 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
+import TimedRound from '../TimedRound';
 import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
-
-import TimedRound from '../TimedRound';
 
 const EditDatesModal: React.FC<{
   setShowEditDatesModal: Dispatch<SetStateAction<boolean>>;

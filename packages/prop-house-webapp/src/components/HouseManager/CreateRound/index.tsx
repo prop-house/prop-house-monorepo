@@ -17,12 +17,12 @@ import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
+import { getDateFromDuration } from '../utils/getDateFromDuration';
 import EditNameDescriptionModal from '../EditNameDescriptionModal';
 import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
 import EditAwardsModal from '../EditAwardsModal';
-import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
-import { getDateFromDuration } from '../utils/getDateFromDuration';
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
