@@ -2,9 +2,10 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
 import TimedRound from '../TimedRound';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
+import { saveRound } from '../../../state/thunks';
 
 const EditDatesModal: React.FC<{
   setShowEditDatesModal: Dispatch<SetStateAction<boolean>>;
@@ -24,8 +25,7 @@ const EditDatesModal: React.FC<{
     };
 
     setEditedRound!(updated);
-    dispatch(updateRound(updated));
-    dispatch(checkStepCriteria());
+    dispatch(saveRound(updated));
     setShowEditDatesModal(false);
   };
 

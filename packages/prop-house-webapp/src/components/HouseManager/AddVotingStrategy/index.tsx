@@ -18,10 +18,10 @@ import {
   VotingStrategyType,
   WhitelistMember,
 } from '@prophouse/sdk-react';
-import { updateRound, checkStepCriteria } from '../../../state/slices/round';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { useProvider } from 'wagmi';
+import { saveRound } from '../../../state/thunks';
 
 const AddVotingStrategy: React.FC<{
   strat: NewStrategy;
@@ -115,8 +115,7 @@ const AddVotingStrategy: React.FC<{
         updatedStrategies = [...round.strategies, s];
       }
 
-      dispatch(updateRound({ ...round, strategies: updatedStrategies }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, strategies: updatedStrategies }));
       setStrategies(updatedStrategies);
     }
 

@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import Divider from '../../Divider';
 import DualSectionSelector from '../DualSectionSelector';
 import Group from '../Group';
 import Section from '../Section';
 import Text from '../Text';
 import TimedRound from '../TimedRound';
+import { saveRound } from '../../../state/thunks';
 
 const RoundDatesSelector = () => {
   const dispatch = useDispatch();
@@ -25,8 +25,7 @@ const RoundDatesSelector = () => {
     };
 
     setIsTimedRound(!isTimedRound);
-    dispatch(updateRound(updated));
-    dispatch(checkStepCriteria());
+    dispatch(saveRound(updated));
   };
 
   return (

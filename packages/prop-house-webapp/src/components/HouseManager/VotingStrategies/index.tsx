@@ -4,9 +4,9 @@ import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
 import VotingStrategy from '../VotingStrategy';
 import { FC } from 'react';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import clsx from 'clsx';
+import { saveRound } from '../../../state/thunks';
 
 const VotingStrategies: FC<{
   editMode?: boolean;
@@ -51,8 +51,7 @@ const VotingStrategies: FC<{
       });
     }
 
-    dispatch(updateRound({ ...round, strategies: updatedStrategies }));
-    dispatch(checkStepCriteria());
+    dispatch(saveRound({ ...round, strategies: updatedStrategies }));
     setStrategies(updatedStrategies);
   };
 

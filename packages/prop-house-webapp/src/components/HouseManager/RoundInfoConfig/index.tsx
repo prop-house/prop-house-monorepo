@@ -3,9 +3,9 @@ import Footer from '../Footer';
 import RoundFields from '../RoundFields';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { updateRound } from '../../../state/slices/round';
 import { useEffect, useRef } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { saveRound } from '../../../state/thunks';
 
 const RoundInfoConfig = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const RoundInfoConfig = () => {
       const res = await client.current.postFile(file, file.name);
 
       dispatch(
-        updateRound({
+        saveRound({
           ...round,
           house: { ...round.house, contractURI: `ipfs://${res.data.ipfsHash}` },
         }),

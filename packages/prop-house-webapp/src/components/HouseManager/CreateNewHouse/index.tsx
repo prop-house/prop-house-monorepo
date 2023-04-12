@@ -7,7 +7,6 @@ import Button, { ButtonColor } from '../../Button';
 import InstructionBox from '../InstructionBox';
 import Divider from '../../Divider';
 import { useDispatch } from 'react-redux';
-import { updateRound, checkStepCriteria } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import validFileType from '../../../utils/validFileType';
 import { useSigner } from 'wagmi';
@@ -15,6 +14,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import buildIpfsPath from '../../../utils/buildIpfsPath';
 import changeFileExtension from '../../../utils/changeFileExtension';
 import removeTags from '../../../utils/removeTags';
+import { saveRound } from '../../../state/thunks';
 
 const CreateNewHouse = () => {
   const dispatch = useDispatch();
@@ -54,8 +54,7 @@ const CreateNewHouse = () => {
       const res = await client.current.postFile(file, file.name);
       const image = buildIpfsPath(res.data.ipfsHash);
 
-      dispatch(updateRound({ ...round, house: { ...round.house, image } }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, house: { ...round.house, image } }));
       setImageError(null);
     } catch {
       setImageError('error uploading file');
@@ -89,8 +88,7 @@ const CreateNewHouse = () => {
 
     field === 'title' ? setTitle(value) : setDescription(value);
 
-    dispatch(updateRound({ ...round, house: { ...round.house, [field]: value } }));
-    dispatch(checkStepCriteria());
+    dispatch(saveRound({ ...round, house: { ...round.house, [field]: value } }));
   };
 
   const handleDescriptionChange = (value: string) => {

@@ -118,4 +118,5 @@ export const roundSlice = createSlice({
 
 export const { setActiveStep, checkStepCriteria, setNextStep, setPrevStep, updateRound } =
   roundSlice.actions;
+
 export default roundSlice.reducer;
