@@ -5,7 +5,9 @@ import { isProposer as _isProposer } from '../_shared/isProposer.ts';
 import { insertReply } from '../_shared/insertReply.ts';
 
 serve(async req => {
-  const provider = new ethers.providers.JsonRpcProvider('99fa8a6adf2f4215ba86661c36cb7e84');
+  const INFURA_PROJECT_ID = Deno.env.get('INFURA_PROJECT_ID');
+
+  const provider = new ethers.providers.JsonRpcProvider(INFURA_PROJECT_ID);
   const { userAddress, communityAddress, blockTag, proposalId, content } = await req.json();
 
   const hasVotingPower = await prophouse.getVotingPower(
