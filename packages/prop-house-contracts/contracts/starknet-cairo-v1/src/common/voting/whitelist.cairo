@@ -13,7 +13,7 @@ mod WhitelistVotingStrategy {
 
     impl WhitelistVotingStrategy of IVotingStrategy {
         fn get_voting_power(
-            timestamp: u32,
+            timestamp: u64,
             voter_address: ContractAddress,
             params: Array<felt252>,
             user_params: Array<felt252>,
@@ -24,7 +24,7 @@ mod WhitelistVotingStrategy {
 
     #[external]
     fn get_voting_power(
-        timestamp: u32,
+        timestamp: u64,
         voter_address: ContractAddress,
         params: Array<felt252>,
         user_params: Array<felt252>,
@@ -33,7 +33,7 @@ mod WhitelistVotingStrategy {
     }
 
     fn _get_voting_power(
-        timestamp: u32,
+        timestamp: u64,
         voter_address: ContractAddress,
         params: Array<felt252>,
         user_params: Array<felt252>,

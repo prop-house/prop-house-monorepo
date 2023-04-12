@@ -61,7 +61,7 @@ mod EthereumBalanceOfVotingStrategy {
 
     impl EthereumBalanceOfVotingStrategy of IVotingStrategy {
         fn get_voting_power(
-            timestamp: u32,
+            timestamp: u64,
             voter_address: ContractAddress,
             params: Array<felt252>,
             user_params: Array<felt252>,
@@ -91,7 +91,7 @@ mod EthereumBalanceOfVotingStrategy {
     /// Returns the voting power of the voter at the given timestamp.
     #[external]
     fn get_voting_power(
-        timestamp: u32,
+        timestamp: u64,
         voter_address: ContractAddress,
         params: Array<felt252>,
         user_params: Array<felt252>,
@@ -113,7 +113,7 @@ mod EthereumBalanceOfVotingStrategy {
 
     /// Returns the value of the mapping storage slot at the given timestamp.
     fn _get_slot_value(
-        timestamp: u32,
+        timestamp: u64,
         voter_address: ContractAddress,
         params: @Array<felt252>,
         user_params: Array<felt252>,
