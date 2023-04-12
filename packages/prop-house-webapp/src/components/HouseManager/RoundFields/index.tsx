@@ -1,30 +1,21 @@
 import classes from './RoundFields.module.css';
 import Group from '../Group';
 import Text from '../Text';
-import { FC, useMemo, useRef } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { capitalize } from '../../../utils/capitalize';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { NewRound, updateRound, checkStepCriteria } from '../../../state/slices/round';
+import removeTags from '../../../utils/removeTags';
+import { useDispatch } from 'react-redux';
 
 const RoundFields: FC<{
-  title: string;
-  description: string;
-  errors: { title?: string; description?: string };
-  descriptionLength: number;
-  handleBlur: (field: 'title' | 'description') => void;
-  handleChange: (field: 'title' | 'description', value: string) => void;
-  handleDescriptionChange: (value: string) => void;
+  round: NewRound;
+  editMode?: boolean | undefined;
+  setEditedRound?: ((round: NewRound) => void) | undefined;
 }> = props => {
-  const {
-    title,
-    description,
-    errors,
-    descriptionLength,
-    handleBlur,
-    handleChange,
-    handleDescriptionChange,
-  } = props;
+  const { round, editMode, setEditedRound } = props;
 
   let quillRef = useRef<ReactQuill>(null);
   var icons = Quill.import('ui/icons');
@@ -70,6 +61,50 @@ const RoundFields: FC<{
 
   const formats = ['bold', 'italic', 'link'];
 
+  const dispatch = useDispatch();
+
+  const [title, setTitle] = useState(round.title || '');
+  const [description, setDescription] = useState(round.description || '');
+  const [descriptionLength, setDescriptionLength] = useState(0);
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+
+  const handleBlur = (field: 'title' | 'description') => {
+    const value = field === 'title' ? title : description;
+    const length = value === description ? descriptionLength : value.length;
+    const minLen = field === 'title' ? 5 : 20;
+    const maxLen = field === 'title' ? 255 : undefined;
+    const error =
+      length < minLen
+        ? `${capitalize(field)} must be at least ${minLen} characters.`
+        : maxLen && length > maxLen
+        ? `${capitalize(field)} must be less than ${maxLen} characters.`
+        : undefined;
+
+    setErrors({ ...errors, [field]: error });
+  };
+
+  const handleFieldChange = (field: 'title' | 'description', value: string) => {
+    errors[field] && setErrors({ ...errors, [field]: undefined });
+
+    field === 'title' ? setTitle(value) : setDescription(value);
+
+    if (editMode) {
+      setEditedRound!({ ...round, [field]: value });
+    } else {
+      dispatch(updateRound({ ...round, [field]: value }));
+      dispatch(checkStepCriteria());
+    }
+  };
+
+  useEffect(() => {
+    setDescriptionLength(removeTags(round.description).length);
+  }, [round.description]);
+
+  const handleDescriptionChange = (value: string) => {
+    setDescription(value);
+    handleFieldChange('description', value);
+  };
+
   return (
     <>
       <Group gap={8} mb={16}>
@@ -85,7 +120,7 @@ const RoundFields: FC<{
           maxLength={255}
           id="title"
           value={title}
-          onChange={e => handleChange('title', e.target.value)}
+          onChange={e => handleFieldChange('title', e.target.value)}
           onBlur={() => handleBlur('title')}
         />
 
