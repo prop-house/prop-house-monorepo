@@ -10,9 +10,9 @@ export interface HouseProps {
   title: string;
   description: string;
   image: string;
-  roundCount: number;
   contractURI: string;
 }
+
 export const HouseForRound: HouseProps = {
   existingHouse: true,
   houseType: HouseType.COMMUNITY,
@@ -20,7 +20,6 @@ export const HouseForRound: HouseProps = {
   title: '',
   description: '',
   image: '',
-  roundCount: 0,
   contractURI: '',
 };
 
