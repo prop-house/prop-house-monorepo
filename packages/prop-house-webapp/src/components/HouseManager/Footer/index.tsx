@@ -179,7 +179,9 @@ const Footer: React.FC = () => {
             }
             disabled={stepDisabledArray[5]}
             bgColor={ButtonColor.Pink}
-            onClick={() => handleCreateRound(round)}
+            onClick={() =>
+              transactionHash ? setShowCreateRoundModal(true) : handleCreateRound(round)
+            }
           />
         )}
       </div>

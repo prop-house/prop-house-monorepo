@@ -89,7 +89,6 @@ const CreateRoundModal: React.FC<{
           <Button
             text="Close"
             bgColor={ButtonColor.White}
-            disabled={!(status.isError || status.isSuccess)}
             onClick={() => setShowCreateRoundModal(false)}
           />
         )
