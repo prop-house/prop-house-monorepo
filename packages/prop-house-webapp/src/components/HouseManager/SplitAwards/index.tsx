@@ -44,12 +44,20 @@ const SplitAwards: React.FC<{
   setEditedRound?: React.Dispatch<React.SetStateAction<NewRound>>;
 }> = props => {
   const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
-  const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
+
+  const [isTyping, setIsTyping] = useState(false);
   const [award, setAward] = useState({ ...NewAward, price: 0 });
+  const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
 
   const provider = useProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
+
+  // Get address type by calling verification contract
+  const { data } = useAddressType(award.address);
+
+  // Get decimals of ERC20 token
+  const { data: decimals } = useGetDecimals(award.address);
 
   useEffect(() => {
     const shouldFetchEthPrice = !awards.length || awards[0].price === 0;
@@ -116,6 +124,8 @@ const SplitAwards: React.FC<{
           price,
           address: erc20TokenAddresses[token],
           type,
+          decimals:
+            award.type === AssetType.ERC20 && decimals !== undefined ? (decimals as number) : 0,
         });
     setAward({ ...award, ...updated });
   };
@@ -162,14 +172,6 @@ const SplitAwards: React.FC<{
       dispatch(checkStepCriteria());
     }
   };
-
-  // Get address type by calling verification contract
-  const { data } = useAddressType(award.address);
-
-  // Get decimals of ERC20 token
-  const { data: decimals } = useGetDecimals(award.address);
-
-  const [isTyping, setIsTyping] = useState(false);
 
   const handleAwardAddressBlur = async () => {
     setIsTyping(false);
