@@ -68,9 +68,13 @@ interface RoundState {
 const initialState: RoundState = {
   activeStep: 1,
   round: initialRound,
+  // steps are disabled by default, and are enabled only when the user
+  // completes the step criteria (e.g. fills out all required fields)
   stepDisabledArray: [true, true, true, true, true, true],
 };
 
+// this function removes any awards that are not completed to
+// prevent the user from creating a round with incomplete awards
 const removeIncompleteAwards = (round: NewRound) => {
   if (!round.splitAwards) {
     const filteredAwards = round.awards.filter(award => award.state === 'success');
@@ -86,13 +90,16 @@ export const roundSlice = createSlice({
     setActiveStep: (state, action: PayloadAction<number>) => {
       state.activeStep = action.payload;
     },
+    // This function checks the validity of each step and updates the stepDisabledArray
     checkStepCriteria: state => {
       const { round, activeStep } = state;
       const stepIndex = activeStep - 1;
 
+      //
       state.stepDisabledArray[stepIndex] = !isRoundStepValid(round, activeStep);
 
-      // If the user is on step 1 and they select an existing house, move to step 2
+      // If the user is on step 1 and they select an existing house,
+      // move to step 2 since there is no 'Next' button in the footer
       if (
         activeStep === 1 &&
         round.house.existingHouse &&
