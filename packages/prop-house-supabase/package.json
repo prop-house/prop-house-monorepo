@@ -5,5 +5,9 @@
   "license": "MIT",
   "dependencies": {
     "supabase": "^1.50.4"
+  },
+  "scripts": {
+    "sup:start": "supabase start",
+    "sup:serve": "supabase functions serve --env-file ./supabase/.env.local"
   }
 }
