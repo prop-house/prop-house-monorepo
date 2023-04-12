@@ -7,7 +7,7 @@ mod EthereumExecutionStrategy {
     use prop_house::round_factory::IRoundFactory;
     use prop_house::round_factory::IRoundFactoryDispatcher;
     use prop_house::round_factory::IRoundFactoryDispatcherTrait;
-    use prop_house::common::lib::traits::IExecutionStrategy;
+    use prop_house::common::utils::traits::IExecutionStrategy;
     use zeroable::Zeroable;
     use array::ArrayTrait;
 

@@ -1,4 +1,4 @@
-use prop_house::common::lib::constants::UINT64_MAX;
+use prop_house::common::utils::constants::UINT64_MAX;
 use option::OptionTrait;
 use traits::TryInto;
 
@@ -38,10 +38,10 @@ trait IFactsRegistry {
 mod EthereumBalanceOfVotingStrategy {
     use starknet::ContractAddress;
     use starknet::ContractAddressIntoFelt252;
-    use prop_house::common::lib::u256::U256Zeroable;
-    use prop_house::common::lib::traits::IVotingStrategy;
-    use prop_house::common::lib::array::array_slice;
-    use prop_house::common::lib::storage::get_slot_key;
+    use prop_house::common::utils::u256::U256Zeroable;
+    use prop_house::common::utils::traits::IVotingStrategy;
+    use prop_house::common::utils::array::array_slice;
+    use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcherTrait;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcher;
     use super::IFactsRegistryDispatcherTrait;

@@ -1,7 +1,7 @@
 #[contract]
 mod VanillaVotingStrategy {
     use starknet::ContractAddress;
-    use prop_house::common::lib::traits::IVotingStrategy;
+    use prop_house::common::utils::traits::IVotingStrategy;
 
     impl VanillaVotingStrategy of IVotingStrategy {
         fn get_voting_power(

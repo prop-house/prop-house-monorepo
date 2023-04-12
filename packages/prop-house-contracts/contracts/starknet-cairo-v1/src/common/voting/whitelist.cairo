@@ -3,7 +3,7 @@ mod WhitelistVotingStrategy {
     use starknet::ContractAddress;
     use starknet::ContractAddressIntoFelt252;
     use quaireaux_data_structures::merkle_tree::MerkleTreeTrait;
-    use prop_house::common::lib::traits::IVotingStrategy;
+    use prop_house::common::utils::traits::IVotingStrategy;
     use quaireaux_utils::check_gas;
     use option::OptionTrait;
     use array::ArrayTrait;
