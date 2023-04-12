@@ -40,8 +40,8 @@ mod EthereumBalanceOfVotingStrategy {
     use starknet::ContractAddressIntoFelt252;
     use prop_house::common::lib::u256::U256Zeroable;
     use prop_house::common::lib::traits::IVotingStrategy;
-    use prop_house::common::lib::array_utils::array_slice;
-    use prop_house::common::lib::storage_utils::get_slot_key;
+    use prop_house::common::lib::array::array_slice;
+    use prop_house::common::lib::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcherTrait;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcher;
     use super::IFactsRegistryDispatcherTrait;

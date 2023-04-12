@@ -1,5 +1,5 @@
-mod array_utils;
+mod array;
 mod constants;
-mod storage_utils;
+mod storage;
 mod traits;
 mod u256;
