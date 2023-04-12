@@ -38,6 +38,7 @@ trait IFactsRegistry {
 mod EthereumBalanceOfVotingStrategy {
     use starknet::ContractAddress;
     use starknet::ContractAddressIntoFelt252;
+    use prop_house::common::lib::u256::U256Zeroable;
     use prop_house::common::lib::traits::IVotingStrategy;
     use prop_house::common::lib::array_utils::array_slice;
     use prop_house::common::lib::storage_utils::get_slot_key;
@@ -144,7 +145,7 @@ mod EthereumBalanceOfVotingStrategy {
             proof_sizes_words,
             proofs_concat,
         );
-        assert(slot_value != u256 { low: 0, high: 0 }, 'SSP: Slot value is zero');
+        assert(slot_value.is_non_zero(), 'SSP: Slot value is zero');
 
         slot_value
     }
