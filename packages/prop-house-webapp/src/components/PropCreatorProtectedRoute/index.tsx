@@ -1,14 +1,17 @@
 import NoActiveHouseModal from '../NoActiveHouseModal';
 
-interface ProtectedRouteProps {
+interface PropCreatorProtectedRouteProps {
   noActiveCommunity: boolean;
   children: JSX.Element;
 }
 
-const ProtectedRoute = ({ noActiveCommunity, children }: ProtectedRouteProps) => {
+const PropCreatorProtectedRoute = ({
+  noActiveCommunity,
+  children,
+}: PropCreatorProtectedRouteProps) => {
   if (noActiveCommunity) return <NoActiveHouseModal />;
 
   return children;
 };
 
-export default ProtectedRoute;
+export default PropCreatorProtectedRoute;
