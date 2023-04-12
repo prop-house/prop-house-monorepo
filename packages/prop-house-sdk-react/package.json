@@ -1,7 +1,7 @@
 {
   "name": "@prophouse/sdk-react",
   "version": "0.1.0-alpha.10",
-  "description": "Useful tooling for interacting with the Prop House protocol from React applications",
+  "description": "Useful tools for interacting with the Prop House protocol from React applications",
   "author": "solimander",
   "homepage": "https://prop.house",
   "license": "GPL-3.0",

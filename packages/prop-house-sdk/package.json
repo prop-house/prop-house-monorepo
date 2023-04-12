@@ -1,7 +1,7 @@
 {
   "name": "@prophouse/sdk",
   "version": "0.1.0-alpha.21",
-  "description": "Useful tooling for interacting with the Prop House protocol",
+  "description": "Useful tools for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
   "license": "GPL-3.0",
