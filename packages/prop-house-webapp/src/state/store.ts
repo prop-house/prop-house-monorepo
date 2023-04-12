@@ -7,7 +7,6 @@ import roundReducer from './slices/round';
 
 const store = configureStore({
   reducer: {
-    // backend: backendReducer,
     propHouse: propHouseReducer,
     round: roundReducer,
     configuration: configurationReducer,
