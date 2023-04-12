@@ -1,7 +1,7 @@
 import classes from './IndividualAwards.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
@@ -20,6 +20,7 @@ import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
 import AwardRow from '../AwardRow';
 import { useProvider } from 'wagmi';
 import { getTokenIdImage } from '../utils/getTokenIdImage';
+import { saveRound } from '../../../state/thunks';
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -134,13 +135,12 @@ const IndividualAwards: React.FC<{
     } else {
       setAwards(updatedAwards);
       dispatch(
-        updateRound({
+        saveRound({
           ...round,
           numWinners: updatedAwards.length,
           awards: updatedAwards,
         }),
       );
-      dispatch(checkStepCriteria());
     }
 
     setSelectedAward(AwardType.ERC20);
@@ -218,8 +218,7 @@ const IndividualAwards: React.FC<{
         awards: filteredAwards,
       });
     } else {
-      dispatch(updateRound({ ...round, numWinners: updated.length, awards: updated }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, numWinners: updated.length, awards: updated }));
       setAwards(updated);
     }
   };

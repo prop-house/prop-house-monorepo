@@ -1,10 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import AssetSelector from '../AssetSelector';
+import { saveRound } from '../../../state/thunks';
 
 const EditAwardsModal: React.FC<{
   setShowAwardsModal: Dispatch<SetStateAction<boolean>>;
@@ -20,8 +21,7 @@ const EditAwardsModal: React.FC<{
     const updated = { ...editedRound, numWinners: filteredAwards.length, awards: filteredAwards };
 
     setEditedRound!(updated);
-    dispatch(updateRound(updated));
-    dispatch(checkStepCriteria());
+    dispatch(saveRound(updated));
     setShowAwardsModal(false);
   };
 

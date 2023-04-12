@@ -1,7 +1,7 @@
 import classes from './SplitAwards.module.css';
 import Text from '../Text';
 import Group from '../Group';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import NumberOfWinners from '../NumberOfWinners';
@@ -20,6 +20,7 @@ import { getUSDPrice } from '../utils/getUSDPrice';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import useGetDecimals from '../utils/useGetDecimals';
 import { useProvider } from 'wagmi';
+import { saveRound } from '../../../state/thunks';
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -78,7 +79,7 @@ const SplitAwards: React.FC<{
           { ...award, price: ethPrice.ethereum.usd, selectedAsset: ERC20.ETH, state: 'success' },
         ]);
         dispatch(
-          updateRound({
+          saveRound({
             ...round,
             awards: [
               {
@@ -90,7 +91,6 @@ const SplitAwards: React.FC<{
             ],
           }),
         );
-        dispatch(checkStepCriteria());
       };
       fetchEthPrice();
     } else {
@@ -158,7 +158,7 @@ const SplitAwards: React.FC<{
     if (editMode) {
       setEditedRound!({ ...editedRound!, awards: [{ ...award, ...updated }] });
     } else {
-      dispatch(updateRound({ ...round, awards: [{ ...award, ...updated }] }));
+      dispatch(saveRound({ ...round, awards: [{ ...award, ...updated }] }));
     }
 
     setShowSplitAwardModal(false);
@@ -168,8 +168,7 @@ const SplitAwards: React.FC<{
     if (editMode) {
       setEditedRound!({ ...editedRound!, splitAwards: true, numWinners: amount });
     } else {
-      dispatch(updateRound({ ...round, numWinners: amount }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, numWinners: amount }));
     }
   };
 

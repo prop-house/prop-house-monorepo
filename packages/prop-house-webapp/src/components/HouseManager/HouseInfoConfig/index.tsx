@@ -2,7 +2,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import { checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { saveRound } from '../../../state/thunks';
 import HouseSelection, { FetchedHouse } from '../HouseSelection';
 import CreateNewHouse from '../CreateNewHouse';
 import { usePropHouse } from '@prophouse/sdk-react';
@@ -12,26 +12,23 @@ const HouseInfoConfig = () => {
   const round = useAppSelector(state => state.round.round);
   const propHouse = usePropHouse();
 
-  const handleCreateNewHouse = () => {
-    dispatch(updateRound({ ...round, house: { ...round.house, existingHouse: false } }));
-    dispatch(checkStepCriteria());
-  };
+  const handleCreateNewHouse = () =>
+    dispatch(saveRound({ ...round, house: { ...round.house, existingHouse: false } }));
 
   const handleHouseSelection = (house: FetchedHouse) => {
     if (house.metadata) {
-      const updated = {
-        ...round,
-        house: {
-          ...round.house,
-          title: house.metadata.name as string,
-          description: house.metadata.description as string,
-          image: house.metadata.imageURI as string,
-          address: house.id,
-        },
-      };
-
-      dispatch(updateRound(updated));
-      dispatch(checkStepCriteria());
+      dispatch(
+        saveRound({
+          ...round,
+          house: {
+            ...round.house,
+            title: house.metadata.name as string,
+            description: house.metadata.description as string,
+            image: house.metadata.imageURI as string,
+            address: house.id,
+          },
+        }),
+      );
     }
   };
 

@@ -12,13 +12,14 @@ import Bullet from '../Bullet';
 import formatDateTime from '../../../utils/formatDateTime';
 import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
 import { getSecondsFromDays } from '../utils/getSecondsFromDays';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useState } from 'react';
 import { getDateFromDuration } from '../utils/getDateFromDuration';
 import { getDaysFromSeconds } from '../utils/getDaysFromSeconds';
 import { getDurationBetweenDatesInSeconds } from '../utils/getDurationBetweenDatesInSeconds';
 import { getTimestampFromDate } from '../utils/getTimestampFromDate';
 import { useDispatch } from 'react-redux';
+import { saveRound } from '../../../state/thunks';
 
 const TimedRound: React.FC<{
   round: NewRound;
@@ -84,9 +85,8 @@ const TimedRound: React.FC<{
       setEditedRound!({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) });
     } else {
       dispatch(
-        updateRound({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) }),
+        saveRound({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) }),
       );
-      dispatch(checkStepCriteria());
     }
   };
 
@@ -97,10 +97,7 @@ const TimedRound: React.FC<{
       if (editMode) {
         setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) });
       } else {
-        dispatch(
-          updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }),
-        );
-        dispatch(checkStepCriteria());
+        dispatch(saveRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }));
       }
     } else {
       setCustomVotingPeriod(false);
@@ -108,8 +105,7 @@ const TimedRound: React.FC<{
       if (editMode) {
         setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) });
       } else {
-        dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
-        dispatch(checkStepCriteria());
+        dispatch(saveRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
       }
     }
   };
@@ -119,8 +115,7 @@ const TimedRound: React.FC<{
     if (editMode) {
       setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) });
     } else {
-      dispatch(updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(duration) }));
     }
   };
   const handleVotingInputChange = (duration: number) => {
@@ -128,8 +123,7 @@ const TimedRound: React.FC<{
     if (editMode) {
       setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) });
     } else {
-      dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(duration) }));
     }
   };
 
@@ -140,8 +134,7 @@ const TimedRound: React.FC<{
       if (editMode) {
         setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) });
       } else {
-        dispatch(updateRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) }));
-        dispatch(checkStepCriteria());
+        dispatch(saveRound({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) }));
       }
     } else {
       setCustomVotingPeriod(true);
@@ -149,8 +142,7 @@ const TimedRound: React.FC<{
       if (editMode) {
         setEditedRound!({ ...round, votePeriodDurationSecs: getSecondsFromDays(15) });
       } else {
-        dispatch(updateRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(15) }));
-        dispatch(checkStepCriteria());
+        dispatch(saveRound({ ...round, votePeriodDurationSecs: getSecondsFromDays(15) }));
       }
     }
   };

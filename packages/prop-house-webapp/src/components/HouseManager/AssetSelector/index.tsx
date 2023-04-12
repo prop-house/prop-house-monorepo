@@ -9,8 +9,9 @@ import SplitAwards from '../SplitAwards';
 import { ERC20 } from '../StrategiesConfig';
 import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
-import { checkStepCriteria, NewRound, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
+import { saveRound } from '../../../state/thunks';
 
 export interface Award {
   id: string;
@@ -95,8 +96,7 @@ const AssetSelector: FC<{
         setSplitAwards([NewAward]);
       }
 
-      dispatch(updateRound(updated));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound(updated));
     }
 
     // Toggle the isSplitAward state at the end of the function

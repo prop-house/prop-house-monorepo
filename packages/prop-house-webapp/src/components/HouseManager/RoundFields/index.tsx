@@ -6,9 +6,10 @@ import clsx from 'clsx';
 import { capitalize } from '../../../utils/capitalize';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { NewRound, updateRound, checkStepCriteria } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import removeTags from '../../../utils/removeTags';
 import { useDispatch } from 'react-redux';
+import { saveRound } from '../../../state/thunks';
 
 const RoundFields: FC<{
   round: NewRound;
@@ -91,8 +92,7 @@ const RoundFields: FC<{
     if (editMode) {
       setEditedRound!({ ...round, [field]: value });
     } else {
-      dispatch(updateRound({ ...round, [field]: value }));
-      dispatch(checkStepCriteria());
+      dispatch(saveRound({ ...round, [field]: value }));
     }
   };
 

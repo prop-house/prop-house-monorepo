@@ -1,10 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
-import { NewRound, checkStepCriteria, updateRound } from '../../../state/slices/round';
+import { NewRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import RoundFields from '../RoundFields';
+import { saveRound } from '../../../state/thunks';
 
 const EditNameDescriptionModal: React.FC<{
   setShowEditNameModal: Dispatch<SetStateAction<boolean>>;
@@ -16,13 +17,12 @@ const EditNameDescriptionModal: React.FC<{
 
   const handleSave = () => {
     dispatch(
-      updateRound({
+      saveRound({
         ...editedRound,
         title: editedRound.title,
         description: editedRound.description,
       }),
     );
-    dispatch(checkStepCriteria());
     setShowEditNameModal(false);
   };
 
