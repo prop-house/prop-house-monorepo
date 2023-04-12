@@ -42,10 +42,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
     async function fetchHouses() {
       try {
         propHouse.query
-          .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account as string, {
-            page: 1,
-            perPage: 10,
-          })
+          .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account as string)
           .then(data => setHouses(data.houses));
       } catch (error) {
         console.error('Error fetching houses:', error);

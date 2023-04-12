@@ -56,10 +56,6 @@ const Rounds: React.FC = () => {
         // @ts-ignore
         const data: RoundsWithHouseInfo = await propHouse.query.getRoundsManagedByAccount(
           account as string,
-          {
-            page: 1,
-            perPage: 10,
-          },
         );
 
         // const roundDetailsPromises = data.rounds.map(round => propHouse.query.getRound(round.id));
