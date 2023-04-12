@@ -11,6 +11,7 @@ import { buildImageURL } from '../utils/buildImageURL';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { changeTagToParagraph, changeTagToSpan } from '../../RoundCard';
+import { useAccount } from 'wagmi';
 
 interface HouseSelectionProps {
   propHouse: PropHouse;
@@ -34,18 +35,24 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
   onSelectHouse,
   handleCreateNewHouse,
 }) => {
+  const { address: account } = useAccount();
   const [houses, setHouses] = useState<FetchedHouse[]>([]);
 
   useEffect(() => {
     async function fetchHouses() {
       try {
-        propHouse.query.getHouses().then(data => setHouses(data.houses));
+        propHouse.query
+          .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account as string, {
+            page: 1,
+            perPage: 10,
+          })
+          .then(data => setHouses(data.houses));
       } catch (error) {
         console.error('Error fetching houses:', error);
       }
     }
     fetchHouses();
-  }, [propHouse.query]);
+  }, [propHouse.query, account]);
 
   return (
     <>

@@ -10,7 +10,7 @@ import Footer from './components/Footer';
 import './App.css';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import PropCreatorProtectedRoute from './components/PropCreatorProtectedRoute';
 import NotFound from './components/NotFound';
 import Round from './pages/Round';
 import bgColorForPage from './utils/bgColorForPage';
@@ -19,7 +19,7 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
-import { createClient, configureChains, WagmiConfig, goerli } from 'wagmi';
+import { createClient, configureChains, WagmiConfig, goerli, useAccount } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -30,6 +30,7 @@ import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
+import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
 
 const { chains, provider } = configureChains(
   // [mainnet, base],
@@ -50,6 +51,7 @@ const wagmiClient = createClient({
 
 function App() {
   const location = useLocation();
+  const { address: account } = useAccount();
   const [noActiveCommunity, setNoActiveCommunity] = useState(false);
 
   useEffect(() => {
@@ -101,15 +103,24 @@ function App() {
                     <Route
                       path="/create"
                       element={
-                        <ProtectedRoute noActiveCommunity={noActiveCommunity}>
+                        <PropCreatorProtectedRoute noActiveCommunity={noActiveCommunity}>
                           <Create />
-                        </ProtectedRoute>
+                        </PropCreatorProtectedRoute>
                       }
                     />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/admin" element={<HouseManager />} />
-                    <Route path="/admin/rounds" element={<Rounds />} />
+
+                    <Route
+                      path="/admin"
+                      element={
+                        <RoundCreatorProtectedRoute account={account}>
+                          <HouseManager />
+                        </RoundCreatorProtectedRoute>
+                      }
+                    />
+
+                    <Route path="/rounds" element={<Rounds />} />
                     <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="/:house" element={<House />} />
                     <Route path="/:house/:title" element={<Round />} />
