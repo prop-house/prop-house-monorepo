@@ -1,14 +1,14 @@
 import { Navigate } from 'react-router-dom';
 
-interface PropCreatorProtectedRouteProps {
+interface RoundCreatorProtectedRouteProps {
   account: `0x${string}` | undefined;
   children: JSX.Element;
 }
 
-const PropCreatorProtectedRoute = ({ account, children }: PropCreatorProtectedRouteProps) => {
+const RoundCreatorProtectedRoute = ({ account, children }: RoundCreatorProtectedRouteProps) => {
   if (!account) return <Navigate to="/" />;
 
   return children;
 };
 
-export default PropCreatorProtectedRoute;
+export default RoundCreatorProtectedRoute;
