@@ -1,3 +1,4 @@
+mod auth;
 mod execution;
 mod libraries;
 mod registry;

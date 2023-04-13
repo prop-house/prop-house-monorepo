@@ -2,10 +2,13 @@
 mod EthereumTxAuthStrategy {
     use starknet::ContractAddress;
     use starknet::call_contract_syscall;
+    use starknet::ContractAddressIntoFelt252;
     use prop_house::common::utils::array::array_hash;
+    use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::traits::IAuthStrategy;
     use zeroable::Zeroable;
     use array::ArrayTrait;
+    use traits::Into;
 
     struct Storage {
         _commit_address: ContractAddress,
@@ -13,14 +16,14 @@ mod EthereumTxAuthStrategy {
     }
 
     impl EthereumTxAuthStrategy of IAuthStrategy {
-        fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>) {
+        fn authenticate(target: ContractAddress, selector: felt252, mut cdata: Array<felt252>) {
             let mut input = ArrayTrait::new();
-            input.append(target);
+            input.append(target.into());
             input.append(selector);
-            input.append_all(cdata);
+            input.append_all(ref cdata);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(*cdata.at(0), array_hash(input));
+            _consume_commit(*cdata.at(0), array_hash(@input));
 
             // Execute the function call with the supplied calldata
             starknet::call_contract_syscall(
@@ -45,7 +48,7 @@ mod EthereumTxAuthStrategy {
 
         // If the same hash is committed twice by the same sender,
         // then the mapping will be overwritten but with the same value as before.
-        _commits::insert(hash, sender);
+        _commits::write(hash, sender);
     }
 
     ///
@@ -61,16 +64,17 @@ mod EthereumTxAuthStrategy {
         let stored_address = _commits::read(hash_);
 
         // Check that the hash has been received from the commit contract
-        assert(stored_address.is_not_zero(), 'EthereumTx: Hash not committed or already executed');
+        // The hash is unknown if not yet committed or already executed
+        assert(stored_address.is_non_zero(), 'EthereumTx: Unknown hash');
 
         // The sender of the commit on L1 must be the same as the address in the calldata
-        assert(sender_ == stored_address, 'EthereumTx: Commit made by incorrect L1 address');
+        assert(sender_ == stored_address, 'EthereumTx: Invalid committer');
 
         _commits::write(hash_, 0);
     }
 
     fn _only_commit_address(from_address_: felt252) {
         let commit_address = _commit_address::read();
-        assert(from_address_ == commit_address, 'EthereumTx: Not commit address');
+        assert(from_address_ == commit_address.into(), 'EthereumTx: Not commit address');
     }
 }
