@@ -69,7 +69,7 @@ mod EthereumBalanceOfVotingStrategy {
             let params_len = params.len();
 
             // Expects contract_address slot_index, with an optional voting_power_multiplier
-            assert(params_len == 2 | params_len == 3, 'EthereumBO: Bad param length');
+            assert(params_len == 2 | params_len == 3, 'EthBO: Bad param length');
 
             let voting_power = _get_slot_value(timestamp, voter_address, @params, user_params);
             if params_len == 2 {
@@ -77,7 +77,7 @@ mod EthereumBalanceOfVotingStrategy {
             }
 
             let voting_power_multiplier = *params.at(2);
-            assert(voting_power_multiplier.is_non_zero(), 'EthereumBO: Invalid multiplier');
+            assert(voting_power_multiplier.is_non_zero(), 'EthBO: Invalid multiplier');
 
             voting_power * voting_power_multiplier.into()
         }
@@ -128,13 +128,12 @@ mod EthereumBalanceOfVotingStrategy {
         );
 
         // Extract contract address and desired slot index
-        assert(params.len() == 2, 'SSP: Invalid param length');
         let contract_address = *params.at(0);
         let slot_index = *params.at(1);
 
         // Ensure the slot proof is for the correct slot
         let valid_slot = get_slot_key(slot_index, voter_address.into());
-        assert(slot.into() == valid_slot, 'SingleSlotProof: Invalid slot');
+        assert(slot.into() == valid_slot, 'EthBO: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };
         let slot_value = facts_registry.get_storage_uint(
@@ -145,7 +144,7 @@ mod EthereumBalanceOfVotingStrategy {
             proof_sizes_words,
             proofs_concat,
         );
-        assert(slot_value.is_non_zero(), 'SSP: Slot value is zero');
+        assert(slot_value.is_non_zero(), 'EthBO: Slot value is zero');
 
         slot_value
     }
@@ -154,7 +153,7 @@ mod EthereumBalanceOfVotingStrategy {
     fn _decode_param_array(
         params: Array<felt252>
     ) -> (StorageSlot, Array::<felt252>, Array::<felt252>, Array::<felt252>) {
-        assert(params.len() >= 5, 'SSP: Invalid user param length');
+        assert(params.len() >= 5, 'EthBO: Bad user param length');
 
         let slot = StorageSlot {
             word_1: *params.at(0),
