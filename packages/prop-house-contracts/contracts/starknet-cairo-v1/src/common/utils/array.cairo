@@ -1,4 +1,3 @@
-use quaireaux_utils::check_gas;
 use array::ArrayTrait;
 use hash::LegacyHash;
 
@@ -10,8 +9,6 @@ use hash::LegacyHash;
 fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     ref dst: Array::<T>, src: @Array::<T>, index: u32, count: u32
 ) {
-    check_gas();
-
     if count == 0 {
         return ();
     }
@@ -49,8 +46,6 @@ fn array_hash(arr: @Array::<felt252>) -> felt252 {
 /// * `state` - The current hash state.
 /// * `index` - The current index.
 fn _array_hash_internal(arr: @Array::<felt252>, mut state: felt252, index: u32, ) -> felt252 {
-    check_gas();
-
     if (index == arr.len()) {
         return state;
     }

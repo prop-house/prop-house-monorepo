@@ -4,7 +4,6 @@ mod WhitelistVotingStrategy {
     use starknet::ContractAddressIntoFelt252;
     use quaireaux_data_structures::merkle_tree::MerkleTreeTrait;
     use prop_house::common::utils::traits::IVotingStrategy;
-    use quaireaux_utils::check_gas;
     use option::OptionTrait;
     use array::ArrayTrait;
     use hash::LegacyHash;
@@ -57,8 +56,6 @@ mod WhitelistVotingStrategy {
         // Extract the proof from the user params
         let mut i = leaf_len;
         loop {
-            check_gas();
-
             if i == user_params_len {
                 break ();
             }
