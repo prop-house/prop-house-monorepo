@@ -108,7 +108,15 @@ function App() {
                       }
                     />
 
-                    <Route path="/rounds" element={<Rounds />} />
+                    <Route
+                      path="/admin/rounds"
+                      element={
+                        <RoundCreatorProtectedRoute account={account}>
+                          <Rounds />
+                        </RoundCreatorProtectedRoute>
+                      }
+                    />
+
                     <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="/:house" element={<House />} />
                     <Route path="/:house/:title" element={<Round />} />
