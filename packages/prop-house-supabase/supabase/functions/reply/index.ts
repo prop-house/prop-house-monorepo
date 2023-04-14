@@ -16,24 +16,52 @@ serve(async req => {
   const provider = new ethers.providers.JsonRpcProvider(INFURA_PROJECT_ID);
   const { address, communityAddress, blockTag, proposalId, content, signedData } = await req.json();
 
-  const recoveredAddress = ethers.utils.verifyMessage(
-    Buffer.Buffer.from(signedData.message, 'base64').toString('utf8'),
-    signedData.signature,
-  );
+  let recoveredAddress;
+  try {
+    recoveredAddress = ethers.utils.verifyMessage(
+      Buffer.Buffer.from(signedData.message, 'base64').toString('utf8'),
+      signedData.signature,
+    );
+  } catch (error) {
+    return new Response(
+      JSON.stringify({ error: `error recovering address from message. error: ${error}` }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    );
+  }
 
-  if (recoveredAddress.toLowerCase() !== address.toLowerCase())
-    throw new Error('Invalid signature');
+  if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+    return new Response(
+      JSON.stringify({
+        error: `The recovered address from signed message does not match the address.`,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    );
+  }
 
-  const hasVotingPower = await prophouse.getVotingPower(
-    address,
-    communityAddress,
-    provider,
-    blockTag,
-  );
+  let votingPower;
+  try {
+    votingPower = await prophouse.getVotingPower(address, communityAddress, provider, blockTag);
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        error: `Error fetching voting power. ${error}`,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    );
+  }
 
   const isProposer = await _isProposer(address, proposalId);
 
-  const canReply = isProposer || hasVotingPower > 0;
+  const canReply = isProposer || votingPower > 0;
 
   if (!canReply)
     return new Response(
