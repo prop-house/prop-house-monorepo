@@ -1,4 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import Buffer from 'https://deno.land/std@0.110.0/node/buffer.ts';
 import prophouse from 'https://esm.sh/@prophouse/communities@0.1.4';
 import { ethers } from 'https://esm.sh/ethers@5.7.2';
 import { isProposer as _isProposer } from '../_shared/isProposer.ts';
@@ -13,21 +14,30 @@ serve(async req => {
   const INFURA_PROJECT_ID = Deno.env.get('INFURA_PROJECT_ID');
 
   const provider = new ethers.providers.JsonRpcProvider(INFURA_PROJECT_ID);
-  const { userAddress, communityAddress, blockTag, proposalId, content } = await req.json();
+  const { address, communityAddress, blockTag, proposalId, content, signedData } = await req.json();
+
+  const recoveredAddress = ethers.utils.verifyMessage(
+    Buffer.Buffer.from(signedData.message, 'base64').toString('utf8'),
+    signedData.signature,
+  );
+
+  if (recoveredAddress.toLowerCase() !== address.toLowerCase())
+    throw new Error('Invalid signature');
 
   const hasVotingPower = await prophouse.getVotingPower(
-    userAddress,
+    address,
     communityAddress,
     provider,
     blockTag,
   );
-  const isProposer = await _isProposer(userAddress, proposalId);
+
+  const isProposer = await _isProposer(address, proposalId);
 
   const canReply = isProposer || hasVotingPower > 0;
 
   if (!canReply)
     return new Response(
-      JSON.stringify({ error: `${userAddress} is not allowed to reply to proposal ${proposalId}` }),
+      JSON.stringify({ error: `${address} is not allowed to reply to proposal ${proposalId}` }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 403,
@@ -35,9 +45,9 @@ serve(async req => {
     );
 
   try {
-    insertReply(userAddress, proposalId, content);
+    await insertReply(address, proposalId, content);
     return new Response(
-      JSON.stringify({ success: `${userAddress} added a reply to proposal ${proposalId}` }),
+      JSON.stringify({ success: `${address} added a reply to proposal ${proposalId}` }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
