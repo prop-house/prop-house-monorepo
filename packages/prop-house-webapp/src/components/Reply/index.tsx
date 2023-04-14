@@ -3,6 +3,7 @@ import classes from './Reply.module.css';
 import Modal from '../Modal';
 import { Form } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
+import { submitReply } from 'prop-house-supabase';
 
 const Reply: React.FC<{}> = () => {
   const [showReplyModal, setShowReplyModal] = useState(false);
@@ -12,10 +13,10 @@ const Reply: React.FC<{}> = () => {
     setComment(event.target.value);
   };
 
-  const handleReplySubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleReplySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    await submitReply(comment);
     setComment('');
-    /// handle submit
   };
 
   const replyModal = (
@@ -45,7 +46,9 @@ const Reply: React.FC<{}> = () => {
           onClick={() => setShowReplyModal(false)}
         />
       }
-      secondButton={<Button text="Submit" bgColor={ButtonColor.Purple} />}
+      secondButton={
+        <Button text="Submit" bgColor={ButtonColor.Purple} onClick={e => handleReplySubmit(e)} />
+      }
     />
   );
 
