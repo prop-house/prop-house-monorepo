@@ -101,7 +101,7 @@ export const communities = new CaseInsensitiveMap(
     // Nouns OTG
     '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
     // Seneca
-    '0x1f65ec15af924e931c07d509f0217cafff96712b': balanceOfErc721(10),
+    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100),
     // Index card
     '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': erc1155(1, 50),
     // Explorer Grants
