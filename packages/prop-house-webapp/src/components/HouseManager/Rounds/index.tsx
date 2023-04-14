@@ -40,11 +40,6 @@ type Round = {
   };
 };
 
-type RoundsWithHouseInfo = {
-  __typename?: 'Query';
-  rounds: Round[];
-};
-
 const Rounds: React.FC = () => {
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
@@ -53,12 +48,8 @@ const Rounds: React.FC = () => {
   useEffect(() => {
     async function fetchRounds() {
       try {
-        // @ts-ignore
-        const data: RoundsWithHouseInfo = await propHouse.query.getRoundsManagedByAccount(
-          account as string,
-        );
+        const data = await propHouse.query.getRoundsManagedByAccount(account as string);
 
-        // const roundDetailsPromises = data.rounds.map(round => propHouse.query.getRound(round.id));
         const roundDetailsPromises = data.rounds.map(round =>
           propHouse.query.getRoundWithHouseInfo(round.id),
         );

@@ -16,6 +16,7 @@ const NumberOfWinners: React.FC<{
   const handleDecrement = () => handleNumWinnersChange(winners - 1);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // use ParseInt to convert string to number and disallow decimals
     let value = parseInt(e.target.value);
     // If value is NaN or negative, set to 1
     if (isNaN(value) || value < 1) value = 1;
@@ -25,8 +26,10 @@ const NumberOfWinners: React.FC<{
 
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
+    // use ParseInt to convert string to number and disallow decimals
     const value = parseInt(clipboardData, 10);
     if (isNaN(value) || value < 1) {
+      // disallow paste if value is not a number or 0
       e.preventDefault();
       return;
     }

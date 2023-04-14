@@ -33,12 +33,14 @@ const VotingStrategy: React.FC<{
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
         {type === VotingStrategyType.WHITELIST ? (
+          // if it's a whitelist use, show the ENS & avatar
           <Group row gap={4} classNames={classes.ens}>
             <AddressAvatar address={address} size={16} />
 
             <EthAddress address={address} />
           </Group>
         ) : (
+          // otherwise, show the token image & name
           <div className={classes.addressImgAndTitle}>
             <img src={tokenInfo.image} alt={tokenInfo.name} />
 
@@ -47,19 +49,24 @@ const VotingStrategy: React.FC<{
         )}
 
         <div className={classes.votesText}>
+          {/* tokens show x-vote(s), users show "vote(s) per token" */}
           {`${multiplier} vote${multiplier === 1 ? '' : 's'}${
             type !== VotingStrategyType.WHITELIST ? ' / token' : ''
           }`}
         </div>
       </div>
 
+      {/* we have two because on mobile we want to show the X,
+      and on desktop we want the button text to be "Remove" */}
       <Button
+        // unicode for the X
         text="&#x2715;"
         classNames={classes.xButtonMobile}
         bgColor={ButtonColor.White}
         disabled={isDisabled}
         onClick={() => removeStrategy(address, type)}
       />
+
       <Button
         text="Remove"
         classNames={classes.xButtonDesktop}

@@ -7,6 +7,18 @@ import HouseSelection, { FetchedHouse } from '../HouseSelection';
 import CreateNewHouse from '../CreateNewHouse';
 import { usePropHouse } from '@prophouse/sdk-react';
 
+/**
+ * @overview
+ * Step 1 of the house manager where use selects to use an existing house or to create a new one
+ *
+ * @function handleCreateNewHouse - sets the existingHouse flag to false
+ * @function handleHouseSelection - sets the house address and metadata
+ *
+ * @components
+ * @name HouseSelection - the available houses and the option to create a new one
+ * @name CreateNewHouse - the new house creator form
+ */
+
 const HouseInfoConfig = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
@@ -37,6 +49,7 @@ const HouseInfoConfig = () => {
       {round.house.existingHouse ? (
         <>
           <Header title="Which house is the round for?" />
+
           <HouseSelection
             propHouse={propHouse}
             onSelectHouse={handleHouseSelection}
@@ -46,7 +59,9 @@ const HouseInfoConfig = () => {
       ) : (
         <>
           <Header title="Create your house" />
+
           <CreateNewHouse />
+
           <Footer />
         </>
       )}

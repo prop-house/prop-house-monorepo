@@ -1,5 +1,18 @@
 import { CSSProperties } from 'react';
 
+/**
+ * @overview
+ * Tailwind-like helper component to group components together. Defaults to flex column layout.
+ *
+ * @props
+ * @name children - whatever it's wrapping
+ * @name gap - gap between components
+ * @name mt,mb - margin top OR bottom
+ * @name margin - margin top AND bottom
+ * @name row - boolean to change to row layout
+ * @name classNames - custom classnames
+ */
+
 const Group: React.FC<{
   children: React.ReactNode;
   gap?: number;

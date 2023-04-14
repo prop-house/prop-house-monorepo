@@ -19,10 +19,25 @@ import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
 import { getDateFromDuration } from '../utils/getDateFromDuration';
-import EditNameDescriptionModal from '../EditNameDescriptionModal';
+import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
 import VotingStrategyModal from '../VotingStrategyModal';
 import EditAwardsModal from '../EditAwardsModal';
+
+/**
+ * @overview
+ * Step 6 where the user can review the round information and edit it if needed. House info is not editable here.
+ * TODO - add House name & image up top (see Figma)
+ *
+ * @component
+ * @name DeadlineDates - the start and end dates of the round
+ * @name EditSection - the edit icon that opens the modal to edit the section
+ * @name CardWrapper -formats the strategy & award cards into a grid
+ *
+ * @notes
+ * @see startDate - the start date of the round
+ * @see endDate - the voting end date of the round
+ */
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
@@ -36,7 +51,7 @@ const CreateRound = () => {
   }, [dispatch, round]);
 
   const [editDatesModal, setShowEditDatesModal] = useState(false);
-  const [editNameModal, setShowEditNameModal] = useState(false);
+  const [editRoundInfoModal, setShowEditRoundInfoModal] = useState(false);
   const [editStrategiesModal, setShowStrategiesModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
@@ -49,7 +64,9 @@ const CreateRound = () => {
   return (
     <>
       {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
-      {editNameModal && <EditNameDescriptionModal setShowEditNameModal={setShowEditNameModal} />}
+      {editRoundInfoModal && (
+        <EditRoundInfoModal setShowEditRoundInfoModal={setShowEditRoundInfoModal} />
+      )}
       {editStrategiesModal && (
         <VotingStrategyModal
           editMode
@@ -68,7 +85,7 @@ const CreateRound = () => {
       <Group gap={6} mb={-10}>
         <Group row classNames={classes.titleAndEditIcon} gap={10}>
           <Text type="heading">{round.title}</Text>
-          <EditSection onClick={() => setShowEditNameModal(true)} />
+          <EditSection onClick={() => setShowEditRoundInfoModal(true)} />
         </Group>
 
         <ReadMore
@@ -103,6 +120,8 @@ const CreateRound = () => {
             s.strategyType === VotingStrategyType.VANILLA ? (
               <></>
             ) : s.strategyType === VotingStrategyType.WHITELIST ? (
+              // with whitelist, we need to show a card for each member
+              // TODO - add truncate to number of cards (see Figma)
               s.members.map((m, idx) => (
                 <StrategyCard
                   key={idx}
@@ -128,6 +147,10 @@ const CreateRound = () => {
       <Group gap={16}>
         <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
         <CardWrapper>
+          {/* this creates an array of the correct length to map over based on the number of winners
+          if there is only one winner, we want to show the same award card for all winners (e.g. awards[0]), 
+          otherwise we want to show the award card for each winner (e.g. awards[idx])
+           */}
           {[...Array(round.numWinners)].map((_, idx) => (
             <AwardCard award={round.awards[round.awards.length === 1 ? 0 : idx]} place={idx + 1} />
           ))}

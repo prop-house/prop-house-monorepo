@@ -21,6 +21,21 @@ import { getTimestampFromDate } from '../utils/getTimestampFromDate';
 import { useDispatch } from 'react-redux';
 import { saveRound } from '../../../state/thunks';
 
+/**
+ * @function changeTimingType - changes the round timing from timed to infinite or vice versa
+ *
+ * @components
+ * @name DateTimeInput - the `react-datetime` input for the start date
+ * @name TimePeriod - the 3 buttons for fixed durations: 5 days, 7 days, 14 days
+ * @name CustomPeriod - button to select a custom duration
+ * @name NumberInput - number input for custom duration in days
+ *
+ * @see editMode - used to determine whether or not we're editing from Step 6,
+ * in which case we don't want to dispatch the saveRound thunk, rather we want to
+ * track the changes in the parent component and dispatch the saveRound thunk
+ * when the user clicks "Save Changes"
+ */
+
 const TimedRound: React.FC<{
   round: NewRound;
   editMode?: boolean;
@@ -47,7 +62,8 @@ const TimedRound: React.FC<{
   const [customProposingPeriod, setCustomProposingPeriod] = useState(
     startTime === 0
       ? false
-      : !periods.includes(
+      : // Flow: get proposal end date by calculating the duration between the start date (by getting date from the start time unix timestamp) and the selected proposal period duration (x-days from start date calculated by converting propsingDuration seconds to whole numbe of days), then get the duration between the start date and the proposal end date in seconds, then convert that duration to days, and check if that duration is in the periods array, if its not 5, 7, or 14 days, then it's a custom duration
+        !periods.includes(
           getDaysFromSeconds(
             getDurationBetweenDatesInSeconds(
               getDateFromTimestamp(startTime),
@@ -63,7 +79,8 @@ const TimedRound: React.FC<{
   const [customVotingPeriod, setCustomVotingPeriod] = useState(
     proposingDuration === 0
       ? false
-      : !periods.includes(
+      : // same as avove but for proposing period but with the voting period duration
+        !periods.includes(
           getDaysFromSeconds(
             getDurationBetweenDatesInSeconds(
               getDateFromDuration(
@@ -81,6 +98,7 @@ const TimedRound: React.FC<{
 
   const handleSelectStartTime = (date: Date) => {
     setStartTime(getTimestampFromDate(date));
+    // Reminder: in edit mode we are not dispatching updates to the store onClick, rather we are tracking the changes in the parent component and dispatching the saveRound thunk when the user clicks "Save Changes"
     if (editMode) {
       setEditedRound!({ ...round, proposalPeriodStartUnixTimestamp: getTimestampFromDate(date) });
     } else {
@@ -130,6 +148,9 @@ const TimedRound: React.FC<{
   const handleSelectCustomPeriod = (isProposingPeriod: boolean) => {
     if (isProposingPeriod) {
       setCustomProposingPeriod(true);
+      // set proposing duration to 15 days (1 more than the highest value in the periods array when the custom button is clicked)
+      // if they enter a custom duration that is equal to a predefined duration (e.g. 7) and go to the next step and then return back,
+      // the predefined button will be selected instead as it's the same duration and makes more sense to the user
       setProposingDuartion(15);
       if (editMode) {
         setEditedRound!({ ...round, proposalPeriodDurationSecs: getSecondsFromDays(15) });
@@ -150,7 +171,7 @@ const TimedRound: React.FC<{
   return (
     <>
       <Group margin={16}>
-        <InstructionBox title="How timing works" text="Your round starts " />
+        <InstructionBox title="How timing works" text="Your round starts" />
       </Group>
 
       <Group gap={6}>

@@ -4,9 +4,16 @@ import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../utils/getERC20Image';
-import { ERC20 } from '../StrategiesConfig';
+import { ERC20 } from '../AwardsConfig';
 import { Award } from '../AssetSelector';
 import Divider from '../../Divider';
+
+/**
+ * @overview
+ * The predefined ERC20 token buttons or "Other" that reveals the address input for a custom ERC20.
+ *
+ * @see erc20Tokens - The list of predefined ERC20 tokens to map over & display
+ */
 
 export const erc20Tokens: ERC20[] = [ERC20.ETH, ERC20.WETH, ERC20.USDC, ERC20.APE, ERC20.OTHER];
 
@@ -46,6 +53,7 @@ const ERC20Buttons: React.FC<{
         {renderTokenButtons()}
       </Group>
 
+      {/* the custom address input */}
       {award.selectedAsset === ERC20.OTHER && (
         <>
           <Divider narrow />

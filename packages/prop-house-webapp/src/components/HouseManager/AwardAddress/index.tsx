@@ -25,6 +25,8 @@ const AwardAddress: React.FC<{
 
           <Group>
             {verifiedAddress ? (
+              // after onBlur verification, show the address' token info
+              // it's a button so that the user can click it to switch back to the input
               <button className={classes.addressSuccess} onClick={handleSwitch}>
                 {
                   <div className={classes.addressImgAndTitle}>

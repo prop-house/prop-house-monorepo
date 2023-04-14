@@ -32,6 +32,7 @@ const VotesPerAddress: React.FC<{
     const clipboardData = e.clipboardData.getData('text');
     const value = parseInt(clipboardData, 10);
     if (isNaN(value) || value < 1) {
+      // If value is NaN or negative, prevent paste
       e.preventDefault();
       return;
     }
