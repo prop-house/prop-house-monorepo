@@ -15,6 +15,7 @@ import {
   StoredAuctionBase,
   InfiniteAuctionProposal,
   StoredVoteWithProposal,
+  Reply,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -23,12 +24,14 @@ import {
   DeleteProposalMessageTypes,
   EditProposalMessageTypes,
   InfiniteAuctionProposalMessageTypes,
+  ReplyMessageTypes,
   TimedAuctionProposalMessageTypes,
   VoteMessageTypes,
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
 import { Signer } from 'ethers';
+import { createClient } from '@supabase/supabase-js';
 
 export class PropHouseWrapper {
   constructor(
@@ -440,4 +443,21 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
   }
+
+  submitReply = async (signer: Signer, reply: Reply) => {
+    const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+    const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const signedPayload = await reply.signedPayload(signer, false, ReplyMessageTypes);
+
+    const { data, error } = await supabase.functions.invoke('reply', {
+      body: {
+        signedPayload,
+      },
+    });
+    if (error) throw new Error(error);
+  };
 }

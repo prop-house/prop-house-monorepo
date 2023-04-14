@@ -5,7 +5,6 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@supabase/supabase-js": "^2.20.0",
     "supabase": "^1.50.4"
   },
   "devDependencies": {
