@@ -13,6 +13,16 @@ import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 
+/**
+ * @overview
+ * Handles step progression, which buttons to show, and the new round creation logic
+ *
+ * @function handleCreateRound - calls the specific create round function based on config
+ *
+ * @components
+ * @name CreateRoundModal - modal that shows the tx state
+ */
+
 const Footer: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
   const stepDisabledArray = useAppSelector(state => state.round.stepDisabledArray);
@@ -24,19 +34,9 @@ const Footer: React.FC = () => {
   const [createRoundModal, setShowCreateRoundModal] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
-  const waitForTransaction = useWaitForTransaction({
-    hash: transactionHash as `0x${string}`,
-    onSettled: (data, error) => {
-      if (error) {
-        console.log('Tx error', error);
-
-        // Handle error case, e.g. show a notification
-      } else {
-        console.log('Tx success', data);
-        // Handle success case, e.g. navigate to a different page
-      }
-    },
-  });
+  // Wagmi hook that will wait for a transaction to be mined and
+  // `waitForTransaction` is the tx state (loading/success/error)
+  const waitForTransaction = useWaitForTransaction({ hash: transactionHash as `0x${string}` });
 
   const handleNext = () => {
     const isDisabled = stepDisabledArray[activeStep - 1];
@@ -103,7 +103,7 @@ const Footer: React.FC = () => {
     }
 
     const roundInfo: RoundInfo<RoundType> = {
-      roundType: RoundType.TIMED_FUNDING,
+      roundType: round.roundType,
       title: round.title,
       description: round.description,
       config: {
@@ -132,7 +132,6 @@ const Footer: React.FC = () => {
           return response;
         } catch (e) {
           console.log('error', e);
-          // Handle error case, e.g. show a notification
         }
       }
     }

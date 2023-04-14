@@ -11,6 +11,7 @@ import CreateRound from '../CreateRound';
 const PrimaryCard: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
 
+  // This sets the content of the primary card based on the active step
   const renderStep = () => {
     switch (activeStep) {
       case 1:

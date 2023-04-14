@@ -10,15 +10,17 @@ const CreateRoundStep: React.FC<{
 }> = props => {
   const { activeStep, stepNumber, title, text } = props;
 
-  const getStylesForStep = () => {
-    if (activeStep > stepNumber) return classes.completedStep;
-    if (activeStep === stepNumber) return classes.currentStep;
-    if (activeStep < stepNumber) return classes.futureStep;
-  };
+  const getStylesForStep = () =>
+    activeStep > stepNumber
+      ? classes.completedStep
+      : activeStep === stepNumber
+      ? classes.currentStep
+      : classes.futureStep;
 
   return (
     <>
       <div className={clsx(classes.step, getStylesForStep())}>
+        {/* TODO - fix vertical dotted line logic, doesn't grow as text wraps to 2nd line (currently fixed height) */}
         <span className={classes.number}>{stepNumber}</span>
 
         <div className={classes.textContainer}>

@@ -9,23 +9,25 @@ import { VotingStrategyType, AssetType, VotingStrategyConfig } from '@prophouse/
 import VotingStrategyModal from '../VotingStrategyModal';
 import VotingStrategies from '../VotingStrategies';
 
+/**
+ * @overview
+ * Step 3 - user selects the voting strategies (token holders or allowlist users that can vote) for the round
+ *
+ * @components
+ * @name VotingStrategyModal - the modal that allows the user to add a new voting strategy
+ * @name UploadCSVModal - // TODO - need to refactor old code to new desgin
+ * @name VotingStrategies - list of completed strategies, can be removed but not edited
+ *
+ * @notes
+ * @see StrategyType - button options within modal
+ * @see NewStrategy - new strategy object
+ */
+
 export enum StrategyType {
   ERC721 = 'ERC-721',
   ERC1155 = 'ERC-1155',
   ERC20 = 'ERC-20',
   Allowlist = 'Allowlist',
-}
-export enum AwardType {
-  ERC721 = 'ERC-721',
-  ERC1155 = 'ERC-1155',
-  ERC20 = 'ERC-20',
-}
-export enum ERC20 {
-  ETH = 'ETH',
-  WETH = 'WETH',
-  USDC = 'USDC',
-  APE = 'APE',
-  OTHER = 'Other',
 }
 
 export interface NewStrategy {
@@ -34,6 +36,7 @@ export interface NewStrategy {
   asset: AssetType;
   multiplier: number;
   tokenId: string;
+  // state is used to track the state of the input
   state: 'input' | 'success' | 'error';
   name: string;
   image: string;
@@ -57,6 +60,8 @@ const StrategiesConfig = () => {
   const [showVotingStrategyModal, setShowVotingStrategyModal] = useState(false);
 
   const round = useAppSelector(state => state.round.round);
+
+  // if there are no strategies, set the strategies to an empty array
   const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
     round.strategies.length ? round.strategies : [],
   );
@@ -83,7 +88,6 @@ const StrategiesConfig = () => {
 
       {showUploadCSVModal && (
         <UploadCSVModal
-          // handleUpload={handleCSVUpload}
           handleUpload={() => {}}
           setShowUploadCSVModal={setShowUploadCSVModal}
           type="contract"

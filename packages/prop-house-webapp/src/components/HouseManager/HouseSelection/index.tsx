@@ -42,6 +42,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
     async function fetchHouses() {
       try {
         propHouse.query
+          // passing `as string` because Wagmi returns address as an 0x-prefixed string (`0x${string}`)
           .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account as string)
           .then(data => setHouses(data.houses));
       } catch (error) {

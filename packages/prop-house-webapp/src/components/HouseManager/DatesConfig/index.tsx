@@ -3,8 +3,15 @@ import Divider from '../../Divider';
 import Footer from '../Footer';
 import Header from '../Header';
 import RoundDatesSelector from '../RoundDatesSelector';
-
 import Text from '../Text';
+
+/**
+ * @overview
+ * Step 5 - user sets the start date and the proposal & voting period duration
+ *
+ * @components
+ * @name RoundDatesSelector - component to select dates for the round, we abstract here to allow direct access to the dates selector in the edit modal
+ */
 
 const DatesConfig = () => {
   const round = useAppSelector(state => state.round.round);

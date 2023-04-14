@@ -1,5 +1,6 @@
 import { useContractRead } from 'wagmi';
 
+// TODO - automatically detect network
 // !Mainnet
 // const contractAddress = '0x905429be6e2e07b6a7df6b2acd7806090a8e8915';
 // !Goerli

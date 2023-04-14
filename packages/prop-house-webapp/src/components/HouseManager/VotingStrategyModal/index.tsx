@@ -1,11 +1,18 @@
 import classes from './VotingStrategyModal.module.css';
 import React, { SetStateAction, useState } from 'react';
 import ReactModal from 'react-modal';
-import { StrategyType, newStrategy, NewStrategy } from '../WhoCanParticipate';
+import { StrategyType, newStrategy, NewStrategy } from '../StrategiesConfig';
 import { VotingStrategyConfig } from '@prophouse/sdk-react';
 import VotingStrategies from '../VotingStrategies';
 import AddVotingStrategy from '../AddVotingStrategy';
 import Divider from '../../Divider';
+
+/**
+ * @see editMode is used to determine whether or not we're editing from Step 6,
+ * in which case we don't want to dispatch the saveRound thunk, rather we want to
+ * track the changes in the parent component and dispatch the saveRound thunk
+ * when the user clicks "Save Changes"
+ */
 
 const VotingStrategyModal: React.FC<{
   editMode?: boolean;

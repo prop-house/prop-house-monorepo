@@ -8,11 +8,7 @@ import { useEffect, useState } from 'react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { useProvider } from 'wagmi';
 
-const StrategyCard: React.FC<{
-  type: string;
-  address: string;
-  multiplier?: number;
-}> = props => {
+const StrategyCard: React.FC<{ type: string; address: string; multiplier?: number }> = props => {
   const { type, address, multiplier } = props;
 
   const provider = useProvider();
@@ -26,7 +22,7 @@ const StrategyCard: React.FC<{
       setTokenInfo({ name, image });
     };
     if (type !== VotingStrategyType.WHITELIST) fetchTokenInfo();
-  }, [address, type]);
+  }, [address, provider, type]);
 
   return (
     <div className={classes.container}>

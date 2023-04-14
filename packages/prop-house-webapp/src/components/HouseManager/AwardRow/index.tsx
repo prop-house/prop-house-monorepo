@@ -5,6 +5,12 @@ import { Award } from '../AssetSelector';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import trimEthAddress from '../../../utils/trimEthAddress';
 
+/**
+ * @overview
+ * After an IndividualAward has been selected, this component displays the award information.
+ * It has the award image, name, amount, and USD value.
+ */
+
 const AwardRow: React.FC<{ award: Award }> = props => {
   const { award } = props;
 

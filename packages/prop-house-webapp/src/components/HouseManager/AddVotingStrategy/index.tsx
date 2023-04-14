@@ -23,6 +23,17 @@ import useAddressType from '../utils/useAddressType';
 import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
 
+/**
+ * @see addressTypes - strategy types to map over & display
+ */
+
+const addressTypes: StrategyType[] = [
+  StrategyType.ERC721,
+  StrategyType.ERC1155,
+  StrategyType.ERC20,
+  StrategyType.Allowlist,
+];
+
 const AddVotingStrategy: React.FC<{
   strat: NewStrategy;
   selectedStrategy: string;
@@ -43,12 +54,10 @@ const AddVotingStrategy: React.FC<{
   } = props;
   const { t } = useTranslation();
   const provider = useProvider();
-
+  const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.round.round);
 
   const [isTyping, setIsTyping] = useState<boolean>(false);
-
-  const dispatch = useAppDispatch();
 
   const handleAddVotingStrategy = () => {
     let s: VotingStrategyConfig | null = null;
@@ -251,13 +260,6 @@ const AddVotingStrategy: React.FC<{
       return;
     }
   };
-
-  const addressTypes: StrategyType[] = [
-    StrategyType.ERC721,
-    StrategyType.ERC1155,
-    StrategyType.ERC20,
-    StrategyType.Allowlist,
-  ];
 
   const verifiedAddress = strat.state === 'success';
 

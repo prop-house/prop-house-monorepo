@@ -7,10 +7,10 @@ import { useDispatch } from 'react-redux';
 import RoundFields from '../RoundFields';
 import { saveRound } from '../../../state/thunks';
 
-const EditNameDescriptionModal: React.FC<{
-  setShowEditNameModal: Dispatch<SetStateAction<boolean>>;
+const EditRoundInfoModal: React.FC<{
+  setShowEditRoundInfoModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { setShowEditNameModal } = props;
+  const { setShowEditRoundInfoModal } = props;
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
   const [editedRound, setEditedRound] = useState<NewRound>(round);
@@ -23,12 +23,12 @@ const EditNameDescriptionModal: React.FC<{
         description: editedRound.description,
       }),
     );
-    setShowEditNameModal(false);
+    setShowEditRoundInfoModal(false);
   };
 
   const handleCancel = () => {
     setEditedRound(round);
-    setShowEditNameModal(false);
+    setShowEditRoundInfoModal(false);
   };
 
   const isDisabled = () => {
@@ -44,7 +44,7 @@ const EditNameDescriptionModal: React.FC<{
       title="Edit round name and description"
       subtitle=""
       body={<RoundFields editMode round={editedRound} setEditedRound={setEditedRound} />}
-      setShowModal={setShowEditNameModal}
+      setShowModal={setShowEditRoundInfoModal}
       button={<Button text={'Cancel'} bgColor={ButtonColor.Black} onClick={handleCancel} />}
       secondButton={
         <Button
@@ -58,4 +58,4 @@ const EditNameDescriptionModal: React.FC<{
   );
 };
 
-export default EditNameDescriptionModal;
+export default EditRoundInfoModal;

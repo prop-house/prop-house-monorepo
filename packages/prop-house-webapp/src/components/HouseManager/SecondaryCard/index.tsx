@@ -36,12 +36,14 @@ const SecondaryCard: React.FC = () => {
 
   // If the activeStep is greater than 2, show steps 3-5. Otherwise, show the subset of steps starting from the activeStep.
   const displayedSteps = activeStep > 2 ? steps.slice(2, 5) : steps.slice(activeStep - 1);
+
   // Set the start index of the displayed steps based on the activeStep.
   // If the activeStep is greater than 2, start at step 3. Otherwise, start at the activeStep.
   const start = activeStep > 2 ? 2 : activeStep - 1;
 
   return (
     <>
+      {/* Desktop */}
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.thirty}
@@ -58,6 +60,7 @@ const SecondaryCard: React.FC = () => {
         ))}
       </Card>
 
+      {/* Mobile */}
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.thirty}

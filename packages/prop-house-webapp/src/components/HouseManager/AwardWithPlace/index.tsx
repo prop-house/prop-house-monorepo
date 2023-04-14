@@ -8,6 +8,7 @@ const AwardWithPlace: React.FC<{ place: number }> = props => {
 
   return (
     <div className={classes.award}>
+      {/* top 3 places get a medal emoji, the rest get a circle with the place number */}
       {place > 3 ? (
         <div className={classes.placeCircle}>
           <span className={classes.place}>{place}</span>

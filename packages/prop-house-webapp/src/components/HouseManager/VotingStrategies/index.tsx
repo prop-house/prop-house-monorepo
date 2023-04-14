@@ -8,6 +8,13 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import clsx from 'clsx';
 import { saveRound } from '../../../state/thunks';
 
+/**
+ * @see editMode is used to determine whether or not we're editing from Step 6,
+ * in which case we don't want to dispatch the saveRound thunk, rather we want to
+ * track the changes in the parent component and dispatch the saveRound thunk
+ * when the user clicks "Save Changes"
+ */
+
 const VotingStrategies: FC<{
   editMode?: boolean;
   strategies: VotingStrategyConfig[];
@@ -26,23 +33,28 @@ const VotingStrategies: FC<{
     let updatedStrategies;
 
     if (type === VotingStrategyType.WHITELIST) {
+      // we use flatMap because we need to remove the entire strategy if there's only one member left
       updatedStrategies = strategies.flatMap(s => {
         if (s.strategyType === VotingStrategyType.WHITELIST) {
-          // If there's only one member left, remove the entire strategy
+          // if there's only one member left, remove the entire strategy by returning an empty array
           if (s.members.length === 1) {
             return [];
           } else {
+            // otherwise, remove the member from the strategy
             return {
               ...s,
               members: s.members.filter(m => m.address !== address),
             };
           }
         } else {
+          // if it's not a whitelist, just return the strategy
           return s;
         }
       });
     } else {
       updatedStrategies = strategies.filter(s => {
+        // we do this because the Whitelist type doesn't have an address field
+        // this ensures that we don't remove the wrong strategy
         if ('address' in s) {
           return s.address !== address;
         } else {
@@ -59,9 +71,11 @@ const VotingStrategies: FC<{
     <>
       <Group gap={12} mb={12}>
         {strategies.map((s, idx) =>
+          // not supported
           s.strategyType === VotingStrategyType.VANILLA ? (
             <></>
-          ) : s.strategyType === VotingStrategyType.WHITELIST ? (
+          ) : // if it's a whitelist, we need to map over the members
+          s.strategyType === VotingStrategyType.WHITELIST ? (
             s.members.map((m, idx) => (
               <VotingStrategy
                 key={idx}
@@ -73,6 +87,7 @@ const VotingStrategies: FC<{
               />
             ))
           ) : (
+            // otherwise, proceed as normal
             <VotingStrategy
               key={idx}
               type={s.strategyType}
@@ -84,6 +99,7 @@ const VotingStrategies: FC<{
           ),
         )}
       </Group>
+
       <Group row gap={6} mb={18} classNames={clsx(editMode && classes.editModeButtons)}>
         <Button
           onClick={() => {

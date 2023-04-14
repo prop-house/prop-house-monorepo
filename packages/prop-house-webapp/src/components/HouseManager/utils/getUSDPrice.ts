@@ -1,6 +1,7 @@
 import { AssetType } from '@prophouse/sdk-react';
 import { Provider } from '@wagmi/core';
 
+// Get USD price from CoinGecko API
 export const getUSDPrice = async (type: AssetType, address: string, provider: Provider) => {
   // handle case when "Other" is selected but no address is provided yet
   if (type !== AssetType.ETH && address === '') return { price: 0 };

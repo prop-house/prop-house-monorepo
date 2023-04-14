@@ -62,6 +62,7 @@ const CreateRoundModal: React.FC<{
     : NounImage.Pencil;
 
   const handleClick = () => {
+    // TODO: update when we decide on a new path
     navigate('/admin/rounds');
     setShowCreateRoundModal(false);
   };

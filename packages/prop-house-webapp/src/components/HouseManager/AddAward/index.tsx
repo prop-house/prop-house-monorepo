@@ -3,7 +3,7 @@ import React, { SetStateAction, useRef } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { AwardType, ERC20 } from '../StrategiesConfig';
+import { AwardType, ERC20 } from '../AwardsConfig';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -65,6 +65,7 @@ const AddAward: React.FC<{
 
   // Get address type by calling verification contract
   const { data } = useAddressType(award.address);
+
   const handleAddressBlur = async () => {
     setIsTyping(false);
     // if address is empty, dont do anything
@@ -147,6 +148,7 @@ const AddAward: React.FC<{
             handleChange={handleAddressChange}
           />
           {award.selectedAsset === ERC20.OTHER && (
+            // allows user to look up the address on etherscan
             <ViewOnEtherscanButton address={award.address} isDisabled={!verifiedAddress} />
           )}
         </Group>
@@ -199,6 +201,7 @@ const AddAward: React.FC<{
                 type="number"
                 onChange={e => handleTokenId(e)}
                 onKeyDown={e => {
+                  // allow blur on Enter
                   if (e.key === 'Enter') {
                     handleTokenBlur(award.tokenId!);
                     inputRef.current?.blur();
@@ -209,6 +212,7 @@ const AddAward: React.FC<{
               />
             </Group>
           </Group>
+          {/* allows user to look up the address on OpenSea */}
           <ViewOnOpenSeaButton address={award.address} isDisabled={!verifiedAddress} />
         </Group>
       </Group>

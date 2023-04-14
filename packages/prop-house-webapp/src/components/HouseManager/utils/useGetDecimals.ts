@@ -1,5 +1,7 @@
 import { useContractRead } from 'wagmi';
 
+// Get decimals number from contract
+
 const abi = [
   {
     constant: true,

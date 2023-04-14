@@ -19,6 +19,8 @@ const RoundFields: FC<{
   const { round, editMode, setEditedRound } = props;
 
   let quillRef = useRef<ReactQuill>(null);
+
+  // import & set the custom undo/redo icons
   var icons = Quill.import('ui/icons');
   icons['undo'] = `<svg viewbox="0 0 18 18">
   <polygon class="ql-fill ql-stroke" points="6 10 4 12 2 10 6 10"></polygon>
@@ -69,6 +71,7 @@ const RoundFields: FC<{
   const [descriptionLength, setDescriptionLength] = useState(0);
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
+  // on blur, validate the field and set any errors
   const handleBlur = (field: 'title' | 'description') => {
     const value = field === 'title' ? title : description;
     const length = value === description ? descriptionLength : value.length;
@@ -100,6 +103,7 @@ const RoundFields: FC<{
     setDescriptionLength(removeTags(round.description).length);
   }, [round.description]);
 
+  // set description separately to avoid re-rendering the editor
   const handleDescriptionChange = (value: string) => {
     setDescription(value);
     handleFieldChange('description', value);

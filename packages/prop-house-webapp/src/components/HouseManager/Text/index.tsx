@@ -1,6 +1,14 @@
 import clsx from 'clsx';
 import classes from './Text.module.css';
 
+/**
+ * @overview
+ * Generic text component with pre-defined styles.
+ *
+ * @notes
+ * @see links are "text buttons" that take an onClick prop
+ */
+
 interface TextProps {
   type: 'heading' | 'title' | 'subtitle' | 'body' | 'link' | 'error';
   disabled?: boolean;

@@ -5,12 +5,12 @@ import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
-import { Award, NewAward } from '../AssetSelector';
+import { Award, NewAward, erc20Name, erc20TokenAddresses } from '../AssetSelector';
 import { SetStateAction, useState } from 'react';
 import Modal from '../../Modal';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../utils/getERC20Image';
-import { AwardType, ERC20 } from '../StrategiesConfig';
+import { AwardType, ERC20 } from '../AwardsConfig';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { getUSDPrice } from '../utils/getUSDPrice';
@@ -22,20 +22,12 @@ import { useProvider } from 'wagmi';
 import { getTokenIdImage } from '../utils/getTokenIdImage';
 import { saveRound } from '../../../state/thunks';
 
-export const erc20TokenAddresses: { [key in ERC20]: string } = {
-  [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  [ERC20.USDC]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-  [ERC20.APE]: '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
-  [ERC20.ETH]: '',
-  [ERC20.OTHER]: '',
-};
-export const erc20Name: { [key in ERC20]: string } = {
-  [ERC20.WETH]: 'Wrapped Ether',
-  [ERC20.USDC]: 'USD Coin',
-  [ERC20.APE]: 'Ape Coin',
-  [ERC20.ETH]: 'Ethereum',
-  [ERC20.OTHER]: '',
-};
+/**
+ * @see editMode is used to determine whether or not we're editing from Step 6,
+ * in which case we don't want to dispatch the saveRound thunk, rather we want to
+ * track the changes in the parent component and dispatch the saveRound thunk
+ * when the user clicks "Save Changes"
+ */
 
 const IndividualAwards: React.FC<{
   editMode?: boolean;
