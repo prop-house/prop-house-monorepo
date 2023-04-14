@@ -111,7 +111,7 @@ export const communities = new CaseInsensitiveMap(
     // Own the Doge
     '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D': balanceOfErc721(),
     // Noun 40
-    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100),
+    '0xaE65E700f3f8904ac1007d47a5309dD26f8146c0': fixedVotes(100),
     // Ed Cruz
     '0x7426B39865D11207B8F795b10D70843FC3289051': fixedVotes(100),
     // Eu
