@@ -48,7 +48,7 @@ mod EthereumExecutionStrategy {
         let round_factory = IRoundFactoryDispatcher { contract_address: round_factory };
         let origin_round = round_factory.origin_round(caller);
 
-        assert(origin_round.is_non_zero(), 'ETHStrategy: Invalid Caller');
+        assert(origin_round.is_non_zero(), 'ETHStrategy: Invalid caller');
 
         origin_round
     }

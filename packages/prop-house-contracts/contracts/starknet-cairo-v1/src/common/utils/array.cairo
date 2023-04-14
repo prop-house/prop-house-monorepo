@@ -3,6 +3,9 @@ use hash::LegacyHash;
 
 trait ArrayTraitExt<T> {
     fn append_all(ref self: Array::<T>, ref arr: Array::<T>);
+    fn occurrences_of<impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
+        ref self: Array::<T>, item: T
+    ) -> usize;
 }
 
 impl ArrayImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of ArrayTraitExt<T> {
@@ -14,6 +17,33 @@ impl ArrayImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of ArrayTraitExt<T> 
             },
             Option::None(()) => (),
         }
+    }
+
+    fn occurrences_of<impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
+        ref self: Array::<T>, item: T
+    ) -> usize {
+        _occurrences_of_loop(ref self, item, 0, 0)
+    }
+}
+
+/// Asserts that the array does not contain any duplicates.
+/// * `arr` - The array to check.
+fn assert_no_duplicates<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
+    ref arr: Array::<T>
+) {
+    let arr_len = arr.len();
+    if arr_len == 0 {
+        return ();
+    }
+
+    let mut i = 0;
+    loop {
+        if i == arr_len {
+            break ();
+        }
+
+        assert(arr.occurrences_of(*arr.at(i)) == 1, 'Duplicate element found');
+        i += 1;
     }
 }
 
@@ -68,4 +98,23 @@ fn _array_hash_internal(arr: @Array::<felt252>, mut state: felt252, index: u32, 
     state = LegacyHash::hash(state, *arr.at(index));
 
     _array_hash_internal(arr, state, index + 1)
+}
+
+/// Returns the number of occurrences of an item in an array.
+/// * `arr` - The array to search.
+/// * `item` - The item to search for.
+/// * `index` - The current index.
+/// * `count` - The current count.
+fn _occurrences_of_loop<T, impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>, impl TCopy: Copy<T>>(
+    ref arr: Array<T>, item: T, index: usize, count: usize
+) -> usize {
+    if index >= arr.len() {
+        count
+    } else if *arr.at(
+        index
+    ) == item {
+        _occurrences_of_loop(ref arr, item, index + 1, count + 1)
+    } else {
+        _occurrences_of_loop(ref arr, item, index + 1, count)
+    }
 }

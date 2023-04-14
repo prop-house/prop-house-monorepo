@@ -1,12 +1,10 @@
 #[abi]
 trait IL1HeadersStore {
-    #[external]
     fn get_latest_l1_block() -> felt252;
 }
 
 #[abi]
 trait IEthereumBlockRegistry {
-    #[external]
     fn get_eth_block_number(timestamp: felt252) -> felt252;
 }
 

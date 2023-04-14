@@ -23,7 +23,6 @@ impl StorageSlotIntoU256 of Into<StorageSlot, u256> {
 
 #[abi]
 trait IFactsRegistry {
-    #[external]
     fn get_storage_uint(
         block: felt252,
         account_160: felt252,
