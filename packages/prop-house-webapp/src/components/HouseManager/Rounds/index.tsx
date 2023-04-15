@@ -13,6 +13,10 @@ import StatusLabel from '../../StatusLabel';
 import Divider from '../../Divider';
 import Button, { ButtonColor } from '../../Button';
 
+/**
+ * @note This is WIP
+ */
+
 export enum RoundState {
   AwaitingRegistration = 'AWAITING_REGISTRATION',
   Cancelled = 'CANCELLED',
@@ -48,8 +52,11 @@ const Rounds: React.FC = () => {
   useEffect(() => {
     async function fetchRounds() {
       try {
+        // returns rounds managed by account
         const data = await propHouse.query.getRoundsManagedByAccount(account as string);
 
+        // but we need to get more info, including the house, for each
+        // round so we need to make a separate query for each round
         const roundDetailsPromises = data.rounds.map(round =>
           propHouse.query.getRoundWithHouseInfo(round.id),
         );
