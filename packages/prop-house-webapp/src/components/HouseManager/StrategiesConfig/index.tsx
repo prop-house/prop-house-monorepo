@@ -19,16 +19,8 @@ import VotingStrategies from '../VotingStrategies';
  * @name VotingStrategies - list of completed strategies, can be removed but not edited
  *
  * @notes
- * @see StrategyType - button options within modal
  * @see NewStrategy - new strategy object
  */
-
-export enum StrategyType {
-  ERC721 = 'ERC-721',
-  ERC1155 = 'ERC-1155',
-  ERC20 = 'ERC-20',
-  Allowlist = 'Allowlist',
-}
 
 export interface NewStrategy {
   type: VotingStrategyType;

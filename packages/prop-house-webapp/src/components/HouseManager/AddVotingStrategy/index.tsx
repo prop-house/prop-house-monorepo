@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { StrategyType, newStrategy, NewStrategy } from '../StrategiesConfig';
+import { newStrategy, NewStrategy } from '../StrategiesConfig';
 import StrategyAddress from '../StrategyAddress';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
@@ -24,8 +24,16 @@ import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
 
 /**
+ * @see StrategyType - button options within modal
  * @see addressTypes - strategy types to map over & display
  */
+
+enum StrategyType {
+  ERC721 = 'ERC-721',
+  ERC1155 = 'ERC-1155',
+  ERC20 = 'ERC-20',
+  Allowlist = 'Allowlist',
+}
 
 const addressTypes: StrategyType[] = [
   StrategyType.ERC721,
