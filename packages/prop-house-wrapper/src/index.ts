@@ -16,6 +16,7 @@ import {
   InfiniteAuctionProposal,
   StoredVoteWithProposal,
   Reply,
+  StoredReply,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -455,9 +456,27 @@ export class PropHouseWrapper {
 
     const { data, error } = await supabase.functions.invoke('reply', {
       body: {
-        signedPayload,
+        ...signedPayload,
       },
     });
     if (error) throw new Error(error);
+  };
+
+  fetchReplies = async (proposalId: number): Promise<StoredReply[]> => {
+    const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+    const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const { data, error } = await supabase.from('reply').select('*').eq('proposalId', proposalId);
+
+    if (error) throw new Error(error.message);
+
+    return data.map(
+      (reply: any) =>
+        new StoredReply(reply.id, reply.createdAt, reply.proposalId, reply.content, reply.address),
+    );
   };
 }

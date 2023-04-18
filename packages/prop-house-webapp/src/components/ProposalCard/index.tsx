@@ -194,7 +194,7 @@ const ProposalCard: React.FC<{
           </div>
         </Card>
       </div>
-      <RepliesContainer propId={proposal.id} />
+      <RepliesContainer proposal={proposal} />
     </>
   );
 };

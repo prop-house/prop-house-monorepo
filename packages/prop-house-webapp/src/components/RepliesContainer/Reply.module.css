@@ -13,7 +13,7 @@
   font-weight: bold;
   color: var(--brand-gray);
 }
-
+.replies,
 .reply {
   cursor: pointer;
 }

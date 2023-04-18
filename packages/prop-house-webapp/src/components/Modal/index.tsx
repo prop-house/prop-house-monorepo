@@ -93,7 +93,7 @@ const Modal: React.FC<{
           </div>
 
           {body && (
-            <div>
+            <div className={classes.body}>
               {' '}
               <Divider /> {body}{' '}
             </div>

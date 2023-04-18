@@ -390,6 +390,23 @@ export class Reply extends Signable {
     };
   }
 }
+
+export class StoredReply {
+  constructor(
+    public readonly id: number,
+    public readonly createdAt: Date,
+    public readonly proposalId: number,
+    public readonly content: string,
+    public readonly address: string,
+  ) {
+    this.id = id;
+    this.createdAt = new Date(this.createdAt);
+    this.proposalId = proposalId;
+    this.content = content;
+    this.address = address;
+  }
+}
+
 export interface CommunityWithAuctions extends Community {
   auctions: StoredTimedAuction[];
 }

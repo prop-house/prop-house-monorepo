@@ -1,23 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import classes from './Reply.module.css';
 import Modal from '../Modal';
 import { Form } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
-
-import { useBlockNumber, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { useAppSelector } from '../../hooks';
-import { Reply } from '@nouns/prop-house-wrapper/dist/builders';
+import { Reply, StoredProposal, StoredReply } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import ReplyDisplay from '../ReplyDisplay';
 
-const RepliesContainer: React.FC<{ propId: number }> = props => {
-  const { propId } = props;
+const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
+  const { proposal } = props;
   const { data: signer } = useSigner();
-  const { data: blockNumber } = useBlockNumber();
 
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
+  const activeRound = useAppSelector(state => state.propHouse.activeRound);
+  const wrapper = new PropHouseWrapper('', signer);
 
   const [showReplyModal, setShowReplyModal] = useState(false);
+  const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [comment, setComment] = useState('');
+  const [replies, setReplies] = useState<StoredReply[]>([]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
@@ -25,13 +28,17 @@ const RepliesContainer: React.FC<{ propId: number }> = props => {
 
   const handleReplySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!signer || !activeCommmunity || !blockNumber) return;
+    if (!signer || !activeCommmunity || !activeRound) return;
 
     const address = await signer.getAddress();
     if (!address) return;
 
-    const wrapper = new PropHouseWrapper('', signer);
-    const reply = new Reply(activeCommmunity.contractAddress, 17073822, propId, comment);
+    const reply = new Reply(
+      activeCommmunity.contractAddress,
+      activeRound.balanceBlockTag,
+      proposal.id,
+      comment,
+    );
     try {
       await wrapper.submitReply(signer, reply);
       setComment('');
@@ -39,6 +46,14 @@ const RepliesContainer: React.FC<{ propId: number }> = props => {
       console.log(e);
     }
   };
+
+  useEffect(() => {
+    const fetchReplies = async () => {
+      const replies = await wrapper.fetchReplies(proposal.id);
+      setReplies(replies);
+    };
+    fetchReplies();
+  }, []);
 
   const replyModal = (
     <Modal
@@ -73,11 +88,40 @@ const RepliesContainer: React.FC<{ propId: number }> = props => {
     />
   );
 
+  const repliesModal = (
+    <Modal
+      title={`Reply`}
+      subtitle={`Replies to ${proposal.title}`}
+      setShowModal={setShowRepliesModal}
+      body={
+        <>
+          {replies.map(r => (
+            <ReplyDisplay reply={r} />
+          ))}
+        </>
+      }
+      button={
+        <Button
+          text="Cancel"
+          bgColor={ButtonColor.White}
+          onClick={() => setShowRepliesModal(false)}
+        />
+      }
+      secondButton={
+        <Button text="Submit" bgColor={ButtonColor.Purple} onClick={e => handleReplySubmit(e)} />
+      }
+    />
+  );
+
   return (
     <>
       {showReplyModal && replyModal}
+      {showRepliesModal && repliesModal}
       <div className={classes.container}>
-        <div className={classes.replies}>6 replies</div>
+        <div
+          className={classes.replies}
+          onClick={() => setShowRepliesModal(true)}
+        >{`${replies.length} replies`}</div>
         <div className={classes.reply} onClick={() => setShowReplyModal(true)}>
           Reply
         </div>

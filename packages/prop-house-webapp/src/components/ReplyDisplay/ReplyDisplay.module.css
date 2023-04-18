@@ -1,0 +1,22 @@
+.replyContainer {
+}
+.replyContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 0 0.5rem;
+  margin: 2rem 0;
+}
+.replyHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 5px;
+}
+.ethAddress {
+  color: var(--brand-black);
+  font-weight: bold;
+  font-size: 16px;
+}
+.replyBody {
+}
