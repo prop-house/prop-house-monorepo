@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import Buffer from 'https://deno.land/std@0.110.0/node/buffer.ts';
-import prophouse from 'https://esm.sh/@prophouse/communities@0.1.4';
+import prophouse from 'https://esm.sh/@prophouse/communities@0.1.5';
 import { ethers } from 'https://esm.sh/ethers@5.7.2';
 import { isProposer as _isProposer } from '../_shared/isProposer.ts';
 import { insertReply } from '../_shared/insertReply.ts';
@@ -14,7 +14,7 @@ serve(async req => {
 
   const INFURA_PROJECT_ID = Deno.env.get('INFURA_PROJECT_ID');
 
-  const provider = new ethers.providers.JsonRpcProvider(INFURA_PROJECT_ID);
+  const provider = new ethers.providers.InfuraProvider(1, INFURA_PROJECT_ID);
   const value = await req.json();
   const { address, communityAddress, blockTag, proposalId, content } = value;
 
@@ -29,6 +29,8 @@ serve(async req => {
       },
     );
   }
+
+  const isProposer = await _isProposer(address, proposalId);
 
   let votingPower;
   try {
@@ -45,7 +47,6 @@ serve(async req => {
     );
   }
 
-  const isProposer = await _isProposer(address, proposalId);
   const canReply = isProposer || votingPower > 0;
 
   if (!canReply)
