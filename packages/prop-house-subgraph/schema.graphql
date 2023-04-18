@@ -71,14 +71,8 @@ type House @entity {
   "The house metadata URI"
   contractURI: String
 
-  "The house name, parsed from the contract URI"
-  name: String
-
-  "The house description, parsed from the contract URI"
-  description: String
-
-  "The house image URI, parsed from the contract URI"
-  imageURI: String  
+  "The house metadata (stored on IPFS)"
+  metadata: HouseMetadata
 
   "The account who currently owns the house"
   owner: Account
@@ -92,11 +86,28 @@ type House @entity {
   "The creation transaction hash"
   creationTx: Bytes!
 
+  "The number of rounds that have been created on the house"
+  roundCount: Int!
+
   "All rounds on the house"
   rounds: [Round!]! @derivedFrom(field: "house")
 
   "All accounts who currently have permission to create rounds on the house (in addition to the owner)"
   roundCreators: [RoundCreator!]! @derivedFrom(field: "house")
+}
+
+type HouseMetadata @entity {
+  "The IPFS content hash that contains the house metadata"
+  id: ID!
+
+  "The house name, pulled from the contract URI"
+  name: String!
+
+  "The house description, pulled from the contract URI"
+  description: String!
+
+  "The house image URI, pulled from the contract URI"
+  imageURI: String!
 }
 
 type Round @entity {

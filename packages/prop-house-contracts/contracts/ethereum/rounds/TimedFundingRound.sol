@@ -350,10 +350,10 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         // L2 strategy params
         payload[2] = 8 + strategyCount + strategyParamsFlatCount;
         (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards.pack()))).split();
-        payload[5] = proposalPeriodStartTimestamp;
-        payload[6] = proposalPeriodDuration;
-        payload[7] = votePeriodDuration;
-        payload[8] = winnerCount;
+        payload[5] = config.proposalPeriodStartTimestamp;
+        payload[6] = config.proposalPeriodDuration;
+        payload[7] = config.votePeriodDuration;
+        payload[8] = config.winnerCount;
 
         // L2 voting strategies
         unchecked {

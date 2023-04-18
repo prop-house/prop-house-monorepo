@@ -27,10 +27,13 @@ export const ManyHousesSimpleQuery = graphql(`
   ) {
     houses(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
+      roundCount
     }
   }
 `);
@@ -40,15 +43,18 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = graphql(`
     $creator: String!
     $first: Int!
     $skip: Int!
-    $orderBy: Round_orderBy
+    $orderBy: House_orderBy
     $orderDirection: OrderDirection
   ) {
     houses(where: { roundCreators_: { creator: $creator } }) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
+      roundCount
     }
   }
 `);
@@ -58,15 +64,41 @@ export const ManyHousesSimpleWhereAccountIsOwnerQuery = graphql(`
     $owner: String!
     $first: Int!
     $skip: Int!
-    $orderBy: Round_orderBy
+    $orderBy: House_orderBy
     $orderDirection: OrderDirection
   ) {
     houses(where: { owner: $owner }) {
       id
-      name
-      description
-      imageURI
+      metadata {
+        name
+        description
+        imageURI
+      }
       createdAt
+      roundCount
+    }
+  }
+`);
+
+export const ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery = graphql(`
+  query manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions(
+    $ownerOrCreator: String!
+    $first: Int!
+    $skip: Int!
+    $orderBy: House_orderBy
+    $orderDirection: OrderDirection
+  ) {
+    houses(
+      where: { or: [{ roundCreators_: { creator: $ownerOrCreator } }, { owner: $ownerOrCreator }] }
+    ) {
+      id
+      metadata {
+        name
+        description
+        imageURI
+      }
+      createdAt
+      roundCount
     }
   }
 `);
@@ -161,6 +193,43 @@ export const RoundQuery = graphql(`
       }
       timedFundingConfig {
         ...TimedFundingRoundConfigParts
+      }
+    }
+  }
+`);
+
+export const RoundWithHouseInfoQuery = graphql(`
+  query roundWithHouseInfo($id: ID!) {
+    round(id: $id) {
+      id
+      type
+      title
+      description
+      createdAt
+      state
+      manager {
+        id
+      }
+      votingStrategies {
+        votingStrategy {
+          id
+          type
+          address
+          params
+        }
+      }
+      timedFundingConfig {
+        ...TimedFundingRoundConfigParts
+      }
+      house {
+        id
+        metadata {
+          name
+          description
+          imageURI
+        }
+        createdAt
+        roundCount
       }
     }
   }

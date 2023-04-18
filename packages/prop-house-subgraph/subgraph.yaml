@@ -12,7 +12,7 @@ dataSources:
       startBlock: 8701532
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/manager.ts
       entities:
@@ -42,7 +42,7 @@ dataSources:
       startBlock: 8701532
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/prop-house.ts
       entities:
@@ -73,7 +73,7 @@ dataSources:
       startBlock: 8701532
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/creator-pass-issuer.ts
       entities:
@@ -91,13 +91,26 @@ dataSources:
           handler: handleBatchTransfer
     network: goerli
 templates:
+  - name: HouseMetadata
+    kind: file/ipfs
+    mapping:
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./src/house-metadata.ts
+      handler: handleHouseMetadata
+      entities:
+        - HouseMetadata
+      abis:
+        - name: CommunityHouse
+          file: ./abis/CommunityHouse.json
+    network: goerli
   - name: CommunityHouse
     kind: ethereum/contract
     source:
       abi: CommunityHouse
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/community-house.ts
       entities:
@@ -118,7 +131,7 @@ templates:
       abi: TimedFundingRound
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.6
+      apiVersion: 0.0.7
       language: wasm/assemblyscript
       file: ./src/timed-funding-round.ts
       entities:

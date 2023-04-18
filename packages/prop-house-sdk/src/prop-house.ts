@@ -4,6 +4,7 @@ import {
   AssetStruct,
   AssetType,
   Custom,
+  EVM,
   HouseInfo,
   HouseType,
   PropHouseConfig,
@@ -20,7 +21,7 @@ import { House } from './houses';
 import { Round } from './rounds';
 
 export class PropHouse<CS extends Custom | void = void> extends ChainBase {
-  private readonly _contract: PropHouseContract;
+  private _contract: PropHouseContract;
   private readonly _voting: Voting<CS>;
   private readonly _house: House;
   private readonly _round: Round<CS>;
@@ -80,6 +81,16 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
       voting: this._voting,
       query: this._query,
     });
+  }
+
+  /**
+   * Attach the `PropHouse` instance to a new EVM provider or signer
+   * @param evm EVM provider/connection information and optional signer
+   */
+  public attach(evm: EVM) {
+    this._evm = this.toEVMSignerOrProvider(evm);
+    this._contract = this.contract.connect(this._evm);
+    return this;
   }
 
   /**

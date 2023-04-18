@@ -16,7 +16,7 @@ import randomBytes from 'randombytes';
 
 export abstract class RoundBase<
   RT extends RoundType,
-  CS extends void | Custom = void
+  CS extends void | Custom = void,
 > extends ChainBase {
   protected readonly _voting: Voting<CS>;
   protected readonly _query: QueryWrapper;

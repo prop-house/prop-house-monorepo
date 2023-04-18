@@ -12,6 +12,7 @@ import {
   ManyDepositsByAccountQuery,
   ManyHousesSimpleQuery,
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery,
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyRoundBalancesQuery,
   ManyRoundsSimpleForHouseQuery,
@@ -20,8 +21,14 @@ import {
   ManyRoundsSimpleWhereTitleContainsQuery,
   ManyRoundVotingStrategiesQuery,
   RoundQuery,
+  RoundWithHouseInfoQuery,
 } from './queries.evm';
-import { getDefaultConfig, getGraphQlClientsForChainOrThrow, toPaginated } from './utils';
+import {
+  getDefaultConfig,
+  getGraphQlClientsForChainOrThrow,
+  QueryConfig,
+  toPaginated,
+} from './utils';
 import { OrderByProposalFields, OrderByVoteFields } from './starknet/graphql';
 import { GraphQL } from '../types';
 import {
@@ -59,8 +66,11 @@ export class QueryWrapper {
    * Get high-level house information for many houses
    * @param config Pagination and ordering configuration
    */
-  public async getHouses(config = getDefaultConfig(House_OrderBy.CreatedAt)) {
-    return this._gql.evm.request(ManyHousesSimpleQuery, toPaginated(config));
+  public async getHouses(config: Partial<QueryConfig<House_OrderBy>> = {}) {
+    return this._gql.evm.request(
+      ManyHousesSimpleQuery,
+      toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
+    );
   }
 
   /**
@@ -70,10 +80,10 @@ export class QueryWrapper {
    */
   public async getHousesWhereAccountHasCreatorPermissions(
     account: string,
-    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+    config: Partial<QueryConfig<House_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
       creator: account.toLowerCase(),
     });
   }
@@ -85,11 +95,27 @@ export class QueryWrapper {
    */
   public async getHousesWhereAccountIsOwner(
     account: string,
-    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+    config: Partial<QueryConfig<House_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyHousesSimpleWhereAccountIsOwnerQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
       owner: account.toLowerCase(),
+    });
+  }
+
+  /**
+   * Get paginated houses where the provided account is the house owner
+   * or has creator permissions
+   * @param account The account address
+   * @param config Pagination and ordering configuration
+   */
+  public async getHousesWhereAccountIsOwnerOrHasCreatorPermissions(
+    account: string,
+    config: Partial<QueryConfig<House_OrderBy>> = {},
+  ) {
+    return this._gql.evm.request(ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery, {
+      ...toPaginated(this.merge(getDefaultConfig(House_OrderBy.CreatedAt), config)),
+      ownerOrCreator: account.toLowerCase(),
     });
   }
 
@@ -97,8 +123,11 @@ export class QueryWrapper {
    * Get high-level round information for many rounds
    * @param config Pagination and ordering configuration
    */
-  public async getRounds(config = getDefaultConfig(Round_OrderBy.CreatedAt)) {
-    return this._gql.evm.request(ManyRoundsSimpleQuery, toPaginated(config));
+  public async getRounds(config: Partial<QueryConfig<Round_OrderBy>> = {}) {
+    return this._gql.evm.request(
+      ManyRoundsSimpleQuery,
+      toPaginated(this.merge(getDefaultConfig(Round_OrderBy.CreatedAt), config)),
+    );
   }
 
   /**
@@ -106,12 +135,9 @@ export class QueryWrapper {
    * @param house The house address
    * @param config Pagination and ordering configuration
    */
-  public async getRoundsForHouse(
-    house: string,
-    config = getDefaultConfig(Round_OrderBy.CreatedAt),
-  ) {
+  public async getRoundsForHouse(house: string, config: Partial<QueryConfig<Round_OrderBy>> = {}) {
     return this._gql.evm.request(ManyRoundsSimpleForHouseQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Round_OrderBy.CreatedAt), config)),
       house: house.toLowerCase(),
     });
   }
@@ -123,10 +149,10 @@ export class QueryWrapper {
    */
   public async getRoundsWhereTitleContains(
     titleContains: string,
-    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+    config: Partial<QueryConfig<Round_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyRoundsSimpleWhereTitleContainsQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Round_OrderBy.CreatedAt), config)),
       titleContains,
     });
   }
@@ -140,16 +166,21 @@ export class QueryWrapper {
   }
 
   /**
+   * Get detailed information for a single round, including house information
+   * @param round The round address
+   */
+  public async getRoundWithHouseInfo(round: string) {
+    return this._gql.evm.request(RoundWithHouseInfoQuery, { id: round.toLowerCase() });
+  }
+
+  /**
    * Get balance information for a single round
    * @param round The round address
    * @param config Pagination and ordering configuration
    */
-  public async getRoundBalances(
-    round: string,
-    config = getDefaultConfig(Balance_OrderBy.UpdatedAt),
-  ) {
+  public async getRoundBalances(round: string, config: Partial<QueryConfig<Balance_OrderBy>> = {}) {
     return this._gql.evm.request(ManyRoundBalancesQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Balance_OrderBy.UpdatedAt), config)),
       round: round.toLowerCase(),
     });
   }
@@ -161,10 +192,10 @@ export class QueryWrapper {
    */
   public async getRoundVotingStrategies(
     round: string,
-    config = getDefaultConfig(VotingStrategy_OrderBy.Id),
+    config: Partial<QueryConfig<VotingStrategy_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyRoundVotingStrategiesQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(VotingStrategy_OrderBy.Id), config)),
       round: round.toLowerCase(),
     });
   }
@@ -176,10 +207,10 @@ export class QueryWrapper {
    */
   public async getRoundsManagedByAccount(
     account: string,
-    config = getDefaultConfig(Round_OrderBy.CreatedAt),
+    config: Partial<QueryConfig<Round_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyRoundsSimpleManagedByAccountQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Round_OrderBy.CreatedAt), config)),
       manager: account.toLowerCase(),
     });
   }
@@ -191,10 +222,10 @@ export class QueryWrapper {
    */
   public async getRoundDepositsByAccount(
     account: string,
-    config = getDefaultConfig(Deposit_OrderBy.DepositedAt),
+    config: Partial<QueryConfig<Deposit_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyDepositsByAccountQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Deposit_OrderBy.DepositedAt), config)),
       depositor: account.toLowerCase(),
     });
   }
@@ -206,10 +237,10 @@ export class QueryWrapper {
    */
   public async getRoundClaimsByAccount(
     account: string,
-    config = getDefaultConfig(Claim_OrderBy.ClaimedAt),
+    config: Partial<QueryConfig<Claim_OrderBy>> = {},
   ) {
     return this._gql.evm.request(ManyClaimsByAccountQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(Claim_OrderBy.ClaimedAt), config)),
       claimer: account.toLowerCase(),
     });
   }
@@ -221,10 +252,10 @@ export class QueryWrapper {
    */
   public async getProposalsByAccount(
     account: string,
-    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+    config: Partial<QueryConfig<OrderByProposalFields>> = {},
   ) {
     return this._gql.starknet.request(ManyProposalsByAccountQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(OrderByProposalFields.ReceivedAt), config)),
       proposer: account.toLowerCase(),
     });
   }
@@ -236,10 +267,10 @@ export class QueryWrapper {
    */
   public async getVotesByAccount(
     account: string,
-    config = getDefaultConfig(OrderByVoteFields.ReceivedAt),
+    config: Partial<QueryConfig<OrderByVoteFields>> = {},
   ) {
     return this._gql.starknet.request(ManyVotesByAccountQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(OrderByVoteFields.ReceivedAt), config)),
       voter: account.toLowerCase(),
     });
   }
@@ -251,11 +282,23 @@ export class QueryWrapper {
    */
   public async getProposalsForRound(
     round: string,
-    config = getDefaultConfig(OrderByProposalFields.ReceivedAt),
+    config: Partial<QueryConfig<OrderByProposalFields>> = {},
   ) {
     return this._gql.starknet.request(ManyProposalsForRoundQuery, {
-      ...toPaginated(config),
+      ...toPaginated(this.merge(getDefaultConfig(OrderByProposalFields.ReceivedAt), config)),
       round: round.toLowerCase(),
     });
+  }
+
+  /**
+   * Merge a user and a default configuration
+   * @param defaultConfig The default configuration
+   * @param userConfig The user-provided partial configuration
+   */
+  protected merge<OB>(defaultConfig: QueryConfig<OB>, userConfig: Partial<QueryConfig<OB>>) {
+    return {
+      ...defaultConfig,
+      ...userConfig,
+    };
   }
 }

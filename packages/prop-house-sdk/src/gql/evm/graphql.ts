@@ -801,16 +801,14 @@ export type House = {
   creationTx: Scalars['Bytes'];
   /** The account who created the house */
   creator?: Maybe<Account>;
-  /** The house description, parsed from the contract URI */
-  description?: Maybe<Scalars['String']>;
   /** The address of the house contract */
   id: Scalars['ID'];
-  /** The house image URI, parsed from the contract URI */
-  imageURI?: Maybe<Scalars['String']>;
-  /** The house name, parsed from the contract URI */
-  name?: Maybe<Scalars['String']>;
+  /** The house metadata (stored on IPFS) */
+  metadata?: Maybe<HouseMetadata>;
   /** The account who currently owns the house */
   owner?: Maybe<Account>;
+  /** The number of rounds that have been created on the house */
+  roundCount: Scalars['Int'];
   /** All accounts who currently have permission to create rounds on the house (in addition to the owner) */
   roundCreators: Array<RoundCreator>;
   /** All rounds on the house */
@@ -928,69 +926,22 @@ export enum HouseImplementation_OrderBy {
   Type = 'type',
 }
 
-export type House_Filter = {
+export type HouseMetadata = {
+  __typename?: 'HouseMetadata';
+  /** The house description, pulled from the contract URI */
+  description: Scalars['String'];
+  /** The IPFS content hash that contains the house metadata */
+  id: Scalars['ID'];
+  /** The house image URI, pulled from the contract URI */
+  imageURI: Scalars['String'];
+  /** The house name, pulled from the contract URI */
+  name: Scalars['String'];
+};
+
+export type HouseMetadata_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<House_Filter>>>;
-  contractURI?: InputMaybe<Scalars['String']>;
-  contractURI_contains?: InputMaybe<Scalars['String']>;
-  contractURI_contains_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_ends_with?: InputMaybe<Scalars['String']>;
-  contractURI_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_gt?: InputMaybe<Scalars['String']>;
-  contractURI_gte?: InputMaybe<Scalars['String']>;
-  contractURI_in?: InputMaybe<Array<Scalars['String']>>;
-  contractURI_lt?: InputMaybe<Scalars['String']>;
-  contractURI_lte?: InputMaybe<Scalars['String']>;
-  contractURI_not?: InputMaybe<Scalars['String']>;
-  contractURI_not_contains?: InputMaybe<Scalars['String']>;
-  contractURI_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_not_ends_with?: InputMaybe<Scalars['String']>;
-  contractURI_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_not_in?: InputMaybe<Array<Scalars['String']>>;
-  contractURI_not_starts_with?: InputMaybe<Scalars['String']>;
-  contractURI_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  contractURI_starts_with?: InputMaybe<Scalars['String']>;
-  contractURI_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  createdAt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
-  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
-  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
-  createdAt_not?: InputMaybe<Scalars['BigInt']>;
-  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  creationTx?: InputMaybe<Scalars['Bytes']>;
-  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
-  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
-  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  creator?: InputMaybe<Scalars['String']>;
-  creator_?: InputMaybe<Account_Filter>;
-  creator_contains?: InputMaybe<Scalars['String']>;
-  creator_contains_nocase?: InputMaybe<Scalars['String']>;
-  creator_ends_with?: InputMaybe<Scalars['String']>;
-  creator_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_gt?: InputMaybe<Scalars['String']>;
-  creator_gte?: InputMaybe<Scalars['String']>;
-  creator_in?: InputMaybe<Array<Scalars['String']>>;
-  creator_lt?: InputMaybe<Scalars['String']>;
-  creator_lte?: InputMaybe<Scalars['String']>;
-  creator_not?: InputMaybe<Scalars['String']>;
-  creator_not_contains?: InputMaybe<Scalars['String']>;
-  creator_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  creator_not_ends_with?: InputMaybe<Scalars['String']>;
-  creator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_not_in?: InputMaybe<Array<Scalars['String']>>;
-  creator_not_starts_with?: InputMaybe<Scalars['String']>;
-  creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  creator_starts_with?: InputMaybe<Scalars['String']>;
-  creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  and?: InputMaybe<Array<InputMaybe<HouseMetadata_Filter>>>;
   description?: InputMaybe<Scalars['String']>;
   description_contains?: InputMaybe<Scalars['String']>;
   description_contains_nocase?: InputMaybe<Scalars['String']>;
@@ -1059,6 +1010,108 @@ export type House_Filter = {
   name_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   name_starts_with?: InputMaybe<Scalars['String']>;
   name_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  or?: InputMaybe<Array<InputMaybe<HouseMetadata_Filter>>>;
+};
+
+export enum HouseMetadata_OrderBy {
+  Description = 'description',
+  Id = 'id',
+  ImageUri = 'imageURI',
+  Name = 'name',
+}
+
+export type House_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<House_Filter>>>;
+  contractURI?: InputMaybe<Scalars['String']>;
+  contractURI_contains?: InputMaybe<Scalars['String']>;
+  contractURI_contains_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_ends_with?: InputMaybe<Scalars['String']>;
+  contractURI_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_gt?: InputMaybe<Scalars['String']>;
+  contractURI_gte?: InputMaybe<Scalars['String']>;
+  contractURI_in?: InputMaybe<Array<Scalars['String']>>;
+  contractURI_lt?: InputMaybe<Scalars['String']>;
+  contractURI_lte?: InputMaybe<Scalars['String']>;
+  contractURI_not?: InputMaybe<Scalars['String']>;
+  contractURI_not_contains?: InputMaybe<Scalars['String']>;
+  contractURI_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_not_ends_with?: InputMaybe<Scalars['String']>;
+  contractURI_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_not_in?: InputMaybe<Array<Scalars['String']>>;
+  contractURI_not_starts_with?: InputMaybe<Scalars['String']>;
+  contractURI_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  contractURI_starts_with?: InputMaybe<Scalars['String']>;
+  contractURI_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  createdAt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAt_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAt_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not?: InputMaybe<Scalars['BigInt']>;
+  createdAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  creationTx?: InputMaybe<Scalars['Bytes']>;
+  creationTx_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTx_gt?: InputMaybe<Scalars['Bytes']>;
+  creationTx_gte?: InputMaybe<Scalars['Bytes']>;
+  creationTx_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creationTx_lt?: InputMaybe<Scalars['Bytes']>;
+  creationTx_lte?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not_contains?: InputMaybe<Scalars['Bytes']>;
+  creationTx_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
+  creator?: InputMaybe<Scalars['String']>;
+  creator_?: InputMaybe<Account_Filter>;
+  creator_contains?: InputMaybe<Scalars['String']>;
+  creator_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_ends_with?: InputMaybe<Scalars['String']>;
+  creator_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_gt?: InputMaybe<Scalars['String']>;
+  creator_gte?: InputMaybe<Scalars['String']>;
+  creator_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_lt?: InputMaybe<Scalars['String']>;
+  creator_lte?: InputMaybe<Scalars['String']>;
+  creator_not?: InputMaybe<Scalars['String']>;
+  creator_not_contains?: InputMaybe<Scalars['String']>;
+  creator_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with?: InputMaybe<Scalars['String']>;
+  creator_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_not_in?: InputMaybe<Array<Scalars['String']>>;
+  creator_not_starts_with?: InputMaybe<Scalars['String']>;
+  creator_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  creator_starts_with?: InputMaybe<Scalars['String']>;
+  creator_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  metadata?: InputMaybe<Scalars['String']>;
+  metadata_?: InputMaybe<HouseMetadata_Filter>;
+  metadata_contains?: InputMaybe<Scalars['String']>;
+  metadata_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadata_ends_with?: InputMaybe<Scalars['String']>;
+  metadata_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_gt?: InputMaybe<Scalars['String']>;
+  metadata_gte?: InputMaybe<Scalars['String']>;
+  metadata_in?: InputMaybe<Array<Scalars['String']>>;
+  metadata_lt?: InputMaybe<Scalars['String']>;
+  metadata_lte?: InputMaybe<Scalars['String']>;
+  metadata_not?: InputMaybe<Scalars['String']>;
+  metadata_not_contains?: InputMaybe<Scalars['String']>;
+  metadata_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadata_not_ends_with?: InputMaybe<Scalars['String']>;
+  metadata_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_not_in?: InputMaybe<Array<Scalars['String']>>;
+  metadata_not_starts_with?: InputMaybe<Scalars['String']>;
+  metadata_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  metadata_starts_with?: InputMaybe<Scalars['String']>;
+  metadata_starts_with_nocase?: InputMaybe<Scalars['String']>;
   or?: InputMaybe<Array<InputMaybe<House_Filter>>>;
   owner?: InputMaybe<Scalars['String']>;
   owner_?: InputMaybe<Account_Filter>;
@@ -1081,6 +1134,14 @@ export type House_Filter = {
   owner_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   owner_starts_with?: InputMaybe<Scalars['String']>;
   owner_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  roundCount?: InputMaybe<Scalars['Int']>;
+  roundCount_gt?: InputMaybe<Scalars['Int']>;
+  roundCount_gte?: InputMaybe<Scalars['Int']>;
+  roundCount_in?: InputMaybe<Array<Scalars['Int']>>;
+  roundCount_lt?: InputMaybe<Scalars['Int']>;
+  roundCount_lte?: InputMaybe<Scalars['Int']>;
+  roundCount_not?: InputMaybe<Scalars['Int']>;
+  roundCount_not_in?: InputMaybe<Array<Scalars['Int']>>;
   roundCreators_?: InputMaybe<RoundCreator_Filter>;
   rounds_?: InputMaybe<Round_Filter>;
   type?: InputMaybe<Scalars['String']>;
@@ -1111,12 +1172,15 @@ export enum House_OrderBy {
   CreationTx = 'creationTx',
   Creator = 'creator',
   CreatorId = 'creator__id',
-  Description = 'description',
   Id = 'id',
-  ImageUri = 'imageURI',
-  Name = 'name',
+  Metadata = 'metadata',
+  MetadataDescription = 'metadata__description',
+  MetadataId = 'metadata__id',
+  MetadataImageUri = 'metadata__imageURI',
+  MetadataName = 'metadata__name',
   Owner = 'owner',
   OwnerId = 'owner__id',
+  RoundCount = 'roundCount',
   RoundCreators = 'roundCreators',
   Rounds = 'rounds',
   Type = 'type',
@@ -1149,6 +1213,7 @@ export type Query = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
+  houseMetadata: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -1306,6 +1371,16 @@ export type QueryHouseImplementationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<HouseImplementation_Filter>;
+};
+
+export type QueryHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<HouseMetadata_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<HouseMetadata_Filter>;
 };
 
 export type QueryHousesArgs = {
@@ -1941,10 +2016,8 @@ export enum RoundCreator_OrderBy {
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
   HouseCreationTx = 'house__creationTx',
-  HouseDescription = 'house__description',
   HouseId = 'house__id',
-  HouseImageUri = 'house__imageURI',
-  HouseName = 'house__name',
+  HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
   PassCount = 'passCount',
@@ -2323,10 +2396,8 @@ export enum Round_OrderBy {
   HouseContractUri = 'house__contractURI',
   HouseCreatedAt = 'house__createdAt',
   HouseCreationTx = 'house__creationTx',
-  HouseDescription = 'house__description',
   HouseId = 'house__id',
-  HouseImageUri = 'house__imageURI',
-  HouseName = 'house__name',
+  HouseRoundCount = 'house__roundCount',
   HouseType = 'house__type',
   Id = 'id',
   Manager = 'manager',
@@ -2370,6 +2441,7 @@ export type Subscription = {
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
+  houseMetadata: Array<HouseMetadata>;
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
@@ -2527,6 +2599,16 @@ export type SubscriptionHouseImplementationsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<HouseImplementation_Filter>;
+};
+
+export type SubscriptionHouseMetadataArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<HouseMetadata_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<HouseMetadata_Filter>;
 };
 
 export type SubscriptionHousesArgs = {
@@ -3129,10 +3211,14 @@ export type ManyHousesSimpleQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3140,7 +3226,7 @@ export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables = Ex
   creator: Scalars['String'];
   first: Scalars['Int'];
   skip: Scalars['Int'];
-  orderBy?: InputMaybe<Round_OrderBy>;
+  orderBy?: InputMaybe<House_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
@@ -3149,10 +3235,14 @@ export type ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3160,7 +3250,7 @@ export type ManyHousesSimpleWhereAccountIsOwnerQueryVariables = Exact<{
   owner: Scalars['String'];
   first: Scalars['Int'];
   skip: Scalars['Int'];
-  orderBy?: InputMaybe<Round_OrderBy>;
+  orderBy?: InputMaybe<House_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
 }>;
 
@@ -3169,10 +3259,38 @@ export type ManyHousesSimpleWhereAccountIsOwnerQuery = {
   houses: Array<{
     __typename?: 'House';
     id: string;
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
     createdAt: any;
+    roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
+  }>;
+};
+
+export type ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQueryVariables = Exact<{
+  ownerOrCreator: Scalars['String'];
+  first: Scalars['Int'];
+  skip: Scalars['Int'];
+  orderBy?: InputMaybe<House_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+}>;
+
+export type ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery = {
+  __typename?: 'Query';
+  houses: Array<{
+    __typename?: 'House';
+    id: string;
+    createdAt: any;
+    roundCount: number;
+    metadata?: {
+      __typename?: 'HouseMetadata';
+      name: string;
+      description: string;
+      imageURI: string;
+    } | null;
   }>;
 };
 
@@ -3270,6 +3388,53 @@ export type RoundQuery = {
           };
         })
       | null;
+  } | null;
+};
+
+export type RoundWithHouseInfoQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+export type RoundWithHouseInfoQuery = {
+  __typename?: 'Query';
+  round?: {
+    __typename?: 'Round';
+    id: string;
+    type: string;
+    title: string;
+    description: string;
+    createdAt: any;
+    state: RoundState;
+    manager?: { __typename?: 'Account'; id: string } | null;
+    votingStrategies: Array<{
+      __typename?: 'RoundVotingStrategy';
+      votingStrategy: {
+        __typename?: 'VotingStrategy';
+        id: string;
+        type: VotingStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
+    timedFundingConfig?:
+      | ({ __typename?: 'TimedFundingRoundConfig' } & {
+          ' $fragmentRefs'?: {
+            TimedFundingRoundConfigPartsFragment: TimedFundingRoundConfigPartsFragment;
+          };
+        })
+      | null;
+    house: {
+      __typename?: 'House';
+      id: string;
+      createdAt: any;
+      roundCount: number;
+      metadata?: {
+        __typename?: 'HouseMetadata';
+        name: string;
+        description: string;
+        imageURI: string;
+      } | null;
+    };
   } | null;
 };
 
@@ -3374,7 +3539,7 @@ export type ManyClaimsByAccountQuery = {
   }>;
 };
 
-export const TimedFundingRoundConfigPartsFragmentDoc = ({
+export const TimedFundingRoundConfigPartsFragmentDoc = {
   kind: 'Document',
   definitions: [
     {
@@ -3418,8 +3583,8 @@ export const TimedFundingRoundConfigPartsFragmentDoc = ({
       },
     },
   ],
-} as unknown) as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
-export const ManyHousesSimpleDocument = ({
+} as unknown as DocumentNode<TimedFundingRoundConfigPartsFragment, unknown>;
+export const ManyHousesSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3486,10 +3651,20 @@ export const ManyHousesSimpleDocument = ({
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3497,8 +3672,8 @@ export const ManyHousesSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
-export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
+} as unknown as DocumentNode<ManyHousesSimpleQuery, ManyHousesSimpleQueryVariables>;
+export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3533,7 +3708,7 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
         },
         {
           kind: 'VariableDefinition',
@@ -3576,10 +3751,20 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3587,11 +3772,11 @@ export const ManyHousesSimpleWhereAccountHasCreatorPermissionsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQuery,
   ManyHousesSimpleWhereAccountHasCreatorPermissionsQueryVariables
 >;
-export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
+export const ManyHousesSimpleWhereAccountIsOwnerDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3626,7 +3811,7 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Round_orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
         },
         {
           kind: 'VariableDefinition',
@@ -3660,10 +3845,20 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
               kind: 'SelectionSet',
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
               ],
             },
           },
@@ -3671,11 +3866,144 @@ export const ManyHousesSimpleWhereAccountIsOwnerDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyHousesSimpleWhereAccountIsOwnerQuery,
   ManyHousesSimpleWhereAccountIsOwnerQueryVariables
 >;
-export const ManyRoundsSimpleDocument = ({
+export const ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissions' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'ownerOrCreator' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+          },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'House_orderBy' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'houses' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'or' },
+                      value: {
+                        kind: 'ListValue',
+                        values: [
+                          {
+                            kind: 'ObjectValue',
+                            fields: [
+                              {
+                                kind: 'ObjectField',
+                                name: { kind: 'Name', value: 'roundCreators_' },
+                                value: {
+                                  kind: 'ObjectValue',
+                                  fields: [
+                                    {
+                                      kind: 'ObjectField',
+                                      name: { kind: 'Name', value: 'creator' },
+                                      value: {
+                                        kind: 'Variable',
+                                        name: { kind: 'Name', value: 'ownerOrCreator' },
+                                      },
+                                    },
+                                  ],
+                                },
+                              },
+                            ],
+                          },
+                          {
+                            kind: 'ObjectValue',
+                            fields: [
+                              {
+                                kind: 'ObjectField',
+                                name: { kind: 'Name', value: 'owner' },
+                                value: {
+                                  kind: 'Variable',
+                                  name: { kind: 'Name', value: 'ownerOrCreator' },
+                                },
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'metadata' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQuery,
+  ManyHousesSimpleWhereAccountIsOwnerOrHasCreatorPermissionsQueryVariables
+>;
+export const ManyRoundsSimpleDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3754,8 +4082,8 @@ export const ManyRoundsSimpleDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
-export const ManyRoundsSimpleForHouseDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleQuery, ManyRoundsSimpleQueryVariables>;
+export const ManyRoundsSimpleForHouseDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3856,11 +4184,8 @@ export const ManyRoundsSimpleForHouseDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
-  ManyRoundsSimpleForHouseQuery,
-  ManyRoundsSimpleForHouseQueryVariables
->;
-export const ManyRoundsSimpleWhereTitleContainsDocument = ({
+} as unknown as DocumentNode<ManyRoundsSimpleForHouseQuery, ManyRoundsSimpleForHouseQueryVariables>;
+export const ManyRoundsSimpleWhereTitleContainsDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -3961,11 +4286,11 @@ export const ManyRoundsSimpleWhereTitleContainsDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleWhereTitleContainsQuery,
   ManyRoundsSimpleWhereTitleContainsQueryVariables
 >;
-export const RoundDocument = ({
+export const RoundDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4094,8 +4419,162 @@ export const RoundDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<RoundQuery, RoundQueryVariables>;
-export const ManyRoundBalancesDocument = ({
+} as unknown as DocumentNode<RoundQuery, RoundQueryVariables>;
+export const RoundWithHouseInfoDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'roundWithHouseInfo' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+          type: {
+            kind: 'NonNullType',
+            type: { kind: 'NamedType', name: { kind: 'Name', value: 'ID' } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'round' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'state' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'manager' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'votingStrategies' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'votingStrategy' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'type' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'address' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'params' } },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'timedFundingConfig' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'TimedFundingRoundConfigParts' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'house' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'metadata' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                            { kind: 'Field', name: { kind: 'Name', value: 'imageURI' } },
+                          ],
+                        },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    {
+      kind: 'FragmentDefinition',
+      name: { kind: 'Name', value: 'TimedFundingRoundConfigParts' },
+      typeCondition: {
+        kind: 'NamedType',
+        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
+      },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'votePeriodStartTimestamp' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'votePeriodDuration' } },
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'awards' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'asset' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'assetType' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'token' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'identifier' } },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'amount' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RoundWithHouseInfoQuery, RoundWithHouseInfoQueryVariables>;
+export const ManyRoundBalancesDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4205,8 +4684,8 @@ export const ManyRoundBalancesDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
-export const ManyRoundVotingStrategiesDocument = ({
+} as unknown as DocumentNode<ManyRoundBalancesQuery, ManyRoundBalancesQueryVariables>;
+export const ManyRoundVotingStrategiesDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4314,11 +4793,11 @@ export const ManyRoundVotingStrategiesDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundVotingStrategiesQuery,
   ManyRoundVotingStrategiesQueryVariables
 >;
-export const ManyRoundsSimpleManagedByAccountDocument = ({
+export const ManyRoundsSimpleManagedByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4419,11 +4898,11 @@ export const ManyRoundsSimpleManagedByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<
+} as unknown as DocumentNode<
   ManyRoundsSimpleManagedByAccountQuery,
   ManyRoundsSimpleManagedByAccountQueryVariables
 >;
-export const ManyDepositsByAccountDocument = ({
+export const ManyDepositsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4541,8 +5020,8 @@ export const ManyDepositsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
-export const ManyClaimsByAccountDocument = ({
+} as unknown as DocumentNode<ManyDepositsByAccountQuery, ManyDepositsByAccountQueryVariables>;
+export const ManyClaimsByAccountDocument = {
   kind: 'Document',
   definitions: [
     {
@@ -4662,4 +5141,4 @@ export const ManyClaimsByAccountDocument = ({
       },
     },
   ],
-} as unknown) as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;
+} as unknown as DocumentNode<ManyClaimsByAccountQuery, ManyClaimsByAccountQueryVariables>;
