@@ -14,11 +14,6 @@ interface ITimedFundingRound is IRound {
         Cancelled
     }
 
-    /// @notice Supported round execution types
-    enum ExecutionType {
-        MerkleProof
-    }
-
     /// @notice The timed funding round configuration
     struct RoundConfig {
         Asset[] awards;

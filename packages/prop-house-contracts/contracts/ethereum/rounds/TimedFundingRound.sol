@@ -27,7 +27,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
     using { AssetHelper.pack } for Asset[];
 
     /// @notice Maximum winner count for this strategy
-    uint256 public constant MAX_WINNER_COUNT = 256;
+    uint256 public constant MAX_WINNER_COUNT = 255;
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
     uint256 public constant AWARD_RECLAMATION_AFTER = 8 weeks;
@@ -211,10 +211,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
             revert FINALIZATION_NOT_AVAILABLE();
         }
 
-        uint256[] memory payload = new uint256[](3);
-        payload[0] = uint256(ExecutionType.MerkleProof);
-        payload[1] = merkleRootLow;
-        payload[2] = merkleRootHigh;
+        uint256[] memory payload = new uint256[](2);
+        payload[0] = merkleRootLow;
+        payload[1] = merkleRootHigh;
 
         // This function will revert if the message does not exist
         starknet.consumeMessageFromL2(executionRelayer, payload);

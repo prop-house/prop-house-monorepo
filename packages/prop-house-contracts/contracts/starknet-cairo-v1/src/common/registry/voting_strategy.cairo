@@ -10,21 +10,22 @@ use starknet::ContractAddress;
 use option::OptionTrait;
 use traits::TryInto;
 use traits::Into;
+use clone::Clone;
 
-#[derive(Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 struct VotingStrategy {
     address: ContractAddress,
     params: Array<felt252>,
 }
 
 impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
-    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult::<VotingStrategy> {
+    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<VotingStrategy> {
         Result::Ok(
             VotingStrategy {
                 address: storage_read_syscall(
                     address_domain, storage_address_from_base_and_offset(base, 0)
                 )?.try_into().unwrap(),
-                params: ArrayTrait::<felt252>::new(),
+                params: ArrayTrait::new(),
             // TODO: Arrays do not yet implement `StorageAccess`
             // params: storage_read_syscall(
             //     address_domain,
@@ -36,7 +37,7 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
 
     fn write(
         address_domain: u32, base: StorageBaseAddress, value: VotingStrategy
-    ) -> SyscallResult::<()> {
+    ) -> SyscallResult<()> {
         storage_write_syscall(
             address_domain, storage_address_from_base_and_offset(base, 0), value.address.into()
         ) // ?;
@@ -122,7 +123,7 @@ mod VotingStrategyRegistry {
     /// Computes the strategy id for the given voting strategy.
     /// * `voting_strategy` - The voting strategy.
     fn _compute_strategy_id(ref voting_strategy: VotingStrategy) -> felt252 {
-        let mut strategy_array = ArrayTrait::<felt252>::new();
+        let mut strategy_array = ArrayTrait::new();
         strategy_array.append(voting_strategy.address.into());
         strategy_array.append_all(ref voting_strategy.params);
 

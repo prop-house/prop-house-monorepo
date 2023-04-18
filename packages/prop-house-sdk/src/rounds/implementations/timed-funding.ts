@@ -49,7 +49,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   /**
    * Maximum winner count for this strategy
    */
-  public static MAX_WINNER_COUNT = 256;
+  public static MAX_WINNER_COUNT = 255;
 
   /**
    * EIP712 timed funding round propose types

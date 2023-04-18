@@ -36,7 +36,6 @@ trait IFactsRegistry {
 #[contract]
 mod SingleSlotProof {
     use starknet::ContractAddress;
-    use starknet::ContractAddressIntoFelt252;
     use prop_house::common::utils::u256::U256Zeroable;
     use prop_house::common::utils::array::array_slice;
     use prop_house::common::utils::storage::get_slot_key;
@@ -70,7 +69,7 @@ mod SingleSlotProof {
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     fn get_slot_value(
         timestamp: u64,
-        voter_address: ContractAddress,
+        voter_address: felt252,
         params: @Array<felt252>,
         user_params: Array<felt252>,
     ) -> u256 {
@@ -89,7 +88,7 @@ mod SingleSlotProof {
         let slot_index = *params.at(1);
 
         // Ensure the slot proof is for the correct slot
-        let valid_slot = get_slot_key(slot_index, voter_address.into());
+        let valid_slot = get_slot_key(slot_index, voter_address);
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };

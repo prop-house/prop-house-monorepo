@@ -10,7 +10,7 @@ mod EthereumBalanceOfVotingStrategy {
     impl EthereumBalanceOfVotingStrategy of IVotingStrategy {
         fn get_voting_power(
             timestamp: u64,
-            voter_address: ContractAddress,
+            voter_address: felt252,
             params: Array<felt252>,
             user_params: Array<felt252>,
         ) -> u256 {
@@ -45,10 +45,7 @@ mod EthereumBalanceOfVotingStrategy {
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     #[external]
     fn get_voting_power(
-        timestamp: u64,
-        voter_address: ContractAddress,
-        params: Array<felt252>,
-        user_params: Array<felt252>,
+        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
     ) -> u256 {
         EthereumBalanceOfVotingStrategy::get_voting_power(
             timestamp, voter_address, params, user_params

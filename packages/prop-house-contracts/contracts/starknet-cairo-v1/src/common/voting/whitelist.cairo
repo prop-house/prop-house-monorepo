@@ -1,7 +1,5 @@
 #[contract]
 mod WhitelistVotingStrategy {
-    use starknet::ContractAddress;
-    use starknet::ContractAddressIntoFelt252;
     use quaireaux_data_structures::merkle_tree::MerkleTreeTrait;
     use prop_house::common::utils::traits::IVotingStrategy;
     use option::OptionTrait;
@@ -13,7 +11,7 @@ mod WhitelistVotingStrategy {
     impl WhitelistVotingStrategy of IVotingStrategy {
         fn get_voting_power(
             timestamp: u64,
-            voter_address: ContractAddress,
+            voter_address: felt252,
             params: Array<felt252>,
             user_params: Array<felt252>,
         ) -> u256 {
@@ -23,19 +21,13 @@ mod WhitelistVotingStrategy {
 
     #[external]
     fn get_voting_power(
-        timestamp: u64,
-        voter_address: ContractAddress,
-        params: Array<felt252>,
-        user_params: Array<felt252>,
+        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
     ) -> u256 {
         WhitelistVotingStrategy::get_voting_power(timestamp, voter_address, params, user_params)
     }
 
     fn _get_voting_power(
-        timestamp: u64,
-        voter_address: ContractAddress,
-        params: Array<felt252>,
-        user_params: Array<felt252>,
+        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
     ) -> u256 {
         let user_params_len = user_params.len();
         let leaf_len = 3; // [voter_address, voting_power.low, voting_power.high]
@@ -48,7 +40,7 @@ mod WhitelistVotingStrategy {
             high: (*user_params.at(2)).try_into().unwrap()
         };
 
-        assert(leaf_voter_address == voter_address.into(), 'Whitelist: Invalid leaf');
+        assert(leaf_voter_address == voter_address, 'Whitelist: Invalid leaf');
 
         let leaf = LegacyHash::hash(leaf_voter_address, leaf_voting_power);
         let mut proof = ArrayTrait::new();

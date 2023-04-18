@@ -39,16 +39,24 @@ mod RoundFactory {
         initializer(origin_messenger);
     }
 
+    /// Returns the origin round address for a given starknet round address.
+    /// * `starknet_round` - The starknet round address.
     #[view]
     fn origin_round(starknet_round: ContractAddress) -> felt252 {
         RoundFactory::origin_round(starknet_round)
     }
 
+    /// Returns the origin messenger address.
     #[view]
     fn origin_messenger() -> felt252 {
         RoundFactory::origin_messenger()
     }
 
+    /// Registers a new round.
+    /// * `from_address` - The address of the sender.
+    /// * `origin_round` - The origin round address.
+    /// * `round_class_hash` - The class hash of the round.
+    /// * `round_params` - The round parameters.
     #[l1_handler]
     fn register_round(
         from_address: felt252,
@@ -74,6 +82,8 @@ mod RoundFactory {
         _origin_messenger::write(origin_messenger_);
     }
 
+    /// Asserts that the from address is the origin messenger.
+    /// * `from_address_` - The address of the sender.
     fn _only_origin_messenger(from_address_: felt252) {
         let messenger = _origin_messenger::read();
         assert(from_address_ == messenger, 'RoundFactory: Not messenger');
