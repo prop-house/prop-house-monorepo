@@ -1,9 +1,23 @@
+type Summary {
+  "A constant (SUMMARY)"
+  id: String!
+
+  "The total number of rounds across all houses"
+  roundCount: Int!
+
+  "The total number of proposals across all rounds"
+  proposalCount: Int!
+
+  "The total number of vote submissions across all rounds"
+  voteSubmissionCount: Int!
+}
+
 type Round {
   "The Starknet round address"
   id: String!
 
   "The round address on the source chain"
-  source_chain_round: String!
+  sourceChainRound: String!
 
   "The round type (TIMED_FUNDING)"
   type: String!
@@ -12,13 +26,13 @@ type Round {
   state: String!
 
   "The total number of proposals in the round"
-  proposal_count: Int!
+  proposalCount: Int!
 
   "The total number of votes in the round"
-  vote_count: Int!
+  voteCount: Int!
 
   "The unix timestamp when the round was registered"
-  registered_at: Int!
+  registeredAt: Int!
 
   "The transaction in which the round was registered"
   tx: String
@@ -35,7 +49,7 @@ type Proposal {
   id: String!
 
   "The proposal ID"
-  proposal_id: Int!
+  proposalId: Int!
 
   "The round that the proposal was submitted to"
   round: Round!
@@ -44,7 +58,7 @@ type Proposal {
   proposer: Account!
 
   "The proposal metadata URI"
-  metadata_uri: String!
+  metadataUri: String!
 
   "The proposal title"
   title: String!
@@ -53,19 +67,19 @@ type Proposal {
   body: String!
 
   "Whether the proposal has been cancelled"
-  is_cancelled: Boolean!
+  isCancelled: Boolean!
 
   "Whether the proposal has been selected as a winner"
-  is_winner: Boolean!
+  isWinner: Boolean!
 
   "The unix timestamp when the proposal was received"
-  received_at: Int!
+  receivedAt: Int!
 
   "The transaction in which the proposal was submitted"
   tx: String
 
   "The number of votes that the proposal has received"
-  vote_count: Int!
+  voteCount: Int!
 
   "All votes that the proposal has received"
   votes: [Vote]! @derivedFrom(field: "proposal")
@@ -85,10 +99,10 @@ type Vote {
   proposal: Proposal!
 
   "The amount of voting power"
-  voting_power: Int!
+  votingPower: Int!
 
   "The unix timestamp when the vote was received"
-  received_at: Int!
+  receivedAt: Int!
 
   "The transaction in which the votes were submitted"
   tx: String
@@ -99,13 +113,13 @@ type Account {
   id: String!
 
   "The number of proposals created by the account"
-  proposal_count: Int!
+  proposalCount: Int!
 
   "The number of votes submitted by the account"
-  vote_count: Int!
+  voteCount: Int!
 
   "The unix timestamp at which the account first interacted with prop house"
-  first_seen_at: Int!
+  firstSeenAt: Int!
 
   "All proposals submitted by the account"
   proposals: [Proposal]! @derivedFrom(field: "proposer")

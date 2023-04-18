@@ -14,20 +14,26 @@ export const handleRoundRegistered: CheckpointWriter = async ({
 
   const round = {
     id: validateAndParseAddress(event.l2_round_address),
-    source_chain_round: event.l1_round_address,
+    sourceChainRound: event.l1_round_address,
     type: getRoundType(event.round_class_hash),
-    registered_at: block.timestamp,
+    registeredAt: block.timestamp,
     tx: tx.transaction_hash,
     state: RoundState.ACTIVE,
-    proposal_count: 0,
-    vote_count: 0,
+    proposalCount: 0,
+    voteCount: 0,
   };
   instance.executeTemplate('TimedFundingRound', {
     contract: round.id,
     start: block.block_number,
   });
 
-  await mysql.queryAsync('INSERT IGNORE INTO rounds SET ?;', [round]);
+  const query = `
+    INSERT IGNORE INTO rounds SET ?;
+    INSERT INTO summaries (id, roundCount, proposalCount, voteSubmissionCount)
+      VALUES ('SUMMARY', 1, 0, 0)
+      ON DUPLICATE KEY UPDATE roundCount = roundCount + 1;
+  `;
+  await mysql.queryAsync(query, [round]);
 };
 
 export const handleProposalCreated: CheckpointWriter = async ({
@@ -67,29 +73,30 @@ export const handleProposalCreated: CheckpointWriter = async ({
 
   const proposal = {
     id: `${round}-${event.proposal_id}`,
-    proposal_id: event.proposal_id,
+    proposalId: event.proposal_id,
     round,
     proposer,
-    metadata_uri: metadata.uri,
+    metadataUri: metadata.uri,
     title: metadata.title,
     body: metadata.body,
-    is_cancelled: false,
-    received_at: block.timestamp,
+    isCancelled: false,
+    receivedAt: block.timestamp,
     tx: tx.transaction_hash,
-    vote_count: 0,
+    voteCount: 0,
   };
   const account = {
     id: proposer,
-    vote_count: 0,
-    proposal_count: 0,
-    first_seen_at: block.timestamp,
+    voteCount: 0,
+    proposalCount: 0,
+    firstSeenAt: block.timestamp,
   };
 
   const query = `
     INSERT IGNORE INTO proposals SET ?;
-    UPDATE rounds SET proposal_count = proposal_count + 1 WHERE id = ? LIMIT 1;
+    UPDATE rounds SET proposalCount = proposalCount + 1 WHERE id = ? LIMIT 1;
     INSERT IGNORE INTO accounts SET ?;
-    UPDATE accounts SET proposal_count = proposal_count + 1 WHERE id = ? LIMIT 1;
+    UPDATE accounts SET proposalCount = proposalCount + 1 WHERE id = ? LIMIT 1;
+    UPDATE summaries SET proposalCount = proposalCount + 1 WHERE id = 'SUMMARY' LIMIT 1;
   `;
   await mysql.queryAsync(query, [proposal, proposal.round, account, proposer]);
 };
@@ -100,7 +107,7 @@ export const handleProposalCancelled: CheckpointWriter = async ({ rawEvent, even
   const round = validateAndParseAddress(rawEvent.from_address);
   const id = `${round}-${event.proposal_id}`;
 
-  await mysql.queryAsync('UPDATE proposals SET is_cancelled = true WHERE id = ? LIMIT 1;', [id]);
+  await mysql.queryAsync('UPDATE proposals SET isCancelled = true WHERE id = ? LIMIT 1;', [id]);
 };
 
 export const handleVoteCreated: CheckpointWriter = async ({
@@ -123,23 +130,24 @@ export const handleVoteCreated: CheckpointWriter = async ({
     voter,
     round,
     proposal,
-    voting_power: power,
-    received_at: block.timestamp,
+    votingPower: power,
+    receivedAt: block.timestamp,
     tx: tx.transaction_hash,
   };
   const account = {
     id: voter,
-    vote_count: 0,
-    proposal_count: 0,
-    first_seen_at: block.timestamp,
+    voteCount: 0,
+    proposalCount: 0,
+    firstSeenAt: block.timestamp,
   };
 
   const query = `
     INSERT IGNORE INTO votes SET ?;
-    UPDATE rounds SET vote_count = vote_count + 1 WHERE id = ? LIMIT 1;
-    UPDATE proposals SET vote_count = vote_count + 1 WHERE id = ? LIMIT 1;
+    UPDATE rounds SET voteCount = voteCount + 1 WHERE id = ? LIMIT 1;
+    UPDATE proposals SET voteCount = voteCount + 1 WHERE id = ? LIMIT 1;
     INSERT IGNORE INTO accounts SET ?;
-    UPDATE accounts SET vote_count = vote_count + 1 WHERE id = ? LIMIT 1;
+    UPDATE accounts SET voteCount = voteCount + 1 WHERE id = ? LIMIT 1;
+    UPDATE summaries SET voteCount = voteCount + 1 WHERE id = 'SUMMARY' LIMIT 1;
   `;
   await mysql.queryAsync(query, [vote, vote.round, proposal, account, voter]);
 };
@@ -152,7 +160,7 @@ export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, 
 
   const query = `
     UPDATE rounds SET state = ? WHERE id = ? LIMIT 1;
-    UPDATE proposals SET is_winner = true WHERE id IN ?;
+    UPDATE proposals SET isWinner = true WHERE id IN ?;
   `;
   await mysql.queryAsync(query, [RoundState.FINALIZED, round, winningIds]);
 };
