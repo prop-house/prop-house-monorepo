@@ -31,9 +31,13 @@ const RepliesContainer: React.FC<{ propId: number }> = props => {
     if (!address) return;
 
     const wrapper = new PropHouseWrapper('', signer);
-    const reply = new Reply(activeCommmunity.contractAddress, blockNumber, propId, comment);
-    await wrapper.submitReply(signer, reply);
-    setComment('');
+    const reply = new Reply(activeCommmunity.contractAddress, 17073822, propId, comment);
+    try {
+      await wrapper.submitReply(signer, reply);
+      setComment('');
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const replyModal = (
