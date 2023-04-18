@@ -32,6 +32,7 @@ import {
 import { OrderByProposalFields, OrderByVoteFields } from './starknet/graphql';
 import { GraphQL } from '../types';
 import {
+  GlobalStatsQuery,
   ManyProposalsByAccountQuery,
   ManyProposalsForRoundQuery,
   ManyVotesByAccountQuery,
@@ -60,6 +61,13 @@ export class QueryWrapper {
    */
   constructor(chainId: number) {
     this._gql = getGraphQlClientsForChainOrThrow(chainId, url => new GraphQLClient(url));
+  }
+
+  /**
+   * Get global protocol stats, including total rounds, proposals, and vote submissions.
+   */
+  public async getGlobalStats() {
+    return this._gql.starknet.request(GlobalStatsQuery);
   }
 
   /**

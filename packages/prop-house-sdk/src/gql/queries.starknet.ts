@@ -1,5 +1,15 @@
 import { graphql } from './starknet';
 
+export const GlobalStatsQuery = graphql(`
+  query globalStats {
+    summary(id: "SUMMARY") {
+      roundCount
+      proposalCount
+      voteSubmissionCount
+    }
+  }
+`);
+
 export const ManyProposalsForRoundQuery = graphql(`
   query manyProposalsForRound(
     $round: String!
@@ -16,18 +26,18 @@ export const ManyProposalsForRoundQuery = graphql(`
       where: { round: $round }
     ) {
       id
-      proposal_id
+      proposalId
       proposer {
         id
       }
-      metadata_uri
+      metadataUri
       title
       body
-      is_cancelled
-      is_winner
-      received_at
+      isCancelled
+      isWinner
+      receivedAt
       tx
-      vote_count
+      voteCount
     }
   }
 `);
@@ -48,15 +58,15 @@ export const ManyProposalsByAccountQuery = graphql(`
       where: { proposer: $proposer }
     ) {
       id
-      proposal_id
-      metadata_uri
+      proposalId
+      metadataUri
       title
       body
-      is_cancelled
-      is_winner
-      received_at
+      isCancelled
+      isWinner
+      receivedAt
       tx
-      vote_count
+      voteCount
     }
   }
 `);
@@ -83,8 +93,8 @@ export const ManyVotesByAccountQuery = graphql(`
       proposal {
         id
       }
-      voting_power
-      received_at
+      votingPower
+      receivedAt
       tx
     }
   }
