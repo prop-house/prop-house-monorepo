@@ -10,7 +10,7 @@ Prop House uses a novel mechanism for communities to deploy capital within their
 
 ### prop-house-backend
 
-The [prop house backend](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-backend) is implemented using Nestjs and handles  CRUD actions for storing prop house data. It provides a [GraphQL interface](https://prod.backend.prop.house/graphql) for querying data.
+The [prop house backend](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-backend) is implemented using Nestjs and handles CRUD actions for storing prop house data. It provides a [GraphQL interface](https://prod.backend.prop.house/graphql) for querying data.
 
 ### prop-house-wrapper
 
@@ -20,9 +20,9 @@ The [prop house wrapper](https://github.com/cryptoseneca/prop-house/tree/master/
 
 The [prop house webapp](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-webapp) is the frontend for interacting with houses as hosted at [prop.house](https://prop.house).
 
-### prop-house-communities
+### @prophouse/communities
 
-The [prop house communities](https://github.com/cryptoseneca/prop-house/tree/master/packages/prop-house-communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
+The [prop house communities](https://github.com/cryptoseneca/prop-house/tree/master/packages/@prophouse/communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
 
 ## Quick Start
 
