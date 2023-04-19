@@ -1,7 +1,7 @@
 import classes from './StatusRoundCards.module.css';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { getRelevantComms } from 'prop-house-communities';
+import { getRelevantComms } from '@prophouse/communities';
 import { useEffect, useState } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
 import { useAccount, useBlockNumber, useProvider } from 'wagmi';

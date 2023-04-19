@@ -11,7 +11,7 @@ import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { ethers } from 'ethers';
 import config from 'src/config/configuration';
-import { getVotingPower } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
 import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Injectable()

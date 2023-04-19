@@ -9,7 +9,7 @@ RUN yarn
 
 ADD . .
 
-WORKDIR /app/packages/prop-house-communities
+WORKDIR /app/packages/@prophouse/communities
 
 RUN yarn
 
