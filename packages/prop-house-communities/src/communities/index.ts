@@ -122,5 +122,7 @@ export const communities = new CaseInsensitiveMap(
     '0x5EBFd1CAC809F947164F558a606c29e685c754d3': balanceOfErc721(1),
     // Florinouns
     '0x9b02525cec175cE12FF8281c8923b1De1F85Af92': balanceOfErc721(),
+    // mxtter
+    '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
   }),
 );
