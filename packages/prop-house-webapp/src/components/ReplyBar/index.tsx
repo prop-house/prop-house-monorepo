@@ -84,8 +84,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   useEffect(() => {
     const fetchReplies = async () => {
       const replies = await wrapper.fetchReplies(proposal.id);
-      replies.sort((a, b) => (b.createdAt < a.createdAt ? 1 : -1));
-      setReplies(replies);
+      const sorted = replies.sort((a, b) => (b.createdAt < a.createdAt ? 1 : -1));
+      setReplies(sorted);
       const shuffledReplies = replies.sort(() => Math.random() - 0.5);
       const addresses = shuffledReplies.slice(0, 10).map(r => r.address);
       setRepliesAddresses(addresses);
@@ -127,7 +127,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const repliesModal = (
     <Modal
       title={proposal.title}
-      subtitle={`${replies.length} comment${replies.length === 1 ? '' : 's'}`}
+      subtitle={`Voters and proposer can chit chat here`}
       setShowModal={setShowRepliesModal}
       body={
         replies.length === 0 ? (
