@@ -22,7 +22,7 @@ serve(async req => {
   const { isValidAccountSig, accountSigError } = verifyAccountSignature(message, value);
   if (!isValidAccountSig) {
     return new Response(
-      JSON.stringify({ error: `EOA signature invalid. error: ${accountSigError}` }),
+      JSON.stringify({ error: `EOA signature invalid. Error message: ${accountSigError}` }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
@@ -30,7 +30,20 @@ serve(async req => {
     );
   }
 
-  const isProposer = await _isProposer(address, proposalId);
+  let isProposer;
+  try {
+    isProposer = await _isProposer(address, proposalId);
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        error: `Error fetching voting power. Error message: ${error}`,
+      }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 400,
+      },
+    );
+  }
 
   let votingPower;
   try {
@@ -38,7 +51,7 @@ serve(async req => {
   } catch (error) {
     return new Response(
       JSON.stringify({
-        error: `Error fetching voting power. ${error}`,
+        error: `Error fetching voting power.  Error message: ${error}`,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -51,10 +64,12 @@ serve(async req => {
 
   if (!canReply)
     return new Response(
-      JSON.stringify({ error: `${address} is not allowed to reply to proposal ${proposalId}` }),
+      JSON.stringify({
+        message: `Account is not authortized to reply. Account must be a proposer or have voting power.`,
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 403,
+        status: 400,
       },
     );
 

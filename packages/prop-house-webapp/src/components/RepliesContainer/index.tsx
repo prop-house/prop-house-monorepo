@@ -42,6 +42,7 @@ const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
     try {
       await wrapper.submitReply(signer, reply);
       setComment('');
+      setShowReplyModal(false);
     } catch (e) {
       console.log(e);
     }

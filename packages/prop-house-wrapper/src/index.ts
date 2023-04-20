@@ -460,6 +460,7 @@ export class PropHouseWrapper {
       },
     });
     if (error) throw new Error(error);
+    return data;
   };
 
   fetchReplies = async (proposalId: number): Promise<StoredReply[]> => {
