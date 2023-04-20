@@ -1,11 +1,8 @@
 .replyContainer {
-}
-.replyContainer {
   display: flex;
   flex-direction: column;
+  margin: 10px 0px;
   gap: 5px;
-  padding: 0 0.5rem;
-  margin: 2rem 0;
 }
 .replyHeader {
   display: flex;
@@ -13,10 +10,19 @@
   justify-content: flex-start;
   gap: 5px;
 }
-.ethAddress {
-  color: var(--brand-black);
-  font-weight: bold;
-  font-size: 16px;
+
+.ethAddress,
+.timestamp {
+  color: var(--brand-gray);
+  font-weight: 700;
+  font-size: 14px;
+}
+.timestamp {
+  font-size: 14px !important;
+  font-weight: 500 !important;
 }
 .replyBody {
+  font-size: 14px;
+  color: var(--brand-gray);
+  font-weight: 600;
 }

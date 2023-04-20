@@ -126,7 +126,7 @@ const ProposalCard: React.FC<{
             )}
           </div>
 
-          <Divider narrow />
+          <Divider />
 
           <div className={classes.submissionInfoContainer}>
             <div className={classes.addressAndTimestamp}>

@@ -2,18 +2,51 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 8px 2rem;
+  padding: 6px 18px 8px 18px;
   margin: -8px 1rem 1rem 1rem;
   border: 1px solid var(--border-med);
   border-top: none;
-  border-bottom-left-radius: 12px;
-  border-bottom-right-radius: 12px;
-  background-color: rgb(255, 255, 255, 0);
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  background-color: var(--bg-med);
   font-size: 14px;
   font-weight: bold;
   color: var(--brand-gray);
-}
-.replies,
-.reply {
   cursor: pointer;
+}
+.repliesModalBodyContainer {
+  margin: 10px 0;
+}
+
+.replies span {
+  margin-right: 5px;
+}
+.replyContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+.formContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.commentInput {
+  flex-grow: 1;
+  margin-right: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--brand-black);
+  font-weight: bold;
+  resize: none;
+}
+
+.submitCommentBtn {
+  background-color: var(--brand-pink);
+  border-radius: 33%;
+  border: none;
+  max-width: 32px;
+  height: 32px;
 }

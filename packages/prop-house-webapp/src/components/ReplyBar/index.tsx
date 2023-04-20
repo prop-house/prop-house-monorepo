@@ -12,6 +12,8 @@ import {
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import Reply from '../Reply';
+import { BiComment } from 'react-icons/bi';
+import { FiArrowUp } from 'react-icons/fi';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -60,75 +62,48 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     fetchReplies();
   }, []);
 
-  const replyModal = (
-    <Modal
-      title="Reply"
-      subtitle="Add a reply to proposal"
-      setShowModal={setShowReplyModal}
-      body={
-        <>
-          <Form onSubmit={handleReplySubmit}>
-            <Form.Group>
-              <Form.Control
-                as="textarea"
-                id="comment-input"
-                value={comment}
-                onChange={handleReplyChange}
-                style={{ height: '100px' }}
-              />
-            </Form.Group>
-          </Form>
-        </>
-      }
-      button={
-        <Button
-          text="Cancel"
-          bgColor={ButtonColor.White}
-          onClick={() => setShowReplyModal(false)}
+  const replyContainer = (
+    <div className={classes.replyContainer}>
+      <form className={classes.formContainer}>
+        <textarea
+          className={classes.commentInput}
+          value={comment}
+          onChange={handleReplyChange}
+          rows={3}
+          placeholder="Write a comment"
         />
-      }
-      secondButton={
-        <Button text="Submit" bgColor={ButtonColor.Purple} onClick={e => handleReplySubmit(e)} />
-      }
-    />
+        <button className={classes.submitCommentBtn} onClick={(e: any) => handleReplySubmit(e)}>
+          <FiArrowUp color="white" size={16} />
+        </button>
+      </form>
+    </div>
   );
 
   const repliesModal = (
     <Modal
-      title={`Reply`}
-      subtitle={`Replies to ${proposal.title}`}
+      title={proposal.title}
+      subtitle={`${replies.length} comments`}
       setShowModal={setShowRepliesModal}
       body={
-        <>
+        <div className={classes.repliesModalBodyContainer}>
           {replies.map(r => (
             <Reply reply={r} />
           ))}
-        </>
+        </div>
       }
-      button={
-        <Button
-          text="Cancel"
-          bgColor={ButtonColor.White}
-          onClick={() => setShowRepliesModal(false)}
-        />
-      }
-      secondButton={
-        <Button text="Submit" bgColor={ButtonColor.Purple} onClick={e => handleReplySubmit(e)} />
-      }
+      bottomContainer={replyContainer}
     />
   );
 
   return (
     <>
-      {showReplyModal && replyModal}
       {showRepliesModal && repliesModal}
-      <div className={classes.container}>
-        <div
-          className={classes.replies}
-          onClick={() => setShowRepliesModal(true)}
-        >{`${replies.length} replies`}</div>
-        <div className={classes.reply} onClick={() => setShowReplyModal(true)}>
-          Reply
+      <div className={classes.container} onClick={() => setShowRepliesModal(true)}>
+        <div className={classes.replies}>
+          <span>
+            <BiComment size={14} />
+          </span>
+          {`${replies.length} comments`}
         </div>
       </div>
     </>

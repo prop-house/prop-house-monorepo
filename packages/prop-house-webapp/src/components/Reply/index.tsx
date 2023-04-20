@@ -10,7 +10,14 @@ const Reply: React.FC<{ reply: StoredReply }> = props => {
     <div className={classes.replyContainer}>
       <div className={classes.replyHeader}>
         <div className={classes.address}>
-          {<EthAddress className={classes.ethAddress} address={reply.address} addAvatar={true} />}
+          {
+            <EthAddress
+              className={classes.ethAddress}
+              address={reply.address}
+              addAvatar={true}
+              avatarDiameter={14}
+            />
+          }
         </div>
         <div className={classes.timestamp}>{dayjs(reply.createdAt).fromNow()}</div>
       </div>
