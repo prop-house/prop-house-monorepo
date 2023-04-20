@@ -1,9 +1,9 @@
 import { StoredReply } from '@nouns/prop-house-wrapper/dist/builders';
-import classes from './ReplyDisplay.module.css';
+import classes from './Reply.module.css';
 import EthAddress from '../EthAddress';
 import dayjs from 'dayjs';
 
-const ReplyDisplay: React.FC<{ reply: StoredReply }> = props => {
+const Reply: React.FC<{ reply: StoredReply }> = props => {
   const { reply } = props;
 
   return (
@@ -19,4 +19,4 @@ const ReplyDisplay: React.FC<{ reply: StoredReply }> = props => {
   );
 };
 
-export default ReplyDisplay;
+export default Reply;

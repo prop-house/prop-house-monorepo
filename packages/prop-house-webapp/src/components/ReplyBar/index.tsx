@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
-import classes from './Reply.module.css';
+import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import { Form } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import { useSigner } from 'wagmi';
 import { useAppSelector } from '../../hooks';
-import { Reply, StoredProposal, StoredReply } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  Reply as ReplyType,
+  StoredProposal,
+  StoredReply,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import ReplyDisplay from '../ReplyDisplay';
+import Reply from '../Reply';
 
-const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
+const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
   const { data: signer } = useSigner();
 
@@ -33,7 +37,7 @@ const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
     const address = await signer.getAddress();
     if (!address) return;
 
-    const reply = new Reply(
+    const reply = new ReplyType(
       activeCommmunity.contractAddress,
       activeRound.balanceBlockTag,
       proposal.id,
@@ -97,7 +101,7 @@ const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
       body={
         <>
           {replies.map(r => (
-            <ReplyDisplay reply={r} />
+            <Reply reply={r} />
           ))}
         </>
       }
@@ -131,4 +135,4 @@ const RepliesContainer: React.FC<{ proposal: StoredProposal }> = props => {
   );
 };
 
-export default RepliesContainer;
+export default ReplyBar;

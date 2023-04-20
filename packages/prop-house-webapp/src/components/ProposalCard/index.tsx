@@ -28,7 +28,7 @@ import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
-import RepliesContainer from '../RepliesContainer';
+import ReplyBar from '../ReplyBar';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -194,7 +194,7 @@ const ProposalCard: React.FC<{
           </div>
         </Card>
       </div>
-      <RepliesContainer proposal={proposal} />
+      <ReplyBar proposal={proposal} />
     </>
   );
 };
