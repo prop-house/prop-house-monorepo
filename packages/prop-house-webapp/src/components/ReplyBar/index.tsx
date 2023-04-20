@@ -13,6 +13,8 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import Reply from '../Reply';
 import { BiComment } from 'react-icons/bi';
 import { FiArrowUp, FiCheck } from 'react-icons/fi';
+import { NounImage } from '../../utils/getNounImage';
+import ErrorVotingModal from '../ErrorVotingModal';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -23,6 +25,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const wrapper = new PropHouseWrapper('', signer);
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loadingSubmission, setLoadingSubmission] = useState(false);
   const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
   const repliesModalBodyRef = useRef<HTMLDivElement>(null);
@@ -57,7 +60,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         repliesModalBodyRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     } catch (e) {
       setLoadingSubmission(false);
-      console.log(e);
+      setShowRepliesModal(false);
+      setShowErrorModal(true);
     }
   };
 
@@ -120,9 +124,21 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     />
   );
 
+  const errorModal = (
+    <Modal
+      title={'Failed to submit comment'}
+      subtitle={
+        'Please make sure you either have voting power in this round or that you are the proposer of this proposal.'
+      }
+      image={NounImage.Banana}
+      setShowModal={setShowErrorModal}
+    />
+  );
+
   return (
     <>
       {showRepliesModal && repliesModal}
+      {showErrorModal && errorModal}
       <div className={classes.container} onClick={() => setShowRepliesModal(true)}>
         <div className={classes.replies}>
           <span>
