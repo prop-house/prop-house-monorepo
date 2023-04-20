@@ -14,6 +14,7 @@ const Modal: React.FC<{
   body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;
+  bottomContainer?: JSX.Element;
   onRequestClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
@@ -27,6 +28,7 @@ const Modal: React.FC<{
     body,
     setShowModal,
     onRequestClose,
+    bottomContainer,
   } = props;
   const { t } = useTranslation();
 
@@ -92,18 +94,20 @@ const Modal: React.FC<{
             </div>
           </div>
 
-          {body && (
-            <div className={classes.body}>
-              {' '}
-              <Divider /> {body}{' '}
-            </div>
-          )}
+          <Divider noMarginDown />
+          {body && <div className={classes.body}>{body}</div>}
 
+          <Divider noMarginUp />
           <div>
-            <Divider />
             <div className={classes.buttonContainer}>
-              {button ? button : closeButton}
-              {secondButton && secondButton}
+              {bottomContainer ? (
+                bottomContainer
+              ) : (
+                <>
+                  {button ? button : closeButton}
+                  {secondButton && secondButton}
+                </>
+              )}
             </div>
           </div>
         </div>
