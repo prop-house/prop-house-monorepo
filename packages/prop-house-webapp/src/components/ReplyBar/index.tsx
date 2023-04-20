@@ -103,16 +103,20 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const repliesModal = (
     <Modal
       title={proposal.title}
-      subtitle={`${replies.length} comments`}
+      subtitle={`${replies.length} comment${replies.length === 1 ? '' : 's'}`}
       setShowModal={setShowRepliesModal}
       body={
-        <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
-          {replies.map(r => (
-            <Reply reply={r} />
-          ))}
-        </div>
+        replies.length === 0 ? (
+          replyContainer
+        ) : (
+          <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
+            {replies.map(r => (
+              <Reply reply={r} />
+            ))}
+          </div>
+        )
       }
-      bottomContainer={replyContainer}
+      bottomContainer={replies.length === 0 ? <></> : replyContainer}
     />
   );
 
@@ -124,7 +128,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           <span>
             <BiComment size={14} />
           </span>
-          {`${replies.length} comments`}
+          {`${replies.length} comment${replies.length === 1 ? '' : 's'}`}
         </div>
       </div>
     </>
