@@ -1,3 +1,6 @@
-const buildIpfsPath = (ipfsHash: string) => `https://prophouse.mypinata.cloud/ipfs/${ipfsHash}`;
+import { buildNftStorageUrl } from './ipfs';
+
+const buildIpfsPath = (ipfsHash: string) =>
+  buildNftStorageUrl({ cid: ipfsHash, fullIpfsPath: ipfsHash });
 
 export default buildIpfsPath;

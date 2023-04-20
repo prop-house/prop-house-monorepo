@@ -4,14 +4,19 @@ import PinataClient, { PinataPinOptions } from '@pinata/sdk';
 import fs from 'fs';
 import { Readable } from 'stream';
 const pinataClient = require('@pinata/sdk');
+import { NFTStorage, Blob, File } from 'nft.storage';
 
 @Injectable()
 export class IpfsService {
   private ipfsClient: PinataClient;
+  private nftStorageClient: NFTStorage;
   constructor(private readonly configService: ConfigService) {
     const apiKey = this.configService.get<string>('PINATA_API_KEY');
     const apiSecret = this.configService.get<string>('PINATA_API_SECRET');
     this.ipfsClient = new pinataClient(apiKey, apiSecret);
+    this.nftStorageClient = new NFTStorage({
+      token: this.configService.get<string>('NFT_STORAGE_API_KEY'),
+    });
   }
 
   async pinFile(path: string, name: string, keyvalues: any = {}) {
@@ -25,7 +30,17 @@ export class IpfsService {
         cidVersion: 0,
       },
     };
-    return this.ipfsClient.pinFileToIPFS(fileStream, options);
+    const cid = await this.nftStorageClient.storeBlob(
+      new Blob([fs.readFileSync(path)]),
+    );
+    const pinataResponse = await this.ipfsClient.pinFileToIPFS(
+      fileStream,
+      options,
+    );
+    return {
+      ...pinataResponse,
+      nftStorageCid: cid,
+    };
   }
 
   async pinBuffer(buffer: Buffer, name: string, keyValues: any = {}) {
@@ -42,6 +57,14 @@ export class IpfsService {
     // Have to add this .path hack for pinata sdk
     /// @ts-ignore
     readable.path = name;
-    return this.ipfsClient.pinFileToIPFS(readable, options);
+    const cid = await this.nftStorageClient.storeBlob(new Blob([buffer]));
+    const pinataResponse = await this.ipfsClient.pinFileToIPFS(
+      readable,
+      options,
+    );
+    return {
+      ...pinataResponse,
+      nftStorageCid: cid,
+    };
   }
 }

@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
+import pipe from 'ramda/src/pipe';
+import { injectIpfsGateway, ipfsImageSrcRegex } from '../../utils/ipfs';
 
 export interface ProposalContentProps {
   fields: ProposalFields;
@@ -40,19 +42,24 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
            * <Markdown/> component used to render HTML, while supporting Markdown.
            */}
           <Markdown>
-            {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-              allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-              allowedAttributes: {
-                img: ['src', 'alt', 'height', 'width'],
-                a: ['href', 'target'],
-              },
-              allowedClasses: {
-                code: ['language-*', 'lang-*'],
-                pre: ['language-*', 'lang-*'],
-              },
-              // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
+            {pipe(
+              (fieldWhat: string) =>
+                sanitizeHtml(fieldWhat, {
+                  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                  allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                  allowedAttributes: {
+                    img: ['src', 'alt', 'height', 'width'],
+                    a: ['href', 'target'],
+                  },
+                  allowedClasses: {
+                    code: ['language-*', 'lang-*'],
+                    pre: ['language-*', 'lang-*'],
+                  },
+                  // edge case: handle ampersands in img links encoded from sanitization
+                }),
+              (fieldWhat: string) => fieldWhat.replaceAll('&amp;', '&'),
+              (fieldWhat: string) => injectIpfsGateway(fieldWhat),
+            )(fields.what)}
           </Markdown>
         </span>
       </div>

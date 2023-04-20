@@ -8,6 +8,8 @@ import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
 import { StoredAuctionBase, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { BiAward } from 'react-icons/bi';
+import pipe from 'ramda/src/pipe';
+import { injectIpfsGateway, ipfsImageSrcRegex } from '../../utils/ipfs';
 
 export interface RenderedProposalProps {
   proposal: StoredProposal;
@@ -69,19 +71,24 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
              * <Markdown/> component used to render HTML, while supporting Markdown.
              */}
             <Markdown>
-              {sanitizeHtml(fields.what, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-                allowedAttributes: {
-                  img: ['src', 'alt', 'height', 'width'],
-                  a: ['href', 'target'],
-                },
-                allowedClasses: {
-                  code: ['language-*', 'lang-*'],
-                  pre: ['language-*', 'lang-*'],
-                },
+              {pipe(
+                (whatText: string) =>
+                  sanitizeHtml(whatText, {
+                    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                    allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                    allowedAttributes: {
+                      img: ['src', 'alt', 'height', 'width'],
+                      a: ['href', 'target'],
+                    },
+                    allowedClasses: {
+                      code: ['language-*', 'lang-*'],
+                      pre: ['language-*', 'lang-*'],
+                    },
+                  }),
                 // edge case: handle ampersands in img links encoded from sanitization
-              }).replaceAll('&amp;', '&')}
+                (whatText: string) => whatText.replaceAll('&amp;', '&'),
+                (whatText: string) => injectIpfsGateway(whatText),
+              )(fields.what)}
             </Markdown>
           </span>
         </Col>

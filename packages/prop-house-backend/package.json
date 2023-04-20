@@ -46,6 +46,7 @@
     "file-type": "16.5.3",
     "graphql": "^16.6.0",
     "mime-types": "^2.1.35",
+    "nft.storage": "^7.0.3",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",

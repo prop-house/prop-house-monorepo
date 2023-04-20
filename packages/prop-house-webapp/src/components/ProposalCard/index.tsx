@@ -28,6 +28,7 @@ import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
+import { injectIpfsGateway } from '../../utils/ipfs';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -120,7 +121,7 @@ const ProposalCard: React.FC<{
 
             {imgUrlFromProp && (
               <div className={classes.propImgContainer}>
-                <img src={imgUrlFromProp} alt="propCardImage" />
+                <img src={injectIpfsGateway(imgUrlFromProp)} alt="propCardImage" />
               </div>
             )}
           </div>
