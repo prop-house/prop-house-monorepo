@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import ReactLoading from 'react-loading';
-import { useSigner } from 'wagmi';
+import { useEnsAvatar, useSigner } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import {
   Reply as ReplyType,
@@ -12,9 +12,23 @@ import {
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import Reply from '../Reply';
 import { BiComment } from 'react-icons/bi';
-import { FiArrowUp, FiCheck } from 'react-icons/fi';
+import { FiArrowUp } from 'react-icons/fi';
 import { NounImage } from '../../utils/getNounImage';
-import ErrorVotingModal from '../ErrorVotingModal';
+import Jazzicon from 'react-jazzicon/dist/Jazzicon';
+import { jsNumberForAddress } from 'react-jazzicon';
+
+const Avatar: React.FC<{ address: string }> = props => {
+  const { address } = props;
+  const { data } = useEnsAvatar({
+    address: `0x${address.substring(2)}`,
+  });
+
+  return data ? (
+    <img key={address} src={data} alt={`Avatar for ${address}`} />
+  ) : (
+    <Jazzicon diameter={12} seed={jsNumberForAddress(address)} />
+  );
+};
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -25,6 +39,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const wrapper = new PropHouseWrapper('', signer);
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
+  const [repliesAddresses, setRepliesAddresses] = useState<string[]>([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [loadingSubmission, setLoadingSubmission] = useState(false);
   const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
@@ -65,10 +80,14 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     }
   };
 
+  // fetch replies
   useEffect(() => {
     const fetchReplies = async () => {
       const replies = await wrapper.fetchReplies(proposal.id);
       setReplies(replies);
+      const shuffledReplies = replies.sort(() => Math.random() - 0.5);
+      const addresses = shuffledReplies.slice(0, 10).map(r => r.address);
+      setRepliesAddresses(addresses);
     };
     fetchReplies();
   }, [loadingSubmission]);
@@ -145,6 +164,11 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
             <BiComment size={14} />
           </span>
           {`${replies.length} comment${replies.length === 1 ? '' : 's'}`}
+        </div>
+        <div className={classes.avatarContainer}>
+          {repliesAddresses.map(address => (
+            <Avatar key={address} address={address} />
+          ))}
         </div>
       </div>
     </>

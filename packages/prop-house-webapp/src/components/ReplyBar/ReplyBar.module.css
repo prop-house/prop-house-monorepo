@@ -1,5 +1,6 @@
 .container {
   display: flex;
+  align-items: center;
   flex-direction: row;
   justify-content: space-between;
   padding: 6px 18px 8px 18px;
@@ -60,4 +61,14 @@
 
 .loadingIcon svg {
   vertical-align: top;
+}
+.avatarContainer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.avatarContainer div,
+.avatarContainer img {
+  margin-left: -4px !important;
+  border: solid white 1px;
 }
