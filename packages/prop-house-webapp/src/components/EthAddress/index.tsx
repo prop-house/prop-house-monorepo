@@ -11,8 +11,9 @@ const EthAddress: React.FC<{
   className?: string;
   containerClassName?: string;
   addAvatar?: boolean;
+  avatarDiameter?: number;
 }> = props => {
-  const { address, className, containerClassName, addAvatar } = props;
+  const { address, className, containerClassName, addAvatar, avatarDiameter } = props;
 
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -33,9 +34,12 @@ const EthAddress: React.FC<{
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
         {addAvatar &&
           (avatar ? (
-            <img className={classes.avatar} src={avatar} alt="ens-avatar" />
+            <img className={clsx(classes.avatar)} src={avatar} alt="ens-avatar" />
           ) : (
-            <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
+            <Jazzicon
+              diameter={avatarDiameter ? avatarDiameter : 20}
+              seed={jsNumberForAddress(address)}
+            />
           ))}
         <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
