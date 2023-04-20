@@ -84,6 +84,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   useEffect(() => {
     const fetchReplies = async () => {
       const replies = await wrapper.fetchReplies(proposal.id);
+      replies.sort((a, b) => (b.createdAt < a.createdAt ? 1 : -1));
       setReplies(replies);
       const shuffledReplies = replies.sort(() => Math.random() - 0.5);
       const addresses = shuffledReplies.slice(0, 10).map(r => r.address);
