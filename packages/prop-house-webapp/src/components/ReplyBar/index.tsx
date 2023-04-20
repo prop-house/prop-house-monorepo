@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
-import { Form } from 'react-bootstrap';
-import Button, { ButtonColor } from '../Button';
+import ReactLoading from 'react-loading';
 import { useSigner } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import {
@@ -13,7 +12,7 @@ import {
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import Reply from '../Reply';
 import { BiComment } from 'react-icons/bi';
-import { FiArrowUp } from 'react-icons/fi';
+import { FiArrowUp, FiCheck } from 'react-icons/fi';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -23,13 +22,17 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
   const wrapper = new PropHouseWrapper('', signer);
 
-  const [showReplyModal, setShowReplyModal] = useState(false);
   const [showRepliesModal, setShowRepliesModal] = useState(false);
+  const [loadingSubmission, setLoadingSubmission] = useState(false);
+  const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
+  const repliesModalBodyRef = useRef<HTMLDivElement>(null);
+
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState<StoredReply[]>([]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
+    if (event.target.value.length > 0) setSubmissionBtnDisabled(false);
   };
 
   const handleReplySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -46,10 +49,14 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       comment,
     );
     try {
+      setLoadingSubmission(true);
       await wrapper.submitReply(signer, reply);
+      setLoadingSubmission(false);
       setComment('');
-      setShowReplyModal(false);
+      if (repliesModalBodyRef && repliesModalBodyRef.current)
+        repliesModalBodyRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     } catch (e) {
+      setLoadingSubmission(false);
       console.log(e);
     }
   };
@@ -60,7 +67,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       setReplies(replies);
     };
     fetchReplies();
-  }, []);
+  }, [loadingSubmission]);
 
   const replyContainer = (
     <div className={classes.replyContainer}>
@@ -72,8 +79,22 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           rows={3}
           placeholder="Write a comment"
         />
-        <button className={classes.submitCommentBtn} onClick={(e: any) => handleReplySubmit(e)}>
-          <FiArrowUp color="white" size={16} />
+        <button
+          className={classes.submitCommentBtn}
+          onClick={(e: any) => handleReplySubmit(e)}
+          disabled={submissionBtnDisabled}
+        >
+          {loadingSubmission ? (
+            <ReactLoading
+              type={'spin'}
+              color="white"
+              height={16}
+              width={16}
+              className={classes.loadingIcon}
+            />
+          ) : (
+            <FiArrowUp color="white" size={16} />
+          )}
         </button>
       </form>
     </div>
@@ -85,7 +106,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       subtitle={`${replies.length} comments`}
       setShowModal={setShowRepliesModal}
       body={
-        <div className={classes.repliesModalBodyContainer}>
+        <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
           {replies.map(r => (
             <Reply reply={r} />
           ))}

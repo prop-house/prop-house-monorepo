@@ -45,8 +45,18 @@
 
 .submitCommentBtn {
   background-color: var(--brand-pink);
-  border-radius: 33%;
+  border-radius: 50%;
   border: none;
   max-width: 32px;
   height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.submitCommentBtn:disabled {
+  opacity: 0.6;
+}
+
+.loadingIcon svg {
+  vertical-align: top;
 }
