@@ -16,9 +16,7 @@ import { FiArrowUp } from 'react-icons/fi';
 import { NounImage } from '../../utils/getNounImage';
 import Avatar from '../Avatar';
 import { isTimedAuction } from '../../utils/auctionType';
-import { auctionStatus } from '../../utils/auctionStatus';
-import { AuctionStatus } from '../../utils/auctionStatus';
-import isAuctionActive from '../../utils/isAuctionActive';
+import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { isActiveProp } from '../../utils/isActiveProp';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
@@ -28,7 +26,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const wrapper = new PropHouseWrapper('', signer);
+  const wrapper = useRef(new PropHouseWrapper(''));
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [repliesAddresses, setRepliesAddresses] = useState<string[]>([]);
@@ -50,6 +48,10 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   };
 
   useEffect(() => {
+    wrapper.current = new PropHouseWrapper('', signer);
+  }, [signer]);
+
+  useEffect(() => {
     if (!signer) return;
 
     const checkCanComment = async () => {
@@ -57,7 +59,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       setCanComment(votingPower > 0 || proposal.address === address);
     };
     checkCanComment();
-  }, [signer, votingPower]);
+  }, [signer, votingPower, proposal]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
@@ -79,7 +81,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     );
     try {
       setLoadingSubmission(true);
-      await wrapper.submitReply(signer, reply);
+      await wrapper.current.submitReply(signer, reply);
       setLoadingSubmission(false);
       setComment('');
       if (repliesModalBodyRef && repliesModalBodyRef.current)
@@ -94,7 +96,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   // fetch replies
   useEffect(() => {
     const fetchReplies = async () => {
-      const replies = await wrapper.fetchReplies(proposal.id);
+      const replies = await wrapper.current.fetchReplies(proposal.id);
       const sorted = replies.sort((a, b) => (b.createdAt < a.createdAt ? 1 : -1));
       setReplies(sorted);
       const shuffledReplies = replies.sort(() => Math.random() - 0.5);
@@ -102,7 +104,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       setRepliesAddresses(addresses);
     };
     fetchReplies();
-  }, [loadingSubmission]);
+  }, [loadingSubmission, wrapper, proposal]);
 
   // disable submit button if no signer or no comment
   useEffect(() => {

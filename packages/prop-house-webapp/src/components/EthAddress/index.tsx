@@ -3,8 +3,7 @@ import React from 'react';
 import { useAppSelector } from '../../hooks';
 import trimEthAddress from '../../utils/trimEthAddress';
 import classes from './EthAddress.module.css';
-import { useEnsName, useEnsAvatar } from 'wagmi';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useEnsName } from 'wagmi';
 import Avatar from '../Avatar';
 
 const EthAddress: React.FC<{
