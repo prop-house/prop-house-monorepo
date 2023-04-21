@@ -474,10 +474,17 @@ export class PropHouseWrapper {
     const { data, error } = await supabase.from('reply').select('*').eq('proposalId', proposalId);
 
     if (error) throw new Error(error.message);
-
-    return data.map(
-      (reply: any) =>
-        new StoredReply(reply.id, reply.createdAt, reply.proposalId, reply.content, reply.address),
-    );
+    if (data)
+      return data.map(
+        (reply: any) =>
+          new StoredReply(
+            reply.id,
+            reply.createdAt,
+            reply.proposalId,
+            reply.content,
+            reply.address,
+          ),
+      );
+    return [];
   };
 }
