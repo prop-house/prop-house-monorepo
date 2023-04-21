@@ -1,3 +1,5 @@
+scalar BigInt
+
 type Summary {
   "A constant (SUMMARY)"
   id: String!
@@ -8,8 +10,11 @@ type Summary {
   "The total number of proposals across all rounds"
   proposalCount: Int!
 
-  "The total number of vote submissions across all rounds"
-  voteSubmissionCount: Int!
+  "The total number of unique proposers across all rounds"
+  uniqueProposers: Int!
+
+  "The total number of unique voters across all rounds"
+  uniqueVoters: Int!
 }
 
 type Round {
@@ -28,14 +33,17 @@ type Round {
   "The total number of proposals in the round"
   proposalCount: Int!
 
-  "The total number of votes in the round"
-  voteCount: Int!
+  "The number of unique proposers in the round"
+  uniqueProposers: Int!
+
+  "The number of unique voters in the round"
+  uniqueVoters: Int!
 
   "The unix timestamp when the round was registered"
   registeredAt: Int!
 
   "The transaction in which the round was registered"
-  tx: String
+  txHash: String
 
   "All proposals that have been submitted to the round"
   proposals: [Proposal]! @derivedFrom(field: "round")
@@ -76,10 +84,10 @@ type Proposal {
   receivedAt: Int!
 
   "The transaction in which the proposal was submitted"
-  tx: String
+  txHash: String
 
-  "The number of votes that the proposal has received"
-  voteCount: Int!
+  "The amount of voting power that the proposal has received"
+  votingPower: BigInt!
 
   "All votes that the proposal has received"
   votes: [Vote]! @derivedFrom(field: "proposal")
@@ -99,13 +107,13 @@ type Vote {
   proposal: Proposal!
 
   "The amount of voting power"
-  votingPower: Int!
+  votingPower: BigInt!
 
   "The unix timestamp when the vote was received"
   receivedAt: Int!
 
   "The transaction in which the votes were submitted"
-  tx: String
+  txHash: String
 }
 
 type Account {
