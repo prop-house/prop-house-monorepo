@@ -43,14 +43,14 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [loadingSubmission, setLoadingSubmission] = useState(false);
   const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
+  const [commentInputDisabled, setCommentInputDisabled] = useState(true);
   const repliesModalBodyRef = useRef<HTMLDivElement>(null);
-
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState<StoredReply[]>([]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
-    if (event.target.value.length > 0) setSubmissionBtnDisabled(false);
+    if (event.target.value.length > 0 && signer) setSubmissionBtnDisabled(false);
   };
 
   const handleReplySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -93,6 +93,11 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     fetchReplies();
   }, [loadingSubmission]);
 
+  // disable submit button if no signer or no comment
+  useEffect(() => {
+    setCommentInputDisabled(signer ? false : true);
+  }, [signer, comment]);
+
   const replyContainer = (
     <div className={classes.replyContainer}>
       <form className={classes.formContainer}>
@@ -101,7 +106,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           value={comment}
           onChange={handleReplyChange}
           rows={3}
-          placeholder="Write a comment"
+          placeholder={signer ? `Write a comment` : `Connect your wallet to comment!`}
+          disabled={commentInputDisabled}
         />
         <button
           className={classes.submitCommentBtn}
@@ -140,6 +146,10 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           </div>
         )
       }
+      onRequestClose={() => {
+        setComment('');
+        setShowRepliesModal(false);
+      }}
       bottomContainer={replies.length === 0 ? <></> : replyContainer}
     />
   );

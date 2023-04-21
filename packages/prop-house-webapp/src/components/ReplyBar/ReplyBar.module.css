@@ -44,7 +44,9 @@
   font-weight: bold;
   resize: none;
 }
-
+.commentInput:disabled {
+  background-color: transparent;
+}
 .submitCommentBtn {
   background-color: var(--brand-pink);
   border-radius: 50%;
