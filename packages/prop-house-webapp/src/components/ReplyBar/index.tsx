@@ -36,6 +36,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
 
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
   const wrapper = new PropHouseWrapper('', signer);
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
@@ -44,9 +45,20 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const [loadingSubmission, setLoadingSubmission] = useState(false);
   const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
   const [commentInputDisabled, setCommentInputDisabled] = useState(true);
+  const [canComment, setCanComment] = useState(false);
   const repliesModalBodyRef = useRef<HTMLDivElement>(null);
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState<StoredReply[]>([]);
+
+  useEffect(() => {
+    if (!signer) return;
+
+    const checkCanComment = async () => {
+      const address = await signer.getAddress();
+      setCanComment(votingPower > 0 || proposal.address === address);
+    };
+    checkCanComment();
+  }, [signer, votingPower]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
@@ -133,11 +145,14 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const repliesModal = (
     <Modal
       title={proposal.title}
-      subtitle={`Voters and proposer can chit chat here`}
+      subtitle={`${replies.length} comments`}
       setShowModal={setShowRepliesModal}
       body={
         replies.length === 0 ? (
-          replyContainer
+          <div className={classes.noCommentsContainer}>
+            <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
+            <div className={classes.noCommentsText}>No comments yet...</div>
+          </div>
         ) : (
           <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
             {replies.map(r => (
@@ -150,7 +165,19 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         setComment('');
         setShowRepliesModal(false);
       }}
-      bottomContainer={replies.length === 0 ? <></> : replyContainer}
+      bottomContainer={
+        signer ? (
+          canComment ? (
+            replyContainer
+          ) : (
+            <div className={classes.replyModalBottomRow}>
+              Only accounts with voting power or the proposer can comment.
+            </div>
+          )
+        ) : (
+          <div className={classes.replyModalBottomRow}>Please connect your wallet to comment.</div>
+        )
+      }
     />
   );
 

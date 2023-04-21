@@ -74,3 +74,25 @@
   margin-left: -4px !important;
   border: solid white 1px;
 }
+.replyModalBottomRow {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--brand-gray);
+}
+
+.noCommentsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  row-gap: 25px;
+}
+.noCommentsContainer img {
+  margin-top: 1rem;
+  width: 200px;
+  height: auto;
+}
+.noCommentsText {
+  color: var(--brand-gray);
+  margin-bottom: 1rem;
+}
