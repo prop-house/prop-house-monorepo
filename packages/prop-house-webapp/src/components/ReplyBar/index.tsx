@@ -15,6 +15,11 @@ import { BiComment } from 'react-icons/bi';
 import { FiArrowUp } from 'react-icons/fi';
 import { NounImage } from '../../utils/getNounImage';
 import Avatar from '../Avatar';
+import { isTimedAuction } from '../../utils/auctionType';
+import { auctionStatus } from '../../utils/auctionStatus';
+import { AuctionStatus } from '../../utils/auctionStatus';
+import isAuctionActive from '../../utils/isAuctionActive';
+import { isActiveProp } from '../../utils/isActiveProp';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -35,6 +40,14 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const repliesModalBodyRef = useRef<HTMLDivElement>(null);
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState<StoredReply[]>([]);
+
+  const isInCommentPeriod = () => {
+    if (!activeRound) return false;
+    const status = auctionStatus(activeRound);
+    return isTimedAuction(activeRound)
+      ? status === AuctionStatus.AuctionAcceptingProps || status === AuctionStatus.AuctionVoting
+      : isActiveProp(proposal, activeRound);
+  };
 
   useEffect(() => {
     if (!signer) return;
@@ -152,16 +165,20 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         setShowRepliesModal(false);
       }}
       bottomContainer={
-        signer ? (
-          canComment ? (
+        isInCommentPeriod() ? (
+          !signer ? (
+            <div className={classes.replyModalBottomRow}>
+              Please connect your wallet to comment.
+            </div>
+          ) : canComment ? (
             replyContainer
           ) : (
             <div className={classes.replyModalBottomRow}>
-              Only accounts with voting power or the proposer can comment.
+              Only the proposer or accounts with voting power can comment.
             </div>
           )
         ) : (
-          <div className={classes.replyModalBottomRow}>Please connect your wallet to comment.</div>
+          <></>
         )
       }
     />
