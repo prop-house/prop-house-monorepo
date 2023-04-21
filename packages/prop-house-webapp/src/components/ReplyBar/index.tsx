@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import ReactLoading from 'react-loading';
-import { useEnsAvatar, useSigner } from 'wagmi';
+import { useSigner } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import {
   Reply as ReplyType,
@@ -14,21 +14,7 @@ import Reply from '../Reply';
 import { BiComment } from 'react-icons/bi';
 import { FiArrowUp } from 'react-icons/fi';
 import { NounImage } from '../../utils/getNounImage';
-import Jazzicon from 'react-jazzicon/dist/Jazzicon';
-import { jsNumberForAddress } from 'react-jazzicon';
-
-const Avatar: React.FC<{ address: string }> = props => {
-  const { address } = props;
-  const { data } = useEnsAvatar({
-    address: `0x${address.substring(2)}`,
-  });
-
-  return data ? (
-    <img key={address} src={data} alt={`Avatar for ${address}`} />
-  ) : (
-    <Jazzicon diameter={12} seed={jsNumberForAddress(address)} />
-  );
-};
+import Avatar from '../Avatar';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -205,7 +191,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         </div>
         <div className={classes.avatarContainer}>
           {repliesAddresses.map(address => (
-            <Avatar key={address} address={address} />
+            <Avatar key={address} diameter={12} address={address} />
           ))}
         </div>
       </div>
