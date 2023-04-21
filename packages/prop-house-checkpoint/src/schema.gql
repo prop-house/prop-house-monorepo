@@ -43,7 +43,7 @@ type Round {
   registeredAt: Int!
 
   "The transaction in which the round was registered"
-  txHash: String
+  txHash: String!
 
   "All proposals that have been submitted to the round"
   proposals: [Proposal]! @derivedFrom(field: "round")
@@ -84,7 +84,7 @@ type Proposal {
   receivedAt: Int!
 
   "The transaction in which the proposal was submitted"
-  txHash: String
+  txHash: String!
 
   "The amount of voting power that the proposal has received"
   votingPower: BigInt!
@@ -113,7 +113,7 @@ type Vote {
   receivedAt: Int!
 
   "The transaction in which the votes were submitted"
-  txHash: String
+  txHash: String!
 }
 
 type Account {
