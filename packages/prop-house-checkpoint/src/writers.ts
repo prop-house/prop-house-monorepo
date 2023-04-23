@@ -1,6 +1,7 @@
 import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
 import { getJSON, getRoundType, intSequenceToString, toAddress, uint256toString } from './utils';
 import { validateAndParseAddress } from 'starknet';
+import { hexZeroPad } from '@ethersproject/bytes';
 import { Proposal, RoundState } from './types';
 
 export const handleRoundRegistered: CheckpointWriter = async ({
@@ -14,7 +15,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
 
   const round = {
     id: validateAndParseAddress(event.l2_round_address),
-    sourceChainRound: event.l1_round_address,
+    sourceChainRound: hexZeroPad(event.l1_round_address, 40),
     type: getRoundType(event.round_class_hash),
     registeredAt: block.timestamp,
     txHash: tx.transaction_hash,
