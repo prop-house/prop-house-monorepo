@@ -15,7 +15,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
 
   const round = {
     id: validateAndParseAddress(event.l2_round_address),
-    sourceChainRound: hexZeroPad(event.l1_round_address, 40),
+    sourceChainRound: hexZeroPad(event.l1_round_address, 20),
     type: getRoundType(event.round_class_hash),
     registeredAt: block.timestamp,
     txHash: tx.transaction_hash,
