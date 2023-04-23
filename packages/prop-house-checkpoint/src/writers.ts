@@ -54,6 +54,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
   const metadata = {
     uri: '',
     title: '',
+    tldr: '',
     body: '',
   };
 
@@ -68,7 +69,8 @@ export const handleProposalCreated: CheckpointWriter = async ({
       const json = await getJSON(metadata.uri);
 
       if (json.title) metadata.title = json.title;
-      if (json.body) metadata.body = json.body;
+      if (json.tldr) metadata.tldr = json.tldr;
+      if (json.body || json.what) metadata.body = json.body || json.what;
     } catch (error) {
       console.log(`Failed to fetch metadata with error: ${error}`);
     }
@@ -81,6 +83,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     proposer,
     metadataUri: metadata.uri,
     title: metadata.title,
+    tldr: metadata.tldr,
     body: metadata.body,
     isCancelled: false,
     receivedAt: block.timestamp,
