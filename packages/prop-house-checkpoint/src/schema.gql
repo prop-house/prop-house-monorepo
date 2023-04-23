@@ -71,6 +71,9 @@ type Proposal {
   "The proposal title"
   title: String!
 
+  "The proposal tl;dr"
+  tldr: String!
+
   "The proposal body"
   body: String!
 
