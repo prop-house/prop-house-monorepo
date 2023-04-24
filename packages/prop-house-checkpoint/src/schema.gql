@@ -1,4 +1,5 @@
 scalar BigInt
+scalar Text
 
 type Summary {
   "A constant (SUMMARY)"
@@ -72,13 +73,13 @@ type Proposal {
   metadataUri: String!
 
   "The proposal title"
-  title: String!
+  title: Text!
 
   "The proposal tl;dr"
-  tldr: String!
+  tldr: Text!
 
   "The proposal body"
-  body: String!
+  body: Text!
 
   "Whether the proposal has been cancelled"
   isCancelled: Boolean!
