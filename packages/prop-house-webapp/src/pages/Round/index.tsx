@@ -44,7 +44,6 @@ const Round = () => {
   const infRoundFilteredProposals = useAppSelector(
     state => state.propHouse.infRoundFilteredProposals,
   );
-  const host = useAppSelector(state => state.configuration.backendHost);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const isRoundOver = round?.state === RoundState.COMPLETE; // TODO: Handle claiming and cancelled
