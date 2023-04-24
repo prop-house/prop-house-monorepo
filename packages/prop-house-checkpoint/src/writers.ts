@@ -98,6 +98,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     tldr: metadata.tldr,
     body: metadata.body,
     isCancelled: false,
+    isWinner: false,
     receivedAt: timestamp,
     txStatus: getTxStatus(block),
     txHash: tx.transaction_hash,
