@@ -4,6 +4,11 @@ export enum RoundState {
   FINALIZED = 'FINALIZED',
 }
 
+export enum TransactionStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+}
+
 export interface Uint256 {
   low: string;
   high: string;
