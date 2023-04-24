@@ -1,5 +1,12 @@
 import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
-import { getJSON, getRoundType, intSequenceToString, toAddress, uint256toString, unixTimestamp } from './utils';
+import {
+  getJSON,
+  getRoundType,
+  intSequenceToString,
+  toAddress,
+  uint256toString,
+  unixTimestamp,
+} from './utils';
 import { validateAndParseAddress } from 'starknet';
 import { hexZeroPad } from '@ethersproject/bytes';
 import { Proposal, RoundState } from './types';
@@ -51,6 +58,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
 
   const round = validateAndParseAddress(rawEvent.from_address);
   const proposer = toAddress(event.proposer_address);
+  const proposalId = parseInt(event.proposal_id, 16);
 
   const metadata = {
     uri: '',
@@ -79,8 +87,8 @@ export const handleProposalCreated: CheckpointWriter = async ({
 
   const timestamp = block?.timestamp ?? unixTimestamp();
   const proposal = {
-    id: `${round}-${event.proposal_id}`,
-    proposalId: event.proposal_id,
+    id: `${round}-${proposalId}`,
+    proposalId,
     round,
     proposer,
     metadataUri: metadata.uri,
@@ -122,7 +130,8 @@ export const handleProposalCancelled: CheckpointWriter = async ({ rawEvent, even
   if (!rawEvent || !event) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
-  const id = `${round}-${event.proposal_id}`;
+  const proposalId = parseInt(event.proposal_id, 16);
+  const id = `${round}-${proposalId}`;
 
   await mysql.queryAsync('UPDATE proposals SET isCancelled = true WHERE id = ? LIMIT 1;', [id]);
 };
@@ -140,7 +149,8 @@ export const handleVoteCreated: CheckpointWriter = async ({
   const round = validateAndParseAddress(rawEvent.from_address);
   const voter = toAddress(event.voter_address);
   const power = uint256toString(event.voting_power);
-  const proposal = `${round}-${event.proposal_id}`;
+  const proposalId = parseInt(event.proposal_id, 16);
+  const proposal = `${round}-${proposalId}`;
   const timestamp = block?.timestamp ?? unixTimestamp();
 
   const vote = {
@@ -179,7 +189,9 @@ export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, 
   if (!rawEvent || !event) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
-  const winningIds = event.winners.map(({ proposal_id }: Proposal) => proposal_id);
+  const winningIds = event.winners.map(
+    ({ proposal_id }: Proposal) => `${round}-${parseInt(proposal_id, 16)}`,
+  );
 
   const query = `
     UPDATE rounds SET state = ? WHERE id = ? LIMIT 1;
