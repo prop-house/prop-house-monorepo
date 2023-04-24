@@ -42,6 +42,9 @@ type Round {
   "The unix timestamp when the round was registered"
   registeredAt: Int!
 
+  "The status of the round registration transaction"
+  txStatus: String!
+
   "The transaction in which the round was registered"
   txHash: String!
 
@@ -86,6 +89,9 @@ type Proposal {
   "The unix timestamp when the proposal was received"
   receivedAt: Int!
 
+  "The status of the propose transaction"
+  txStatus: String!
+
   "The transaction in which the proposal was submitted"
   txHash: String!
 
@@ -114,6 +120,9 @@ type Vote {
 
   "The unix timestamp when the vote was received"
   receivedAt: Int!
+
+  "The status of the vote transaction"
+  txStatus: String!
 
   "The transaction in which the votes were submitted"
   txHash: String!

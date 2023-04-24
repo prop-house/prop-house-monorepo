@@ -2,6 +2,7 @@ import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
 import {
   getJSON,
   getRoundType,
+  getTxStatus,
   intSequenceToString,
   toAddress,
   uint256toString,
@@ -26,6 +27,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
     sourceChainRound: hexZeroPad(event.l1_round_address, 20),
     type: getRoundType(event.round_class_hash),
     registeredAt: block?.timestamp ?? unixTimestamp(),
+    txStatus: getTxStatus(block),
     txHash: tx.transaction_hash,
     state: RoundState.ACTIVE,
     proposalCount: 0,
@@ -38,13 +40,13 @@ export const handleRoundRegistered: CheckpointWriter = async ({
   });
 
   const query = `
-    INSERT IGNORE INTO rounds SET ?;
+    INSERT INTO rounds SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
     SET @added_rounds = ROW_COUNT();
     INSERT INTO summaries (id, roundCount, proposalCount, uniqueProposers, uniqueVoters)
       VALUES ('SUMMARY', 1, 0, 0, 0)
       ON DUPLICATE KEY UPDATE roundCount = roundCount + @added_rounds;
   `;
-  await mysql.queryAsync(query, [round]);
+  await mysql.queryAsync(query, [round, round.txStatus]);
 };
 
 export const handleProposalCreated: CheckpointWriter = async ({
@@ -97,6 +99,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     body: metadata.body,
     isCancelled: false,
     receivedAt: timestamp,
+    txStatus: getTxStatus(block),
     txHash: tx.transaction_hash,
     votingPower: 0,
   };
@@ -109,7 +112,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
 
   const query = `
     INSERT IGNORE INTO accounts SET ?;
-    INSERT IGNORE INTO proposals SET ?;
+    INSERT INTO proposals SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
     SET @added_proposals = ROW_COUNT();
 
     SELECT COUNT(*) INTO @proposer_exists FROM proposals WHERE round = ? AND proposer = ?;
@@ -123,7 +126,15 @@ export const handleProposalCreated: CheckpointWriter = async ({
                          uniqueProposers = uniqueProposers + @is_new_proposer
     WHERE id = 'SUMMARY' LIMIT 1;
   `;
-  await mysql.queryAsync(query, [account, proposal, round, proposer, round, proposer]);
+  await mysql.queryAsync(query, [
+    account,
+    proposal,
+    proposal.receivedAt,
+    round,
+    proposer,
+    round,
+    proposer,
+  ]);
 };
 
 export const handleProposalCancelled: CheckpointWriter = async ({ rawEvent, event, mysql }) => {
@@ -160,6 +171,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
     proposal,
     votingPower: power,
     receivedAt: timestamp,
+    txStatus: getTxStatus(block),
     txHash: tx.transaction_hash,
   };
   const account = {
@@ -171,7 +183,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
 
   const query = `
     INSERT IGNORE INTO accounts SET ?;
-    INSERT IGNORE INTO votes SET ?;
+    INSERT INTO votes SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
     SET @added_votes = ROW_COUNT();
 
     SELECT COUNT(*) INTO @voter_exists FROM votes WHERE round = ? AND voter = ?;
@@ -182,7 +194,17 @@ export const handleVoteCreated: CheckpointWriter = async ({
     UPDATE accounts SET voteCount = voteCount + @added_votes WHERE id = ? LIMIT 1;
     UPDATE summaries SET uniqueVoters = uniqueVoters + @is_new_voter WHERE id = 'SUMMARY' LIMIT 1;
   `;
-  await mysql.queryAsync(query, [account, vote, round, voter, round, power, proposal, voter]);
+  await mysql.queryAsync(query, [
+    account,
+    vote,
+    vote.txStatus,
+    round,
+    voter,
+    round,
+    power,
+    proposal,
+    voter,
+  ]);
 };
 
 export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, mysql }) => {
