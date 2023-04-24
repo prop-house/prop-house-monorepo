@@ -1,27 +1,27 @@
 import classes from './UserCardFooter.module.css';
 import isWinner from '../../utils/isWinner';
 import { useNavigate } from 'react-router-dom';
-import { AuctionStatus } from '../../utils/auctionStatus';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useTranslation } from 'react-i18next';
+import { Proposal, RoundState } from '@prophouse/sdk-react';
 
 const UserCardFooter: React.FC<{
-  status: AuctionStatus;
+  state: RoundState;
   amountOfPropsWon: number;
-  userProps: StoredProposalWithVotes[];
+  userProps: Proposal[];
   winningIds: number[];
   cardIndex: number;
 }> = props => {
-  const { status, amountOfPropsWon, userProps, winningIds, cardIndex } = props;
+  const { state, amountOfPropsWon, userProps, winningIds, cardIndex } = props;
   const { t } = useTranslation();
 
   let navigate = useNavigate();
 
   return (
     <>
-      {status === AuctionStatus.AuctionEnded &&
+      {/* TODO: No longer valid. Need claiming UI. */}
+      {state >= RoundState.IN_CLAIMING_PERIOD &&
         amountOfPropsWon > 0 &&
         winningIds &&
         isWinner(winningIds, userProps[cardIndex].id) ? (

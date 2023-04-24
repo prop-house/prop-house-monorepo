@@ -1,20 +1,19 @@
 import classes from './UserCardHeader.module.css';
 import isWinner from '../../utils/isWinner';
-import { AuctionStatus } from '../../utils/auctionStatus';
 import Button, { ButtonColor } from '../Button';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Dispatch, SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Proposal, RoundState } from '@prophouse/sdk-react';
 
 const UserCardHeader: React.FC<{
-  status: AuctionStatus;
+  state: RoundState;
   amountOfPropsWon: number;
-  userProps: StoredProposalWithVotes[];
+  userProps: Proposal[];
   cardIndex: number;
   setCardIndex: Dispatch<SetStateAction<number>>;
   winningIds: number[];
 }> = props => {
-  const { status, amountOfPropsWon, userProps, winningIds, cardIndex, setCardIndex } = props;
+  const { state, amountOfPropsWon, userProps, winningIds, cardIndex, setCardIndex } = props;
   const { t } = useTranslation();
 
   return (
@@ -22,7 +21,7 @@ const UserCardHeader: React.FC<{
       <div className={classes.sideCardHeader}>
         <div className={classes.textContainer}>
           <p className={classes.subtitle}>
-            {status === AuctionStatus.AuctionEnded
+            {state >= RoundState.IN_CLAIMING_PERIOD
               ? amountOfPropsWon > 0 && isWinner(winningIds, userProps[cardIndex].id)
                 ? `${t('your')} ${amountOfPropsWon > 1 ? t('proposal') : t('proposals')} ${t(
                   'won',

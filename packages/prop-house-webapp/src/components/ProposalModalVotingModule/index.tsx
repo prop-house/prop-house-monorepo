@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 import { getVotingPower } from 'prop-house-communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount, useProvider } from 'wagmi';
@@ -19,9 +18,10 @@ import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
+import { Proposal, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModalVotingModule: React.FC<{
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
   setShowVoteAllotmentModal: Dispatch<SetStateAction<boolean>>;
   isWinner?: boolean;
@@ -29,6 +29,7 @@ const ProposalModalVotingModule: React.FC<{
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
 
   const provider = useProvider();
+  const propHouse = usePropHouse();
   const { address: account } = useAccount();
 
   const dispatch = useDispatch();
@@ -65,29 +66,32 @@ const ProposalModalVotingModule: React.FC<{
     if (!account || !provider || !community) return;
 
     const fetchVotes = async () => {
+      if (!round) return;
+        
       try {
-        const votes = await getVotingPower(
+        const { votingStrategies } = await propHouse.query.getRoundVotingStrategies(round.address);
+        const votes = await propHouse.voting.getTotalVotingPower(
           account,
-          community.contractAddress,
-          provider,
-          round!.balanceBlockTag,
+          round.config.proposalPeriodEndTimestamp,
+          votingStrategies,
         );
-        dispatch(setVotingPower(votes));
+        dispatch(setVotingPower(votes.toNumber())); // TODO: Support base units
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  }, [account, provider, dispatch, community, round, propHouse.query, propHouse.voting]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
-    if (proposals && account)
-      dispatch(
-        setVotesByUserInActiveRound(
-          proposals.flatMap(p => p.votes).filter(v => v.address === account),
-        ),
-      );
+    if (proposals && account) {}
+      // TODO: Fetch votes by user in active round
+      // dispatch(
+      //   setVotesByUserInActiveRound(
+      //     proposals.flatMap(p => p.votes).filter(v => v.address === account),
+      //   ),
+      // );
   }, [proposals, account, dispatch]);
 
   return (

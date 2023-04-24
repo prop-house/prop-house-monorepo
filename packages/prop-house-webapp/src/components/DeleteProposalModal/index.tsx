@@ -1,14 +1,12 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { useDispatch } from 'react-redux';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { useSigner } from 'wagmi';
+import { usePropHouse } from '@prophouse/sdk-react';
 
 const DeleteProposalModal: React.FC<{
   id: number;
@@ -18,7 +16,7 @@ const DeleteProposalModal: React.FC<{
 }> = props => {
   const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
-  const { data: signer } = useSigner();
+  const propHouse = usePropHouse();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
@@ -27,18 +25,18 @@ const DeleteProposalModal: React.FC<{
 
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
+  // const client = useRef(new PropHouseWrapper(host));
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+  // useEffect(() => {
+  //   client.current = new PropHouseWrapper(host, signer);
+  // }, [signer, host]);
 
   const handleDeleteProposal = async () => {
     if (!id) return;
 
     try {
-      await client.current.deleteProposal(new DeleteProposal(id));
+      // TODO
+      // await propHouse.round.timedFunding.cancelProposal(id);
       setErrorDeleting(false);
       setHasBeenDeleted(true);
     } catch (error) {
@@ -87,8 +85,8 @@ const DeleteProposalModal: React.FC<{
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowDeletePropModal(false);
-              refreshActiveProposals(client.current, round!, dispatch);
-              refreshActiveProposal(client.current, activeProposal!, dispatch);
+              refreshActiveProposals(propHouse, round!, dispatch);
+              refreshActiveProposal(propHouse, activeProposal!, dispatch);
               handleClosePropModal();
             }}
           />

@@ -1,14 +1,10 @@
-import {
-  AuctionBase,
-  StoredAuctionBase,
-  StoredInfiniteAuction,
-  StoredTimedAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { Round, RoundType } from '@prophouse/sdk-react';
 
+// NOt yet supported
 export const isInfAuction = (
-  auction: StoredAuctionBase | AuctionBase,
-): auction is StoredInfiniteAuction => 'quorum' in auction;
+  _round: Round
+) => false; // round.type === RoundType.TIMED_FUNDING;
 
 export const isTimedAuction = (
-  auction: StoredAuctionBase | AuctionBase,
-): auction is StoredTimedAuction => !('quorum' in auction);
+  round: Round
+) => round.type === RoundType.TIMED_FUNDING;

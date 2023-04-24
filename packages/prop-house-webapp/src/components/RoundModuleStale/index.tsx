@@ -1,8 +1,8 @@
-import { StoredInfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Round } from '@prophouse/sdk-react';
 import React from 'react';
 import RoundModuleCard from '../RoundModuleCard';
 
-const RoundModuleStale: React.FC<{ auction: StoredInfiniteAuction }> = ({ auction }) => {
+const RoundModuleStale: React.FC<{ round: Round }> = ({ round }) => {
   return (
     <RoundModuleCard
       title={'Stale'}
@@ -10,7 +10,8 @@ const RoundModuleStale: React.FC<{ auction: StoredInfiniteAuction }> = ({ auctio
         <>
           <p style={{ fontWeight: 'bold' }}>What is a stale proposal?</p>
           <br />
-          <p>{`Stale proposals are those that did not meet quorum (${auction.quorum} votes) within the round's voting period.`}</p>
+          {/* TODO: Not a thing */}
+          {/* <p>{`Stale proposals are those that did not meet quorum (${round.quorum} votes) within the round's voting period.`}</p> */}
         </>
       }
       type="stale"

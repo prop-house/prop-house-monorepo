@@ -20,9 +20,9 @@
 .learnMoreBtn:hover {
   background: rgba(148, 23, 226, 0.08);
 }
-.searchBarContainer {
+/* .searchBarContainer {
   height: 20px;
-}
+} */
 
 @media (min-width: 991px) {
   .searchBarContainer {

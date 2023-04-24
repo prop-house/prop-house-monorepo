@@ -1,6 +1,6 @@
 import classes from './HouseHeader.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
+// import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
@@ -12,9 +12,10 @@ import { isMobile } from 'web3modal';
 import ReadMore from '../ReadMore';
 import { isLongName } from '../../utils/isLongName';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
+import { House } from '@prophouse/sdk-react';
 
 const HouseHeader: React.FC<{
-  community: Community;
+  community: House;
 }> = props => {
   const { community } = props;
 
@@ -36,7 +37,7 @@ const HouseHeader: React.FC<{
           },
         }}
       >
-        {sanitizeHtml(community.description as any, {
+        {sanitizeHtml(community.description ?? '', {
           allowedAttributes: {
             a: ['href', 'target'],
           },
@@ -47,6 +48,7 @@ const HouseHeader: React.FC<{
   );
 
   const { t } = useTranslation();
+  const name = community.name ?? '';
 
   return (
     <div className={classes.profileHeaderRow}>
@@ -56,9 +58,10 @@ const HouseHeader: React.FC<{
 
       <div className={classes.communityInfoCol}>
         <div className={classes.houseTitleInfo}>
-          <div className={clsx(classes.titleRow, isLongName(community.name) && classes.longName)}>
-            <div className={classes.title}>{community.name} House</div>
-            <Tooltip
+          <div className={clsx(classes.titleRow, isLongName(name) && classes.longName)}>
+            <div className={classes.title}>{name} House</div>
+            {/* Not a thing anymore */}
+            {/* <Tooltip
               content={
                 <div
                   className={classes.contractAddressPill}
@@ -80,20 +83,20 @@ const HouseHeader: React.FC<{
                 </div>
               }
               tooltipContent={addressTooltipCopy}
-            />
+            /> */}
           </div>
 
           <div className={classes.propHouseDataRow}>
-            <div className={classes.itemData}>{community.numAuctions ?? 0}</div>
+            <div className={classes.itemData}>{community.roundCount}</div>
             <div className={classes.itemTitle}>
-              {Number(community?.numAuctions) === 1 ? t('roundCap') : t('roundsCap')}
+              {Number(community.roundCount) === 1 ? t('roundCap') : t('roundsCap')}
             </div>
             <span className={classes.bullet}>{' • '}</span>
-
+{/* 
             <div className={classes.itemData}>{community.numProposals ?? 0}</div>
             <div className={classes.itemTitle}>
               {community.numProposals === 1 ? t('proposalCap') : t('proposalsCap')}
-            </div>
+            </div> */}
           </div>
         </div>
         {!isMobile() && <ReadMore description={communityDescription} />}

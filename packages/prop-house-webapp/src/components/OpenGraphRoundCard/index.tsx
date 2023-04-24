@@ -6,37 +6,33 @@ import { useAppSelector } from '../../hooks';
 import formatTime from '../../utils/formatTime';
 import CommunityProfImg from '../CommunityProfImg';
 import TruncateThousands from '../TruncateThousands';
-import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import { useSigner } from 'wagmi';
 import { isTimedAuction } from '../../utils/auctionType';
+import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
   const { id } = params;
 
-  const [round, setRound] = useState<StoredTimedAuction>();
-  const [community, setCommunity] = useState<Community>();
+  const [round, setRound] = useState<Round>();
+  const [community, setCommunity] = useState<House>();
 
-  const { data: signer } = useSigner();
+  const propHouse = usePropHouse();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
 
   useEffect(() => {
     if (!id) return;
 
     const fetch = async () => {
-      const round = await client.current.getAuction(Number(id));
-      const community = await client.current.getCommunityWithId(round.community);
-      setRound(round);
-      setCommunity(community);
+      const round = await propHouse.query.getRoundWithHouseInfo(id);
+      if (round) {
+        setRound(round);
+        setCommunity(round.house);
+      }
     };
 
     fetch();
-  }, [id]);
+  }, [id, propHouse.query]);
 
   return (
     <>
@@ -51,13 +47,14 @@ const OpenGraphRoundCard: React.FC = () => {
               <div className={classes.roundName}>{round.title}</div>
               {isTimedAuction(round) && (
                 <div className={classes.date}>
-                  {`${formatTime(round.startTime)} - ${formatTime(round.proposalEndTime)}`}
+                  {`${formatTime(round.config.proposalPeriodStartTimestamp)} - ${formatTime(round.config.proposalPeriodEndTimestamp)}`}
                 </div>
               )}
             </span>
 
             <span className={classes.houseImg}>
-              <CommunityProfImg community={community} />
+              {/* TODO: Fix */}
+              {/* <CommunityProfImg community={community} /> */}
             </span>
           </span>
 
@@ -65,10 +62,11 @@ const OpenGraphRoundCard: React.FC = () => {
             <div className={classes.roundInfo}>
               <span className={classes.title}>Awards:</span>
               <p className={classes.subtitle}>
-                <TruncateThousands amount={round.fundingAmount} decimals={2} /> {round.currencyType}
+                {/* TODO: Handle awards */}
+                {/* <TruncateThousands amount={round.fundingAmount} decimals={2} /> {round.currencyType} */}
                 {isTimedAuction(round) && (
                   <>
-                    <span className={classes.xDivide}>{' × '}</span> {round.numWinners}
+                    <span className={classes.xDivide}>{' × '}</span> {round.config.winnerCount}
                   </>
                 )}
               </p>

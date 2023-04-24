@@ -1,11 +1,5 @@
-import {
-  Community,
-  StoredProposalWithVotes,
-  StoredAuctionBase,
-} from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundModules.module.css';
 import { Col } from 'react-bootstrap';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import clsx from 'clsx';
 import getWinningIds from '../../utils/getWinningIds';
 import UserPropCard from '../UserPropCard';
@@ -25,30 +19,31 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { House, Proposal, Round, RoundState } from '@prophouse/sdk-react';
 
 const RoundModules: React.FC<{
-  auction: StoredAuctionBase;
-  proposals: StoredProposalWithVotes[];
-  community: Community;
+  round: Round;
+  proposals: Proposal[];
+  community: House;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { auction, proposals, community, setShowVotingModal } = props;
+  const { round, proposals, community, setShowVotingModal } = props;
 
   const { address: account } = useAccount();
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
-  const winningIds = getWinningIds(proposals, auction);
-  const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
+  const winningIds = getWinningIds(proposals, round);
+  const [userProposals, setUserProposals] = useState<Proposal[]>();
 
-  // auction statuses
-  const auctionNotStarted = auctionStatus(auction) === AuctionStatus.AuctionNotStarted;
-  const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
-  const isVotingWindow = auctionStatus(auction) === AuctionStatus.AuctionVoting;
-  const isRoundOver =
-    auctionStatus(auction) === AuctionStatus.AuctionEnded ||
-    (isInfAuction(auction) && infRoundBalance(proposals, auction) === 0);
+  // Round statuses
+  const auctionNotStarted = round.state === RoundState.NOT_STARTED;
+  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round.state === RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round.state >= RoundState.IN_CLAIMING_PERIOD;
+  // TODO: Not a thing
+  // ||  (isInfAuction(round) && infRoundBalance(proposals, auction) === 0);
 
-  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + prop.voteCount), 0);
+  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + Number(prop.votingPower)), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
 
   useEffect(() => {
@@ -56,12 +51,12 @@ const RoundModules: React.FC<{
     setFetchedUserProps(false);
 
     // set user props
-    if (proposals.some(p => isSameAddress(p.address, account))) {
+    if (proposals.some(p => isSameAddress(p.proposer, account))) {
       setUserProposals(
         proposals
-          .filter(p => isSameAddress(p.address, account))
-          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-            a.voteCount < b.voteCount ? 1 : -1,
+          .filter(p => isSameAddress(p.proposer, account))
+          .sort((a, b) =>
+            BigInt(a.votingPower) < BigInt(b.votingPower) ? 1 : -1,
           ),
       );
 
@@ -69,46 +64,46 @@ const RoundModules: React.FC<{
     }
   }, [account, proposals]);
 
-  const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
-    (isInfAuction(auction) &&
+  const acceptingPropsModule = ((isTimedAuction(round) && isProposingWindow) ||
+    (isInfAuction(round) &&
       !isRoundOver &&
       votingPower === 0 &&
       infRoundFilter === InfRoundFilterType.Active)) && (
-    <AcceptingPropsModule auction={auction} community={community} />
+    <AcceptingPropsModule round={round} community={community} />
   );
 
-  const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
+  const timedRoundVotingModule = isTimedAuction(round) && isVotingWindow && (
     <TimedRoundVotingModule
-      communityName={community.name}
+      communityName={community.name ?? ''}
       setShowVotingModal={setShowVotingModal}
       totalVotes={getVoteTotal()}
     />
   );
 
-  const infRoundVotingModule = isInfAuction(auction) &&
+  const infRoundVotingModule = isInfAuction(round) &&
     (!account || votingPower > 0) &&
     !isRoundOver &&
     infRoundFilter === InfRoundFilterType.Active && (
       <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
     );
 
-  const roundWinnerModule = isInfAuction(auction) &&
+  const roundWinnerModule = isInfAuction(round) &&
     !isRoundOver &&
-    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+    infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner round={round} />;
 
-  const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
-    <RoundModuleStale auction={auction} />
+  const roundStaleModule = isInfAuction(round) && infRoundFilter === InfRoundFilterType.Stale && (
+    <RoundModuleStale round={round} />
   );
 
   const roundOverModule = isRoundOver && (
     <RoundOverModule
       numOfProposals={proposals.length}
       totalVotes={getVoteTotal()}
-      round={auction}
+      round={round}
     />
   );
 
-  const userPropCardModule = (isInfAuction(auction)
+  const userPropCardModule = (isInfAuction(round)
     ? infRoundFilter === InfRoundFilterType.Active
     : true) &&
     !auctionNotStarted &&
@@ -119,8 +114,8 @@ const RoundModules: React.FC<{
       <UserPropCard
         userProps={userProposals}
         proposals={proposals}
-        numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
-        status={auctionStatus(auction)}
+        numOfWinners={isInfAuction(round) ? 0 : round.config.winnerCount}
+        state={round.state}
         winningIds={winningIds && winningIds}
       />
     );

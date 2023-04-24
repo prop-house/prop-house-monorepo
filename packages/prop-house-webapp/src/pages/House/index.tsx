@@ -2,42 +2,39 @@ import classes from './House.module.css';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
-import React, { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useEffect, useState } from 'react';
 import { setActiveCommunity } from '../../state/slices/propHouse';
-import { slugToName } from '../../utils/communitySlugs';
 import { Col, Container, Row } from 'react-bootstrap';
 import RoundCard from '../../components/RoundCard';
 import HouseUtilityBar from '../../components/HouseUtilityBar';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
+// import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ErrorMessageCard from '../../components/ErrorMessageCard';
 import NoSearchResults from '../../components/NoSearchResults';
 import NotFound from '../../components/NotFound';
-import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
+import { sortRoundByState } from '../../utils/sortRoundByState';
 import { RoundStatus } from '../../components/StatusFilters';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
+import { GetRoundStateParams, Round, RoundState, RoundType, TimedFunding, usePropHouse } from '@prophouse/sdk-react';
 import { useTranslation } from 'react-i18next';
-import { useSigner } from 'wagmi';
 import { isMobile } from 'web3modal';
 
 const House = () => {
   const location = useLocation();
-  const slug = location.pathname.substring(1, location.pathname.length);
+  const address = location.pathname.substring(1, location.pathname.length);
 
-  const { data: signer } = useSigner();
+  const propHouse = usePropHouse();
+  // const { data: signer } = useSigner();
 
   const dispatch = useAppDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
+  // const client = useRef(new PropHouseWrapper(host));
 
-  const [rounds, setRounds] = useState<StoredAuctionBase[]>([]);
-  const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuctionBase[]>([]);
+  const [rounds, setRounds] = useState<Round[]>([]);
+  const [roundsOnDisplay, setRoundsOnDisplay] = useState<Round[]>([]);
   const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
   const [input, setInput] = useState<string>('');
   const [loadingCommunity, setLoadingCommunity] = useState(false);
@@ -48,17 +45,15 @@ const House = () => {
 
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  // fetch community
+  // Fetch house information
   useEffect(() => {
     const fetchCommunity = async () => {
       try {
         setLoadingCommunity(true);
-        const community = await client.current.getCommunityWithName(slugToName(slug));
-        dispatch(setActiveCommunity(community));
+
+        const house = await propHouse.query.getHouse(address);
+
+        dispatch(setActiveCommunity(house));
         setLoadingCommunity(false);
       } catch (e) {
         setLoadingCommunity(false);
@@ -66,7 +61,7 @@ const House = () => {
       }
     };
     fetchCommunity();
-  }, [slug, dispatch]);
+  }, [address, dispatch, propHouse.query]);
 
   // fetch rounds
   useEffect(() => {
@@ -75,27 +70,22 @@ const House = () => {
     const fetchRounds = async () => {
       try {
         setLoadingRounds(true);
-        const rounds = await client.current.getAuctionsForCommunity(community.id);
-
+        const rounds = await propHouse.query.getRoundsForHouse(community.address);
         setRounds(rounds);
+
+        const numActiveRounds = rounds.filter(({ state }) => 
+          state === RoundState.IN_PROPOSING_PERIOD || state === RoundState.IN_VOTING_PERIOD,
+        ).length;
 
         // Number of rounds under a certain status type in a House
         setNumberOfRoundsPerStatus([
           // number of active rounds (proposing & voting)
-          rounds.filter(
-            r =>
-              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-              auctionStatus(r) === AuctionStatus.AuctionVoting,
-          ).length,
+          numActiveRounds,
           rounds.length,
         ]);
 
-        // if there are no active rounds, default filter by all rounds
-        rounds.filter(
-          r =>
-            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-            auctionStatus(r) === AuctionStatus.AuctionVoting,
-        ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
+        // If there are no active rounds, default filter by all rounds
+        !numActiveRounds && setCurrentRoundStatus(RoundStatus.AllRounds);
 
         setLoadingRounds(false);
       } catch (e) {
@@ -104,7 +94,7 @@ const House = () => {
       }
     };
     fetchRounds();
-  }, [community]);
+  }, [community, propHouse.query, propHouse.round, propHouse.round.timedFunding]);
 
   useEffect(() => {
     rounds &&
@@ -116,11 +106,7 @@ const House = () => {
             setRoundsOnDisplay(rounds)
           : // filter by active rounds (proposing & voting)
             setRoundsOnDisplay(
-              rounds.filter(
-                r =>
-                  auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-                  auctionStatus(r) === AuctionStatus.AuctionVoting,
-              ),
+              rounds.filter(({ state }) => state === RoundState.IN_PROPOSING_PERIOD || state === RoundState.IN_VOTING_PERIOD),
             )
         : // filter by search input that matches round title or description
           setRoundsOnDisplay(
@@ -132,7 +118,7 @@ const House = () => {
               );
             }),
           ));
-  }, [input, currentRoundStatus, rounds]);
+  }, [input, currentRoundStatus, rounds, propHouse.round.timedFunding, propHouse.round]);
 
   return (
     <>
@@ -140,9 +126,9 @@ const House = () => {
         <OpenGraphElements
           title={`${community.name} Prop House`}
           description={markdownComponentToPlainText(
-            <ReactMarkdown children={community.description.toString()} />,
+            <ReactMarkdown children={community.description?.toString() ?? ''} />,
           )}
-          imageUrl={cardServiceUrl(CardType.house, community.id).href}
+          imageUrl={cardServiceUrl(CardType.house, community.address).href}
         />
       )}
 
@@ -177,7 +163,8 @@ const House = () => {
                   ) : !loadingRounds && failedLoadingRounds ? (
                     <ErrorMessageCard message={t('noRoundsAvailable')} />
                   ) : roundsOnDisplay.length > 0 ? (
-                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+                    // TODO: Fix type
+                    sortRoundByState(roundsOnDisplay).map((round, index) => (
                       <Col key={index} xl={6}>
                         <RoundCard round={round} />
                       </Col>

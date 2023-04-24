@@ -51,7 +51,7 @@ const NavBar = () => {
                 <Button
                   text="Create a round"
                   bgColor={ButtonColor.Purple}
-                  onClick={() => navigate('/create-round')}
+                  onClick={() => navigate('/admin')}
                   classNames={classes.createRoundBtn}
                 />
               </Nav.Link>

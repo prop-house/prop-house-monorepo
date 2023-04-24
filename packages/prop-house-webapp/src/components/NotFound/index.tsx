@@ -14,7 +14,7 @@ const NotFound = () => {
         <p>
           Please check that the url follows the format:
           <br />
-          <code>prop.house/:nft_slug</code>
+          <code>prop.house/:house_address/:round_address?</code>
         </p>
       </div>
     </div>

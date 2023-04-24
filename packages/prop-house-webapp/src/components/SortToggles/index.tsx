@@ -1,5 +1,4 @@
 import classes from './SortToggles.module.css';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import { useAppSelector } from '../../hooks';
@@ -10,26 +9,27 @@ import {
   setInfRoundFilterType,
 } from '../../state/slices/propHouse';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { Round } from '@prophouse/sdk-react';
 
 const SortToggles: React.FC<{
-  auction: StoredAuctionBase;
+  round: Round;
 }> = props => {
-  const { auction } = props;
+  const { round } = props;
 
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const isInfRoundOver =
-    proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0;
+    proposals && isInfAuction(round) && infRoundBalance(proposals, round) === 0;
 
   const dispatch = useDispatch();
 
   const handleFilterInfRoundProps = (type: InfRoundFilterType) => {
-    if (!isInfAuction(auction)) return;
+    if (!isInfAuction(round)) return;
 
     dispatch(
       filterInfRoundProposals({
         type,
-        round: auction,
+        round,
       }),
     );
     dispatch(setInfRoundFilterType(type));
@@ -38,7 +38,7 @@ const SortToggles: React.FC<{
   return (
     <>
       <div className={classes.sortContainer}>
-        {isInfAuction(auction) && (
+        {isInfAuction(round) && (
           <>
             {!isInfRoundOver && (
               <div

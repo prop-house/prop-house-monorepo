@@ -1,27 +1,26 @@
 import classes from './UserPropCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import clsx from 'clsx';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import isWinner from '../../utils/isWinner';
 import { useState } from 'react';
-import { AuctionStatus } from '../../utils/auctionStatus';
 import PropStats from '../PropStats';
 import CardFooter from '../UserCardFooter';
 import UserCardHeader from '../UserCardHeader';
+import { RoundState, Proposal } from '@prophouse/sdk-react';
 
 const UserPropCard: React.FC<{
-  userProps: StoredProposalWithVotes[];
-  status: AuctionStatus;
-  proposals: StoredProposalWithVotes[] | undefined;
+  userProps: Proposal[];
+  state: RoundState;
+  proposals: Proposal[] | undefined;
   numOfWinners: number;
   winningIds: number[];
 }> = props => {
-  const { userProps, winningIds, proposals, status, numOfWinners } = props;
+  const { userProps, winningIds, proposals, state, numOfWinners } = props;
   const [cardIndex, setCardIndex] = useState(0);
 
   let amountOfPropsWon = 0;
   winningIds &&
-    userProps.map((prop: StoredProposalWithVotes) => {
+    userProps.map((prop: Proposal) => {
       if (isWinner(winningIds, prop.id)) amountOfPropsWon++;
       return amountOfPropsWon;
     });
@@ -33,7 +32,7 @@ const UserPropCard: React.FC<{
       classNames={clsx(classes.sidebarContainerCard, classes.userPropCard)}
     >
       <UserCardHeader
-        status={status}
+        state={state}
         amountOfPropsWon={amountOfPropsWon}
         userProps={userProps}
         cardIndex={cardIndex}
@@ -41,9 +40,9 @@ const UserPropCard: React.FC<{
         winningIds={winningIds}
       />
 
-      {status !== AuctionStatus.AuctionAcceptingProps && proposals && (
+      {state !== RoundState.IN_PROPOSING_PERIOD && proposals && (
         <PropStats
-          status={status}
+          state={state}
           userProps={userProps}
           cardIndex={cardIndex}
           proposals={proposals}
@@ -52,7 +51,7 @@ const UserPropCard: React.FC<{
       )}
 
       <CardFooter
-        status={status}
+        state={state}
         amountOfPropsWon={amountOfPropsWon}
         winningIds={winningIds}
         userProps={userProps}

@@ -1,40 +1,36 @@
 import classes from './PropStats.module.css';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
-import { AuctionStatus } from '../../utils/auctionStatus';
 import getNumberWithOrdinal from '../../utils/getNumberWithOrdinal';
 import { useTranslation } from 'react-i18next';
+import { Proposal, RoundState } from '@prophouse/sdk-react';
 
 const PropStats: React.FC<{
-  status: AuctionStatus;
-  userProps: StoredProposalWithVotes[];
+  state: RoundState;
+  userProps: Proposal[];
   cardIndex: number;
-  proposals: StoredProposalWithVotes[];
+  proposals: Proposal[];
   numOfWinners: number;
 }> = props => {
-  const { userProps, proposals, status, numOfWinners, cardIndex } = props;
+  const { userProps, proposals, state, numOfWinners, cardIndex } = props;
   const { t } = useTranslation();
 
-  const isVotingWindow = status === AuctionStatus.AuctionVoting;
-  const isRoundOver = status === AuctionStatus.AuctionEnded;
-
-  const allPropsHaveZeroVotes = proposals && proposals.filter(p => p.voteCount > 0).length === 0;
+  const allPropsHaveZeroVotes = proposals && proposals.filter(p => BigInt(p.votingPower) > 0).length === 0;
   const fewerPropsThanNumberofWinners = proposals && proposals.length < numOfWinners;
 
   const currentlyWinningProps =
     proposals &&
     proposals
       .slice()
-      .sort((a, b) => (a.voteCount < b.voteCount ? 1 : -1))
+      .sort((a, b) => (BigInt(a.votingPower) < BigInt(b.votingPower) ? 1 : -1))
       .slice(0, numOfWinners);
 
-  const votesNeededToWin = (prop: any) => {
+  const votesNeededToWin = (prop: Proposal) => {
     if (fewerPropsThanNumberofWinners || (proposals && currentlyWinningProps!.includes(prop)))
       return 0;
     if (allPropsHaveZeroVotes) return '-';
 
     return (
       currentlyWinningProps &&
-      currentlyWinningProps[currentlyWinningProps.length - 1].voteCount - prop.voteCount + 1
+      Number(BigInt(currentlyWinningProps[currentlyWinningProps.length - 1].votingPower) - BigInt(prop.votingPower)) + 1
     );
   };
 
@@ -47,11 +43,11 @@ const PropStats: React.FC<{
           </div>
           <div className={classes.userPropText}>
             <div>{t('totalVotes')}</div>
-            <div className={classes.userPropTextValue}>{userProps[cardIndex].voteCount}</div>
+            <div className={classes.userPropTextValue}>{userProps[cardIndex].votingPower}</div>
           </div>
         </div>
 
-        {(isVotingWindow || isRoundOver) && (
+        {state >= RoundState.IN_VOTING_PERIOD && (
           <>
             <div className={classes.userPropItem}>
               <div className={classes.userPropNounImg}>
@@ -65,7 +61,7 @@ const PropStats: React.FC<{
                     getNumberWithOrdinal(
                       proposals
                         .slice()
-                        .sort((a, b) => (a.voteCount < b.voteCount ? 1 : -1))
+                        .sort((a, b) => (BigInt(a.votingPower) < BigInt(b.votingPower) ? 1 : -1))
                         .findIndex(p => p.id === userProps[cardIndex].id) + 1,
                     )}
                 </div>
@@ -77,7 +73,7 @@ const PropStats: React.FC<{
                 <img src="/heads/wallet.png" alt="wallet" />
               </div>
               <div className={classes.userPropText}>
-                <div>{isVotingWindow ? t('votesNeeded') : t('votesFromFunding')}</div>
+                <div>{state === RoundState.IN_VOTING_PERIOD ? t('votesNeeded') : t('votesFromFunding')}</div>
                 <div className={classes.userPropTextValue}>
                   {votesNeededToWin(userProps[cardIndex])}
                 </div>

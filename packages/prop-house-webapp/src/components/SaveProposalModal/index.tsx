@@ -1,17 +1,15 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
-import { useSigner } from 'wagmi';
-import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { usePropHouse } from '@prophouse/sdk-react';
 
 const SaveProposalModal: React.FC<{
   propId: number;
-  roundId: number;
+  roundAddress: string;
   setShowSavePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   handleClosePropModal: () => void;
@@ -19,7 +17,7 @@ const SaveProposalModal: React.FC<{
 }> = props => {
   const {
     propId,
-    roundId,
+    roundAddress,
     setShowSavePropModal,
     setEditProposalMode,
     handleClosePropModal,
@@ -27,14 +25,8 @@ const SaveProposalModal: React.FC<{
   } = props;
   const { t } = useTranslation();
 
-  const host = useAppSelector(state => state.configuration.backendHost);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const client = useRef(new PropHouseWrapper(host));
-  const { data: signer } = useSigner();
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+  const propHouse = usePropHouse();
 
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
   const [errorSaving, setErrorSaving] = useState(false);
@@ -45,18 +37,19 @@ const SaveProposalModal: React.FC<{
 
   const handleSaveProposal = async () => {
     try {
-      if (!propId || !roundId) return;
+      if (!propId || !roundAddress) return;
 
-      await client.current.updateProposal(
-        new UpdatedProposal(
-          propId,
-          updatedProposal.title,
-          updatedProposal.what,
-          updatedProposal.tldr,
-          roundId,
-          updatedProposal.reqAmount,
-        ),
-      );
+      // TODO
+      // await client.current.updateProposal(
+      //   new UpdatedProposal(
+      //     propId,
+      //     updatedProposal.title,
+      //     updatedProposal.what,
+      //     updatedProposal.tldr,
+      //     roundId,
+      //     updatedProposal.reqAmount,
+      //   ),
+      // );
       setErrorSaving(false);
       setHasBeenSaved(true);
     } catch (error) {
@@ -101,8 +94,8 @@ const SaveProposalModal: React.FC<{
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowSavePropModal(false);
-              refreshActiveProposals(client.current, round, dispatch);
-              refreshActiveProposal(client.current, activeProposal!, dispatch);
+              refreshActiveProposals(propHouse, round, dispatch);
+              refreshActiveProposal(propHouse, activeProposal!, dispatch);
               setEditProposalMode(false);
               handleClosePropModal();
             }}

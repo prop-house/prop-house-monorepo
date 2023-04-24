@@ -1,14 +1,14 @@
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import clsx from 'clsx';
+import { Round } from '@prophouse/sdk-react';
 import { useTranslation } from 'react-i18next';
 import { isTimedAuction } from '../../utils/auctionType';
 import RoundModuleCard from '../RoundModuleCard';
 import classes from './RoundOverModule.module.css';
+import clsx from 'clsx';
 
 export interface RoundOverModuleProps {
   totalVotes: number | undefined;
   numOfProposals: number;
-  round: StoredAuctionBase;
+  round: Round;
 }
 
 const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleProps) => {

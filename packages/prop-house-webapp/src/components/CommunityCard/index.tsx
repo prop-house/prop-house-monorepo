@@ -1,44 +1,46 @@
 import classes from './CommunityCard.module.css';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import CommunityProfImg from '../CommunityProfImg';
 import { useTranslation } from 'react-i18next';
-import TruncateThousands from '../TruncateThousands';
-import getHouseCurrency from '../../utils/getHouseCurrency';
+import { House } from '@prophouse/sdk-react';
+import { Link } from 'react-router-dom';
 
 const CommunityCard: React.FC<{
-  community: Community;
+  house: House
 }> = props => {
-  const { community } = props;
+  const { house } = props;
   const { t } = useTranslation();
 
-  const houseCurrency = getHouseCurrency(community.contractAddress);
+  // No such concept
+  // const houseCurrency = getHouseCurrency(community.contractAddress);
 
   return (
     <div className={classes.container}>
-      <CommunityProfImg community={community} />
-      <div className={classes.title}>{community.name}</div>
-      <div className={classes.infoContainer}>
-        <hr className={classes.divider} />
-        <div className={classes.cardInfo}>
-          <div className={classes.infoWithSymbol}>
+      <Link to={house.address}>
+        <CommunityProfImg community={house} />
+        <div className={classes.title}>{house.name}</div>
+        <div className={classes.infoContainer}>
+          <hr className={classes.divider} />
+          <div className={classes.cardInfo}>
+            <div className={classes.infoWithSymbol}>
+              <div className={classes.infoText}>
+                {/* <span className={classes.infoAmount}>
+                  <TruncateThousands
+                    amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
+                  />{' '}
+                  {houseCurrency}
+                </span>{' '} */}
+                {/* <span className={classes.infoCopy}>{t('funded')}</span> */}
+              </div>
+            </div>
             <div className={classes.infoText}>
-              <span className={classes.infoAmount}>
-                <TruncateThousands
-                  amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
-                />{' '}
-                {houseCurrency}
-              </span>{' '}
-              <span className={classes.infoCopy}>{t('funded')}</span>
+              <span className={classes.infoAmount}>{house.roundCount}</span>{' '}
+              <span className={classes.infoCopy}>
+                {house.roundCount === 1 ? t('round') : t('rounds')}
+              </span>
             </div>
           </div>
-          <div className={classes.infoText}>
-            <span className={classes.infoAmount}>{community.numAuctions}</span>{' '}
-            <span className={classes.infoCopy}>
-              {community.numAuctions === 1 ? t('round') : t('rounds')}
-            </span>
-          </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 };

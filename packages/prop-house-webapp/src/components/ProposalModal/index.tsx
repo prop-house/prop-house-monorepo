@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import Modal from 'react-modal';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
 import {
   Direction,
@@ -30,6 +29,7 @@ import DeleteProposalModal from '../DeleteProposalModal';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
 import { isTimedAuction } from '../../utils/auctionType';
+import { Proposal, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -50,9 +50,6 @@ const ProposalModal = () => {
   const infRoundProposals = useAppSelector(state => state.propHouse.infRoundFilteredProposals);
   const proposals = round && isTimedAuction(round) ? activeProposals : infRoundProposals;
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
-
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
   const [signerIsContract, setSignerIsContract] = useState(false);
@@ -69,6 +66,7 @@ const ProposalModal = () => {
   const [hideScrollButton, setHideScrollButton] = useState(false);
   const winningIds = round && proposals && getWinningIds(proposals, round);
   const provider = useProvider();
+  const propHouse = usePropHouse();
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -77,15 +75,10 @@ const ProposalModal = () => {
   };
 
   const dismissModalAndRefreshProps = () => {
-    refreshActiveProposals(backendClient.current, round!, dispatch);
-    refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
+    refreshActiveProposals(propHouse, round!, dispatch);
+    refreshActiveProposal(propHouse, activeProposal!, dispatch);
     handleClosePropModal();
   };
-
-  // provider
-  useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer);
-  }, [signer, backendHost]);
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -97,7 +90,7 @@ const ProposalModal = () => {
   useEffect(() => {
     if (!proposals || !activeProposal) return;
 
-    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id);
+    const index = proposals.findIndex((p: Proposal) => p.id === activeProposal.id);
     setCurrentPropIndex(index + 1);
     dispatch(setActiveProposal(proposals[index]));
   }, [proposals, id, dispatch, activeProposal]);
@@ -141,7 +134,7 @@ const ProposalModal = () => {
       return;
 
     const newPropIndex =
-      proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
+      proposals.findIndex((p: Proposal) => p.id === activeProposal.id) + direction;
     dispatch(setActiveProposal(proposals[newPropIndex]));
   };
 
@@ -158,36 +151,37 @@ const ProposalModal = () => {
   const handleSubmitVote = async () => {
     if (!activeProposal) return;
 
-    try {
-      const blockHeight = await fetchBlockNumber();
+    // TODO
+    // try {
+    //   const blockHeight = await fetchBlockNumber();
 
-      const votes = voteAllotments
-        .map(
-          a =>
-            new Vote(
-              1,
-              a.proposalId,
-              a.votes,
-              community!.contractAddress,
-              SignatureState.PENDING_VALIDATION,
-              blockHeight,
-            ),
-        )
-        .filter(v => v.weight > 0);
-      const isContract = await _signerIsContract();
+    //   const votes = voteAllotments
+    //     .map(
+    //       a =>
+    //         new Vote(
+    //           1,
+    //           a.proposalId,
+    //           a.votes,
+    //           community!.contractAddress,
+    //           SignatureState.PENDING_VALIDATION,
+    //           blockHeight,
+    //         ),
+    //     )
+    //     .filter(v => v.weight > 0);
+    //   const isContract = await _signerIsContract();
 
-      await backendClient.current.logVotes(votes, isContract);
+    //   await backendClient.current.logVotes(votes, isContract);
 
-      setShowErrorVotingModal(false);
-      setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round!, dispatch);
-      refreshActiveProposal(backendClient.current, activeProposal, dispatch);
-      dispatch(clearVoteAllotments());
-      setShowVoteConfirmationModal(false);
-    } catch (e) {
-      setShowErrorVotingModal(true);
-    }
+    //   setShowErrorVotingModal(false);
+    //   setNumPropsVotedFor(voteAllotments.length);
+    //   setShowSuccessVotingModal(true);
+    //   refreshActiveProposals(backendClient.current, round!, dispatch);
+    //   refreshActiveProposal(backendClient.current, activeProposal, dispatch);
+    //   dispatch(clearVoteAllotments());
+    //   setShowVoteConfirmationModal(false);
+    // } catch (e) {
+    //   setShowErrorVotingModal(true);
+    // }
   };
 
   return (
@@ -218,7 +212,7 @@ const ProposalModal = () => {
       {showSavePropModal && activeProposal && round && (
         <SaveProposalModal
           propId={activeProposal.id}
-          roundId={round.id}
+          roundAddress={round.address}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}

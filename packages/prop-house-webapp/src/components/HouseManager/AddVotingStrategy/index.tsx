@@ -28,7 +28,7 @@ import { saveRound } from '../../../state/thunks';
  * @see addressTypes - strategy types to map over & display
  */
 
-enum StrategyType {
+export enum StrategyType {
   ERC721 = 'ERC-721',
   ERC1155 = 'ERC-1155',
   ERC20 = 'ERC-20',

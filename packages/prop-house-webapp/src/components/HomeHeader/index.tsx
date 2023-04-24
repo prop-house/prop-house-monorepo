@@ -3,16 +3,16 @@ import classes from './HomeHeader.module.css';
 import HomeTitle from '../HomeTitle';
 import HomeStats from '../HomeStats';
 import SearchBar from '../SeachBar';
-import { StatsProps } from '../../pages/Home';
 import { useNavigate } from 'react-router-dom';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { useTranslation } from 'react-i18next';
+import { GlobalStats } from '@prophouse/sdk-react';
 
 interface HomeHeaderProps {
   input: string;
   handleSeachInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  stats: StatsProps;
+  stats: GlobalStats;
 }
 
 const HomeHeader = ({ input, handleSeachInputChange, stats }: HomeHeaderProps) => {

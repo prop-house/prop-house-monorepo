@@ -27,7 +27,7 @@ import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import CreateRound from './pages/CreateRound';
 import HouseManager from './pages/HouseManager';
-import StatusRoundCards from './components/StatusRoundCards';
+// import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
 import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
 
@@ -86,7 +86,8 @@ function App() {
                   {!noNavPath && <NavBar />}
 
                   <Routes>
-                    <Route path="/rounds" element={<StatusRoundCards />} />
+                    {/* TODO: Implement next */}
+                    {/* <Route path="/rounds" element={<StatusRoundCards />} /> */}
                     <Route path="/" element={<Home />} />
                     <Route
                       path="/create"
@@ -119,8 +120,8 @@ function App() {
 
                     <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="/:house" element={<House />} />
-                    <Route path="/:house/:title" element={<Round />} />
-                    <Route path="/:house/:title/:id" element={<Proposal />} />
+                    <Route path="/:house/:round" element={<Round />} />
+                    <Route path="/:house/:round/:id" element={<Proposal />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -1,9 +1,9 @@
-import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Round } from '@prophouse/sdk-react';
 import isAuctionActive from './isAuctionActive';
 
 /**
  * Auction is not accepting proposals
  */
-const isAuctionClosed = (auction: StoredTimedAuction) => !isAuctionActive(auction);
+const isAuctionClosed = (round: Round) => !isAuctionActive(round);
 
 export default isAuctionClosed;

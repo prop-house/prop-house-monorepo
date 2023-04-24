@@ -1,8 +1,8 @@
-import { StoredInfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Round } from '@prophouse/sdk-react';
 import React from 'react';
 import RoundModuleCard from '../RoundModuleCard';
 
-const RoundModuleWinner: React.FC<{ auction: StoredInfiniteAuction }> = ({ auction }) => {
+const RoundModuleWinner: React.FC<{ round: Round }> = ({ round }) => {
   return (
     <RoundModuleCard
       title={'Winners'}
@@ -10,7 +10,8 @@ const RoundModuleWinner: React.FC<{ auction: StoredInfiniteAuction }> = ({ aucti
         <>
           <p style={{ fontWeight: 'bold' }}>What determines a winning proposal?</p>
           <br />
-          <p>{`Proposals that meet the round quorum (${auction.quorum} votes) before the voting period ends.`}</p>
+          {/* TODO: Not a thing */}
+          {/* <p>{`Proposals that meet the round quorum (${round.quorum} votes) before the voting period ends.`}</p> */}
         </>
       }
       type="winner"

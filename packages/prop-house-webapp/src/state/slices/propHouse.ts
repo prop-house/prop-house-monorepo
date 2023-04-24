@@ -1,20 +1,15 @@
-import {
-  StoredProposalWithVotes,
-  Community,
-  StoredAuctionBase,
-  InfiniteAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { House, Proposal, Round } from '@prophouse/sdk-react';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
 import { sortByVotesAndHandleTies } from '../../utils/sortByVotesAndHandleTies';
+import dayjs from 'dayjs';
 
 export interface PropHouseSlice {
-  activeRound?: StoredAuctionBase;
-  activeProposal?: StoredProposalWithVotes;
-  activeProposals?: StoredProposalWithVotes[];
-  activeCommunity?: Community;
+  activeRound?: Round;
+  activeProposal?: Proposal;
+  activeProposals?: Proposal[];
+  activeCommunity?: House;
   modalActive: boolean;
-  infRoundFilteredProposals?: StoredProposalWithVotes[];
+  infRoundFilteredProposals?: Proposal[];
   infRoundFilterType: InfRoundFilterType;
 }
 
@@ -44,7 +39,7 @@ const sortHelper = (a: any, b: any, ascending: boolean) => {
   return ascending ? (a < b ? -1 : 1) : a < b ? 1 : -1;
 };
 
-const sortTimedRoundProps = (proposals: StoredProposalWithVotes[], props: TimedRoundSortProps) => {
+const sortTimedRoundProps = (proposals: Proposal[], props: TimedRoundSortProps) => {
   switch (props.sortType) {
     case TimedRoundSortType.VoteCount:
       return sortByVotesAndHandleTies(proposals, props.ascending);
@@ -52,59 +47,61 @@ const sortTimedRoundProps = (proposals: StoredProposalWithVotes[], props: TimedR
       return proposals.sort(() => Math.random() - 0.5);
     case TimedRoundSortType.CreatedAt:
       return proposals.sort((a, b) =>
-        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+        sortHelper(dayjs.unix(a.receivedAt), dayjs.unix(b.receivedAt), props.ascending),
       );
     default:
       return proposals.sort((a, b) =>
-        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
+        sortHelper(dayjs.unix(a.receivedAt), dayjs.unix(b.receivedAt), props.ascending),
       );
   }
 };
 
 const filterInfRoundProps = (
-  props: StoredProposalWithVotes[],
+  props: Proposal[],
   type: InfRoundFilterType,
-  round: InfiniteAuction,
+  round: Round,
 ) => {
   const now = dayjs();
-  switch (type) {
-    case InfRoundFilterType.Active:
-      return props.filter(
-        p =>
-          p.voteCount < round.quorum &&
-          dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
-      );
-    case InfRoundFilterType.Winners:
-      return props.filter(p => p.voteCount >= round.quorum);
-    case InfRoundFilterType.Stale:
-      return props.filter(
-        p =>
-          p.voteCount < round.quorum &&
-          dayjs(p.createdDate).isBefore(now.subtract(round.votingPeriod, 's')),
-      );
-    default:
-      return props;
-  }
+  // TODO: Not implemented yet
+  // switch (type) {
+  //   case InfRoundFilterType.Active:
+  //     return props.filter(
+  //       p =>
+  //         BigInt(p.votingPower) < BigInt(round.quorum) &&
+  //         dayjs(p.receivedAt).isAfter(now.subtract(round.votingPeriod, 's')),
+  //     );
+  //   case InfRoundFilterType.Winners:
+  //     return props.filter(p => BigInt(p.votingPower) >= BigInt(round.quorum));
+  //   case InfRoundFilterType.Stale:
+  //     return props.filter(
+  //       p =>
+  //         BigInt(p.votingPower) < BigInt(round.quorum) &&
+  //         dayjs(p.receivedAt).isBefore(now.subtract(round.votingPeriod, 's')),
+  //     );
+  //   default:
+  //     return props;
+  // }
+  return props;
 };
 
 export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
   reducers: {
-    setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
+    setActiveRound: (state, action: PayloadAction<Round | undefined>) => {
       state.activeRound = action.payload;
     },
-    setActiveProposal: (state, action: PayloadAction<StoredProposalWithVotes>) => {
+    setActiveProposal: (state, action: PayloadAction<Proposal | undefined>) => {
       state.activeProposal = action.payload;
     },
-    setActiveProposals: (state, action: PayloadAction<StoredProposalWithVotes[]>) => {
+    setActiveProposals: (state, action: PayloadAction<Proposal[]>) => {
       state.activeProposals = sortTimedRoundProps(action.payload, {
         sortType: TimedRoundSortType.CreatedAt,
         ascending: false,
       });
       state.infRoundFilteredProposals = action.payload;
     },
-    appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
+    appendProposal: (state, action: PayloadAction<{ proposal: Proposal }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
     sortTimedRoundProposals: (state, action: PayloadAction<TimedRoundSortProps>) => {
@@ -113,7 +110,7 @@ export const propHouseSlice = createSlice({
     },
     filterInfRoundProposals: (
       state,
-      action: PayloadAction<{ type: InfRoundFilterType; round: InfiniteAuction }>,
+      action: PayloadAction<{ type: InfRoundFilterType; round: Round }>,
     ) => {
       if (!state.activeProposals) return;
 
@@ -126,7 +123,8 @@ export const propHouseSlice = createSlice({
     setInfRoundFilterType: (state, action: PayloadAction<InfRoundFilterType>) => {
       state.infRoundFilterType = action.payload;
     },
-    setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
+    // TODO: Improve this query + type
+    setActiveCommunity: (state, action: PayloadAction<House | undefined>) => {
       state.activeCommunity = action.payload;
     },
     setModalActive: (state, action: PayloadAction<boolean>) => {

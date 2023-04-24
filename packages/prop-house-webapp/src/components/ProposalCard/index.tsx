@@ -1,9 +1,7 @@
 import classes from './ProposalCard.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
-import { AuctionStatus } from '../../utils/auctionStatus';
 import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
@@ -28,29 +26,27 @@ import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import InfoSymbol from '../InfoSymbol';
+import { Proposal, RoundState } from '@prophouse/sdk-react';
 
 const ProposalCard: React.FC<{
-  proposal: StoredProposalWithVotes;
-  auctionStatus: AuctionStatus;
+  proposal: Proposal;
+  roundState: RoundState;
   cardStatus: ProposalCardStatus;
   isWinner: boolean;
   stale?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, isWinner, stale } = props;
+  const { proposal, roundState, cardStatus, isWinner, stale } = props;
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const dispatch = useDispatch();
 
-  const roundIsActive = () =>
-    auctionStatus === AuctionStatus.AuctionAcceptingProps ||
-    auctionStatus === AuctionStatus.AuctionVoting;
+  const roundIsActive = () => [RoundState.IN_PROPOSING_PERIOD, RoundState.IN_VOTING_PERIOD].includes(roundState);
 
   const showVotesSection =
     round && isTimedAuction(round)
-      ? auctionStatus === AuctionStatus.AuctionVoting ||
-        auctionStatus === AuctionStatus.AuctionEnded
+      ? round.state >= RoundState.IN_VOTING_PERIOD
       : infRoundFilter === InfRoundFilterType.Active;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
@@ -87,7 +83,7 @@ const ProposalCard: React.FC<{
           borderRadius={CardBorderRadius.thirty}
           classNames={clsx(
             classes.proposalCard,
-            isWinner && auctionStatus === AuctionStatus.AuctionEnded && classes.winner,
+            isWinner && round && round.state >= RoundState.IN_CLAIMING_PERIOD && classes.winner,
             stale && classes.stale,
           )}
         >
@@ -106,7 +102,8 @@ const ProposalCard: React.FC<{
                 {displayTldr && (
                   <ReactMarkdown
                     className={classes.truncatedTldr}
-                    children={proposal.tldr}
+                    // children={proposal.tldr}
+                    children={''}
                     disallowedElements={['img', '']}
                     components={{
                       h1: 'p',
@@ -129,34 +126,38 @@ const ProposalCard: React.FC<{
 
           <div className={classes.submissionInfoContainer}>
             <div className={classes.addressAndTimestamp}>
-              <EthAddress address={proposal.address} className={classes.truncate} addAvatar />
+              <EthAddress address={proposal.proposer} className={classes.truncate} addAvatar />
 
               <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
                 {' • '}
               </span>
-              {proposal.lastUpdatedDate !== null ? (
-                <Tooltip
-                  content={
-                    <div
-                      className={clsx(classes.date, roundIsActive() && classes.hideDate)}
-                      title={detailedTime(proposal.createdDate)}
-                    >
-                      {diffTime(proposal.createdDate)}
+              {/* proposal.lastUpdatedDate */}
+              {false ? (
+                <></>
+                // Editing not implemented yet
+                // <Tooltip
+                //   content={
+                //     <div
+                //       className={clsx(classes.date, roundIsActive() && classes.hideDate)}
+                //       title={detailedTime(proposal.createdDate)}
+                //     >
+                //       {diffTime(proposal.createdDate)}
 
-                      <InfoSymbol />
-                    </div>
-                  }
-                  tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}
-                />
+                //       <InfoSymbol />
+                //     </div>
+                //   }
+                //   tooltipContent={`edited ${diffTime(proposal.lastUpdatedDate)}`}
+                // />
               ) : (
                 <div
                   className={clsx(classes.date, roundIsActive() && classes.hideDate)}
-                  title={detailedTime(proposal.createdDate)}
+                  title={detailedTime(proposal.receivedAt)}
                 >
-                  {diffTime(proposal.createdDate)}
+                  {diffTime(proposal.receivedAt)}
                 </div>
               )}
-              {proposal.reqAmount && (
+              {/* Not a thing yet */}
+              {/* {proposal.reqAmount && (
                 <>
                   {' '}
                   <span className={clsx(classes.bullet, roundIsActive() && classes.hideDate)}>
@@ -164,19 +165,19 @@ const ProposalCard: React.FC<{
                   </span>
                   <div
                     className={clsx(classes.date, roundIsActive() && classes.hideDate)}
-                    title={detailedTime(proposal.createdDate)}
+                    title={detailedTime(proposal.receivedAt)}
                   >
                     <BiAward />
                     {`${proposal.reqAmount} ${round?.currencyType}`}
                   </div>
                 </>
-              )}
+              )} */}
             </div>
 
             {showVotesSection && (
               <div className={classes.timestampAndlinkContainer}>
                 <div className={clsx(classes.avatarAndPropNumber)}>
-                  <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
+                  <div className={classes.voteCountCopy} title={detailedTime(proposal.receivedAt)}>
                     <VotesDisplay proposal={proposal} />
                     {cardStatus === ProposalCardStatus.Voting && (
                       <div className={classes.votingArrows}>

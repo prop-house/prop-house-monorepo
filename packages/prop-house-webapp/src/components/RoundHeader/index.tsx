@@ -12,12 +12,13 @@ import { isLongName } from '../../utils/isLongName';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
+import { House, Round } from '@prophouse/sdk-react';
 
 const RoundHeader: React.FC<{
-  community: Community;
-  auction: StoredAuctionBase;
+  community: House;
+  round: Round;
 }> = props => {
-  const { community, auction } = props;
+  const { community, round } = props;
   const navigate = useNavigate();
 
   const roundDescription = (
@@ -36,7 +37,7 @@ const RoundHeader: React.FC<{
           },
         }}
       >
-        {sanitizeHtml(auction?.description as any, {
+        {sanitizeHtml(round.description as any, {
           allowedAttributes: {
             a: ['href', 'target'],
           },
@@ -51,13 +52,13 @@ const RoundHeader: React.FC<{
         <div
           className={classes.backToAuction}
           onClick={() => {
-            community && navigate(`/${nameToSlug(community.name)}`);
+            community && navigate(`/${community.address}`);
           }}
         >
           {community && (
             <>
               <img
-                src={community.profileImageUrl}
+                src={community.imageURI} // TODO: Support URI transform
                 alt="community profile"
                 className={classes.profImg}
               />
@@ -68,19 +69,21 @@ const RoundHeader: React.FC<{
 
         <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
-            {isInfAuction(auction)
-              ? `${dayjs().isBefore(auction.startTime) ? `Starts` : `Started`} ${formatTime(
-                  auction.startTime,
-                )}`
-              : `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
+            {isInfAuction(round)
+              // ? `${dayjs().isBefore(round.startTime) ? `Starts` : `Started`} ${formatTime(
+              //     auction.startTime,
+              //   )}`
+              ? 0 // TODO: Infinite rounds not yet supports. Should use a different approach anyways
+              // The conditionals everywhere are messy
+              : `${formatTime(round.config.proposalPeriodStartTimestamp)} - ${formatTime(round.config.proposalPeriodEndTimestamp)}`}
           </div>
           <Col
             className={clsx(
               classes.titleRow,
-              isLongName(community ? community.name : '') && classes.longName,
+              isLongName(community.name ?? '') && classes.longName,
             )}
           >
-            <div className={classes.title}>{auction && `${auction.title}`}</div>
+            <div className={classes.title}>{round && `${round.title}`}</div>
           </Col>
 
           <Col className={classes.communityDescriptionRow}>

@@ -78,11 +78,12 @@ const ProposalEditor: React.FC<{
   const roundFromLoc = location.state && location.state.auction; // creating new prop
   const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
   const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
-  const roundCurrency = roundFromLoc
-    ? roundFromLoc.currencyType
-    : roundFromStore
-    ? roundFromStore.currencyType
-    : '';
+  const roundCurrency = ''; // TODO: Not a thing anymore
+  // const roundCurrency = roundFromLoc
+  //   ? roundFromLoc.currencyType
+  //   : roundFromStore
+  //   ? roundFromStore.currencyType
+  //   : '';
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);

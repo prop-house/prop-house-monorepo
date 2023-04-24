@@ -1,19 +1,19 @@
 import classes from './ProposalWindowButtons.module.css';
 import Button, { ButtonColor } from '../Button';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
+import { Proposal } from '@prophouse/sdk-react';
 import { useAccount } from 'wagmi';
 
 /**
  * New, Edit and Delete buttons
  */
 const ProposalWindowButtons: React.FC<{
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
   setShowSavePropModal: (e: any) => void;
@@ -39,7 +39,7 @@ const ProposalWindowButtons: React.FC<{
     <>
       {/* MY PROP */}
       {account &&
-        (isSameAddress(proposal.address, account) ? (
+        (isSameAddress(proposal.proposer, account) ? (
           <div className={classes.proposalWindowButtons}>
             {editProposalMode && round ? (
               <>

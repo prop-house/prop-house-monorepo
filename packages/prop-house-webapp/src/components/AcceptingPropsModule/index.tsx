@@ -1,6 +1,5 @@
 import classes from './AcceptingPropsModule.module.css';
-import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+// import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { useDispatch } from 'react-redux';
 import { clearProposal } from '../../state/slices/editor';
 import Button, { ButtonColor } from '../Button';
@@ -12,15 +11,16 @@ import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
+import { House, Round, RoundState } from '@prophouse/sdk-react';
 
 const AcceptingPropsModule: React.FC<{
-  auction: StoredAuctionBase;
-  community: Community;
+  round: Round
+  community: House;
 }> = props => {
-  const { auction, community } = props;
+  const { round, community } = props;
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
+  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { address: account } = useAccount();
@@ -45,17 +45,18 @@ const AcceptingPropsModule: React.FC<{
         <div className={classes.bulletItem}>
           <hr className={classes.bullet} />
           <p>
-            {isInfAuction(auction) ? (
+            {isInfAuction(round) ? (
               'Proposals that meet quorum will get funded.'
             ) : (
               <>
                 {' '}
-                {t('theTop')} <b>{auction.numWinners}</b>{' '}
-                {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
-                <b>
-                  {auction.fundingAmount} {auction.currencyType}{' '}
+                {t('theTop')} <b>{round.config.winnerCount}</b>{' '}
+                {round.config.winnerCount === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
+                {/* Needs more complex UI */}
+                {/* <b>
+                  {round.fundingAmount} {round.currencyType}{' '}
                 </b>
-                {t('each')}.
+                {t('each')}. */}
               </>
             )}
           </p>
@@ -69,7 +70,7 @@ const AcceptingPropsModule: React.FC<{
             bgColor={ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create', { state: { auction, community, proposals } });
+              navigate('/create', { state: { round, community, proposals } });
             }}
           />
         ) : (
@@ -84,9 +85,9 @@ const AcceptingPropsModule: React.FC<{
       subtitle={
         <>
           Until{' '}
-          {isInfAuction(auction)
+          {isInfAuction(round)
             ? 'funding is depleted'
-            : dayjs(auction.proposalEndTime).format('MMMM D')}
+            : dayjs.unix(round.config.proposalPeriodEndTimestamp).format('MMMM D')}
         </>
       }
       content={content}

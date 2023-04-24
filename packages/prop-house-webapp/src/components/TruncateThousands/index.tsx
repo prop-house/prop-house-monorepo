@@ -1,5 +1,6 @@
-const TruncateThousands: React.FC<{ amount: number; decimals?: number }> = props => {
+const TruncateThousands: React.FC<{ amount: number | string; decimals?: number }> = props => {
   const { amount, decimals } = props;
+  const _amount = Number(amount);
 
   const addDecimals = (amount: number) =>
     decimals
@@ -10,7 +11,7 @@ const TruncateThousands: React.FC<{ amount: number; decimals?: number }> = props
 
   return (
     <>
-      {addDecimals(amount >= 1000 ? amount / 1000 : amount)}
+      {addDecimals(_amount >= 1000 ? _amount / 1000 : _amount)}
       {amount >= 1000 && 'K'}
     </>
   );

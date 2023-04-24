@@ -1,7 +1,6 @@
 .searchBar {
   display: flex;
   align-items: center;
-  margin-bottom: -30px !important;
 }
 
 .searchIcon {
@@ -43,12 +42,6 @@
   .searchBar input {
     min-width: 0px;
     width: 100%;
-  }
-}
-
-@media (max-width: 767px) {
-  .searchBar {
-    margin-bottom: -35px !important;
   }
 }
 

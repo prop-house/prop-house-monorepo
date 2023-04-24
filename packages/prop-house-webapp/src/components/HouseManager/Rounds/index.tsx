@@ -1,7 +1,7 @@
 import classes from './Rounds.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { Col, Container, Row } from 'react-bootstrap';
-import { usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import Text from '../Text';
@@ -17,59 +17,15 @@ import Button, { ButtonColor } from '../../Button';
  * @note This is WIP
  */
 
-export enum RoundState {
-  AwaitingRegistration = 'AWAITING_REGISTRATION',
-  Cancelled = 'CANCELLED',
-  Finalized = 'FINALIZED',
-  Registered = 'REGISTERED',
-}
-
-type Round = {
-  __typename?: 'Round';
-  id: string;
-  type: string;
-  title: string;
-  description: string;
-  createdAt: any;
-  state: RoundState;
-  house: {
-    id: string;
-    metadata: {
-      name: string;
-      description: string;
-      imageURI: string;
-    };
-    createdAt: string;
-    roundCount: number;
-  };
-};
-
 const Rounds: React.FC = () => {
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
-  const [rounds, setRounds] = useState<Round[]>([]);
+  const [rounds, setRounds] = useState<RoundWithHouse[]>([]);
 
   useEffect(() => {
     async function fetchRounds() {
       try {
-        // returns rounds managed by account
-        const data = await propHouse.query.getRoundsManagedByAccount(account as string);
-
-        // but we need to get more info, including the house, for each
-        // round so we need to make a separate query for each round
-        const roundDetailsPromises = data.rounds.map(round =>
-          propHouse.query.getRoundWithHouseInfo(round.id),
-        );
-
-        const roundDetailsArray = await Promise.all(roundDetailsPromises);
-
-        // @ts-ignore
-        const combinedRounds: Round[] = data.rounds.map((round, index) => ({
-          ...round,
-          ...roundDetailsArray[index].round,
-        }));
-
-        setRounds(combinedRounds);
+        setRounds(await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account!));
       } catch (error) {
         console.error('Error fetching rounds:', error);
       }
@@ -93,13 +49,13 @@ const Rounds: React.FC = () => {
                   <Group row classNames={classes.house}>
                     <Group gap={6} row classNames={classes.house}>
                       <img
-                        src={round.house.metadata.imageURI.replace(
+                        src={round.house.imageURI?.replace(
                           /prophouse.mypinata.cloud/g,
                           'cloudflare-ipfs.com',
                         )}
                         alt={'fallback'}
                       />
-                      <Text type="subtitle">{round.house.metadata.name}</Text>
+                      <Text type="subtitle">{round.house.name}</Text>
                     </Group>
 
                     <StatusLabel state={round.state} />

@@ -1,8 +1,7 @@
-import { Community, AuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { nameToSlug } from './communitySlugs';
+import { House, Round } from '@prophouse/sdk-react';
 
 /**
- * build url path to proposal (/:community-name/:round-name/:proposal-id)
+ * build url path to proposal (/:house-address/:round-address/:proposal-id)
  */
-export const buildProposalPath = (community: Community, round: AuctionBase, propId: number) =>
-  `https://prop.house/${nameToSlug(community.name)}/${nameToSlug(round.title)}/${propId}`;
+export const buildProposalPath = (house: House, round: Round, propId: number) =>
+  `https://prop.house/${house.address}/${round.address}/${propId}`;

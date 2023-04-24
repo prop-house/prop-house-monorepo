@@ -1,5 +1,4 @@
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { auctionStatus, AuctionStatus } from './auctionStatus';
+import { Round, RoundState } from '@prophouse/sdk-react';
 import { isInfAuction } from './auctionType';
 
 export enum ProposalCardStatus {
@@ -10,18 +9,19 @@ export enum ProposalCardStatus {
 
 export const cardStatus = (
   hasDelegatedVotes: boolean,
-  auction: StoredAuctionBase,
+  round: Round,
 ): ProposalCardStatus => {
   // if infinite auction started && has votes, show voting
-  if (
-    isInfAuction(auction) &&
-    auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps &&
-    hasDelegatedVotes
-  )
-    return ProposalCardStatus.Voting;
+  // TODO Infinite rounds not yet supported
+  // if (
+  //   isInfAuction(round) &&
+  //   auctionStatus(round) === AuctionStatus.AuctionAcceptingProps &&
+  //   hasDelegatedVotes
+  // )
+  //   return ProposalCardStatus.Voting;
 
   // if not in voting or not eligible to vote, return default
-  return auctionStatus(auction) !== AuctionStatus.AuctionVoting || !hasDelegatedVotes
+  return round.state !== RoundState.IN_VOTING_PERIOD || !hasDelegatedVotes
     ? ProposalCardStatus.Default
     : ProposalCardStatus.Voting;
 };

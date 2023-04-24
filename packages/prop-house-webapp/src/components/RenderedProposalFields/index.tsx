@@ -6,14 +6,15 @@ import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
-import { StoredAuctionBase, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { House, Proposal, Round } from '@prophouse/sdk-react';
 import { BiAward } from 'react-icons/bi';
 
+
 export interface RenderedProposalProps {
-  proposal: StoredProposal;
+  proposal: Proposal;
   backButton?: React.ReactNode;
-  community?: any;
-  round?: StoredAuctionBase;
+  community?: House;
+  round?: Round;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
@@ -31,25 +32,26 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
             <div className={classes.backBtnContainer}>{backButton && backButton}</div>
             <div className={classes.headerBottomContainer}>
               <div>
-                {proposal.address && proposal.id && (
+                {proposal.proposer && proposal.id && (
                   <div className={classes.subinfo}>
                     <div className={classes.propBy}>
                       <span>{t('propCap')}</span>
                       {t('by')}
                       <div className={classes.submittedBy}>
-                        <EthAddress address={proposal.address} className={classes.submittedBy} />
+                        <EthAddress address={proposal.proposer} className={classes.submittedBy} />
                       </div>
                     </div>
                   </div>
                 )}
                 <h1>{fields.title}</h1>
               </div>
-              {proposal.reqAmount && round && (
+              {/* // TODO: Not a thing */}
+              {/* {proposal.reqAmount && round && (
                 <div className={classes.fundReq}>
                   <BiAward size={'1.8rem'} />
                   {`${proposal.reqAmount} ${round?.currencyType}`}
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 

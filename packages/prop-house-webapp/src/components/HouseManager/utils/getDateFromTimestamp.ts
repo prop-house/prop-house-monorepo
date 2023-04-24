@@ -5,4 +5,4 @@
  *
  * ex. getDateFromTimestamp(1661990400) => 2023-04-01T00:00:00.000Z
  */
-export const getDateFromTimestamp = (unixTimestamp: number): Date => new Date(unixTimestamp * 1000);
+export const getDateFromTimestamp = (unixTimestamp: number | string): Date => new Date(Number(unixTimestamp) * 1000);

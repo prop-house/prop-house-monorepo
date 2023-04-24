@@ -2,7 +2,6 @@ import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
   filterInfRoundProposals,
   InfRoundFilterType,
@@ -16,10 +15,9 @@ import {
 } from '../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import RoundUtilityBar from '../../components/RoundUtilityBar';
+// import RoundUtilityBar from '../../components/RoundUtilityBar';
 import RoundContent from '../../components/RoundContent';
 import { nameToSlug, slugToName } from '../../utils/communitySlugs';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
@@ -31,14 +29,15 @@ import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { RoundState, usePropHouse } from '@prophouse/sdk-react';
 
 const Round = () => {
   const location = useLocation();
-  const communityName = location.pathname.substring(1).split('/')[0];
-  const roundName = location.pathname.substring(1).split('/')[1];
+  const [houseAddress, roundAddress] = location.pathname.substring(1).split('/');;
 
   const dispatch = useAppDispatch();
-  const { data: signer } = useSigner();
+
+  const propHouse = usePropHouse();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -47,10 +46,9 @@ const Round = () => {
   );
   const host = useAppSelector(state => state.configuration.backendHost);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
-  const client = useRef(new PropHouseWrapper(host));
 
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
+  const isRoundOver = round?.state === RoundState.COMPLETE; // TODO: Handle claiming and cancelled
+  const isVotingWindow = round?.state === RoundState.IN_VOTING_PERIOD;
 
   const [loadingRound, setLoadingRound] = useState(false);
   const [loadingComm, setLoadingComm] = useState(false);
@@ -60,20 +58,17 @@ const Round = () => {
   const [loadingProps, setLoadingProps] = useState(false);
   const [propsFailedFetch, setPropsFailedFetch] = useState(false);
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  // if no data is found in store (ie round page is entry point), fetch data
+  // If no data is found in store (ie round page is entry point), fetch data
   useEffect(() => {
     if (community) return;
 
     const fetchCommunity = async () => {
       try {
         setLoadingComm(true);
-        const community = await client.current.getCommunityWithName(slugToName(communityName));
-        dispatch(setActiveCommunity(community));
 
+        const house = await propHouse.query.getHouse(houseAddress);
+
+        dispatch(setActiveCommunity(house));
         setLoadingComm(false);
       } catch (e) {
         setLoadingComm(false);
@@ -82,7 +77,7 @@ const Round = () => {
     };
 
     fetchCommunity();
-  }, [communityName, dispatch, roundName, round, community]);
+  }, [houseAddress, dispatch, roundAddress, round, community, propHouse.query]);
 
   // if no data is found in store (ie round page is entry point), fetch data
   useEffect(() => {
@@ -92,10 +87,7 @@ const Round = () => {
       try {
         setLoadingRound(true);
 
-        const round = await client.current.getAuctionWithNameForCommunity(
-          nameToSlug(roundName),
-          community.id,
-        );
+        const round = await propHouse.query.getRound(roundAddress);
         dispatch(setActiveRound(round));
         setLoadingRound(false);
       } catch (e) {
@@ -105,9 +97,9 @@ const Round = () => {
     };
 
     fetchRound();
-  }, [communityName, dispatch, roundName, round, community]);
+  }, [houseAddress, dispatch, roundAddress, round, community, propHouse.query]);
 
-  // fetch proposals
+  // Fetch proposals
   useEffect(() => {
     if (!round) return;
 
@@ -115,7 +107,7 @@ const Round = () => {
       try {
         setLoadingProps(true);
 
-        const proposals = await client.current.getAuctionProposals(round.id);
+        const proposals = await propHouse.query.getProposalsForRound(round.address);
         dispatch(setActiveProposals(proposals));
 
         // set initial state for props (sorted in timed round / filtered in inf round)
@@ -138,6 +130,7 @@ const Round = () => {
 
         setLoadingProps(false);
       } catch (e) {
+        console.log({ e })
         setLoadingProps(false);
         setPropsFailedFetch(true);
       }
@@ -152,18 +145,21 @@ const Round = () => {
       dispatch(setActiveRound());
       dispatch(setActiveProposals([]));
     };
-  }, [dispatch, isVotingWindow, isRoundOver, round]);
+  }, [dispatch, isVotingWindow, isRoundOver, round, propHouse.query]);
 
   return (
     <>
       {modalActive && <ProposalModal />}
 
       {round && (
-        <OpenGraphElements
-          title={round.title}
-          description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
-          imageUrl={cardServiceUrl(CardType.round, round.id).href}
-        />
+        // TODO: Implement
+        <>
+        </>
+        // <OpenGraphElements
+        //   title={round.title}
+        //   description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
+        //   imageUrl={cardServiceUrl(CardType.round, round.id).href}
+        // />
       )}
 
       {loadingComm || loadingRound ? (
@@ -175,11 +171,12 @@ const Round = () => {
         round && (
           <>
             <Container>
-              <RoundHeader auction={round} community={community} />
+              <RoundHeader round={round} community={community} />
             </Container>
             <div className={classes.stickyContainer}>
               <Container>
-                <RoundUtilityBar auction={round} />
+                {/* TODO: Implement */}
+                {/* <RoundUtilityBar round={round} /> */}
               </Container>
             </div>
           </>
@@ -198,7 +195,7 @@ const Round = () => {
             ) : (
               round && (
                 <RoundContent
-                  auction={round}
+                  round={round}
                   proposals={
                     isInfAuction(round)
                       ? infRoundFilteredProposals

@@ -2,7 +2,6 @@ import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import { ButtonColor } from '../Button';
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import { getVotingPower } from 'prop-house-communities';
@@ -17,6 +16,7 @@ import ConnectButton from '../ConnectButton';
 import { useAccount, useProvider } from 'wagmi';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { isActiveProp } from '../../utils/isActiveProp';
+import { RoundState, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -46,6 +46,7 @@ const ProposalModalFooter: React.FC<{
 
   const { address: account } = useAccount();
   const provider = useProvider();
+  const propHouse = usePropHouse();
 
   const dispatch = useDispatch();
   const { t } = useTranslation();
@@ -55,32 +56,33 @@ const ProposalModalFooter: React.FC<{
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
+  const isProposingWindow = round && round.state === RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round && round.state === RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round && round.state === RoundState.COMPLETE; // TODO: Handle cancelled, claiming.
 
   useEffect(() => {
-    if (!account || !provider || !community) return;
+    if (!account || !provider || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
-        const votes = await getVotingPower(
+        const { votingStrategies } = await propHouse.query.getRoundVotingStrategies(round.address);
+        const votes = await propHouse.voting.getTotalVotingPower(
           account,
-          community.contractAddress,
-          provider,
-          round!.balanceBlockTag,
+          round.config.proposalPeriodEndTimestamp,
+          votingStrategies,
         );
-        dispatch(setVotingPower(votes));
+        dispatch(setVotingPower(votes.toNumber())); // TODO: Use base units
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  }, [account, provider, dispatch, community, round, propHouse.query, propHouse.voting]);
 
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
-      <p className={classes.noVotesMessage}>
+      {/* TODO: Not a thing */}
+      {/* <p className={classes.noVotesMessage}>
         <b>
           {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
         </b>
@@ -96,7 +98,7 @@ const ProposalModalFooter: React.FC<{
         <div className={classes.icon}>
           <VotesDisplay proposal={proposal} />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 
@@ -133,7 +135,7 @@ const ProposalModalFooter: React.FC<{
             {round &&
               isTimedAuction(round) &&
               (isRoundOver && isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+                <WinningProposalBanner numOfVotes={proposal.votingPower} />
               ) : !isRoundOver && !account ? (
                 connectDiv
               ) : isProposingWindow ? (
@@ -159,7 +161,7 @@ const ProposalModalFooter: React.FC<{
             {round &&
               isInfAuction(round) &&
               (isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+                <WinningProposalBanner numOfVotes={proposal.votingPower} />
               ) : !isRoundOver && !account ? (
                 connectDiv
               ) : (

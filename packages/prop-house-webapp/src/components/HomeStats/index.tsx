@@ -1,12 +1,12 @@
 import classes from './HomeStats.module.css';
 import CountUp from 'react-countup';
-import { StatsProps } from '../../pages/Home';
 import { useState } from 'react';
 import TruncateThousands from '../TruncateThousands';
 import { useTranslation } from 'react-i18next';
+import { GlobalStats } from '@prophouse/sdk-react';
 
 interface HomeStatsProps {
-  stats: StatsProps;
+  stats: GlobalStats;
 }
 
 const HomeStats = ({ stats }: HomeStatsProps) => {
@@ -19,16 +19,16 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
 
   const homeStats = [
     {
-      amount: stats.accEthFunded,
-      text: t('ethFunded'),
+      amount: stats.roundCount,
+      text: `${stats.roundCount === 1 ? t('fundingRoundCap') : t('fundingRoundsCap')}`,
     },
     {
-      amount: stats.accRounds,
-      text: `${stats.accRounds === 1 ? t('fundingRoundCap') : t('fundingRoundsCap')}`,
+      amount: stats.proposalCount,
+      text: `${stats.proposalCount === 1 ? t('submittedProp') : t('submittedProps')}`,
     },
     {
-      amount: stats.accProps,
-      text: `${stats.accProps === 1 ? t('submittedProp') : t('submittedProps')}`,
+      amount: stats.uniqueVoters,
+      text: t('uniqueVoters'),
     },
   ];
 
@@ -37,7 +37,7 @@ const HomeStats = ({ stats }: HomeStatsProps) => {
       {homeStats.map(s => (
         <div className={classes.stat}>
           {!loading ? (
-            <CountUp start={0} end={s.amount} suffix="+" delay={0} onEnd={onEnd}>
+            <CountUp duration={1} start={0} end={s.amount} suffix="+" delay={0} onEnd={onEnd}>
               {({ countUpRef }) => <span ref={countUpRef} className={classes.amount} />}
             </CountUp>
           ) : (

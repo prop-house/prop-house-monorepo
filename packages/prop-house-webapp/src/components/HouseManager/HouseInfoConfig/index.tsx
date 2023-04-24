@@ -3,9 +3,9 @@ import Footer from '../Footer';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import { saveRound } from '../../../state/thunks';
-import HouseSelection, { FetchedHouse } from '../HouseSelection';
+import HouseSelection from '../HouseSelection';
 import CreateNewHouse from '../CreateNewHouse';
-import { usePropHouse } from '@prophouse/sdk-react';
+import { House, usePropHouse } from '@prophouse/sdk-react';
 
 /**
  * @overview
@@ -27,17 +27,17 @@ const HouseInfoConfig = () => {
   const handleCreateNewHouse = () =>
     dispatch(saveRound({ ...round, house: { ...round.house, existingHouse: false } }));
 
-  const handleHouseSelection = (house: FetchedHouse) => {
-    if (house.metadata) {
+  const handleHouseSelection = (house: House) => {
+    if (house.name) {
       dispatch(
         saveRound({
           ...round,
           house: {
             ...round.house,
-            title: house.metadata.name as string,
-            description: house.metadata.description as string,
-            image: house.metadata.imageURI as string,
-            address: house.id,
+            title: house.name as string,
+            description: house.description ?? '',
+            image: house.imageURI ?? '',
+            address: house.address,
           },
         }),
       );

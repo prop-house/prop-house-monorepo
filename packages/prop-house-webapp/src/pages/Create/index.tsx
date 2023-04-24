@@ -2,14 +2,12 @@ import classes from './Create.module.css';
 import { Row, Col, Container } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../components/Button';
 import { useLocation } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useRef, useState } from 'react';
 import ProposalEditor from '../../components/ProposalEditor';
 import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { InfiniteAuctionProposal, Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../utils/isAuctionActive';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useTranslation } from 'react-i18next';
@@ -25,35 +23,33 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
-import { useAccount, useSigner } from 'wagmi';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { useAccount } from 'wagmi';
+import { usePropHouse } from '@prophouse/sdk-react';
+import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
 
   const { t } = useTranslation();
 
-  // auction to submit prop to is passed via react-router from propse btn
+  // auction to submit prop to is passed via react-router from propose btn
   const location = useLocation();
-  const activeAuction = location.state.auction;
+  const activeAuction = location.state.round;
   const activeCommunity = location.state.community;
   const activeProps = location.state.proposals;
-  const remainingBal = infRoundBalance(activeProps, activeAuction);
+  const remainingBal = (activeAuction && infRoundBalance(activeProps, activeAuction)) ?? 0;
 
   const [showPreview, setShowPreview] = useState(false);
-  const [propId, setPropId] = useState<null | number>(null);
+  const [propSubmissionTxId, setPropSubmissionTxId] = useState<null | string>(null);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
+  const propHouse = usePropHouse();
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
-
-  useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer);
-  }, [signer, backendHost]);
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
@@ -62,17 +58,19 @@ const Create: React.FC<{}> = () => {
   const submitProposal = async () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
-    let newProp: Proposal | InfiniteAuctionProposal;
-    const { title, what, tldr, reqAmount } = proposalEditorData;
+    const { title, what, tldr } = proposalEditorData;
 
-    newProp =
-      isInfAuction(activeAuction) && reqAmount
-        ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, reqAmount)
-        : new Proposal(title, what, tldr, activeAuction.id);
-
-    const proposal = await backendClient.current.createProposal(newProp);
-
-    setPropId(proposal.id);
+    const json = JSON.stringify({ title, what, tldr }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const file = new File([blob], 'proposal.json', { type: 'application/json' });
+    const result = await client.current.postFile(file, file.name);
+    const proposal = await propHouse.round.timedFunding.proposeViaSignature({
+      round: activeAuction.address,
+      metadataUri: `ipfs://${result.data.ipfsHash}`,
+    });
+    console.log({ proposal })
+    
+    setPropSubmissionTxId(proposal.transaction_hash);
     dispatch(appendProposal({ proposal }));
     dispatch(clearProposal());
     setShowProposalSuccessModal(true);
@@ -185,10 +183,10 @@ const Create: React.FC<{}> = () => {
             showImageUploadModal={showImageUploadModal}
             setShowImageUploadModal={setShowImageUploadModal}
           >
-            {showProposalSuccessModal && propId && (
+            {showProposalSuccessModal && propSubmissionTxId && (
               <ProposalSuccessModal
                 setShowProposalSuccessModal={setShowProposalSuccessModal}
-                proposalId={propId}
+                propSubmissionTxId={propSubmissionTxId}
                 house={activeCommunity}
                 round={activeAuction}
               />

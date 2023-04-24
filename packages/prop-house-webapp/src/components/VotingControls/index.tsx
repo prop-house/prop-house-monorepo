@@ -4,16 +4,17 @@ import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { allotVotes } from '../../state/slices/voting';
-import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
 import { isInfAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
+import { Proposal } from '@prophouse/sdk-react';
 
 const VotingControls: React.FC<{
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   showVoteAllotmentModal?: boolean;
 }> = props => {
   const { proposal, showVoteAllotmentModal } = props;

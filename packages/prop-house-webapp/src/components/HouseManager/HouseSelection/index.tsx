@@ -1,6 +1,6 @@
 import classes from './HouseSelection.module.css';
 import React, { useState, useEffect } from 'react';
-import { PropHouse } from '@prophouse/sdk-react';
+import { House, PropHouse } from '@prophouse/sdk-react';
 import Group from '../Group';
 import clsx from 'clsx';
 import Text from '../Text';
@@ -15,19 +15,8 @@ import { useAccount } from 'wagmi';
 
 interface HouseSelectionProps {
   propHouse: PropHouse;
-  onSelectHouse: (house: FetchedHouse) => void;
+  onSelectHouse: (house: House) => void;
   handleCreateNewHouse: () => void;
-}
-
-export interface FetchedHouse {
-  id: string;
-  metadata?: {
-    name?: string | null;
-    description?: string | null;
-    imageURI?: string | null;
-  } | null;
-  createdAt: string;
-  roundCount: number;
 }
 
 const HouseSelection: React.FC<HouseSelectionProps> = ({
@@ -36,15 +25,14 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
   handleCreateNewHouse,
 }) => {
   const { address: account } = useAccount();
-  const [houses, setHouses] = useState<FetchedHouse[]>([]);
+  const [houses, setHouses] = useState<House[]>([]);
 
   useEffect(() => {
     async function fetchHouses() {
       try {
         propHouse.query
-          // passing `as string` because Wagmi returns address as an 0x-prefixed string (`0x${string}`)
-          .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account as string)
-          .then(data => setHouses(data.houses));
+          .getHousesWhereAccountIsOwnerOrHasCreatorPermissions(account!)
+          .then(houses => setHouses(houses));
       } catch (error) {
         console.error('Error fetching houses:', error);
       }
@@ -64,18 +52,18 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
                     <img
                       className={classes.img}
                       src={
-                        house.metadata?.imageURI
-                          ? buildImageURL(house.metadata.imageURI).replace(
+                        house.imageURI
+                          ? buildImageURL(house.imageURI).replace(
                               /prophouse.mypinata.cloud/g,
                               'cloudflare-ipfs.com',
                             )
                           : ''
                       }
-                      alt={house.metadata?.name ?? ''}
+                      alt={house.name ?? ''}
                     />
                     <Group classNames={classes.textContainer} gap={2}>
                       <Text type="subtitle" classNames={classes.houseName}>
-                        {house.metadata?.name ?? 'Untitled House'} • {house.roundCount} round
+                        {house.name ?? 'Untitled House'} • {house.roundCount} round
                         {house.roundCount === 1 ? '' : 's'}
                       </Text>
                       <Text type="body" classNames={classes.houseInfo}>
@@ -90,7 +78,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
                             },
                           }}
                         >
-                          {sanitizeHtml(house.metadata?.description as any, {
+                          {sanitizeHtml(house.description as string, {
                             allowedAttributes: { a: ['href', 'target'] },
                           })}
                         </Markdown>

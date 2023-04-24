@@ -1,8 +1,4 @@
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import {
-  StoredAuctionBase,
-  StoredProposalWithVotes,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { PropHouse, Proposal, Round, RoundState } from '@prophouse/sdk-react';
 import { Dispatch } from 'redux';
 import {
   filterInfRoundProposals,
@@ -12,33 +8,30 @@ import {
   sortTimedRoundProposals,
   TimedRoundSortType,
 } from '../state/slices/propHouse';
-import { AuctionStatus, auctionStatus } from './auctionStatus';
 import { isInfAuction } from './auctionType';
 
 const refreshActiveProposal = (
-  client: PropHouseWrapper,
-  activeProposal: StoredProposalWithVotes,
+  propHouse: PropHouse,
+  activeProposal: Proposal,
   dispatch: Dispatch,
 ) => {
-  client.getProposal(activeProposal.id).then(proposal => dispatch(setActiveProposal(proposal)));
+  propHouse.query.getProposal(activeProposal.round, activeProposal.id).then(proposal => dispatch(setActiveProposal(proposal)));
 };
 
 export const refreshActiveProposals = async (
-  client: PropHouseWrapper,
-  auction: StoredAuctionBase,
+  propHouse: PropHouse,
+  round: Round,
   dispatch: Dispatch,
 ) => {
-  const proposals = await client.getAuctionProposals(auction.id);
+  const proposals = await propHouse.query.getProposalsForRound(round.address);
   dispatch(setActiveProposals(proposals));
-  if (isInfAuction(auction)) {
-    dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round: auction }));
+  if (isInfAuction(round)) {
+    dispatch(filterInfRoundProposals({ type: InfRoundFilterType.Active, round }));
   } else {
-    const isRoundOver = auction && auctionStatus(auction) === AuctionStatus.AuctionEnded;
-    const isVotingWindow = auction && auctionStatus(auction) === AuctionStatus.AuctionVoting;
     dispatch(
       sortTimedRoundProposals({
         sortType:
-          isVotingWindow || isRoundOver
+          round.state >= RoundState.IN_VOTING_PERIOD
             ? TimedRoundSortType.VoteCount
             : TimedRoundSortType.CreatedAt,
         ascending: false,

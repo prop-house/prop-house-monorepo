@@ -1,6 +1,6 @@
 import classes from './WinningProposalBanner.module.css';
 
-const WinningProposalBanner: React.FC<{ numOfVotes: number }> = props => {
+const WinningProposalBanner: React.FC<{ numOfVotes: number | string }> = props => {
   const { numOfVotes } = props;
 
   return (
