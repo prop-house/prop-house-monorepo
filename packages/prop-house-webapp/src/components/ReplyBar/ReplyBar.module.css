@@ -86,6 +86,8 @@
   align-items: center;
   gap: 1rem;
   row-gap: 25px;
+  align-self: center;
+  justify-content: center;
 }
 .noCommentsContainer img {
   margin-top: 1rem;

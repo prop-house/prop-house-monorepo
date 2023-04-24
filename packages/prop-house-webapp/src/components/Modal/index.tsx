@@ -5,6 +5,8 @@ import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 import LoadingIndicator from '../LoadingIndicator';
+import { IoClose } from 'react-icons/io5';
+import clsx from 'clsx';
 
 const Modal: React.FC<{
   title: string | JSX.Element | boolean;
@@ -17,6 +19,7 @@ const Modal: React.FC<{
   bottomContainer?: JSX.Element;
   onRequestClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  fullScreenOnMobile?: boolean;
 }> = props => {
   const {
     title,
@@ -29,6 +32,7 @@ const Modal: React.FC<{
     setShowModal,
     onRequestClose,
     bottomContainer,
+    fullScreenOnMobile,
   } = props;
   const { t } = useTranslation();
 
@@ -73,7 +77,7 @@ const Modal: React.FC<{
       isOpen={true}
       appElement={document.getElementById('root')!}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
-      className={classes.modal}
+      className={clsx(classes.modal, fullScreenOnMobile && classes.fullScreenOnMobile)}
     >
       <>
         <div ref={modalContainerRef} className={classes.container}>
@@ -89,8 +93,15 @@ const Modal: React.FC<{
             )}
 
             <div className={classes.titleContainer}>
-              {title && <p className={classes.modalTitle}>{title}</p>}
-              {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+              <div className={classes.titleAndSubtitleContainer}>
+                {title && <p className={classes.modalTitle}>{title}</p>}
+                {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+              </div>
+              {fullScreenOnMobile && (
+                <div className={classes.closeBtn} onClick={() => setShowModal(false)}>
+                  <IoClose size={'1.5rem'} />
+                </div>
+              )}
             </div>
           </div>
 

@@ -152,7 +152,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         replies.length === 0 ? (
           <div className={classes.noCommentsContainer}>
             <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
-            <div className={classes.noCommentsText}>No comments yet...</div>
+            <div className={classes.noCommentsText}>No comments yet</div>
           </div>
         ) : (
           <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
@@ -183,6 +183,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           <></>
         )
       }
+      fullScreenOnMobile={true}
     />
   );
 
