@@ -67,6 +67,8 @@
     border-radius: 0px !important;
     min-height: 100% !important;
     min-width: 100% !important;
+    height: 100%;
+    display: flex;
   }
   .fullScreenOnMobile .container {
     min-width: 100% !important;
