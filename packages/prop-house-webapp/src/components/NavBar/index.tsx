@@ -10,11 +10,13 @@ import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
+import { useAccount } from 'wagmi';
 
 const NavBar = () => {
   const { t } = useTranslation();
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const navigate = useNavigate();
+  const { address } = useAccount();
 
   return (
     <Container>
@@ -47,14 +49,14 @@ const NavBar = () => {
             <div className={classes.buttonGroup}>
               <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
 
-              <Nav.Link as="div" className={classes.connectBtnContainer}>
+              {address && <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <Button
                   text="Create a round"
                   bgColor={ButtonColor.Purple}
                   onClick={() => navigate('/admin')}
                   classNames={classes.createRoundBtn}
                 />
-              </Nav.Link>
+              </Nav.Link>}
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <ConnectButton showBalance={false} label={t('connect')} />
