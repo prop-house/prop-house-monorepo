@@ -83,3 +83,5 @@ export const getJSON = async (uri: string): Promise<any> => {
     return res.json();
   }
 };
+
+export const unixTimestamp = () => Math.floor(Date.now() / 1000);

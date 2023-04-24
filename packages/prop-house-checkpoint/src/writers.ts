@@ -1,11 +1,12 @@
 import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
-import { getJSON, getRoundType, intSequenceToString, toAddress, uint256toString } from './utils';
+import { getJSON, getRoundType, intSequenceToString, toAddress, uint256toString, unixTimestamp } from './utils';
 import { validateAndParseAddress } from 'starknet';
 import { hexZeroPad } from '@ethersproject/bytes';
 import { Proposal, RoundState } from './types';
 
 export const handleRoundRegistered: CheckpointWriter = async ({
   block,
+  blockNumber,
   tx,
   event,
   mysql,
@@ -17,7 +18,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
     id: validateAndParseAddress(event.l2_round_address),
     sourceChainRound: hexZeroPad(event.l1_round_address, 20),
     type: getRoundType(event.round_class_hash),
-    registeredAt: block.timestamp,
+    registeredAt: block?.timestamp ?? unixTimestamp(),
     txHash: tx.transaction_hash,
     state: RoundState.ACTIVE,
     proposalCount: 0,
@@ -26,7 +27,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
   };
   instance.executeTemplate('TimedFundingRound', {
     contract: round.id,
-    start: block.block_number,
+    start: blockNumber,
   });
 
   const query = `
@@ -76,6 +77,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     }
   }
 
+  const timestamp = block?.timestamp ?? unixTimestamp();
   const proposal = {
     id: `${round}-${event.proposal_id}`,
     proposalId: event.proposal_id,
@@ -86,7 +88,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     tldr: metadata.tldr,
     body: metadata.body,
     isCancelled: false,
-    receivedAt: block.timestamp,
+    receivedAt: timestamp,
     txHash: tx.transaction_hash,
     votingPower: 0,
   };
@@ -94,7 +96,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     id: proposer,
     voteCount: 0,
     proposalCount: 0,
-    firstSeenAt: block.timestamp,
+    firstSeenAt: timestamp,
   };
 
   const query = `
@@ -139,6 +141,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
   const voter = toAddress(event.voter_address);
   const power = uint256toString(event.voting_power);
   const proposal = `${round}-${event.proposal_id}`;
+  const timestamp = block?.timestamp ?? unixTimestamp();
 
   const vote = {
     id: `${tx.transaction_hash}-${eventIndex}`,
@@ -146,14 +149,14 @@ export const handleVoteCreated: CheckpointWriter = async ({
     round,
     proposal,
     votingPower: power,
-    receivedAt: block.timestamp,
+    receivedAt: timestamp,
     txHash: tx.transaction_hash,
   };
   const account = {
     id: voter,
     voteCount: 0,
     proposalCount: 0,
-    firstSeenAt: block.timestamp,
+    firstSeenAt: timestamp,
   };
 
   const query = `
