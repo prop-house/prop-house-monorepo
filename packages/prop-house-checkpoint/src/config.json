@@ -1,5 +1,5 @@
 {
-  "network_node_url": "https://starknet-goerli.infura.io/v3/596754cde02d416e925e168c720a41c2",
+  "network_node_url": "https://starknet-goerli.infura.io/v3/3c919e72318e43b0921e504e4a54280d",
   "optimistic_indexing": true,
   "sources": [
     {
