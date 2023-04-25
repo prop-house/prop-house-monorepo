@@ -22,7 +22,7 @@ export abstract class StrategyHandlerBase<CS> extends ChainBase {
     // [strategy_addr, strategy_params_len, ...strategy_params]
     const { result } = await this._starknet.callContract({
       contractAddress: this._addresses.starknet.votingRegistry,
-      entrypoint: hash.getSelectorFromName('get_voting_strategy'),
+      entrypoint: 'get_voting_strategy',
       calldata: [strategyId],
     });
     return { addr: result[0], params: result.slice(2) };

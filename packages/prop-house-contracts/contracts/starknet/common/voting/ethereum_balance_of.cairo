@@ -35,7 +35,7 @@ func get_voting_power{
 
     // Expects contract_address slot_index, with an optional voting_power_multiplier
     with_attr error_message("EthereumBalanceOf: Invalid param length") {
-        assert_in_range(params_len, 2, 3);
+        assert_in_range(params_len, 2, 4);
     }
 
     let single_slot_params_len = 2;
