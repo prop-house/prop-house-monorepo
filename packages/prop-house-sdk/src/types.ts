@@ -158,12 +158,12 @@ export namespace TimedFunding {
     metadataUri: string;
   }
   export enum Action {
-    Propose = 'PROPOSE',
-    Vote = 'VOTE',
+    PROPOSE = 'PROPOSE',
+    VOTE = 'VOTE',
   }
   export interface ActionData {
-    [Action.Propose]: EVMSigProposeMessage;
-    [Action.Vote]: EVMSigVoteMessage;
+    [Action.PROPOSE]: EVMSigProposeMessage;
+    [Action.VOTE]: EVMSigVoteMessage;
   }
   export interface RequestParams<A extends Action = Action> {
     address: string;
@@ -200,7 +200,26 @@ export enum RoundType {
   TIMED_FUNDING = 'TIMED_FUNDING',
 }
 
-export interface RoundConfig<CS extends Custom | void = void> {
+export enum RoundState {
+  UNKNOWN,
+  CANCELLED,
+  AWAITING_REGISTRATION,
+  NOT_STARTED,
+  IN_PROPOSING_PERIOD,
+  IN_VOTING_PERIOD,
+  IN_CLAIMING_PERIOD,
+  COMPLETE,
+}
+
+export enum RoundEventState {
+  // TODO: Rename to awaiting configuration.
+  AWAITING_REGISTRATION = 'AWAITING_REGISTRATION',
+  REGISTERED = 'REGISTERED',
+  FINALIZED = 'FINALIZED',
+  CANCELLED = 'CANCELLED',
+}
+
+export interface RoundConfigs<CS extends Custom | void = void> {
   [RoundType.TIMED_FUNDING]: TimedFunding.Config<CS>;
 }
 
@@ -212,9 +231,21 @@ export interface RoundContract {
   [RoundType.TIMED_FUNDING]: TimedFunding.Contract;
 }
 
+export interface GetRoundStateConfig {
+  [RoundType.TIMED_FUNDING]: Pick<
+    TimedFunding.ConfigStruct,
+    'proposalPeriodStartTimestamp' | 'proposalPeriodDuration' | 'votePeriodDuration'
+  >;
+}
+
+export interface GetRoundStateParams<T extends RoundType = RoundType> {
+  eventState: string;
+  config: GetRoundStateConfig[T] | null | undefined;
+}
+
 export interface RoundInfo<T extends RoundType, CS extends Custom | void = void> {
   roundType: T;
-  config: RoundConfig<CS>[T];
+  config: RoundConfigs<CS>[T];
   title: string;
   description: string;
 }
@@ -289,7 +320,7 @@ export interface VotingStrategyWithID extends VotingStrategy {
 
 export interface VotingConfig {
   voter: string;
-  timestamp: string;
+  timestamp: string | number;
   address: string;
   params: (string | number)[];
 }
@@ -297,6 +328,8 @@ export interface VotingConfig {
 //#region Helpers
 
 export type Newable<T> = new (...args: any[]) => T;
+
+export type Address = `0x${string}` | string;
 
 export interface Uint256 {
   low: string;

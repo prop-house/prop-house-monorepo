@@ -6,7 +6,8 @@ export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 /**
  * The `balanceOf` function signature.
  */
-export const BALANCE_OF_FUNC = 'function balanceOf(address account)';
+// prettier-ignore
+export const BALANCE_OF_FUNC = 'function balanceOf(address account) external view returns (uint256)';
 
 /**
  * A JavaScript tracer that's used to detect the slot index of the first mapping that's read.

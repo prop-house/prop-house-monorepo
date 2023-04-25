@@ -1,5 +1,14 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { AssetType, Custom, RoundType, TimedFunding, RoundChainConfig } from '../../types';
+import {
+  AssetType,
+  Custom,
+  RoundType,
+  TimedFunding,
+  RoundChainConfig,
+  RoundState,
+  RoundEventState,
+  GetRoundStateParams,
+} from '../../types';
 import { TimedFundingRound__factory } from '@prophouse/contracts';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
@@ -7,6 +16,7 @@ import { ADDRESS_ONE } from '../../constants';
 import { Account, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
+import { isAddress } from '@ethersproject/address';
 
 export class TimedFundingRound<CS extends void | Custom = void> extends RoundBase<
   RoundType.TIMED_FUNDING,
@@ -49,7 +59,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   /**
    * Maximum winner count for this strategy
    */
-  public static MAX_WINNER_COUNT = 256;
+  public static MAX_WINNER_COUNT = 255;
 
   /**
    * EIP712 timed funding round propose types
@@ -88,6 +98,50 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
+   * Given the provided params, return the round state
+   * @param params The information required to get the round state
+   */
+  // prettier-ignore
+  public static getState(params: GetRoundStateParams<RoundType.TIMED_FUNDING>) {
+    const { eventState, config } = params;
+    if (!eventState || !config) {
+      return RoundState.UNKNOWN;
+    }
+    const eventStateLookup: Record<string, RoundState> = {
+      [RoundEventState.AWAITING_REGISTRATION]: RoundState.AWAITING_REGISTRATION,
+      [RoundEventState.CANCELLED]: RoundState.CANCELLED,
+    };
+    if (eventStateLookup[eventState]) {
+      return eventStateLookup[eventState];
+    }
+
+    const timestamp = BigNumber.from(this._TIMESTAMP_SECS);
+    const proposalPeriodEndTimestamp = BigNumber.from(config.proposalPeriodStartTimestamp).add(
+      config.proposalPeriodDuration,
+    );
+    if (timestamp.lt(config.proposalPeriodStartTimestamp)) {
+      return RoundState.NOT_STARTED;
+    }
+    if (timestamp.lt(proposalPeriodEndTimestamp)) {
+      return RoundState.IN_PROPOSING_PERIOD;
+    }
+    if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration))) {
+      return RoundState.IN_VOTING_PERIOD;
+    }
+    if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration).add(Time.toSeconds(56, TimeUnit.Days)))) {
+      return RoundState.IN_CLAIMING_PERIOD;
+    }
+    return RoundState.COMPLETE;
+  }
+
+  /**
+   * The Starknet relayer path
+   */
+  public get relayerPath() {
+    return 'timed_funding_round';
+  }
+
+  /**
    * The round type
    */
   public get type() {
@@ -115,10 +169,8 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   public async getConfigStruct(
     config: TimedFunding.Config<CS>,
   ): Promise<TimedFunding.ConfigStruct> {
-    const now = Math.floor(Date.now() / 1000);
-
     // prettier-ignore
-    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < now + TimedFundingRound.MIN_PROPOSAL_PERIOD_DURATION) {
+    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < TimedFundingRound._TIMESTAMP_SECS + TimedFundingRound.MIN_PROPOSAL_PERIOD_DURATION) {
       throw new Error('Remaining proposal period duration is too short');
     }
     if (config.votePeriodDurationSecs < TimedFundingRound.MIN_VOTE_PERIOD_DURATION) {
@@ -200,6 +252,14 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
+   * Given the provided params, return the round state
+   * @param params The information required to get the round state
+   */
+  public getState(params: GetRoundStateParams<RoundType.TIMED_FUNDING>) {
+    return TimedFundingRound.getState(params);
+  }
+
+  /**
    * Given a round address, return a `TimedFundingRound` contract instance
    * @param address The round address
    */
@@ -213,6 +273,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async signProposeMessage(config: TimedFunding.ProposeConfig) {
     const address = await this.signer.getAddress();
+    if (isAddress(config.round)) {
+      // If the origin chain round is provided, fetch the Starknet round address
+      config.round = await this._query.getStarknetRoundAddress(config.round);
+    }
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -241,7 +305,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     return this.sendToRelayer<TimedFunding.RequestParams>({
       address,
       signature,
-      action: TimedFunding.Action.Propose,
+      action: TimedFunding.Action.PROPOSE,
       data: message,
     });
   }
@@ -260,6 +324,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       throw new Error('Must vote on at least one proposal');
     }
 
+    if (isAddress(config.round)) {
+      // If the origin chain round is provided, fetch the Starknet round address
+      config.round = await this._query.getStarknetRoundAddress(config.round);
+    }
     const { votingStrategies } = await this._query.getRoundVotingStrategies(config.round);
     const timestamp = await this.getSnapshotTimestamp(config.round);
     const nonZeroStrategyVotingPowers = await this._voting.getVotingPowerForStrategies(
@@ -318,7 +386,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     return this.sendToRelayer<TimedFunding.RequestParams>({
       address,
       signature,
-      action: TimedFunding.Action.Vote,
+      action: TimedFunding.Action.VOTE,
       data: message,
     });
   }
@@ -330,11 +398,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedProposePayload(
     account: Account,
-    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.Propose>, 'action'>,
+    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.PROPOSE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: TimedFunding.Action.Propose,
+      action: TimedFunding.Action.PROPOSE,
     };
     const calldata = this.getProposeCalldata({
       proposer: payload.address,
@@ -354,11 +422,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedVotePayload(
     account: Account,
-    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.Vote>, 'action'>,
+    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.VOTE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: TimedFunding.Action.Vote,
+      action: TimedFunding.Action.VOTE,
     };
     const calldata = this.getVoteCalldata({
       voter: params.address,

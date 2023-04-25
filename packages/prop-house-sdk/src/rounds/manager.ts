@@ -1,7 +1,15 @@
-import { Custom, RoundInfo, RoundType, RoundChainConfig, RoundConfigStruct } from '../types';
+import {
+  Custom,
+  RoundInfo,
+  RoundType,
+  RoundChainConfig,
+  RoundConfigStruct,
+  GetRoundStateParams,
+} from '../types';
 import { RoundBase, TimedFundingRound } from './implementations';
 
-export class Round<CS extends void | Custom = void> {
+export class RoundManager<CS extends void | Custom = void> {
+  private static readonly _all = new Map([[RoundType.TIMED_FUNDING, TimedFundingRound]]);
   private readonly _timedFunding: TimedFundingRound<CS>;
   private readonly _all: Map<RoundType, RoundBase<RoundType, CS>>;
 
@@ -15,7 +23,16 @@ export class Round<CS extends void | Custom = void> {
    * @param config The chain config
    */
   public static for<CS extends void | Custom = void>(config: RoundChainConfig<CS>) {
-    return new Round(config);
+    return new RoundManager(config);
+  }
+
+  /**
+   * Get the round state
+   * @param type The round type
+   * @param params The params required to get the round state
+   */
+  public static getState<RT extends RoundType>(type: RT | string, params: GetRoundStateParams<RT>) {
+    return this.get(type as RT).getState(params);
   }
 
   /**
@@ -23,6 +40,17 @@ export class Round<CS extends void | Custom = void> {
    */
   public get timedFunding() {
     return this._timedFunding;
+  }
+
+  /**
+   * Get a round utility class
+   * @param type The round type
+   */
+  public static get(type: RoundType) {
+    if (!this._all.has(type)) {
+      throw new Error(`Unknown round type: ${type}`);
+    }
+    return this._all.get(type)!;
   }
 
   /**
@@ -49,8 +77,17 @@ export class Round<CS extends void | Custom = void> {
    * @notice Returns the implementation contract address for the provided round type
    * @param type The round type
    */
-  public impl(type: RoundType) {
+  public getImpl(type: RoundType) {
     return this.get(type).impl;
+  }
+
+  /**
+   * Get the round state
+   * @param type The round type
+   * @param params The params required to get the round state
+   */
+  public getState<RT extends RoundType>(type: RT | string, params: GetRoundStateParams<RT>) {
+    return RoundManager.getState<RT>(type, params);
   }
 
   /**

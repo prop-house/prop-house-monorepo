@@ -10,6 +10,9 @@ export const getCodegenConfig = (
   generates: {
     [`./src/gql/${subfolder}/`]: {
       preset: 'client',
+      presetConfig: {
+        fragmentMasking: false,
+      },
     },
   },
   hooks: { afterAllFileWrite: ['prettier --write'] },
