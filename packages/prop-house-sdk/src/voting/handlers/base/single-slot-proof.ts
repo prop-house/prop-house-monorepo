@@ -31,9 +31,9 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
    * Get the block number for the given timestamp. Fetch the latest block number
    * from the header store is not present in the voting strategy store.
    * @param strategy The voting strategy address
-   * @param timestamp The timestamp
+   * @param timestamp The unix timestamp
    */
-  protected async getBlockNumberForTimestamp(strategy: string, timestamp: string) {
+  protected async getBlockNumberForTimestamp(strategy: string, timestamp: string | number) {
     let block = await this.getBlockNumberFromStrategy(strategy, timestamp);
     if (!block) {
       block = await this.getLatestBlockNumberFromHeadersStore();
@@ -44,9 +44,9 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
   /**
    * Get the block number for the given timestamp stored on the voting strategy
    * @param strategy The voting strategy address
-   * @param timestamp The timestamp
+   * @param timestamp The unix timestamp
    */
-  protected async getBlockNumberFromStrategy(strategy: string, timestamp: string) {
+  protected async getBlockNumberFromStrategy(strategy: string, timestamp: string | number) {
     const key = encoding.getStorageVarAddress(
       this._TIMESTAMP_TO_ETH_BLOCK_NUMBER_STORE,
       BigNumber.from(timestamp).toHexString(),

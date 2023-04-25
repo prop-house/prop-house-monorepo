@@ -51,6 +51,6 @@ export function handleHouseURIUpdated(event: ContractURIUpdated): void {
 
   house.metadata = event.params.uri.replace('ipfs://', '');
 
-  HouseMetadataTemplate.create(house.metadata);
+  HouseMetadataTemplate.create(house.metadata!);
   house.save();
 }

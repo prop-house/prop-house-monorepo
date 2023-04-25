@@ -12,7 +12,7 @@ enum VotingStrategyType {
   UNKNOWN
 }
 
-enum RoundState {
+enum RoundEventState {
   AWAITING_REGISTRATION
   REGISTERED
   FINALIZED
@@ -123,8 +123,8 @@ type Round @entity {
   "The round description"
   description: String!
 
-  "The round state"
-  state: RoundState!
+  "The round event state (States shared across all round types, triggered by events)"
+  eventState: RoundEventState!
 
   "The house that the round belongs to"
   house: House!
@@ -194,16 +194,25 @@ type TimedFundingRoundConfig @entity {
   winnerCount: Int!
 
   "The timestamp at which the proposal period starts"
-  proposalPeriodStartTimestamp: BigInt
+  proposalPeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the proposal period ends"
+  proposalPeriodEndTimestamp: BigInt!
 
   "The proposal period duration in seconds"
-  proposalPeriodDuration: BigInt
+  proposalPeriodDuration: BigInt!
 
   "The timestamp at which the vote period starts"
-  votePeriodStartTimestamp: BigInt
+  votePeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the vote period ends"
+  votePeriodEndTimestamp: BigInt!
 
   "The vote period duration in seconds"
-  votePeriodDuration: BigInt
+  votePeriodDuration: BigInt!
+
+  "The timestamp at which the claim period ends"
+  claimPeriodEndTimestamp: BigInt!
   
   "The unix timestamp when the round configuration was registered"
   registeredAt: BigInt!

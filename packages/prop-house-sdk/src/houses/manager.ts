@@ -1,7 +1,7 @@
 import { ChainConfig, HouseInfo, HouseType } from '../types';
 import { HouseBase, CommunityHouse } from './implementations';
 
-export class House {
+export class HouseManager {
   private readonly _community: CommunityHouse;
   private readonly _all: Map<HouseType, HouseBase<HouseType>>;
 
@@ -15,7 +15,7 @@ export class House {
    * @param config The chain configuration
    */
   public static for(config: ChainConfig) {
-    return new House(config);
+    return new HouseManager(config);
   }
 
   /**
@@ -37,20 +37,20 @@ export class House {
   }
 
   /**
+   * @notice Get the implementation contract address for the provided house type
+   * @param type The house type
+   */
+  public getImpl(type: HouseType) {
+    return this.get(type).impl;
+  }
+
+  /**
    * @notice Get a house contract instance
    * @param type The house type
    * @param address The house address
    */
   public getContract(type: HouseType, address: string) {
     return this.get(type).getContract(address);
-  }
-
-  /**
-   * @notice Get the implementation contract address for the provided house type
-   * @param type The house type
-   */
-  public impl(type: HouseType) {
-    return this.get(type).impl;
   }
 
   /**

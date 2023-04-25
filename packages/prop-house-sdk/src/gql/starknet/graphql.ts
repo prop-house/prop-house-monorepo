@@ -12,6 +12,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  BigInt: any;
 };
 
 export type Account = {
@@ -48,8 +49,9 @@ export enum OrderByProposalFields {
   ReceivedAt = 'receivedAt',
   Round = 'round',
   Title = 'title',
-  Tx = 'tx',
-  VoteCount = 'voteCount',
+  Tldr = 'tldr',
+  TxHash = 'txHash',
+  VotingPower = 'votingPower',
 }
 
 export enum OrderByRoundFields {
@@ -58,16 +60,18 @@ export enum OrderByRoundFields {
   RegisteredAt = 'registeredAt',
   SourceChainRound = 'sourceChainRound',
   State = 'state',
-  Tx = 'tx',
+  TxHash = 'txHash',
   Type = 'type',
-  VoteCount = 'voteCount',
+  UniqueProposers = 'uniqueProposers',
+  UniqueVoters = 'uniqueVoters',
 }
 
 export enum OrderBySummaryFields {
   Id = 'id',
   ProposalCount = 'proposalCount',
   RoundCount = 'roundCount',
-  VoteSubmissionCount = 'voteSubmissionCount',
+  UniqueProposers = 'uniqueProposers',
+  UniqueVoters = 'uniqueVoters',
 }
 
 export enum OrderByVoteFields {
@@ -75,7 +79,7 @@ export enum OrderByVoteFields {
   Proposal = 'proposal',
   ReceivedAt = 'receivedAt',
   Round = 'round',
-  Tx = 'tx',
+  TxHash = 'txHash',
   Voter = 'voter',
   VotingPower = 'votingPower',
 }
@@ -118,12 +122,14 @@ export type Proposal = {
   round: Round;
   /** The proposal title */
   title: Scalars['String'];
+  /** The proposal tl;dr */
+  tldr: Scalars['String'];
   /** The transaction in which the proposal was submitted */
-  tx?: Maybe<Scalars['String']>;
-  /** The number of votes that the proposal has received */
-  voteCount: Scalars['Int'];
+  txHash: Scalars['String'];
   /** All votes that the proposal has received */
   votes: Array<Maybe<Vote>>;
+  /** The amount of voting power that the proposal has received */
+  votingPower: Scalars['BigInt'];
 };
 
 export type Query = {
@@ -238,11 +244,13 @@ export type Round = {
   /** The round state */
   state: Scalars['String'];
   /** The transaction in which the round was registered */
-  tx?: Maybe<Scalars['String']>;
+  txHash: Scalars['String'];
   /** The round type (TIMED_FUNDING) */
   type: Scalars['String'];
-  /** The total number of votes in the round */
-  voteCount: Scalars['Int'];
+  /** The number of unique proposers in the round */
+  uniqueProposers: Scalars['Int'];
+  /** The number of unique voters in the round */
+  uniqueVoters: Scalars['Int'];
   /** All votes that have been cast in the round */
   votes: Array<Maybe<Vote>>;
 };
@@ -255,8 +263,10 @@ export type Summary = {
   proposalCount: Scalars['Int'];
   /** The total number of rounds across all houses */
   roundCount: Scalars['Int'];
-  /** The total number of vote submissions across all rounds */
-  voteSubmissionCount: Scalars['Int'];
+  /** The total number of unique proposers across all rounds */
+  uniqueProposers: Scalars['Int'];
+  /** The total number of unique voters across all rounds */
+  uniqueVoters: Scalars['Int'];
 };
 
 export type Vote = {
@@ -270,11 +280,11 @@ export type Vote = {
   /** The round that the vote is in */
   round: Round;
   /** The transaction in which the votes were submitted */
-  tx?: Maybe<Scalars['String']>;
+  txHash: Scalars['String'];
   /** The voter account */
   voter: Account;
   /** The amount of voting power */
-  votingPower: Scalars['Int'];
+  votingPower: Scalars['BigInt'];
 };
 
 export type WhereAccount = {
@@ -371,20 +381,26 @@ export type WhereProposal = {
   title_not?: InputMaybe<Scalars['String']>;
   title_not_contains?: InputMaybe<Scalars['String']>;
   title_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx?: InputMaybe<Scalars['String']>;
-  tx_contains?: InputMaybe<Scalars['String']>;
-  tx_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx_not?: InputMaybe<Scalars['String']>;
-  tx_not_contains?: InputMaybe<Scalars['String']>;
-  tx_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  voteCount?: InputMaybe<Scalars['Int']>;
-  voteCount_gt?: InputMaybe<Scalars['Int']>;
-  voteCount_gte?: InputMaybe<Scalars['Int']>;
-  voteCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteCount_lt?: InputMaybe<Scalars['Int']>;
-  voteCount_lte?: InputMaybe<Scalars['Int']>;
-  voteCount_not?: InputMaybe<Scalars['Int']>;
-  voteCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  tldr?: InputMaybe<Scalars['String']>;
+  tldr_contains?: InputMaybe<Scalars['String']>;
+  tldr_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  tldr_not?: InputMaybe<Scalars['String']>;
+  tldr_not_contains?: InputMaybe<Scalars['String']>;
+  tldr_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash?: InputMaybe<Scalars['String']>;
+  txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash_not?: InputMaybe<Scalars['String']>;
+  txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  votingPower?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
+  votingPower_lt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_lte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
 };
 
 export type WhereRound = {
@@ -422,26 +438,34 @@ export type WhereRound = {
   state_not?: InputMaybe<Scalars['String']>;
   state_not_contains?: InputMaybe<Scalars['String']>;
   state_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx?: InputMaybe<Scalars['String']>;
-  tx_contains?: InputMaybe<Scalars['String']>;
-  tx_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx_not?: InputMaybe<Scalars['String']>;
-  tx_not_contains?: InputMaybe<Scalars['String']>;
-  tx_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash?: InputMaybe<Scalars['String']>;
+  txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash_not?: InputMaybe<Scalars['String']>;
+  txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   type?: InputMaybe<Scalars['String']>;
   type_contains?: InputMaybe<Scalars['String']>;
   type_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   type_not?: InputMaybe<Scalars['String']>;
   type_not_contains?: InputMaybe<Scalars['String']>;
   type_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  voteCount?: InputMaybe<Scalars['Int']>;
-  voteCount_gt?: InputMaybe<Scalars['Int']>;
-  voteCount_gte?: InputMaybe<Scalars['Int']>;
-  voteCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteCount_lt?: InputMaybe<Scalars['Int']>;
-  voteCount_lte?: InputMaybe<Scalars['Int']>;
-  voteCount_not?: InputMaybe<Scalars['Int']>;
-  voteCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueProposers?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_gt?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_gte?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueProposers_lt?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_lte?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_not?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueVoters?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_gt?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_gte?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueVoters_lt?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_lte?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_not?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type WhereSummary = {
@@ -467,14 +491,22 @@ export type WhereSummary = {
   roundCount_lte?: InputMaybe<Scalars['Int']>;
   roundCount_not?: InputMaybe<Scalars['Int']>;
   roundCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteSubmissionCount?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_gt?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_gte?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteSubmissionCount_lt?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_lte?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_not?: InputMaybe<Scalars['Int']>;
-  voteSubmissionCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueProposers?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_gt?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_gte?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueProposers_lt?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_lte?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_not?: InputMaybe<Scalars['Int']>;
+  uniqueProposers_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueVoters?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_gt?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_gte?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  uniqueVoters_lt?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_lte?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_not?: InputMaybe<Scalars['Int']>;
+  uniqueVoters_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type WhereVote = {
@@ -504,26 +536,26 @@ export type WhereVote = {
   round_not?: InputMaybe<Scalars['String']>;
   round_not_contains?: InputMaybe<Scalars['String']>;
   round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx?: InputMaybe<Scalars['String']>;
-  tx_contains?: InputMaybe<Scalars['String']>;
-  tx_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tx_not?: InputMaybe<Scalars['String']>;
-  tx_not_contains?: InputMaybe<Scalars['String']>;
-  tx_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash?: InputMaybe<Scalars['String']>;
+  txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash_not?: InputMaybe<Scalars['String']>;
+  txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   voter?: InputMaybe<Scalars['String']>;
   voter_contains?: InputMaybe<Scalars['String']>;
   voter_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   voter_not?: InputMaybe<Scalars['String']>;
   voter_not_contains?: InputMaybe<Scalars['String']>;
   voter_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  votingPower?: InputMaybe<Scalars['Int']>;
-  votingPower_gt?: InputMaybe<Scalars['Int']>;
-  votingPower_gte?: InputMaybe<Scalars['Int']>;
-  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  votingPower_lt?: InputMaybe<Scalars['Int']>;
-  votingPower_lte?: InputMaybe<Scalars['Int']>;
-  votingPower_not?: InputMaybe<Scalars['Int']>;
-  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  votingPower?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
+  votingPower_lt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_lte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
 };
 
 export type Where_Checkpoint = {
@@ -585,23 +617,23 @@ export type GlobalStatsQuery = {
     __typename?: 'Summary';
     roundCount: number;
     proposalCount: number;
-    voteSubmissionCount: number;
+    uniqueProposers: number;
+    uniqueVoters: number;
   } | null;
 };
 
-export type ManyProposalsForRoundQueryVariables = Exact<{
-  round: Scalars['String'];
+export type ManyProposalsQueryVariables = Exact<{
   first: Scalars['Int'];
   skip: Scalars['Int'];
   orderBy?: InputMaybe<OrderByProposalFields>;
   orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WhereProposal>;
 }>;
 
-export type ManyProposalsForRoundQuery = {
+export type ManyProposalsQuery = {
   __typename?: 'Query';
   proposals?: Array<{
     __typename?: 'Proposal';
-    id: string;
     proposalId: number;
     metadataUri: string;
     title: string;
@@ -609,25 +641,21 @@ export type ManyProposalsForRoundQuery = {
     isCancelled: boolean;
     isWinner: boolean;
     receivedAt: number;
-    tx?: string | null;
-    voteCount: number;
+    txHash: string;
+    votingPower: any;
     proposer: { __typename?: 'Account'; id: string };
+    round: { __typename?: 'Round'; sourceChainRound: string };
   } | null> | null;
 };
 
-export type ManyProposalsByAccountQueryVariables = Exact<{
-  proposer: Scalars['String'];
-  first: Scalars['Int'];
-  skip: Scalars['Int'];
-  orderBy?: InputMaybe<OrderByProposalFields>;
-  orderDirection?: InputMaybe<OrderDirection>;
+export type ProposalQueryVariables = Exact<{
+  id: Scalars['String'];
 }>;
 
-export type ManyProposalsByAccountQuery = {
+export type ProposalQuery = {
   __typename?: 'Query';
-  proposals?: Array<{
+  proposal?: {
     __typename?: 'Proposal';
-    id: string;
     proposalId: number;
     metadataUri: string;
     title: string;
@@ -635,30 +663,66 @@ export type ManyProposalsByAccountQuery = {
     isCancelled: boolean;
     isWinner: boolean;
     receivedAt: number;
-    tx?: string | null;
-    voteCount: number;
+    txHash: string;
+    votingPower: any;
+    proposer: { __typename?: 'Account'; id: string };
+    round: { __typename?: 'Round'; sourceChainRound: string };
+  } | null;
+};
+
+export type ManyRoundProposalsQueryVariables = Exact<{
+  where?: InputMaybe<WhereRound>;
+}>;
+
+export type ManyRoundProposalsQuery = {
+  __typename?: 'Query';
+  rounds?: Array<{
+    __typename?: 'Round';
+    proposals: Array<{
+      __typename?: 'Proposal';
+      id: string;
+      proposalId: number;
+      metadataUri: string;
+      title: string;
+      body: string;
+      isCancelled: boolean;
+      isWinner: boolean;
+      receivedAt: number;
+      txHash: string;
+      votingPower: any;
+      proposer: { __typename?: 'Account'; id: string };
+    } | null>;
   } | null> | null;
 };
 
-export type ManyVotesByAccountQueryVariables = Exact<{
-  voter: Scalars['String'];
+export type ManyVotesQueryVariables = Exact<{
   first: Scalars['Int'];
   skip: Scalars['Int'];
   orderBy?: InputMaybe<OrderByVoteFields>;
   orderDirection?: InputMaybe<OrderDirection>;
+  where?: InputMaybe<WhereVote>;
 }>;
 
-export type ManyVotesByAccountQuery = {
+export type ManyVotesQuery = {
   __typename?: 'Query';
   votes?: Array<{
     __typename?: 'Vote';
-    id: string;
-    votingPower: number;
+    votingPower: any;
     receivedAt: number;
-    tx?: string | null;
-    round: { __typename?: 'Round'; id: string };
-    proposal: { __typename?: 'Proposal'; id: string };
+    txHash: string;
+    voter: { __typename?: 'Account'; id: string };
+    round: { __typename?: 'Round'; sourceChainRound: string };
+    proposal: { __typename?: 'Proposal'; proposalId: number };
   } | null> | null;
+};
+
+export type RoundIdQueryVariables = Exact<{
+  sourceChainRound?: InputMaybe<Scalars['String']>;
+}>;
+
+export type RoundIdQuery = {
+  __typename?: 'Query';
+  rounds?: Array<{ __typename?: 'Round'; id: string } | null> | null;
 };
 
 export const GlobalStatsDocument = {
@@ -686,7 +750,8 @@ export const GlobalStatsDocument = {
               selections: [
                 { kind: 'Field', name: { kind: 'Name', value: 'roundCount' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'proposalCount' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'voteSubmissionCount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'uniqueProposers' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'uniqueVoters' } },
               ],
             },
           },
@@ -695,22 +760,14 @@ export const GlobalStatsDocument = {
     },
   ],
 } as unknown as DocumentNode<GlobalStatsQuery, GlobalStatsQueryVariables>;
-export const ManyProposalsForRoundDocument = {
+export const ManyProposalsDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'query',
-      name: { kind: 'Name', value: 'manyProposalsForRound' },
+      name: { kind: 'Name', value: 'manyProposals' },
       variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-          },
-        },
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
@@ -736,6 +793,11 @@ export const ManyProposalsForRoundDocument = {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereProposal' } },
         },
       ],
       selectionSet: {
@@ -768,22 +830,12 @@ export const ManyProposalsForRoundDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'where' },
-                value: {
-                  kind: 'ObjectValue',
-                  fields: [
-                    {
-                      kind: 'ObjectField',
-                      name: { kind: 'Name', value: 'round' },
-                      value: { kind: 'Variable', name: { kind: 'Name', value: 'round' } },
-                    },
-                  ],
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
               },
             ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
                 {
                   kind: 'Field',
@@ -793,14 +845,24 @@ export const ManyProposalsForRoundDocument = {
                     selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
                   },
                 },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'sourceChainRound' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'title' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'body' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'receivedAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'voteCount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },
               ],
             },
           },
@@ -808,48 +870,22 @@ export const ManyProposalsForRoundDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyProposalsForRoundQuery, ManyProposalsForRoundQueryVariables>;
-export const ManyProposalsByAccountDocument = {
+} as unknown as DocumentNode<ManyProposalsQuery, ManyProposalsQueryVariables>;
+export const ProposalDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'query',
-      name: { kind: 'Name', value: 'manyProposalsByAccount' },
+      name: { kind: 'Name', value: 'proposal' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'proposer' } },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
           type: {
             kind: 'NonNullType',
             type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
           },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
-          },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderByProposalFields' } },
-        },
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
         },
       ],
       selectionSet: {
@@ -857,56 +893,44 @@ export const ManyProposalsByAccountDocument = {
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'proposals' },
+            name: { kind: 'Name', value: 'proposal' },
             arguments: [
               {
                 kind: 'Argument',
-                name: { kind: 'Name', value: 'first' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'skip' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'skip' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderBy' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'orderDirection' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
-              },
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'where' },
-                value: {
-                  kind: 'ObjectValue',
-                  fields: [
-                    {
-                      kind: 'ObjectField',
-                      name: { kind: 'Name', value: 'proposer' },
-                      value: { kind: 'Variable', name: { kind: 'Name', value: 'proposer' } },
-                    },
-                  ],
-                },
+                name: { kind: 'Name', value: 'id' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'id' } },
               },
             ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'proposer' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'round' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'sourceChainRound' } },
+                    ],
+                  },
+                },
                 { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'title' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'body' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'receivedAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'voteCount' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },
               ],
             },
           },
@@ -914,23 +938,80 @@ export const ManyProposalsByAccountDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyProposalsByAccountQuery, ManyProposalsByAccountQueryVariables>;
-export const ManyVotesByAccountDocument = {
+} as unknown as DocumentNode<ProposalQuery, ProposalQueryVariables>;
+export const ManyRoundProposalsDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'query',
-      name: { kind: 'Name', value: 'manyVotesByAccount' },
+      name: { kind: 'Name', value: 'manyRoundProposals' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'voter' } },
-          type: {
-            kind: 'NonNullType',
-            type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
-          },
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereRound' } },
         },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'rounds' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'proposals' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'proposer' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                        },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'body' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'receivedAt' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ManyRoundProposalsQuery, ManyRoundProposalsQueryVariables>;
+export const ManyVotesDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'manyVotes' },
+      variableDefinitions: [
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'first' } },
@@ -956,6 +1037,11 @@ export const ManyVotesByAccountDocument = {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderDirection' } },
           type: { kind: 'NamedType', name: { kind: 'Name', value: 'OrderDirection' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereVote' } },
         },
       ],
       selectionSet: {
@@ -988,28 +1074,28 @@ export const ManyVotesByAccountDocument = {
               {
                 kind: 'Argument',
                 name: { kind: 'Name', value: 'where' },
-                value: {
-                  kind: 'ObjectValue',
-                  fields: [
-                    {
-                      kind: 'ObjectField',
-                      name: { kind: 'Name', value: 'voter' },
-                      value: { kind: 'Variable', name: { kind: 'Name', value: 'voter' } },
-                    },
-                  ],
-                },
+                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
               },
             ],
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'Field', name: { kind: 'Name', value: 'id' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'voter' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                  },
+                },
                 {
                   kind: 'Field',
                   name: { kind: 'Name', value: 'round' },
                   selectionSet: {
                     kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'sourceChainRound' } },
+                    ],
                   },
                 },
                 {
@@ -1017,12 +1103,12 @@ export const ManyVotesByAccountDocument = {
                   name: { kind: 'Name', value: 'proposal' },
                   selectionSet: {
                     kind: 'SelectionSet',
-                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+                    selections: [{ kind: 'Field', name: { kind: 'Name', value: 'proposalId' } }],
                   },
                 },
                 { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'receivedAt' } },
-                { kind: 'Field', name: { kind: 'Name', value: 'tx' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
               ],
             },
           },
@@ -1030,4 +1116,53 @@ export const ManyVotesByAccountDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyVotesByAccountQuery, ManyVotesByAccountQueryVariables>;
+} as unknown as DocumentNode<ManyVotesQuery, ManyVotesQueryVariables>;
+export const RoundIdDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'roundId' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'sourceChainRound' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'String' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'rounds' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'where' },
+                value: {
+                  kind: 'ObjectValue',
+                  fields: [
+                    {
+                      kind: 'ObjectField',
+                      name: { kind: 'Name', value: 'sourceChainRound' },
+                      value: {
+                        kind: 'Variable',
+                        name: { kind: 'Name', value: 'sourceChainRound' },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<RoundIdQuery, RoundIdQueryVariables>;

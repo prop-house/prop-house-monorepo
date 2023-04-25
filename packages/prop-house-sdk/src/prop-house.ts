@@ -17,15 +17,15 @@ import { ChainBase } from './chain-base';
 import { QueryWrapper } from './gql';
 import { encoding } from './utils';
 import { Voting } from './voting';
-import { House } from './houses';
-import { Round } from './rounds';
+import { HouseManager } from './houses';
+import { RoundManager } from './rounds';
 
 export class PropHouse<CS extends Custom | void = void> extends ChainBase {
-  private _contract: PropHouseContract;
-  private readonly _voting: Voting<CS>;
-  private readonly _house: House;
-  private readonly _round: Round<CS>;
   private readonly _query: QueryWrapper;
+  private _contract: PropHouseContract;
+  private _voting: Voting<CS>;
+  private _house: HouseManager;
+  private _round: RoundManager<CS>;
 
   /**
    * The prop house contract instance
@@ -75,11 +75,10 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, this._evm);
     this._query = QueryWrapper.for(config.evmChainId);
     this._voting = Voting.for<CS>(config);
-    this._house = House.for(config);
-    this._round = Round.for<CS>({
+    this._house = HouseManager.for(config);
+    this._round = RoundManager.for<CS>({
       ...config,
       voting: this._voting,
-      query: this._query,
     });
   }
 
@@ -88,8 +87,19 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
    * @param evm EVM provider/connection information and optional signer
    */
   public attach(evm: EVM) {
+    const config = {
+      evm,
+      evmChainId: this._evmChainId,
+      starknet: this._starknet,
+    };
     this._evm = this.toEVMSignerOrProvider(evm);
-    this._contract = this.contract.connect(this._evm);
+    this._contract = this.contract.connect(evm);
+    this._voting = Voting.for<CS>(config);
+    this._house = HouseManager.for(config);
+    this._round = RoundManager.for<CS>({
+      ...config,
+      voting: this._voting,
+    });
     return this;
   }
 
@@ -161,7 +171,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.impl(round.roundType),
+        impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct),
       },
       {
@@ -191,7 +201,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
       {
         title: round.title,
         description: round.description,
-        impl: this.round.impl(round.roundType),
+        impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct),
       },
       assets,
@@ -218,13 +228,13 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     const struct = await this.round.getConfigStruct(round);
     return this.contract.createRoundOnNewHouse(
       {
-        impl: this.house.impl(house.houseType),
+        impl: this.house.getImpl(house.houseType),
         config: this.house.encode(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.impl(round.roundType),
+        impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct),
       },
       {
@@ -251,13 +261,13 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     const { assets, value } = this.mergeAssetsAndGetTotalETHValue(funding);
     return this.contract.createAndFundRoundOnNewHouse(
       {
-        impl: this.house.impl(house.houseType),
+        impl: this.house.getImpl(house.houseType),
         config: this.house.encode(house),
       },
       {
         title: round.title,
         description: round.description,
-        impl: this.round.impl(round.roundType),
+        impl: this.round.getImpl(round.roundType),
         config: this.round.encode(round.roundType, struct),
       },
       assets,

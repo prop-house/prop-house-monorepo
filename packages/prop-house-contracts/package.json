@@ -10,7 +10,7 @@
     "@nomiclabs/hardhat-waffle": "^2.0.3",
     "@openzeppelin/contracts": "^4.6.0",
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
-    "@prophouse/sdk": "~0.1.0-alpha.22",
+    "@prophouse/sdk": "~0.1.0-alpha.23",
     "@snapshot-labs/sx": "^0.1.0-beta.12",
     "@typechain/ethers-v5": "10.1.0",
     "@types/chai": "^4.3.3",
