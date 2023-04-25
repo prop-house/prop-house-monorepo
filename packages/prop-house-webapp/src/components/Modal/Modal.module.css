@@ -73,6 +73,7 @@
     min-width: 100% !important;
     height: 100vh;
     display: flex;
+    overflow-y: hidden;
   }
   .fullScreenOnMobile .container {
     min-width: 100% !important;
@@ -113,5 +114,6 @@
   .fullScreenOnMobile .body {
     flex-grow: 1;
     display: grid;
+    overflow-y: scroll;
   }
 }
