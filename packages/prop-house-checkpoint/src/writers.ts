@@ -114,8 +114,6 @@ export const handleProposalCreated: CheckpointWriter = async ({
     firstSeenAt: timestamp,
   };
 
-  console.log({ proposal, settingTxStatusTo: proposal.txStatus, blockExists: !!block });
-
   const query = `
     INSERT IGNORE INTO accounts SET ?;
     INSERT IGNORE INTO proposals SET ?;
