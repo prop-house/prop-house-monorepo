@@ -114,7 +114,6 @@ export const handleProposalCreated: CheckpointWriter = async ({
     firstSeenAt: timestamp,
   };
 
-  // TODO: Broken stats queries when I added ON DUPLICATE KEY UPDATE
   const query = `
     INSERT IGNORE INTO accounts SET ?;
     INSERT IGNORE INTO proposals SET ?;
