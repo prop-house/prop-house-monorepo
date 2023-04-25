@@ -40,13 +40,16 @@ export const handleRoundRegistered: CheckpointWriter = async ({
   });
 
   const query = `
-    INSERT INTO rounds SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
+    INSERT IGNORE INTO rounds SET ?;
     SET @added_rounds = ROW_COUNT();
+
+    UPDATE rounds SET txStatus = ? WHERE id = ? LIMIT 1;
+
     INSERT INTO summaries (id, roundCount, proposalCount, uniqueProposers, uniqueVoters)
       VALUES ('SUMMARY', 1, 0, 0, 0)
       ON DUPLICATE KEY UPDATE roundCount = roundCount + @added_rounds;
   `;
-  await mysql.queryAsync(query, [round, round.txStatus]);
+  await mysql.queryAsync(query, [round, round.txStatus, round.id]);
 };
 
 export const handleProposalCreated: CheckpointWriter = async ({
@@ -111,10 +114,13 @@ export const handleProposalCreated: CheckpointWriter = async ({
     firstSeenAt: timestamp,
   };
 
+  // TODO: Broken stats queries when I added ON DUPLICATE KEY UPDATE
   const query = `
     INSERT IGNORE INTO accounts SET ?;
-    INSERT INTO proposals SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
+    INSERT IGNORE INTO proposals SET ?;
     SET @added_proposals = ROW_COUNT();
+  
+    UPDATE proposals SET txStatus = ? WHERE id = ? LIMIT 1;
 
     SELECT COUNT(*) INTO @proposer_exists FROM proposals WHERE round = ? AND proposer = ?;
     SET @is_new_proposer = IF(@proposer_exists = 0 AND @added_proposals = 1, 1, 0);
@@ -130,7 +136,8 @@ export const handleProposalCreated: CheckpointWriter = async ({
   await mysql.queryAsync(query, [
     account,
     proposal,
-    proposal.receivedAt,
+    proposal.txStatus,
+    proposal.id,
     round,
     proposer,
     round,
@@ -184,8 +191,10 @@ export const handleVoteCreated: CheckpointWriter = async ({
 
   const query = `
     INSERT IGNORE INTO accounts SET ?;
-    INSERT INTO votes SET ? ON DUPLICATE KEY UPDATE txStatus = ?;
+    INSERT IGNORE INTO votes SET ?;
     SET @added_votes = ROW_COUNT();
+
+    UPDATE votes SET txStatus = ? WHERE id = ? LIMIT 1;
 
     SELECT COUNT(*) INTO @voter_exists FROM votes WHERE round = ? AND voter = ?;
     SET @is_new_voter = IF(@voter_exists = 0 AND @added_votes = 1, 1, 0);
@@ -199,6 +208,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
     account,
     vote,
     vote.txStatus,
+    vote.id,
     round,
     voter,
     round,
