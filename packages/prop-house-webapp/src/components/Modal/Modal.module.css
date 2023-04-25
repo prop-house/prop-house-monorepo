@@ -57,6 +57,10 @@
 .body {
   overflow-y: scroll;
 }
+/** mobile close btn **/
+.closeBtn {
+  display: none;
+}
 
 @media (max-width: 575px) {
   .modal {
@@ -93,6 +97,7 @@
     margin-right: 5px;
   }
   .fullScreenOnMobile .closeBtn {
+    display: flex;
     margin-left: auto;
     color: white;
     background: var(--brand-pink);
