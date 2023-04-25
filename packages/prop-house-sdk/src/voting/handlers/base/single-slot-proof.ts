@@ -17,7 +17,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
    */
   protected async fetchProofInputs(account: string, timestamp: string, strategyId: string) {
     const strategy = await this.getStrategyAddressAndParams(strategyId);
-    const block = await this.getBlockNumberFromStrategy(strategy.addr, timestamp);
+    const block = await this.getBlockNumberForTimestamp(strategy.addr, timestamp);
 
     const result = await this.provider.send('eth_getProof', [
       strategy.params[0], // Contract Address

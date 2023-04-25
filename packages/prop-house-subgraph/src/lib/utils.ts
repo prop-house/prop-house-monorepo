@@ -102,7 +102,7 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The voting strategy address
  */
 export function getVotingStrategyType(addr: string): string {
-  if (addr == '0x1b60e1d89c75630e8e64d93dd27a808ad1586a0ae738afd87503e431139d0') {
+  if (addr == '0x41a78e741e5af2fec34b695679bc6891742439f7afb8484ecd7766661ad02bf') {
     return VotingStrategyType.BALANCE_OF;
   }
   if (addr == '0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38') {

@@ -43,13 +43,13 @@ export const handleRoundRegistered: CheckpointWriter = async ({
     INSERT IGNORE INTO rounds SET ?;
     SET @added_rounds = ROW_COUNT();
 
-    UPDATE rounds SET txStatus = ? WHERE id = ? LIMIT 1;
+    UPDATE rounds SET txStatus = ?, registeredAt = ? WHERE id = ? LIMIT 1;
 
     INSERT INTO summaries (id, roundCount, proposalCount, uniqueProposers, uniqueVoters)
       VALUES ('SUMMARY', 1, 0, 0, 0)
       ON DUPLICATE KEY UPDATE roundCount = roundCount + @added_rounds;
   `;
-  await mysql.queryAsync(query, [round, round.txStatus, round.id]);
+  await mysql.queryAsync(query, [round, round.txStatus, round.registeredAt, round.id]);
 };
 
 export const handleProposalCreated: CheckpointWriter = async ({
@@ -119,7 +119,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     INSERT IGNORE INTO proposals SET ?;
     SET @added_proposals = ROW_COUNT();
   
-    UPDATE proposals SET txStatus = ? WHERE id = ? LIMIT 1;
+    UPDATE proposals SET txStatus = ?, receivedAt = ? WHERE id = ? LIMIT 1;
 
     SELECT COUNT(*) INTO @proposer_exists FROM proposals WHERE round = ? AND proposer = ?;
     SET @is_new_proposer = IF(@proposer_exists = 0 AND @added_proposals = 1, 1, 0);
@@ -136,6 +136,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     account,
     proposal,
     proposal.txStatus,
+    proposal.receivedAt,
     proposal.id,
     round,
     proposer,
@@ -193,7 +194,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
     INSERT IGNORE INTO votes SET ?;
     SET @added_votes = ROW_COUNT();
 
-    UPDATE votes SET txStatus = ? WHERE id = ? LIMIT 1;
+    UPDATE votes SET txStatus = ?, receivedAt = ? WHERE id = ? LIMIT 1;
 
     SELECT COUNT(*) INTO @voter_exists FROM votes WHERE round = ? AND voter = ?;
     SET @is_new_voter = IF(@voter_exists = 0 AND @added_votes = 1, 1, 0);
@@ -207,6 +208,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
     account,
     vote,
     vote.txStatus,
+    vote.receivedAt,
     vote.id,
     round,
     voter,
