@@ -5479,6 +5479,13 @@
     parchment "^1.1.2"
     quill-delta "^4.0.1"
 
+"@types/ramda@^0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.29.0.tgz#4f226db24764dde77c60e1f601c357894bcfb7cc"
+  integrity sha512-TY9eKsklU43CmAbFJPKDUyBjleZ4EFAkbJeQRF4e8byGkOw1CjDcwg5EGa0Bgf0Kgs9BE9OU4UzQWnQDHnvMtA==
+  dependencies:
+    types-ramda "^0.29.1"
+
 "@types/range-parser@*":
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.4.tgz#cd667bcfdd025213aafb7ca5915a932590acdcdc"
@@ -18240,6 +18247,11 @@ raf@^3.4.1:
   dependencies:
     performance-now "^2.1.0"
 
+ramda@^0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.29.0.tgz#fbbb67a740a754c8a4cbb41e2a6e0eb8507f55fb"
+  integrity sha512-BBea6L67bYLtdbOqfp8f58fPMqEwx0doL+pAi8TZyp2YWz8R9G8z9x75CZI8W+ftqhFHCpEX2cRnUUXK130iKA==
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -20994,6 +21006,11 @@ ts-pnp@1.2.0, ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
+ts-toolbelt@^9.6.0:
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/ts-toolbelt/-/ts-toolbelt-9.6.0.tgz#50a25426cfed500d4a09bd1b3afb6f28879edfd5"
+  integrity sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==
+
 tsconfig-paths-webpack-plugin@3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/tsconfig-paths-webpack-plugin/-/tsconfig-paths-webpack-plugin-3.5.2.tgz#01aafff59130c04a8c4ebc96a3045c43c376449a"
@@ -21181,6 +21198,13 @@ typeorm@^0.2.41:
     xml2js "^0.4.23"
     yargs "^17.0.1"
     zen-observable-ts "^1.0.0"
+
+types-ramda@^0.29.1:
+  version "0.29.1"
+  resolved "https://registry.yarnpkg.com/types-ramda/-/types-ramda-0.29.1.tgz#08c6ddf583ba359ec1113c7069e30a44ef73896d"
+  integrity sha512-pdEF8VXcBTSu3fPupZahieG6Lh8eBWPtcaH/OB5QPCoN2hz4vBbspoMLB3X9kwzXRD3lwD4/j0hwj3Z/PAzzcA==
+  dependencies:
+    ts-toolbelt "^9.6.0"
 
 typescript@4.3.5:
   version "4.3.5"

@@ -30,6 +30,7 @@ import HouseManager from './pages/HouseManager';
 // import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
 import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
+import StatusRoundCards from './components/StatusRoundCards';
 
 const { chains, provider } = configureChains(
   [goerli],
@@ -87,7 +88,7 @@ function App() {
 
                   <Routes>
                     {/* TODO: Implement next */}
-                    {/* <Route path="/rounds" element={<StatusRoundCards />} /> */}
+                    <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/" element={<Home />} />
                     <Route
                       path="/create"

@@ -14,7 +14,7 @@ import { useAppSelector } from '../../hooks';
 import { House, Round, RoundState } from '@prophouse/sdk-react';
 
 const AcceptingPropsModule: React.FC<{
-  round: Round
+  round: Round;
   community: House;
 }> = props => {
   const { round, community } = props;
