@@ -78,6 +78,7 @@
   .fullScreenOnMobile .container {
     min-width: 100% !important;
     min-height: 100% !important;
+    overflow-y: hidden;
   }
   .fullScreenOnMobile .titleContainer {
     display: flex;
@@ -114,6 +115,6 @@
   .fullScreenOnMobile .body {
     flex-grow: 1;
     display: grid;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 }
