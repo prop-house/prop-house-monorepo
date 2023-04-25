@@ -10740,10 +10740,10 @@ check-types@^11.1.1:
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-11.1.2.tgz#86a7c12bf5539f6324eb0e70ca8896c0e38f3e2f"
   integrity sha512-tzWzvgePgLORb9/3a0YenggReLKAIb2owL03H2Xdoe5pKcUyWRSEQ8xfCar8t2SIAuEDwtmx2da1YB52YuHQMQ==
 
-checkpoint-beta@^0.1.0-beta.17:
-  version "0.1.0-beta.17"
-  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.17.tgz#d50d7a08c95ba600826afa046bbc8ee41b4edade"
-  integrity sha512-TtkrRefky0NNwnBC01W24Erjy1ZLxxHWNqjwE2/rj2aV3MOlOZis/5c9vX/ZsHmghsa/G77yW5ttFZTX9UG30A==
+checkpoint-beta@^0.1.0-beta.18:
+  version "0.1.0-beta.18"
+  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.18.tgz#d4382fee1014b6a08e193f27717c77c266e49734"
+  integrity sha512-nvUTszfyXMJznI7+SRPQpV4jHbmnioG1UUwRX+obu/kRVagt8ZSlm+PzavUbdPBaGQY6RWyK0rt6Be3a7LWl8w==
   dependencies:
     "@graphql-tools/schema" "^8.5.1"
     bluebird "^3.7.2"
