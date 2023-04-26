@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import LoadingIndicator from '../LoadingIndicator';
 import { IoClose } from 'react-icons/io5';
 import clsx from 'clsx';
+import { isMobile } from 'web3modal';
 
 const Modal: React.FC<{
   title: string | JSX.Element | boolean;
@@ -43,7 +44,7 @@ const Modal: React.FC<{
   useEffect(() => {
     const disableScroll = () => {
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
+      if (fullScreenOnMobile && isMobile()) document.body.style.position = 'fixed';
     };
 
     const enableScroll = () => {
