@@ -35,6 +35,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const [submissionBtnDisabled, setSubmissionBtnDisabled] = useState(true);
   const [commentInputDisabled, setCommentInputDisabled] = useState(true);
   const [canComment, setCanComment] = useState(false);
+  const [shouldFetchReplies, setShouldFetchReplies] = useState(true);
   const repliesModalBodyRef = useRef<HTMLDivElement>(null);
   const [comment, setComment] = useState('');
   const [replies, setReplies] = useState<StoredReply[]>([]);
@@ -84,9 +85,11 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       await wrapper.current.submitReply(signer, reply);
       setLoadingSubmission(false);
       setComment('');
+      setShouldFetchReplies(true);
       if (repliesModalBodyRef && repliesModalBodyRef.current)
         repliesModalBodyRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     } catch (e) {
+      setComment('');
       setLoadingSubmission(false);
       setShowRepliesModal(false);
       setShowErrorModal(true);
@@ -95,6 +98,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
 
   // fetch replies
   useEffect(() => {
+    if (!shouldFetchReplies) return;
     const fetchReplies = async () => {
       const replies = await wrapper.current.fetchReplies(proposal.id);
       const sorted = replies.sort((a, b) => (b.createdAt < a.createdAt ? 1 : -1));
@@ -102,6 +106,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       const shuffledReplies = replies.sort(() => Math.random() - 0.5);
       const addresses = shuffledReplies.slice(0, 10).map(r => r.address);
       setRepliesAddresses(addresses);
+      setShouldFetchReplies(false);
     };
     fetchReplies();
   }, [loadingSubmission, wrapper, proposal]);
@@ -109,7 +114,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   // disable submit button if no signer or no comment
   useEffect(() => {
     setCommentInputDisabled(signer ? false : true);
-  }, [signer, comment]);
+  }, [signer, comment, shouldFetchReplies]);
 
   const replyContainer = (
     <div className={classes.replyContainer}>
