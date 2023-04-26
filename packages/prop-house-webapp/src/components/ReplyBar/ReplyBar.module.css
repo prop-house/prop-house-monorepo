@@ -56,6 +56,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 32px !important;
+}
+.submitCommentBtn svg {
+  min-width: 16px !important;
 }
 .submitCommentBtn:disabled {
   opacity: 0.6;
