@@ -43,10 +43,12 @@ const Modal: React.FC<{
   useEffect(() => {
     const disableScroll = () => {
       document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
     };
 
     const enableScroll = () => {
       document.body.style.overflow = 'auto';
+      document.body.style.position = 'initial';
     };
 
     const stopTouchMovePropagation: EventListener = e => {
