@@ -152,7 +152,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const repliesModal = (
     <Modal
       title={proposal.title}
-      subtitle={`${replies.length} comments`}
+      subtitle={`${replies.length} comment${replies.length !== 1 ? 's' : ''}`}
       setShowModal={setShowRepliesModal}
       body={
         replies.length === 0 ? (
