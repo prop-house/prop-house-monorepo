@@ -73,7 +73,7 @@ const Modal: React.FC<{
       }
       enableScroll();
     };
-  }, []);
+  }, [fullScreenOnMobile]);
 
   return (
     <ReactModal
