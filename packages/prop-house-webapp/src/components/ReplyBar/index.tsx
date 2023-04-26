@@ -186,7 +186,9 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
             </div>
           )
         ) : (
-          <></>
+          <div className={classes.replyModalBottomRow}>
+            Proposal is closed for comments - thank you!
+          </div>
         )
       }
       fullScreenOnMobile={true}
