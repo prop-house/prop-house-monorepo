@@ -73,19 +73,17 @@
     min-width: 100% !important;
     height: 100vh;
     display: flex;
-    overflow-y: hidden;
   }
   .fullScreenOnMobile .container {
     min-width: 100% !important;
     min-height: 100% !important;
-    overflow-y: hidden;
   }
   .fullScreenOnMobile .titleContainer {
     display: flex;
   }
 
   .fullScreenOnMobile .modalTitle {
-    overflow: hidden;
+    overflow-x: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 1; /* number of lines to show */
     -webkit-box-orient: vertical;

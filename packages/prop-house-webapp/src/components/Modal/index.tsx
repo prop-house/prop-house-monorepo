@@ -77,7 +77,11 @@ const Modal: React.FC<{
       isOpen={true}
       appElement={document.getElementById('root')!}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
-      className={clsx(classes.modal, fullScreenOnMobile && classes.fullScreenOnMobile)}
+      className={clsx(
+        classes.modal,
+        fullScreenOnMobile && classes.fullScreenOnMobile,
+        'proposalModalContainer',
+      )}
     >
       <>
         <div ref={modalContainerRef} className={classes.container}>
