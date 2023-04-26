@@ -2,9 +2,10 @@ import { StoredReply } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './Reply.module.css';
 import EthAddress from '../EthAddress';
 import dayjs from 'dayjs';
+import clsx from 'clsx';
 
-const Reply: React.FC<{ reply: StoredReply }> = props => {
-  const { reply } = props;
+const Reply: React.FC<{ reply: StoredReply; isProposer: boolean }> = props => {
+  const { reply, isProposer } = props;
 
   return (
     <div className={classes.replyContainer}>
@@ -19,6 +20,8 @@ const Reply: React.FC<{ reply: StoredReply }> = props => {
             />
           }
         </div>
+        {isProposer && <div className={clsx(classes.authorPill, classes.proposer)}>proposer</div>}
+
         <div className={classes.timestamp}>{dayjs(reply.createdAt).fromNow()}</div>
       </div>
       <div className={classes.replyBody}>{reply.content}</div>

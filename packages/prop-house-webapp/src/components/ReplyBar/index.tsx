@@ -163,7 +163,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
         ) : (
           <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
             {replies.map(r => (
-              <Reply reply={r} />
+              <Reply reply={r} isProposer={proposal.address === r.address} />
             ))}
           </div>
         )

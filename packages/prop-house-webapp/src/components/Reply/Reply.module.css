@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
+  align-items: center;
   gap: 5px;
 }
 
@@ -25,4 +26,20 @@
   font-size: 14px;
   color: var(--brand-gray);
   font-weight: 600;
+}
+.authorPill {
+  padding: 0.5px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.authorPill.proposer {
+  background-color: var(--brand-green-hint);
+  border: 1px solid var(--brand-green-semi-transparent);
+  color: var(--brand-green);
+}
+.authorPill.voter {
+  background-color: var(--brand-purple-hint);
+  border: 1px solid var(--brand-purple-semi-transparent);
+  color: var(--brand-purple);
 }
