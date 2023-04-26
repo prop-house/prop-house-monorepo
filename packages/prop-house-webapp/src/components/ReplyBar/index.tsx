@@ -110,7 +110,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       setShouldFetchReplies(false);
     };
     fetchReplies();
-  }, [loadingSubmission, wrapper, proposal]);
+  }, [loadingSubmission, wrapper, proposal, replies, shouldFetchReplies]);
 
   // disable submit button if no signer or no comment
   useEffect(() => {
