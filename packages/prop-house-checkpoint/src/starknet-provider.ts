@@ -85,11 +85,8 @@ export class StarknetProvider extends BaseProvider {
   private async handleBlock(block: FullBlock, eventsMap: EventsMap) {
     this.log.info({ blockNumber: block.block_number }, 'handling block');
 
-    const txsToCheck = block.transactions.filter(
-      tx => !this.processedPoolTransactions.has(tx.transaction_hash),
-    );
-
-    for (const [i, tx] of txsToCheck.entries()) {
+    // Unlike the internal provider, we re-emit events on confirmation
+    for (const [i, tx] of block.transactions.entries()) {
       await this.handleTx(
         block,
         block.block_number,
@@ -99,7 +96,7 @@ export class StarknetProvider extends BaseProvider {
       );
     }
 
-    this.processedPoolTransactions.clear();
+    block.transactions.forEach(tx => this.processedPoolTransactions.delete(tx.transaction_hash));
 
     this.log.debug({ blockNumber: block.block_number }, 'handling block done');
   }
