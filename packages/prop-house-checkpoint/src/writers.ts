@@ -115,14 +115,15 @@ export const handleProposalCreated: CheckpointWriter = async ({
   };
 
   const query = `
+    SELECT COUNT(*) INTO @proposer_exists FROM proposals WHERE round = ? AND proposer = ?;
+
     INSERT IGNORE INTO accounts SET ?;
     INSERT IGNORE INTO proposals SET ?;
     SET @added_proposals = ROW_COUNT();
+
+    SET @is_new_proposer = IF(@proposer_exists = 0 AND @added_proposals = 1, 1, 0);
   
     UPDATE proposals SET txStatus = ?, receivedAt = ? WHERE id = ? LIMIT 1;
-
-    SELECT COUNT(*) INTO @proposer_exists FROM proposals WHERE round = ? AND proposer = ?;
-    SET @is_new_proposer = IF(@proposer_exists = 0 AND @added_proposals = 1, 1, 0);
 
     UPDATE rounds SET proposalCount = proposalCount + @added_proposals,
                       uniqueProposers = uniqueProposers + @is_new_proposer
@@ -133,13 +134,13 @@ export const handleProposalCreated: CheckpointWriter = async ({
     WHERE id = 'SUMMARY' LIMIT 1;
   `;
   await mysql.queryAsync(query, [
+    round,
+    proposer,
     account,
     proposal,
     proposal.txStatus,
     proposal.receivedAt,
     proposal.id,
-    round,
-    proposer,
     round,
     proposer,
   ]);
@@ -163,7 +164,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
   mysql,
   eventIndex,
 }) => {
-  if (!rawEvent || !event || !eventIndex) return;
+  if (!rawEvent || !event || eventIndex === undefined) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
   const voter = toAddress(event.voter_address);
@@ -190,28 +191,32 @@ export const handleVoteCreated: CheckpointWriter = async ({
   };
 
   const query = `
+    SELECT COUNT(*) INTO @voter_exists FROM votes WHERE voter = ?;
+    SELECT COUNT(*) INTO @voter_has_voted_in_round FROM votes WHERE round = ? AND voter = ?;
+
     INSERT IGNORE INTO accounts SET ?;
     INSERT IGNORE INTO votes SET ?;
     SET @added_votes = ROW_COUNT();
 
     UPDATE votes SET txStatus = ?, receivedAt = ? WHERE id = ? LIMIT 1;
 
-    SELECT COUNT(*) INTO @voter_exists FROM votes WHERE round = ? AND voter = ?;
     SET @is_new_voter = IF(@voter_exists = 0 AND @added_votes = 1, 1, 0);
+    SET @is_new_voter_in_round = IF(@voter_has_voted_in_round = 0 AND @added_votes = 1, 1, 0);
 
-    UPDATE rounds SET uniqueVoters = uniqueVoters + @is_new_voter WHERE id = ? LIMIT 1;
+    UPDATE rounds SET uniqueVoters = uniqueVoters + @is_new_voter_in_round WHERE id = ? LIMIT 1;
     UPDATE proposals SET votingPower = IF(@added_votes = 1, votingPower + ?, votingPower) WHERE id = ? LIMIT 1;
     UPDATE accounts SET voteCount = voteCount + @added_votes WHERE id = ? LIMIT 1;
     UPDATE summaries SET uniqueVoters = uniqueVoters + @is_new_voter WHERE id = 'SUMMARY' LIMIT 1;
   `;
   await mysql.queryAsync(query, [
+    voter,
+    round,
+    voter,
     account,
     vote,
     vote.txStatus,
     vote.receivedAt,
     vote.id,
-    round,
-    voter,
     round,
     power,
     proposal,
