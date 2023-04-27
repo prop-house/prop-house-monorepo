@@ -28,6 +28,7 @@ import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
+import ReplyBar from '../ReplyBar';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -125,7 +126,7 @@ const ProposalCard: React.FC<{
             )}
           </div>
 
-          <Divider narrow />
+          <Divider />
 
           <div className={classes.submissionInfoContainer}>
             <div className={classes.addressAndTimestamp}>
@@ -193,6 +194,7 @@ const ProposalCard: React.FC<{
           </div>
         </Card>
       </div>
+      <ReplyBar proposal={proposal} />
     </>
   );
 };

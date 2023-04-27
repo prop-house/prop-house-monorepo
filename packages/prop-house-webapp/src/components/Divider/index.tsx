@@ -2,11 +2,20 @@ import clsx from 'clsx';
 import classes from './Divider.module.css';
 
 const Divider: React.FC<{
-  narrow?: boolean;
+  noMarginUp?: boolean;
+  noMarginDown?: boolean;
 }> = props => {
-  const { narrow } = props;
+  const { noMarginUp, noMarginDown } = props;
 
-  return <hr className={clsx(classes.divider, narrow && classes.narrow)} />;
+  return (
+    <hr
+      className={clsx(
+        classes.divider,
+        noMarginUp && classes.noMarginUp,
+        noMarginDown && classes.noMarginDown,
+      )}
+    />
+  );
 };
 
 export default Divider;

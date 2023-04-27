@@ -1,0 +1,45 @@
+.replyContainer {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0px;
+  gap: 5px;
+}
+.replyHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+}
+
+.ethAddress,
+.timestamp {
+  color: var(--brand-gray);
+  font-weight: 700;
+  font-size: 14px;
+}
+.timestamp {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+.replyBody {
+  font-size: 14px;
+  color: var(--brand-gray);
+  font-weight: 600;
+}
+.authorPill {
+  padding: 0.5px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.authorPill.proposer {
+  background-color: var(--brand-green-hint);
+  border: 1px solid var(--brand-green-semi-transparent);
+  color: var(--brand-green);
+}
+.authorPill.voter {
+  background-color: var(--brand-purple-hint);
+  border: 1px solid var(--brand-purple-semi-transparent);
+  color: var(--brand-purple);
+}
