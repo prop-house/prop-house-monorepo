@@ -3,7 +3,7 @@ import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import fetch from 'node-fetch-commonjs';
 import { TransactionStatus, Uint256 } from './types';
-import { FullBlock } from 'checkpoint-beta';
+import { FullBlock } from '@snapshot-labs/checkpoint';
 
 const {
   starknet: { classHashes },
