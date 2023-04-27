@@ -3,11 +3,12 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
-import Checkpoint, { LogLevel } from 'checkpoint-beta';
+import Checkpoint, { LogLevel } from '@snapshot-labs/checkpoint';
 import config from './config.json';
 import * as writers from './writers';
 import RoundFactoryABI from './abis/RoundFactory.json';
 import TimedFundingRoundABI from './abis/TimedFundingRound.json';
+import { StarknetProvider } from './starknet-provider';
 
 const dir = __dirname.endsWith('dist/src') ? '../' : '';
 const schemaFile = path.join(__dirname, `${dir}../src/schema.gql`);
@@ -24,6 +25,7 @@ const checkpointOptions = {
     RoundFactory: RoundFactoryABI,
     TimedFundingRound: TimedFundingRoundABI,
   },
+  NetworkProvider: StarknetProvider,
 };
 
 const checkpoint = new Checkpoint(config, writers, schema, checkpointOptions);

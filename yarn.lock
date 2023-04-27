@@ -5844,6 +5844,28 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@snapshot-labs/checkpoint@^0.1.0-beta.17":
+  version "0.1.0-beta.17"
+  resolved "https://registry.npmjs.org/@snapshot-labs/checkpoint/-/checkpoint-0.1.0-beta.17.tgz#fdc0fdc1c7f5c602a5044d657eb4f96562d91211"
+  integrity sha512-ryObjuQ7jxqFD1CY8k5iPu8EHhlbt4dt5o+F4QRvUfzftNcs5Yc0teQJHev8SH29SBimptb4pnDUb2wM3iihOA==
+  dependencies:
+    "@graphql-tools/schema" "^8.5.1"
+    bluebird "^3.7.2"
+    connection-string "^4.3.5"
+    dataloader "^2.1.0"
+    express-graphql "^0.12.0"
+    graphql "^16.5.0"
+    graphql-fields "^2.0.3"
+    graphql-parse-resolve-info "^4.12.3"
+    json-to-graphql-query "^2.2.4"
+    knex "^2.4.2"
+    mysql "^2.18.1"
+    pg "^8.10.0"
+    pino "^8.3.1"
+    pino-pretty "^8.1.0"
+    pluralize "^8.0.0"
+    starknet "^4.13.1"
+
 "@snapshot-labs/sx@^0.1.0-beta.12":
   version "0.1.0-beta.20"
   resolved "https://registry.yarnpkg.com/@snapshot-labs/sx/-/sx-0.1.0-beta.20.tgz#6bc5edfeedf426a32f886d2d6eff0b27ba23866f"
@@ -10739,28 +10761,6 @@ check-types@^11.1.1:
   version "11.1.2"
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-11.1.2.tgz#86a7c12bf5539f6324eb0e70ca8896c0e38f3e2f"
   integrity sha512-tzWzvgePgLORb9/3a0YenggReLKAIb2owL03H2Xdoe5pKcUyWRSEQ8xfCar8t2SIAuEDwtmx2da1YB52YuHQMQ==
-
-checkpoint-beta@^0.1.0-beta.19:
-  version "0.1.0-beta.19"
-  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.19.tgz#7caf37427531ca94c0a577a72f5e69eb15a6266f"
-  integrity sha512-ud5NwZz5eBfK4w1Sw11/mWjNBXNBUSMguOmXpfeMi1SiEwVX2W3d2aGCw5yQUfze3J2jr+eq/DrCO82BeP+oBA==
-  dependencies:
-    "@graphql-tools/schema" "^8.5.1"
-    bluebird "^3.7.2"
-    connection-string "^4.3.5"
-    dataloader "^2.1.0"
-    express-graphql "^0.12.0"
-    graphql "^16.5.0"
-    graphql-fields "^2.0.3"
-    graphql-parse-resolve-info "^4.12.3"
-    json-to-graphql-query "^2.2.4"
-    knex "^2.4.2"
-    mysql "^2.18.1"
-    pg "^8.10.0"
-    pino "^8.3.1"
-    pino-pretty "^8.1.0"
-    pluralize "^8.0.0"
-    starknet "^4.13.1"
 
 checkpoint-store@^1.1.0:
   version "1.1.0"

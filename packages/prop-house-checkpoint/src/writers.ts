@@ -1,4 +1,4 @@
-import type { CheckpointWriter } from 'checkpoint-beta';
+import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
 import {
   getJSON,
   getRoundType,
