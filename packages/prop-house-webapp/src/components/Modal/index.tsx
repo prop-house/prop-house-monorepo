@@ -5,6 +5,9 @@ import Button, { ButtonColor } from '../Button';
 import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 import LoadingIndicator from '../LoadingIndicator';
+import { IoClose } from 'react-icons/io5';
+import clsx from 'clsx';
+import { isMobile } from 'web3modal';
 
 const Modal: React.FC<{
   title: string | JSX.Element | boolean;
@@ -14,8 +17,10 @@ const Modal: React.FC<{
   body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;
+  bottomContainer?: JSX.Element;
   onRequestClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  fullScreenOnMobile?: boolean;
 }> = props => {
   const {
     title,
@@ -27,6 +32,8 @@ const Modal: React.FC<{
     body,
     setShowModal,
     onRequestClose,
+    bottomContainer,
+    fullScreenOnMobile,
   } = props;
   const { t } = useTranslation();
 
@@ -37,10 +44,12 @@ const Modal: React.FC<{
   useEffect(() => {
     const disableScroll = () => {
       document.body.style.overflow = 'hidden';
+      if (fullScreenOnMobile && isMobile()) document.body.style.position = 'fixed';
     };
 
     const enableScroll = () => {
       document.body.style.overflow = 'auto';
+      document.body.style.position = 'initial';
     };
 
     const stopTouchMovePropagation: EventListener = e => {
@@ -64,14 +73,18 @@ const Modal: React.FC<{
       }
       enableScroll();
     };
-  }, []);
+  }, [fullScreenOnMobile]);
 
   return (
     <ReactModal
       isOpen={true}
       appElement={document.getElementById('root')!}
       onRequestClose={onRequestClose ? onRequestClose : closeModal}
-      className={classes.modal}
+      className={clsx(
+        classes.modal,
+        fullScreenOnMobile && classes.fullScreenOnMobile,
+        'proposalModalContainer',
+      )}
     >
       <>
         <div ref={modalContainerRef} className={classes.container}>
@@ -87,23 +100,32 @@ const Modal: React.FC<{
             )}
 
             <div className={classes.titleContainer}>
-              {title && <p className={classes.modalTitle}>{title}</p>}
-              {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+              <div className={classes.titleAndSubtitleContainer}>
+                {title && <p className={classes.modalTitle}>{title}</p>}
+                {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+              </div>
+              {fullScreenOnMobile && (
+                <div className={classes.closeBtn} onClick={() => setShowModal(false)}>
+                  <IoClose size={'1.5rem'} />
+                </div>
+              )}
             </div>
           </div>
 
-          {body && (
-            <div>
-              {' '}
-              <Divider /> {body}{' '}
-            </div>
-          )}
+          <Divider noMarginDown />
+          {body && <div className={classes.body}>{body}</div>}
 
+          <Divider noMarginUp />
           <div>
-            <Divider />
             <div className={classes.buttonContainer}>
-              {button ? button : closeButton}
-              {secondButton && secondButton}
+              {bottomContainer ? (
+                bottomContainer
+              ) : (
+                <>
+                  {button ? button : closeButton}
+                  {secondButton && secondButton}
+                </>
+              )}
             </div>
           </div>
         </div>

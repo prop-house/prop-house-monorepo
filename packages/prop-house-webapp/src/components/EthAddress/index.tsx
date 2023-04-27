@@ -3,16 +3,17 @@ import React from 'react';
 import { useAppSelector } from '../../hooks';
 import trimEthAddress from '../../utils/trimEthAddress';
 import classes from './EthAddress.module.css';
-import { useEnsName, useEnsAvatar } from 'wagmi';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import { useEnsName } from 'wagmi';
+import Avatar from '../Avatar';
 
 const EthAddress: React.FC<{
   address: string;
   className?: string;
   containerClassName?: string;
   addAvatar?: boolean;
+  avatarDiameter?: number;
 }> = props => {
-  const { address, className, containerClassName, addAvatar } = props;
+  const { address, className, containerClassName, addAvatar, avatarDiameter } = props;
 
   // create Etherscan link
   const etherscanHost = useAppSelector(state => state.configuration.etherscanHost);
@@ -20,7 +21,6 @@ const EthAddress: React.FC<{
 
   // wagmi hooks to get ENS name and avatar
   const { data: ens } = useEnsName({ address: address as `0x${string}` });
-  const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
 
   // trim address: 0x1234567890abcdef1234567890abcdef12345678 -> 0x1234...5678
   const shortAddress = trimEthAddress(address as string);
@@ -31,12 +31,7 @@ const EthAddress: React.FC<{
       className={clsx(classes.ethAddress, containerClassName)}
     >
       <a href={buildAddressHref(address)} target="_blank" rel="noreferrer">
-        {addAvatar &&
-          (avatar ? (
-            <img className={classes.avatar} src={avatar} alt="ens-avatar" />
-          ) : (
-            <Jazzicon diameter={20} seed={jsNumberForAddress(address)} />
-          ))}
+        {addAvatar && <Avatar address={address} diameter={avatarDiameter ? avatarDiameter : 20} />}
         <span className={clsx(classes.address, className)}>{ens ? ens : shortAddress}</span>
       </a>
     </div>

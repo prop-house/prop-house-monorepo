@@ -370,6 +370,43 @@ export class Community extends Signable {
     };
   }
 }
+
+export class Reply extends Signable {
+  constructor(
+    public readonly communityAddress: string,
+    public readonly blockTag: number,
+    public readonly proposalId: number,
+    public readonly content: string,
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      communityAddress: this.communityAddress,
+      blockTag: this.blockTag,
+      proposalId: this.proposalId,
+      content: this.content,
+    };
+  }
+}
+
+export class StoredReply {
+  constructor(
+    public readonly id: number,
+    public readonly createdAt: Date,
+    public readonly proposalId: number,
+    public readonly content: string,
+    public readonly address: string,
+  ) {
+    this.id = id;
+    this.createdAt = new Date(this.createdAt);
+    this.proposalId = proposalId;
+    this.content = content;
+    this.address = address;
+  }
+}
+
 export interface CommunityWithAuctions extends Community {
   auctions: StoredTimedAuction[];
 }
