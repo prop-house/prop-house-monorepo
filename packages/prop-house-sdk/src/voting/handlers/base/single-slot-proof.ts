@@ -1,5 +1,6 @@
 import { encoding, storageProofs } from '../../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
+import { hexZeroPad } from '@ethersproject/bytes';
 import { StrategyHandlerBase } from './base';
 
 // prettier-ignore
@@ -20,7 +21,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
     const block = await this.getBlockNumberForTimestamp(strategy.addr, timestamp);
 
     const result = await this.provider.send('eth_getProof', [
-      strategy.params[0], // Contract Address
+      hexZeroPad(strategy.params[0], 20), // Contract Address
       [encoding.getSlotKey(account, strategy.params[1])], // Storage Key
       `0x${block.toString(16)}`, // Block Number
     ]);

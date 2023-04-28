@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { hash } from 'starknet';
+import { Call } from 'starknet';
 import { ChainBase } from '../../../chain-base';
 import { VotingConfig } from '../../../types';
 
@@ -45,4 +45,10 @@ export abstract class StrategyHandlerBase<CS> extends ChainBase {
    * @param config Information required to fetch voting power for a user
    */
   public abstract getVotingPower(config: VotingConfig): Promise<BigNumber>;
+
+  public getStrategyPreCalls?(
+    account: string,
+    timestamp: string,
+    strategyId: string,
+  ): Promise<Call[]>;
 }

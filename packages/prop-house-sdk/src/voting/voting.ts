@@ -7,6 +7,7 @@ import {
 } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { hexStripZeros } from '@ethersproject/bytes';
+import { Call } from 'starknet';
 import {
   BalanceOfHandler,
   VanillaHandler,
@@ -76,6 +77,19 @@ export class Voting<CS extends Custom | void = void> {
         this.get(strategy.address).getUserParams(account, timestamp, strategy.id),
       ),
     );
+  }
+
+  public async getPreCallsForStrategies(
+    account: string,
+    timestamp: string,
+    strategies: VotingStrategyWithID[],
+  ): Promise<Call[]> {
+    const preCalls = await Promise.all(
+      strategies.map(async strategy =>
+        this.get(strategy.address).getStrategyPreCalls?.(account, timestamp, strategy.id),
+      ),
+    );
+    return preCalls.flat().filter(call => call !== undefined) as Call[];
   }
 
   public async getVotingPowerForStrategies<VS extends VotingStrategy>(

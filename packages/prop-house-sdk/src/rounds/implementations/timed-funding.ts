@@ -24,7 +24,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 > {
   // Storage variable name helpers
   protected readonly _SPENT_VOTING_POWER_STORE = 'spent_voting_power_store';
-  protected readonly _PROPOSAL_PERIOD_END_TIMESTAMP_STORE = 'proposal_period_end_timestamp_store';
+  protected readonly _ROUND_TIMESTAMPS_STORE = 'round_timestamps_store';
 
   /**
    * The `RoundConfig` struct type
@@ -323,12 +323,12 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
+    const { votingStrategies } = await this._query.getRoundVotingStrategies(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
-    const { votingStrategies } = await this._query.getRoundVotingStrategies(config.round);
     const timestamp = await this.getSnapshotTimestamp(config.round);
     const nonZeroStrategyVotingPowers = await this._voting.getVotingPowerForStrategies(
       address,
@@ -432,9 +432,26 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       voter: params.address,
       ...params.data,
     });
+
+    // TODO: Avoid calling these twice...
+    const timestamp = await this.getSnapshotTimestamp(params.data.round);
+    const { votingStrategies } = await this._query.getVotingStrategies({
+      where: {
+        id_in: params.data.votingStrategyIds,
+      },
+    });
+
+    // TODO: We only need to do this if they haven't voted before.
+    // Remove asap.
+    const preCalls = await this._voting.getPreCallsForStrategies(
+      params.data.voterAddress,
+      timestamp,
+      votingStrategies,
+    );
+
     const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('vote'), calldata);
-    const fee = await account.estimateFee(call);
-    return account.execute(call, undefined, {
+    const fee = await account.estimateFee([...preCalls, call]);
+    return account.execute([...preCalls, call], undefined, {
       maxFee: fee.suggestedMaxFee,
     });
   }
@@ -541,11 +558,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param round The Starknet round address
    */
   public async getSnapshotTimestamp(round: string): Promise<string> {
-    const snapshotTimestamp = await this._starknet.getStorageAt(
+    const roundTimestamps = await this._starknet.getStorageAt(
       round,
-      encoding.getStorageVarAddress(this._PROPOSAL_PERIOD_END_TIMESTAMP_STORE),
+      encoding.getStorageVarAddress(this._ROUND_TIMESTAMPS_STORE),
     );
-    return BigNumber.from(snapshotTimestamp).toString();
+    return BigNumber.from(roundTimestamps).shr(40).mask(40).toString();
   }
 
   /**

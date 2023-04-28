@@ -6,6 +6,7 @@ import { storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { BALANCE_OF_FUNC } from '../../constants';
+import { Call } from 'starknet';
 
 export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   // prettier-ignore
@@ -71,6 +72,33 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
       storageProofs: [proof],
     } = await this.fetchProofInputs(account, timestamp, strategyId);
     return proof;
+  }
+
+  public async getStrategyPreCalls(
+    account: string,
+    timestamp: string,
+    strategyId: string,
+  ): Promise<Call[]> {
+    const proofInputs = await this.fetchProofInputs(account, timestamp, strategyId);
+    return [
+      {
+        contractAddress: this._addresses.starknet.herodotus.factRegistry,
+        entrypoint: 'prove_account',
+        calldata: [
+          proofInputs.accountOptions,
+          proofInputs.blockNumber,
+          proofInputs.ethAddress.values[0],
+          proofInputs.ethAddress.values[1],
+          proofInputs.ethAddress.values[2],
+          proofInputs.accountProofSizesBytes.length,
+          ...proofInputs.accountProofSizesBytes,
+          proofInputs.accountProofSizesWords.length,
+          ...proofInputs.accountProofSizesWords,
+          proofInputs.accountProof.length,
+          ...proofInputs.accountProof,
+        ],
+      },
+    ];
   }
 
   /**
