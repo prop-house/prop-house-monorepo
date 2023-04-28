@@ -59,7 +59,7 @@ mod WhitelistVotingStrategy {
         let mut merkle_tree = MerkleTreeTrait::new();
 
         // Verify the proof is valid
-        assert(merkle_tree.verify(merkle_root, leaf, proof), 'Whitelist: Invalid proof');
+        assert(merkle_tree.verify(merkle_root, leaf, proof.span()), 'Whitelist: Invalid proof');
 
         // Return the voting power
         leaf_voting_power

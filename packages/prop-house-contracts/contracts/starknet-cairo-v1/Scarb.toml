@@ -9,6 +9,6 @@ test = "cairo-test ."
 
 # Note: currently testing doesn't work with dependencies
 [dependencies]
-quaireaux_data_structures = { git = "https://github.com/solimander/quaireaux" }
+quaireaux_data_structures = { git = "https://github.com/keep-starknet-strange/quaireaux" }
 
 [[target.starknet-contract]]
