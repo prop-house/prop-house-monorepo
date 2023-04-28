@@ -7,9 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
   Direction,
-  SignatureState,
-  StoredProposalWithVotes,
-  Vote,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
@@ -124,13 +121,7 @@ const ProposalModal = () => {
   }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: Direction) => {
-    if (
-      !activeProposal ||
-      !proposals ||
-      proposals.length === 0 ||
-      editProposalMode ||
-      showDeletePropModal
-    )
+    if (!activeProposal || !proposals?.length || editProposalMode || showDeletePropModal)
       return;
 
     const newPropIndex =
@@ -138,50 +129,44 @@ const ProposalModal = () => {
     dispatch(setActiveProposal(proposals[newPropIndex]));
   };
 
-  const _signerIsContract = async () => {
-    if (!signer || !provider || !account) {
-      return false;
-    }
-    const code = await provider.getCode(account);
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
+  // TODO: Implement voting for contracts
+  // const _signerIsContract = async () => {
+  //   if (!signer || !provider || !account) {
+  //     return false;
+  //   }
+  //   const code = await provider.getCode(account);
+  //   const isContract = code !== '0x';
+  //   setSignerIsContract(isContract);
+  //   return isContract;
+  // };
 
   const handleSubmitVote = async () => {
-    if (!activeProposal) return;
+    if (!activeProposal || !round) return;
 
-    // TODO
-    // try {
-    //   const blockHeight = await fetchBlockNumber();
+    try {
+      const votes = voteAllotments.filter(a => a.votes > 0).map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
+      const result = await propHouse.round.timedFunding.voteViaSignature({
+        round: round.address,
+        votes,
+      });
+      if (!result?.transaction_hash) {
+        throw new Error(`Vote submission failed: ${result}`);
+      }
 
-    //   const votes = voteAllotments
-    //     .map(
-    //       a =>
-    //         new Vote(
-    //           1,
-    //           a.proposalId,
-    //           a.votes,
-    //           community!.contractAddress,
-    //           SignatureState.PENDING_VALIDATION,
-    //           blockHeight,
-    //         ),
-    //     )
-    //     .filter(v => v.weight > 0);
-    //   const isContract = await _signerIsContract();
+      // TODO: If it's a contract, we need to submit an on-chain commitment
+      // const isContract = await _signerIsContract();
+      setShowErrorVotingModal(false);
+      setNumPropsVotedFor(voteAllotments.length);
+      setShowSuccessVotingModal(true);
 
-    //   await backendClient.current.logVotes(votes, isContract);
-
-    //   setShowErrorVotingModal(false);
-    //   setNumPropsVotedFor(voteAllotments.length);
-    //   setShowSuccessVotingModal(true);
-    //   refreshActiveProposals(backendClient.current, round!, dispatch);
-    //   refreshActiveProposal(backendClient.current, activeProposal, dispatch);
-    //   dispatch(clearVoteAllotments());
-    //   setShowVoteConfirmationModal(false);
-    // } catch (e) {
-    //   setShowErrorVotingModal(true);
-    // }
+      // TODO: For now, this may take 1-2 mins. Update locally instead.
+      refreshActiveProposals(propHouse, round!, dispatch);
+      refreshActiveProposal(propHouse, activeProposal, dispatch);
+      dispatch(clearVoteAllotments());
+      setShowVoteConfirmationModal(false);
+    } catch (e) {
+      setShowErrorVotingModal(true);
+    }
   };
 
   return (

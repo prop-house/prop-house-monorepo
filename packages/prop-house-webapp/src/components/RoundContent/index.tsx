@@ -89,41 +89,33 @@ const RoundContent: React.FC<{
   //     dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   // }, [proposals, account, dispatch]);
 
-  const _signerIsContract = async () => {
-    if (!provider || !account) {
-      return false;
-    }
-    const code = await provider?.getCode(account);
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
+  // TODO: Implement voting for contracts
+  // const _signerIsContract = async () => {
+  //   if (!provider || !account) {
+  //     return false;
+  //   }
+  //   const code = await provider?.getCode(account);
+  //   const isContract = code !== '0x';
+  //   setSignerIsContract(isContract);
+  //   return isContract;
+  // };
 
   const handleSubmitVote = async () => {
     try {
-      const blockHeight = await fetchBlockNumber();
-
-      // TODO: Implement
-      // const votes = voteAllotments
-      //   .map(
-      //     a =>
-      //       new Vote(
-      //         1,
-      //         a.proposalId,
-      //         a.votes,
-      //         community!.contractAddress,
-      //         SignatureState.PENDING_VALIDATION,
-      //         blockHeight,
-      //       ),
-      //   )
-      //   .filter(v => v.weight > 0);
-      // const isContract = await _signerIsContract();
-
-      // await client.current.logVotes(votes, isContract);
+      const votes = voteAllotments.filter(a => a.votes > 0).map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
+      const result = await propHouse.round.timedFunding.voteViaSignature({
+        round: round.address,
+        votes,
+      });
+      if (!result?.transaction_hash) {
+        throw new Error(`Vote submission failed: ${result}`);
+      }
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
+
+      // TODO: For now, handle locally. This may take 1-2 mins
       refreshActiveProposals(propHouse, round, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
