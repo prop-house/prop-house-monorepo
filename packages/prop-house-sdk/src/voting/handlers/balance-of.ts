@@ -108,9 +108,10 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   public async getVotingPower(config: VotingConfig): Promise<BigNumber> {
     const block = await this.getBlockNumberForTimestamp(config.address, config.timestamp);
     const token = BigNumber.from(config.params[0]).toHexString();
-    return this.contractFor(token).balanceOf(config.voter, {
+    const balance = await this.contractFor(token).balanceOf(config.voter, {
       blockTag: block,
     });
+    return balance.mul(config.params?.[2] ?? 1);
   }
 
   /**
