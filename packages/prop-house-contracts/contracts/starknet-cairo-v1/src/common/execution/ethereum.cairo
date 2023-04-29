@@ -1,7 +1,6 @@
 #[contract]
 mod EthereumExecutionStrategy {
-    use starknet::ContractAddress;
-    use starknet::get_caller_address;
+    use starknet::{ContractAddress, get_caller_address };
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::syscalls::send_message_to_l1_syscall;
     use prop_house::round_factory::IRoundFactory;

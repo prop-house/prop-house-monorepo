@@ -45,16 +45,13 @@ struct ProposalVote {
 
 #[contract]
 mod TimedFundingRound {
-    use starknet::ContractAddress;
-    use starknet::get_caller_address;
-    use starknet::get_block_timestamp;
+    use starknet::{ContractAddress, get_block_timestamp, get_caller_address };
     use starknet::contract_address::Felt252TryIntoContractAddress;
-    use prop_house::common::libraries::round::Round;
-    use prop_house::common::libraries::round::Proposal;
-    use prop_house::common::libraries::round::ProposalWithId;
-    use prop_house::common::registry::voting_strategy::VotingStrategy;
+    use super::{ITimedFundingRound, ProposalVote, RoundParams, RoundState, Award };
+    use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId };
     use prop_house::common::registry::voting_strategy::IVotingStrategyRegistryDispatcherTrait;
     use prop_house::common::registry::voting_strategy::IVotingStrategyRegistryDispatcher;
+    use prop_house::common::registry::voting_strategy::VotingStrategy;
     use prop_house::common::utils::traits::IVotingStrategyDispatcherTrait;
     use prop_house::common::utils::traits::IVotingStrategyDispatcher;
     use prop_house::common::utils::traits::IExecutionStrategyDispatcherTrait;
@@ -64,21 +61,13 @@ mod TimedFundingRound {
     use prop_house::common::utils::array::Immutable2DArray;
     use prop_house::common::utils::array::get_sub_array;
     use prop_house::common::utils::array::ArrayTraitExt;
-    use prop_house::common::utils::u256::U256Zeroable;
     use prop_house::common::utils::array::array_slice;
-    use super::ITimedFundingRound;
+    use prop_house::common::utils::u256::U256Zeroable;
+    use traits::{TryInto, Into };
     use integer::U16IntoFelt252;
-    use array::ArrayTCloneImpl;
-    use super::ProposalVote;
     use option::OptionTrait;
     use zeroable::Zeroable;
-    use super::RoundParams;
-    use super::RoundState;
     use array::ArrayTrait;
-    use traits::TryInto;
-    use super::Award;
-    use traits::Into;
-    use clone::Clone;
 
     /// The maximum number of winners that can be specified for a round.
     const MAX_WINNERS: u16 = 255;
@@ -353,7 +342,7 @@ mod TimedFundingRound {
             }
             let address = (*voting_strategy_addresses.at(i)).try_into().unwrap();
             let params = get_sub_array(@array_2d, i);
-            voting_strategies.append(VotingStrategy { address, params });
+            voting_strategies.append(VotingStrategy { address, params: params.span() });
             i += 1;
         };
 
@@ -401,12 +390,9 @@ mod TimedFundingRound {
                 break ();
             }
 
-            let voting_strategy = voting_strategies.at(i);
+            let voting_strategy = *voting_strategies.at(i);
             let strategy_id = voting_strategy_registry.register_voting_strategy_if_not_exists(
-                // TODO: Likely cheaper to pass a span containing the params
-                VotingStrategy {
-                    address: *voting_strategy.address, params: voting_strategy.params.clone()
-                },
+                VotingStrategy { address: voting_strategy.address, params: voting_strategy.params }, 
             );
             _is_voting_strategy_registered::write(strategy_id, true);
         }
@@ -450,7 +436,7 @@ mod TimedFundingRound {
                 timestamp,
                 voter_address,
                 voting_strategy.params,
-                user_voting_strategy_params_all.clone(), // TODO: Use Span instead
+                user_voting_strategy_params_all.span(),
             );
             cumulative_voting_power += voting_power;
         };

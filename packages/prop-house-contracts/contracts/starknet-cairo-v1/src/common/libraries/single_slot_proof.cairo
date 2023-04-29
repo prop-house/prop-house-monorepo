@@ -37,7 +37,7 @@ trait IFactsRegistry {
 mod SingleSlotProof {
     use starknet::ContractAddress;
     use prop_house::common::utils::u256::U256Zeroable;
-    use prop_house::common::utils::array::array_slice;
+    use prop_house::common::utils::array::span_slice;
     use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcherTrait;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcher;
@@ -47,9 +47,8 @@ mod SingleSlotProof {
     use super::StorageSlot;
     use option::OptionTrait;
     use zeroable::Zeroable;
-    use array::ArrayTrait;
-    use traits::TryInto;
-    use traits::Into;
+    use array::{ArrayTrait, SpanTrait };
+    use traits::{TryInto, Into };
 
     struct Storage {
         _fact_registry: ContractAddress,
@@ -68,10 +67,7 @@ mod SingleSlotProof {
     /// * `params` - The params, containing the contract address and slot index.
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     fn get_slot_value(
-        timestamp: u64,
-        voter_address: felt252,
-        params: @Array<felt252>,
-        user_params: Array<felt252>,
+        timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         let ethereum_block_registry = IEthereumBlockRegistryDispatcher {
             contract_address: _ethereum_block_registry::read()
@@ -108,7 +104,7 @@ mod SingleSlotProof {
     /// Decodes the user params into the slot, proof sizes, and proofs.
     /// * `params` - The user params, containing the slot, proof sizes, and proofs.
     fn _decode_param_array(
-        params: Array<felt252>
+        params: Span<felt252>
     ) -> (StorageSlot, Array::<felt252>, Array::<felt252>, Array::<felt252>) {
         assert(params.len() >= 5, 'SSP: Bad user param length');
 
@@ -120,11 +116,9 @@ mod SingleSlotProof {
         };
         let num_nodes: u32 = (*params.at(4)).try_into().unwrap();
 
-        let proof_sizes_bytes = array_slice(@params, 5, num_nodes);
-        let proof_sizes_words = array_slice(@params, 5 + num_nodes, num_nodes);
-        let proofs_concat = array_slice(
-            @params, 5 + 2 * num_nodes, params.len() - 5 - 2 * num_nodes
-        );
+        let proof_sizes_bytes = span_slice(params, 5, num_nodes);
+        let proof_sizes_words = span_slice(params, 5 + num_nodes, num_nodes);
+        let proofs_concat = span_slice(params, 5 + 2 * num_nodes, params.len() - 5 - 2 * num_nodes);
         return (slot, proof_sizes_bytes, proof_sizes_words, proofs_concat);
     }
 }

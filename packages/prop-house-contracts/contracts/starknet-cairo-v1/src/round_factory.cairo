@@ -9,8 +9,7 @@ trait IRoundFactory {
 #[contract]
 mod RoundFactory {
     use starknet::syscalls::deploy_syscall;
-    use starknet::ContractAddress;
-    use starknet::ClassHash;
+    use starknet::{ContractAddress, ClassHash };
     use super::IRoundFactory;
     use array::ArrayTrait;
 

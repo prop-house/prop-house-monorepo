@@ -2,18 +2,18 @@
 mod WhitelistVotingStrategy {
     use quaireaux_data_structures::merkle_tree::MerkleTreeTrait;
     use prop_house::common::utils::traits::IVotingStrategy;
+    use prop_house::common::utils::serde::SpanSerde;
+    use array::{ArrayTrait, SpanTrait };
+    use traits::{TryInto, Into };
     use option::OptionTrait;
-    use array::ArrayTrait;
     use hash::LegacyHash;
-    use traits::TryInto;
-    use traits::Into;
 
     impl WhitelistVotingStrategy of IVotingStrategy {
         fn get_voting_power(
             timestamp: u64,
             voter_address: felt252,
-            params: Array<felt252>,
-            user_params: Array<felt252>,
+            params: Span<felt252>,
+            user_params: Span<felt252>,
         ) -> u256 {
             _get_voting_power(timestamp, voter_address, params, user_params)
         }
@@ -21,13 +21,13 @@ mod WhitelistVotingStrategy {
 
     #[external]
     fn get_voting_power(
-        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
+        timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         WhitelistVotingStrategy::get_voting_power(timestamp, voter_address, params, user_params)
     }
 
     fn _get_voting_power(
-        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
+        timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         let user_params_len = user_params.len();
         let leaf_len = 3; // [voter_address, voting_power.low, voting_power.high]

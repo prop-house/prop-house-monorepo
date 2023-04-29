@@ -4,14 +4,11 @@ use starknet::StorageBaseAddress;
 use starknet::storage_read_syscall;
 use starknet::storage_write_syscall;
 use starknet::storage_address_from_base_and_offset;
-use prop_house::common::utils::bool::BoolIntoFelt252;
-use prop_house::common::utils::bool::Felt252TryIntoBool;
-use integer::U128IntoFelt252;
-use integer::Felt252IntoU256;
+use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool };
+use integer::{U128IntoFelt252, Felt252IntoU256 };
+use traits::{TryInto, Into };
 use option::OptionTrait;
 use array::ArrayTrait;
-use traits::TryInto;
-use traits::Into;
 
 #[derive(Copy, Drop, Serde)]
 struct Proposal {
@@ -63,8 +60,7 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
 
 #[contract]
 mod Round {
-    use super::Proposal;
-    use super::ProposalWithId;
+    use super::{Proposal, ProposalWithId };
     use array::ArrayTrait;
 
     struct Storage {

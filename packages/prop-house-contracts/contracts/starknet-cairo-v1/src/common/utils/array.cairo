@@ -1,6 +1,6 @@
+use array::{ArrayTrait, SpanTrait };
 use integer::Felt252TryIntoU32;
 use option::OptionTrait;
-use array::ArrayTrait;
 use hash::LegacyHash;
 use traits::TryInto;
 
@@ -107,6 +107,26 @@ fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     fill_array(ref dst, src, index + 1, count - 1)
 }
 
+// Fill an array with a value from a span.
+/// * `dst` - The array to fill.
+/// * `src` - The span to fill with.
+/// * `index` - The index to start filling at.
+/// * `count` - The number of elements to fill.
+fn fill_array_from_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
+    ref dst: Array<T>, src: Span<T>, index: u32, count: u32
+) {
+    if count == 0 {
+        return ();
+    }
+    if index >= src.len() {
+        return ();
+    }
+    let element = src.at(index);
+    dst.append(*element);
+
+    fill_array_from_span(ref dst, src, index + 1, count - 1)
+}
+
 /// Returns the slice of an array.
 /// * `arr` - The array to slice.
 /// * `begin` - The index to start the slice at.
@@ -118,6 +138,20 @@ fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
 ) -> Array<T> {
     let mut slice = ArrayTrait::new();
     fill_array(ref dst: slice, :src, index: begin, count: end);
+    slice
+}
+
+/// Returns the slice of a span.
+/// * `span` - The span to slice.
+/// * `begin` - The index to start the slice at.
+/// * `end` - The index to end the slice at (not included).
+/// # Returns
+/// * `Array<T>` - The slice of the span as an array.
+fn span_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
+    src: Span<T>, begin: usize, end: usize
+) -> Array<T> {
+    let mut slice = ArrayTrait::new();
+    fill_array_from_span(ref dst: slice, :src, index: begin, count: end);
     slice
 }
 

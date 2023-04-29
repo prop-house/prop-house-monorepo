@@ -5,17 +5,17 @@ use starknet::storage_read_syscall;
 use starknet::storage_write_syscall;
 use starknet::storage_address_from_base_and_offset;
 use starknet::contract_address::Felt252TryIntoContractAddress;
+use prop_house::common::utils::storage_access::StorageAccessFelt252Span;
 use starknet::ContractAddressIntoFelt252;
 use starknet::ContractAddress;
+use traits::{TryInto, Into };
 use option::OptionTrait;
-use traits::TryInto;
-use traits::Into;
-use clone::Clone;
+use array::ArrayTrait;
 
-#[derive(Clone, Drop, Serde)]
+#[derive(Copy, Drop, Serde)]
 struct VotingStrategy {
     address: ContractAddress,
-    params: Array<felt252>,
+    params: Span<felt252>,
 }
 
 impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
@@ -25,12 +25,7 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
                 address: storage_read_syscall(
                     address_domain, storage_address_from_base_and_offset(base, 0)
                 )?.try_into().unwrap(),
-                params: ArrayTrait::new(),
-            // TODO: Arrays do not yet implement `StorageAccess`
-            // params: storage_read_syscall(
-            //     address_domain,
-            //     storage_address_from_base_and_offset(base, 1)
-            // )?.try_into().unwrap(),
+                params: StorageAccessFelt252Span::read(address_domain, base)?,
             }
         )
     }
@@ -40,13 +35,8 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
     ) -> SyscallResult<()> {
         storage_write_syscall(
             address_domain, storage_address_from_base_and_offset(base, 0), value.address.into()
-        ) // ?;
-    // TODO: Arrays do not yet implement `StorageAccess` 
-    // storage_write_syscall(
-    //     address_domain,
-    //     storage_address_from_base_and_offset(base, 1_u8),
-    //     value.params.into()
-    // )
+        )?;
+        StorageAccessFelt252Span::write(address_domain, base, value.params)
     }
 }
 
@@ -63,13 +53,11 @@ mod VotingStrategyRegistry {
     use starknet::contract_address::ContractAddressZeroable;
     use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::array::array_hash;
-    use super::IVotingStrategyRegistry;
-    use super::VotingStrategy;
-    use array::ArrayTCloneImpl;
+    use prop_house::common::utils::serde::SpanSerde;
+    use super::{IVotingStrategyRegistry, VotingStrategy };
+    use array::{ArrayTrait, SpanTrait };
     use zeroable::Zeroable;
-    use array::ArrayTrait;
     use traits::Into;
-    use clone::Clone;
 
     struct Storage {
         _voting_strategies: LegacyMap<felt252, VotingStrategy>, 
@@ -91,12 +79,8 @@ mod VotingStrategyRegistry {
 
             let stored_strategy = _voting_strategies::read(strategy_id);
             if stored_strategy.address.is_zero() {
-                let s = @voting_strategy;
-
                 _voting_strategies::write(strategy_id, voting_strategy);
-                VotingStrategyRegistered(
-                    strategy_id, VotingStrategy { address: *s.address, params: s.params.clone(),  }
-                );
+                VotingStrategyRegistered(strategy_id, voting_strategy);
             }
             strategy_id
         }
@@ -125,8 +109,17 @@ mod VotingStrategyRegistry {
     fn _compute_strategy_id(ref voting_strategy: VotingStrategy) -> felt252 {
         let mut strategy_array = ArrayTrait::new();
         strategy_array.append(voting_strategy.address.into());
-        strategy_array.append_all(ref voting_strategy.params);
 
+        loop {
+            match voting_strategy.params.pop_front() {
+                Option::Some(v) => {
+                    strategy_array.append(*v);
+                },
+                Option::None(_) => {
+                    break ();
+                },
+            };
+        };
         array_hash(@strategy_array)
     }
 }

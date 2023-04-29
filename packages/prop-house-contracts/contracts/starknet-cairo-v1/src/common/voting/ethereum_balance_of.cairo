@@ -3,16 +3,17 @@ mod EthereumBalanceOfVotingStrategy {
     use starknet::ContractAddress;
     use prop_house::common::utils::traits::IVotingStrategy;
     use prop_house::common::libraries::single_slot_proof::SingleSlotProof;
+    use prop_house::common::utils::serde::SpanSerde;
+    use array::{ArrayTrait, SpanTrait };
     use zeroable::Zeroable;
-    use array::ArrayTrait;
     use traits::Into;
 
     impl EthereumBalanceOfVotingStrategy of IVotingStrategy {
         fn get_voting_power(
             timestamp: u64,
             voter_address: felt252,
-            params: Array<felt252>,
-            user_params: Array<felt252>,
+            params: Span<felt252>,
+            user_params: Span<felt252>,
         ) -> u256 {
             let params_len = params.len();
 
@@ -20,7 +21,7 @@ mod EthereumBalanceOfVotingStrategy {
             assert(params_len == 2 | params_len == 3, 'EthBO: Bad param length');
 
             let voting_power = SingleSlotProof::get_slot_value(
-                timestamp, voter_address, @params, user_params
+                timestamp, voter_address, params, user_params
             );
             if params_len == 2 {
                 return voting_power;
@@ -45,7 +46,7 @@ mod EthereumBalanceOfVotingStrategy {
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     #[external]
     fn get_voting_power(
-        timestamp: u64, voter_address: felt252, params: Array<felt252>, user_params: Array<felt252>, 
+        timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         EthereumBalanceOfVotingStrategy::get_voting_power(
             timestamp, voter_address, params, user_params
