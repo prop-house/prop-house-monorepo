@@ -43,7 +43,7 @@
   border: 2px solid var(--brand-pink-transparent);
 }
 .completedStep .number {
-  background: var(--brand-gray-transparent);
+  background: var(--brand-green);
   border: 2px solid transparent;
   color: white;
 }
@@ -57,7 +57,7 @@
   border: 1px dashed var(--brand-pink);
 }
 .completedStep::after {
-  border: 1px dashed var(--brand-gray-transparent) !important;
+  border: 1px dashed var(--brand-green) !important;
 }
 
 @media (max-width: 991px) {
