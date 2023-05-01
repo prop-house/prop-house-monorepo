@@ -36,7 +36,7 @@ const AwardsConfig = () => {
   return (
     <>
       <Text type="heading">{round.title}</Text>
-      <Divider narrow />
+      <Divider />
 
       <Header
         title="What will the winners be awarded?"

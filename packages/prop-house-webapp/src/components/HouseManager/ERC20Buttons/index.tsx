@@ -56,7 +56,7 @@ const ERC20Buttons: React.FC<{
       {/* the custom address input */}
       {award.selectedAsset === ERC20.OTHER && (
         <>
-          <Divider narrow />
+          <Divider />
           <Group gap={6}>
             <AwardAddress
               award={award}

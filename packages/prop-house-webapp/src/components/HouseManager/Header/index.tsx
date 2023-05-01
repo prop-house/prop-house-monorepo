@@ -13,7 +13,7 @@ const Header: React.FC<{
       {title && <Text type="title">{title}</Text>}
       {subtitle && <Text type="body">{subtitle}</Text>}
       {content && content}
-      <Divider narrow />
+      <Divider />
     </>
   );
 };

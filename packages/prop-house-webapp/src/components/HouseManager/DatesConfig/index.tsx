@@ -19,7 +19,7 @@ const DatesConfig = () => {
   return (
     <>
       <Text type="heading">{round.title}</Text>
-      <Divider narrow />
+      <Divider />
 
       <Header
         title="How long should the round run?"
