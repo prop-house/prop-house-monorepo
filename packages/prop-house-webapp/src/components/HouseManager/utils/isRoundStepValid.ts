@@ -18,9 +18,9 @@ const isStep2Valid = (round: NewRound) =>
   round.title.length <= 255 &&
   20 <= removeTags(round.description).length;
 
-// STRATEGIES
-// At least one strategy
-const isStep3Valid = (round: NewRound) => round.strategies.length > 0;
+// VOTERS
+// At least one voter
+const isStep3Valid = (round: NewRound) => round.voters.length > 0;
 
 // AWARDS
 // At least one valid award

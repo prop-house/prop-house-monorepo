@@ -3,7 +3,7 @@ import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import { useAppSelector } from '../../../hooks';
 import HouseInfoConfig from '../HouseInfoConfig';
 import RoundInfoConfig from '../RoundInfoConfig';
-import StrategiesConfig from '../StrategiesConfig';
+import VotersConfig from '../VotersConfig';
 import AwardsConfig from '../AwardsConfig';
 import DatesConfig from '../DatesConfig';
 import CreateRound from '../CreateRound';
@@ -19,7 +19,7 @@ const PrimaryCard: React.FC = () => {
       case 2:
         return <RoundInfoConfig />;
       case 3:
-        return <StrategiesConfig />;
+        return <VotersConfig />;
       case 4:
         return <AwardsConfig />;
       case 5:

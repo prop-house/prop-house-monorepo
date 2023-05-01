@@ -10,7 +10,7 @@ import CardWrapper from '../CardWrapper';
 import EditSection from '../EditSection';
 import Footer from '../Footer';
 import Group from '../Group';
-import StrategyCard from '../StrategyCard';
+import VoterCard from '../VoterCard';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import Markdown from 'markdown-to-jsx';
@@ -21,7 +21,7 @@ import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
 import { getDateFromDuration } from '../utils/getDateFromDuration';
 import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
-import VotingStrategyModal from '../VotingStrategyModal';
+import VotersModal from '../VotersModal';
 import EditAwardsModal from '../EditAwardsModal';
 
 /**
@@ -32,7 +32,7 @@ import EditAwardsModal from '../EditAwardsModal';
  * @component
  * @name DeadlineDates - the start and end dates of the round
  * @name EditSection - the edit icon that opens the modal to edit the section
- * @name CardWrapper -formats the strategy & award cards into a grid
+ * @name CardWrapper -formats the voter & award cards into a grid
  *
  * @notes
  * @see startDate - the start date of the round
@@ -41,8 +41,8 @@ import EditAwardsModal from '../EditAwardsModal';
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
-  const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
-    round.strategies.length ? round.strategies : [],
+  const [voters, setVoters] = useState<VotingStrategyConfig[]>(
+    round.voters.length ? round.voters : [],
   );
   const dispatch = useDispatch();
 
@@ -52,7 +52,7 @@ const CreateRound = () => {
 
   const [editDatesModal, setShowEditDatesModal] = useState(false);
   const [editRoundInfoModal, setShowEditRoundInfoModal] = useState(false);
-  const [editStrategiesModal, setShowStrategiesModal] = useState(false);
+  const [editVotersModal, setShowVotersModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
   const startDate = getDateFromTimestamp(round.proposalPeriodStartUnixTimestamp);
@@ -67,12 +67,12 @@ const CreateRound = () => {
       {editRoundInfoModal && (
         <EditRoundInfoModal setShowEditRoundInfoModal={setShowEditRoundInfoModal} />
       )}
-      {editStrategiesModal && (
-        <VotingStrategyModal
+      {editVotersModal && (
+        <VotersModal
           editMode
-          strategies={strategies}
-          setStrategies={setStrategies}
-          setShowVotingStrategyModal={setShowStrategiesModal}
+          voters={voters}
+          setVoters={setVoters}
+          setShowVotersModal={setShowVotersModal}
         />
       )}
       {editAwardsModal && <EditAwardsModal setShowAwardsModal={setShowAwardsModal} />}
@@ -111,19 +111,19 @@ const CreateRound = () => {
         />
       </Group>
 
-      <Divider narrow />
+      <Divider />
 
       <Group gap={16}>
-        <EditSection section="votes" onClick={() => setShowStrategiesModal(true)} />
+        <EditSection section="votes" onClick={() => setShowVotersModal(true)} />
         <CardWrapper>
-          {strategies.map((s, idx) =>
+          {voters.map((s, idx) =>
             s.strategyType === VotingStrategyType.VANILLA ? (
               <></>
             ) : s.strategyType === VotingStrategyType.WHITELIST ? (
               // with whitelist, we need to show a card for each member
               // TODO - add truncate to number of cards (see Figma)
               s.members.map((m, idx) => (
-                <StrategyCard
+                <VoterCard
                   key={idx}
                   type={s.strategyType}
                   address={m.address}
@@ -131,7 +131,7 @@ const CreateRound = () => {
                 />
               ))
             ) : (
-              <StrategyCard
+              <VoterCard
                 key={idx}
                 type={s.strategyType}
                 address={s.address}

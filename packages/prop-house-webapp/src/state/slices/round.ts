@@ -32,7 +32,7 @@ export interface NewRound {
   numWinners: number;
   currencyType: string;
   description: string;
-  strategies: VotingStrategyConfig[];
+  voters: VotingStrategyConfig[];
   awards: Award[];
   splitAwards: boolean;
   roundType: RoundType;
@@ -47,7 +47,7 @@ export const initialRound: NewRound = {
   numWinners: 1,
   currencyType: '',
   description: '',
-  strategies: [],
+  voters: [],
   awards: [NewAward],
   splitAwards: true,
   roundType: RoundType.TIMED_FUNDING,
@@ -89,7 +89,7 @@ export const roundSlice = createSlice({
       const { round, activeStep } = state;
       const stepIndex = activeStep - 1;
 
-      //
+      // If the step is valid, enable the step, otherwise disable it
       state.stepDisabledArray[stepIndex] = !isRoundStepValid(round, activeStep);
 
       // If the user is on step 1 and they select an existing house,

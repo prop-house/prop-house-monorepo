@@ -6,23 +6,23 @@ import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import UploadCSVModal from '../UploadCSVModal';
 import { VotingStrategyType, AssetType, VotingStrategyConfig } from '@prophouse/sdk-react';
-import VotingStrategyModal from '../VotingStrategyModal';
-import VotingStrategies from '../VotingStrategies';
+import VotersModal from '../VotersModal';
+import Voters from '../Voters';
 
 /**
  * @overview
- * Step 3 - user selects the voting strategies (token holders or allowlist users that can vote) for the round
+ * Step 3 - user selects the voters (token holders or allowlist users that can vote) for the round
  *
  * @components
  * @name VotingStrategyModal - the modal that allows the user to add a new voting strategy
  * @name UploadCSVModal - // TODO - need to refactor old code to new desgin
- * @name VotingStrategies - list of completed strategies, can be removed but not edited
+ * @name Voters - list of completed voters, can be removed but not edited
  *
  * @notes
- * @see NewStrategy - new strategy object
+ * @see NewVoter - new strategy object
  */
 
-export interface NewStrategy {
+export interface NewVoter {
   type: VotingStrategyType;
   address: string;
   asset: AssetType;
@@ -35,7 +35,7 @@ export interface NewStrategy {
   error: string;
 }
 
-export const newStrategy: NewStrategy = {
+export const newVoter: NewVoter = {
   type: VotingStrategyType.BALANCE_OF,
   asset: AssetType.ERC721,
   address: '',
@@ -47,34 +47,32 @@ export const newStrategy: NewStrategy = {
   error: '',
 };
 
-const StrategiesConfig = () => {
+const VotersConfig = () => {
   const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
-  const [showVotingStrategyModal, setShowVotingStrategyModal] = useState(false);
+  const [showVotersModal, setShowVotersModal] = useState(false);
 
   const round = useAppSelector(state => state.round.round);
 
-  // if there are no strategies, set the strategies to an empty array
-  const [strategies, setStrategies] = useState<VotingStrategyConfig[]>(
-    round.strategies.length ? round.strategies : [],
+  // if there are no voters, set the voters to an empty array
+  const [voters, setVoters] = useState<VotingStrategyConfig[]>(
+    round.voters.length ? round.voters : [],
   );
 
   return (
     <>
       <Text type="heading">{round.title}</Text>
-      <Divider narrow />
+      <Divider />
 
       <Group gap={6} mb={16}>
-        <Text type="subtitle">Voting Strategies</Text>
-        <Text type="body">
-          Voting strategies determine who can vote in your round and how many votes they get.
-        </Text>
+        <Text type="subtitle">Voters</Text>
+        <Text type="body">Determine who can vote in your round and how many votes they get.</Text>
       </Group>
 
-      {showVotingStrategyModal && (
-        <VotingStrategyModal
-          strategies={strategies}
-          setStrategies={setStrategies}
-          setShowVotingStrategyModal={setShowVotingStrategyModal}
+      {showVotersModal && (
+        <VotersModal
+          voters={voters}
+          setVoters={setVoters}
+          setShowVotersModal={setShowVotersModal}
         />
       )}
 
@@ -86,15 +84,11 @@ const StrategiesConfig = () => {
         />
       )}
 
-      <VotingStrategies
-        strategies={strategies}
-        setStrategies={setStrategies}
-        setShowVotingStrategyModal={setShowVotingStrategyModal}
-      />
+      <Voters voters={voters} setVoters={setVoters} setShowVotersModal={setShowVotersModal} />
 
       <Footer />
     </>
   );
 };
 
-export default StrategiesConfig;
+export default VotersConfig;

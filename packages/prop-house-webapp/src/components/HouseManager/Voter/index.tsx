@@ -1,4 +1,4 @@
-import classes from './VotingStrategy.module.css';
+import classes from './Voter.module.css';
 import Group from '../Group';
 import EthAddress from '../../EthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
@@ -8,14 +8,14 @@ import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';
 import { useProvider } from 'wagmi';
 
-const VotingStrategy: React.FC<{
+const Voter: React.FC<{
   type: string;
   address: string;
   multiplier?: number;
   isDisabled?: boolean;
-  removeStrategy: (address: string, type: string) => void;
+  removeVoter: (address: string, type: string) => void;
 }> = props => {
-  const { type, address, multiplier, isDisabled, removeStrategy } = props;
+  const { type, address, multiplier, isDisabled, removeVoter } = props;
 
   const provider = useProvider();
   const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });
@@ -64,7 +64,7 @@ const VotingStrategy: React.FC<{
         classNames={classes.xButtonMobile}
         bgColor={ButtonColor.White}
         disabled={isDisabled}
-        onClick={() => removeStrategy(address, type)}
+        onClick={() => removeVoter(address, type)}
       />
 
       <Button
@@ -72,10 +72,10 @@ const VotingStrategy: React.FC<{
         classNames={classes.xButtonDesktop}
         bgColor={ButtonColor.White}
         disabled={isDisabled}
-        onClick={() => removeStrategy(address, type)}
+        onClick={() => removeVoter(address, type)}
       />
     </Group>
   );
 };
 
-export default VotingStrategy;
+export default Voter;

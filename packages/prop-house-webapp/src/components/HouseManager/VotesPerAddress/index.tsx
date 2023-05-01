@@ -2,19 +2,19 @@ import classes from './VotesPerAddress.module.css';
 import React from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Group from '../Group';
-import { NewStrategy } from '../StrategiesConfig';
+import { NewVoter } from '../VotersConfig';
 import Text from '../Text';
 import { AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 
 const VotesPerAddress: React.FC<{
-  strategy: NewStrategy;
+  voter: NewVoter;
   handleVote: (votes: number) => void;
   disabled: boolean;
 }> = props => {
-  const { strategy, handleVote, disabled } = props;
+  const { voter, handleVote, disabled } = props;
 
-  const handleIncrement = () => handleVote(strategy.multiplier + 1);
-  const handleDecrement = () => handleVote(strategy.multiplier - 1);
+  const handleIncrement = () => handleVote(voter.multiplier + 1);
+  const handleDecrement = () => handleVote(voter.multiplier - 1);
 
   const handleVoteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseInt(e.target.value);
@@ -41,12 +41,10 @@ const VotesPerAddress: React.FC<{
   return (
     <Group mt={8} gap={4}>
       <Text type="subtitle">
-        {strategy.type === VotingStrategyType.WHITELIST ? 'Votes per user' : 'Votes per token'}
+        {voter.type === VotingStrategyType.WHITELIST ? 'Votes per user' : 'Votes per token'}
       </Text>
       <Text type="body">{`Choose how many votes are allotted for each ${
-        strategy.type === VotingStrategyType.WHITELIST
-          ? 'user'
-          : `${AssetType[strategy.asset]} held`
+        voter.type === VotingStrategyType.WHITELIST ? 'user' : `${AssetType[voter.asset]} held`
       }.`}</Text>
 
       <Group row gap={16} classNames={classes.voteContainer}>
@@ -54,7 +52,7 @@ const VotesPerAddress: React.FC<{
           maxLength={3}
           className={classes.votesInput}
           disabled={disabled}
-          value={disabled ? '' : strategy.multiplier}
+          value={disabled ? '' : voter.multiplier}
           placeholder="1"
           type="number"
           onChange={handleVoteInputChange}
@@ -66,7 +64,7 @@ const VotesPerAddress: React.FC<{
             classNames={classes.button}
             bgColor={ButtonColor.Gray}
             onClick={handleDecrement}
-            disabled={strategy.multiplier === 1 || disabled}
+            disabled={voter.multiplier === 1 || disabled}
           />
           <Button
             text="+"

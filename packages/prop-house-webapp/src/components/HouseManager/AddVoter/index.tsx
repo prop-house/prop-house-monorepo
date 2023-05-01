@@ -1,11 +1,11 @@
-import classes from './AddVotingStrategy.module.css';
+import classes from './AddVoter.module.css';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { newStrategy, NewStrategy } from '../StrategiesConfig';
-import StrategyAddress from '../StrategyAddress';
+import { newVoter, NewVoter } from '../VotersConfig';
+import VoterAddress from '../VoterAddress';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -28,7 +28,7 @@ import { saveRound } from '../../../state/thunks';
  * @see addressTypes - strategy types to map over & display
  */
 
-enum StrategyType {
+export enum StrategyType {
   ERC721 = 'ERC-721',
   ERC1155 = 'ERC-1155',
   ERC20 = 'ERC-20',
@@ -42,22 +42,22 @@ const addressTypes: StrategyType[] = [
   StrategyType.Allowlist,
 ];
 
-const AddVotingStrategy: React.FC<{
-  strat: NewStrategy;
+const AddVoter: React.FC<{
+  voter: NewVoter;
   selectedStrategy: string;
-  strategies: VotingStrategyConfig[];
-  setStrat: (strat: NewStrategy) => void;
-  setStrategies: (strategies: VotingStrategyConfig[]) => void;
+  voters: VotingStrategyConfig[];
+  setVoter: (strat: NewVoter) => void;
+  setVoters: (voters: VotingStrategyConfig[]) => void;
   setSelectedStrategy: (selectedStrategy: string) => void;
   handleCancel: () => void;
 }> = props => {
   const {
-    strat,
+    voter,
     selectedStrategy,
-    strategies,
-    setStrat,
+    voters,
+    setVoter,
     handleCancel,
-    setStrategies,
+    setVoters,
     setSelectedStrategy,
   } = props;
   const { t } = useTranslation();
@@ -70,25 +70,25 @@ const AddVotingStrategy: React.FC<{
   const handleAddVotingStrategy = () => {
     let s: VotingStrategyConfig | null = null;
 
-    if (strat.type === VotingStrategyType.ERC1155_BALANCE_OF) {
+    if (voter.type === VotingStrategyType.ERC1155_BALANCE_OF) {
       s = {
-        strategyType: strat.type,
+        strategyType: voter.type,
         assetType: AssetType.ERC1155,
-        address: strat.address,
-        tokenId: strat.tokenId,
-        multiplier: strat.multiplier,
+        address: voter.address,
+        tokenId: voter.tokenId,
+        multiplier: voter.multiplier,
       };
-    } else if (strat.type === VotingStrategyType.BALANCE_OF) {
+    } else if (voter.type === VotingStrategyType.BALANCE_OF) {
       s = {
         strategyType: VotingStrategyType.BALANCE_OF,
         assetType: AssetType.ERC20,
-        address: strat.address,
-        multiplier: strat.multiplier,
+        address: voter.address,
+        multiplier: voter.multiplier,
       };
-    } else if (strat.type === VotingStrategyType.WHITELIST) {
+    } else if (voter.type === VotingStrategyType.WHITELIST) {
       const newMember: WhitelistMember = {
-        address: strat.address,
-        votingPower: strat.multiplier.toString(),
+        address: voter.address,
+        votingPower: voter.multiplier.toString(),
       };
       s = {
         strategyType: VotingStrategyType.WHITELIST,
@@ -97,16 +97,16 @@ const AddVotingStrategy: React.FC<{
     }
 
     if (s) {
-      let updatedStrategies: VotingStrategyConfig[] = [];
+      let updatedVoters: VotingStrategyConfig[] = [];
 
       if (s.strategyType === VotingStrategyType.WHITELIST) {
         // Find existing Whitelist strategy
-        const existingStrategyIndex = round.strategies.findIndex(
+        const existingStrategyIndex = round.voters.findIndex(
           existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
         );
 
         if (existingStrategyIndex > -1) {
-          const existingStrategy = round.strategies[existingStrategyIndex];
+          const existingStrategy = round.voters[existingStrategyIndex];
 
           // Type guard to ensure existing strategy is a Whitelist strategy
           if ('members' in existingStrategy) {
@@ -115,28 +115,28 @@ const AddVotingStrategy: React.FC<{
               ...existingStrategy,
               members: [...existingStrategy.members, ...s.members],
             };
-            updatedStrategies = [
-              ...round.strategies.slice(0, existingStrategyIndex),
+            updatedVoters = [
+              ...round.voters.slice(0, existingStrategyIndex),
               updatedStrategy,
-              ...round.strategies.slice(existingStrategyIndex + 1),
+              ...round.voters.slice(existingStrategyIndex + 1),
             ];
           } else {
             console.error('Invalid strategy type');
           }
         } else {
           // Add a new Whitelist strategy
-          updatedStrategies = [...round.strategies, s];
+          updatedVoters = [...round.voters, s];
         }
       } else {
         // Add non-Whitelist strategy
-        updatedStrategies = [...round.strategies, s];
+        updatedVoters = [...round.voters, s];
       }
 
-      dispatch(saveRound({ ...round, strategies: updatedStrategies }));
-      setStrategies(updatedStrategies);
+      dispatch(saveRound({ ...round, voters: updatedVoters }));
+      setVoters(updatedVoters);
     }
 
-    setStrat(newStrategy);
+    setVoter(newVoter);
     handleCloseModal();
   };
 
@@ -149,53 +149,53 @@ const AddVotingStrategy: React.FC<{
     setSelectedStrategy(selectedType);
 
     if (selectedType === StrategyType.ERC721 || selectedType === StrategyType.ERC20) {
-      setStrat({
-        ...newStrategy,
+      setVoter({
+        ...newVoter,
         type: VotingStrategyType.BALANCE_OF,
         asset: selectedType === StrategyType.ERC721 ? AssetType.ERC721 : AssetType.ERC20,
       });
     } else if (selectedType === StrategyType.ERC1155) {
-      setStrat({
-        ...newStrategy,
+      setVoter({
+        ...newVoter,
         type: VotingStrategyType.BALANCE_OF,
         asset: AssetType.ERC1155,
       });
     } else if (selectedType === StrategyType.Allowlist) {
-      setStrat({
-        ...newStrategy,
+      setVoter({
+        ...newVoter,
         type: VotingStrategyType.WHITELIST,
       });
     }
   };
 
   // Get address type by calling verification contract
-  const { data } = useAddressType(strat.address);
+  const { data } = useAddressType(voter.address);
 
   const handleAddressBlur = async () => {
     setIsTyping(false);
 
     // if address is empty, dont do anything
-    if (!strat.address) {
-      setStrat({ ...strat, state: 'input' });
+    if (!voter.address) {
+      setVoter({ ...voter, state: 'input' });
       return;
     }
 
-    const isDuplicate = strategies.some(s => {
+    const isDuplicate = voters.some(s => {
       if (
         s.strategyType !== VotingStrategyType.WHITELIST &&
         s.strategyType !== VotingStrategyType.VANILLA
       ) {
-        return s.address.toLowerCase() === strat.address.toLowerCase();
+        return s.address.toLowerCase() === voter.address.toLowerCase();
       } else if (s.strategyType === VotingStrategyType.WHITELIST) {
-        return s.members.some(m => m.address.toLowerCase() === strat.address.toLowerCase());
+        return s.members.some(m => m.address.toLowerCase() === voter.address.toLowerCase());
       } else {
         return null;
       }
     });
 
     if (isDuplicate) {
-      setStrat({
-        ...strat,
+      setVoter({
+        ...voter,
         state: 'error',
         error: 'Address already exists',
       });
@@ -204,49 +204,49 @@ const AddVotingStrategy: React.FC<{
 
     // if address isn't valid, set error
     if (!data) {
-      setStrat({ ...strat, state: 'error', error: 'Invalid address' });
+      setVoter({ ...voter, state: 'error', error: 'Invalid address' });
       return;
     }
 
     // if address is EOA, check against string vs AssetType
-    if (strat.type === VotingStrategyType.WHITELIST) {
+    if (voter.type === VotingStrategyType.WHITELIST) {
       if (data !== 'EOA') {
-        setStrat({
-          ...strat,
+        setVoter({
+          ...voter,
           state: 'error',
           error: `Expected EOA and got ${data}`,
         });
       } else {
-        setStrat({ ...strat, state: 'success' });
+        setVoter({ ...voter, state: 'success' });
       }
 
       return;
       // if address is not EOA, check against AssetType
-    } else if (AssetType[strat.asset] !== data) {
-      setStrat({
-        ...strat,
+    } else if (AssetType[voter.asset] !== data) {
+      setVoter({
+        ...voter,
         state: 'error',
-        error: `Expected ${AssetType[strat.asset]} and got ${data}`,
+        error: `Expected ${AssetType[voter.asset]} and got ${data}`,
       });
 
       return;
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const { name, image } = await getTokenInfo(strat.address, provider);
-      setStrat({ ...strat, state: 'success', name, image });
+      const { name, image } = await getTokenInfo(voter.address, provider);
+      setVoter({ ...voter, state: 'success', name, image });
     }
   };
 
   const handleAddressChange = (value: string) => {
     setIsTyping(true);
-    setStrat({ ...strat, address: value });
+    setVoter({ ...voter, address: value });
   };
 
-  const handleSwitchInput = () => setStrat({ ...strat, state: 'input' });
+  const handleSwitchInput = () => setVoter({ ...voter, state: 'input' });
 
   const handleAddressClear = () =>
-    setStrat({
-      ...strat,
+    setVoter({
+      ...voter,
       address: '',
       multiplier: 1,
       tokenId: '1',
@@ -255,9 +255,9 @@ const AddVotingStrategy: React.FC<{
       image: '',
     });
 
-  const handleVoteChange = (votes: number) => setStrat({ ...strat, multiplier: votes });
+  const handleVoteChange = (votes: number) => setVoter({ ...voter, multiplier: votes });
 
-  const handleTokenIdChange = (tokenId: string) => setStrat({ ...strat, tokenId });
+  const handleTokenIdChange = (tokenId: string) => setVoter({ ...voter, tokenId });
 
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
@@ -269,7 +269,7 @@ const AddVotingStrategy: React.FC<{
     }
   };
 
-  const verifiedAddress = strat.state === 'success';
+  const verifiedAddress = voter.state === 'success';
 
   const renderAddressButtons = () => {
     return addressTypes.map(type => (
@@ -295,26 +295,22 @@ const AddVotingStrategy: React.FC<{
   const strategyContent = {
     [StrategyType.ERC721]: (
       <Group gap={8}>
-        <StrategyAddress
-          strategy={strat}
+        <VoterAddress
+          voter={voter}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}
           handleClear={handleAddressClear}
           handleSwitch={handleSwitchInput}
           handleChange={handleAddressChange}
         />
-        <VotesPerAddress
-          strategy={strat}
-          disabled={!verifiedAddress}
-          handleVote={handleVoteChange}
-        />
+        <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),
     [StrategyType.ERC1155]: (
       <Group gap={8}>
         <Group row gap={6}>
-          <StrategyAddress
-            strategy={strat}
+          <VoterAddress
+            voter={voter}
             isTyping={isTyping}
             handleBlur={handleAddressBlur}
             handleClear={handleAddressClear}
@@ -336,7 +332,7 @@ const AddVotingStrategy: React.FC<{
             <input
               className={classes.tokenIdInput}
               disabled={!verifiedAddress}
-              value={!verifiedAddress ? '' : strat.tokenId}
+              value={!verifiedAddress ? '' : voter.tokenId}
               placeholder="0000"
               type="number"
               onChange={e => handleTokenId(e)}
@@ -345,46 +341,34 @@ const AddVotingStrategy: React.FC<{
           </Group>
         </Group>
 
-        <ViewOnOpenSeaButton address={strat.address} isDisabled={!verifiedAddress} />
-        <VotesPerAddress
-          strategy={strat}
-          disabled={!verifiedAddress}
-          handleVote={handleVoteChange}
-        />
+        <ViewOnOpenSeaButton address={voter.address} isDisabled={!verifiedAddress} />
+        <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),
     [StrategyType.ERC20]: (
       <Group gap={8}>
-        <StrategyAddress
-          strategy={strat}
+        <VoterAddress
+          voter={voter}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}
           handleClear={handleAddressClear}
           handleSwitch={handleSwitchInput}
           handleChange={handleAddressChange}
         />
-        <VotesPerAddress
-          strategy={strat}
-          disabled={!verifiedAddress}
-          handleVote={handleVoteChange}
-        />
+        <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),
     [StrategyType.Allowlist]: (
       <Group gap={8}>
-        <StrategyAddress
-          strategy={strat}
+        <VoterAddress
+          voter={voter}
           isTyping={isTyping}
           handleBlur={handleAddressBlur}
           handleClear={handleAddressClear}
           handleSwitch={handleSwitchInput}
           handleChange={handleAddressChange}
         />
-        <VotesPerAddress
-          strategy={strat}
-          disabled={!verifiedAddress}
-          handleVote={handleVoteChange}
-        />
+        <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),
   };
@@ -426,4 +410,4 @@ const AddVotingStrategy: React.FC<{
   );
 };
 
-export default AddVotingStrategy;
+export default AddVoter;

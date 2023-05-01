@@ -1,4 +1,4 @@
-import classes from './StrategyCard.module.css';
+import classes from './VoterCard.module.css';
 import Text from '../Text';
 import AddressAvatar from '../../AddressAvatar';
 import { useEnsName } from 'wagmi';
@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import { useProvider } from 'wagmi';
 
-const StrategyCard: React.FC<{ type: string; address: string; multiplier?: number }> = props => {
+const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }> = props => {
   const { type, address, multiplier } = props;
 
   const provider = useProvider();
@@ -53,4 +53,4 @@ const StrategyCard: React.FC<{ type: string; address: string; multiplier?: numbe
   );
 };
 
-export default StrategyCard;
+export default VoterCard;

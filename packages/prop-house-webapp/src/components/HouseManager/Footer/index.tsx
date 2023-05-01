@@ -108,7 +108,7 @@ const Footer: React.FC = () => {
       description: round.description,
       config: {
         awards,
-        strategies: round.strategies,
+        strategies: round.voters,
         proposalPeriodStartUnixTimestamp: round.proposalPeriodStartUnixTimestamp,
         proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
         votePeriodDurationSecs: round.votePeriodDurationSecs,
@@ -128,7 +128,9 @@ const Footer: React.FC = () => {
       if (round.house.contractURI !== '') {
         try {
           const response = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
+
           setTransactionHash(response.hash);
+
           return response;
         } catch (e) {
           console.log('error', e);

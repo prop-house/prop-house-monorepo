@@ -1,26 +1,26 @@
-import classes from './StrategyAddress.module.css';
+import classes from './VoterAddress.module.css';
 import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
 import Bullet from '../Bullet';
-import { NewStrategy } from '../StrategiesConfig';
+import { NewVoter } from '../VotersConfig';
 import EthAddress from '../../EthAddress';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
 
-const StrategyAddress: React.FC<{
+const VoterAddress: React.FC<{
   isTyping: boolean;
-  strategy: NewStrategy;
+  voter: NewVoter;
   placeholder?: string;
   handleBlur: () => void;
   handleSwitch: () => void;
   handleChange: (value: string) => void;
   handleClear: () => void;
 }> = props => {
-  const { strategy, isTyping, handleClear, handleBlur, handleSwitch, handleChange, placeholder } =
+  const { voter, isTyping, handleClear, handleBlur, handleSwitch, handleChange, placeholder } =
     props;
 
-  const verifiedAddress = strategy.state === 'success';
+  const verifiedAddress = voter.state === 'success';
 
   return (
     <>
@@ -28,7 +28,7 @@ const StrategyAddress: React.FC<{
         <Group gap={4} classNames={classes.addressAndTitle}>
           <Group row>
             <Text type="subtitle">
-              {strategy.type === VotingStrategyType.WHITELIST ? 'Wallet' : 'Contract'} Address
+              {voter.type === VotingStrategyType.WHITELIST ? 'Wallet' : 'Contract'} Address
             </Text>
 
             {verifiedAddress && (
@@ -44,27 +44,27 @@ const StrategyAddress: React.FC<{
           <Group>
             {verifiedAddress ? (
               <button className={classes.addressSuccess} onClick={handleSwitch}>
-                {strategy.type === VotingStrategyType.WHITELIST ? (
-                  <EthAddress address={strategy.address} addAvatar />
+                {voter.type === VotingStrategyType.WHITELIST ? (
+                  <EthAddress address={voter.address} addAvatar />
                 ) : (
                   <div className={classes.addressImgAndTitle}>
-                    <img src={strategy.image} alt={strategy.name} />
+                    <img src={voter.image} alt={voter.name} />
 
-                    <span>{strategy.name}</span>
+                    <span>{voter.name}</span>
                   </div>
                 )}
 
-                <div>{trimEthAddress(strategy.address)}</div>
+                <div>{trimEthAddress(voter.address)}</div>
               </button>
             ) : (
               <div className={classes.addressContainer}>
                 <input
                   className={clsx(
                     classes.addressInput,
-                    strategy.state === 'error' && classes.addressInputError,
+                    voter.state === 'error' && classes.addressInputError,
                   )}
                   type="text"
-                  value={strategy.address}
+                  value={voter.address}
                   onBlur={handleBlur}
                   onKeyDown={e => e.key === 'Enter' && handleBlur()}
                   onChange={e => handleChange(e.target.value)}
@@ -77,9 +77,9 @@ const StrategyAddress: React.FC<{
           </Group>
         </Group>
 
-        {strategy.state === 'error' && !isTyping && (
+        {voter.state === 'error' && !isTyping && (
           <Group mt={-5}>
-            <p className={classes.error}>{strategy.error}</p>
+            <p className={classes.error}>{voter.error}</p>
           </Group>
         )}
       </div>
@@ -87,4 +87,4 @@ const StrategyAddress: React.FC<{
   );
 };
 
-export default StrategyAddress;
+export default VoterAddress;
