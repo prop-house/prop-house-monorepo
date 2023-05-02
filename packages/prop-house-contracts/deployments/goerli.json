@@ -7,7 +7,7 @@
       "creatorPassIssuer": "0x76D4c1B098D2e729e1cD2cFcaF6c1fB8828C5588",
       "starknetCommit": "0x0FE38B1f9be81c36B5588F77248886fd5b9B7a6c",
       "communityHouseImpl": "0x7FD871f9203Cb8Ec1F30938A88c1EbF7CF0282b2",
-      "timedFundingRoundImpl": "0xE4e6Ee2b6cA302a267d4618998Bc4dEDd07C3fFE"
+      "timedFundingRoundImpl": "0xd7BC117555Afe9E124c99d03E36FAD58C8bD1340"
     }
   },
   "starknet": {
@@ -19,7 +19,7 @@
       "timedFundingRoundEthSigAuthStrategy": "0xe7670a1aa4cb06a70552b2eb1167aa7c07d21276401b83860bba7ae5148c42",
       "vanillaVotingStrategy": "0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9",
       "merkleWhitelistVotingStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
-      "ethereumBalanceOfVotingStrategy": "0x1b60e1d89c75630e8e64d93dd27a808ad1586a0ae738afd87503e431139d0",
+      "ethereumBalanceOfVotingStrategy": "0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f",
       "herodotus": {
         "factRegistry": "0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f",
         "l1HeadersStore": "0x1d9b36a00d7d5300e5da456c56d09c46dfefbc91b3a6b1552b6f2a34d6e34c4"

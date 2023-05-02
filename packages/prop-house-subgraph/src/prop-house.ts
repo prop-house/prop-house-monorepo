@@ -1,7 +1,7 @@
 import { log } from '@graphprotocol/graph-ts';
 import { BatchDepositToRound, DepositToRound, HouseCreated, RoundCreated, Transfer } from '../generated/PropHouse/PropHouse';
 import { Account, Asset, Balance, Deposit, House, Round } from '../generated/schema';
-import { BIGINT_ZERO, RoundState, ZERO_ADDRESS } from './lib/constants';
+import { BIGINT_ZERO, RoundEventState, ZERO_ADDRESS } from './lib/constants';
 import {
   CommunityHouse as CommunityHouseTemplate,
   TimedFundingRound as TimedFundingRoundTemplate,
@@ -52,7 +52,7 @@ export function handleRoundCreated(event: RoundCreated): void {
   round.type = event.params.kind.toString();
   round.title = event.params.title;
   round.description = event.params.description;
-  round.state = RoundState.AWAITING_REGISTRATION;
+  round.eventState = RoundEventState.AWAITING_REGISTRATION;
   round.house = house.id;
   round.creator = creator.id;
   round.manager = creator.id;

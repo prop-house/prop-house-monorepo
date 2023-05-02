@@ -1,2 +1,2 @@
 export { RoundBase, TimedFundingRound } from './implementations';
-export { Round } from './round';
+export { RoundManager } from './manager';

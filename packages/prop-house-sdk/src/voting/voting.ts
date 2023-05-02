@@ -6,6 +6,8 @@ import {
   VotingStrategyWithID,
 } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
+import { hexStripZeros } from '@ethersproject/bytes';
+import { Call } from 'starknet';
 import {
   BalanceOfHandler,
   VanillaHandler,
@@ -36,9 +38,17 @@ export class Voting<CS extends Custom | void = void> {
    * @param typeOrAddress The voting strategy type or address
    */
   public get(typeOrAddress: string) {
-    const strategy = this._all.find(s =>
-      [s.type.toLowerCase(), s.address.toLowerCase()].includes(typeOrAddress.toLowerCase()),
-    );
+    const strategy = this._all.find(s => {
+      const address = BigNumber.from(s.address);
+      const hexAddress = address.toHexString();
+      const searchVariations = [
+        s.type,
+        hexAddress,
+        hexStripZeros(hexAddress),
+        address.toString(),
+      ].map(s => s.toLowerCase());
+      return searchVariations.includes(typeOrAddress.toLowerCase());
+    });
     if (!strategy) {
       throw new Error(`Unknown voting strategy type or address: ${typeOrAddress}`);
     }
@@ -69,18 +79,36 @@ export class Voting<CS extends Custom | void = void> {
     );
   }
 
+  public async getPreCallsForStrategies(
+    account: string,
+    timestamp: string,
+    strategies: VotingStrategyWithID[],
+  ): Promise<Call[]> {
+    const preCalls = await Promise.all(
+      strategies.map(async strategy =>
+        this.get(strategy.address).getStrategyPreCalls?.(account, timestamp, strategy.id),
+      ),
+    );
+    return preCalls.flat().filter(call => call !== undefined) as Call[];
+  }
+
   public async getVotingPowerForStrategies<VS extends VotingStrategy>(
     voter: string,
-    timestamp: string,
+    timestamp: string | number,
     strategies: VS[],
     filterZeroVotingPower = true,
   ) {
     const results = await Promise.all(
       strategies.map(async strategy => {
+        const handler = this.get(strategy.address)!;
         return {
-          strategy,
-          votingPower: await this.get(strategy.address).getVotingPower({
+          strategy: {
             ...strategy,
+            address: handler.address,
+          },
+          votingPower: await handler.getVotingPower({
+            ...strategy,
+            address: handler.address,
             voter,
             timestamp,
           }),
@@ -93,7 +121,11 @@ export class Voting<CS extends Custom | void = void> {
     return results;
   }
 
-  public async getTotalVotingPower(voter: string, timestamp: string, strategies: VotingStrategy[]) {
+  public async getTotalVotingPower(
+    voter: string,
+    timestamp: string | number,
+    strategies: VotingStrategy[],
+  ) {
     const results = await this.getVotingPowerForStrategies(voter, timestamp, strategies);
     return results.reduce((acc, curr) => acc.add(curr.votingPower), BigNumber.from(0));
   }

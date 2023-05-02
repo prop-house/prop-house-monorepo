@@ -1,8 +1,8 @@
 import { log } from '@graphprotocol/graph-ts';
 import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedFundingRound/TimedFundingRound';
-import { Account, Asset, Award, Balance, Claim, Deposit, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
+import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getVotingStrategyType } from './lib/utils';
-import { RoundState, BIGINT_ONE, ZERO_ADDRESS } from './lib/constants';
+import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
 
 export function handleRoundRegistered(event: RoundRegistered): void {
   const round = Round.load(event.address.toHex());
@@ -13,7 +13,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     ]);
     return;
   }
-  round.state = RoundState.REGISTERED;
+  round.eventState = RoundEventState.REGISTERED;
 
   const config = new TimedFundingRoundConfig(`${round.id}-timed-funding-round-config`);
 
@@ -21,10 +21,19 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   config.winnerCount = event.params.winnerCount;
   config.proposalPeriodStartTimestamp = event.params.proposalPeriodStartTimestamp;
   config.proposalPeriodDuration = event.params.proposalPeriodDuration;
+  config.proposalPeriodEndTimestamp = config.proposalPeriodStartTimestamp.plus(
+    config.proposalPeriodDuration,
+  );
   config.votePeriodStartTimestamp = event.params.proposalPeriodStartTimestamp.plus(
     event.params.proposalPeriodDuration
   ).plus(BIGINT_ONE);
   config.votePeriodDuration = event.params.votePeriodDuration;
+  config.votePeriodEndTimestamp = config.votePeriodStartTimestamp.plus(
+    config.votePeriodDuration,
+  );
+  config.claimPeriodEndTimestamp = config.votePeriodEndTimestamp.plus(
+    BIGINT_8_WEEKS_IN_SECONDS, // This is an approximation and will be updated upon finalization
+  );
   config.registeredAt = event.block.timestamp;
   config.registrationTx = event.transaction.hash;
   config.save();
@@ -92,7 +101,7 @@ export function handleRoundCancelled(event: RoundCancelled): void {
     return;
   }
 
-  round.state = RoundState.CANCELLED;
+  round.eventState = RoundEventState.CANCELLED;
   round.save();
 }
 
@@ -105,8 +114,22 @@ export function handleRoundFinalized(event: RoundFinalized): void {
     ]);
     return;
   }
+  if (round.timedFundingConfig) {
+    const timedFundingConfig = TimedFundingRoundConfig.load(round.timedFundingConfig!);
+    if (!timedFundingConfig) {
+      log.error('[handleRoundFinalized] Timed funding config not found: {}. Finalization Hash: {}', [
+        event.address.toHex(),
+        event.transaction.hash.toHex(),
+      ]);
+      return;
+    }
+    timedFundingConfig.claimPeriodEndTimestamp = event.block.timestamp.plus(
+      BIGINT_8_WEEKS_IN_SECONDS,
+    );
+    timedFundingConfig.save();
+  }
 
-  round.state = RoundState.FINALIZED;
+  round.eventState = RoundEventState.FINALIZED;
   round.save();
 }
 

@@ -1,4 +1,5 @@
 scalar BigInt
+scalar Text
 
 type Summary {
   "A constant (SUMMARY)"
@@ -42,6 +43,9 @@ type Round {
   "The unix timestamp when the round was registered"
   registeredAt: Int!
 
+  "The status of the round registration transaction"
+  txStatus: String!
+
   "The transaction in which the round was registered"
   txHash: String!
 
@@ -69,13 +73,13 @@ type Proposal {
   metadataUri: String!
 
   "The proposal title"
-  title: String!
+  title: Text!
 
   "The proposal tl;dr"
-  tldr: String!
+  tldr: Text!
 
   "The proposal body"
-  body: String!
+  body: Text!
 
   "Whether the proposal has been cancelled"
   isCancelled: Boolean!
@@ -85,6 +89,9 @@ type Proposal {
 
   "The unix timestamp when the proposal was received"
   receivedAt: Int!
+
+  "The status of the propose transaction"
+  txStatus: String!
 
   "The transaction in which the proposal was submitted"
   txHash: String!
@@ -114,6 +121,9 @@ type Vote {
 
   "The unix timestamp when the vote was received"
   receivedAt: Int!
+
+  "The status of the vote transaction"
+  txStatus: String!
 
   "The transaction in which the votes were submitted"
   txHash: String!

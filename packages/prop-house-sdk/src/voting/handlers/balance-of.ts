@@ -6,6 +6,7 @@ import { storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
 import { BALANCE_OF_FUNC } from '../../constants';
+import { Call } from 'starknet';
 
 export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   // prettier-ignore
@@ -73,6 +74,33 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
     return proof;
   }
 
+  public async getStrategyPreCalls(
+    account: string,
+    timestamp: string,
+    strategyId: string,
+  ): Promise<Call[]> {
+    const proofInputs = await this.fetchProofInputs(account, timestamp, strategyId);
+    return [
+      {
+        contractAddress: this._addresses.starknet.herodotus.factRegistry,
+        entrypoint: 'prove_account',
+        calldata: [
+          proofInputs.accountOptions,
+          proofInputs.blockNumber,
+          proofInputs.ethAddress.values[0],
+          proofInputs.ethAddress.values[1],
+          proofInputs.ethAddress.values[2],
+          proofInputs.accountProofSizesBytes.length,
+          ...proofInputs.accountProofSizesBytes,
+          proofInputs.accountProofSizesWords.length,
+          ...proofInputs.accountProofSizesWords,
+          proofInputs.accountProof.length,
+          ...proofInputs.accountProof,
+        ],
+      },
+    ];
+  }
+
   /**
    * Get the total voting power for the provided config
    * @param config The voting strategy config information
@@ -80,9 +108,10 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   public async getVotingPower(config: VotingConfig): Promise<BigNumber> {
     const block = await this.getBlockNumberForTimestamp(config.address, config.timestamp);
     const token = BigNumber.from(config.params[0]).toHexString();
-    return this.contractFor(token).balanceOf(config.voter, {
+    const balance = await this.contractFor(token).balanceOf(config.voter, {
       blockTag: block,
     });
+    return balance.mul(config.params?.[2] ?? 1);
   }
 
   /**

@@ -5,8 +5,11 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export let BIGINT_ZERO = BigInt.fromI32(0);
 export let BIGINT_ONE = BigInt.fromI32(1);
 
+// 60 * 60 * 24 * 7 * 8
+export const BIGINT_8_WEEKS_IN_SECONDS = BigInt.fromI32(4838400);
+
 // String enums are not yet supported by AssemblyScript
-export namespace RoundState {
+export namespace RoundEventState {
   export const AWAITING_REGISTRATION = 'AWAITING_REGISTRATION';
   export const REGISTERED = 'REGISTERED';
   export const FINALIZED = 'FINALIZED';
