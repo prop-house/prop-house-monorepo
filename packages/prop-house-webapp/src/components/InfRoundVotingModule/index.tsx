@@ -82,10 +82,7 @@ const InfRoundVotingModule: React.FC<InfRoundVotingModuleProps> = (
           text={t('submitVotes')}
           bgColor={ButtonColor.Purple}
           onClick={() => setShowVotingModal(true)}
-          disabled={
-            countTotalVotesAlloted(voteAllotments) === 0 ||
-            numVotesByUserInActiveRound === votingPower
-          }
+          disabled={countTotalVotesAlloted(voteAllotments) === 0}
         />
       ) : null}
     </>
