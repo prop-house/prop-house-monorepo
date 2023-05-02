@@ -5,7 +5,7 @@ import { useAppSelector } from '../../hooks';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import Button, { ButtonColor } from '../Button';
 import RoundModuleCard from '../RoundModuleCard';
-import { countNumVotes } from '../../utils/countNumVotes';
+
 import ConnectButton from '../ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
@@ -21,8 +21,6 @@ const InfRoundVotingModule: React.FC<InfRoundVotingModuleProps> = (
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const { t } = useTranslation();
 
@@ -82,10 +80,7 @@ const InfRoundVotingModule: React.FC<InfRoundVotingModuleProps> = (
           text={t('submitVotes')}
           bgColor={ButtonColor.Purple}
           onClick={() => setShowVotingModal(true)}
-          disabled={
-            countTotalVotesAlloted(voteAllotments) === 0 ||
-            numVotesByUserInActiveRound === votingPower
-          }
+          disabled={countTotalVotesAlloted(voteAllotments) === 0}
         />
       ) : null}
     </>
