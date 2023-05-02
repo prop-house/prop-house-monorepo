@@ -121,7 +121,7 @@ const ProposalCard: React.FC<{
 
             {imgUrlFromProp && (
               <div className={classes.propImgContainer}>
-                <img src={imgUrlFromProp} alt="propCardImage" />
+                <img src={imgUrlFromProp} crossOrigin="anonymous" alt="propCardImage" />
               </div>
             )}
           </div>

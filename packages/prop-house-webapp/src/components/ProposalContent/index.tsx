@@ -52,7 +52,9 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
                 pre: ['language-*', 'lang-*'],
               },
               // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
+            })
+              .replaceAll('&amp;', '&')
+              .replaceAll(/<img/g, '<img crossorigin="anonymous"')}
           </Markdown>
         </span>
       </div>
