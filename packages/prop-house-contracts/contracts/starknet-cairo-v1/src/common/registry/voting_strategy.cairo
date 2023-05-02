@@ -1,13 +1,10 @@
-use starknet::StorageAccess;
-use starknet::SyscallResult;
-use starknet::StorageBaseAddress;
-use starknet::storage_read_syscall;
-use starknet::storage_write_syscall;
-use starknet::storage_address_from_base_and_offset;
+use starknet::{
+    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
+    storage_address_from_base_and_offset
+};
 use starknet::contract_address::Felt252TryIntoContractAddress;
 use prop_house::common::utils::storage_access::StorageAccessFelt252Span;
-use starknet::ContractAddressIntoFelt252;
-use starknet::ContractAddress;
+use starknet::{ContractAddressIntoFelt252, ContractAddress};
 use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
@@ -48,11 +45,9 @@ trait IVotingStrategyRegistry {
 
 #[contract]
 mod VotingStrategyRegistry {
-    use starknet::ContractAddress;
-    use starknet::ContractAddressIntoFelt252;
     use starknet::contract_address::ContractAddressZeroable;
-    use prop_house::common::utils::array::ArrayTraitExt;
-    use prop_house::common::utils::array::array_hash;
+    use starknet::{ContractAddress, ContractAddressIntoFelt252};
+    use prop_house::common::utils::array::{ArrayTraitExt, array_hash};
     use prop_house::common::utils::serde::SpanSerde;
     use super::{IVotingStrategyRegistry, VotingStrategy};
     use array::{ArrayTrait, SpanTrait};

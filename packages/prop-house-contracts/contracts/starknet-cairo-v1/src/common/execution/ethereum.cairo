@@ -3,9 +3,9 @@ mod EthereumExecutionStrategy {
     use starknet::{ContractAddress, get_caller_address};
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::syscalls::send_message_to_l1_syscall;
-    use prop_house::round_factory::IRoundFactory;
-    use prop_house::round_factory::IRoundFactoryDispatcher;
-    use prop_house::round_factory::IRoundFactoryDispatcherTrait;
+    use prop_house::round_factory::{
+        IRoundFactory, IRoundFactoryDispatcher, IRoundFactoryDispatcherTrait
+    };
     use prop_house::common::utils::traits::IExecutionStrategy;
     use prop_house::common::utils::serde::SpanSerde;
     use zeroable::Zeroable;

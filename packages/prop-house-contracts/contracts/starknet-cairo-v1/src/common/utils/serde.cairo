@@ -1,7 +1,6 @@
 use serde::{serialize_array_helper, deserialize_array_helper};
+use array::{ArrayTrait, SpanTrait};
 use option::OptionTrait;
-use array::ArrayTrait;
-use array::SpanTrait;
 use serde::Serde;
 
 impl SpanSerde<T, impl TSerde: Serde<T>, impl TDrop: Drop<T>> of Serde<Span<T>> {

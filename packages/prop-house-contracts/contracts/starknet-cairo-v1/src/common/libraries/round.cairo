@@ -1,9 +1,7 @@
-use starknet::StorageAccess;
-use starknet::SyscallResult;
-use starknet::StorageBaseAddress;
-use starknet::storage_read_syscall;
-use starknet::storage_write_syscall;
-use starknet::storage_address_from_base_and_offset;
+use starknet::{
+    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
+    storage_address_from_base_and_offset
+};
 use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
 use integer::{U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64};
 use traits::{TryInto, Into};

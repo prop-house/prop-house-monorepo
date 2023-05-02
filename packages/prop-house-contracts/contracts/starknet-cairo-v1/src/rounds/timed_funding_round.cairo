@@ -50,20 +50,18 @@ mod TimedFundingRound {
     use starknet::contract_address::Felt252TryIntoContractAddress;
     use super::{ITimedFundingRound, ProposalVote, RoundParams, RoundState, Award};
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
-    use prop_house::common::registry::voting_strategy::IVotingStrategyRegistryDispatcherTrait;
-    use prop_house::common::registry::voting_strategy::IVotingStrategyRegistryDispatcher;
-    use prop_house::common::registry::voting_strategy::VotingStrategy;
-    use prop_house::common::utils::traits::IVotingStrategyDispatcherTrait;
-    use prop_house::common::utils::traits::IVotingStrategyDispatcher;
-    use prop_house::common::utils::traits::IExecutionStrategyDispatcherTrait;
-    use prop_house::common::utils::traits::IExecutionStrategyDispatcher;
+    use prop_house::common::registry::voting_strategy::{
+        IVotingStrategyRegistryDispatcherTrait, IVotingStrategyRegistryDispatcher, VotingStrategy
+    };
+    use prop_house::common::utils::traits::{
+        IVotingStrategyDispatcherTrait, IVotingStrategyDispatcher,
+        IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher
+    };
+    use prop_house::common::utils::array::{
+        assert_no_duplicates, construct_2d_array, Immutable2DArray, get_sub_array, ArrayTraitExt,
+        array_slice
+    };
     use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
-    use prop_house::common::utils::array::assert_no_duplicates;
-    use prop_house::common::utils::array::construct_2d_array;
-    use prop_house::common::utils::array::Immutable2DArray;
-    use prop_house::common::utils::array::get_sub_array;
-    use prop_house::common::utils::array::ArrayTraitExt;
-    use prop_house::common::utils::array::array_slice;
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
     use prop_house::common::utils::u256::U256Zeroable;

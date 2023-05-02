@@ -1,5 +1,4 @@
-use prop_house::common::utils::merkle::MerkleTree;
-use prop_house::common::utils::merkle::MerkleTreeTrait;
+use prop_house::common::utils::merkle::{MerkleTree, MerkleTreeTrait};
 use prop_house::common::utils::u256::as_u256;
 use array::ArrayTrait;
 use hash::LegacyHash;

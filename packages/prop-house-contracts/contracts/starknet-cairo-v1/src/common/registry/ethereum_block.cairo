@@ -11,9 +11,7 @@ trait IEthereumBlockRegistry {
 #[contract]
 mod EthereumBlockRegistry {
     use starknet::ContractAddress;
-    use super::IEthereumBlockRegistry;
-    use super::IL1HeadersStoreDispatcherTrait;
-    use super::IL1HeadersStoreDispatcher;
+    use super::{IEthereumBlockRegistry, IL1HeadersStoreDispatcherTrait, IL1HeadersStoreDispatcher};
     use zeroable::Zeroable;
 
     struct Storage {

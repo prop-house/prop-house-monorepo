@@ -1,9 +1,7 @@
-use starknet::StorageAccess;
-use starknet::SyscallResult;
-use starknet::StorageBaseAddress;
-use starknet::storage_read_syscall;
-use starknet::storage_write_syscall;
-use starknet::storage_address_from_base_and_offset;
+use starknet::{
+    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
+    storage_address_from_base_and_offset
+};
 use array::{ArrayTrait, SpanTrait};
 use integer::{downcast, upcast};
 use traits::{TryInto, Into};
