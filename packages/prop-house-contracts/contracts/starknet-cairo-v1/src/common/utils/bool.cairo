@@ -1,4 +1,4 @@
-use traits::{TryInto, Into };
+use traits::{TryInto, Into};
 
 impl BoolIntoFelt252 of Into<bool, felt252> {
     fn into(self: bool) -> felt252 {

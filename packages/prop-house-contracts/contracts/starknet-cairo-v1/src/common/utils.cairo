@@ -1,6 +1,8 @@
 mod array;
 mod bool;
 mod constants;
+mod keccak;
+mod merkle;
 mod serde;
 mod storage_access;
 mod storage;

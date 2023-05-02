@@ -1,10 +1,10 @@
 #[contract]
 mod WhitelistVotingStrategy {
-    use quaireaux_data_structures::merkle_tree::MerkleTreeTrait;
+    use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::traits::IVotingStrategy;
     use prop_house::common::utils::serde::SpanSerde;
-    use array::{ArrayTrait, SpanTrait };
-    use traits::{TryInto, Into };
+    use array::{ArrayTrait, SpanTrait};
+    use traits::{TryInto, Into};
     use option::OptionTrait;
     use hash::LegacyHash;
 
@@ -56,7 +56,7 @@ mod WhitelistVotingStrategy {
         };
 
         let merkle_root = *params.at(0);
-        let mut merkle_tree = MerkleTreeTrait::new();
+        let mut merkle_tree = MerkleTreeTrait::<felt252>::new();
 
         // Verify the proof is valid
         assert(merkle_tree.verify(merkle_root, leaf, proof.span()), 'Whitelist: Invalid proof');

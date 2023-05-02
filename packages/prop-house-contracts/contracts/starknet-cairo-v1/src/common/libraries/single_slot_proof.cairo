@@ -1,4 +1,5 @@
 use prop_house::common::utils::constants::UINT64_MAX;
+use prop_house::common::utils::serde::SpanSerde;
 use option::OptionTrait;
 use traits::TryInto;
 
@@ -27,9 +28,9 @@ trait IFactsRegistry {
         block: felt252,
         account_160: felt252,
         slot: StorageSlot,
-        proof_sizes_bytes: Array<felt252>,
-        proof_sizes_words: Array<felt252>,
-        proofs_concat: Array<felt252>,
+        proof_sizes_bytes: Span<felt252>,
+        proof_sizes_words: Span<felt252>,
+        proofs_concat: Span<felt252>,
     ) -> u256;
 }
 
@@ -37,7 +38,6 @@ trait IFactsRegistry {
 mod SingleSlotProof {
     use starknet::ContractAddress;
     use prop_house::common::utils::u256::U256Zeroable;
-    use prop_house::common::utils::array::span_slice;
     use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcherTrait;
     use prop_house::common::registry::ethereum_block::IEthereumBlockRegistryDispatcher;
@@ -47,8 +47,8 @@ mod SingleSlotProof {
     use super::StorageSlot;
     use option::OptionTrait;
     use zeroable::Zeroable;
-    use array::{ArrayTrait, SpanTrait };
-    use traits::{TryInto, Into };
+    use array::{ArrayTrait, SpanTrait};
+    use traits::{TryInto, Into};
 
     struct Storage {
         _fact_registry: ContractAddress,
@@ -105,7 +105,7 @@ mod SingleSlotProof {
     /// * `params` - The user params, containing the slot, proof sizes, and proofs.
     fn _decode_param_array(
         params: Span<felt252>
-    ) -> (StorageSlot, Array::<felt252>, Array::<felt252>, Array::<felt252>) {
+    ) -> (StorageSlot, Span::<felt252>, Span::<felt252>, Span::<felt252>) {
         assert(params.len() >= 5, 'SSP: Bad user param length');
 
         let slot = StorageSlot {
@@ -116,9 +116,9 @@ mod SingleSlotProof {
         };
         let num_nodes: u32 = (*params.at(4)).try_into().unwrap();
 
-        let proof_sizes_bytes = span_slice(params, 5, num_nodes);
-        let proof_sizes_words = span_slice(params, 5 + num_nodes, num_nodes);
-        let proofs_concat = span_slice(params, 5 + 2 * num_nodes, params.len() - 5 - 2 * num_nodes);
+        let proof_sizes_bytes = params.slice(5, num_nodes);
+        let proof_sizes_words = params.slice(5 + num_nodes, num_nodes);
+        let proofs_concat = params.slice(5 + 2 * num_nodes, params.len() - 5 - 2 * num_nodes);
         return (slot, proof_sizes_bytes, proof_sizes_words, proofs_concat);
     }
 }

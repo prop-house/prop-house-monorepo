@@ -1,3 +1,4 @@
+use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
 use array::ArrayTrait;
 use traits::Into;
 
@@ -7,6 +8,5 @@ fn get_slot_key(slot_index: felt252, mapping_key: felt252) -> u256 {
     encoded_array.append(mapping_key.into());
     encoded_array.append(slot_index.into());
 
-    // TODO: Return keccak256 of encoded_array (not implemented yet)
-    0.into()
+    keccak_uint256s_be_to_be(encoded_array.span())
 }

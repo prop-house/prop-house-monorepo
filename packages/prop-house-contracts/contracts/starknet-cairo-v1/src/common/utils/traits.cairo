@@ -3,7 +3,7 @@ use prop_house::common::utils::serde::SpanSerde;
 
 #[abi]
 trait IExecutionStrategy {
-    fn execute(params: Array<felt252>);
+    fn execute(params: Span<felt252>);
 }
 
 #[abi]

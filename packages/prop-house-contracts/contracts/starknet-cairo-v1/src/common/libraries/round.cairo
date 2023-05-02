@@ -4,16 +4,17 @@ use starknet::StorageBaseAddress;
 use starknet::storage_read_syscall;
 use starknet::storage_write_syscall;
 use starknet::storage_address_from_base_and_offset;
-use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool };
-use integer::{U128IntoFelt252, Felt252IntoU256 };
-use traits::{TryInto, Into };
+use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
+use integer::{U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64};
+use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
 #[derive(Copy, Drop, Serde)]
 struct Proposal {
     proposer: felt252,
-    is_cancelled: bool, // TODO: Store `last_updated_at` and use that to sort for tie-breakers.
+    is_cancelled: bool,
+    last_updated_at: u64,
     voting_power: u256,
 }
 
@@ -33,10 +34,15 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
             address_domain, is_cancelled_base
         )?.try_into().unwrap();
 
-        let voting_power_base = storage_address_from_base_and_offset(base, 2);
+        let last_updated_at_base = storage_address_from_base_and_offset(base, 2);
+        let last_updated_at = storage_read_syscall(
+            address_domain, last_updated_at_base
+        )?.try_into().unwrap();
+
+        let voting_power_base = storage_address_from_base_and_offset(base, 3);
         let voting_power = storage_read_syscall(address_domain, voting_power_base)?.into();
 
-        Result::Ok(Proposal { proposer, is_cancelled, voting_power })
+        Result::Ok(Proposal { proposer, is_cancelled, last_updated_at, voting_power })
     }
 
     fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
@@ -46,12 +52,15 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
         let is_cancelled_base = storage_address_from_base_and_offset(base, 1);
         storage_write_syscall(address_domain, is_cancelled_base, value.is_cancelled.into())?;
 
-        let voting_power_base_low = storage_address_from_base_and_offset(base, 2);
+        let last_updated_at_base = storage_address_from_base_and_offset(base, 2);
+        storage_write_syscall(address_domain, last_updated_at_base, value.last_updated_at.into())?;
+
+        let voting_power_base_low = storage_address_from_base_and_offset(base, 3);
         storage_write_syscall(
             address_domain, voting_power_base_low, value.voting_power.low.into()
         )?;
 
-        let voting_power_base_high = storage_address_from_base_and_offset(base, 3);
+        let voting_power_base_high = storage_address_from_base_and_offset(base, 4);
         storage_write_syscall(
             address_domain, voting_power_base_high, value.voting_power.high.into()
         )
@@ -60,8 +69,8 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
 
 #[contract]
 mod Round {
-    use super::{Proposal, ProposalWithId };
-    use array::ArrayTrait;
+    use super::{Proposal, ProposalWithId};
+    use array::{ArrayTrait, SpanTrait};
 
     struct Storage {
         _proposals: LegacyMap<u32, Proposal>,
@@ -93,10 +102,26 @@ mod Round {
     /// * `max_return_count` - Max number of proposals to return
     fn get_n_proposals_by_voting_power_desc(
         mut proposals: Array<ProposalWithId>, max_return_count: u32
-    ) -> Array<ProposalWithId> {
-        _mergesort_proposals_by_voting_power_desc_and_slice(proposals, max_return_count)
+    ) -> Span<ProposalWithId> {
+        _mergesort_proposals_by_voting_power_desc_and_slice(proposals, max_return_count).span()
     }
 
+    /// Return an array of all the proposal IDs in the given array of proposals.
+    /// * `proposals` - Array of proposals
+    fn extract_proposal_ids(mut proposals: Span<ProposalWithId>) -> Span<u32> {
+        let mut proposal_ids = ArrayTrait::<u32>::new();
+        loop {
+            match proposals.pop_front() {
+                Option::Some(p) => {
+                    proposal_ids.append(*p.proposal_id);
+                },
+                Option::None(_) => {
+                    break ();
+                },
+            };
+        };
+        proposal_ids.span()
+    }
 
     /// Merge sort and slice an array of proposals by descending voting power
     /// * `arr` - Array of proposals to sort

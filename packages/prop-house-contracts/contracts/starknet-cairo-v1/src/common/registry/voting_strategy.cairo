@@ -8,7 +8,7 @@ use starknet::contract_address::Felt252TryIntoContractAddress;
 use prop_house::common::utils::storage_access::StorageAccessFelt252Span;
 use starknet::ContractAddressIntoFelt252;
 use starknet::ContractAddress;
-use traits::{TryInto, Into };
+use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
@@ -54,8 +54,8 @@ mod VotingStrategyRegistry {
     use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::array::array_hash;
     use prop_house::common::utils::serde::SpanSerde;
-    use super::{IVotingStrategyRegistry, VotingStrategy };
-    use array::{ArrayTrait, SpanTrait };
+    use super::{IVotingStrategyRegistry, VotingStrategy};
+    use array::{ArrayTrait, SpanTrait};
     use zeroable::Zeroable;
     use traits::Into;
 

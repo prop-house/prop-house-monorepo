@@ -5,7 +5,7 @@ description = "Public infrastructure by Nouns DAO"
 
 [scripts]
 sierra = "cairo-compile . -r"
-test = "cairo-test ."
+test = "cairo-test . --starknet"
 
 # Note: currently testing doesn't work with dependencies
 [dependencies]

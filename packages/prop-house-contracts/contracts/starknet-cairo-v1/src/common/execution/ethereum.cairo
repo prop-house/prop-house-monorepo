@@ -1,12 +1,13 @@
 #[contract]
 mod EthereumExecutionStrategy {
-    use starknet::{ContractAddress, get_caller_address };
+    use starknet::{ContractAddress, get_caller_address};
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::syscalls::send_message_to_l1_syscall;
     use prop_house::round_factory::IRoundFactory;
     use prop_house::round_factory::IRoundFactoryDispatcher;
     use prop_house::round_factory::IRoundFactoryDispatcherTrait;
     use prop_house::common::utils::traits::IExecutionStrategy;
+    use prop_house::common::utils::serde::SpanSerde;
     use zeroable::Zeroable;
     use array::ArrayTrait;
 
@@ -15,10 +16,8 @@ mod EthereumExecutionStrategy {
     }
 
     impl EthereumExecutionStrategy of IExecutionStrategy {
-        fn execute(params: Array<felt252>) {
-            send_message_to_l1_syscall(
-                to_address: _origin_round_for_caller(), payload: params.span()
-            );
+        fn execute(params: Span<felt252>) {
+            send_message_to_l1_syscall(to_address: _origin_round_for_caller(), payload: params);
         }
     }
 
@@ -28,7 +27,7 @@ mod EthereumExecutionStrategy {
     }
 
     #[external]
-    fn execute(params: Array<felt252>) {
+    fn execute(params: Span<felt252>) {
         EthereumExecutionStrategy::execute(params);
     }
 

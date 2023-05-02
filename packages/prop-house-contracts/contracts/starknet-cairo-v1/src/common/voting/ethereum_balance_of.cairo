@@ -4,7 +4,7 @@ mod EthereumBalanceOfVotingStrategy {
     use prop_house::common::utils::traits::IVotingStrategy;
     use prop_house::common::libraries::single_slot_proof::SingleSlotProof;
     use prop_house::common::utils::serde::SpanSerde;
-    use array::{ArrayTrait, SpanTrait };
+    use array::{ArrayTrait, SpanTrait};
     use zeroable::Zeroable;
     use traits::Into;
 

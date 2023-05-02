@@ -1,7 +1,7 @@
 #[contract]
 mod EthereumTxAuthStrategy {
-    use starknet::{ContractAddress, ContractAddressIntoFelt252, call_contract_syscall };
-    use prop_house::common::utils::array::{array_hash, ArrayTraitExt };
+    use starknet::{ContractAddress, ContractAddressIntoFelt252, call_contract_syscall};
+    use prop_house::common::utils::array::{array_hash, ArrayTraitExt};
     use prop_house::common::utils::traits::IAuthStrategy;
     use zeroable::Zeroable;
     use array::ArrayTrait;

@@ -17,3 +17,7 @@ impl U256Zeroable of Zeroable<u256> {
         !self.is_zero()
     }
 }
+
+fn as_u256(high: u128, low: u128) -> u256 {
+    u256 { low, high }
+}
