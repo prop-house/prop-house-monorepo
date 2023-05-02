@@ -1,9 +1,9 @@
 import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
-  Auction,
+  TimedAuction,
   Proposal,
-  StoredAuction,
+  StoredTimedAuction,
   StoredFile,
   StoredVote,
   Vote,
@@ -11,6 +11,12 @@ import {
   CommunityWithAuctions,
   UpdatedProposal,
   DeleteProposal,
+  StoredInfiniteAuction,
+  StoredAuctionBase,
+  InfiniteAuctionProposal,
+  StoredVoteWithProposal,
+  Reply,
+  StoredReply,
 } from './builders';
 import FormData from 'form-data';
 import * as fs from 'fs';
@@ -18,12 +24,15 @@ import * as fs from 'fs';
 import {
   DeleteProposalMessageTypes,
   EditProposalMessageTypes,
-  ProposalMessageTypes,
+  InfiniteAuctionProposalMessageTypes,
+  ReplyMessageTypes,
+  TimedAuctionProposalMessageTypes,
   VoteMessageTypes,
 } from './types/eip712Types';
 import { multiVoteSignature } from './utils/multiVoteSignature';
 import { multiVotePayload } from './utils/multiVotePayload';
 import { Signer } from 'ethers';
+import { createClient } from '@supabase/supabase-js';
 
 export class PropHouseWrapper {
   constructor(
@@ -31,7 +40,7 @@ export class PropHouseWrapper {
     private readonly signer: Signer | Wallet | null | undefined = undefined,
   ) {}
 
-  async createAuction(auction: Auction): Promise<StoredAuction[]> {
+  async createAuction(auction: TimedAuction): Promise<StoredTimedAuction[]> {
     try {
       return (await axios.post(`${this.host}/auctions`, auction)).data;
     } catch (e: any) {
@@ -39,28 +48,127 @@ export class PropHouseWrapper {
     }
   }
 
-  async getAuction(id: number): Promise<StoredAuction> {
+  async getAuction(id: number): Promise<StoredTimedAuction> {
     try {
-      const rawAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
-      return StoredAuction.FromResponse(rawAuction);
+      const rawTimedAuction = (await axios.get(`${this.host}/auctions/${id}`)).data;
+      return StoredTimedAuction.FromResponse(rawTimedAuction);
     } catch (e: any) {
-      throw e.response.data.message;
+      if (e.response && e.response.status === 404) {
+        try {
+          const rawTimedAuction = (await axios.get(`${this.host}/infinite-auctions/${id}`)).data;
+          return StoredTimedAuction.FromResponse(rawTimedAuction);
+        } catch (e: any) {
+          throw e.response.data.message;
+        }
+      } else {
+        throw e.response.data.message;
+      }
     }
   }
 
-  async getAuctions(): Promise<StoredAuction[]> {
+  async getAuctions(): Promise<StoredTimedAuction[]> {
     try {
       const rawAuctions = (await axios.get(`${this.host}/auctions`)).data;
-      return rawAuctions.map(StoredAuction.FromResponse);
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
     } catch (e: any) {
       throw e.response.data.message;
     }
   }
 
-  async getAuctionsForCommunity(id: number): Promise<StoredAuction[]> {
+  async getAuctionsForCommunity(id: number): Promise<StoredAuctionBase[]> {
     try {
-      const rawAuctions = (await axios.get(`${this.host}/auctions/forCommunity/${id}`)).data;
-      return rawAuctions.map(StoredAuction.FromResponse);
+      const [rawTimedAuctions, rawInfAuctions] = await Promise.allSettled([
+        axios.get(`${this.host}/auctions/forCommunity/${id}`),
+        axios.get(`${this.host}/infinite-auctions/forCommunity/${id}`),
+      ]);
+
+      const timed =
+        rawTimedAuctions.status === 'fulfilled'
+          ? rawTimedAuctions.value.data.map(StoredTimedAuction.FromResponse)
+          : [];
+
+      const infinite =
+        rawInfAuctions.status === 'fulfilled'
+          ? rawInfAuctions.value.data.map(StoredInfiniteAuction.FromResponse)
+          : [];
+
+      return timed.concat(infinite);
+    } catch (e: any) {
+      throw e.response?.data?.message ?? 'Error occurred while fetching auctions for community';
+    }
+  }
+
+  async getActiveAuctions(skip = 5, limit = 5): Promise<StoredTimedAuction[]> {
+    try {
+      const rawAuctions = (
+        await axios.get(`${this.host}/auctions/allActive/n`, {
+          params: {
+            limit,
+            skip,
+          },
+        })
+      ).data;
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+  async getActiveAuctionsForCommunities(
+    skip = 5,
+    limit = 5,
+    addresses: string[],
+  ): Promise<StoredTimedAuction[]> {
+    try {
+      const rawAuctions = (
+        await axios.get(`${this.host}/auctions/active/f`, {
+          params: {
+            limit,
+            skip,
+            addresses,
+          },
+        })
+      ).data;
+      return rawAuctions.map(StoredTimedAuction.FromResponse);
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  /**
+   * total vote weight submitted to round id after given timestamp
+   * @param auctionId
+   * @param timestamp unix timestamp (ms)
+   */
+  async getLatestNumVotes(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/latestNumVotes/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  /**
+   * number of proposals submitted to round id after given timestamp
+   * @param auctionId
+   * @param timestamp unix timestamp (ms)
+   */
+  async getLatestNumProps(auctionId: number, timestamp: number): Promise<number> {
+    try {
+      return (
+        await axios.get(`${this.host}/auctions/latestNumProps/f`, {
+          params: {
+            auctionId,
+            timestamp,
+          },
+        })
+      ).data;
     } catch (e: any) {
       throw e.response.data.message;
     }
@@ -69,14 +177,21 @@ export class PropHouseWrapper {
   async getAuctionWithNameForCommunity(
     auctionName: string,
     communityId: number,
-  ): Promise<StoredAuction> {
+  ): Promise<StoredAuctionBase> {
     try {
-      const rawAuction = (
+      const rawTimedAuction = (
         await axios.get(`${this.host}/auctions/${auctionName}/community/${communityId}`)
       ).data;
-      return StoredAuction.FromResponse(rawAuction);
-    } catch (e: any) {
-      throw e.response.data.message;
+      return StoredTimedAuction.FromResponse(rawTimedAuction);
+    } catch (e) {
+      try {
+        const rawInfAuction = (
+          await axios.get(`${this.host}/infinite-auctions/${auctionName}/community/${communityId}`)
+        ).data;
+        return StoredInfiniteAuction.FromResponse(rawInfAuction);
+      } catch (e: any) {
+        throw e.response.data.message;
+      }
     }
   }
 
@@ -111,13 +226,15 @@ export class PropHouseWrapper {
     }
   }
 
-  async createProposal(proposal: Proposal, isContract = false) {
+  async createProposal(proposal: Proposal | InfiniteAuctionProposal, isContract = false) {
     if (!this.signer) return;
     try {
       const signedPayload = await proposal.signedPayload(
         this.signer,
         isContract,
-        ProposalMessageTypes,
+        proposal instanceof Proposal
+          ? TimedAuctionProposalMessageTypes
+          : InfiniteAuctionProposalMessageTypes,
       );
       return (await axios.post(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
@@ -150,6 +267,35 @@ export class PropHouseWrapper {
       return (await axios.delete(`${this.host}/proposals`, { data: signedPayload })).data;
     } catch (e: any) {
       throw e;
+    }
+  }
+
+  async getVotes(
+    limit = 20,
+    skip = 0,
+    order: 'ASC' | 'DESC' = 'DESC',
+    addresses?: string[],
+  ): Promise<StoredVoteWithProposal[]> {
+    try {
+      const { data } = await axios.get(`${this.host}/votes/findWithOpts`, {
+        params: {
+          limit,
+          skip,
+          order,
+          addresses,
+        },
+      });
+      return data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
+  async getNumVotesCastedForRound(account: string, roundId: number) {
+    try {
+      return (await axios.get(`${this.host}/votes/numVotes/${account}/${roundId}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
     }
   }
 
@@ -259,6 +405,14 @@ export class PropHouseWrapper {
     return (await axios.get(`${this.host}/votes/by/${address}`)).data;
   }
 
+  async getVotesForCommunities(addresses: string[]): Promise<StoredVoteWithProposal[]> {
+    try {
+      return (await axios.get(`${this.host}/votes/byCommunities/${addresses}`)).data;
+    } catch (e: any) {
+      throw e.response.data.message;
+    }
+  }
+
   async getCommunities(): Promise<CommunityWithAuctions[]> {
     try {
       return (await axios.get(`${this.host}/communities`)).data;
@@ -290,4 +444,47 @@ export class PropHouseWrapper {
       throw e.response.data.message;
     }
   }
+
+  submitReply = async (signer: Signer, reply: Reply) => {
+    const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+    const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    const signedPayload = await reply.signedPayload(signer, false, ReplyMessageTypes);
+
+    const { data, error } = await supabase.functions.invoke('reply', {
+      body: {
+        ...signedPayload,
+      },
+    });
+    if (error) throw new Error(error);
+    return data;
+  };
+
+  fetchReplies = async (proposalId: number): Promise<StoredReply[]> => {
+    const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
+    const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
+
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const { data, error } = await supabase.from('reply').select('*').eq('proposalId', proposalId);
+
+    if (error) throw new Error(error.message);
+    if (data)
+      return data.map(
+        (reply: any) =>
+          new StoredReply(
+            reply.id,
+            reply.createdAt,
+            reply.proposalId,
+            reply.content,
+            reply.address,
+          ),
+      );
+    return [];
+  };
 }

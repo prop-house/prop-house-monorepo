@@ -1,0 +1,7 @@
+.banner {
+  display: flex;
+  justify-content: center;
+  padding: 10px 15px;
+  background-color: var(--brand-purple);
+  color: white;
+}

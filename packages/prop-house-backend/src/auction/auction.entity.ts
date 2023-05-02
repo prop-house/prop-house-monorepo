@@ -12,10 +12,11 @@ import {
   ManyToOne,
   RelationId,
 } from 'typeorm';
+import { AuctionBase } from './auction-base.type';
 
 @Entity()
 @ObjectType()
-export class Auction {
+export class Auction implements AuctionBase {
   @PrimaryGeneratedColumn()
   @Field(() => Int, {
     description: 'All auctions are issued a unique ID number',
@@ -76,7 +77,7 @@ export class Auction {
   proposals: Proposal[];
 
   @RelationId((auction: Auction) => auction.proposals)
-  numProposals: number;
+  proposalIds: number[];
 
   @ManyToOne(() => Community, (community) => community.auctions)
   @JoinColumn()
@@ -104,6 +105,9 @@ export class Auction {
   setUpdatedDate() {
     this.lastUpdatedDate = new Date();
   }
+
+  public isAcceptingProposals = (): boolean =>
+    new Date() > this.startTime && new Date() <= this.proposalEndTime;
 }
 
 @InputType()

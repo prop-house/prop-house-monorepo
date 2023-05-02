@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  max-height: 500px;
 }
 .modal {
   font-family: 'PT Root UI', sans-serif;
@@ -53,9 +54,66 @@
 .imgContainer img {
   height: 80px;
 }
+.body {
+  overflow-y: scroll;
+}
+/** mobile close btn **/
+.closeBtn {
+  display: none;
+}
+
 @media (max-width: 575px) {
   .modal {
     width: 90%;
     min-width: 300px;
+  }
+  .fullScreenOnMobile {
+    border-radius: 0px !important;
+    min-height: 100% !important;
+    min-width: 100% !important;
+    height: 100vh;
+    display: flex;
+    overscroll-behavior-y: none;
+  }
+  .fullScreenOnMobile .container {
+    min-width: 100% !important;
+    min-height: 100% !important;
+  }
+  .fullScreenOnMobile .titleContainer {
+    display: flex;
+  }
+
+  .fullScreenOnMobile .modalTitle {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    text-overflow: clip !important;
+    padding-bottom: 0px;
+  }
+  .fullScreenOnMobile .titleContainer {
+    text-align: left;
+  }
+  .fullScreenOnMobile .modalTitle {
+    margin-right: 5px;
+  }
+  .fullScreenOnMobile .closeBtn {
+    display: flex;
+    margin-left: auto;
+    color: white;
+    background: var(--brand-pink);
+    cursor: pointer;
+    font-size: 1.25rem;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    border: 1.5px solid #e02ecf;
+    padding: 4px;
+    border-radius: 10px;
+  }
+  .fullScreenOnMobile .body {
+    flex-grow: 1;
+    display: grid;
+    overflow-y: auto;
   }
 }

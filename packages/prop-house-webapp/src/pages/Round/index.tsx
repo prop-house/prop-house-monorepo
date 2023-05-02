@@ -4,17 +4,21 @@ import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useRef, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import {
+  filterInfRoundProposals,
+  InfRoundFilterType,
   setActiveCommunity,
   setActiveProposals,
   setActiveRound,
+  setInfRoundFilterType,
   setModalActive,
+  sortTimedRoundProposals,
+  TimedRoundSortType,
 } from '../../state/slices/propHouse';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import RoundContent from '../../components/RoundContent';
 import { nameToSlug, slugToName } from '../../utils/communitySlugs';
-import { dispatchSortProposals, SortType } from '../../utils/sortingProposals';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
@@ -25,6 +29,8 @@ import { useSigner } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const Round = () => {
   const location = useLocation();
@@ -36,6 +42,9 @@ const Round = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const infRoundFilteredProposals = useAppSelector(
+    state => state.propHouse.infRoundFilteredProposals,
+  );
   const host = useAppSelector(state => state.configuration.backendHost);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const client = useRef(new PropHouseWrapper(host));
@@ -43,8 +52,10 @@ const Round = () => {
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
 
-  const [loadingCommAndRound, setLoadingCommAndRound] = useState(false);
-  const [commAndRoundfailedFetch, setCommAndRoundFailedFetch] = useState(false);
+  const [loadingRound, setLoadingRound] = useState(false);
+  const [loadingComm, setLoadingComm] = useState(false);
+  const [loadingCommFailed, setLoadingCommFailed] = useState(false);
+  const [roundfailedFetch, setRoundFailedFetch] = useState(false);
 
   const [loadingProps, setLoadingProps] = useState(false);
   const [propsFailedFetch, setPropsFailedFetch] = useState(false);
@@ -53,31 +64,48 @@ const Round = () => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
-  // if no round is found in store (ie round page is entry point), fetch community and round
+  // if no data is found in store (ie round page is entry point), fetch data
   useEffect(() => {
-    if (round) return;
+    if (community) return;
 
-    const fetchCommunityAndRound = async () => {
+    const fetchCommunity = async () => {
       try {
-        setLoadingCommAndRound(true);
-
+        setLoadingComm(true);
         const community = await client.current.getCommunityWithName(slugToName(communityName));
+        dispatch(setActiveCommunity(community));
+
+        setLoadingComm(false);
+      } catch (e) {
+        setLoadingComm(false);
+        setLoadingCommFailed(true);
+      }
+    };
+
+    fetchCommunity();
+  }, [communityName, dispatch, roundName, round, community]);
+
+  // if no data is found in store (ie round page is entry point), fetch data
+  useEffect(() => {
+    if (round || !community) return;
+
+    const fetchRound = async () => {
+      try {
+        setLoadingRound(true);
+
         const round = await client.current.getAuctionWithNameForCommunity(
           nameToSlug(roundName),
           community.id,
         );
-
-        dispatch(setActiveCommunity(community));
         dispatch(setActiveRound(round));
-        setLoadingCommAndRound(false);
+        setLoadingRound(false);
       } catch (e) {
-        setLoadingCommAndRound(false);
-        setCommAndRoundFailedFetch(true);
+        setLoadingRound(false);
+        setRoundFailedFetch(true);
       }
     };
 
-    fetchCommunityAndRound();
-  }, [communityName, dispatch, roundName, round]);
+    fetchRound();
+  }, [communityName, dispatch, roundName, round, community]);
 
   // fetch proposals
   useEffect(() => {
@@ -90,10 +118,23 @@ const Round = () => {
         const proposals = await client.current.getAuctionProposals(round.id);
         dispatch(setActiveProposals(proposals));
 
-        // if the round is in voting state or over we sort by votes, otherwise we sort by created date
-        isVotingWindow || isRoundOver
-          ? dispatchSortProposals(dispatch, SortType.VoteCount, false)
-          : dispatchSortProposals(dispatch, SortType.CreatedAt, false);
+        // set initial state for props (sorted in timed round / filtered in inf round)
+        if (isTimedAuction(round)) {
+          dispatch(
+            sortTimedRoundProposals({
+              sortType:
+                isVotingWindow || isRoundOver
+                  ? TimedRoundSortType.VoteCount
+                  : TimedRoundSortType.CreatedAt,
+              ascending: false,
+            }),
+          );
+        } else {
+          const infRoundOver = infRoundBalance(proposals, round) === 0;
+          const filterType = infRoundOver ? InfRoundFilterType.Winners : InfRoundFilterType.Active;
+          dispatch(setInfRoundFilterType(filterType));
+          dispatch(filterInfRoundProposals({ type: filterType, round }));
+        }
 
         setLoadingProps(false);
       } catch (e) {
@@ -105,6 +146,7 @@ const Round = () => {
     fetchAuctionProposals();
 
     return () => {
+      dispatch(setInfRoundFilterType(InfRoundFilterType.Active));
       dispatch(setModalActive(false));
       dispatch(setActiveCommunity());
       dispatch(setActiveRound());
@@ -124,9 +166,9 @@ const Round = () => {
         />
       )}
 
-      {loadingCommAndRound ? (
+      {loadingComm || loadingRound ? (
         <LoadingIndicator height={isMobile() ? 416 : 332} />
-      ) : !loadingCommAndRound && commAndRoundfailedFetch ? (
+      ) : loadingCommFailed || roundfailedFetch ? (
         <NotFound />
       ) : (
         community &&
@@ -151,10 +193,23 @@ const Round = () => {
               <div className={classes.loader}>
                 <LoadingIndicator />
               </div>
-            ) : !loadingProps && propsFailedFetch ? (
+            ) : propsFailedFetch ? (
               <NotFound />
             ) : (
-              round && proposals && <RoundContent auction={round} proposals={proposals} />
+              round && (
+                <RoundContent
+                  auction={round}
+                  proposals={
+                    isInfAuction(round)
+                      ? infRoundFilteredProposals
+                        ? infRoundFilteredProposals
+                        : []
+                      : proposals
+                      ? proposals
+                      : []
+                  }
+                />
+              )
             )}
           </div>
         </Container>

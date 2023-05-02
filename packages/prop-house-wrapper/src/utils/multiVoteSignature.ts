@@ -1,5 +1,4 @@
-import { TypedDataSigner } from '@ethersproject/abstract-signer';
-import { Signer } from 'ethers';
+import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { DomainSeparator, VoteMessageTypes } from '../types/eip712Types';
 
 /**

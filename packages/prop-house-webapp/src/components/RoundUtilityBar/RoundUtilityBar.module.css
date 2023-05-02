@@ -7,86 +7,11 @@
   top: 0;
 }
 
-@media (min-width: 767px) {
-  .searchBar {
-    padding-bottom: 12px;
-  }
-  .searchBar input {
-    min-width: 312px;
-  }
-}
-@media (min-width: 768px) {
-  .dropdown {
-    display: none;
-  }
-}
-
-@media (max-width: 767px) {
-  .roundUtilityBar {
-    gap: 16px;
-    justify-content: space-between;
-  }
-  .utilitySection {
-    width: 50%;
-  }
-
-  .searchBar input {
-    min-width: 0px;
-    width: 100%;
-  }
-  .sortToggles {
-    display: none;
-  }
-  .item:nth-child(3),
-  .item:nth-child(4) {
-    display: none;
-  }
-  .item:nth-child(2) {
-    border-right: none !important;
-  }
-}
-
 .propHouseDataRow {
   display: flex;
   padding-bottom: 12px;
 }
-.propHouseDataRow .item:nth-child(1) {
-  margin-left: 0;
-}
-.propHouseDataRow .item {
-  margin-right: 2rem;
-}
 
-.item {
-  display: flex;
-  font-size: large;
-  flex-direction: column;
-}
-.item:not(:last-child) {
-  border-right: 1px solid var(--border-light);
-  padding-right: 25px;
-}
-
-.itemTitle {
-  color: var(--brand-gray);
-  font-size: 13px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.purpleText {
-  color: var(--brand-purple);
-}
-.itemData {
-  font-weight: bold;
-  font-size: 18px;
-  margin-right: 0.5rem;
-}
-.xDivide {
-  color: var(--brand-gray-transparent);
-  font-weight: 500;
-}
 .infoBar {
   padding-top: 2rem;
   display: flex;
@@ -97,40 +22,59 @@
   align-self: flex-start;
   height: auto;
 }
-@media (max-width: 576px) {
-  .infoBar {
-    flex-direction: column;
-  }
-}
-
-.leftSectionContainer {
-  align-self: flex-end;
-}
-.rightSectionContainer {
-  display: flex;
-  padding-bottom: 10px;
-  gap: 50px;
+.propHouseDataRow > *:not([style*='display:none']):last-child {
+  border-right: none;
 }
 
 @media (max-width: 992px) {
-  .propHouseDataRow .item {
-    margin-right: 0.75rem;
-  }
   .propHouseDataRow {
     padding-bottom: 0px;
     padding-bottom: 12px !important;
   }
 }
 
-@media (max-width: 700px) {
-  .item:first-child {
-    padding-right: 6px !important;
+@media (min-width: 767px) {
+  .searchBar {
+    padding-bottom: 12px;
   }
-  .propHouseDataRow {
-    justify-content: flex-end;
+  .searchBar input {
+    min-width: 312px;
   }
 }
-@media (max-width: 550px) {
+
+@media (max-width: 767px) {
+  .roundUtilityBar {
+    justify-content: space-between;
+  }
+
+  .utilitySection:nth-child(2) {
+    padding-bottom: 10px;
+  }
+  .searchBar input {
+    min-width: 0px;
+    width: 100%;
+  }
+  .sortToggles {
+    display: none;
+  }
+  .displaySortToggles {
+    display: block;
+  }
+  .propHouseDataRow {
+    justify-content: start;
+  }
+  .propHouseDataRow :nth-child(n + 2) {
+    border-right: none;
+  }
+  .propHouseDataRow :nth-child(n + 3) {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .infoBar {
+    flex-direction: column;
+  }
   .roundUtilityBar {
     flex-direction: column-reverse;
     height: auto;
@@ -139,15 +83,21 @@
     width: 100%;
   }
   .propHouseDataRow {
-    justify-content: inherit;
+    justify-content: start;
   }
-  .item:nth-child(3) {
-    display: block;
+  .propHouseDataRow.hideThirdItemOnMobile > *:nth-child(2) {
+    border-right: none;
   }
-  .item:nth-child(2) {
-    border-right: 1px solid var(--border-light) !important;
+  .propHouseDataRow.hideFourthItemOnMobile > *:nth-child(2) {
+    border-right: 1px solid var(--border-light);
   }
-  .item:nth-child(3) {
-    border-right: none !important;
+  .propHouseDataRow :nth-child(n + 3) {
+    display: flex;
+  }
+  .propHouseDataRow.hideThirdItemOnMobile :nth-child(n + 3) {
+    display: none;
+  }
+  .propHouseDataRow.hideFourthItemOnMobile :nth-child(n + 4) {
+    display: none;
   }
 }

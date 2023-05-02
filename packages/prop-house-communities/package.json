@@ -1,9 +1,11 @@
 {
-  "name": "prop-house-communities",
-  "version": "0.0.1",
+  "name": "@prophouse/communities",
+  "version": "0.1.5",
+  "description": "Voting strategies for Prop House rounds.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "license": "MIT",
+  "homepage": "https://prop.house",
+  "license": "GPL-3.0",
   "scripts": {
     "build": "tsc",
     "test": "mocha --timeout 5000 -r ts-node/register -r dotenv/config 'test/**/*.ts'  --watch --watch-files test/**/*.ts"
@@ -12,6 +14,7 @@
     "@apollo/client": "^3.6.2",
     "@ethersproject/providers": "^5.6.0",
     "bignumber.js": "^9.1.0",
+    "cross-fetch": "^3.1.5",
     "ethers": "^5.6.0",
     "graphql": "^16.5.0"
   },

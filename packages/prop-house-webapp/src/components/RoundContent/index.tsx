@@ -1,8 +1,8 @@
 import {
   SignatureState,
-  StoredAuction,
   StoredProposalWithVotes,
   Vote,
+  StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
@@ -11,30 +11,31 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { aggValidatedVoteWeightForProps } from '../../utils/aggVoteWeight';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import {
   clearVoteAllotments,
-  setNumSubmittedVotes,
+  setVotesByUserInActiveRound,
   setVotingPower,
 } from '../../state/slices/voting';
 import { Row, Col } from 'react-bootstrap';
-import ProposalCard from '../ProposalCard';
-import { cardStatus } from '../../utils/cardStatus';
-import getWinningIds from '../../utils/getWinningIds';
-import isWinner from '../../utils/isWinner';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
+import ProposalCard from '../ProposalCard';
+import { cardStatus } from '../../utils/cardStatus';
+import isWinner from '../../utils/isWinner';
+import getWinningIds from '../../utils/getWinningIds';
+import { InfRoundFilterType } from '../../state/slices/propHouse';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
 const RoundContent: React.FC<{
-  auction: StoredAuction;
+  auction: StoredAuctionBase;
   proposals: StoredProposalWithVotes[];
 }> = props => {
   const { auction, proposals } = props;
@@ -50,13 +51,23 @@ const RoundContent: React.FC<{
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const votingPower = useAppSelector(state => state.voting.votingPower);
+  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
+
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
+
   const client = useRef(new PropHouseWrapper(host));
-  const winningIds = getWinningIds(proposals, auction);
   const { data: signer } = useSigner();
   const provider = useProvider();
+  const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
+  const warningMessage = isTimedAuction(auction)
+    ? t('submittedProposals')
+    : infRoundFilter === InfRoundFilterType.Active
+    ? 'Active proposals will show up here.'
+    : infRoundFilter === InfRoundFilterType.Winners
+    ? 'Proposals that meet quorum will show up here.'
+    : 'Proposals that did not meet quorum before voting period ended will show up here.';
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -69,7 +80,7 @@ const RoundContent: React.FC<{
     const fetchVotes = async () => {
       try {
         const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-        const votes = await getNumVotes(
+        const votes = await getVotingPower(
           account,
           community.contractAddress,
           provider,
@@ -85,8 +96,9 @@ const RoundContent: React.FC<{
 
   // update submitted votes on proposal changes
   useEffect(() => {
-    if (proposals && account)
-      dispatch(setNumSubmittedVotes(aggValidatedVoteWeightForProps(proposals, account)));
+    const votes = proposals.flatMap(p => (p.votes ? p.votes : []));
+    if (proposals && account && votes.length > 0)
+      dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {
@@ -123,7 +135,7 @@ const RoundContent: React.FC<{
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(client.current, auction.id, dispatch);
+      refreshActiveProposals(client.current, auction, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
@@ -161,20 +173,21 @@ const RoundContent: React.FC<{
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
                   (proposals.length === 0 ? (
-                    <ErrorMessageCard message={t('submittedProposals')} />
+                    <ErrorMessageCard message={warningMessage} />
                   ) : (
-                    proposals.map((proposal, index) => {
-                      return (
+                    <>
+                      {proposals.map((prop, index) => (
                         <Col key={index}>
                           <ProposalCard
-                            proposal={proposal}
+                            proposal={prop}
                             auctionStatus={auctionStatus(auction)}
                             cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={isWinner(winningIds, proposal.id)}
+                            isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
+                            stale={staleProp}
                           />
                         </Col>
-                      );
-                    })
+                      ))}
+                    </>
                   ))}
               </Col>
               <RoundModules

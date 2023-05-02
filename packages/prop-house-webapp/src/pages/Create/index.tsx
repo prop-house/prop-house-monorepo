@@ -7,7 +7,7 @@ import ProposalEditor from '../../components/ProposalEditor';
 import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { Proposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { InfiniteAuctionProposal, Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import isAuctionActive from '../../utils/isAuctionActive';
@@ -23,8 +23,10 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount, useSigner } from 'wagmi';
+import { infRoundBalance } from '../../utils/infRoundBalance';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
@@ -36,6 +38,8 @@ const Create: React.FC<{}> = () => {
   const location = useLocation();
   const activeAuction = location.state.auction;
   const activeCommunity = location.state.community;
+  const activeProps = location.state.proposals;
+  const remainingBal = infRoundBalance(activeProps, activeAuction);
 
   const [showPreview, setShowPreview] = useState(false);
   const [propId, setPropId] = useState<null | number>(null);
@@ -58,14 +62,15 @@ const Create: React.FC<{}> = () => {
   const submitProposal = async () => {
     if (!activeAuction || !isAuctionActive(activeAuction)) return;
 
-    const proposal = await backendClient.current.createProposal(
-      new Proposal(
-        proposalEditorData.title,
-        proposalEditorData.what,
-        proposalEditorData.tldr,
-        activeAuction.id,
-      ),
-    );
+    let newProp: Proposal | InfiniteAuctionProposal;
+    const { title, what, tldr, reqAmount } = proposalEditorData;
+
+    newProp =
+      isInfAuction(activeAuction) && reqAmount
+        ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, reqAmount)
+        : new Proposal(title, what, tldr, activeAuction.id);
+
+    const proposal = await backendClient.current.createProposal(newProp);
 
     setPropId(proposal.id);
     dispatch(appendProposal({ proposal }));
@@ -199,17 +204,19 @@ const Create: React.FC<{}> = () => {
                   <span className={classes.boldLabel}>{activeCommunity.name}</span> house
                 </h1>
 
-                <span className={classes.fundingCopy}>
-                  <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners will
-                  be selected to receive{' '}
-                  <span className={classes.boldLabel}>
-                    {' '}
-                    <FundingAmount
-                      amount={activeAuction.fundingAmount}
-                      currencyType={activeAuction.currencyType}
-                    />
+                {isTimedAuction(activeAuction) && (
+                  <span className={classes.fundingCopy}>
+                    <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners
+                    will be selected to receive{' '}
+                    <span className={classes.boldLabel}>
+                      {' '}
+                      <FundingAmount
+                        amount={activeAuction.fundingAmount}
+                        currencyType={activeAuction.currencyType}
+                      />
+                    </span>
                   </span>
-                </span>
+                )}
               </Container>
             </div>
 
@@ -217,7 +224,7 @@ const Create: React.FC<{}> = () => {
               <Row>
                 <Col xl={12}>
                   {showPreview ? (
-                    <Preview />
+                    <Preview roundCurrency={activeAuction.currencyType} />
                   ) : (
                     <ProposalEditor
                       onDataChange={onDataChange}
@@ -232,6 +239,7 @@ const Create: React.FC<{}> = () => {
                       setInvalidFileMessage={setInvalidFileMessage}
                       duplicateFile={duplicateFile}
                       setDuplicateFile={setDuplicateFile}
+                      remainingBal={remainingBal}
                     />
                   )}
                 </Col>
@@ -247,7 +255,7 @@ const Create: React.FC<{}> = () => {
                         return !prev;
                       })
                     }
-                    disabled={!isValidPropData(proposalEditorData)}
+                    disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
                   />
 
                   {showPreview &&
@@ -257,7 +265,7 @@ const Create: React.FC<{}> = () => {
                         text={t('signAndSubmit')}
                         bgColor={ButtonColor.Pink}
                         onClick={submitProposal}
-                        disabled={!isValidPropData(proposalEditorData)}
+                        disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
                       />
                     ) : (
                       <ConnectButton

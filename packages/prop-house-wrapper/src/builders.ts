@@ -16,7 +16,12 @@ export abstract class Signable {
     eip712MessageType: Record<string, TypedDataField[]>,
   ) {
     const typedSigner = signer as Signer & TypedDataSigner;
-    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, this.toPayload());
+
+    // parse reqAmount to support decimal values when signing an uint256 type
+    let payload = this.toPayload();
+    if (payload.hasOwnProperty('reqAmount')) payload.reqAmount = payload.reqAmount.toString();
+
+    return await typedSigner._signTypedData(domainSeparator, eip712MessageType, payload);
   }
 
   async signedPayload(
@@ -76,7 +81,7 @@ export abstract class Signable {
   }
 }
 
-export class Auction extends Signable {
+export class TimedAuction extends Signable {
   constructor(
     public readonly visible: boolean,
     public readonly title: string,
@@ -87,6 +92,7 @@ export class Auction extends Signable {
     public readonly currencyType: string,
     public readonly numWinners: number,
     public readonly community: number,
+    public readonly communityId: number,
     public readonly balanceBlockTag: number,
     public readonly description: string,
   ) {
@@ -104,13 +110,14 @@ export class Auction extends Signable {
       currencyType: this.currencyType,
       numWinners: this.numWinners,
       community: this.community,
+      communityId: this.communityId,
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
     };
   }
 }
 
-export class StoredAuction extends Auction {
+export class StoredTimedAuction extends TimedAuction {
   //@ts-ignore
   public readonly id: number;
   //@ts-ignore
@@ -118,7 +125,7 @@ export class StoredAuction extends Auction {
   //@ts-ignore
   public readonly createdDate: Date;
 
-  static FromResponse(response: any): StoredAuction {
+  static FromResponse(response: any): StoredTimedAuction {
     const parsed = {
       ...response,
       startTime: new Date(response.startTime),
@@ -129,12 +136,67 @@ export class StoredAuction extends Auction {
   }
 }
 
+export class InfiniteAuction extends Signable {
+  constructor(
+    public readonly visible: boolean,
+    public readonly title: string,
+    public readonly startTime: Date,
+    public readonly fundingAmount: number,
+    public readonly currencyType: string,
+    public readonly communityId: number,
+    public readonly balanceBlockTag: number,
+    public readonly description: string,
+    public readonly quorum: number,
+    public readonly votingPeriod: number,
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      visible: this.visible,
+      title: this.title,
+      startTime: this.startTime.toISOString(),
+      fundingAmount: this.fundingAmount,
+      currencyType: this.currencyType,
+      communityId: this.communityId,
+      balanceBlockTag: this.balanceBlockTag,
+      description: this.description,
+      quorum: this.quorum,
+      votingPeriod: this.votingPeriod,
+    };
+  }
+}
+
+export class StoredInfiniteAuction extends InfiniteAuction {
+  //@ts-ignore
+  public readonly id: number;
+  //@ts-ignore
+  public readonly numProposals: number;
+  //@ts-ignore
+  public readonly createdDate: Date;
+
+  static FromResponse(response: any): StoredTimedAuction {
+    const parsed = {
+      ...response,
+      startTime: new Date(response.startTime),
+    };
+    return parsed;
+  }
+}
+
+export type AuctionBase = TimedAuction | InfiniteAuction;
+export type StoredAuctionBase = StoredTimedAuction | StoredInfiniteAuction;
+
+export type ProposalParent = 'auction' | 'infinite-auction';
+
 export class Proposal extends Signable {
   constructor(
     public readonly title: string,
     public readonly what: string,
     public readonly tldr: string,
     public readonly auctionId: number,
+    public readonly parentType: ProposalParent = 'auction',
   ) {
     super();
   }
@@ -145,6 +207,7 @@ export class Proposal extends Signable {
       what: this.what,
       tldr: this.tldr,
       parentAuctionId: this.auctionId,
+      parentType: this.parentType,
     };
   }
 }
@@ -156,14 +219,41 @@ export class UpdatedProposal extends Proposal {
     public readonly what: string,
     public readonly tldr: string,
     public readonly auctionId: number,
+    public readonly reqAmount: number | null,
+    public readonly parentType: ProposalParent = 'auction',
   ) {
-    super(title, what, tldr, auctionId);
+    super(title, what, tldr, auctionId, parentType);
   }
 
   toPayload() {
     return {
       id: this.id,
+      reqAmount: this.reqAmount,
       ...super.toPayload(),
+    };
+  }
+}
+
+export class InfiniteAuctionProposal extends Signable {
+  constructor(
+    public readonly title: string,
+    public readonly what: string,
+    public readonly tldr: string,
+    public readonly auctionId: number,
+    public readonly reqAmount: number,
+    public readonly parentType: ProposalParent = 'infinite-auction',
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      title: this.title,
+      what: this.what,
+      tldr: this.tldr,
+      parentAuctionId: this.auctionId,
+      parentType: this.parentType,
+      reqAmount: this.reqAmount,
     };
   }
 }
@@ -175,6 +265,7 @@ export interface StoredProposal extends Proposal {
   voteCount: number;
   lastUpdatedDate: Date;
   deletedAt: Date;
+  reqAmount: number | null;
 }
 
 export interface StoredProposalWithVotes extends StoredProposal {
@@ -234,6 +325,10 @@ export interface StoredVote extends Vote {
   id: number;
 }
 
+export interface StoredVoteWithProposal extends StoredVote {
+  proposal: StoredProposal;
+}
+
 export interface StoredFile {
   id: number;
   hidden: boolean;
@@ -275,8 +370,45 @@ export class Community extends Signable {
     };
   }
 }
+
+export class Reply extends Signable {
+  constructor(
+    public readonly communityAddress: string,
+    public readonly blockTag: number,
+    public readonly proposalId: number,
+    public readonly content: string,
+  ) {
+    super();
+  }
+
+  toPayload() {
+    return {
+      communityAddress: this.communityAddress,
+      blockTag: this.blockTag,
+      proposalId: this.proposalId,
+      content: this.content,
+    };
+  }
+}
+
+export class StoredReply {
+  constructor(
+    public readonly id: number,
+    public readonly createdAt: Date,
+    public readonly proposalId: number,
+    public readonly content: string,
+    public readonly address: string,
+  ) {
+    this.id = id;
+    this.createdAt = new Date(this.createdAt);
+    this.proposalId = proposalId;
+    this.content = content;
+    this.address = address;
+  }
+}
+
 export interface CommunityWithAuctions extends Community {
-  auctions: StoredAuction[];
+  auctions: StoredTimedAuction[];
 }
 
 export const signPayload = async (signer: Signer | Wallet, payload: string) =>

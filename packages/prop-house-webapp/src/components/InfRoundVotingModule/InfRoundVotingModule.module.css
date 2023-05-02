@@ -1,0 +1,81 @@
+.sideCardBody {
+  font-size: 14px;
+  margin-bottom: 0;
+}
+.title {
+  font-size: 18px;
+  margin-bottom: 0;
+}
+.subtitle {
+  margin-bottom: 0;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.purpleText {
+  color: var(--brand-purple);
+}
+.purpleIcon {
+  background: var(--brand-purple-hint);
+  border: 1px solid var(--brand-purple-semi-transparent);
+}
+.purpleIcon svg {
+  color: var(--brand-purple);
+}
+.divider {
+  margin: 18px 0px;
+}
+.bulletList {
+  color: var(--brand-gray);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 8px;
+}
+
+.bulletList b {
+  color: var(--brand-black);
+}
+
+.bulletItem {
+  display: flex;
+  gap: 18px;
+}
+
+.bulletItem p {
+  margin-bottom: 0;
+}
+
+.bullet {
+  color: var(--brand-gray-semi-transparent);
+  border-radius: 50px;
+  min-width: 18px !important;
+  height: 2px !important;
+  margin: 0;
+  margin-top: 10px;
+  word-break: break-all;
+}
+.vote {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.votingInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+.votingBar {
+  border-radius: 50px;
+  margin: 12px 0px;
+  background: var(--brand-purple-hint);
+}

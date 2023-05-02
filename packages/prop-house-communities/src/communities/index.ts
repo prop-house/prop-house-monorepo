@@ -1,13 +1,15 @@
 import {
+  nouns,
+  lilNouns,
+  onchainMonkey,
   balanceOfErc20,
   balanceOfErc721,
   balanceOfErc721Multiple,
   erc1155,
   oneHundredVotes,
+  perWalletVoteErc20,
+  fixedVotes,
 } from '../strategies';
-import { lilNouns } from '../strategies/lilNouns';
-import { nouns } from '../strategies/nouns';
-import { onchainMonkey } from '../strategies/onchainMonkey';
 import { CaseInsensitiveMap } from '../types/CaseInsensitiveMap';
 
 /**
@@ -89,8 +91,38 @@ export const communities = new CaseInsensitiveMap(
     // Chaos
     '0xc16923543829f002E4A3f37e3E2e7CC9B8a87b96': balanceOfErc20(18),
     // Rug Radio
-    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': balanceOfErc20(18),
+    '0x6235CAEea7C515DaC14060Ec23a760090655F21b': perWalletVoteErc20(18, 5),
     // Noggle DAO
     '0x567C3CC159b694F4A4ed6545A86EB4fd5c5169FD': balanceOfErc721(),
+    // Headline
+    '0x3e4a08b6dA666D7C239221E4429340975eC09C48': balanceOfErc721(10),
+    // MferbuilderDAO
+    '0x795D300855069F602862c5e23814Bdeeb25DCa6b': balanceOfErc721(10),
+    // Nouns OTG
+    '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
+    // Seneca
+    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100),
+    // Index card
+    '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': erc1155(1, 50),
+    // Explorer Grants
+    '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100),
+    // Trait works
+    '0xe8f0b57a805b9a15fee874fdd8f6bc250a0d2c55': balanceOfErc721(10),
+    // Own the Doge
+    '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D': balanceOfErc721(),
+    // Noun 40
+    '0xaE65E700f3f8904ac1007d47a5309dD26f8146c0': fixedVotes(100),
+    // Ed Cruz
+    '0x7426B39865D11207B8F795b10D70843FC3289051': fixedVotes(100),
+    // Eu
+    '0xa47f60564085b8792BaE197BE7762C7f7930eC67': fixedVotes(100),
+    // Juicebox
+    '0x3abF2A4f8452cCC2CF7b4C1e4663147600646f66': balanceOfErc20(18),
+    // Infinite Retro Round
+    '0x5EBFd1CAC809F947164F558a606c29e685c754d3': balanceOfErc721(1),
+    // Florinouns
+    '0x9b02525cec175cE12FF8281c8923b1De1F85Af92': balanceOfErc721(),
+    // mxtter
+    '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
   }),
 );

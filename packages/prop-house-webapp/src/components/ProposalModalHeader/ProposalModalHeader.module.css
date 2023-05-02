@@ -8,6 +8,27 @@
   flex-direction: column;
   max-width: 75%;
 }
+.authorAndFundReqContainer {
+  display: flex;
+  align-items: center;
+  color: var(--brand-gray);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.fundReq {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+}
+.submittedBy {
+  display: flex;
+  align-items: flex-end;
+  color: var(--brand-pink);
+  font-weight: 700;
+  font-size: 1rem;
+  gap: 5px;
+}
+
 .crownNoun {
   display: flex;
 }
@@ -51,14 +72,6 @@ hr {
   .propSpacer {
     display: none !important;
   }
-}
-.submittedBy {
-  display: flex;
-  align-items: flex-end;
-  color: var(--brand-pink);
-  font-weight: 700;
-  font-size: 1rem;
-  gap: 5px;
 }
 
 .textSpacer {

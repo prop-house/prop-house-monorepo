@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
+import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
 import { Repository } from 'typeorm';
+import { InfiniteAuctionProposal } from './infauction-proposal.entity';
 import { Proposal } from './proposal.entity';
 import { GetProposalsDto } from './proposal.types';
 
@@ -8,10 +11,11 @@ import { GetProposalsDto } from './proposal.types';
 export class ProposalsService {
   constructor(
     @InjectRepository(Proposal)
-    private proposalsRepository: Repository<Proposal>,
+    private proposalsRepository: Repository<Proposal | InfiniteAuctionProposal>,
+    private infiniteAuctionService: InfiniteAuctionService,
   ) {}
 
-  findAll(dto: GetProposalsDto): Promise<Proposal[]> {
+  findAll(dto: GetProposalsDto) {
     return this.proposalsRepository.find({
       skip: dto.skip,
       take: dto.limit,
@@ -25,18 +29,26 @@ export class ProposalsService {
     });
   }
 
-  findAllWithAuctionId(auctionId: number): Promise<Proposal[]> {
+  findAllWithAuctionId(auctionId: number) {
     return this.proposalsRepository.find({
       relations: ['votes'],
       where: { visible: true, auctionId: auctionId },
     });
   }
 
-  findOne(id: number): Promise<Proposal> {
-    return this.proposalsRepository.findOne(id, {
+  async findOne(id: number) {
+    const proposal = await this.proposalsRepository.findOne(id, {
       relations: ['votes', 'auction'],
       where: { visible: true },
     });
+
+    if (proposal.parentType === 'infinite-auction') {
+      proposal.auction = await this.infiniteAuctionService.findOne(
+        proposal.auctionId,
+      );
+    }
+    proposal.auctionId = proposal.auction.id;
+    return proposal;
   }
 
   findBetween(start: Date = new Date('1900-01-01'), end: Date) {
@@ -60,7 +72,7 @@ export class ProposalsService {
     this.proposalsRepository.save(foundProposal);
   }
 
-  async store(proposal: Proposal): Promise<Proposal> {
+  async store(proposal: Proposal | InfiniteAuctionProposal) {
     return await this.proposalsRepository.save(proposal);
   }
 

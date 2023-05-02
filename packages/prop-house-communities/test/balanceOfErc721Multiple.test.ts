@@ -3,8 +3,7 @@ import { BigNumber, Contract, providers } from 'ethers';
 import { infuraEndpoint } from './src/constants/infuraEndpoint';
 import BalanceOfABI from '../src/abi/BalanceOfABI.json';
 import { strategyForCommunity } from '../src/utils/strategyForCommunity';
-import { getNumVotes } from '../src/actions';
-import { balanceOfErc721, balanceOfErc721Multiple } from '../src/strategies';
+import { balanceOfErc721Multiple } from '../src/strategies';
 
 describe('balance of erc721 multiple', () => {
   let apiKey;

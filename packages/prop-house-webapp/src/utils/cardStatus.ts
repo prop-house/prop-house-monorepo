@@ -1,5 +1,6 @@
-import { StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { auctionStatus, AuctionStatus } from './auctionStatus';
+import { isInfAuction } from './auctionType';
 
 export enum ProposalCardStatus {
   Default,
@@ -9,11 +10,18 @@ export enum ProposalCardStatus {
 
 export const cardStatus = (
   hasDelegatedVotes: boolean,
-  auction: StoredAuction
+  auction: StoredAuctionBase,
 ): ProposalCardStatus => {
+  // if infinite auction started && has votes, show voting
+  if (
+    isInfAuction(auction) &&
+    auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps &&
+    hasDelegatedVotes
+  )
+    return ProposalCardStatus.Voting;
+
   // if not in voting or not eligible to vote, return default
-  return auctionStatus(auction) !== AuctionStatus.AuctionVoting ||
-    !hasDelegatedVotes
+  return auctionStatus(auction) !== AuctionStatus.AuctionVoting || !hasDelegatedVotes
     ? ProposalCardStatus.Default
     : ProposalCardStatus.Voting;
 };

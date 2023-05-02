@@ -1,6 +1,6 @@
-import { StoredAuction } from "@nouns/prop-house-wrapper/dist/builders";
+import { StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 
-const highestAuctionId = (auctions: StoredAuction[]): number =>
+const highestAuctionId = (auctions: StoredTimedAuction[]): number =>
   auctions.reduce((acc, auction) => {
     acc = auction.id > acc ? auction.id : acc;
     return acc;

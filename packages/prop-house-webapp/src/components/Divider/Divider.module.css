@@ -1,6 +1,9 @@
 .divider {
-  margin: 18px 0px;
+  margin: 12px 0px;
 }
-.narrow {
-  margin: 9px 0px;
+.noMarginUp {
+  margin-top: 0px;
+}
+.noMarginDown {
+  margin-bottom: 0px;
 }

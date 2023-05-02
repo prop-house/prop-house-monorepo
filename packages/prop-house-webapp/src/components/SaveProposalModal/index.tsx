@@ -28,6 +28,7 @@ const SaveProposalModal: React.FC<{
   const { t } = useTranslation();
 
   const host = useAppSelector(state => state.configuration.backendHost);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const client = useRef(new PropHouseWrapper(host));
   const { data: signer } = useSigner();
 
@@ -53,6 +54,7 @@ const SaveProposalModal: React.FC<{
           updatedProposal.what,
           updatedProposal.tldr,
           roundId,
+          updatedProposal.reqAmount,
         ),
       );
       setErrorSaving(false);
@@ -93,13 +95,13 @@ const SaveProposalModal: React.FC<{
               setShowSavePropModal(false);
             }}
           />
-        ) : hasBeenSaved ? (
+        ) : hasBeenSaved && round ? (
           <Button
             text={t('Close')}
             bgColor={ButtonColor.White}
             onClick={() => {
               setShowSavePropModal(false);
-              refreshActiveProposals(client.current, roundId, dispatch);
+              refreshActiveProposals(client.current, round, dispatch);
               refreshActiveProposal(client.current, activeProposal!, dispatch);
               setEditProposalMode(false);
               handleClosePropModal();

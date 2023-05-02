@@ -7,11 +7,12 @@ import {
   Repository,
 } from 'typeorm';
 import { Vote } from './vote.entity';
-import { CreateVoteDto } from './vote.types';
+import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { Proposal } from 'src/proposal/proposal.entity';
 import { ethers } from 'ethers';
 import config from 'src/config/configuration';
-import { getNumVotes } from 'prop-house-communities';
+import { getVotingPower } from '@prophouse/communities';
+import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Injectable()
 export class VotesService {
@@ -24,8 +25,40 @@ export class VotesService {
     return this.votesRepository.find(opts);
   }
 
+  findAllWithOpts(dto: GetVoteDto): Promise<Vote[]> {
+    const q = this.votesRepository
+      .createQueryBuilder('v')
+      .skip(dto.skip)
+      .take(dto.limit)
+      .orderBy('v.createdDate', dto.order)
+      .leftJoin('v.proposal', 'p')
+      .addSelect('p');
+
+    if (dto.addresses && dto.addresses.length > 0)
+      q.leftJoin('p.auction', 'a')
+        .leftJoin('a.community', 'c')
+        .where('LOWER(c.contractAddress) IN (:...addresses)', {
+          addresses: dto.addresses.map((addr) => addr.toLowerCase()),
+        });
+
+    return q.getMany();
+  }
+
   async findAllByAuctionId(auctionId: number): Promise<Vote[]> {
     return await this.votesRepository.find({ where: { auctionId } });
+  }
+
+  async findAllByCommunityAddresses(addresses: string[]): Promise<Vote[]> {
+    return this.votesRepository
+      .createQueryBuilder('v')
+      .leftJoin('v.proposal', 'p')
+      .leftJoin('p.auction', 'a')
+      .leftJoin('a.community', 'c')
+      .where('LOWER(c.contractAddress) IN (:...addresses)', {
+        addresses: addresses.map((addr) => addr.toLowerCase()),
+      })
+      .addSelect('p')
+      .getMany();
   }
 
   findOne(id: number): Promise<Vote> {
@@ -57,12 +90,21 @@ export class VotesService {
     });
   }
 
-  async getNumVotes(
+  async getNumVotesByAccountAndRoundId(account: string, roundId: number) {
+    const votes = await this.votesRepository
+      .createQueryBuilder('v')
+      .where('address = :account', { account })
+      .andWhere('v.auctionId = :roundId', { roundId })
+      .getMany();
+    return votes.reduce((sum, vote) => sum + Number(vote.weight), 0);
+  }
+
+  async getVotingPower(
     dto: Pick<CreateVoteDto, 'address' | 'communityAddress'>,
     balanceblockTag: number,
   ): Promise<number> {
     const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
-    return await getNumVotes(
+    return await getVotingPower(
       dto.address,
       dto.communityAddress,
       provider,
@@ -70,7 +112,10 @@ export class VotesService {
     );
   }
 
-  async createNewVote(createVoteDto: CreateVoteDto, proposal: Proposal) {
+  async createNewVote(
+    createVoteDto: CreateVoteDto,
+    proposal: Proposal | InfiniteAuctionProposal,
+  ) {
     // Create vote for proposal
     const vote = new Vote({
       address: createVoteDto.address,

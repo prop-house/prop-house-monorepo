@@ -1,2 +1,3 @@
 export { getName } from './getName';
-export { getNumVotes } from './getNumVotes';
+export { getVotingPower } from './getVotingPower';
+export { getRelevantComms } from './getRelevantComms';

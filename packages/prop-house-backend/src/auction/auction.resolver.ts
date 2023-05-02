@@ -13,6 +13,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { CommunitiesService } from 'src/community/community.service';
+import { Proposal } from 'src/proposal/proposal.entity';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { PaginationArgs } from 'src/utils/graphql';
 import { Between, LessThan, MoreThan } from 'typeorm';
@@ -199,7 +200,7 @@ export class AuctionsResolver {
     }
   }
 
-  @ResolveField()
+  @ResolveField((returns) => [Proposal])
   async proposals(@Parent() auction: Auction) {
     const { id } = auction;
     return this.proposalsService.findAllWithAuctionId(id);

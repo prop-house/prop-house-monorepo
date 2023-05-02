@@ -54,11 +54,42 @@
 .buttonGroup {
   display: flex;
 }
+
+.connectBtnContainer {
+  align-self: center;
+}
+.createRoundBtn {
+  height: 40px;
+}
 @media (max-width: 991px) {
+  .menuLink {
+    background-color: white;
+  }
   .buttonGroup {
     gap: 10px;
     display: flex;
     justify-content: space-between;
+    flex-direction: column;
+    width: 100%;
+  }
+  .buttonGroup div {
+    width: 100%;
+  }
+  .buttonGroup div button {
+    background-color: white;
+  }
+  .connectBtnContainer div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .connectBtnContainer button {
+    align-self: center;
+  }
+  .createRoundBtn {
+    color: var(--brand-black-transparent);
+    width: 100%;
+    border: 1px rgba(0, 0, 0, 0.1) solid !important;
   }
 }
 

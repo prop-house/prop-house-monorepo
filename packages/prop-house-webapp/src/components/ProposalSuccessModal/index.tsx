@@ -8,14 +8,14 @@ import { openInNewTab } from '../../utils/openInNewTab';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import { buildRoundPath } from '../../utils/buildRoundPath';
-import { Auction, Community } from '@nouns/prop-house-wrapper/dist/builders';
+import { TimedAuction, Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAccount } from 'wagmi';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
   proposalId?: number;
   house: Community;
-  round: Auction;
+  round: TimedAuction;
 }> = props => {
   const { setShowProposalSuccessModal, proposalId, house, round } = props;
   const navigate = useNavigate();
