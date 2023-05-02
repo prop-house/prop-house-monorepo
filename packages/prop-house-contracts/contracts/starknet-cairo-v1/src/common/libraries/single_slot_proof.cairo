@@ -18,7 +18,7 @@ impl StorageSlotIntoU256 of Into<StorageSlot, u256> {
         let low = (word_3_shifted + self.word_4).try_into().unwrap();
         let high = (word_1_shifted + self.word_2).try_into().unwrap();
 
-        u256 { low: low, high: high,  }
+        u256 { low, high }
     }
 }
 

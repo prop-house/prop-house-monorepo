@@ -62,9 +62,9 @@ mod TimedFundingRound {
         array_slice
     };
     use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
+    use prop_house::common::utils::u256::{U256Zeroable, as_u256};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use prop_house::common::utils::u256::U256Zeroable;
     use prop_house::common::utils::constants::MASK_250;
     use integer::{U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
@@ -468,7 +468,7 @@ mod TimedFundingRound {
             contract_address: 0.try_into().unwrap() // TODO: Provide registry contract address
         };
 
-        let mut cumulative_voting_power = u256 { low: 0, high: 0 };
+        let mut cumulative_voting_power = as_u256(0, 0);
         let used_voting_strategy_ids_len = used_voting_strategy_ids.len();
 
         let mut i = 0;
@@ -541,7 +541,7 @@ mod TimedFundingRound {
 
         // Exit early if the proposal has been cancelled
         if proposal.is_cancelled {
-            return u256 { low: 0, high: 0 };
+            return as_u256(0, 0);
         }
 
         assert(voting_power.is_non_zero(), 'TFR: No voting power provided');

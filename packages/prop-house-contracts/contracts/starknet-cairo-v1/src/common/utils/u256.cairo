@@ -1,10 +1,14 @@
 use zeroable::Zeroable;
 
+fn as_u256(high: u128, low: u128) -> u256 {
+    u256 { low, high }
+}
+
 /// Canonical implementation of Zeroable for u256.
 impl U256Zeroable of Zeroable<u256> {
     #[inline(always)]
     fn zero() -> u256 {
-        u256 { low: 0_u128, high: 0_u128 }
+        as_u256(0, 0)
     }
 
     #[inline(always)]
@@ -16,8 +20,4 @@ impl U256Zeroable of Zeroable<u256> {
     fn is_non_zero(self: u256) -> bool {
         !self.is_zero()
     }
-}
-
-fn as_u256(high: u128, low: u128) -> u256 {
-    u256 { low, high }
 }

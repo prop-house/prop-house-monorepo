@@ -2,6 +2,7 @@
 mod VanillaVotingStrategy {
     use prop_house::common::utils::traits::IVotingStrategy;
     use prop_house::common::utils::serde::SpanSerde;
+    use prop_house::common::utils::u256::as_u256;
 
     impl VanillaVotingStrategy of IVotingStrategy {
         fn get_voting_power(
@@ -10,7 +11,7 @@ mod VanillaVotingStrategy {
             params: Span<felt252>,
             user_params: Span<felt252>,
         ) -> u256 {
-            u256 { low: 1, high: 0 }
+            as_u256(0, 1)
         }
     }
 
