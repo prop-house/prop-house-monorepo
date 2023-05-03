@@ -1,8 +1,15 @@
+use starknet::ContractAddress;
+
+#[abi]
+trait IEthereumTxAuthStrategy {
+    fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>);
+}
+
 #[contract]
 mod EthereumTxAuthStrategy {
     use starknet::{ContractAddress, ContractAddressIntoFelt252, call_contract_syscall};
     use prop_house::common::utils::array::{array_hash, ArrayTraitExt};
-    use prop_house::common::utils::traits::IAuthStrategy;
+    use super::IEthereumTxAuthStrategy;
     use zeroable::Zeroable;
     use array::ArrayTrait;
     use traits::Into;
@@ -12,7 +19,7 @@ mod EthereumTxAuthStrategy {
         _commits: LegacyMap<felt252, felt252>,
     }
 
-    impl EthereumTxAuthStrategy of IAuthStrategy {
+    impl EthereumTxAuthStrategy of IEthereumTxAuthStrategy {
         fn authenticate(target: ContractAddress, selector: felt252, mut cdata: Array<felt252>) {
             let mut input = ArrayTrait::new();
             input.append(target.into());

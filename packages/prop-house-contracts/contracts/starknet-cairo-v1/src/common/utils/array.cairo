@@ -1,8 +1,8 @@
 use array::{ArrayTrait, SpanTrait};
 use integer::Felt252TryIntoU32;
+use traits::{Into, TryInto};
 use option::OptionTrait;
 use hash::LegacyHash;
-use traits::TryInto;
 
 trait ArrayTraitExt<T> {
     fn append_all(ref self: Array<T>, ref arr: Array<T>);
@@ -119,6 +119,24 @@ fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     let mut slice = ArrayTrait::new();
     fill_array(ref dst: slice, :src, index: begin, count: end);
     slice
+}
+
+/// Convert a span of `felt252` to a `u256` array.
+/// * `data` - The data to convert.
+fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
+    let mut arr = ArrayTrait::<u256>::new();
+    loop {
+        match data.pop_front() {
+            Option::Some(item) => {
+                let item = *item;
+                arr.append(item.into());
+            },
+            Option::None(_) => {
+                break ();
+            },
+        };
+    };
+    arr
 }
 
 /// Returns the pedersen hash of an array.

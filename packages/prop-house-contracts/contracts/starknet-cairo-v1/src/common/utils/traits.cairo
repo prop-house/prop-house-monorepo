@@ -12,8 +12,3 @@ trait IVotingStrategy {
         timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256;
 }
-
-#[abi]
-trait IAuthStrategy {
-    fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>);
-}

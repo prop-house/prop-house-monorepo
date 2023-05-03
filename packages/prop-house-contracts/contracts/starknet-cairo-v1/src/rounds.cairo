@@ -1,1 +1,1 @@
-mod timed_funding_round;
+mod timed_funding;
