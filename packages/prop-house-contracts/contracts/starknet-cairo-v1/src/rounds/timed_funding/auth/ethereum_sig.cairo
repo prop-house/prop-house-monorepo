@@ -18,13 +18,14 @@ trait IEthereumSigAuthStrategy {
 mod EthereumSigAuthStrategy {
     use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
     use prop_house::rounds::timed_funding::constants::{DomainSeparator, TypeHash, Selector};
+    use prop_house::common::utils::contract_address::ContractAddressIntoU256;
     use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
     use prop_house::common::utils::u256::{U256Zeroable, as_u256};
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
     use prop_house::common::utils::array::into_u256_arr;
-    use integer::{upcast, Felt252TryIntoU32};
     use super::IEthereumSigAuthStrategy;
     use array::{ArrayTrait, SpanTrait};
+    use integer::Felt252TryIntoU32;
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use zeroable::Zeroable;
@@ -78,21 +79,21 @@ mod EthereumSigAuthStrategy {
         cdata: Span<felt252>,
     ) {
         // Proposer address should be located in calldata[0]
-        let proposer_address = *cdata[0];
+        let proposer_address = *cdata.at(0);
 
         // Ensure proposer has not already used this salt in a previous action
         assert(!_salts::read((proposer_address, salt)), 'EthereumSig: Salt already used');
 
         let auth_strategy_address = get_contract_address();
-        let metadata_uri = cdata.slice(2, upcast(*cdata[1]));
+        let metadata_uri = cdata.slice(2, (*cdata.at(1)).try_into().unwrap());
         let metadata_uri_hash = keccak_uint256s_be_to_be(into_u256_arr(metadata_uri).span());
 
         // The message data
         let mut data = ArrayTrait::new();
         data.append(TypeHash::PROPOSE());
-        data.append(upcast(auth_strategy_address));
-        data.append(upcast(target));
-        data.append(upcast(proposer_address));
+        data.append(auth_strategy_address.into());
+        data.append(target.into());
+        data.append(proposer_address.into());
         data.append(metadata_uri_hash);
         data.append(salt);
 
@@ -123,18 +124,18 @@ mod EthereumSigAuthStrategy {
         cdata: Span<felt252>,
     ) {
         // Voter address should be located in calldata[0]
-        let voter_address = *cdata[0];
+        let voter_address = *cdata.at(0);
 
         // Ensure voter has not already used this salt in a previous action
         assert(!_salts::read((voter_address, salt)), 'EthereumSig: Salt already used');
 
         let auth_strategy_address = get_contract_address();
 
-        let proposal_votes_len = (*cdata[1]).try_into().unwrap();
+        let proposal_votes_len = (*cdata.at(1)).try_into().unwrap();
         let proposal_votes = cdata.slice(2, proposal_votes_len);
         let proposal_votes_hash = keccak_uint256s_be_to_be(into_u256_arr(proposal_votes).span());
 
-        let used_voting_strategy_ids_len = (*cdata[2 + proposal_votes_len]).try_into().unwrap();
+        let used_voting_strategy_ids_len = (*cdata.at(2 + proposal_votes_len)).try_into().unwrap();
         let used_voting_strategy_ids = cdata.slice(
             3 + proposal_votes_len, used_voting_strategy_ids_len
         );
@@ -142,9 +143,9 @@ mod EthereumSigAuthStrategy {
             into_u256_arr(used_voting_strategy_ids).span()
         );
 
-        let user_voting_strategy_params_flat_len = (*cdata[3
-            + proposal_votes_len
-            + used_voting_strategy_ids_len]).try_into().unwrap();
+        let user_voting_strategy_params_flat_len = (*cdata.at(
+            3 + proposal_votes_len + used_voting_strategy_ids_len
+        )).try_into().unwrap();
         let user_voting_strategy_params_flat = cdata.slice(
             4 + proposal_votes_len + used_voting_strategy_ids_len,
             user_voting_strategy_params_flat_len
@@ -156,9 +157,9 @@ mod EthereumSigAuthStrategy {
         // The message data
         let mut data = ArrayTrait::new();
         data.append(TypeHash::VOTE());
-        data.append(upcast(auth_strategy_address));
-        data.append(upcast(target));
-        data.append(upcast(voter_address));
+        data.append(auth_strategy_address.into());
+        data.append(target.into());
+        data.append(voter_address.into());
         data.append(proposal_votes_hash);
         data.append(used_voting_strategy_ids_hash);
         data.append(user_voting_strategy_params_flat_hash);
@@ -191,8 +192,8 @@ mod EthereumSigAuthStrategy {
         cdata: Span<felt252>,
     ) {
         // Proposer address should be located in calldata[0], proposal_id in calldata[1]
-        let proposer_address = *cdata[0];
-        let proposal_id = *cdata[1];
+        let proposer_address = *cdata.at(0);
+        let proposal_id = *cdata.at(1);
 
         // Ensure proposer has not already used this salt in a previous action
         assert(!_salts::read((proposer_address, salt)), 'EthereumSig: Salt already used');
@@ -202,10 +203,10 @@ mod EthereumSigAuthStrategy {
         // The message data
         let mut data = ArrayTrait::new();
         data.append(TypeHash::CANCEL_PROPOSAL());
-        data.append(upcast(auth_strategy_address));
-        data.append(upcast(target));
-        data.append(upcast(proposer_address));
-        data.append(upcast(proposal_id));
+        data.append(auth_strategy_address.into());
+        data.append(target.into());
+        data.append(proposer_address.into());
+        data.append(proposal_id.into());
         data.append(salt);
 
         let hash = _hash_structured_data(data.span());
@@ -224,7 +225,7 @@ mod EthereumSigAuthStrategy {
         let hash_struct = keccak_uint256s_be_to_be(message);
 
         let mut data = ArrayTrait::new();
-        data.append(upcast(ETHEREUM_PREFIX));
+        data.append(ETHEREUM_PREFIX.into());
         data.append(DomainSeparator::GOERLI());
         data.append(hash_struct);
 

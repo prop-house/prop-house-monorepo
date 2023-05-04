@@ -7,6 +7,9 @@ description = "Public infrastructure by Nouns DAO"
 sierra = "cairo-compile . -r"
 test = "cairo-test . --starknet"
 
+[lib]
+casm = true
+
 # Note: currently testing doesn't work with dependencies
 [dependencies]
 quaireaux_data_structures = { git = "https://github.com/keep-starknet-strange/quaireaux" }

@@ -54,14 +54,14 @@ fn construct_2d_array(flat_array: Span<felt252>) -> Immutable2DArray {
 /// * `array_2d` - The 2D array to extract the sub array from.
 /// * `index` - The index of the sub array to extract.
 fn get_sub_array(array_2d: @Immutable2DArray, index: u32) -> Array<felt252> {
-    let offset = (*array_2d.offsets[index]).try_into().unwrap();
+    let offset = (*array_2d.offsets.at(index)).try_into().unwrap();
     let last_index = array_2d.offsets.len() - 1;
 
     let mut array_len = 0;
     if index == last_index {
         array_len = array_2d.elements.len() - offset;
     } else {
-        array_len = (*array_2d.offsets[index + 1]).try_into().unwrap() - offset;
+        array_len = (*array_2d.offsets.at(index + 1)).try_into().unwrap() - offset;
     }
     array_slice(array_2d.elements.span(), offset, array_len)
 }

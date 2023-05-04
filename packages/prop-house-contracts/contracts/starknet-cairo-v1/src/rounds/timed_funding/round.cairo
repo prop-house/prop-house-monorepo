@@ -258,7 +258,7 @@ mod TimedFundingRound {
             let leaves = _compute_leaves(winning_proposals, awards);
 
             let mut merkle_tree = MerkleTreeTrait::<u256>::new();
-            let merkle_root = merkle_tree.compute_root(*leaves[leaves.len() - 1], leaves);
+            let merkle_root = merkle_tree.compute_root(*leaves.at(leaves.len() - 1), leaves);
             let execution_strategy = IExecutionStrategyDispatcher {
                 contract_address: 0.try_into().unwrap() // TODO: Fetch from registry using origin chain ID
             };
@@ -594,7 +594,7 @@ mod TimedFundingRound {
     /// * `awards` - The awards to compute the leaves for.
     fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Award>) -> Span<u256> {
         if awards.len() == 1 {
-            return _compute_leaves_for_split_award(proposals, *awards[0]);
+            return _compute_leaves_for_split_award(proposals, *awards.at(0));
         }
         _compute_leaves_for_assigned_awards(proposals, awards)
     }
@@ -621,7 +621,7 @@ mod TimedFundingRound {
             }
             leaves.append(
                 _compute_leaf_for_proposal_award(
-                    *proposals[i], award_to_split.asset_id, amount_per_proposal
+                    *proposals.at(i), award_to_split.asset_id, amount_per_proposal
                 )
             );
             i += 1;
@@ -646,10 +646,10 @@ mod TimedFundingRound {
             if i == proposal_count {
                 break ();
             }
-            let award = *awards[i];
+            let award = *awards.at(i);
 
             leaves.append(
-                _compute_leaf_for_proposal_award(*proposals[i], award.asset_id, award.amount)
+                _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
             );
             i += 1;
         };
