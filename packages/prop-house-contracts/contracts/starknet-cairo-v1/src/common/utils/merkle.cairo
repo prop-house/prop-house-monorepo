@@ -1,5 +1,6 @@
 use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
 use array::{ArrayTrait, SpanTrait};
+use integer::u256_from_felt252;
 use hash::LegacyHash;
 use traits::Into;
 
@@ -98,7 +99,7 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.
                     // If it is, we need to swap the order of the hash.
-                    if current_node.into() < proof_element.into() {
+                    if u256_from_felt252(current_node) < u256_from_felt252(proof_element) {
                         current_node = LegacyHash::hash(current_node, proof_element);
                     } else {
                         current_node = LegacyHash::hash(proof_element, current_node);
