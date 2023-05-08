@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import classes from './StatusLabel.module.css';
-import { RoundState } from '../HouseManager/Rounds';
+import { RoundState } from '@prophouse/sdk-react';
 
 const StatusLabel: React.FC<{ state: RoundState }> = props => {
   const { state } = props;
@@ -9,21 +9,37 @@ const StatusLabel: React.FC<{ state: RoundState }> = props => {
   let bgClass = '';
 
   switch (state) {
-    case RoundState.AwaitingRegistration:
-      copy = 'Awaiting Registration';
+    case RoundState.UNKNOWN:
+      copy = 'Unknown';
       bgClass = classes.grayBg;
       break;
-    case RoundState.Cancelled:
+    case RoundState.CANCELLED:
       copy = 'Cancelled';
+      bgClass = classes.redBg;
+      break;
+    case RoundState.AWAITING_REGISTRATION:
+      copy = 'Awaiting Registration';
+      bgClass = classes.orangeBg;
+      break;
+    case RoundState.NOT_STARTED:
+      copy = 'Not Started';
+      bgClass = classes.yellowBg;
+      break;
+    case RoundState.IN_PROPOSING_PERIOD:
+      copy = 'In Proposing Period';
       bgClass = classes.greenBg;
       break;
-    case RoundState.Finalized:
-      copy = 'Finalized';
+    case RoundState.IN_VOTING_PERIOD:
+      copy = 'In Voting Period';
+      bgClass = classes.blueBg;
+      break;
+    case RoundState.IN_CLAIMING_PERIOD:
+      copy = 'In Claiming Period';
       bgClass = classes.purpleBg;
       break;
-    case RoundState.Registered:
-      copy = 'Registered';
-      bgClass = classes.whiteBg;
+    case RoundState.COMPLETE:
+      copy = 'Complete';
+      bgClass = classes.indigoBg;
       break;
     default:
       copy = 'Unknown';
