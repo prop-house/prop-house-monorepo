@@ -16,6 +16,7 @@
   width: 42px;
   height: 42px;
   border-radius: 4px;
+  object-fit: cover;
 }
 .textContainer {
   justify-content: center;
