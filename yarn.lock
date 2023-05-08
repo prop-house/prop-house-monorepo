@@ -4343,10 +4343,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
-"@prophouse/contracts@^0.1.0-alpha.10":
-  version "0.1.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@prophouse/contracts/-/contracts-0.1.0-alpha.10.tgz#55d4b1c37fce23c8b8dfacd8a8bddd85c1e3cd08"
-  integrity sha512-gaQObjDTRSGF48iYeD/PuZJChR2BS7Y5eoyrAFEu58ZYjtcR06C7IfsoOHJizMqoaYLgrpBXCehDlm1qNYLA4w==
+"@prophouse/contracts@^0.1.0-alpha.11":
+  version "0.1.0-alpha.11"
+  resolved "https://registry.yarnpkg.com/@prophouse/contracts/-/contracts-0.1.0-alpha.11.tgz#f1e2a32eed0b1e811c79e6584934ed2da103b45a"
+  integrity sha512-h4ttmgll53nowGbtNJadSyYdHKlyYRWwCqXZc18qGI5EQz5po7T0+JPuaIYIspUESiziZPdi2hcytOBKf1IrSA==
   dependencies:
     ethers "~5.7.2"
 
@@ -4357,12 +4357,12 @@
   dependencies:
     ethers "~5.5.0"
 
-"@prophouse/sdk-react@0.1.0-alpha.10":
-  version "0.1.0-alpha.10"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.10.tgz#b18dcfbd0ac4a95e66a8804cc953d563c97d7371"
-  integrity sha512-5Ki3fUlF8tnjvhlShwv8PLPa8SaTLpIAD8noVjkw6qv9ci6AdNFyzCluT4bgbR9RlEQmx04rYIjN33i685PYAQ==
+"@prophouse/sdk-react@0.1.0-alpha.13":
+  version "0.1.0-alpha.13"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.13.tgz#bb60dc9d65ebaf3a113dc59f0d3578c1ca7aaced"
+  integrity sha512-+P+vdDedoLJJ9/BlnYYoQS69YJDDnPbhdrnv92fHjQAH/uMn1FXTrEI4ucXQuS5tites/OitjXe+Fx1nIxXAhg==
   dependencies:
-    "@prophouse/sdk" "~0.1.0-alpha.21"
+    "@prophouse/sdk" "~0.1.0-alpha.24"
 
 "@prophouse/sdk@^0.1.0-alpha.8":
   version "0.1.0-alpha.8"
@@ -4386,10 +4386,10 @@
     starknet "4.19.3"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@~0.1.0-alpha.21":
-  version "0.1.0-alpha.21"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.1.0-alpha.21.tgz#821b649673a063b9907136575fa73dfcaa402ac4"
-  integrity sha512-USNOk+19VDmjlkdWgwvYopaRtXIrLsic2ya0kT64IVgh5y2XwaJktytArwp+y6mWuIqJ8sR+TsPWfsGUVlYGkw==
+"@prophouse/sdk@~0.1.0-alpha.24":
+  version "0.1.0-alpha.24"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.1.0-alpha.24.tgz#a41428fc38c64ed1b54f5586487835055c42fa0b"
+  integrity sha512-QzUTQ1T9hn8rKJkGuVBLTQN1yA9DxHHDsg66Fx4v0PEehM7QhKjhmF4EyLGxaX77vgty+AwMheS3PTmVODVAQQ==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -4403,7 +4403,7 @@
     "@ethersproject/providers" "~5.7.0"
     "@ethersproject/solidity" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
-    "@prophouse/contracts" "^0.1.0-alpha.10"
+    "@prophouse/contracts" "^0.1.0-alpha.11"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
