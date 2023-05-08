@@ -116,7 +116,7 @@ const Modal: React.FC<{
           {body && <div className={classes.body}>{body}</div>}
 
           <Divider noMarginUp />
-          <div>
+          <div className={classes.footer}>
             <div className={classes.buttonContainer}>
               {bottomContainer ? (
                 bottomContainer

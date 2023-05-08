@@ -65,7 +65,7 @@
   display: none;
 }
 
-/* .footer {
+.footer {
   position: sticky !important;
   bottom: -1px;
   bottom: 0px;
@@ -78,7 +78,8 @@
   padding-bottom: 18px;
   padding-top: 18px;
   margin-top: 18px;
-} */
+}
+
 .modal::-webkit-scrollbar {
   width: 7px;
   height: 0px;
