@@ -2,7 +2,7 @@ import {
   ChainId,
   ContractAddresses,
   getContractAddressesForChainOrThrow,
-} from '@prophouse/contracts';
+} from '@prophouse/protocol';
 import { constants, SequencerProvider } from 'starknet';
 import { JsonRpcProvider, JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';

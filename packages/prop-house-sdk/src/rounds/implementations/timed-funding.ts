@@ -9,7 +9,7 @@ import {
   RoundEventState,
   GetRoundStateParams,
 } from '../../types';
-import { TimedFundingRound__factory } from '@prophouse/contracts';
+import { TimedFundingRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';

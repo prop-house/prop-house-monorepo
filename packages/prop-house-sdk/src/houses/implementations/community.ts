@@ -1,7 +1,7 @@
 import { ChainConfig, CommunityHouseConfig, HouseType } from '../../types';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { HouseBase } from './base';
-import { CommunityHouse__factory } from '@prophouse/contracts';
+import { CommunityHouse__factory } from '@prophouse/protocol';
 
 export class CommunityHouse extends HouseBase<HouseType.COMMUNITY> {
   /**

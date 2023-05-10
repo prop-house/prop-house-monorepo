@@ -1,4 +1,4 @@
-import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/contracts';
+import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/protocol';
 import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
