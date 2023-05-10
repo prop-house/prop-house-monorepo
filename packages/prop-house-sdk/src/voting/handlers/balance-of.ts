@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { BalanceOf, ChainConfig, VotingStrategyType, VotingConfig } from '../../types';
-import { ChainId } from '@prophouse/contracts';
+import { ChainId } from '@prophouse/protocol';
 import { SingleSlotProofHandler } from './base';
 import { storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';

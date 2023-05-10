@@ -1,4 +1,4 @@
-import { ChainId } from '@prophouse/contracts';
+import { ChainId } from '@prophouse/protocol';
 import { Interface } from '@ethersproject/abi';
 import { QueryWrapper } from '../../gql';
 import {

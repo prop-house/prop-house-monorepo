@@ -1,4 +1,4 @@
-import { PropHouseContract, PropHouse__factory } from '@prophouse/contracts';
+import { PropHouseContract, PropHouse__factory } from '@prophouse/protocol';
 import {
   Asset,
   AssetStruct,

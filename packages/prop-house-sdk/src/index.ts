@@ -1,4 +1,4 @@
-export * from '@prophouse/contracts';
+export * from '@prophouse/protocol';
 export * from './gql';
 export * from './houses';
 export * from './rounds';

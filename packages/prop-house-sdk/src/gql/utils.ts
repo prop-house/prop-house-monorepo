@@ -1,4 +1,4 @@
-import { ChainId } from '@prophouse/contracts';
+import { ChainId } from '@prophouse/protocol';
 import { OrderDirection } from './evm/graphql';
 import { GraphQL } from '../types';
 
