@@ -1,17 +1,20 @@
 .headerContainer {
   display: flex;
-  margin-top: 2rem;
   flex-direction: column;
 }
-.headerContainer {
-  margin-top: 0rem;
+.headerBottomContainer {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
-
-@media (min-width: 577px) {
-  .headerContainer {
-    flex-direction: column;
-    gap: 20px;
-  }
+.fundReq {
+  font-weight: 900;
+  color: var(--brand-black-transparent);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
 }
 
 hr {
@@ -25,23 +28,12 @@ hr {
   flex-direction: row;
 }
 
-@media (max-width: 577px) {
-  .subinfo {
-    flex-direction: column;
-    gap: 5px;
-  }
-}
 .subinfo a {
   font-weight: 650;
 }
 
 .propSubmissionData {
   display: flex;
-}
-@media (max-width: 577px) {
-  .propSpacer {
-    display: none !important;
-  }
 }
 .submittedBy {
   display: flex;
@@ -88,8 +80,16 @@ hr {
   font-weight: 700;
   color: var(--brand-gray);
 }
+
 @media (max-width: 577px) {
   .backBtnContainer {
     padding-bottom: 25px;
+  }
+  .propSpacer {
+    display: none !important;
+  }
+  .subinfo {
+    flex-direction: column;
+    gap: 5px;
   }
 }

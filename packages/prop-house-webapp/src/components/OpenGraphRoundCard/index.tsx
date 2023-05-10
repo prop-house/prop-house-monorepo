@@ -5,17 +5,16 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import formatTime from '../../utils/formatTime';
 import CommunityProfImg from '../CommunityProfImg';
-import { deadlineTime, deadlineCopy } from '../../utils/auctionStatus';
-import diffTime from '../../utils/diffTime';
 import TruncateThousands from '../TruncateThousands';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useSigner } from 'wagmi';
+import { isTimedAuction } from '../../utils/auctionType';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
   const { id } = params;
 
-  const [round, setRound] = useState<StoredAuction>();
+  const [round, setRound] = useState<StoredTimedAuction>();
   const [community, setCommunity] = useState<Community>();
 
   const { data: signer } = useSigner();
@@ -50,10 +49,11 @@ const OpenGraphRoundCard: React.FC = () => {
               </div>
 
               <div className={classes.roundName}>{round.title}</div>
-
-              <div className={classes.date}>
-                {`${formatTime(round.startTime)} - ${formatTime(round.proposalEndTime)}`}
-              </div>
+              {isTimedAuction(round) && (
+                <div className={classes.date}>
+                  {`${formatTime(round.startTime)} - ${formatTime(round.proposalEndTime)}`}
+                </div>
+              )}
             </span>
 
             <span className={classes.houseImg}>
@@ -63,16 +63,15 @@ const OpenGraphRoundCard: React.FC = () => {
 
           <span className={classes.roundInfoContainer}>
             <div className={classes.roundInfo}>
-              <span className={classes.title}>Funding:</span>
+              <span className={classes.title}>Awards:</span>
               <p className={classes.subtitle}>
                 <TruncateThousands amount={round.fundingAmount} decimals={2} /> {round.currencyType}
-                <span className={classes.xDivide}>{' × '}</span> {round.numWinners}
+                {isTimedAuction(round) && (
+                  <>
+                    <span className={classes.xDivide}>{' × '}</span> {round.numWinners}
+                  </>
+                )}
               </p>
-            </div>
-
-            <div className={classes.roundInfo}>
-              <span className={classes.title}>{deadlineCopy(round)}:</span>
-              <p className={classes.subtitle}>{diffTime(deadlineTime(round))}</p>
             </div>
           </span>
         </div>

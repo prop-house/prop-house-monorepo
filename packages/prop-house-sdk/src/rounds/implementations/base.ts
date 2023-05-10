@@ -3,10 +3,12 @@ import { Interface } from '@ethersproject/abi';
 import { QueryWrapper } from '../../gql';
 import {
   Custom,
+  GetRoundStateParams,
   RoundChainConfig,
-  RoundConfig,
+  RoundConfigs,
   RoundConfigStruct,
   RoundContract,
+  RoundState,
   RoundType,
 } from '../../types';
 import { bytes, splitUint256 } from '../../utils';
@@ -26,7 +28,7 @@ export abstract class RoundBase<
   constructor(config: RoundChainConfig<CS>) {
     super(config);
     this._voting = config.voting ?? Voting.for<CS>(config);
-    this._query = QueryWrapper.for(config.evmChainId);
+    this._query = config.query ?? QueryWrapper.for(config.evmChainId);
     this._relayer = config.customStarknetRelayer || RoundBase.DEFAULT_STARKNET_RELAYERS[this._evmChainId];
   }
 
@@ -49,11 +51,23 @@ export abstract class RoundBase<
   };
 
   /**
+   * Internal helper that returns the current timestamp in seconds
+   */
+  protected static get _TIMESTAMP_SECS() {
+    return Math.floor(Date.now() / 1000);
+  }
+
+  /**
    * The Starknet relayer URL
    */
   public get relayer() {
     return this._relayer;
   }
+
+  /**
+   * The Starknet relayer path
+   */
+  public abstract get relayerPath(): string;
 
   /**
    * The round type
@@ -74,7 +88,7 @@ export abstract class RoundBase<
    * Convert the provided round configuration to a config struct
    * @param config The round configuration
    */
-  public abstract getConfigStruct(config: RoundConfig<CS>[RT]): Promise<RoundConfigStruct[RT]>;
+  public abstract getConfigStruct(config: RoundConfigs<CS>[RT]): Promise<RoundConfigStruct[RT]>;
 
   /**
    * Estimate the round registration message fee cost (in wei)
@@ -95,11 +109,19 @@ export abstract class RoundBase<
   public abstract getContract(address: string): RoundContract[RT];
 
   /**
+   * Given the provided params, return the round state
+   * @param _params The information required to get the round state
+   */
+  public static getState(_params: GetRoundStateParams): RoundState {
+    throw new Error('Not implemented');
+  }
+
+  /**
    * Send a payload to the Starknet relayer
    * @param params The JSON RPC params
    */
   public async sendToRelayer<T>(params: T) {
-    const res = await fetch(this.relayer, {
+    const res = await fetch(`${this.relayer}/${this.relayerPath}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

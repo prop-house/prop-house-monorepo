@@ -6,13 +6,15 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ParseDate } from 'src/utils/date';
 import { Auction } from './auction.entity';
-import { CreateAuctionDto } from './auction.types';
-import { AuctionsService } from './auctions.service';
+import { CreateAuctionDto, GetAuctionsDto, LatestDto } from './auction.types';
+import { AuctionsService, AuctionWithProposalCount } from './auctions.service';
 import { ProposalsService } from 'src/proposal/proposals.service';
 import { Proposal } from 'src/proposal/proposal.entity';
+import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
 
 @Controller('auctions')
 export class AuctionsController {
@@ -48,7 +50,9 @@ export class AuctionsController {
   }
 
   @Get('/forCommunity/:id')
-  async findAllForCommunity(@Param('id') id: number): Promise<Auction[]> {
+  async findAllForCommunity(
+    @Param('id') id: number,
+  ): Promise<AuctionWithProposalCount[]> {
     const auctions = await this.auctionsService.findAllForCommunity(id);
     if (!auctions)
       throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
@@ -71,7 +75,9 @@ export class AuctionsController {
   }
 
   @Get(':id/proposals')
-  async find(@Param('id') id: number): Promise<Proposal[]> {
+  async find(
+    @Param('id') id: number,
+  ): Promise<(Proposal | InfiniteAuctionProposal)[]> {
     const foundProposals = await this.proposalService.findAllWithAuctionId(id);
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
@@ -80,7 +86,9 @@ export class AuctionsController {
   l;
 
   @Get(':id/rollUpProposals')
-  async findAll(@Param('id') id: number): Promise<Proposal[]> {
+  async findAll(
+    @Param('id') id: number,
+  ): Promise<(Proposal | InfiniteAuctionProposal)[]> {
     const foundProposals = await this.proposalService.findAllWithAuctionId(id);
     if (!foundProposals)
       throw new HttpException('Proposals not found', HttpStatus.NOT_FOUND);
@@ -88,5 +96,47 @@ export class AuctionsController {
       await this.proposalService.rollupVoteCount(foundProposals[index].id);
     }
     return foundProposals;
+  }
+
+  @Get('allActive/:n')
+  async findAllActive(@Query() dto: GetAuctionsDto): Promise<Auction[]> {
+    const auctions = await this.auctionsService.findAllActive(dto);
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auctions;
+  }
+
+  @Get('active/:n')
+  async findAllActiveForCommunities(
+    @Query() dto: GetAuctionsDto,
+  ): Promise<Auction[]> {
+    const auctions = await this.auctionsService.findAllActiveForCommunities(
+      dto,
+    );
+    if (!auctions)
+      throw new HttpException('Auction not found', HttpStatus.NOT_FOUND);
+    return auctions;
+  }
+
+  @Get('latestNumProps/:n')
+  async latestNumProps(@Query() dto: LatestDto): Promise<number> {
+    const numProps = await this.auctionsService.latestNumProps(dto);
+    if (numProps === undefined)
+      throw new HttpException(
+        `Error fetching num props for ${dto.auctionId} `,
+        HttpStatus.NOT_FOUND,
+      );
+    return Number(numProps);
+  }
+
+  @Get('latestNumVotes/:n')
+  async latestNumVotes(@Query() dto: LatestDto): Promise<number> {
+    const numVotes = await this.auctionsService.latestNumVotes(dto);
+    if (numVotes === undefined)
+      throw new HttpException(
+        `Error fetching num props for ${dto.auctionId} `,
+        HttpStatus.NOT_FOUND,
+      );
+    return Number(numVotes);
   }
 }

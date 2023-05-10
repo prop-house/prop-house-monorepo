@@ -9,11 +9,9 @@ import { useAppSelector } from '../../hooks';
 import { buildProposalPath } from '../../utils/buildPropsalPath';
 import { useTranslation } from 'react-i18next';
 import { isMobile } from 'web3modal';
+import { BiAward } from 'react-icons/bi';
 
 export interface ProposalModalHeaderProps {
-  fieldTitle: string;
-  address: string;
-  proposalId: number;
   backButton: React.ReactNode;
   propIndex: number | undefined;
   numberOfProps: number;
@@ -28,9 +26,6 @@ export interface ProposalModalHeaderProps {
 const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
   const {
     backButton,
-    fieldTitle,
-    address,
-    proposalId,
     propIndex,
     numberOfProps,
     handleDirectionalArrowClick,
@@ -38,13 +33,14 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
     isLastProp,
     showVoteAllotmentModal,
     editProposalMode,
+    proposal,
   } = props;
 
   const { t } = useTranslation();
   const [tooltipContent, setTooltipContent] = useState('Click to copy');
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const propURL = community && round && buildProposalPath(community, round, proposalId);
+  const propURL = community && round && buildProposalPath(community, round, proposal.id);
 
   const shareBtn = (onClick?: () => void) => (
     <button className={classes.shareButton} onClick={onClick}>
@@ -54,7 +50,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
 
   const mobileShare = () => {
     const shareData = {
-      title: fieldTitle,
+      title: proposal.title,
       url: propURL,
     };
     if (navigator.canShare(shareData)) navigator.share(shareData);
@@ -100,20 +96,28 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerPropInfo}>
-        {address && proposalId && (
-          <div className={classes.subinfo}>
-            <div className={classes.communityAndPropNumber}>
-              <span className={classes.propNumber}>
-                Prop {propIndex} of {numberOfProps} <span className={classes.creditDash}>—</span> by{' '}
-              </span>{' '}
-              <div className={classes.submittedBy}>
-                <EthAddress address={address} className={classes.submittedBy} addAvatar />
-              </div>
-            </div>
+        <div className={classes.subinfo}>
+          <div className={classes.communityAndPropNumber}>
+            <span className={classes.propNumber}>
+              Prop {propIndex} of {numberOfProps}
+            </span>
           </div>
-        )}
+        </div>
 
-        <p className={classes.propTitle}>{fieldTitle}</p>
+        <p className={classes.propTitle}>{proposal.title}</p>
+
+        <div className={classes.authorAndFundReqContainer}>
+          {proposal.reqAmount && (
+            <div className={classes.fundReq}>
+              <BiAward size={'1rem'} />
+              {`${proposal.reqAmount} ${round?.currencyType}`}
+            </div>
+          )}
+
+          <div className={classes.submittedBy}>
+            <EthAddress address={proposal.address} className={classes.submittedBy} />
+          </div>
+        </div>
       </div>
 
       <div className={classes.btnContainer}>

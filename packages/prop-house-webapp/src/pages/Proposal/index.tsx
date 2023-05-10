@@ -11,8 +11,6 @@ import {
   setActiveProposal,
   setActiveRound,
 } from '../../state/slices/propHouse';
-
-import proposalFields from '../../utils/proposalFields';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
@@ -100,11 +98,9 @@ const Proposal = () => {
         {proposal ? (
           <Container>
             <RenderedProposalFields
-              fields={proposalFields(proposal)}
-              address={proposal.address}
-              proposalId={proposal.id}
+              proposal={proposal}
               community={community}
-              roundName={round && round?.title}
+              round={round && round}
               backButton={
                 <div className={classes.backToAuction} onClick={() => handleBackClick()}>
                   <IoArrowBackCircleOutline size={'1.5rem'} /> View round

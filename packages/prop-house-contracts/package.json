@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/contracts",
-  "version": "0.1.0-alpha.10",
+  "version": "0.1.0-alpha.11",
   "license": "GPL-3.0",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -27,7 +27,7 @@
     "solady": "^0.0.62",
     "solmate": "^6.6.1",
     "starknet": "4.22.0",
-    "starknet-hardhat-plugin-extended": "0.8.0-alpha.5",
+    "starknet-hardhat-plugin-extended": "0.8.0-alpha.6",
     "ts-node": "^10.9.1",
     "typechain": "8.1.0"
   },

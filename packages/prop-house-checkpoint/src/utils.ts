@@ -1,7 +1,8 @@
 import { RoundType, getContractAddressesForChainOrThrow } from '@prophouse/sdk';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Uint256 } from './types';
+import { TransactionStatus, Uint256 } from './types';
+import { FullBlock } from '@snapshot-labs/checkpoint';
 
 const {
   starknet: { classHashes },
@@ -82,3 +83,9 @@ export const getJSON = async (uri: string) => {
     return res.json();
   }
 };
+
+export const getTxStatus = (block: FullBlock | null) => {
+  return block ? TransactionStatus.CONFIRMED : TransactionStatus.PENDING;
+};
+
+export const unixTimestamp = () => Math.floor(Date.now() / 1000);

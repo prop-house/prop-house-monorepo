@@ -7,16 +7,25 @@ import { useTranslation } from 'react-i18next';
 
 export interface ProposalContentProps {
   fields: ProposalFields;
+  roundCurrency?: string;
 }
 
 const ProposalContent: React.FC<ProposalContentProps> = props => {
-  const { fields } = props;
+  const { fields, roundCurrency } = props;
   const { t } = useTranslation();
 
   return (
     <>
       <div className="proposalCopy">
         <span className={classes.proposalBody}>
+          {fields.reqAmount && (
+            <>
+              <h2>Funds requested</h2>
+              <p>
+                {fields.reqAmount} {roundCurrency}
+              </p>
+            </>
+          )}
           {fields.tldr && (
             <>
               <h2>{t('tldr')}</h2>
@@ -43,7 +52,9 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
                 pre: ['language-*', 'lang-*'],
               },
               // edge case: handle ampersands in img links encoded from sanitization
-            }).replaceAll('&amp;', '&')}
+            })
+              .replaceAll('&amp;', '&')
+              .replaceAll(/<img/g, '<img crossorigin="anonymous"')}
           </Markdown>
         </span>
       </div>

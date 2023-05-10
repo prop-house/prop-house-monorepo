@@ -29,6 +29,7 @@ import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
+import { isTimedAuction } from '../../utils/auctionType';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -44,8 +45,10 @@ const ProposalModal = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
+  const activeProposals = useAppSelector(state => state.propHouse.activeProposals);
+  const infRoundProposals = useAppSelector(state => state.propHouse.infRoundFilteredProposals);
+  const proposals = round && isTimedAuction(round) ? activeProposals : infRoundProposals;
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
@@ -64,7 +67,7 @@ const ProposalModal = () => {
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
-  const winningIds = round && getWinningIds(proposals, round);
+  const winningIds = round && proposals && getWinningIds(proposals, round);
   const provider = useProvider();
 
   const handleClosePropModal = () => {
@@ -74,7 +77,7 @@ const ProposalModal = () => {
   };
 
   const dismissModalAndRefreshProps = () => {
-    refreshActiveProposals(backendClient.current, round!.id, dispatch);
+    refreshActiveProposals(backendClient.current, round!, dispatch);
     refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
     handleClosePropModal();
   };
@@ -178,7 +181,7 @@ const ProposalModal = () => {
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round!.id, dispatch);
+      refreshActiveProposals(backendClient.current, round!, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
@@ -253,6 +256,7 @@ const ProposalModal = () => {
               showVoteAllotmentModal={showVoteAllotmentModal}
               editProposalMode={editProposalMode}
               setEditProposalMode={setEditProposalMode}
+              proposals={proposals}
             />
 
             <ProposalModalFooter

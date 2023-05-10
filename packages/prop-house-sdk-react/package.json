@@ -1,7 +1,7 @@
 {
   "name": "@prophouse/sdk-react",
-  "version": "0.1.0-alpha.7",
-  "description": "Useful tooling for interacting with the Prop House protocol from React applications",
+  "version": "0.1.0-alpha.13",
+  "description": "Useful tools for interacting with the Prop House protocol from React applications",
   "author": "solimander",
   "homepage": "https://prop.house",
   "license": "GPL-3.0",
@@ -18,7 +18,7 @@
     "wagmi": ">=0.9.2"
   },
   "dependencies": {
-    "@prophouse/sdk": "~0.1.0-alpha.18"
+    "@prophouse/sdk": "~0.1.0-alpha.24"
   },
   "devDependencies": {
     "react": "^17.0.2",

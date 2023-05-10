@@ -2,11 +2,12 @@ import { ChainId } from '@prophouse/contracts';
 import { OrderDirection } from './evm/graphql';
 import { GraphQL } from '../types';
 
-export interface QueryConfig<OB> {
+export interface QueryConfig<OB, W> {
   page: number;
   perPage: number;
   orderBy?: OB;
   orderDirection?: OrderDirection;
+  where?: W;
 }
 
 export const GRAPHQL_APIS: Record<number, GraphQL> = {
@@ -65,9 +66,10 @@ export const getDefaultConfig = <OB>(orderBy: OB) => ({
  * Convert the query
  * @param config The query config
  */
-export const toPaginated = <OB>(config: QueryConfig<OB>) => ({
+export const toPaginated = <OB, W>(config: QueryConfig<OB, W>) => ({
   first: config.page * config.perPage,
   skip: (config.page - 1) * config.perPage,
   orderBy: config.orderBy,
   orderDirection: config.orderDirection,
+  where: config.where,
 });

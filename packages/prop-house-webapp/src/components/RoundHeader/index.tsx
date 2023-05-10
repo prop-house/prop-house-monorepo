@@ -1,25 +1,26 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './RoundHeader.module.css';
-import { Community, StoredAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
-import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import formatTime from '../../utils/formatTime';
 import { nameToSlug } from '../../utils/communitySlugs';
 import ReadMore from '../ReadMore';
 import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
+import { isInfAuction } from '../../utils/auctionType';
+import dayjs from 'dayjs';
 
 const RoundHeader: React.FC<{
   community: Community;
-  auction: StoredAuction;
+  auction: StoredAuctionBase;
 }> = props => {
   const { community, auction } = props;
   const navigate = useNavigate();
 
-  const roundDescription =
+  const roundDescription = (
     <>
       {/* support both markdown & html links in community's description.  */}
       <Markdown
@@ -31,7 +32,7 @@ const RoundHeader: React.FC<{
                 target: '_blank',
                 rel: 'noreferrer',
               },
-            }
+            },
           },
         }}
       >
@@ -40,7 +41,9 @@ const RoundHeader: React.FC<{
             a: ['href', 'target'],
           },
         })}
-      </Markdown></>
+      </Markdown>
+    </>
+  );
 
   return (
     <Row className={classes.profileHeaderRow}>
@@ -51,13 +54,25 @@ const RoundHeader: React.FC<{
             community && navigate(`/${nameToSlug(community.name)}`);
           }}
         >
-          <IoArrowBackCircleOutline size={'1.5rem'} />
-          <span>{community && community.name}</span>
+          {community && (
+            <>
+              <img
+                src={community.profileImageUrl}
+                alt="community profile"
+                className={classes.profImg}
+              />
+              <div className={classes.commTitle}>{community.name}</div>
+            </>
+          )}
         </div>
 
         <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
-            {auction && `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
+            {isInfAuction(auction)
+              ? `${dayjs().isBefore(auction.startTime) ? `Starts` : `Started`} ${formatTime(
+                  auction.startTime,
+                )}`
+              : `${formatTime(auction.startTime)} - ${formatTime(auction.proposalEndTime)}`}
           </div>
           <Col
             className={clsx(

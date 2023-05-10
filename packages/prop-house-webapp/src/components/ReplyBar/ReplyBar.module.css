@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 6px 18px 8px 18px;
+  margin: -8px 1rem 1rem 1rem;
+  border: 1px solid var(--border-med);
+  border-top: none;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  background-color: var(--bg-med);
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--brand-gray);
+  cursor: pointer;
+}
+.repliesModalBodyContainer {
+  margin: 10px 0;
+}
+
+.replies span {
+  margin-right: 5px;
+}
+.replyContainer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+.formContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.commentInput {
+  flex-grow: 1;
+  margin-right: 10px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: var(--brand-black);
+  font-weight: bold;
+  resize: none;
+}
+.commentInput:disabled {
+  background-color: transparent;
+}
+.submitCommentBtn {
+  background-color: var(--brand-pink);
+  border-radius: 50%;
+  border: none;
+  max-width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px !important;
+}
+.submitCommentBtn svg {
+  min-width: 16px !important;
+}
+.submitCommentBtn:disabled {
+  opacity: 0.6;
+}
+
+.loadingIcon svg {
+  vertical-align: top;
+}
+.avatarContainer {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.avatarContainer div,
+.avatarContainer img {
+  margin-left: -4px !important;
+  border: solid white 1px;
+}
+.replyModalBottomRow {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--brand-gray);
+}
+
+.noCommentsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  row-gap: 25px;
+  justify-content: center;
+}
+.noCommentsContainer img {
+  margin-top: 1rem;
+  width: 200px;
+  height: auto;
+}
+.noCommentsText {
+  color: var(--brand-gray);
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: -25px;
+    padding-top: 25px;
+  }
+}

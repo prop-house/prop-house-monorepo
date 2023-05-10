@@ -4,7 +4,7 @@ import {
   getContractAddressesForChainOrThrow,
 } from '@prophouse/contracts';
 import { constants, SequencerProvider } from 'starknet';
-import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers';
+import { JsonRpcProvider, JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
 import { Wallet } from '@ethersproject/wallet';
@@ -28,8 +28,8 @@ export class ChainBase {
    * The EVM provider that was provided via the config
    */
   public get provider() {
-    if (this._evm instanceof Wallet) {
-      return this._evm.provider as JsonRpcProvider;
+    if ((this._evm as JsonRpcSigner).provider) {
+      return (this._evm as JsonRpcSigner).provider;
     }
     return this._evm as JsonRpcProvider;
   }

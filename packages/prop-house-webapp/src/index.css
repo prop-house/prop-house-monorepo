@@ -28,9 +28,10 @@ code {
 }
 @media (max-width: 991px) {
   .lang .btn-primary.dropdown-toggle {
-    color: black !important;
+    color: var(--brand-gray) !important;
     border: 1px solid transparent !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
+    background-color: white !important;
   }
 }
 .lang .dropdown-menu {

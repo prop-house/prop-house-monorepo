@@ -12,7 +12,7 @@ enum VotingStrategyType {
   UNKNOWN
 }
 
-enum RoundState {
+enum RoundEventState {
   AWAITING_REGISTRATION
   REGISTERED
   FINALIZED
@@ -71,14 +71,8 @@ type House @entity {
   "The house metadata URI"
   contractURI: String
 
-  "The house name, parsed from the contract URI"
-  name: String
-
-  "The house description, parsed from the contract URI"
-  description: String
-
-  "The house image URI, parsed from the contract URI"
-  imageURI: String  
+  "The house metadata (stored on IPFS)"
+  metadata: HouseMetadata
 
   "The account who currently owns the house"
   owner: Account
@@ -102,6 +96,20 @@ type House @entity {
   roundCreators: [RoundCreator!]! @derivedFrom(field: "house")
 }
 
+type HouseMetadata @entity {
+  "The IPFS content hash that contains the house metadata"
+  id: ID!
+
+  "The house name, pulled from the contract URI"
+  name: String!
+
+  "The house description, pulled from the contract URI"
+  description: String!
+
+  "The house image URI, pulled from the contract URI"
+  imageURI: String!
+}
+
 type Round @entity {
   "The address of the round contract"
   id: ID!
@@ -115,8 +123,8 @@ type Round @entity {
   "The round description"
   description: String!
 
-  "The round state"
-  state: RoundState!
+  "The round event state (States shared across all round types, triggered by events)"
+  eventState: RoundEventState!
 
   "The house that the round belongs to"
   house: House!
@@ -186,16 +194,25 @@ type TimedFundingRoundConfig @entity {
   winnerCount: Int!
 
   "The timestamp at which the proposal period starts"
-  proposalPeriodStartTimestamp: BigInt
+  proposalPeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the proposal period ends"
+  proposalPeriodEndTimestamp: BigInt!
 
   "The proposal period duration in seconds"
-  proposalPeriodDuration: BigInt
+  proposalPeriodDuration: BigInt!
 
   "The timestamp at which the vote period starts"
-  votePeriodStartTimestamp: BigInt
+  votePeriodStartTimestamp: BigInt!
+
+  "The timestamp at which the vote period ends"
+  votePeriodEndTimestamp: BigInt!
 
   "The vote period duration in seconds"
-  votePeriodDuration: BigInt
+  votePeriodDuration: BigInt!
+
+  "The timestamp at which the claim period ends"
+  claimPeriodEndTimestamp: BigInt!
   
   "The unix timestamp when the round configuration was registered"
   registeredAt: BigInt!

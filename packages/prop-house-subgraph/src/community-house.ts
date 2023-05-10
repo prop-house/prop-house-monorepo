@@ -1,5 +1,6 @@
-import { ipfs, json, log } from '@graphprotocol/graph-ts';
+import { log } from '@graphprotocol/graph-ts';
 import { ContractURIUpdated, Transfer } from '../generated/templates/CommunityHouse/CommunityHouse';
+import { HouseMetadata as HouseMetadataTemplate } from '../generated/templates';
 import { Account, House, Round } from '../generated/schema';
 import { ZERO_ADDRESS } from './lib/constants';
 
@@ -40,42 +41,16 @@ export function handleHouseURIUpdated(event: ContractURIUpdated): void {
 
   house.contractURI = event.params.uri;
 
-  // If URI is empty, clear fields
+  // If URI is empty, clear house metadata
   if (!event.params.uri.length) {
-    house.name = null;
-    house.description = null;
-    house.imageURI = null;
+    house.metadata = null;
 
     house.save();
     return;
   }
 
-  const data = ipfs.cat(event.params.uri.replace('ipfs://', ''));
-  if (!data) {
-    log.error('[handleHouseURIUpdated] Could not fetch IPFS data for URI: {}. URI Update Hash: {}', [
-      event.params.uri,
-      event.transaction.hash.toHex(),
-    ]);
-    return;
-  }
+  house.metadata = event.params.uri.replace('ipfs://', '');
 
-  const result = json.try_fromBytes(data);
-  if (result.isError) {
-    log.error('[handleHouseURIUpdated] Could not parse IPFS data for URI: {}. Error: {}. URI Update Hash: {}', [
-      event.params.uri,
-      result.error.toString(),
-      event.transaction.hash.toHex(),
-    ]);
-    return;
-  }
-
-  const metadata = result.value.toObject();
-  const name = metadata.get('name');
-  const description = metadata.get('description');
-  const imageURI = metadata.get('image'); 
-
-  house.name = name ? name.toString() : null;
-  house.description = description ? description.toString() : null;
-  house.imageURI = imageURI ? imageURI.toString() : null;
+  HouseMetadataTemplate.create(house.metadata!);
   house.save();
 }
