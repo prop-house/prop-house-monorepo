@@ -564,7 +564,9 @@ func get_proposal_info{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_che
     let (is_cancelled) = cancelled_proposals_store.read(proposal_id);
 
     return (
-        ProposalInfo(proposal_id=proposal_id, proposer_address=proposal_address, voting_power=voting_power),
+        ProposalInfo(
+            proposal_id=proposal_id, proposer_address=proposal_address, voting_power=voting_power
+        ),
         is_cancelled,
     );
 }
@@ -796,7 +798,11 @@ func _populate_proposal_info_arr{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*,
     let (proposer_address) = proposer_address_registry_store.read(current_proposal_id);
     let (voting_power) = proposal_vote_power_store.read(current_proposal_id);
 
-    assert acc[current_index] = ProposalInfo(proposal_id=current_proposal_id, proposer_address=proposer_address, voting_power=voting_power);
+    assert acc[current_index] = ProposalInfo(
+        proposal_id=current_proposal_id,
+        proposer_address=proposer_address,
+        voting_power=voting_power,
+    );
 
     return _populate_proposal_info_arr(
         next_unused_proposal_nonce, current_proposal_id + 1, current_index + 1, acc
@@ -818,5 +824,5 @@ func _flatten_and_abi_encode_award_array{range_check_ptr}(awards_len: felt, awar
     memcpy(4 + awards_flat, awards, Award.SIZE * awards_len);
 
     // length = (data_offset + array_length) + (num_uint256_in_award * awards_len)
-    return (2 + (2 * awards_len), awards_flat,);
+    return (2 + (2 * awards_len), awards_flat);
 }

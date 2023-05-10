@@ -484,7 +484,6 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     return [
       config.proposer,
-      `0x${metadataUri.bytesLength.toString(16)}`,
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
     ];

@@ -1,0 +1,20 @@
+[package]
+name = "prop_house"
+version = "0.1.0"
+description = "Public infrastructure by Nouns DAO"
+
+[scripts]
+sierra = "cairo-compile . -r"
+test = "cairo-test . --starknet"
+
+# Note: currently testing doesn't work with dependencies
+# [dependencies]
+# quaireaux_data_structures = { git = "https://github.com/keep-starknet-strange/quaireaux" }
+
+[[target.starknet-contract]]
+
+# Enable CASM codegen.
+casm = true
+
+# Emit Python-powered hints in order to run compiled CASM class with legacy Cairo VM.
+casm-add-pythonic-hints = true
