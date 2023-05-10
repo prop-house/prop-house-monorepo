@@ -286,7 +286,7 @@ export class DeleteProposal extends Signable {
 
 export enum Direction {
   Up = 1,
-  Down = -1,
+  Down = 2,
   Abstain = 0,
 }
 
