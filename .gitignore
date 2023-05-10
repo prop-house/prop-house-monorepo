@@ -150,3 +150,6 @@ starknet-artifacts
 
 # Typechain
 typechain
+
+# Scarb
+target

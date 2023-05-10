@@ -1,6 +1,4 @@
 import { hash } from 'starknet';
-import { JsonRpcProvider } from '@ethersproject/providers';
-import { Provider as StarknetProvider } from 'starknet';
 import { ChainConfig, VotingStrategyType, Whitelist, WhitelistMember } from '../../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { merkle, splitUint256 } from '../../utils';
