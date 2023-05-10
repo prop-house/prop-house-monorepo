@@ -62,6 +62,23 @@ mod EthereumSigAuthStrategy {
         }
     }
 
+    #[external]
+    fn authenticate(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        target: ContractAddress,
+        selector: felt252,
+        cdata: Span<felt252>,
+    ) {
+        EthereumSigAuthStrategy::authenticate(r, s, v, salt, target, selector, cdata);
+    }
+
+    ///
+    /// Internals
+    ///
+
     /// Verifies a `propose` signature.
     /// * `r` - The `r` component of the signature.
     /// * `s` - The `s` component of the signature.
