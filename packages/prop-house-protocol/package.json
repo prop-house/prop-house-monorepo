@@ -1,5 +1,5 @@
 {
-  "name": "@prophouse/contracts",
+  "name": "@prophouse/protocol",
   "version": "0.1.0-alpha.11",
   "license": "GPL-3.0",
   "main": "dist/src/index.js",

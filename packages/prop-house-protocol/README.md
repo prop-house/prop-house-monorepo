@@ -1,4 +1,4 @@
-# Prop House Contracts
+# @prophouse/protocol
 
 ## Development
 ---

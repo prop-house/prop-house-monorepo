@@ -24,9 +24,9 @@ The [Prop House webapp](./packages/prop-house-webapp) is the frontend for intera
 
 The [Prop House communities](./packages/prop-house-communities) package contains the logic to fetch voting data for individuals within the scope of their own communities.
 
-### @prophouse/contracts
+### @prophouse/protocol
 
-The [Prop House contracts](./packages/prop-house-contracts) package contains the Solidity and Cairo contracts that power the Prop House protocol.
+The [Prop House protocol](./packages/prop-house-protocol) package contains the Solidity and Cairo contracts that power the Prop House protocol.
 
 ### @prophouse/sdk
 
