@@ -35,7 +35,7 @@
     "hardhat": "hardhat",
     "typechain": "typechain --target=ethers-v5 out/**/*.json --out-dir typechain",
     "format:l1": "prettier --write '{contracts,test}/{,*/**/}*.sol'",
-    "format:l2": "cairo-format -i --one_item_per_line contracts/starknet/*.cairo contracts/starknet/**/*.cairo contracts/starknet/**/**/*.cairo",
+    "format:l2": "cd contracts/starknet && scarb fmt",
     "format:ts": "prettier --write '{,*/**/}*.ts'",
     "format": "concurrently 'yarn format:l1' 'yarn format:l2' 'yarn format:ts'",
     "clean": "forge clean && hardhat clean && rimraf dist tsconfig.build.tsbuildinfo",
