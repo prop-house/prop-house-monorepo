@@ -10,7 +10,7 @@ trait IEthereumSigAuthStrategy {
         salt: u256,
         target: ContractAddress,
         selector: felt252,
-        cdata: Array<felt252>,
+        cdata: Span<felt252>,
     );
 }
 
@@ -20,9 +20,9 @@ mod EthereumSigAuthStrategy {
     use prop_house::rounds::timed_funding::constants::{DomainSeparator, TypeHash, Selector};
     use prop_house::common::utils::contract_address::ContractAddressIntoU256;
     use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
-    use prop_house::common::utils::u256::{U256Zeroable, as_u256};
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
     use prop_house::common::utils::array::into_u256_arr;
+    use prop_house::common::utils::serde::SpanSerde;
     use super::IEthereumSigAuthStrategy;
     use array::{ArrayTrait, SpanTrait};
     use integer::Felt252TryIntoU32;
@@ -42,22 +42,23 @@ mod EthereumSigAuthStrategy {
             salt: u256,
             target: ContractAddress,
             selector: felt252,
-            mut cdata: Array<felt252>,
+            cdata: Span<felt252>,
         ) {
             if selector == Selector::PROPOSE {
-                _verify_propose_sig(r, s, v, salt, target, selector, cdata.span());
+                _verify_propose_sig(r, s, v, salt, target, selector, cdata);
             } else if selector == Selector::VOTE {
-                _verify_vote_sig(r, s, v, salt, target, selector, cdata.span());
+                _verify_vote_sig(r, s, v, salt, target, selector, cdata);
             } else if selector == Selector::CANCEL_PROPOSAL {
-                _verify_cancel_proposal_sig(r, s, v, salt, target, selector, cdata.span());
+                _verify_cancel_proposal_sig(r, s, v, salt, target, selector, cdata);
             } else {
                 return ();
             }
 
             // Execute the function call with the supplied calldata
             starknet::call_contract_syscall(
-                address: target, entry_point_selector: selector, calldata: cdata.span(), 
-            ).unwrap_syscall();
+                address: target, entry_point_selector: selector, calldata: cdata, 
+            )
+                .unwrap_syscall();
         }
     }
 
@@ -90,7 +91,7 @@ mod EthereumSigAuthStrategy {
 
         // The message data
         let mut data = ArrayTrait::new();
-        data.append(TypeHash::PROPOSE());
+        data.append(TypeHash::PROPOSE);
         data.append(auth_strategy_address.into());
         data.append(target.into());
         data.append(proposer_address.into());
@@ -136,27 +137,28 @@ mod EthereumSigAuthStrategy {
         let proposal_votes_hash = keccak_uint256s_be_to_be(into_u256_arr(proposal_votes).span());
 
         let used_voting_strategy_ids_len = (*cdata.at(2 + proposal_votes_len)).try_into().unwrap();
-        let used_voting_strategy_ids = cdata.slice(
-            3 + proposal_votes_len, used_voting_strategy_ids_len
-        );
+        let used_voting_strategy_ids = cdata
+            .slice(3 + proposal_votes_len, used_voting_strategy_ids_len);
         let used_voting_strategy_ids_hash = keccak_uint256s_be_to_be(
             into_u256_arr(used_voting_strategy_ids).span()
         );
 
-        let user_voting_strategy_params_flat_len = (*cdata.at(
-            3 + proposal_votes_len + used_voting_strategy_ids_len
-        )).try_into().unwrap();
-        let user_voting_strategy_params_flat = cdata.slice(
-            4 + proposal_votes_len + used_voting_strategy_ids_len,
-            user_voting_strategy_params_flat_len
-        );
+        let user_voting_strategy_params_flat_len = (*cdata
+            .at(3 + proposal_votes_len + used_voting_strategy_ids_len))
+            .try_into()
+            .unwrap();
+        let user_voting_strategy_params_flat = cdata
+            .slice(
+                4 + proposal_votes_len + used_voting_strategy_ids_len,
+                user_voting_strategy_params_flat_len
+            );
         let user_voting_strategy_params_flat_hash = keccak_uint256s_be_to_be(
             into_u256_arr(user_voting_strategy_params_flat).span(), 
         );
 
         // The message data
         let mut data = ArrayTrait::new();
-        data.append(TypeHash::VOTE());
+        data.append(TypeHash::VOTE);
         data.append(auth_strategy_address.into());
         data.append(target.into());
         data.append(voter_address.into());
@@ -202,7 +204,7 @@ mod EthereumSigAuthStrategy {
 
         // The message data
         let mut data = ArrayTrait::new();
-        data.append(TypeHash::CANCEL_PROPOSAL());
+        data.append(TypeHash::CANCEL_PROPOSAL);
         data.append(auth_strategy_address.into());
         data.append(target.into());
         data.append(proposer_address.into());
@@ -226,7 +228,7 @@ mod EthereumSigAuthStrategy {
 
         let mut data = ArrayTrait::new();
         data.append(ETHEREUM_PREFIX.into());
-        data.append(DomainSeparator::GOERLI());
+        data.append(DomainSeparator::GOERLI);
         data.append(hash_struct);
 
         keccak_uint256s_be_to_be(data.span())

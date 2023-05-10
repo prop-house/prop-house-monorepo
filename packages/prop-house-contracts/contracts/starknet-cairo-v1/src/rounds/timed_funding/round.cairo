@@ -1,7 +1,9 @@
 use prop_house::common::registry::voting_strategy::VotingStrategy;
+use prop_house::common::libraries::round::Proposal;
 use array::ArrayTrait;
 
 trait ITimedFundingRound {
+    fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(proposer_address: felt252, metadata_uri: Array<felt252>);
     fn edit_proposal(proposer_address: felt252, proposal_id: u32, metadata_uri: Array<felt252>);
     fn cancel_proposal(proposer_address: felt252, proposal_id: u32);
@@ -44,11 +46,22 @@ struct ProposalVote {
     voting_power: u256,
 }
 
+// Deployment-time constants
+const voting_strategy_registry_address: felt252 = 0xDEAD0001;
+const eth_execution_strategy: felt252 = 0xDEAD0002;
+const eth_tx_auth_strategy: felt252 = 0xDEAD0003;
+const eth_sig_auth_strategy: felt252 = 0xDEAD0004;
+
 #[contract]
 mod TimedFundingRound {
-    use starknet::{ContractAddress, get_block_timestamp, get_caller_address};
-    use starknet::contract_address::Felt252TryIntoContractAddress;
-    use super::{ITimedFundingRound, ProposalVote, RoundParams, RoundState, Award};
+    use starknet::{
+        ContractAddress, get_block_timestamp, get_caller_address, Felt252TryIntoContractAddress
+    };
+    use super::{
+        ITimedFundingRound, ProposalVote, RoundParams, RoundState, Award,
+        voting_strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
+        eth_sig_auth_strategy
+    };
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
     use prop_house::common::registry::voting_strategy::{
         IVotingStrategyRegistryDispatcherTrait, IVotingStrategyRegistryDispatcher, VotingStrategy
@@ -62,10 +75,10 @@ mod TimedFundingRound {
         array_slice
     };
     use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
-    use prop_house::common::utils::u256::{U256Zeroable, as_u256};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
     use prop_house::common::utils::constants::MASK_250;
+    use prop_house::common::utils::u256::U256Zeroable;
     use integer::{U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
@@ -102,6 +115,13 @@ mod TimedFundingRound {
     fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
 
     impl TimedFundingRound of ITimedFundingRound {
+        fn get_proposal(proposal_id: u32) -> Proposal {
+            let proposal = Round::_proposals::read(proposal_id);
+            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+
+            proposal
+        }
+
         fn propose(proposer_address: felt252, metadata_uri: Array<felt252>) {
             // Verify that the caller is a valid auth strategy
             _assert_caller_is_valid_auth_strategy();
@@ -127,9 +147,7 @@ mod TimedFundingRound {
                 proposer: proposer_address,
                 last_updated_at: current_timestamp,
                 is_cancelled: false,
-                voting_power: u256 {
-                    low: 0, high: 0
-                },
+                voting_power: 0,
             };
 
             // Store the proposal and increment the proposal count
@@ -258,9 +276,9 @@ mod TimedFundingRound {
             let leaves = _compute_leaves(winning_proposals, awards);
 
             let mut merkle_tree = MerkleTreeTrait::<u256>::new();
-            let merkle_root = merkle_tree.compute_root(*leaves.at(leaves.len() - 1), leaves);
+            let merkle_root = merkle_tree.compute_merkle_root(leaves);
             let execution_strategy = IExecutionStrategyDispatcher {
-                contract_address: 0.try_into().unwrap() // TODO: Fetch from registry using origin chain ID
+                contract_address: eth_execution_strategy.try_into().unwrap(), 
             };
             execution_strategy.execute(_build_execution_params(merkle_root));
 
@@ -273,6 +291,13 @@ mod TimedFundingRound {
     #[constructor]
     fn constructor(round_params: Array<felt252>) {
         initializer(round_params.span());
+    }
+
+    /// Returns the proposal for the given proposal ID.
+    /// * `proposal_id` - The proposal ID.
+    #[view]
+    fn get_proposal(proposal_id: u32) -> Proposal {
+        TimedFundingRound::get_proposal(proposal_id)
     }
 
     /// Submit a proposal to the round.
@@ -373,9 +398,9 @@ mod TimedFundingRound {
         let winner_count = (*params.at(4)).try_into().unwrap();
         let voting_strategy_addresses_len = (*params.at(5)).try_into().unwrap();
         let voting_strategy_addresses = array_slice(params, 6, voting_strategy_addresses_len);
-        let voting_strategy_params_flat_len = (*params.at(
-            6 + voting_strategy_addresses_len
-        )).try_into().unwrap();
+        let voting_strategy_params_flat_len = (*params.at(6 + voting_strategy_addresses_len))
+            .try_into()
+            .unwrap();
         let voting_strategy_params_flat = array_slice(
             params, 7 + voting_strategy_addresses_len, voting_strategy_params_flat_len
         );
@@ -406,9 +431,11 @@ mod TimedFundingRound {
 
     /// Asserts that the caller is a valid auth strategy.
     fn _assert_caller_is_valid_auth_strategy() {
-        let caller = get_caller_address();
-        // TODO: Either add a registry contract or implement deploy-time constants.
-        let is_valid = true;
+        let caller: felt252 = get_caller_address().into();
+        assert(
+            caller == eth_tx_auth_strategy | caller == eth_sig_auth_strategy,
+            'TFR: Invalid auth strategy'
+        );
     }
 
     /// Asserts that the round is active.
@@ -420,33 +447,30 @@ mod TimedFundingRound {
     fn _assert_awards_valid(awards: Span<Award>) {
         let flattened_awards = _flatten_and_abi_encode_awards(awards);
         let stored_award_hash = _award_hash::read().into();
-        let computed_award_hash = keccak_uint256s_be_to_be(
-            flattened_awards.span()
-        ) & MASK_250.into();
+        let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250.into();
 
         assert(computed_award_hash == stored_award_hash, 'TFR: Invalid awards provided');
     }
 
     /// Register the provided voting strategies if they are not already registered.
     /// * `voting_strategies` - The voting strategies to register.
-    fn _register_voting_strategies(voting_strategies: Span<VotingStrategy>) {
-        let voting_strategies_len = voting_strategies.len();
+    fn _register_voting_strategies(mut voting_strategies: Span<VotingStrategy>) {
         let voting_strategy_registry = IVotingStrategyRegistryDispatcher {
-            contract_address: 0.try_into().unwrap() // TODO: Fetch from deployer
+            contract_address: voting_strategy_registry_address.try_into().unwrap(), 
         };
 
-        let mut i = 0;
         loop {
-            if i == voting_strategies_len {
-                break ();
-            }
-
-            let voting_strategy = *voting_strategies.at(i);
-            let strategy_id = voting_strategy_registry.register_voting_strategy_if_not_exists(
-                VotingStrategy { address: voting_strategy.address, params: voting_strategy.params }, 
-            );
-            _is_voting_strategy_registered::write(strategy_id, true);
-        }
+            match voting_strategies.pop_front() {
+                Option::Some(s) => {
+                    let strategy_id = voting_strategy_registry
+                        .register_voting_strategy_if_not_exists(*s);
+                    _is_voting_strategy_registered::write(strategy_id, true);
+                },
+                Option::None(_) => {
+                    break ();
+                },
+            };
+        };
     }
 
     /// Returns the cumulative voting power of the given voter for the provided voting strategies.
@@ -459,36 +483,38 @@ mod TimedFundingRound {
         timestamp: u64,
         voter_address: felt252,
         mut used_voting_strategy_ids: Array<felt252>,
-        user_voting_strategy_params_all: Span<felt252>, // TODO: Does this still need to be flat?
+        user_voting_strategy_params_all: Span<felt252>,
     ) -> u256 {
         // Ensure there are no duplicates to prevent double counting
         assert_no_duplicates(ref used_voting_strategy_ids);
 
         let voting_strategy_registry = IVotingStrategyRegistryDispatcher {
-            contract_address: 0.try_into().unwrap() // TODO: Provide registry contract address
+            contract_address: voting_strategy_registry_address.try_into().unwrap(), 
         };
 
         let mut cumulative_voting_power = U256Zeroable::zero();
-        let used_voting_strategy_ids_len = used_voting_strategy_ids.len();
 
-        let mut i = 0;
         loop {
-            if i == used_voting_strategy_ids_len {
-                break cumulative_voting_power;
-            }
-
-            let voting_strategy_id = *used_voting_strategy_ids.at(0);
-            let voting_strategy = voting_strategy_registry.get_voting_strategy(voting_strategy_id);
-
-            let voting_strategy_contract = IVotingStrategyDispatcher {
-                contract_address: voting_strategy.address
+            match used_voting_strategy_ids.pop_front() {
+                Option::Some(strategy_id) => {
+                    let voting_strategy = voting_strategy_registry.get_voting_strategy(strategy_id);
+                    let voting_strategy_contract = IVotingStrategyDispatcher {
+                        contract_address: voting_strategy.address
+                    };
+                    let voting_power = voting_strategy_contract
+                        .get_voting_power(
+                            timestamp,
+                            voter_address,
+                            voting_strategy.params,
+                            user_voting_strategy_params_all,
+                        );
+                    cumulative_voting_power += voting_power;
+                },
+                Option::None(_) => {
+                    break cumulative_voting_power;
+                },
             };
-            let voting_power = voting_strategy_contract.get_voting_power(
-                timestamp, voter_address, voting_strategy.params, user_voting_strategy_params_all, 
-            );
-            cumulative_voting_power += voting_power;
-        };
-        cumulative_voting_power
+        }
     }
 
     /// Cast votes on one or more proposals.
@@ -541,7 +567,7 @@ mod TimedFundingRound {
 
         // Exit early if the proposal has been cancelled
         if proposal.is_cancelled {
-            return U256Zeroable::zero();
+            return 0;
         }
 
         assert(voting_power.is_non_zero(), 'TFR: No voting power provided');
@@ -558,7 +584,7 @@ mod TimedFundingRound {
 
     // Flatten and ABI-encode (adds data offset + array length prefix) an array of award assets.
     /// * `awards` - The array of awards to flatten and encode.
-    fn _flatten_and_abi_encode_awards(awards: Span<Award>) -> Array<u256> {
+    fn _flatten_and_abi_encode_awards(mut awards: Span<Award>) -> Span<u256> {
         let award_count = awards.len();
         let award_count_felt: felt252 = award_count.into();
 
@@ -566,17 +592,17 @@ mod TimedFundingRound {
         flattened_awards.append(0x20.into()); // Data offset
         flattened_awards.append(award_count_felt.into()); // Array length
 
-        let mut i = 0;
         loop {
-            if i == award_count {
-                break ();
-            }
-            let award = *awards.at(i);
-            flattened_awards.append(award.asset_id);
-            flattened_awards.append(award.amount);
-            i += 1;
-        };
-        flattened_awards
+            match awards.pop_front() {
+                Option::Some(a) => {
+                    flattened_awards.append(*a.asset_id);
+                    flattened_awards.append(*a.amount);
+                },
+                Option::None(_) => {
+                    break flattened_awards.span();
+                },
+            };
+        }
     }
 
     /// Build the execution parameters that will be passed to the execution strategy.
@@ -617,16 +643,16 @@ mod TimedFundingRound {
         let mut i = 0;
         loop {
             if i == proposal_count {
-                break ();
+                break leaves.span();
             }
-            leaves.append(
-                _compute_leaf_for_proposal_award(
-                    *proposals.at(i), award_to_split.asset_id, amount_per_proposal
-                )
-            );
+            leaves
+                .append(
+                    _compute_leaf_for_proposal_award(
+                        *proposals.at(i), award_to_split.asset_id, amount_per_proposal
+                    )
+                );
             i += 1;
-        };
-        leaves.span()
+        }
     }
 
     /// Compute the leaves for the given proposals using awards that are to be assigned
@@ -644,16 +670,16 @@ mod TimedFundingRound {
         let mut i = 0;
         loop {
             if i == proposal_count {
-                break ();
+                break leaves.span();
             }
             let award = *awards.at(i);
 
-            leaves.append(
-                _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
-            );
+            leaves
+                .append(
+                    _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
+                );
             i += 1;
-        };
-        leaves.span()
+        }
     }
 
     /// Compute a single leaf consisting of a proposal ID, proposer address, asset ID, and asset amount.

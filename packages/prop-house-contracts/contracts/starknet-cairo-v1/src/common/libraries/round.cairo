@@ -28,14 +28,14 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
         let proposer = storage_read_syscall(address_domain, proposer_base)?;
 
         let is_cancelled_base = storage_address_from_base_and_offset(base, 1);
-        let is_cancelled = storage_read_syscall(
-            address_domain, is_cancelled_base
-        )?.try_into().unwrap();
+        let is_cancelled = storage_read_syscall(address_domain, is_cancelled_base)?
+            .try_into()
+            .unwrap();
 
         let last_updated_at_base = storage_address_from_base_and_offset(base, 2);
-        let last_updated_at = storage_read_syscall(
-            address_domain, last_updated_at_base
-        )?.try_into().unwrap();
+        let last_updated_at = storage_read_syscall(address_domain, last_updated_at_base)?
+            .try_into()
+            .unwrap();
 
         let voting_power_base = storage_address_from_base_and_offset(base, 3);
         let voting_power = storage_read_syscall(address_domain, voting_power_base)?.into();
@@ -189,7 +189,11 @@ mod Round {
             );
         }
 
-        if *left_arr[left_arr_ix].proposal.voting_power >= *right_arr[right_arr_ix].proposal.voting_power {
+        if *left_arr[left_arr_ix]
+            .proposal
+            .voting_power >= *right_arr[right_arr_ix]
+            .proposal
+            .voting_power {
             result_arr.append(*left_arr[left_arr_ix]);
             _merge_and_slice_recursive(
                 left_arr, right_arr, ref result_arr, left_arr_ix + 1, right_arr_ix, max_return_count

@@ -21,7 +21,7 @@ import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC1155 } from '../lib/token/ERC1155.sol';
 
 contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, ERC1155Supply, ReceiptIssuer, Clone {
-    using { Uint256.split } for uint256;
+    using { Uint256.mask250 } for bytes32;
     using { Uint256.toUint256 } for address;
     using { AssetHelper.toID } for Asset;
     using { AssetHelper.pack } for Asset[];
@@ -339,16 +339,18 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
     function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
         uint256 strategyCount = config.votingStrategies.length;
         uint256 strategyParamsFlatCount = config.votingStrategyParamsFlat.length;
+        uint256 strategyWithParamCount = strategyCount + strategyParamsFlatCount;
 
-        payload = new uint256[](11 + strategyCount + strategyParamsFlatCount);
+        payload = new uint256[](11 + strategyWithParamCount);
 
         // `payload[0]` is reserved for the round address, which is
         // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
-        payload[2] = 8 + strategyCount + strategyParamsFlatCount;
-        (payload[3], payload[4]) = uint256(keccak256(abi.encode(config.awards.pack()))).split();
+        payload[2] = 8 + strategyWithParamCount;
+        payload[3] = 7 + strategyWithParamCount;
+        payload[4] = keccak256(abi.encode(config.awards.pack())).mask250();
         payload[5] = config.proposalPeriodStartTimestamp;
         payload[6] = config.proposalPeriodDuration;
         payload[7] = config.votePeriodDuration;
@@ -364,7 +366,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
                 if (strategy == 0) {
                     revert INVALID_VOTING_STRATEGY();
                 }
-                payload[++offset] = config.votingStrategies[i];
+                payload[++offset] = strategy;
             }
 
             payload[++offset] = strategyParamsFlatCount;

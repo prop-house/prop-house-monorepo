@@ -10,6 +10,8 @@ export const ONE_ETHER = ethers.utils.parseEther('1');
 
 export const ONE_DAY_SEC = 60 * 60 * 24;
 
+export const STARKNET_MAX_FEE = BigInt(3e15);
+
 export const HOUSE_NAME = 'Test House';
 
 export const HOUSE_SYMBOL = 'TEST';

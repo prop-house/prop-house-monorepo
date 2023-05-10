@@ -5,18 +5,18 @@ use option::OptionTrait;
 use hash::LegacyHash;
 
 trait ArrayTraitExt<T> {
-    fn append_all(ref self: Array<T>, ref arr: Array<T>);
+    fn append_all(ref self: Array<T>, arr: Span<T>);
     fn occurrences_of<impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
         ref self: Array<T>, item: T
     ) -> usize;
 }
 
 impl ArrayImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of ArrayTraitExt<T> {
-    fn append_all(ref self: Array<T>, ref arr: Array<T>) {
+    fn append_all(ref self: Array<T>, mut arr: Span<T>) {
         match arr.pop_front() {
             Option::Some(v) => {
-                self.append(v);
-                self.append_all(ref arr);
+                self.append(*v);
+                self.append_all(arr);
             },
             Option::None(()) => (),
         }
@@ -139,23 +139,23 @@ fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
     arr
 }
 
-/// Returns the pedersen hash of an array.
+/// Computes the pedersen hash of an array of felts.
 /// * `arr` - The array to hash.
-fn array_hash(arr: @Array<felt252>) -> felt252 {
-    _array_hash_internal(arr, *arr.at(0), 1)
+fn compute_hash_on_elements(arr: @Array<felt252>) -> felt252 {
+    _compute_hash_on_elements_internal(arr, 0, 0)
 }
 
-/// Recursively hashes an array.
+/// Recursively computes the pedersen hash of an array of felts.
 /// * `arr` - The array to hash.
 /// * `state` - The current hash state.
 /// * `index` - The current index.
-fn _array_hash_internal(arr: @Array<felt252>, mut state: felt252, index: u32) -> felt252 {
+fn _compute_hash_on_elements_internal(
+    arr: @Array<felt252>, mut state: felt252, index: u32
+) -> felt252 {
     if (index == arr.len()) {
-        return state;
+        return LegacyHash::hash(state, arr.len());
     }
-    state = LegacyHash::hash(state, *arr.at(index));
-
-    _array_hash_internal(arr, state, index + 1)
+    _compute_hash_on_elements_internal(arr, LegacyHash::hash(state, *arr.at(index)), index + 1)
 }
 
 /// Returns the number of occurrences of an item in an array.
@@ -163,17 +163,14 @@ fn _array_hash_internal(arr: @Array<felt252>, mut state: felt252, index: u32) ->
 /// * `item` - The item to search for.
 /// * `index` - The current index.
 /// * `count` - The current count.
-fn _occurrences_of_internal<T,
-impl TDrop: Drop<T>,
-impl TPartialEq: PartialEq<T>,
-impl TCopy: Copy<T>>(
+fn _occurrences_of_internal<
+    T, impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>, impl TCopy: Copy<T>
+>(
     ref arr: Array<T>, item: T, index: usize, count: usize
 ) -> usize {
     if index >= arr.len() {
         count
-    } else if *arr.at(
-        index
-    ) == item {
+    } else if *arr.at(index) == item {
         _occurrences_of_internal(ref arr, item, index + 1, count + 1)
     } else {
         _occurrences_of_internal(ref arr, item, index + 1, count)

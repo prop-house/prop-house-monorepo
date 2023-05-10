@@ -1,6 +1,7 @@
 use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
 use array::{ArrayTrait, SpanTrait};
 use integer::u256_from_felt252;
+use option::OptionTrait;
 use hash::LegacyHash;
 use traits::Into;
 
@@ -12,10 +13,12 @@ struct MerkleTree {}
 trait MerkleTreeTrait<T> {
     /// Create a new merkle tree instance.
     fn new() -> MerkleTree;
+    /// Compute the merkle root of the tree.
+    fn compute_merkle_root(ref self: MerkleTree, leaves: Span<T>) -> T;
     /// Compute the merkle root of a given proof.
-    fn compute_root(ref self: MerkleTree, current_node: T, proof: Span<T>) -> T;
+    fn compute_proof_root(ref self: MerkleTree, current_node: T, proof: Span<T>) -> T;
     /// Verify a merkle proof.
-    fn verify(ref self: MerkleTree, root: T, leaf: T, proof: Span<T>) -> bool;
+    fn verify_proof(ref self: MerkleTree, root: T, leaf: T, proof: Span<T>) -> bool;
 }
 
 /// KeccakMerkleTree implementation.
@@ -26,13 +29,54 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
         MerkleTree {}
     }
 
+    /// Compute the merkle root of the tree.
+    /// * `leaves` - The leaves of the tree.
+    fn compute_merkle_root(ref self: MerkleTree, mut leaves: Span<u256>) -> u256 {
+        loop {
+            if leaves.len() == 1 {
+                break *leaves.at(0);
+            }
+
+            let mut next_level_nodes = ArrayTrait::<u256>::new();
+            leaves = loop {
+                match leaves.pop_front() {
+                    Option::Some(left) => {
+                        let left = *left;
+
+                        match leaves.pop_front() {
+                            Option::Some(right) => {
+                                let right = *right;
+
+                                let mut hash_input = ArrayTrait::<u256>::new();
+                                if left < right {
+                                    hash_input.append(left);
+                                    hash_input.append(right);
+                                } else {
+                                    hash_input.append(right);
+                                    hash_input.append(left);
+                                }
+                                next_level_nodes.append(keccak_uint256s_be_to_be(hash_input.span()));
+                            },
+                            Option::None(_) => {
+                                next_level_nodes.append(left);
+                                continue;
+                            },
+                        };
+                    },
+                    Option::None(_) => {
+                        break next_level_nodes.span();
+                    },
+                };
+            };
+        }
+    }
+
     /// Compute the merkle root of a given proof.
-    /// # Arguments
     /// * `current_node` - The current node of the proof.
     /// * `proof` - The proof.
-    /// # Returns
-    /// The merkle root.
-    fn compute_root(ref self: MerkleTree, mut current_node: u256, mut proof: Span<u256>) -> u256 {
+    fn compute_proof_root(
+        ref self: MerkleTree, mut current_node: u256, mut proof: Span<u256>
+    ) -> u256 {
         let mut current_node = current_node;
         loop {
             match proof.pop_front() {
@@ -60,14 +104,11 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
     }
 
     /// Verify a merkle proof.
-    /// # Arguments
     /// * `root` - The merkle root.
     /// * `leaf` - The leaf to verify.
     /// * `proof` - The proof.
-    /// # Returns
-    /// True if the proof is valid, false otherwise.
-    fn verify(ref self: MerkleTree, root: u256, leaf: u256, mut proof: Span<u256>) -> bool {
-        let computed_root = self.compute_root(leaf, proof);
+    fn verify_proof(ref self: MerkleTree, root: u256, leaf: u256, mut proof: Span<u256>) -> bool {
+        let computed_root = self.compute_proof_root(leaf, proof);
         computed_root == root
     }
 }
@@ -80,13 +121,16 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
         MerkleTree {}
     }
 
+    /// Compute the merkle root of the tree.
+    /// * `leaves` - The leaves of the tree.
+    fn compute_merkle_root(ref self: MerkleTree, mut leaves: Span<felt252>) -> felt252 {
+        panic_with_felt252('Not implemented')
+    }
+
     /// Compute the merkle root of a given proof.
-    /// # Arguments
     /// * `current_node` - The current node of the proof.
     /// * `proof` - The proof.
-    /// # Returns
-    /// The merkle root.
-    fn compute_root(
+    fn compute_proof_root(
         ref self: MerkleTree, mut current_node: felt252, mut proof: Span<felt252>
     ) -> felt252 {
         let mut current_node = current_node;
@@ -113,16 +157,13 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
     }
 
     /// Verify a merkle proof.
-    /// # Arguments
     /// * `root` - The merkle root.
     /// * `leaf` - The leaf to verify.
     /// * `proof` - The proof.
-    /// # Returns
-    /// True if the proof is valid, false otherwise.
-    fn verify(
+    fn verify_proof(
         ref self: MerkleTree, root: felt252, leaf: felt252, mut proof: Span<felt252>
     ) -> bool {
-        let computed_root = self.compute_root(leaf, proof);
+        let computed_root = self.compute_proof_root(leaf, proof);
         computed_root == root
     }
 }

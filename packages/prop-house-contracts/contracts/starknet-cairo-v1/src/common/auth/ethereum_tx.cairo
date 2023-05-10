@@ -2,16 +2,17 @@ use starknet::ContractAddress;
 
 #[abi]
 trait IEthereumTxAuthStrategy {
-    fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>);
+    fn authenticate(target: ContractAddress, selector: felt252, cdata: Span<felt252>);
 }
 
 #[contract]
 mod EthereumTxAuthStrategy {
     use starknet::{ContractAddress, ContractAddressIntoFelt252, call_contract_syscall};
-    use prop_house::common::utils::array::{array_hash, ArrayTraitExt};
+    use prop_house::common::utils::array::{compute_hash_on_elements, ArrayTraitExt};
+    use prop_house::common::utils::serde::SpanSerde;
     use super::IEthereumTxAuthStrategy;
+    use array::{ArrayTrait, SpanTrait};
     use zeroable::Zeroable;
-    use array::ArrayTrait;
     use traits::Into;
 
     struct Storage {
@@ -20,19 +21,20 @@ mod EthereumTxAuthStrategy {
     }
 
     impl EthereumTxAuthStrategy of IEthereumTxAuthStrategy {
-        fn authenticate(target: ContractAddress, selector: felt252, mut cdata: Array<felt252>) {
+        fn authenticate(target: ContractAddress, selector: felt252, cdata: Span<felt252>) {
             let mut input = ArrayTrait::new();
             input.append(target.into());
             input.append(selector);
-            input.append_all(ref cdata);
+            input.append_all(cdata);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(*cdata.at(0), array_hash(@input));
+            _consume_commit(*cdata.at(0), compute_hash_on_elements(@input));
 
             // Execute the function call with the supplied calldata
             starknet::call_contract_syscall(
-                address: target, entry_point_selector: selector, calldata: cdata.span(), 
-            ).unwrap_syscall();
+                address: target, entry_point_selector: selector, calldata: cdata, 
+            )
+                .unwrap_syscall();
         }
     }
 
@@ -42,7 +44,7 @@ mod EthereumTxAuthStrategy {
     }
 
     #[external]
-    fn authenticate(target: ContractAddress, selector: felt252, cdata: Array<felt252>) {
+    fn authenticate(target: ContractAddress, selector: felt252, cdata: Span<felt252>) {
         EthereumTxAuthStrategy::authenticate(target, selector, cdata);
     }
 

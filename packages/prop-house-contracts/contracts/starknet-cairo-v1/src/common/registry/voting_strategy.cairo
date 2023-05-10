@@ -3,11 +3,11 @@ use starknet::{
     storage_address_from_base_and_offset
 };
 use starknet::contract_address::Felt252TryIntoContractAddress;
-use prop_house::common::utils::storage_access::StorageAccessFelt252Span;
 use starknet::{ContractAddressIntoFelt252, ContractAddress};
+use starknet::storage_access::StorageAccessContractAddress;
+use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
 use option::OptionTrait;
-use array::ArrayTrait;
 
 #[derive(Copy, Drop, Serde)]
 struct VotingStrategy {
@@ -17,23 +17,48 @@ struct VotingStrategy {
 
 impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<VotingStrategy> {
-        Result::Ok(
-            VotingStrategy {
-                address: storage_read_syscall(
-                    address_domain, storage_address_from_base_and_offset(base, 0)
-                )?.try_into().unwrap(),
-                params: StorageAccessFelt252Span::read(address_domain, base)?,
+        let address = StorageAccessContractAddress::read(address_domain, base)?;
+
+        let param_length_base = storage_address_from_base_and_offset(base, 1);
+        let param_length = storage_read_syscall(address_domain, param_length_base)?
+            .try_into()
+            .unwrap();
+
+        let mut i = 0;
+
+        let mut params = ArrayTrait::new();
+        loop {
+            if i == param_length {
+                break Result::Ok(VotingStrategy { address, params: params.span() });
             }
-        )
+            let param_base = storage_address_from_base_and_offset(base, i + 2);
+            params.append(storage_read_syscall(address_domain, param_base)?);
+
+            i += 1;
+        }
     }
 
     fn write(
-        address_domain: u32, base: StorageBaseAddress, value: VotingStrategy
+        address_domain: u32, base: StorageBaseAddress, mut value: VotingStrategy
     ) -> SyscallResult<()> {
-        storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 0), value.address.into()
-        )?;
-        StorageAccessFelt252Span::write(address_domain, base, value.params)
+        StorageAccessContractAddress::write(address_domain, base, value.address)?;
+
+        let mut offset = 1;
+        loop {
+            match value.params.pop_front() {
+                Option::Some(v) => {
+                    starknet::storage_write_syscall(
+                        address_domain,
+                        starknet::storage_address_from_base_and_offset(base, offset),
+                        *v
+                    );
+                    offset += 1;
+                },
+                Option::None(_) => {
+                    break Result::Ok(());
+                },
+            };
+        }
     }
 }
 
@@ -47,7 +72,7 @@ trait IVotingStrategyRegistry {
 mod VotingStrategyRegistry {
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::{ContractAddress, ContractAddressIntoFelt252};
-    use prop_house::common::utils::array::{ArrayTraitExt, array_hash};
+    use prop_house::common::utils::array::{ArrayTraitExt, compute_hash_on_elements};
     use prop_house::common::utils::serde::SpanSerde;
     use super::{IVotingStrategyRegistry, VotingStrategy};
     use array::{ArrayTrait, SpanTrait};
@@ -115,6 +140,6 @@ mod VotingStrategyRegistry {
                 },
             };
         };
-        array_hash(@strategy_array)
+        compute_hash_on_elements(@strategy_array)
     }
 }

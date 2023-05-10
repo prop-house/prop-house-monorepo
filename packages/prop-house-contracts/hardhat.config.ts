@@ -8,7 +8,7 @@ import './tasks';
 
 dotenv.config();
 
-const { ETH_MNEMONIC, ETH_PRIVATE_KEY, STARKNET_NETWORK } = process.env;
+const { ETH_MNEMONIC, ETH_PRIVATE_KEY, STARKNET_NETWORK, CAIRO_1_BIN_DIR } = process.env;
 
 const getRemappings = () => {
   return fs
@@ -31,6 +31,7 @@ const config: HardhatUserConfig = {
   paths: {
     sources: 'contracts',
     cache: 'cache_hardhat', // Use a different cache for Hardhat than Foundry
+    starknetArtifacts: './contracts/starknet-cairo-v1/target/dev',
   },
   // This fully resolves paths for imports in the ./lib directory for Hardhat
   preprocess: {
@@ -53,6 +54,7 @@ const config: HardhatUserConfig = {
   starknet: {
     venv: 'active',
     network: STARKNET_NETWORK ?? 'starknetLocal',
+    cairo1BinDir: CAIRO_1_BIN_DIR,
   },
   networks: {
     ethereumLocal: {

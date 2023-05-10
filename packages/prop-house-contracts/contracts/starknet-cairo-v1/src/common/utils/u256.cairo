@@ -8,7 +8,7 @@ fn as_u256(high: u128, low: u128) -> u256 {
 impl U256Zeroable of Zeroable<u256> {
     #[inline(always)]
     fn zero() -> u256 {
-        as_u256(0, 0)
+        0
     }
 
     #[inline(always)]
