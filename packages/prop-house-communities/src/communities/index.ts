@@ -128,5 +128,7 @@ export const communities = new CaseInsensitiveMap(
     '0x49a5aEec7d9AC70990404278e93031E4C3C71875': fixedVotes(100),
     // nouns esports
     '0x9a64c732c284fd248e71fb2d9850f47e6ef6e32d': balanceOfErc721(),
+    // turbo voting token
+    '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
   }),
 );
