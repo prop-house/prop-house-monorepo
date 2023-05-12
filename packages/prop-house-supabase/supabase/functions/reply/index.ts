@@ -20,23 +20,25 @@ serve(async req => {
 
   const message = Buffer.Buffer.from(value.signedData.message, 'base64').toString('utf8');
   const { isValidAccountSig, accountSigError } = verifyAccountSignature(message, value);
+
   if (!isValidAccountSig) {
-    return new Response(
-      JSON.stringify({ error: `EOA signature invalid. Error message: ${accountSigError}` }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
-    );
+    const errorMsg = `EOA signature invalid. Error message: ${accountSigError}`;
+    console.log(errorMsg);
+    return new Response(JSON.stringify({ error: errorMsg }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    });
   }
 
   let isProposer;
   try {
     isProposer = await _isProposer(address, proposalId);
   } catch (error) {
+    const errorMsg = `Error fetching voting power. Error message: ${error}`;
+    console.log(errorMsg);
     return new Response(
       JSON.stringify({
-        error: `Error fetching voting power. Error message: ${error}`,
+        error: errorMsg,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -49,9 +51,11 @@ serve(async req => {
   try {
     votingPower = await prophouse.getVotingPower(address, communityAddress, provider, blockTag);
   } catch (error) {
+    const errorMsg = `Error fetching voting power.  Error message: ${error}`;
+    console.log(errorMsg);
     return new Response(
       JSON.stringify({
-        error: `Error fetching voting power.  Error message: ${error}`,
+        error: errorMsg,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -62,16 +66,19 @@ serve(async req => {
 
   const canReply = isProposer || votingPower > 0;
 
-  if (!canReply)
+  if (!canReply) {
+    const errorMsg = `Account ${address} is not authortized to reply. Account must be a proposer or have voting power.`;
+    console.log(errorMsg, isProposer, votingPower);
     return new Response(
       JSON.stringify({
-        message: `Account is not authortized to reply. Account must be a proposer or have voting power.`,
+        message: errorMsg,
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       },
     );
+  }
 
   try {
     await insertReply(address, proposalId, content);
@@ -83,12 +90,11 @@ serve(async req => {
       },
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: `error inserting reply into db. error: ${error}` }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      },
-    );
+    const errorMsg = `error inserting reply into db. error: ${error}`;
+    console.log(errorMsg);
+    return new Response(JSON.stringify({ error: errorMsg }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 400,
+    });
   }
 });
