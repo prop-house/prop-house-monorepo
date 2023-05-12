@@ -131,6 +131,6 @@ export const communities = new CaseInsensitiveMap(
     // turbo voting token
     '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
     // nounfred
-    '0x9a26659cc8C51C4Ac7e2ad1DCC235Cf5D859E3Db': fixedVotes(100),
+    '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487': fixedVotes(100),
   }),
 );
