@@ -124,5 +124,7 @@ export const communities = new CaseInsensitiveMap(
     '0x9b02525cec175cE12FF8281c8923b1De1F85Af92': balanceOfErc721(),
     // mxtter
     '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
+    // nounish
+    '0x49a5aEec7d9AC70990404278e93031E4C3C71875': fixedVotes(100),
   }),
 );
