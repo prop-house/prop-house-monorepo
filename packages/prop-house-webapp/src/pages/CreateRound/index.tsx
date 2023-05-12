@@ -38,6 +38,16 @@ const CreateRound: React.FC<{}> = () => {
                 )
               }
             />
+            <Button
+              text="Create infinite round"
+              bgColor={ButtonColor.Purple}
+              onClick={() =>
+                window.open(
+                  'https://www.addressform.io/f/9da52780-7ff3-4845-b843-b7ed415f94d6',
+                  '_blank',
+                )
+              }
+            />
           </div>
           <div className={classes.step}>
             <h2>Questions?</h2>
