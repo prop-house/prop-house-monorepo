@@ -124,5 +124,13 @@ export const communities = new CaseInsensitiveMap(
     '0x9b02525cec175cE12FF8281c8923b1De1F85Af92': balanceOfErc721(),
     // mxtter
     '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
+    // nounish
+    '0x49a5aEec7d9AC70990404278e93031E4C3C71875': fixedVotes(100),
+    // nouns esports
+    '0x9a64c732c284fd248e71fb2d9850f47e6ef6e32d': balanceOfErc721(),
+    // turbo voting token
+    '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
+    // nounfred
+    '0x9a26659cc8C51C4Ac7e2ad1DCC235Cf5D859E3Db': fixedVotes(100),
   }),
 );
