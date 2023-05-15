@@ -132,5 +132,7 @@ export const communities = new CaseInsensitiveMap(
     '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
     // nounfred
     '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487': fixedVotes(100),
+    // panama dao
+    '0xe403248c8F078Fd6729309635cdD0A668DDD20f9': balanceOfErc721(10),
   }),
 );
