@@ -125,12 +125,14 @@ export const communities = new CaseInsensitiveMap(
     // mxtter
     '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
     // nounish
-    '0x49a5aEec7d9AC70990404278e93031E4C3C71875': fixedVotes(100),
+    '0x89A814E79ce54B9bdc443779BEC7d9699De85D45': fixedVotes(100),
     // nouns esports
     '0x9a64c732c284fd248e71fb2d9850f47e6ef6e32d': balanceOfErc721(),
     // turbo voting token
     '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
     // nounfred
     '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487': fixedVotes(100),
+    // panama dao
+    '0xe403248c8F078Fd6729309635cdD0A668DDD20f9': balanceOfErc721(10),
   }),
 );
