@@ -6,7 +6,10 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
-import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
+import {
+  countVotesAllottedToProp,
+  countVotesAllottedToPropWithDirection,
+} from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
 import { isInfAuction } from '../../utils/auctionType';
@@ -28,6 +31,10 @@ const VotingControls: React.FC<{
   const { t } = useTranslation();
 
   const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
+  const allotedUpVotesForProp =
+    proposal && countVotesAllottedToPropWithDirection(voteAllotments, proposal.id, Direction.Up);
+  const allotedDownVotesForProp =
+    proposal && countVotesAllottedToPropWithDirection(voteAllotments, proposal.id, Direction.Down);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
@@ -44,6 +51,16 @@ const VotingControls: React.FC<{
         )
       : countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments);
   const canAllotVotes = votesRemaining > 0;
+
+  const upVotesDisabled =
+    round && isInfAuction(round)
+      ? votesRemaining === 0 && allotedUpVotesForProp > 0
+      : votesRemaining === 0;
+
+  const downVotesDisabled =
+    round && isInfAuction(round)
+      ? votesRemaining === 0 && allotedDownVotesForProp > 0
+      : allottedVotesForProp === 0;
 
   const isAllotting = () => (allottedVotesForProp && allottedVotesForProp > 0) || inputIsInFocus;
 
@@ -187,14 +204,14 @@ const VotingControls: React.FC<{
             bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClickVote(e, Direction.Down)}
-            disabled={allottedVotesForProp === 0}
+            disabled={downVotesDisabled}
           />
           <Button
             text="↑"
             bgColor={isAllotting() ? ButtonColor.PurpleLight : ButtonColor.Gray}
             classNames={classes.voteBtn}
             onClick={e => handleClickVote(e, Direction.Up)}
-            disabled={!canAllotVotes}
+            disabled={upVotesDisabled}
           />
         </div>
       </Col>
