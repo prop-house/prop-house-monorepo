@@ -12,7 +12,7 @@ import Modal from '../../Modal';
 import ERC20Buttons from '../ERC20Buttons';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../utils/getERC20Image';
-import { ERC20 } from '../AwardsConfig';
+
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import TruncateThousands from '../../TruncateThousands';
@@ -21,6 +21,7 @@ import { formatCommaNum } from '../utils/formatCommaNum';
 import useGetDecimals from '../utils/useGetDecimals';
 import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
+import { ERC20 } from '../AwardsConfig';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
