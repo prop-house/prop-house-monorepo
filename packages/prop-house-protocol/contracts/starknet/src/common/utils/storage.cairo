@@ -1,4 +1,4 @@
-use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
+use prop_house::common::utils::hash::keccak_uint256s_be_to_be;
 use array::ArrayTrait;
 use traits::Into;
 

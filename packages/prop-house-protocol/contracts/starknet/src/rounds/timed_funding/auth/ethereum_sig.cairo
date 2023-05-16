@@ -19,7 +19,7 @@ mod EthereumSigAuthStrategy {
     use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
     use prop_house::rounds::timed_funding::constants::{DomainSeparator, TypeHash, Selector};
     use prop_house::common::utils::contract_address::ContractAddressIntoU256;
-    use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
+    use prop_house::common::utils::hash::keccak_uint256s_be_to_be;
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
     use prop_house::common::utils::array::into_u256_arr;
     use prop_house::common::utils::serde::SpanSerde;

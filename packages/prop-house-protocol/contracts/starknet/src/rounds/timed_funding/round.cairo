@@ -1,14 +1,15 @@
 use prop_house::common::registry::voting_strategy::VotingStrategy;
 use prop_house::common::libraries::round::Proposal;
+use starknet::EthAddress;
 use array::ArrayTrait;
 
 trait ITimedFundingRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
-    fn propose(proposer_address: felt252, metadata_uri: Array<felt252>);
-    fn edit_proposal(proposer_address: felt252, proposal_id: u32, metadata_uri: Array<felt252>);
-    fn cancel_proposal(proposer_address: felt252, proposal_id: u32);
+    fn propose(proposer_address: EthAddress, metadata_uri: Array<felt252>);
+    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
+    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
     fn vote(
-        voter_address: felt252,
+        voter_address: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_flat: Array<felt252>,
@@ -46,6 +47,7 @@ struct ProposalVote {
     voting_power: u256,
 }
 
+// TODO: Move these to registry that's indexed by chain ID
 // Deployment-time constants
 const voting_strategy_registry_address: felt252 = 0xDEAD0001;
 const eth_execution_strategy: felt252 = 0xDEAD0002;
@@ -55,13 +57,15 @@ const eth_sig_auth_strategy: felt252 = 0xDEAD0004;
 #[contract]
 mod TimedFundingRound {
     use starknet::{
-        ContractAddress, get_block_timestamp, get_caller_address, Felt252TryIntoContractAddress
+        ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
+        Felt252TryIntoContractAddress
     };
     use super::{
         ITimedFundingRound, ProposalVote, RoundParams, RoundState, Award,
         voting_strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
         eth_sig_auth_strategy
     };
+    use prop_house::rounds::timed_funding::config::RoundConfig;
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
     use prop_house::common::registry::voting_strategy::{
         IVotingStrategyRegistryDispatcherTrait, IVotingStrategyRegistryDispatcher, VotingStrategy
@@ -74,12 +78,12 @@ mod TimedFundingRound {
         assert_no_duplicates, construct_2d_array, Immutable2DArray, get_sub_array, ArrayTraitExt,
         array_slice
     };
-    use prop_house::common::utils::keccak::keccak_uint256s_be_to_be;
+    use prop_house::common::utils::hash::{keccak_uint256s_be_to_be, LegacyHashEthAddress};
+    use prop_house::common::utils::constants::{MASK_192, MASK_250};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use prop_house::common::utils::constants::MASK_250;
     use prop_house::common::utils::u256::U256Zeroable;
-    use integer::{U16IntoFelt252, U32IntoFelt252};
+    use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
     use option::OptionTrait;
@@ -89,18 +93,15 @@ mod TimedFundingRound {
     const MAX_WINNERS: u16 = 255;
 
     struct Storage {
-        _round_state: u8,
-        _winner_count: u16,
-        _proposal_period_start_timestamp: u64,
-        _proposal_period_end_timestamp: u64,
-        _vote_period_end_timestamp: u64,
-        _award_hash: felt252,
+        _config: RoundConfig,
         _is_voting_strategy_registered: LegacyMap<felt252, bool>,
-        _spent_voting_power: LegacyMap<felt252, u256>,
+        _spent_voting_power: LegacyMap<EthAddress, u256>,
     }
 
     #[event]
-    fn ProposalCreated(proposal_id: u32, proposer_address: felt252, metadata_uri: Array<felt252>) {}
+    fn ProposalCreated(
+        proposal_id: u32, proposer_address: EthAddress, metadata_uri: Array<felt252>
+    ) {}
 
     #[event]
     fn ProposalEdited(proposal_id: u32, updated_metadata_uri: Array<felt252>) {}
@@ -109,7 +110,7 @@ mod TimedFundingRound {
     fn ProposalCancelled(proposal_id: u32) {}
 
     #[event]
-    fn VoteCast(proposal_id: u32, voter_address: felt252, voting_power: u256) {}
+    fn VoteCast(proposal_id: u32, voter_address: EthAddress, voting_power: u256) {}
 
     #[event]
     fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
@@ -122,24 +123,24 @@ mod TimedFundingRound {
             proposal
         }
 
-        fn propose(proposer_address: felt252, metadata_uri: Array<felt252>) {
+        fn propose(proposer_address: EthAddress, metadata_uri: Array<felt252>) {
             // Verify that the caller is a valid auth strategy
             _assert_caller_is_valid_auth_strategy();
 
             // Verify that the funding round is active
             _assert_round_active();
 
+            let config = _config::read();
             let current_timestamp = get_block_timestamp();
-            let proposal_period_start_timestamp = _proposal_period_start_timestamp::read();
-            let proposal_period_end_timestamp = _proposal_period_end_timestamp::read();
 
             // Ensure that the round is in the proposal period
             assert(
-                current_timestamp >= proposal_period_start_timestamp,
+                current_timestamp >= config.proposal_period_start_timestamp,
                 'TFR: Proposal period not begun',
             );
             assert(
-                current_timestamp < proposal_period_end_timestamp, 'TFR: Proposal period has ended', 
+                current_timestamp < config.proposal_period_end_timestamp,
+                'TFR: Proposal period has ended',
             );
 
             let proposal_id = Round::_proposal_count::read() + 1;
@@ -158,7 +159,7 @@ mod TimedFundingRound {
         }
 
         fn edit_proposal(
-            proposer_address: felt252, proposal_id: u32, metadata_uri: Array<felt252>
+            proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
         ) {
             // Verify that the caller is a valid auth strategy
             _assert_caller_is_valid_auth_strategy();
@@ -184,7 +185,7 @@ mod TimedFundingRound {
             ProposalEdited(proposal_id, metadata_uri);
         }
 
-        fn cancel_proposal(proposer_address: felt252, proposal_id: u32) {
+        fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
             // Verify that the caller is a valid auth strategy
             _assert_caller_is_valid_auth_strategy();
 
@@ -210,7 +211,7 @@ mod TimedFundingRound {
         }
 
         fn vote(
-            voter_address: felt252,
+            voter_address: EthAddress,
             proposal_votes: Array<ProposalVote>,
             used_voting_strategy_ids: Array<felt252>,
             user_voting_strategy_params_flat: Array<felt252>,
@@ -221,16 +222,18 @@ mod TimedFundingRound {
             // Verify that the funding round is active
             _assert_round_active();
 
-            // The snapshot is taken at the proposal period end timestamp
-            let snapshot_timestamp = _proposal_period_end_timestamp::read();
-            let vote_period_start_timestamp = snapshot_timestamp + 1;
-            let vote_period_end_timestamp = _vote_period_end_timestamp::read();
-
+            let config = _config::read();
             let current_timestamp = get_block_timestamp();
+
+            // The snapshot is taken at the proposal period end timestamp
+            let snapshot_timestamp = config.proposal_period_end_timestamp;
+            let vote_period_start_timestamp = snapshot_timestamp + 1;
 
             // Ensure that the round is in the voting period
             assert(current_timestamp >= vote_period_start_timestamp, 'TFR: Vote period not begun');
-            assert(current_timestamp <= vote_period_end_timestamp, 'TFR: Vote period has ended');
+            assert(
+                current_timestamp <= config.vote_period_end_timestamp, 'TFR: Vote period has ended'
+            );
 
             // Determine the cumulative voting power of the user
             let cumulative_voting_power = _get_cumulative_voting_power(
@@ -254,20 +257,21 @@ mod TimedFundingRound {
             // Verify the validity of the provided awards
             _assert_awards_valid(awards.span());
 
+            let config = _config::read();
             let current_timestamp = get_block_timestamp();
-            let vote_period_end_timestamp = _vote_period_end_timestamp::read();
 
-            assert(current_timestamp > vote_period_end_timestamp, 'TFR: Vote period not ended');
+            assert(
+                current_timestamp > config.vote_period_end_timestamp, 'TFR: Vote period not ended'
+            );
 
             let proposal_count = Round::_proposal_count::read();
-            let winner_count: felt252 = _winner_count::read().into();
 
             // If no proposals were submitted, the round must be cancelled.
             assert(proposal_count != 0, 'TFR: No proposals submitted');
 
             let active_proposals = Round::get_active_proposals();
             let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
-                active_proposals, winner_count.try_into().unwrap()
+                active_proposals, config.winner_count.into()
             );
 
             // TODO: Support arbitrary execution.
@@ -282,7 +286,10 @@ mod TimedFundingRound {
             };
             execution_strategy.execute(_build_execution_params(merkle_root));
 
-            _round_state::write(RoundState::FINALIZED);
+            let mut config = _config::read();
+
+            config.round_state = RoundState::FINALIZED;
+            _config::write(config);
 
             RoundFinalized(Round::extract_proposal_ids(winning_proposals), merkle_root);
         }
@@ -304,7 +311,7 @@ mod TimedFundingRound {
     /// * `proposer_address` - The address of the proposer.
     /// * `metadata_uri` - The proposal metadata URI.
     #[external]
-    fn propose(proposer_address: felt252, metadata_uri: Array<felt252>) {
+    fn propose(proposer_address: EthAddress, metadata_uri: Array<felt252>) {
         TimedFundingRound::propose(proposer_address, metadata_uri);
     }
 
@@ -313,7 +320,7 @@ mod TimedFundingRound {
     /// * `proposal_id` - The ID of the proposal to cancel.
     /// * `metadata_uri` - The updated proposal metadata URI.
     #[external]
-    fn edit_proposal(proposer_address: felt252, proposal_id: u32, metadata_uri: Array<felt252>) {
+    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
         TimedFundingRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
     }
 
@@ -321,7 +328,7 @@ mod TimedFundingRound {
     /// * `proposer_address` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal to cancel.
     #[external]
-    fn cancel_proposal(proposer_address: felt252, proposal_id: u32) {
+    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
         TimedFundingRound::cancel_proposal(proposer_address, proposal_id);
     }
 
@@ -332,7 +339,7 @@ mod TimedFundingRound {
     /// * `user_voting_strategy_params_flat` - The flattened parameters for the voting strategies used to cast the votes.
     #[external]
     fn vote(
-        voter_address: felt252,
+        voter_address: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_flat: Array<felt252>,
@@ -376,22 +383,25 @@ mod TimedFundingRound {
         assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TFR: Invalid winner count');
         assert(voting_strategies.len() != 0, 'TFR: No voting strategies');
 
-        let proposal_period_end_timestamp = proposal_period_start_timestamp
-            + proposal_period_duration;
+        let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
         let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration;
 
-        _proposal_period_start_timestamp::write(proposal_period_start_timestamp);
-        _proposal_period_end_timestamp::write(proposal_period_end_timestamp);
-        _vote_period_end_timestamp::write(vote_period_end_timestamp);
-        _winner_count::write(winner_count);
-        _award_hash::write(award_hash);
-
+        _config::write(
+            RoundConfig {
+                round_state: RoundState::ACTIVE,
+                winner_count,
+                proposal_period_start_timestamp,
+                proposal_period_end_timestamp,
+                vote_period_end_timestamp,
+                award_hash,
+            }
+        );
         _register_voting_strategies(voting_strategies);
     }
 
     /// Decode the round parameters from an array of felt252s.
     fn _decode_param_array(params: Span<felt252>) -> RoundParams {
-        let award_hash = *params.at(0);
+        let award_hash = *params.at(0).into();
         let proposal_period_start_timestamp = (*params.at(1)).try_into().unwrap();
         let proposal_period_duration = (*params.at(2)).try_into().unwrap();
         let vote_period_duration = (*params.at(3)).try_into().unwrap();
@@ -440,14 +450,14 @@ mod TimedFundingRound {
 
     /// Asserts that the round is active.
     fn _assert_round_active() {
-        assert(_round_state::read() == RoundState::ACTIVE, 'TFR: Round not active');
+        assert(_config::read().round_state == RoundState::ACTIVE, 'TFR: Round not active');
     }
 
     /// Asserts that the provided awards are valid.
     fn _assert_awards_valid(awards: Span<Award>) {
         let flattened_awards = _flatten_and_abi_encode_awards(awards);
-        let stored_award_hash = _award_hash::read().into();
-        let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250.into();
+        let stored_award_hash = _config::read().award_hash.into();
+        let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250;
 
         assert(computed_award_hash == stored_award_hash, 'TFR: Invalid awards provided');
     }
@@ -475,13 +485,13 @@ mod TimedFundingRound {
 
     /// Returns the cumulative voting power of the given voter for the provided voting strategies.
     /// * `timestamp` - The timestamp at which to calculate the cumulative voting power.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `used_voting_strategy_ids` - The IDs of the voting strategies used to calculate the
     /// cumulative voting power.
     /// * `user_voting_strategy_params_all` - The voting strategy parameters for all users.
     fn _get_cumulative_voting_power(
         timestamp: u64,
-        voter_address: felt252,
+        voter_address: EthAddress,
         mut used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_all: Span<felt252>,
     ) -> u256 {
@@ -492,8 +502,7 @@ mod TimedFundingRound {
             contract_address: voting_strategy_registry_address.try_into().unwrap(), 
         };
 
-        let mut cumulative_voting_power = U256Zeroable::zero();
-
+        let mut cumulative_voting_power = 0;
         loop {
             match used_voting_strategy_ids.pop_front() {
                 Option::Some(strategy_id) => {
@@ -504,7 +513,7 @@ mod TimedFundingRound {
                     let voting_power = voting_strategy_contract
                         .get_voting_power(
                             timestamp,
-                            voter_address,
+                            voter_address.into(),
                             voting_strategy.params,
                             user_voting_strategy_params_all,
                         );
@@ -522,43 +531,38 @@ mod TimedFundingRound {
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
     /// * `proposal_votes` - The votes to cast.
     fn _cast_votes_on_one_or_more_proposals(
-        voter_address: felt252, cumulative_voting_power: u256, proposal_votes: Span<ProposalVote>
+        voter_address: EthAddress,
+        cumulative_voting_power: u256,
+        mut proposal_votes: Span<ProposalVote>
     ) {
-        let proposal_vote_count = proposal_votes.len();
         let mut spent_voting_power = _spent_voting_power::read(voter_address);
-
-        let mut i = 0;
+        let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
         loop {
-            if i == proposal_vote_count {
-                break ();
-            }
-            // Cast the votes for the proposal
-            spent_voting_power +=
-                _cast_votes_on_proposal(
-                    voter_address,
-                    *proposal_votes.at(i),
-                    cumulative_voting_power,
-                    spent_voting_power,
-                );
-            i += 1;
+            match proposal_votes.pop_front() {
+                Option::Some(proposal_vote) => {
+                    // Cast the votes for the proposal
+                    spent_voting_power +=
+                        _cast_votes_on_proposal(
+                            voter_address, *proposal_vote, remaining_voting_power, 
+                        );
+                    remaining_voting_power -= spent_voting_power;
+                },
+                Option::None(_) => {
+                    // Update the spent voting power for the user
+                    _spent_voting_power::write(voter_address, spent_voting_power);
+                    break ();
+                },
+            };
         };
-
-        // Update the spent voting power for the user
-        _spent_voting_power::write(voter_address, spent_voting_power);
     }
 
     /// Cast votes on a single proposal.
     /// * `voter_address` - The address of the voter.
     /// * `proposal_vote` - The proposal vote information.
-    /// * `cumulative_voting_power` - The cumulative voting power of the voter.
-    /// * `spent_voting_power` - The voting power that has already been spent by the voter.
+    /// * `remaining_voting_power` - The remaining voting power of the voter.
     fn _cast_votes_on_proposal(
-        voter_address: felt252,
-        proposal_vote: ProposalVote,
-        cumulative_voting_power: u256,
-        spent_voting_power: u256,
+        voter_address: EthAddress, proposal_vote: ProposalVote, remaining_voting_power: u256, 
     ) -> u256 {
-        let remaining_voting_power = cumulative_voting_power - spent_voting_power;
         let proposal_id = proposal_vote.proposal_id;
         let voting_power = proposal_vote.voting_power;
 
@@ -693,7 +697,7 @@ mod TimedFundingRound {
 
         let mut leaf_input = ArrayTrait::new();
         leaf_input.append(proposal_id.into());
-        leaf_input.append(p.proposal.proposer.into());
+        leaf_input.append(u256_from_felt252(p.proposal.proposer.into()));
         leaf_input.append(asset_id);
         leaf_input.append(asset_amount);
 

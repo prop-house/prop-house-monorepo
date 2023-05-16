@@ -1,18 +1,23 @@
 use starknet::{
-    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
-    storage_address_from_base_and_offset
+    EthAddress, StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall,
+    storage_write_syscall, storage_address_from_base_and_offset
 };
+use prop_house::common::utils::u256::as_u256;
 use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
-use integer::{U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64};
+use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU64};
+use prop_house::common::utils::constants::{TWO_POW_160, TWO_POW_224, MASK_160, MASK_64};
+use integer::{
+    U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252
+};
 use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
 #[derive(Copy, Drop, Serde)]
 struct Proposal {
-    proposer: felt252,
-    is_cancelled: bool,
+    proposer: EthAddress,
     last_updated_at: u64,
+    is_cancelled: bool,
     voting_power: u256,
 }
 
@@ -22,45 +27,71 @@ struct ProposalWithId {
     proposal: Proposal,
 }
 
+/// Pack the proposal fields into a single felt252.
+/// * `proposer` - The proposer of the proposal.
+/// * `last_updated_at` - The last time the proposal was updated.
+/// * `is_cancelled` - Whether the proposal is cancelled.
+fn pack_proposal_fields(proposer: EthAddress, last_updated_at: u64, is_cancelled: bool) -> felt252 {
+    let mut packed = 0;
+    packed = packed | proposer.address.into();
+    packed = packed | (u256_from_felt252(last_updated_at.into()) * TWO_POW_160);
+    packed = packed | (u256_from_felt252(is_cancelled.into()) * TWO_POW_224);
+
+    packed.try_into().unwrap()
+}
+
+/// Unpack the proposal fields from a single felt252.
+/// * `packed` - The packed proposal.
+fn unpack_proposal_fields(packed: felt252) -> (EthAddress, u64, bool) {
+    let packed = packed.into();
+
+    let proposer: EthAddress = (packed & MASK_160).try_into().unwrap();
+    let last_updated_at: u64 = ((packed / TWO_POW_160) & MASK_64).try_into().unwrap();
+    let is_cancelled = packed / TWO_POW_224 != 0;
+
+    (proposer, last_updated_at, is_cancelled)
+}
+
 impl ProposalStorageAccess of StorageAccess<Proposal> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Proposal> {
-        let proposer_base = storage_address_from_base_and_offset(base, 0);
-        let proposer = storage_read_syscall(address_domain, proposer_base)?;
-
-        let is_cancelled_base = storage_address_from_base_and_offset(base, 1);
-        let is_cancelled = storage_read_syscall(address_domain, is_cancelled_base)?
-            .try_into()
-            .unwrap();
-
-        let last_updated_at_base = storage_address_from_base_and_offset(base, 2);
-        let last_updated_at = storage_read_syscall(address_domain, last_updated_at_base)?
-            .try_into()
-            .unwrap();
-
-        let voting_power_base = storage_address_from_base_and_offset(base, 3);
-        let voting_power = storage_read_syscall(address_domain, voting_power_base)?.into();
-
-        Result::Ok(Proposal { proposer, is_cancelled, last_updated_at, voting_power })
-    }
-
-    fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
-        let proposer_base = storage_address_from_base_and_offset(base, 0);
-        storage_write_syscall(address_domain, proposer_base, value.proposer)?;
-
-        let is_cancelled_base = storage_address_from_base_and_offset(base, 1);
-        storage_write_syscall(address_domain, is_cancelled_base, value.is_cancelled.into())?;
-
-        let last_updated_at_base = storage_address_from_base_and_offset(base, 2);
-        storage_write_syscall(address_domain, last_updated_at_base, value.last_updated_at.into())?;
-
-        let voting_power_base_low = storage_address_from_base_and_offset(base, 3);
-        storage_write_syscall(
-            address_domain, voting_power_base_low, value.voting_power.low.into()
+        let (proposer, last_updated_at, is_cancelled) = unpack_proposal_fields(
+            storage_read_syscall(address_domain, storage_address_from_base_and_offset(base, 0))?
+        );
+        let voting_power_low = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 1)
         )?;
+        let voting_power_high = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 2)
+        )?;
+        Result::Ok(
+            Proposal {
+                proposer,
+                is_cancelled,
+                last_updated_at,
+                voting_power: as_u256(
+                    voting_power_high.try_into().unwrap(), voting_power_low.try_into().unwrap()
+                )
+            }
+        )
+    }
+    #[inline(always)]
+    fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
+        let packed = pack_proposal_fields(
+            value.proposer, value.last_updated_at, value.is_cancelled
+        );
 
-        let voting_power_base_high = storage_address_from_base_and_offset(base, 4);
         storage_write_syscall(
-            address_domain, voting_power_base_high, value.voting_power.high.into()
+            address_domain, storage_address_from_base_and_offset(base, 0), packed
+        )?;
+        storage_write_syscall(
+            address_domain,
+            storage_address_from_base_and_offset(base, 1),
+            value.voting_power.low.into(),
+        )?;
+        storage_write_syscall(
+            address_domain,
+            storage_address_from_base_and_offset(base, 2),
+            value.voting_power.high.into(),
         )
     }
 }
