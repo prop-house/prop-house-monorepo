@@ -44,8 +44,6 @@ const Voters: FC<{
   const [displayCount, setDisplayCount] = useState(10);
 
   const handleRemoveVoter = (address: string, type: string) => {
-    setDisplayCount(prevCount => (prevCount > 0 ? prevCount - 1 : 0));
-
     if (!editMode) setUploadMessage!('');
 
     if (type === VotingStrategyType.VANILLA) return;
@@ -101,6 +99,20 @@ const Voters: FC<{
 
     dispatch(saveRound({ ...round, voters: updatedVoters }));
     setVoters(updatedVoters);
+
+    // After the voter is removed, check if all visible voters have been removed
+    let visibleCount = 0;
+
+    updatedVoters.forEach(voter => {
+      if (voter.strategyType === VotingStrategyType.WHITELIST && voter.members) {
+        visibleCount += Math.min(voter.members.length, displayCount);
+      } else {
+        visibleCount += 1;
+      }
+    });
+
+    // If all visible voters have been removed, increase the displayCount to show the next 10 (or as many as there are remaining)
+    if (visibleCount === 0) setDisplayCount(Math.min(getVoterCount(), displayCount + 10));
   };
 
   // this is used to determine whether or not we should show the "View X more strategies" link
