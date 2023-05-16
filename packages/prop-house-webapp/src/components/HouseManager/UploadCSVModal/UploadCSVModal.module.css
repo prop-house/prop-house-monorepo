@@ -1,10 +1,164 @@
 .example {
   display: flex;
   width: min-content;
-  /* justify-content: end; */
 }
 .example button {
   width: min-content;
   white-space: nowrap;
   cursor: pointer;
+}
+.zone {
+  position: relative;
+  min-height: 200px;
+  height: auto;
+  border: 2px dashed var(--border-dark);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-med);
+}
+.file {
+  border-radius: 20px;
+  display: flex;
+  height: 120px;
+  width: 120px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+  flex-direction: column;
+  justify-content: center;
+}
+.progressBar {
+  bottom: 14px;
+  position: absolute;
+  width: 100%;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.zoneHover {
+  border-color: #686868;
+}
+.zoneValid {
+  border-color: var(--brand-green);
+}
+.zoneError {
+  border-color: var(--brand-red);
+  background: var(--brand-red-hint);
+}
+
+.default {
+  border-color: #ccc;
+}
+
+.remove {
+  height: 23px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 23px;
+  cursor: pointer;
+}
+
+/* TODO - new file styles */
+
+.fileName {
+  font-weight: 700;
+  font-size: 14px;
+}
+.fileSize {
+  font-weight: 500;
+  font-size: 12px;
+  font-style: italic;
+}
+.uploadedFile {
+  margin-top: 0;
+  position: relative;
+  display: flex;
+  margin-bottom: 2px;
+  background-color: var(--bg-dark);
+  padding: 8px;
+  border-radius: 8px;
+}
+.uploadedFile p {
+  margin-bottom: 0;
+}
+.fileName {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
+}
+@media (max-width: 450px) {
+  .fileName {
+    max-width: 85%;
+  }
+}
+
+.uploadedFile img {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 75%;
+}
+.deleteFile {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+}
+.deleteFile:hover {
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: var(--box-shadow);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  transition: opacity 0.3s ease;
+}
+.inputLabelContainer {
+  text-align: center;
+  color: #ccc;
+  font-weight: 600;
+  padding: 10px;
+  font-size: 18px;
+}
+.uploadImagePicture {
+  width: 100px !important;
+  margin-bottom: 10px;
+}
+.inputLabelTitle {
+  color: var(--brand-black);
+  margin-bottom: 0px;
+}
+.inputLabelSubtitle {
+  font-style: italic;
+  font-size: 14px;
+}
+.inputLabelContainer img {
+  width: 100px;
+}
+.uploadReadyTitle {
+  margin-top: -3px;
+  padding-bottom: 10px;
+  color: var(--brand-black);
+  font-weight: 600;
+}
+.uploadedFilesContainer {
+  margin-top: 10px;
+  overflow-y: auto;
+  max-height: 200px;
 }

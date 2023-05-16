@@ -12,16 +12,12 @@ import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import {
-  AssetType,
-  VotingStrategyConfig,
-  VotingStrategyType,
-  WhitelistMember,
-} from '@prophouse/sdk-react';
+import { AssetType, VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
+import createVoterStrategy from '../utils/createVoterStrategy';
 
 /**
  * @see StrategyType - button options within modal
@@ -68,38 +64,12 @@ const AddVoter: React.FC<{
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
   const handleAddVotingStrategy = () => {
-    let s: VotingStrategyConfig | null = null;
+    let v = createVoterStrategy(voter);
 
-    if (voter.type === VotingStrategyType.ERC1155_BALANCE_OF) {
-      s = {
-        strategyType: voter.type,
-        assetType: AssetType.ERC1155,
-        address: voter.address,
-        tokenId: voter.tokenId,
-        multiplier: voter.multiplier,
-      };
-    } else if (voter.type === VotingStrategyType.BALANCE_OF) {
-      s = {
-        strategyType: VotingStrategyType.BALANCE_OF,
-        assetType: AssetType.ERC20,
-        address: voter.address,
-        multiplier: voter.multiplier,
-      };
-    } else if (voter.type === VotingStrategyType.WHITELIST) {
-      const newMember: WhitelistMember = {
-        address: voter.address,
-        votingPower: voter.multiplier.toString(),
-      };
-      s = {
-        strategyType: VotingStrategyType.WHITELIST,
-        members: [newMember],
-      };
-    }
-
-    if (s) {
+    if (v) {
       let updatedVoters: VotingStrategyConfig[] = [];
 
-      if (s.strategyType === VotingStrategyType.WHITELIST) {
+      if (v.strategyType === VotingStrategyType.WHITELIST) {
         // Find existing Whitelist strategy
         const existingStrategyIndex = round.voters.findIndex(
           existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
@@ -113,7 +83,7 @@ const AddVoter: React.FC<{
             // Update existing Whitelist strategy by spreading in existing members
             const updatedStrategy = {
               ...existingStrategy,
-              members: [...existingStrategy.members, ...s.members],
+              members: [...existingStrategy.members, ...v.members],
             };
             updatedVoters = [
               ...round.voters.slice(0, existingStrategyIndex),
@@ -125,11 +95,11 @@ const AddVoter: React.FC<{
           }
         } else {
           // Add a new Whitelist strategy
-          updatedVoters = [...round.voters, s];
+          updatedVoters = [...round.voters, v];
         }
       } else {
         // Add non-Whitelist strategy
-        updatedVoters = [...round.voters, s];
+        updatedVoters = [...round.voters, v];
       }
 
       dispatch(saveRound({ ...round, voters: updatedVoters }));

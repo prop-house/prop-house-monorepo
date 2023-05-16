@@ -1,12 +1,17 @@
 import classes from './Voters.module.css';
 import Group from '../Group';
-import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import {
+  DefaultVotingConfigs,
+  VotingStrategyConfig,
+  VotingStrategyType,
+} from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
 import Voter from '../Voter';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import clsx from 'clsx';
 import { saveRound } from '../../../state/thunks';
+import Text from '../Text';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -19,38 +24,69 @@ const Voters: FC<{
   editMode?: boolean;
   voters: VotingStrategyConfig[];
   setVoters: (voters: VotingStrategyConfig[]) => void;
+  setUploadMessage?: (message: string) => void;
   setCurrentView?: (view: 'showVoters' | 'addVoters') => void;
   setShowVotersModal?: (show: boolean) => void;
+  setShowUploadCSVModal?: (show: boolean) => void;
 }> = props => {
-  const { editMode, voters, setVoters, setCurrentView, setShowVotersModal } = props;
+  const {
+    editMode,
+    voters,
+    setVoters,
+    setUploadMessage,
+    setCurrentView,
+    setShowVotersModal,
+    setShowUploadCSVModal,
+  } = props;
 
   const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.round.round);
+  const [displayCount, setDisplayCount] = useState(10);
 
   const handleRemoveVoter = (address: string, type: string) => {
+    setDisplayCount(prevCount => (prevCount > 0 ? prevCount - 1 : 0));
+
+    if (!editMode) setUploadMessage!('');
+
     if (type === VotingStrategyType.VANILLA) return;
 
-    let updatedVoters;
+    let updatedVoters: DefaultVotingConfigs[] = [...voters];
 
     if (type === VotingStrategyType.WHITELIST) {
-      // we use flatMap because we need to remove the entire "Voter" if there's only one member left
-      updatedVoters = voters.flatMap(s => {
-        if (s.strategyType === VotingStrategyType.WHITELIST) {
+      // Find existing Whitelist strategy
+      const existingStrategyIndex = voters.findIndex(
+        existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
+      );
+
+      if (existingStrategyIndex > -1) {
+        const existingStrategy = voters[existingStrategyIndex];
+
+        // Type guard to ensure existing strategy is a Whitelist strategy
+        if ('members' in existingStrategy) {
           // if there's only one member left, remove the entire "Voter" by returning an empty array
-          if (s.members.length === 1) {
-            return [];
+          if (existingStrategy.members.length === 1) {
+            updatedVoters = [
+              ...voters.slice(0, existingStrategyIndex),
+              ...voters.slice(existingStrategyIndex + 1),
+            ];
           } else {
             // otherwise, remove the member from the "Voter"
-            return {
-              ...s,
-              members: s.members.filter(m => m.address !== address),
+            const updatedStrategy = {
+              ...existingStrategy,
+              members: existingStrategy.members.filter(m => m.address !== address),
             };
+            updatedVoters = [
+              ...voters.slice(0, existingStrategyIndex),
+              updatedStrategy,
+              ...voters.slice(existingStrategyIndex + 1),
+            ];
           }
         } else {
-          // if it's not a whitelist, just return the "Voter"
-          return s;
+          console.error('Invalid strategy type');
         }
-      });
+      } else {
+        console.error('No whitelist strategy found');
+      }
     } else {
       updatedVoters = voters.filter(s => {
         // we do this because the Whitelist type doesn't have an address field
@@ -67,25 +103,42 @@ const Voters: FC<{
     setVoters(updatedVoters);
   };
 
+  // this is used to determine whether or not we should show the "View X more strategies" link
+  const getVoterCount = () => {
+    return voters.reduce((count, voter) => {
+      if (voter.strategyType === VotingStrategyType.WHITELIST && 'members' in voter) {
+        // Add the number of members to the count
+        return count + voter.members.length;
+      } else {
+        // If voter is not a whitelist strategy, add 1 to the count
+        return count + 1;
+      }
+    }, 0);
+  };
+
+  const handleShowMoreVoters = () => setDisplayCount(getVoterCount());
+
   return (
     <>
-      <Group gap={12} mb={12}>
-        {voters.map((s, idx) =>
+      <Group gap={12} mb={12} classNames={classes.voters}>
+        {voters.slice(0, displayCount).map((s, idx) =>
           // not supported
           s.strategyType === VotingStrategyType.VANILLA ? (
             <></>
           ) : // if it's a whitelist, we need to map over the members
           s.strategyType === VotingStrategyType.WHITELIST ? (
-            s.members.map((m, idx) => (
-              <Voter
-                key={idx}
-                type={s.strategyType}
-                address={m.address}
-                multiplier={Number(m.votingPower)}
-                isDisabled={editMode && s.members.length === 1}
-                removeVoter={handleRemoveVoter}
-              />
-            ))
+            s.members
+              .slice(0, displayCount)
+              .map((m, idx) => (
+                <Voter
+                  key={idx}
+                  type={s.strategyType}
+                  address={m.address}
+                  multiplier={Number(m.votingPower)}
+                  isDisabled={editMode && s.members.length === 1}
+                  removeVoter={handleRemoveVoter}
+                />
+              ))
           ) : (
             // otherwise, proceed as normal
             <Voter
@@ -100,26 +153,41 @@ const Voters: FC<{
         )}
       </Group>
 
+      {/* This will only show if there are more than 10 voters and the display count is less than the total number of voters */}
+      {getVoterCount() > 10 && displayCount !== getVoterCount() && (
+        <Group mb={12}>
+          <Text type="link" onClick={handleShowMoreVoters} classNames={classes.message}>
+            {`View ${getVoterCount() - displayCount} more ${
+              getVoterCount() - displayCount === 1 ? 'strategy' : 'strategies'
+            }`}
+          </Text>
+        </Group>
+      )}
+
       <Group row gap={6} mb={18} classNames={clsx(editMode && classes.editModeButtons)}>
         <Button
-          onClick={() => {
-            setCurrentView ? setCurrentView('addVoters') : setShowVotersModal!(true);
-          }}
           text={'Add a voter'}
           bgColor={ButtonColor.Pink}
+          onClick={() => {
+            if (!editMode) setUploadMessage!('');
+            setCurrentView ? setCurrentView('addVoters') : setShowVotersModal!(true);
+          }}
         />
 
         {editMode ? (
           <Button
-            onClick={() => setShowVotersModal!(false)}
             text={'Cancel'}
             bgColor={ButtonColor.White}
+            onClick={() => setShowVotersModal!(false)}
           />
         ) : (
           <Button
-            // TODO: Add CSV upload functionality
             text={'Upload CSV'}
             bgColor={ButtonColor.White}
+            onClick={() => {
+              setUploadMessage!('');
+              setShowUploadCSVModal!(true);
+            }}
           />
         )}
       </Group>

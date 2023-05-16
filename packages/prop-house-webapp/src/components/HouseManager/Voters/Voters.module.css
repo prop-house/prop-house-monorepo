@@ -4,3 +4,23 @@
 .editModeButtons button {
   width: 100% !important;
 }
+.message {
+  color: var(--brand-pink);
+}
+.voters {
+  max-height: 380px;
+  overflow-y: scroll;
+}
+.voters::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+.voters::-webkit-scrollbar-track {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.voters::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: white;
+  background: var(--brand-gray-semi-transparent);
+}

@@ -2,7 +2,6 @@ import classes from './Modal.module.css';
 import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
 import Button, { ButtonColor } from '../Button';
-import Divider from '../Divider';
 import { useTranslation } from 'react-i18next';
 import LoadingIndicator from '../LoadingIndicator';
 import { IoClose } from 'react-icons/io5';
@@ -112,10 +111,8 @@ const Modal: React.FC<{
             </div>
           </div>
 
-          <Divider noMarginDown />
           {body && <div className={classes.body}>{body}</div>}
 
-          <Divider noMarginUp />
           <div className={classes.footer}>
             <div className={classes.buttonContainer}>
               {bottomContainer ? (
