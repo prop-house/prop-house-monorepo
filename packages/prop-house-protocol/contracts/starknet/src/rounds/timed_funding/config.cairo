@@ -68,22 +68,36 @@ fn unpack_round_config_fields(packed: felt252) -> (u8, u16, u64, u64, u64) {
     )
 }
 
-
+// Storage packing is currently blocked by https://github.com/starkware-libs/cairo/issues/3153.
 impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<RoundConfig> {
-        let (
-            round_state,
-            winner_count,
-            proposal_period_start_timestamp,
-            proposal_period_end_timestamp,
-            vote_period_end_timestamp
-        ) =
-            unpack_round_config_fields(
-            storage_read_syscall(address_domain, storage_address_from_base_and_offset(base, 0))?
-        );
-
-        let award_hash = storage_read_syscall(
+        let round_state = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 0)
+        )?
+            .try_into()
+            .unwrap();
+        let winner_count = storage_read_syscall(
             address_domain, storage_address_from_base_and_offset(base, 1)
+        )?
+            .try_into()
+            .unwrap();
+        let proposal_period_start_timestamp = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 2)
+        )?
+            .try_into()
+            .unwrap();
+        let proposal_period_end_timestamp = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 3)
+        )?
+            .try_into()
+            .unwrap();
+        let vote_period_end_timestamp = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 4)
+        )?
+            .try_into()
+            .unwrap();
+        let award_hash = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 5)
         )?;
         Result::Ok(
             RoundConfig {
@@ -100,19 +114,29 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
     fn write(
         address_domain: u32, base: StorageBaseAddress, value: RoundConfig
     ) -> SyscallResult<()> {
-        let packed = pack_round_config_fields(
-            value.round_state,
-            value.winner_count,
-            value.proposal_period_start_timestamp,
-            value.proposal_period_end_timestamp,
-            value.vote_period_end_timestamp
-        );
-
         storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 0), packed
+            address_domain, storage_address_from_base_and_offset(base, 0), value.round_state.into()
         )?;
         storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 1), value.award_hash
+            address_domain, storage_address_from_base_and_offset(base, 1), value.winner_count.into()
+        )?;
+        storage_write_syscall(
+            address_domain,
+            storage_address_from_base_and_offset(base, 2),
+            value.proposal_period_start_timestamp.into()
+        )?;
+        storage_write_syscall(
+            address_domain,
+            storage_address_from_base_and_offset(base, 3),
+            value.proposal_period_end_timestamp.into()
+        )?;
+        storage_write_syscall(
+            address_domain,
+            storage_address_from_base_and_offset(base, 4),
+            value.vote_period_end_timestamp.into()
+        )?;
+        storage_write_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 5), value.award_hash
         )
     }
 }

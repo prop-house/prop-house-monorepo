@@ -1,5 +1,5 @@
 const getStarknetArtifactPath = (contract: string, ext: 'sierra' | 'casm') =>
-  `./contracts/starknet-cairo-v1/target/dev/prop_house_${contract}.${ext}.json`;
+  `./contracts/starknet/target/dev/prop_house_${contract}.${ext}.json`;
 const getSierraPath = (contract: string) => getStarknetArtifactPath(contract, 'sierra');
 const getCasmPath = (contract: string) => getStarknetArtifactPath(contract, 'casm');
 

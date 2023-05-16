@@ -31,7 +31,7 @@ const config: HardhatUserConfig = {
   paths: {
     sources: 'contracts',
     cache: 'cache_hardhat', // Use a different cache for Hardhat than Foundry
-    starknetArtifacts: './contracts/starknet-cairo-v1/target/dev',
+    starknetArtifacts: './contracts/starknet/target/dev',
   },
   // This fully resolves paths for imports in the ./lib directory for Hardhat
   preprocess: {
