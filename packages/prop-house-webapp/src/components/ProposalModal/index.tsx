@@ -165,7 +165,7 @@ const ProposalModal = () => {
         .map(
           a =>
             new Vote(
-              1,
+              a.direction,
               a.proposalId,
               a.votes,
               community!.contractAddress,
