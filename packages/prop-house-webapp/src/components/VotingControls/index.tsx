@@ -59,10 +59,12 @@ const VotingControls: React.FC<{
     setVoteCountDisplayed(prev => (direction === Direction.Up ? prev + 1 : prev - 1));
     dispatch(
       allotVotes({
-        proposalId: proposal.id,
-        proposalTitle: proposal.title,
-        direction: direction,
-        weight: 1,
+        voteAllotment: {
+          proposalId: proposal.id,
+          proposalTitle: proposal.title,
+          direction: direction,
+          votes: 1,
+        },
       }),
     );
   };
@@ -88,20 +90,24 @@ const VotingControls: React.FC<{
     // reset prev allotment (reduce to 0)
     dispatch(
       allotVotes({
-        proposalTitle: proposal.title,
-        proposalId: proposal.id,
-        direction: Direction.Down,
-        weight: voteCountDisplayed,
+        voteAllotment: {
+          proposalTitle: proposal.title,
+          proposalId: proposal.id,
+          direction: Direction.Down,
+          votes: voteCountDisplayed,
+        },
       }),
     );
 
     // handle allottment
     dispatch(
       allotVotes({
-        proposalTitle: proposal.title,
-        proposalId: proposal.id,
-        direction: Direction.Up,
-        weight: inputVotes,
+        voteAllotment: {
+          proposalTitle: proposal.title,
+          proposalId: proposal.id,
+          direction: Direction.Up,
+          votes: inputVotes,
+        },
       }),
     );
 
@@ -129,10 +135,12 @@ const VotingControls: React.FC<{
 
       dispatch(
         allotVotes({
-          proposalId: proposal.id,
-          proposalTitle: proposal.title,
-          direction: direction,
-          weight: 1,
+          voteAllotment: {
+            proposalId: proposal.id,
+            proposalTitle: proposal.title,
+            direction: direction,
+            votes: 1,
+          },
         }),
       );
     },
