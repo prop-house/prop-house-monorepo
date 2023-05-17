@@ -55,7 +55,8 @@ const InfRoundVotingControls: React.FC<{
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
-    if (!proposal) return;
+    if (!proposal || perPropVotesRemaining === 0) return;
+
     e.stopPropagation();
 
     dispatch(
@@ -82,7 +83,7 @@ const InfRoundVotingControls: React.FC<{
           ? Direction.Down
           : undefined;
 
-      if (direction === undefined || !proposal) return;
+      if (direction === undefined || !proposal || perPropVotesRemaining === 0) return;
       if (direction === Direction.Up && upVotesDisabled) return;
       if (direction === Direction.Down && downVotesDisabled) return;
 
