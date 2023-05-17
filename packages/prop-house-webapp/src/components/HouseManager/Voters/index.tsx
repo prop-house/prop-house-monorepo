@@ -7,11 +7,12 @@ import {
 } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
 import Voter from '../Voter';
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import clsx from 'clsx';
 import { saveRound } from '../../../state/thunks';
 import Text from '../Text';
+import OverflowScroll from '../OverflowScroll';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -28,6 +29,8 @@ const Voters: FC<{
   setCurrentView?: (view: 'showVoters' | 'addVoters') => void;
   setShowVotersModal?: (show: boolean) => void;
   setShowUploadCSVModal?: (show: boolean) => void;
+  displayCount?: number;
+  setDisplayCount?: (count: number) => void;
 }> = props => {
   const {
     editMode,
@@ -37,11 +40,12 @@ const Voters: FC<{
     setCurrentView,
     setShowVotersModal,
     setShowUploadCSVModal,
+    displayCount,
+    setDisplayCount,
   } = props;
 
   const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.round.round);
-  const [displayCount, setDisplayCount] = useState(10);
 
   const handleRemoveVoter = (address: string, type: string) => {
     if (!editMode) setUploadMessage!('');
@@ -100,22 +104,24 @@ const Voters: FC<{
     dispatch(saveRound({ ...round, voters: updatedVoters }));
     setVoters(updatedVoters);
 
+    if (editMode) return;
+
     // After the voter is removed, check if all visible voters have been removed
     let visibleCount = 0;
 
     updatedVoters.forEach(voter => {
       if (voter.strategyType === VotingStrategyType.WHITELIST && voter.members) {
-        visibleCount += Math.min(voter.members.length, displayCount);
+        visibleCount += Math.min(voter.members.length, displayCount!);
       } else {
         visibleCount += 1;
       }
     });
 
     // If all visible voters have been removed, increase the displayCount to show the next 10 (or as many as there are remaining)
-    if (visibleCount === 0) setDisplayCount(Math.min(getVoterCount(), displayCount + 10));
+    if (visibleCount === 0) setDisplayCount!(Math.min(getVoterCount(), displayCount! + 10));
   };
 
-  // this is used to determine whether or not we should show the "View X more strategies" link
+  // this is used to determine whether or not we should show the "View X more voter(s)" link
   const getVoterCount = () => {
     return voters.reduce((count, voter) => {
       if (voter.strategyType === VotingStrategyType.WHITELIST && 'members' in voter) {
@@ -128,20 +134,19 @@ const Voters: FC<{
     }, 0);
   };
 
-  const handleShowMoreVoters = () => setDisplayCount(getVoterCount());
+  const handleShowMoreVoters = () => setDisplayCount!(getVoterCount());
 
   return (
     <>
-      <Group gap={12} mb={12} classNames={classes.voters}>
-        {voters.slice(0, displayCount).map((s, idx) =>
-          // not supported
-          s.strategyType === VotingStrategyType.VANILLA ? (
-            <></>
-          ) : // if it's a whitelist, we need to map over the members
-          s.strategyType === VotingStrategyType.WHITELIST ? (
-            s.members
-              .slice(0, displayCount)
-              .map((m, idx) => (
+      <OverflowScroll>
+        <Group gap={12} mb={12} classNames={classes.voters}>
+          {(editMode ? voters : voters.slice(0, displayCount)).map((s, idx) =>
+            // not supported
+            s.strategyType === VotingStrategyType.VANILLA ? (
+              <></>
+            ) : // if it's a whitelist, we need to map over the members
+            s.strategyType === VotingStrategyType.WHITELIST ? (
+              (editMode ? s.members : s.members.slice(0, displayCount)).map((m, idx) => (
                 <Voter
                   key={idx}
                   type={s.strategyType}
@@ -151,26 +156,27 @@ const Voters: FC<{
                   removeVoter={handleRemoveVoter}
                 />
               ))
-          ) : (
-            // otherwise, proceed as normal
-            <Voter
-              key={idx}
-              type={s.strategyType}
-              address={s.address}
-              multiplier={s.multiplier}
-              isDisabled={editMode && voters.length === 1}
-              removeVoter={handleRemoveVoter}
-            />
-          ),
-        )}
-      </Group>
+            ) : (
+              // otherwise, proceed as normal
+              <Voter
+                key={idx}
+                type={s.strategyType}
+                address={s.address}
+                multiplier={s.multiplier}
+                isDisabled={editMode && voters.length === 1}
+                removeVoter={handleRemoveVoter}
+              />
+            ),
+          )}
+        </Group>
+      </OverflowScroll>
 
       {/* This will only show if there are more than 10 voters and the display count is less than the total number of voters */}
-      {getVoterCount() > 10 && displayCount !== getVoterCount() && (
+      {!editMode && getVoterCount() > 10 && displayCount !== getVoterCount() && (
         <Group mb={12}>
           <Text type="link" onClick={handleShowMoreVoters} classNames={classes.message}>
-            {`View ${getVoterCount() - displayCount} more ${
-              getVoterCount() - displayCount === 1 ? 'strategy' : 'strategies'
+            {`Show ${getVoterCount() - displayCount!} more ${
+              getVoterCount() - displayCount! === 1 ? 'voter' : 'voters'
             }`}
           </Text>
         </Group>

@@ -60,6 +60,7 @@ const VotersConfig = () => {
   const [showUploadCSVModal, setShowUploadCSVModal] = useState(false);
   const [showVotersModal, setShowVotersModal] = useState(false);
   const [uploadMessage, setUploadMessage] = useState('');
+  const [displayCount, setDisplayCount] = useState(10);
 
   const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.round.round);
@@ -137,6 +138,9 @@ const VotersConfig = () => {
     dispatch(saveRound({ ...round, voters: updatedVoters }));
     setVoters(updatedVoters);
 
+    // Reset the display count
+    setDisplayCount(10);
+
     // Set the upload message
     setUploadMessage(
       createUploadMessage(
@@ -145,6 +149,7 @@ const VotersConfig = () => {
         invalid.length,
       ),
     );
+
     setShowUploadCSVModal(false);
 
     return { csvVoters: allowList };
@@ -184,6 +189,8 @@ const VotersConfig = () => {
       )}
 
       <Voters
+        displayCount={displayCount}
+        setDisplayCount={setDisplayCount}
         voters={voters}
         setVoters={setVoters}
         setUploadMessage={setUploadMessage}

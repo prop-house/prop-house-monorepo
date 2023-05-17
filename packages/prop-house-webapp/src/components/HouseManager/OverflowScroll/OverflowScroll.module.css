@@ -1,0 +1,18 @@
+.container {
+  max-height: 390px;
+  overflow-y: scroll;
+  padding: 6px;
+}
+.container::-webkit-scrollbar {
+  width: 7px;
+  height: 0px;
+}
+.container::-webkit-scrollbar-track {
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.container::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: white;
+  background: var(--brand-gray-semi-transparent);
+}

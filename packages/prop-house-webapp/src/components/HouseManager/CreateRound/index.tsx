@@ -23,6 +23,8 @@ import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
 import VotersModal from '../VotersModal';
 import EditAwardsModal from '../EditAwardsModal';
+import OverflowScroll from '../OverflowScroll';
+// import EditVotersModal from '../EditVotersModal';
 
 /**
  * @overview
@@ -67,6 +69,7 @@ const CreateRound = () => {
       {editRoundInfoModal && (
         <EditRoundInfoModal setShowEditRoundInfoModal={setShowEditRoundInfoModal} />
       )}
+      {/* {editVotersModal && <EditVotersModal setShowVotersModal={setShowVotersModal} />} */}
       {editVotersModal && (
         <VotersModal
           editMode
@@ -114,47 +117,54 @@ const CreateRound = () => {
       <Divider />
 
       <Group gap={16}>
-        <EditSection section="votes" onClick={() => setShowVotersModal(true)} />
-        <CardWrapper>
-          {voters.map((s, idx) =>
-            s.strategyType === VotingStrategyType.VANILLA ? (
-              <></>
-            ) : s.strategyType === VotingStrategyType.WHITELIST ? (
-              // with whitelist, we need to show a card for each member
-              // TODO - add truncate to number of cards (see Figma)
-              s.members.map((m, idx) => (
+        <EditSection section="voters" onClick={() => setShowVotersModal(true)} />
+        <OverflowScroll>
+          <CardWrapper>
+            {voters.map((s, idx) =>
+              s.strategyType === VotingStrategyType.VANILLA ? (
+                <></>
+              ) : s.strategyType === VotingStrategyType.WHITELIST ? (
+                // with whitelist, we need to show a card for each member
+                // TODO - add truncate to number of cards (see Figma)
+                s.members.map((m, idx) => (
+                  <VoterCard
+                    key={idx}
+                    type={s.strategyType}
+                    address={m.address}
+                    multiplier={Number(m.votingPower)}
+                  />
+                ))
+              ) : (
                 <VoterCard
                   key={idx}
                   type={s.strategyType}
-                  address={m.address}
-                  multiplier={Number(m.votingPower)}
+                  address={s.address}
+                  multiplier={s.multiplier}
                 />
-              ))
-            ) : (
-              <VoterCard
-                key={idx}
-                type={s.strategyType}
-                address={s.address}
-                multiplier={s.multiplier}
-              />
-            ),
-          )}
-        </CardWrapper>
+              ),
+            )}
+          </CardWrapper>
+        </OverflowScroll>
       </Group>
 
       <Divider />
 
       <Group gap={16}>
         <EditSection section="awards" onClick={() => setShowAwardsModal(true)} />
-        <CardWrapper>
-          {/* this creates an array of the correct length to map over based on the number of winners
+        <OverflowScroll>
+          <CardWrapper>
+            {/* this creates an array of the correct length to map over based on the number of winners
           if there is only one winner, we want to show the same award card for all winners (e.g. awards[0]), 
           otherwise we want to show the award card for each winner (e.g. awards[idx])
            */}
-          {[...Array(round.numWinners)].map((_, idx) => (
-            <AwardCard award={round.awards[round.awards.length === 1 ? 0 : idx]} place={idx + 1} />
-          ))}
-        </CardWrapper>
+            {[...Array(round.numWinners)].map((_, idx) => (
+              <AwardCard
+                award={round.awards[round.awards.length === 1 ? 0 : idx]}
+                place={idx + 1}
+              />
+            ))}
+          </CardWrapper>
+        </OverflowScroll>
       </Group>
 
       <Footer />
