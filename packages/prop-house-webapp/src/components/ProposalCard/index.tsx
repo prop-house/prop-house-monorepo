@@ -29,6 +29,7 @@ import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
+import InfRoundVotingControls from '../InfRoundVotingControls';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -180,12 +181,18 @@ const ProposalCard: React.FC<{
               <div className={classes.timestampAndlinkContainer}>
                 <div className={clsx(classes.avatarAndPropNumber)}>
                   <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
-                    <VotesDisplay proposal={proposal} />
-                    {cardStatus === ProposalCardStatus.Voting && (
-                      <div className={classes.votingArrows}>
-                        <span className={classes.plusArrow}>+</span>
-                        <VotingControls proposal={proposal} />
-                      </div>
+                    {round && isTimedAuction(round) ? (
+                      <>
+                        <VotesDisplay proposal={proposal} />
+                        {cardStatus === ProposalCardStatus.Voting && (
+                          <div className={classes.votingArrows}>
+                            <span className={classes.plusArrow}>+</span>
+                            <VotingControls proposal={proposal} />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <InfRoundVotingControls proposal={proposal} />
                     )}
                   </div>
                 </div>

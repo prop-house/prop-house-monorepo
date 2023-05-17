@@ -1,0 +1,27 @@
+.votingBtnsContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand-gray) !important;
+}
+.votingBtn {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.votingBtn:hover {
+  opacity: 0.7;
+}
+.votingBtn.up {
+  color: var(--brand-green);
+}
+.votingBtn.down {
+  color: var(--brand-red);
+}
+.votingBtn.up:disabled {
+  color: var(--brand-green-transparent);
+}
+.votingBtn.down:disabled {
+  color: var(--brand-red-transparent);
+}

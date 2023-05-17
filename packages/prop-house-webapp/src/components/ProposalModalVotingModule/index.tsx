@@ -19,6 +19,7 @@ import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
+import InfRoundVotingControls from '../InfRoundVotingControls';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -126,12 +127,19 @@ const ProposalModalVotingModule: React.FC<{
           )}
 
           <div className={classes.icon}>
-            <VotesDisplay proposal={proposal} /> <span>+</span>
+            {round && isTimedAuction(round) && (
+              <>
+                <VotesDisplay proposal={proposal} /> <span>+</span>
+              </>
+            )}
           </div>
 
           <div className="mobileTooltipContainer">
-            <VotingControls proposal={proposal} />
-
+            {round && isInfAuction(round) ? (
+              <InfRoundVotingControls proposal={proposal} />
+            ) : (
+              <VotingControls proposal={proposal} />
+            )}
             <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
           </div>
 
