@@ -6,14 +6,9 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  countVotesAllottedToProp,
-  countVotesAllottedToPropWithDirection,
-} from '../../utils/countVotesAllottedToProp';
+import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
-import { isInfAuction } from '../../utils/auctionType';
-import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 
 const VotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -23,7 +18,6 @@ const VotingControls: React.FC<{
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
-  const round = useAppSelector(state => state.propHouse.activeRound);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
 
@@ -31,36 +25,20 @@ const VotingControls: React.FC<{
   const { t } = useTranslation();
 
   const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
-  const allotedUpVotesForProp =
-    proposal && countVotesAllottedToPropWithDirection(voteAllotments, proposal.id, Direction.Up);
-  const allotedDownVotesForProp =
-    proposal && countVotesAllottedToPropWithDirection(voteAllotments, proposal.id, Direction.Down);
 
   const [voteCountDisplayed, setVoteCountDisplayed] = useState(0);
   const [inputIsInFocus, setInputIsInFocus] = useState(false);
   const [displayWarningTooltip, setDisplayWarningTooltip] = useState(false);
   const [attemptedInputVotes, setAttemptedInputVotes] = useState(0);
 
-  const votesRemaining =
-    round && isInfAuction(round)
-      ? countVotesRemainingForInfRound(
-          proposal.id,
-          votingPower,
-          votesByUserInActiveRound,
-          voteAllotments,
-        )
-      : countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments);
+  const votesRemaining = countVotesRemainingForTimedRound(
+    votingPower,
+    votesByUserInActiveRound,
+    voteAllotments,
+  );
   const canAllotVotes = votesRemaining > 0;
-
-  const upVotesDisabled =
-    round && isInfAuction(round)
-      ? votesRemaining === 0 && allotedUpVotesForProp > 0
-      : votesRemaining === 0;
-
-  const downVotesDisabled =
-    round && isInfAuction(round)
-      ? votesRemaining === 0 && allotedDownVotesForProp > 0
-      : allottedVotesForProp === 0;
+  const upVotesDisabled = votesRemaining === 0;
+  const downVotesDisabled = allottedVotesForProp === 0;
 
   const isAllotting = () => (allottedVotesForProp && allottedVotesForProp > 0) || inputIsInFocus;
 
