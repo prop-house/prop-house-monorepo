@@ -1,6 +1,5 @@
 import classes from './ProposalModalNavButtons.module.css';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
-import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 
 const ProposalModalNavButtons: React.FC<{
   editProposalMode: boolean;

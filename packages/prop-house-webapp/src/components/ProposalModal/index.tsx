@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
 import {
-  Direction,
   SignatureState,
   StoredProposalWithVotes,
   Vote,

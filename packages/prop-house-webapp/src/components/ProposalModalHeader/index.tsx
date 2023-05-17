@@ -1,7 +1,7 @@
 import classes from './ProposalModalHeader.module.css';
 import EthAddress from '../EthAddress';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
-import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useCallback, useEffect, useState } from 'react';
 import shareIcon from '../../assets/icons/share-icon.svg';
 import Tooltip from '../Tooltip';
