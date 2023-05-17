@@ -10,13 +10,13 @@ use traits::{TryInto, Into};
 use option::OptionTrait;
 
 #[derive(Copy, Drop, Serde)]
-struct VotingStrategy {
+struct Strategy {
     address: ContractAddress,
     params: Span<felt252>,
 }
 
-impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
-    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<VotingStrategy> {
+impl StrategyStorageAccess of StorageAccess<Strategy> {
+    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Strategy> {
         let address = StorageAccessContractAddress::read(address_domain, base)?;
 
         let param_length_base = storage_address_from_base_and_offset(base, 1);
@@ -25,11 +25,10 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
             .unwrap();
 
         let mut i = 0;
-
         let mut params = ArrayTrait::new();
         loop {
             if i == param_length {
-                break Result::Ok(VotingStrategy { address, params: params.span() });
+                break Result::Ok(Strategy { address, params: params.span() });
             }
             let param_base = storage_address_from_base_and_offset(base, i + 2);
             params.append(storage_read_syscall(address_domain, param_base)?);
@@ -39,7 +38,7 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
     }
 
     fn write(
-        address_domain: u32, base: StorageBaseAddress, mut value: VotingStrategy
+        address_domain: u32, base: StorageBaseAddress, mut value: Strategy
     ) -> SyscallResult<()> {
         StorageAccessContractAddress::write(address_domain, base, value.address)?;
 
@@ -63,75 +62,75 @@ impl VotingStrategyStorageAccess of StorageAccess<VotingStrategy> {
 }
 
 #[abi]
-trait IVotingStrategyRegistry {
-    fn get_voting_strategy(strategy_id: felt252) -> VotingStrategy;
-    fn register_voting_strategy_if_not_exists(voting_strategy: VotingStrategy) -> felt252;
+trait IStrategyRegistry {
+    fn get_strategy(strategy_id: felt252) -> Strategy;
+    fn register_strategy_if_not_exists(strategy: Strategy) -> felt252;
 }
 
 #[contract]
-mod VotingStrategyRegistry {
+mod StrategyRegistry {
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::{ContractAddress, ContractAddressIntoFelt252};
     use prop_house::common::utils::array::{ArrayTraitExt, compute_hash_on_elements};
     use prop_house::common::utils::serde::SpanSerde;
-    use super::{IVotingStrategyRegistry, VotingStrategy};
+    use super::{IStrategyRegistry, Strategy};
     use array::{ArrayTrait, SpanTrait};
     use zeroable::Zeroable;
     use traits::Into;
 
     struct Storage {
-        _voting_strategies: LegacyMap<felt252, VotingStrategy>, 
+        _strategies: LegacyMap<felt252, Strategy>, 
     }
 
     #[event]
-    fn VotingStrategyRegistered(strategy_id: felt252, strategy: VotingStrategy) {}
+    fn StrategyRegistered(strategy_id: felt252, strategy: Strategy) {}
 
-    impl VotingStrategyRegistry of IVotingStrategyRegistry {
-        fn get_voting_strategy(strategy_id: felt252) -> VotingStrategy {
-            let voting_strategy = _voting_strategies::read(strategy_id);
-            assert(voting_strategy.address.is_non_zero(), 'VSR: Strategy does not exist');
+    impl StrategyRegistry of IStrategyRegistry {
+        fn get_strategy(strategy_id: felt252) -> Strategy {
+            let strategy = _strategies::read(strategy_id);
+            assert(strategy.address.is_non_zero(), 'VSR: Strategy does not exist');
 
-            voting_strategy
+            strategy
         }
 
-        fn register_voting_strategy_if_not_exists(mut voting_strategy: VotingStrategy) -> felt252 {
-            let strategy_id = _compute_strategy_id(ref voting_strategy);
+        fn register_strategy_if_not_exists(mut strategy: Strategy) -> felt252 {
+            let strategy_id = _compute_strategy_id(ref strategy);
 
-            let stored_strategy = _voting_strategies::read(strategy_id);
+            let stored_strategy = _strategies::read(strategy_id);
             if stored_strategy.address.is_zero() {
-                _voting_strategies::write(strategy_id, voting_strategy);
-                VotingStrategyRegistered(strategy_id, voting_strategy);
+                _strategies::write(strategy_id, strategy);
+                StrategyRegistered(strategy_id, strategy);
             }
             strategy_id
         }
     }
 
-    /// Returns the voting strategy for the given strategy id.
+    /// Returns the  strategy for the given strategy id.
     /// * `strategy_id` - The strategy id.
     #[view]
-    fn get_voting_strategy(strategy_id: felt252) -> VotingStrategy {
-        VotingStrategyRegistry::get_voting_strategy(strategy_id)
+    fn get_strategy(strategy_id: felt252) -> Strategy {
+        StrategyRegistry::get_strategy(strategy_id)
     }
 
-    /// Registers the given voting strategy if it does not exist.
-    /// * `voting_strategy` - The voting strategy.
+    /// Registers the given  strategy if it does not exist.
+    /// * `strategy` - The  strategy.
     #[external]
-    fn register_voting_strategy_if_not_exists(voting_strategy: VotingStrategy) -> felt252 {
-        VotingStrategyRegistry::register_voting_strategy_if_not_exists(voting_strategy)
+    fn register_strategy_if_not_exists(strategy: Strategy) -> felt252 {
+        StrategyRegistry::register_strategy_if_not_exists(strategy)
     }
 
     ///
     /// Internals
     ///
 
-    /// Computes the strategy id for the given voting strategy.
-    /// * `voting_strategy` - The voting strategy.
-    fn _compute_strategy_id(ref voting_strategy: VotingStrategy) -> felt252 {
+    /// Computes the strategy id for the given  strategy.
+    /// * `strategy` - The  strategy.
+    fn _compute_strategy_id(ref strategy: Strategy) -> felt252 {
         let mut strategy_array = ArrayTrait::new();
-        strategy_array.append(voting_strategy.address.into());
+        strategy_array.append(strategy.address.into());
 
         loop {
-            match voting_strategy.params.pop_front() {
+            match strategy.params.pop_front() {
                 Option::Some(v) => {
                     strategy_array.append(*v);
                 },

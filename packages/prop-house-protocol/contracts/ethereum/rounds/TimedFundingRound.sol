@@ -5,7 +5,7 @@ import { Clone } from 'solady/src/utils/Clone.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ITimedFundingRound } from '../interfaces/ITimedFundingRound.sol';
-import { REGISTER_ROUND_SELECTOR, TIMED_FUNDING_ROUND_TYPE } from '../Constants.sol';
+import { REGISTER_ROUND_SELECTOR, TIMED_FUNDING_ROUND_TYPE, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
@@ -337,44 +337,74 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
     function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
-        uint256 strategyCount = config.votingStrategies.length;
-        uint256 strategyParamsFlatCount = config.votingStrategyParamsFlat.length;
-        uint256 strategyWithParamCount = strategyCount + strategyParamsFlatCount;
+        uint256 vsCount = config.votingStrategies.length;
+        uint256 vsParamFlatCount = config.votingStrategyParamsFlat.length;
+        uint256 psCount = config.proposingStrategies.length;
+        uint256 psParamsFlatCount = config.proposingStrategyParamsFlat.length;
 
-        payload = new uint256[](11 + strategyWithParamCount);
+        uint256 strategyParamsCount = vsCount + vsParamFlatCount + psCount + psParamsFlatCount;
+
+        payload = new uint256[](12 + strategyParamsCount);
 
         // `payload[0]` is reserved for the round address, which is
         // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
-        payload[2] = 8 + strategyWithParamCount;
-        payload[3] = 7 + strategyWithParamCount;
+        payload[2] = 9 + strategyParamsCount;
+        payload[3] = 8 + strategyParamsCount;
         payload[4] = keccak256(abi.encode(config.awards.pack())).mask250();
         payload[5] = config.proposalPeriodStartTimestamp;
         payload[6] = config.proposalPeriodDuration;
         payload[7] = config.votePeriodDuration;
         payload[8] = config.winnerCount;
 
-        // L2 voting strategies
-        unchecked {
-            payload[9] = strategyCount;
+        payload[9] = config.proposalThreshold;
 
-            uint256 offset = 9;
-            for (uint256 i = 0; i < strategyCount; ++i) {
-                uint256 strategy = config.votingStrategies[i];
+        uint256 offset = 10;
+        (payload, offset) = _addStrategies(
+            payload,
+            offset,
+            config.proposingStrategies,
+            config.proposingStrategyParamsFlat
+        );
+        (payload, ) = _addStrategies(payload, offset, config.votingStrategies, config.votingStrategyParamsFlat);
+        return payload;
+    }
+
+    /// @notice Add strategies and parameters to the payload
+    /// @param payload The payload to add to
+    /// @param offset The starting offset index
+    /// @param strategies The strategy addresses to add
+    /// @param params The flattened parameters to add
+    function _addStrategies(
+        uint256[] memory payload,
+        uint256 offset,
+        uint256[] memory strategies,
+        uint256[] memory params
+    ) internal pure returns (uint256[] memory, uint256) {
+        unchecked {
+            // Add strategy count
+            payload[offset++] = strategies.length;
+
+            // Add strategies
+            for (uint256 i = 0; i < strategies.length; ++i) {
+                uint256 strategy = strategies[i];
                 if (strategy == 0) {
-                    revert INVALID_VOTING_STRATEGY();
+                    revert INVALID_STRATEGY(strategy);
                 }
                 payload[++offset] = strategy;
             }
 
-            payload[++offset] = strategyParamsFlatCount;
-            for (uint256 i = 0; i < strategyParamsFlatCount; ++i) {
-                payload[++offset] = config.votingStrategyParamsFlat[i];
+            // Add parameter count
+            payload[++offset] = params.length;
+
+            // Add parameters
+            for (uint256 i = 0; i < params.length; ++i) {
+                payload[++offset] = params[i];
             }
+            return (payload, offset);
         }
-        return payload;
     }
 
     /// @notice Define the configuration and register the round on L2.
@@ -399,6 +429,9 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
 
         emit RoundRegistered(
             config.awards,
+            config.proposalThreshold,
+            config.proposingStrategies,
+            config.proposingStrategyParamsFlat,
             config.votingStrategies,
             config.votingStrategyParamsFlat,
             config.proposalPeriodStartTimestamp,
@@ -427,8 +460,16 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
             revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
         }
+        if (config.proposalThreshold != 0) {
+            if (config.proposingStrategies.length == 0) {
+                revert NO_PROPOSING_STRATEGIES_PROVIDED();
+            }
+            if (config.proposalThreshold > MAX_250_BIT_UNSIGNED) {
+                revert PROPOSAL_THRESHOLD_EXCEEDS_MAX();
+            }
+        }
         if (config.votingStrategies.length == 0) {
-            revert NO_STRATEGIES_PROVIDED();
+            revert NO_VOTING_STRATEGIES_PROVIDED();
         }
     }
 

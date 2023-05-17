@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { MASK_250 } from '../../Constants.sol';
+import { MAX_250_BIT_UNSIGNED } from '../../Constants.sol';
 
 library Uint256 {
     /// @notice Split a uint256 into a high and low value
@@ -17,7 +17,7 @@ library Uint256 {
     /// Mask the passed `value` to 250 bits
     /// @param value The value to mask
     function mask250(bytes32 value) internal pure returns (uint256) {
-        return uint256(value) & MASK_250;
+        return uint256(value) & MAX_250_BIT_UNSIGNED;
     }
 
     /// @notice Convert an address to a uint256

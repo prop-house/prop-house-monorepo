@@ -20,6 +20,7 @@ struct RoundConfig {
     proposal_period_start_timestamp: u64,
     proposal_period_end_timestamp: u64,
     vote_period_end_timestamp: u64,
+    proposal_threshold: felt252,
     award_hash: felt252,
 }
 
@@ -96,8 +97,11 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         )?
             .try_into()
             .unwrap();
-        let award_hash = storage_read_syscall(
+        let proposal_threshold = storage_read_syscall(
             address_domain, storage_address_from_base_and_offset(base, 5)
+        )?;
+        let award_hash = storage_read_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 6)
         )?;
         Result::Ok(
             RoundConfig {
@@ -106,6 +110,7 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
                 proposal_period_start_timestamp,
                 proposal_period_end_timestamp,
                 vote_period_end_timestamp,
+                proposal_threshold,
                 award_hash
             }
         )
@@ -136,7 +141,10 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             value.vote_period_end_timestamp.into()
         )?;
         storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 5), value.award_hash
+            address_domain, storage_address_from_base_and_offset(base, 5), value.proposal_threshold
+        )?;
+        storage_write_syscall(
+            address_domain, storage_address_from_base_and_offset(base, 6), value.award_hash
         )
     }
 }
