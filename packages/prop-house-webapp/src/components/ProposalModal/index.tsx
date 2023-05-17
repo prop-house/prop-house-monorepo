@@ -130,7 +130,7 @@ const ProposalModal = () => {
     };
   }, [handleKeyPress]);
 
-  const handleDirectionalArrowClick = (direction: Direction) => {
+  const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
       !activeProposal ||
       !proposals ||

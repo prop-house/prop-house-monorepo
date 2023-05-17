@@ -77,10 +77,10 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
   const handleKeyPress = useCallback(
     event => {
       if (event.key === 'ArrowLeft' && !isFirstProp && !showVoteAllotmentModal) {
-        handleDirectionalArrowClick(Direction.Down);
+        handleDirectionalArrowClick(-1);
       }
       if (event.key === 'ArrowRight' && !isLastProp && !showVoteAllotmentModal) {
-        handleDirectionalArrowClick(Direction.Up);
+        handleDirectionalArrowClick(1);
       }
     },
     [handleDirectionalArrowClick, isFirstProp, isLastProp, showVoteAllotmentModal],
@@ -125,13 +125,13 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
         <div className={classes.propNavigationButtons}>
           <button
             disabled={isFirstProp || editProposalMode}
-            onClick={() => handleDirectionalArrowClick(Direction.Down)}
+            onClick={() => handleDirectionalArrowClick(-1)}
           >
             <ImArrowLeft2 size={'1.5rem'} />
           </button>
 
           <button
-            onClick={() => handleDirectionalArrowClick(Direction.Up)}
+            onClick={() => handleDirectionalArrowClick(1)}
             disabled={isLastProp || editProposalMode}
           >
             <ImArrowRight2 size={'1.5rem'} />

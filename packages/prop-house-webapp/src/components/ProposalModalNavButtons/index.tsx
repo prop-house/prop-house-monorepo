@@ -16,14 +16,14 @@ const ProposalModalNavButtons: React.FC<{
         <div className={classes.propNavigationButtons}>
           <button
             disabled={propIndex === 1 || editProposalMode}
-            onClick={() => handleDirectionalArrowClick(Direction.Down)}
+            onClick={() => handleDirectionalArrowClick(-1)}
           >
             <ImArrowLeft2 size={'1.5rem'} />
             <span>Back</span>
           </button>
 
           <button
-            onClick={() => handleDirectionalArrowClick(Direction.Up)}
+            onClick={() => handleDirectionalArrowClick(1)}
             disabled={propIndex === numberOfProps || editProposalMode}
           >
             <span>Next</span> <ImArrowRight2 size={'1.5rem'} />
