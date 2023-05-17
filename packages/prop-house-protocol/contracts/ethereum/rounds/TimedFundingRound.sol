@@ -334,6 +334,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         }
     }
 
+    // prettier-ignore
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
     function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
@@ -362,12 +363,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         payload[9] = config.proposalThreshold;
 
         uint256 offset = 10;
-        (payload, offset) = _addStrategies(
-            payload,
-            offset,
-            config.proposingStrategies,
-            config.proposingStrategyParamsFlat
-        );
+        (payload, offset) = _addStrategies(payload, offset, config.proposingStrategies, config.proposingStrategyParamsFlat);
         (payload, ) = _addStrategies(payload, offset, config.votingStrategies, config.votingStrategyParamsFlat);
         return payload;
     }
