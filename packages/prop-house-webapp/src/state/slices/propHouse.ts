@@ -72,19 +72,19 @@ const filterInfRoundProps = (
       return props
         .filter(
           p =>
-            p.voteCount < round.quorum &&
+            p.voteCountFor < round.quorum &&
             dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
         )
-        .sort((a, b) => sortHelper(a.voteCount, b.voteCount, false));
+        .sort((a, b) => sortHelper(a.voteCountFor, b.voteCountFor, false));
     case InfRoundFilterType.Winners:
       return props
-        .filter(p => p.voteCount >= round.quorum)
+        .filter(p => p.voteCountFor >= round.quorum)
         .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
     case InfRoundFilterType.Stale:
       return props
         .filter(
           p =>
-            p.voteCount < round.quorum &&
+            p.voteCountFor < round.quorum &&
             dayjs(p.createdDate).isBefore(now.subtract(round.votingPeriod, 's')),
         )
         .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));

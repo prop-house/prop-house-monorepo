@@ -17,14 +17,14 @@ const PropStats: React.FC<{
   const isVotingWindow = status === AuctionStatus.AuctionVoting;
   const isRoundOver = status === AuctionStatus.AuctionEnded;
 
-  const allPropsHaveZeroVotes = proposals && proposals.filter(p => p.voteCount > 0).length === 0;
+  const allPropsHaveZeroVotes = proposals && proposals.filter(p => p.voteCountFor > 0).length === 0;
   const fewerPropsThanNumberofWinners = proposals && proposals.length < numOfWinners;
 
   const currentlyWinningProps =
     proposals &&
     proposals
       .slice()
-      .sort((a, b) => (a.voteCount < b.voteCount ? 1 : -1))
+      .sort((a, b) => (a.voteCountFor < b.voteCountFor ? 1 : -1))
       .slice(0, numOfWinners);
 
   const votesNeededToWin = (prop: any) => {
@@ -34,7 +34,7 @@ const PropStats: React.FC<{
 
     return (
       currentlyWinningProps &&
-      currentlyWinningProps[currentlyWinningProps.length - 1].voteCount - prop.voteCount + 1
+      currentlyWinningProps[currentlyWinningProps.length - 1].voteCountFor - prop.voteCountFor + 1
     );
   };
 
@@ -47,7 +47,7 @@ const PropStats: React.FC<{
           </div>
           <div className={classes.userPropText}>
             <div>{t('totalVotes')}</div>
-            <div className={classes.userPropTextValue}>{userProps[cardIndex].voteCount}</div>
+            <div className={classes.userPropTextValue}>{userProps[cardIndex].voteCountFor}</div>
           </div>
         </div>
 
@@ -65,7 +65,7 @@ const PropStats: React.FC<{
                     getNumberWithOrdinal(
                       proposals
                         .slice()
-                        .sort((a, b) => (a.voteCount < b.voteCount ? 1 : -1))
+                        .sort((a, b) => (a.voteCountFor < b.voteCountFor ? 1 : -1))
                         .findIndex(p => p.id === userProps[cardIndex].id) + 1,
                     )}
                 </div>

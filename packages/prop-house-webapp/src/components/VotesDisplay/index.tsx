@@ -25,7 +25,7 @@ const VotesDisplay: React.FC<{ proposal: StoredProposalWithVotes }> = props => {
       )}
       <div onClick={e => handleClick(e)}>
         <div className={classes.scoreAndIcon}>
-          <MdHowToVote /> <TruncateThousands amount={proposal.voteCount} />
+          <MdHowToVote /> <TruncateThousands amount={proposal.voteCountFor} />
         </div>
       </div>
     </>

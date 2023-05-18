@@ -133,7 +133,7 @@ const ProposalModalFooter: React.FC<{
             {round &&
               isTimedAuction(round) &&
               (isRoundOver && isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+                <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
               ) : !isRoundOver && !account ? (
                 connectDiv
               ) : isProposingWindow ? (
@@ -159,7 +159,7 @@ const ProposalModalFooter: React.FC<{
             {round &&
               isInfAuction(round) &&
               (isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCount} />
+                <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
               ) : !isRoundOver && !account ? (
                 connectDiv
               ) : (

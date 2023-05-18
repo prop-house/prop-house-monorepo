@@ -48,7 +48,8 @@ const RoundModules: React.FC<{
     auctionStatus(auction) === AuctionStatus.AuctionEnded ||
     (isInfAuction(auction) && infRoundBalance(proposals, auction) === 0);
 
-  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + prop.voteCount), 0);
+  const getVoteTotal = () =>
+    proposals.reduce((total, prop) => (total = total + prop.voteCountFor), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
 
   useEffect(() => {
@@ -60,8 +61,8 @@ const RoundModules: React.FC<{
       setUserProposals(
         proposals
           .filter(p => isSameAddress(p.address, account))
-          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-            a.voteCount < b.voteCount ? 1 : -1,
+          .sort((a: { voteCountFor: any }, b: { voteCountFor: any }) =>
+            a.voteCountFor < b.voteCountFor ? 1 : -1,
           ),
       );
 

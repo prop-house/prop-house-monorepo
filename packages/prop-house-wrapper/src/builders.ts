@@ -262,7 +262,8 @@ export interface StoredProposal extends Proposal {
   id: number;
   address: string;
   createdDate: Date;
-  voteCount: number;
+  voteCountFor: number;
+  voteCountAgainst: number;
   lastUpdatedDate: Date;
   deletedAt: Date;
   reqAmount: number | null;

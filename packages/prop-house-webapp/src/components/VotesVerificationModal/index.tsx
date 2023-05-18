@@ -38,9 +38,9 @@ const VotesVerificationModal: React.FC<{
     <div onClick={e => e.stopPropagation()}>
       <Modal
         title={proposal.title}
-        subtitle={`${proposal.voteCount} ${proposal.voteCount === 1 ? t('vote') : t('votes')} ${t(
-          'haveBeenCast',
-        )}`}
+        subtitle={`${proposal.voteCountFor} ${
+          proposal.voteCountFor === 1 ? t('vote') : t('votes')
+        } ${t('haveBeenCast')}`}
         body={verifiedVotes}
         setShowModal={setDisplayVotesVerifModal}
       />
