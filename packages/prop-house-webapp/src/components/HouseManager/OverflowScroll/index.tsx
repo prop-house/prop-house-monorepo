@@ -1,12 +1,17 @@
 import classes from './OverflowScroll.module.css';
 import { ReactNode } from 'react';
 
-const OverflowScroll: React.FC<{
+interface OverflowScrollProps {
   children: ReactNode;
-}> = props => {
-  const { children } = props;
+  height?: number;
+}
 
-  return <div className={classes.container}>{children}</div>;
+const OverflowScroll: React.FC<OverflowScrollProps> = ({ children, height = 390 }) => {
+  return (
+    <div className={classes.container} style={{ maxHeight: `${height}px` }}>
+      {children}
+    </div>
+  );
 };
 
 export default OverflowScroll;
