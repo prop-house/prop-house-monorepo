@@ -1,5 +1,4 @@
 .container {
-  max-height: 390px;
   overflow-y: scroll;
   padding: 6px;
 }

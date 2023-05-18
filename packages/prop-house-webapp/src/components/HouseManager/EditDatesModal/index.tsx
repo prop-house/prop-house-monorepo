@@ -8,9 +8,9 @@ import { useDispatch } from 'react-redux';
 import { saveRound } from '../../../state/thunks';
 
 const EditDatesModal: React.FC<{
-  setShowEditDatesModal: Dispatch<SetStateAction<boolean>>;
+  setShowDatesModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { setShowEditDatesModal } = props;
+  const { setShowDatesModal } = props;
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
@@ -26,7 +26,7 @@ const EditDatesModal: React.FC<{
 
     setEditedRound!(updated);
     dispatch(saveRound(updated));
-    setShowEditDatesModal(false);
+    setShowDatesModal(false);
   };
 
   return (
@@ -34,12 +34,12 @@ const EditDatesModal: React.FC<{
       title="Edit round timing"
       subtitle=""
       body={<TimedRound editMode round={editedRound} setEditedRound={setEditedRound} />}
-      setShowModal={setShowEditDatesModal}
+      setShowModal={setShowDatesModal}
       button={
         <Button
           text={'Cancel'}
           bgColor={ButtonColor.Black}
-          onClick={() => setShowEditDatesModal(false)}
+          onClick={() => setShowDatesModal(false)}
         />
       }
       secondButton={

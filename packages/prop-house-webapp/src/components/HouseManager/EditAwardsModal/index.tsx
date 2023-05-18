@@ -20,7 +20,7 @@ const EditAwardsModal: React.FC<{
     const filteredAwards = editedRound.awards.filter(award => award.state === 'success');
     const updated = { ...editedRound, numWinners: filteredAwards.length, awards: filteredAwards };
 
-    setEditedRound!(updated);
+    setEditedRound(updated);
     dispatch(saveRound(updated));
     setShowAwardsModal(false);
   };

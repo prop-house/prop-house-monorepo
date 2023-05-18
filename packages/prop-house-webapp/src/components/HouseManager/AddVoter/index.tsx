@@ -39,6 +39,7 @@ const addressTypes: StrategyType[] = [
 ];
 
 const AddVoter: React.FC<{
+  editMode?: boolean;
   voter: NewVoter;
   selectedStrategy: string;
   voters: VotingStrategyConfig[];
@@ -48,6 +49,7 @@ const AddVoter: React.FC<{
   handleCancel: () => void;
 }> = props => {
   const {
+    editMode,
     voter,
     selectedStrategy,
     voters,
@@ -71,12 +73,12 @@ const AddVoter: React.FC<{
 
       if (v.strategyType === VotingStrategyType.WHITELIST) {
         // Find existing Whitelist strategy
-        const existingStrategyIndex = round.voters.findIndex(
+        const existingStrategyIndex = voters.findIndex(
           existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
         );
 
         if (existingStrategyIndex > -1) {
-          const existingStrategy = round.voters[existingStrategyIndex];
+          const existingStrategy = voters[existingStrategyIndex];
 
           // Type guard to ensure existing strategy is a Whitelist strategy
           if ('members' in existingStrategy) {
@@ -86,27 +88,28 @@ const AddVoter: React.FC<{
               members: [...existingStrategy.members, ...v.members],
             };
             updatedVoters = [
-              ...round.voters.slice(0, existingStrategyIndex),
+              ...voters.slice(0, existingStrategyIndex),
               updatedStrategy,
-              ...round.voters.slice(existingStrategyIndex + 1),
+              ...voters.slice(existingStrategyIndex + 1),
             ];
           } else {
-            console.error('Invalid strategy type');
+            console.log('Invalid strategy type');
           }
         } else {
           // Add a new Whitelist strategy
-          updatedVoters = [...round.voters, v];
+          updatedVoters = [...voters, v];
         }
       } else {
         // Add non-Whitelist strategy
-        updatedVoters = [...round.voters, v];
+        updatedVoters = [...voters, v];
       }
 
-      dispatch(saveRound({ ...round, voters: updatedVoters }));
       setVoters(updatedVoters);
+      if (!editMode) dispatch(saveRound({ ...round, voters: updatedVoters }));
     }
 
     setVoter(newVoter);
+
     handleCloseModal();
   };
 

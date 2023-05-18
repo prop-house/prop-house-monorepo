@@ -8,9 +8,9 @@ import RoundFields from '../RoundFields';
 import { saveRound } from '../../../state/thunks';
 
 const EditRoundInfoModal: React.FC<{
-  setShowEditRoundInfoModal: Dispatch<SetStateAction<boolean>>;
+  setShowRoundInfoModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { setShowEditRoundInfoModal } = props;
+  const { setShowRoundInfoModal } = props;
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
   const [editedRound, setEditedRound] = useState<NewRound>(round);
@@ -23,12 +23,12 @@ const EditRoundInfoModal: React.FC<{
         description: editedRound.description,
       }),
     );
-    setShowEditRoundInfoModal(false);
+    setShowRoundInfoModal(false);
   };
 
   const handleCancel = () => {
     setEditedRound(round);
-    setShowEditRoundInfoModal(false);
+    setShowRoundInfoModal(false);
   };
 
   const isDisabled = () => {
@@ -44,7 +44,7 @@ const EditRoundInfoModal: React.FC<{
       title="Edit round name and description"
       subtitle=""
       body={<RoundFields editMode round={editedRound} setEditedRound={setEditedRound} />}
-      setShowModal={setShowEditRoundInfoModal}
+      setShowModal={setShowRoundInfoModal}
       button={<Button text={'Cancel'} bgColor={ButtonColor.Black} onClick={handleCancel} />}
       secondButton={
         <Button

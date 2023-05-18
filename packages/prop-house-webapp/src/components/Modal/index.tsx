@@ -16,6 +16,7 @@ const Modal: React.FC<{
   body?: string | JSX.Element | any;
   button?: any;
   secondButton?: any;
+  thirdButton?: any;
   bottomContainer?: JSX.Element;
   onRequestClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
@@ -28,6 +29,7 @@ const Modal: React.FC<{
     loading,
     button,
     secondButton,
+    thirdButton,
     body,
     setShowModal,
     onRequestClose,
@@ -121,6 +123,7 @@ const Modal: React.FC<{
                 <>
                   {button ? button : closeButton}
                   {secondButton && secondButton}
+                  {thirdButton && thirdButton}
                 </>
               )}
             </div>

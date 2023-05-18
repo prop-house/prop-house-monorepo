@@ -16,15 +16,14 @@ import { useDispatch } from 'react-redux';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
-import { VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import { VotingStrategyType } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
 import { getDateFromDuration } from '../utils/getDateFromDuration';
 import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
-import VotersModal from '../VotersModal';
 import EditAwardsModal from '../EditAwardsModal';
 import OverflowScroll from '../OverflowScroll';
-// import EditVotersModal from '../EditVotersModal';
+import EditVotersModal from '../EditVotersModal';
 
 /**
  * @overview
@@ -34,7 +33,8 @@ import OverflowScroll from '../OverflowScroll';
  * @component
  * @name DeadlineDates - the start and end dates of the round
  * @name EditSection - the edit icon that opens the modal to edit the section
- * @name CardWrapper -formats the voter & award cards into a grid
+ * @name CardWrapper - formats the voter & award cards into a grid
+ * @name OverflowScroll - wrapper that allows children to scroll vertically
  *
  * @notes
  * @see startDate - the start date of the round
@@ -43,17 +43,15 @@ import OverflowScroll from '../OverflowScroll';
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
-  const [voters, setVoters] = useState<VotingStrategyConfig[]>(
-    round.voters.length ? round.voters : [],
-  );
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(checkStepCriteria());
   }, [dispatch, round]);
 
-  const [editDatesModal, setShowEditDatesModal] = useState(false);
-  const [editRoundInfoModal, setShowEditRoundInfoModal] = useState(false);
+  const [editDatesModal, setShowDatesModal] = useState(false);
+  const [editRoundInfoModal, setShowRoundInfoModal] = useState(false);
   const [editVotersModal, setShowVotersModal] = useState(false);
   const [editAwardsModal, setShowAwardsModal] = useState(false);
 
@@ -65,30 +63,20 @@ const CreateRound = () => {
 
   return (
     <>
-      {editDatesModal && <EditDatesModal setShowEditDatesModal={setShowEditDatesModal} />}
-      {editRoundInfoModal && (
-        <EditRoundInfoModal setShowEditRoundInfoModal={setShowEditRoundInfoModal} />
-      )}
-      {/* {editVotersModal && <EditVotersModal setShowVotersModal={setShowVotersModal} />} */}
-      {editVotersModal && (
-        <VotersModal
-          editMode
-          voters={voters}
-          setVoters={setVoters}
-          setShowVotersModal={setShowVotersModal}
-        />
-      )}
+      {editDatesModal && <EditDatesModal setShowDatesModal={setShowDatesModal} />}
+      {editRoundInfoModal && <EditRoundInfoModal setShowRoundInfoModal={setShowRoundInfoModal} />}
+      {editVotersModal && <EditVotersModal setShowVotersModal={setShowVotersModal} />}
       {editAwardsModal && <EditAwardsModal setShowAwardsModal={setShowAwardsModal} />}
 
       <Group row gap={10}>
         <DeadlineDates start={startDate} end={endDate} />
-        <EditSection onClick={() => setShowEditDatesModal(true)} />
+        <EditSection onClick={() => setShowDatesModal(true)} />
       </Group>
 
       <Group gap={6} mb={-10}>
         <Group row classNames={classes.titleAndEditIcon} gap={10}>
           <Text type="heading">{round.title}</Text>
-          <EditSection onClick={() => setShowEditRoundInfoModal(true)} />
+          <EditSection onClick={() => setShowRoundInfoModal(true)} />
         </Group>
 
         <ReadMore
@@ -120,12 +108,11 @@ const CreateRound = () => {
         <EditSection section="voters" onClick={() => setShowVotersModal(true)} />
         <OverflowScroll>
           <CardWrapper>
-            {voters.map((s, idx) =>
+            {round.voters.map((s, idx) =>
               s.strategyType === VotingStrategyType.VANILLA ? (
                 <></>
               ) : s.strategyType === VotingStrategyType.WHITELIST ? (
                 // with whitelist, we need to show a card for each member
-                // TODO - add truncate to number of cards (see Figma)
                 s.members.map((m, idx) => (
                   <VoterCard
                     key={idx}
