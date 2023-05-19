@@ -37,35 +37,40 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding-top: 8px;
+  padding-top: 2px;
 }
 
 .bulletList b {
   color: var(--brand-black);
 }
 
-.bulletItem {
-  display: flex;
-  gap: 18px;
-}
-
-.bulletItem p {
-  margin-bottom: 0;
-}
-
-.bullet {
-  color: var(--brand-gray-semi-transparent);
-  border-radius: 50px;
-  min-width: 18px !important;
-  height: 2px !important;
-  margin: 0;
-  margin-top: 10px;
-  word-break: break-all;
-}
 .vote {
+  color: var(--brand-black);
+  font-weight: bold;
+  font-size: 14px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+}
+.vote svg {
+  min-width: 14px;
+  min-height: auto;
+  margin-right: 6px;
+  padding: 1px;
+  border-radius: 2px;
+}
+
+.vote svg.thumbsUp {
+  color: var(--brand-green);
+  background-color: var(--brand-green-hint);
+  border: 1px solid var(--brand-green-hint);
+}
+.vote svg.thumbsDown {
+  color: var(--brand-gray-transparent);
+  background-color: var(--border-light);
+  border: 1px solid var(--border-light);
 }
 
 .votingInfo {
