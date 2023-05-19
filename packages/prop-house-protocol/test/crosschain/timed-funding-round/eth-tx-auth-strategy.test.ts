@@ -159,6 +159,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
       proposer: signer.address,
       metadataUri: METADATA_URI,
+      proposingStrategyIds: [],
+      proposingStrategyParams: [],
     });
 
     await starknet.devnet.loadL1MessagingContract(networkUrl, mockStarknetMessaging.address);
@@ -351,6 +353,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
       proposer: signer.address,
       metadataUri: 'Test cancel proposal!',
+      proposingStrategyIds: [],
+      proposingStrategyParams: [],
     });
 
     // Commit the hash of the payload to the StarkNet commit L1 contract

@@ -293,11 +293,21 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
+
+    // TODO: Implement proposal gating in SDK
+    const proposingStrategyIds: string[] = [];
+    const proposingStrategyParams: string[][] = [];
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
       proposerAddress: address,
+      proposingStrategyIds,
+      proposingStrategyParams,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
+      proposingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(proposingStrategyIds)),
+      proposingStrategyParamsHash: encoding.hexPadRight(
+        hash.computeHashOnElements(encoding.flatten2DArray(proposingStrategyParams)),
+      ),
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
@@ -422,7 +432,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     };
     const calldata = this.getProposeCalldata({
       proposer: payload.address,
-      metadataUri: payload.data.metadataUri,
+      ...payload.data,
     });
     const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('propose'), calldata);
     const fee = await account.estimateFee(call);
@@ -497,8 +507,18 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param config The information required to generate the propose calldata
    */
   public getProposeCalldata(config: TimedFunding.ProposeCalldataConfig): string[] {
+    const { proposingStrategyIds, proposingStrategyParams } = config;
+    const flattenedProposingStrategyParams = encoding.flatten2DArray(proposingStrategyParams);
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
-    return [config.proposer, `0x${metadataUri.values.length.toString(16)}`, ...metadataUri.values];
+    return [
+      config.proposer,
+      `0x${metadataUri.values.length.toString(16)}`,
+      ...metadataUri.values,
+      `0x${proposingStrategyIds.length.toString(16)}`,
+      ...proposingStrategyIds,
+      `0x${flattenedProposingStrategyParams.length.toString(16)}`,
+      ...flattenedProposingStrategyParams,
+    ];
   }
 
   /**

@@ -132,6 +132,8 @@ export namespace TimedFunding {
   export interface ProposeMessage {
     round: string;
     authStrategy: string;
+    proposingStrategyIds: string[];
+    proposingStrategyParams: string[][];
     metadataUri: string;
   }
   export interface VoteMessage {
@@ -142,6 +144,8 @@ export namespace TimedFunding {
     proposalVotes: ProposalVote[];
   }
   export interface EVMSigProposeMessage extends ProposeMessage {
+    proposingStrategiesHash: string;
+    proposingStrategyParamsHash: string;
     proposerAddress: string;
     salt: string | number;
   }
@@ -184,6 +188,8 @@ export namespace TimedFunding {
   export interface ProposeCalldataConfig {
     proposer: string;
     metadataUri: string;
+    proposingStrategyIds: string[];
+    proposingStrategyParams: string[][];
   }
   export interface VoteCalldataConfig {
     voter: string;
