@@ -130,7 +130,7 @@ const InfRoundVotingControls: React.FC<{
             disabled={upVotesDisabled}
             className={clsx(classes.votingBtn, classes.up)}
           >
-            <FiThumbsUp />{' '}
+            <FiThumbsUp />
             <TruncateThousands amount={submittedUpVotesForProp + allotedUpVotesForProp} />
           </button>
 
