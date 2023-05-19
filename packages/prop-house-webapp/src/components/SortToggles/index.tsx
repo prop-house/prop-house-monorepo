@@ -62,6 +62,15 @@ const SortToggles: React.FC<{
               <div className={classes.sortLabel}>Winners</div>
             </div>
             <div
+              onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Rejected)}
+              className={clsx(
+                classes.sortItem,
+                infRoundFilter === InfRoundFilterType.Rejected && classes.active,
+              )}
+            >
+              <div className={classes.sortLabel}>Rejected</div>
+            </div>
+            <div
               onClick={() => handleFilterInfRoundProps(InfRoundFilterType.Stale)}
               className={clsx(
                 classes.sortItem,

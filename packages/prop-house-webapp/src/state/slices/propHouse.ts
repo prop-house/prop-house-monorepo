@@ -32,6 +32,7 @@ export enum TimedRoundSortType {
 export enum InfRoundFilterType {
   Active,
   Winners,
+  Rejected,
   Stale,
 }
 
@@ -73,12 +74,17 @@ const filterInfRoundProps = (
         .filter(
           p =>
             p.voteCountFor < round.quorumFor &&
+            p.voteCountAgainst < round.quorumAgainst &&
             dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
         )
         .sort((a, b) => sortHelper(a.voteCountFor, b.voteCountFor, false));
     case InfRoundFilterType.Winners:
       return props
         .filter(p => p.voteCountFor >= round.quorumFor)
+        .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
+    case InfRoundFilterType.Rejected:
+      return props
+        .filter(p => p.voteCountAgainst >= round.quorumAgainst)
         .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
     case InfRoundFilterType.Stale:
       return props

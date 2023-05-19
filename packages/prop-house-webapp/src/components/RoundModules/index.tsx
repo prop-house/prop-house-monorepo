@@ -25,6 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import RoundModuleRejected from '../RoundModuleRejected';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -97,6 +98,10 @@ const RoundModules: React.FC<{
     !isRoundOver &&
     infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
 
+  const roundRejectedModule = isInfAuction(auction) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Rejected && <RoundModuleRejected auction={auction} />;
+
   const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
     <RoundModuleStale auction={auction} />
   );
@@ -131,6 +136,7 @@ const RoundModules: React.FC<{
     timedRoundVotingModule,
     infRoundVotingModule,
     roundWinnerModule,
+    roundRejectedModule,
     roundStaleModule,
     roundOverModule,
     userPropCardModule,
