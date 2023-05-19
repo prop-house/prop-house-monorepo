@@ -1,7 +1,6 @@
 import { ProgressBar } from 'react-bootstrap';
 import classes from './ProposalModalVotingModule.module.css';
 import clsx from 'clsx';
-import VotingControls from '../VotingControls';
 import Button, { ButtonColor } from '../Button';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import { Dispatch, SetStateAction, useEffect } from 'react';
@@ -20,6 +19,7 @@ import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingF
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import InfRoundVotingControls from '../InfRoundVotingControls';
+import TimedRoundVotingControls from '../TimedRoundVotingControls';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -138,7 +138,7 @@ const ProposalModalVotingModule: React.FC<{
             {round && isInfAuction(round) ? (
               <InfRoundVotingControls proposal={proposal} />
             ) : (
-              <VotingControls proposal={proposal} />
+              <TimedRoundVotingControls proposal={proposal} />
             )}
             <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
           </div>

@@ -8,7 +8,6 @@ import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
-import VotingControls from '../VotingControls';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
@@ -30,6 +29,7 @@ import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
 import InfRoundVotingControls from '../InfRoundVotingControls';
+import TimedRoundVotingControls from '../TimedRoundVotingControls';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -187,7 +187,7 @@ const ProposalCard: React.FC<{
                         {cardStatus === ProposalCardStatus.Voting && (
                           <div className={classes.votingArrows}>
                             <span className={classes.plusArrow}>+</span>
-                            <VotingControls proposal={proposal} />
+                            <TimedRoundVotingControls proposal={proposal} />
                           </div>
                         )}
                       </>

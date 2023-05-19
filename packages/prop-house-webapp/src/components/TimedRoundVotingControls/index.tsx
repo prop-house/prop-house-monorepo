@@ -10,7 +10,7 @@ import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
 
-const VotingControls: React.FC<{
+const TimedRoundVotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
   showVoteAllotmentModal?: boolean;
 }> = props => {
@@ -197,4 +197,4 @@ const VotingControls: React.FC<{
   );
 };
 
-export default VotingControls;
+export default TimedRoundVotingControls;
