@@ -1,7 +1,7 @@
 import hre, { starknet } from 'hardhat';
 import { Account, SequencerProvider } from 'starknet';
 import { commonL1Setup } from './common';
-import { CommunityHouse__factory, TimedFundingRound__factory } from '../../../typechain';
+import { CommunityHouse__factory, TimedRound__factory } from '../../../typechain';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import { getStarknetArtifactPaths } from '../utils';
 import { constants } from 'ethers';
@@ -84,17 +84,17 @@ export const communityHouseSetup = async () => {
   };
 };
 
-export const timedFundingRoundSetup = async () => {
+export const timedRoundSetup = async () => {
   const config = await communityHouseSetup();
 
-  const timedFundingRoundFactory = new TimedFundingRound__factory(config.deployer);
+  const timedRoundFactory = new TimedRound__factory(config.deployer);
 
-  const timedFundingRoundL2Metadata = getStarknetArtifactPaths('TimedFundingRound');
-  const timedFundingRoundL2Factory = new StarknetContractFactory({
+  const timedRoundL2Metadata = getStarknetArtifactPaths('TimedRound');
+  const timedRoundL2Factory = new StarknetContractFactory({
     hre,
-    abiPath: timedFundingRoundL2Metadata.sierra,
-    metadataPath: timedFundingRoundL2Metadata.sierra,
-    casmPath: timedFundingRoundL2Metadata.casm,
+    abiPath: timedRoundL2Metadata.sierra,
+    metadataPath: timedRoundL2Metadata.sierra,
+    casmPath: timedRoundL2Metadata.casm,
   });
 
   const ethTxAuthStrategyMetadata = getStarknetArtifactPaths('EthereumTxAuthStrategy');
@@ -105,19 +105,19 @@ export const timedFundingRoundSetup = async () => {
     casmPath: ethTxAuthStrategyMetadata.casm,
   });
 
-  const timedFundingRoundEthSigAuthStrategyMetadata =
+  const timedRoundEthSigAuthStrategyMetadata =
     getStarknetArtifactPaths('EthereumSigAuthStrategy');
-  const timedFundingRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
+  const timedRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
     hre,
-    abiPath: timedFundingRoundEthSigAuthStrategyMetadata.sierra,
-    metadataPath: timedFundingRoundEthSigAuthStrategyMetadata.sierra,
-    casmPath: timedFundingRoundEthSigAuthStrategyMetadata.casm,
+    abiPath: timedRoundEthSigAuthStrategyMetadata.sierra,
+    metadataPath: timedRoundEthSigAuthStrategyMetadata.sierra,
+    casmPath: timedRoundEthSigAuthStrategyMetadata.casm,
   });
 
   await config.starknetSigner.declare(ethTxAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
-  await config.starknetSigner.declare(timedFundingRoundEthSigAuthStrategyFactory, {
+  await config.starknetSigner.declare(timedRoundEthSigAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
 
@@ -125,23 +125,23 @@ export const timedFundingRoundSetup = async () => {
     commit_address: config.starknetCommit.address,
   });
   // prettier-ignore
-  const timedFundingRoundEthSigAuthStrategy = await config.starknetSigner.deploy(
-    timedFundingRoundEthSigAuthStrategyFactory,
+  const timedRoundEthSigAuthStrategy = await config.starknetSigner.deploy(
+    timedRoundEthSigAuthStrategyFactory,
   );
 
-  await config.starknetSigner.declare(timedFundingRoundL2Factory, {
+  await config.starknetSigner.declare(timedRoundL2Factory, {
     constants: {
       '0xdead0001': config.strategyRegistry.address,
       '0xdead0002': config.ethExecutionStrategy.address,
       '0xdead0003': ethTxAuthStrategy.address,
-      '0xdead0004': timedFundingRoundEthSigAuthStrategy.address,
+      '0xdead0004': timedRoundEthSigAuthStrategy.address,
     },
     maxFee: STARKNET_MAX_FEE,
   });
-  const timedFundingRoundClassHash = await timedFundingRoundL2Factory.getClassHash();
+  const timedRoundClassHash = await timedRoundL2Factory.getClassHash();
 
-  const timedFundingRoundImpl = await timedFundingRoundFactory.deploy(
-    timedFundingRoundClassHash,
+  const timedRoundImpl = await timedRoundFactory.deploy(
+    timedRoundClassHash,
     config.propHouse.address,
     config.mockStarknetMessaging.address,
     config.messenger.address,
@@ -152,15 +152,15 @@ export const timedFundingRoundSetup = async () => {
 
   await config.manager.registerRound(
     config.communityHouseImpl.address,
-    timedFundingRoundImpl.address,
+    timedRoundImpl.address,
   );
 
   return {
     ...config,
-    timedFundingRoundImpl,
-    timedFundingRoundL2Factory,
-    timedFundingRoundClassHash,
+    timedRoundImpl,
+    timedRoundL2Factory,
+    timedRoundClassHash,
     ethTxAuthStrategy,
-    timedFundingRoundEthSigAuthStrategy,
+    timedRoundEthSigAuthStrategy,
   };
 };

@@ -1,4 +1,4 @@
-/// Timed funding round function selectors
+/// Timed round function selectors
 mod Selector {
     /// The selector of the propose function.
     const PROPOSE: felt252 = 0x1bfd596ae442867ef71ca523061610682af8b00fc2738329422f4ad8d220b81;
@@ -19,7 +19,7 @@ mod DomainSeparator {
     const GOERLI: u256 = 0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81;
 }
 
-/// Timed funding round EIP-712 type hashes used for authentication
+/// Timed round EIP-712 type hashes used for authentication
 mod TypeHash {
     /// The type hash for the propose function.
     /// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposerAddress,string metadataUri,uint256 salt)")

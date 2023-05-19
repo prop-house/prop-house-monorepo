@@ -619,10 +619,10 @@ export class QueryWrapper {
    */
   protected toRound(round: IRoundQuery['round']): Round {
     if (!round) throw new Error('Round information not present during attempted conversion');
-    if (!round.timedFundingConfig)
+    if (!round.timedConfig)
       throw new Error('Round config information not present during attempted conversion');
 
-    const config = round.timedFundingConfig;
+    const config = round.timedConfig;
     return {
       address: round.id,
       type: round.type as RoundType,

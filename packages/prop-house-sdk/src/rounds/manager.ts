@@ -6,16 +6,16 @@ import {
   RoundConfigStruct,
   GetRoundStateParams,
 } from '../types';
-import { RoundBase, TimedFundingRound } from './implementations';
+import { RoundBase, TimedRound } from './implementations';
 
 export class RoundManager<CS extends void | Custom = void> {
-  private static readonly _all = new Map([[RoundType.TIMED_FUNDING, TimedFundingRound]]);
-  private readonly _timedFunding: TimedFundingRound<CS>;
+  private static readonly _all = new Map([[RoundType.TIMED, TimedRound]]);
+  private readonly _timed: TimedRound<CS>;
   private readonly _all: Map<RoundType, RoundBase<RoundType, CS>>;
 
   constructor(config: RoundChainConfig<CS>) {
-    this._timedFunding = TimedFundingRound.for<CS>(config);
-    this._all = new Map([[this._timedFunding.type, this._timedFunding]]);
+    this._timed = TimedRound.for<CS>(config);
+    this._all = new Map([[this._timed.type, this._timed]]);
   }
 
   /**
@@ -36,10 +36,10 @@ export class RoundManager<CS extends void | Custom = void> {
   }
 
   /**
-   * Timed funding round utilities
+   * Timed round utilities
    */
-  public get timedFunding() {
-    return this._timedFunding;
+  public get timed() {
+    return this._timed;
   }
 
   /**

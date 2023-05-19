@@ -29,5 +29,5 @@ string constant COMMUNITY_HOUSE_NAME = 'Community House';
 // The Community House NFT symbol
 string constant COMMUNITY_HOUSE_SYMBOL = 'COMM';
 
-// The Timed Funding Round type
-bytes32 constant TIMED_FUNDING_ROUND_TYPE = 'TIMED_FUNDING';
+// The Timed Round type
+bytes32 constant TIMED_ROUND_TYPE = 'TIMED';

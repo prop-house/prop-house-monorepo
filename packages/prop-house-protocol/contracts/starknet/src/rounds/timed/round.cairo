@@ -3,7 +3,7 @@ use prop_house::common::libraries::round::Proposal;
 use starknet::EthAddress;
 use array::ArrayTrait;
 
-trait ITimedFundingRound {
+trait ITimedRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(
         proposer_address: EthAddress,
@@ -68,17 +68,17 @@ const eth_tx_auth_strategy: felt252 = 0xDEAD0003;
 const eth_sig_auth_strategy: felt252 = 0xDEAD0004;
 
 #[contract]
-mod TimedFundingRound {
+mod TimedRound {
     use starknet::{
         ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
         Felt252TryIntoContractAddress
     };
     use super::{
-        ITimedFundingRound, ProposalVote, StrategyType, RoundParams, RoundState, Award,
+        ITimedRound, ProposalVote, StrategyType, RoundParams, RoundState, Award,
         strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
         eth_sig_auth_strategy
     };
-    use prop_house::rounds::timed_funding::config::RoundConfig;
+    use prop_house::rounds::timed::config::RoundConfig;
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
     use prop_house::common::registry::strategy::{
         IStrategyRegistryDispatcherTrait, IStrategyRegistryDispatcher, Strategy
@@ -129,7 +129,7 @@ mod TimedFundingRound {
     #[event]
     fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
 
-    impl TimedFundingRound of ITimedFundingRound {
+    impl TimedRound of ITimedRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
             let proposal = Round::_proposals::read(proposal_id);
             assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
@@ -335,7 +335,7 @@ mod TimedFundingRound {
     /// * `proposal_id` - The proposal ID.
     #[view]
     fn get_proposal(proposal_id: u32) -> Proposal {
-        TimedFundingRound::get_proposal(proposal_id)
+        TimedRound::get_proposal(proposal_id)
     }
 
     /// Submit a proposal to the round.
@@ -350,7 +350,7 @@ mod TimedFundingRound {
         used_proposing_strategy_ids: Array<felt252>,
         user_proposing_strategy_params_flat: Array<felt252>,
     ) {
-        TimedFundingRound::propose(
+        TimedRound::propose(
             proposer_address,
             metadata_uri,
             used_proposing_strategy_ids,
@@ -364,7 +364,7 @@ mod TimedFundingRound {
     /// * `metadata_uri` - The updated proposal metadata URI.
     #[external]
     fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
-        TimedFundingRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
+        TimedRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
     }
 
     /// Cancel a proposal.
@@ -372,7 +372,7 @@ mod TimedFundingRound {
     /// * `proposal_id` - The ID of the proposal to cancel.
     #[external]
     fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-        TimedFundingRound::cancel_proposal(proposer_address, proposal_id);
+        TimedRound::cancel_proposal(proposer_address, proposal_id);
     }
 
     /// Cast votes on one or more proposals.
@@ -387,7 +387,7 @@ mod TimedFundingRound {
         used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_flat: Array<felt252>,
     ) {
-        TimedFundingRound::vote(
+        TimedRound::vote(
             voter_address,
             proposal_votes,
             used_voting_strategy_ids,
@@ -399,7 +399,7 @@ mod TimedFundingRound {
     /// * `awards` - The awards to distribute.
     #[external]
     fn finalize_round(awards: Array<Award>) {
-        TimedFundingRound::finalize_round(awards);
+        TimedRound::finalize_round(awards);
     }
 
     ///

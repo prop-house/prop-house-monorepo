@@ -43,7 +43,7 @@ export interface RoundAward {
   asset: RoundAsset;
 }
 
-export interface TimedFundingRoundConfig {
+export interface TimedRoundConfig {
   winnerCount: number;
   proposalThreshold: number;
   proposalPeriodStartTimestamp: number;
@@ -56,7 +56,7 @@ export interface TimedFundingRoundConfig {
   awards: RoundAward[];
 }
 
-export type RoundConfig = TimedFundingRoundConfig;
+export type RoundConfig = TimedRoundConfig;
 
 export interface Round {
   address: string;

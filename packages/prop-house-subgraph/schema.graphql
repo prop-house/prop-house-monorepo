@@ -51,7 +51,7 @@ type RoundImplementation @entity {
   "A concatenation of the house and round implementation contracts"
   id: ID!
 
-  "The round type (TIMED_FUNDING)"
+  "The round type (TIMED)"
   type: String!
 
   "Whether the round is currently registered"
@@ -114,7 +114,7 @@ type Round @entity {
   "The address of the round contract"
   id: ID!
 
-  "The round type (TIMED_FUNDING)"
+  "The round type (TIMED)"
   type: String!
 
   "The round title"
@@ -141,8 +141,8 @@ type Round @entity {
   "The round manager"
   manager: Account
 
-  "The configuration for a timed funding round (Null if type != TIMED_FUNDING)"
-  timedFundingConfig: TimedFundingRoundConfig
+  "The configuration for a timed round (Null if type != TIMED)"
+  timedConfig: TimedRoundConfig
 
   "The selected proposing strategies"
   proposingStrategies: [RoundProposingStrategy!]! @derivedFrom(field: "round")
@@ -186,7 +186,7 @@ type Balance @entity {
   updatedAt: BigInt!
 }
 
-type TimedFundingRoundConfig @entity {
+type TimedRoundConfig @entity {
   "A concatenation of the round address and '-config'"
   id: ID!
 
@@ -429,7 +429,7 @@ type Award @entity {
   amount: BigInt!
 
   "The configuration in which the awards exist"
-  round: TimedFundingRoundConfig!
+  round: TimedRoundConfig!
 }
 
 type Claim @entity {

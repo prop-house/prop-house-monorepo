@@ -60,7 +60,7 @@ When funding a round, the `PropHouse` contract must be approved to spend include
       },
     },
     {
-      roundType: RoundType.TIMED_FUNDING,
+      roundType: RoundType.TIMED,
       title: 'Test Round',
       description: 'A round used for testing purposes',
       config: {
@@ -98,7 +98,7 @@ When funding a round, the `PropHouse` contract must be approved to spend include
   const response = await propHouse.createRoundOnExistingHouse(
     HOUSE_ADDRESS,
     {
-      roundType: RoundType.TIMED_FUNDING,
+      roundType: RoundType.TIMED,
       title: 'Test Round',
       description: 'A round used for testing purposes',
       config: {
@@ -149,7 +149,7 @@ When funding a round, the `PropHouse` contract must be approved to spend include
       },
     },
     {
-      roundType: RoundType.TIMED_FUNDING,
+      roundType: RoundType.TIMED,
       title: 'Test Round',
       description: 'A round used for testing purposes',
       config: {
@@ -190,7 +190,7 @@ When funding a round, the `PropHouse` contract must be approved to spend include
   const response = await propHouse.createAndFundRoundOnExistingHouse(
     HOUSE_ADDRESS,
     {
-      roundType: RoundType.TIMED_FUNDING,
+      roundType: RoundType.TIMED,
       title: 'Test Round',
       description: 'A round used for testing purposes',
       config: {

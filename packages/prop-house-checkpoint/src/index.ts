@@ -7,7 +7,7 @@ import Checkpoint, { LogLevel } from '@snapshot-labs/checkpoint';
 import config from './config.json';
 import * as writers from './writers';
 import RoundFactoryABI from './abis/RoundFactory.json';
-import TimedFundingRoundABI from './abis/TimedFundingRound.json';
+import TimedRoundABI from './abis/TimedRound.json';
 import { StarknetProvider } from './starknet-provider';
 
 const dir = __dirname.endsWith('dist/src') ? '../' : '';
@@ -23,7 +23,7 @@ const checkpointOptions = {
   prettifyLogs: process.env.NODE_ENV !== 'production',
   abis: {
     RoundFactory: RoundFactoryABI,
-    TimedFundingRound: TimedFundingRoundABI,
+    TimedRound: TimedRoundABI,
   },
   NetworkProvider: StarknetProvider,
 };

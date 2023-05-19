@@ -278,7 +278,7 @@ export type Award = {
   /** A concatenation of the round address and award index */
   id: Scalars['ID'];
   /** The configuration in which the awards exist */
-  round: TimedFundingRoundConfig;
+  round: TimedRoundConfig;
 };
 
 export type Award_Filter = {
@@ -324,7 +324,7 @@ export type Award_Filter = {
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
   or?: InputMaybe<Array<InputMaybe<Award_Filter>>>;
   round?: InputMaybe<Scalars['String']>;
-  round_?: InputMaybe<TimedFundingRoundConfig_Filter>;
+  round_?: InputMaybe<TimedRoundConfig_Filter>;
   round_contains?: InputMaybe<Scalars['String']>;
   round_contains_nocase?: InputMaybe<Scalars['String']>;
   round_ends_with?: InputMaybe<Scalars['String']>;
@@ -1318,8 +1318,8 @@ export type Query = {
   roundVotingStrategies: Array<RoundVotingStrategy>;
   roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
-  timedFundingRoundConfig?: Maybe<TimedFundingRoundConfig>;
-  timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
+  timedRoundConfig?: Maybe<TimedRoundConfig>;
+  timedRoundConfigs: Array<TimedRoundConfig>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
 };
@@ -1610,20 +1610,20 @@ export type QueryRoundsArgs = {
   where?: InputMaybe<Round_Filter>;
 };
 
-export type QueryTimedFundingRoundConfigArgs = {
+export type QueryTimedRoundConfigArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-export type QueryTimedFundingRoundConfigsArgs = {
+export type QueryTimedRoundConfigsArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TimedFundingRoundConfig_OrderBy>;
+  orderBy?: InputMaybe<TimedRoundConfig_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<TimedFundingRoundConfig_Filter>;
+  where?: InputMaybe<TimedRoundConfig_Filter>;
 };
 
 export type QueryTransferArgs = {
@@ -1971,13 +1971,13 @@ export type Round = {
   reclamations?: Maybe<Array<Reclaim>>;
   /** All round asset rescues */
   rescues: Array<Rescue>;
-  /** The configuration for a timed funding round (Null if type != TIMED_FUNDING) */
-  timedFundingConfig?: Maybe<TimedFundingRoundConfig>;
+  /** The configuration for a timed round (Null if type != TIMED) */
+  timedConfig?: Maybe<TimedRoundConfig>;
   /** The round title */
   title: Scalars['String'];
   /** All round asset receipt transfers */
   transfers: Array<Transfer>;
-  /** The round type (TIMED_FUNDING) */
+  /** The round type (TIMED) */
   type: Scalars['String'];
   /** The selected voting strategies */
   votingStrategies: Array<RoundVotingStrategy>;
@@ -2153,7 +2153,7 @@ export type RoundImplementation = {
   id: Scalars['ID'];
   /** Whether the round is currently registered */
   isRegistered: Scalars['Boolean'];
-  /** The round type (TIMED_FUNDING) */
+  /** The round type (TIMED) */
   type: Scalars['String'];
 };
 
@@ -2517,27 +2517,27 @@ export type Round_Filter = {
   proposingStrategies_?: InputMaybe<RoundProposingStrategy_Filter>;
   reclamations_?: InputMaybe<Reclaim_Filter>;
   rescues_?: InputMaybe<Rescue_Filter>;
-  timedFundingConfig?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_?: InputMaybe<TimedFundingRoundConfig_Filter>;
-  timedFundingConfig_contains?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_contains_nocase?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_ends_with?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_gt?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_gte?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_in?: InputMaybe<Array<Scalars['String']>>;
-  timedFundingConfig_lt?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_lte?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_contains?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_ends_with?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_in?: InputMaybe<Array<Scalars['String']>>;
-  timedFundingConfig_not_starts_with?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_starts_with?: InputMaybe<Scalars['String']>;
-  timedFundingConfig_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig?: InputMaybe<Scalars['String']>;
+  timedConfig_?: InputMaybe<TimedRoundConfig_Filter>;
+  timedConfig_contains?: InputMaybe<Scalars['String']>;
+  timedConfig_contains_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig_ends_with?: InputMaybe<Scalars['String']>;
+  timedConfig_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig_gt?: InputMaybe<Scalars['String']>;
+  timedConfig_gte?: InputMaybe<Scalars['String']>;
+  timedConfig_in?: InputMaybe<Array<Scalars['String']>>;
+  timedConfig_lt?: InputMaybe<Scalars['String']>;
+  timedConfig_lte?: InputMaybe<Scalars['String']>;
+  timedConfig_not?: InputMaybe<Scalars['String']>;
+  timedConfig_not_contains?: InputMaybe<Scalars['String']>;
+  timedConfig_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig_not_ends_with?: InputMaybe<Scalars['String']>;
+  timedConfig_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig_not_in?: InputMaybe<Array<Scalars['String']>>;
+  timedConfig_not_starts_with?: InputMaybe<Scalars['String']>;
+  timedConfig_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  timedConfig_starts_with?: InputMaybe<Scalars['String']>;
+  timedConfig_starts_with_nocase?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
   title_contains?: InputMaybe<Scalars['String']>;
   title_contains_nocase?: InputMaybe<Scalars['String']>;
@@ -2605,19 +2605,19 @@ export enum Round_OrderBy {
   ProposingStrategies = 'proposingStrategies',
   Reclamations = 'reclamations',
   Rescues = 'rescues',
-  TimedFundingConfig = 'timedFundingConfig',
-  TimedFundingConfigClaimPeriodEndTimestamp = 'timedFundingConfig__claimPeriodEndTimestamp',
-  TimedFundingConfigId = 'timedFundingConfig__id',
-  TimedFundingConfigProposalPeriodDuration = 'timedFundingConfig__proposalPeriodDuration',
-  TimedFundingConfigProposalPeriodEndTimestamp = 'timedFundingConfig__proposalPeriodEndTimestamp',
-  TimedFundingConfigProposalPeriodStartTimestamp = 'timedFundingConfig__proposalPeriodStartTimestamp',
-  TimedFundingConfigProposalThreshold = 'timedFundingConfig__proposalThreshold',
-  TimedFundingConfigRegisteredAt = 'timedFundingConfig__registeredAt',
-  TimedFundingConfigRegistrationTx = 'timedFundingConfig__registrationTx',
-  TimedFundingConfigVotePeriodDuration = 'timedFundingConfig__votePeriodDuration',
-  TimedFundingConfigVotePeriodEndTimestamp = 'timedFundingConfig__votePeriodEndTimestamp',
-  TimedFundingConfigVotePeriodStartTimestamp = 'timedFundingConfig__votePeriodStartTimestamp',
-  TimedFundingConfigWinnerCount = 'timedFundingConfig__winnerCount',
+  TimedConfig = 'timedConfig',
+  TimedConfigClaimPeriodEndTimestamp = 'timedConfig__claimPeriodEndTimestamp',
+  TimedConfigId = 'timedConfig__id',
+  TimedConfigProposalPeriodDuration = 'timedConfig__proposalPeriodDuration',
+  TimedConfigProposalPeriodEndTimestamp = 'timedConfig__proposalPeriodEndTimestamp',
+  TimedConfigProposalPeriodStartTimestamp = 'timedConfig__proposalPeriodStartTimestamp',
+  TimedConfigProposalThreshold = 'timedConfig__proposalThreshold',
+  TimedConfigRegisteredAt = 'timedConfig__registeredAt',
+  TimedConfigRegistrationTx = 'timedConfig__registrationTx',
+  TimedConfigVotePeriodDuration = 'timedConfig__votePeriodDuration',
+  TimedConfigVotePeriodEndTimestamp = 'timedConfig__votePeriodEndTimestamp',
+  TimedConfigVotePeriodStartTimestamp = 'timedConfig__votePeriodStartTimestamp',
+  TimedConfigWinnerCount = 'timedConfig__winnerCount',
   Title = 'title',
   Transfers = 'transfers',
   Type = 'type',
@@ -2663,8 +2663,8 @@ export type Subscription = {
   roundVotingStrategies: Array<RoundVotingStrategy>;
   roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
-  timedFundingRoundConfig?: Maybe<TimedFundingRoundConfig>;
-  timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
+  timedRoundConfig?: Maybe<TimedRoundConfig>;
+  timedRoundConfigs: Array<TimedRoundConfig>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
 };
@@ -2955,20 +2955,20 @@ export type SubscriptionRoundsArgs = {
   where?: InputMaybe<Round_Filter>;
 };
 
-export type SubscriptionTimedFundingRoundConfigArgs = {
+export type SubscriptionTimedRoundConfigArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
   subgraphError?: _SubgraphErrorPolicy_;
 };
 
-export type SubscriptionTimedFundingRoundConfigsArgs = {
+export type SubscriptionTimedRoundConfigsArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<TimedFundingRoundConfig_OrderBy>;
+  orderBy?: InputMaybe<TimedRoundConfig_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<TimedFundingRoundConfig_Filter>;
+  where?: InputMaybe<TimedRoundConfig_Filter>;
 };
 
 export type SubscriptionTransferArgs = {
@@ -2987,8 +2987,8 @@ export type SubscriptionTransfersArgs = {
   where?: InputMaybe<Transfer_Filter>;
 };
 
-export type TimedFundingRoundConfig = {
-  __typename?: 'TimedFundingRoundConfig';
+export type TimedRoundConfig = {
+  __typename?: 'TimedRoundConfig';
   /** The awards offered in the round */
   awards: Array<Award>;
   /** The timestamp at which the claim period ends */
@@ -3019,7 +3019,7 @@ export type TimedFundingRoundConfig = {
   winnerCount: Scalars['Int'];
 };
 
-export type TimedFundingRoundConfigAwardsArgs = {
+export type TimedRoundConfigAwardsArgs = {
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<Award_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
@@ -3027,10 +3027,10 @@ export type TimedFundingRoundConfigAwardsArgs = {
   where?: InputMaybe<Award_Filter>;
 };
 
-export type TimedFundingRoundConfig_Filter = {
+export type TimedRoundConfig_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
-  and?: InputMaybe<Array<InputMaybe<TimedFundingRoundConfig_Filter>>>;
+  and?: InputMaybe<Array<InputMaybe<TimedRoundConfig_Filter>>>;
   awards_?: InputMaybe<Award_Filter>;
   claimPeriodEndTimestamp?: InputMaybe<Scalars['BigInt']>;
   claimPeriodEndTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
@@ -3048,7 +3048,7 @@ export type TimedFundingRoundConfig_Filter = {
   id_lte?: InputMaybe<Scalars['ID']>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  or?: InputMaybe<Array<InputMaybe<TimedFundingRoundConfig_Filter>>>;
+  or?: InputMaybe<Array<InputMaybe<TimedRoundConfig_Filter>>>;
   proposalPeriodDuration?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodDuration_gt?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodDuration_gte?: InputMaybe<Scalars['BigInt']>;
@@ -3154,7 +3154,7 @@ export type TimedFundingRoundConfig_Filter = {
   winnerCount_not_in?: InputMaybe<Array<Scalars['Int']>>;
 };
 
-export enum TimedFundingRoundConfig_OrderBy {
+export enum TimedRoundConfig_OrderBy {
   Awards = 'awards',
   ClaimPeriodEndTimestamp = 'claimPeriodEndTimestamp',
   Id = 'id',
@@ -3407,8 +3407,8 @@ export type GovPowerStrategyFieldsFragment = {
   params: Array<any>;
 };
 
-export type TimedFundingRoundConfigFieldsFragment = {
-  __typename?: 'TimedFundingRoundConfig';
+export type TimedRoundConfigFieldsFragment = {
+  __typename?: 'TimedRoundConfig';
   winnerCount: number;
   proposalThreshold: any;
   proposalPeriodStartTimestamp: any;
@@ -3454,8 +3454,8 @@ export type RoundFieldsFragment = {
       params: Array<any>;
     };
   }>;
-  timedFundingConfig?: {
-    __typename?: 'TimedFundingRoundConfig';
+  timedConfig?: {
+    __typename?: 'TimedRoundConfig';
     winnerCount: number;
     proposalThreshold: any;
     proposalPeriodStartTimestamp: any;
@@ -3568,8 +3568,8 @@ export type ManyRoundsQuery = {
         params: Array<any>;
       };
     }>;
-    timedFundingConfig?: {
-      __typename?: 'TimedFundingRoundConfig';
+    timedConfig?: {
+      __typename?: 'TimedRoundConfig';
       winnerCount: number;
       proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
@@ -3645,8 +3645,8 @@ export type ManyRoundsWithHouseInfoQuery = {
         params: Array<any>;
       };
     }>;
-    timedFundingConfig?: {
-      __typename?: 'TimedFundingRoundConfig';
+    timedConfig?: {
+      __typename?: 'TimedRoundConfig';
       winnerCount: number;
       proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
@@ -3700,8 +3700,8 @@ export type RoundQuery = {
         params: Array<any>;
       };
     }>;
-    timedFundingConfig?: {
-      __typename?: 'TimedFundingRoundConfig';
+    timedConfig?: {
+      __typename?: 'TimedRoundConfig';
       winnerCount: number;
       proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
@@ -3773,8 +3773,8 @@ export type RoundWithHouseInfoQuery = {
         params: Array<any>;
       };
     }>;
-    timedFundingConfig?: {
-      __typename?: 'TimedFundingRoundConfig';
+    timedConfig?: {
+      __typename?: 'TimedRoundConfig';
       winnerCount: number;
       proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
@@ -3948,16 +3948,13 @@ export const GovPowerStrategyFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<GovPowerStrategyFieldsFragment, unknown>;
-export const TimedFundingRoundConfigFieldsFragmentDoc = {
+export const TimedRoundConfigFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -3996,7 +3993,7 @@ export const TimedFundingRoundConfigFieldsFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<TimedFundingRoundConfigFieldsFragment, unknown>;
+} as unknown as DocumentNode<TimedRoundConfigFieldsFragment, unknown>;
 export const RoundFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -4067,14 +4064,11 @@ export const RoundFieldsFragmentDoc = {
           },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'timedFundingConfig' },
+            name: { kind: 'Name', value: 'timedConfig' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-                },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TimedRoundConfigFields' } },
               ],
             },
           },
@@ -4097,11 +4091,8 @@ export const RoundFieldsFragmentDoc = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4469,11 +4460,8 @@ export const ManyRoundsDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4578,14 +4566,11 @@ export const ManyRoundsDocument = {
           },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'timedFundingConfig' },
+            name: { kind: 'Name', value: 'timedConfig' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-                },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TimedRoundConfigFields' } },
               ],
             },
           },
@@ -4703,11 +4688,8 @@ export const ManyRoundsWithHouseInfoDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4812,14 +4794,11 @@ export const ManyRoundsWithHouseInfoDocument = {
           },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'timedFundingConfig' },
+            name: { kind: 'Name', value: 'timedConfig' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-                },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TimedRoundConfigFields' } },
               ],
             },
           },
@@ -4935,11 +4914,8 @@ export const RoundDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -5044,14 +5020,11 @@ export const RoundDocument = {
           },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'timedFundingConfig' },
+            name: { kind: 'Name', value: 'timedConfig' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-                },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TimedRoundConfigFields' } },
               ],
             },
           },
@@ -5126,11 +5099,8 @@ export const RoundWithHouseInfoDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-      typeCondition: {
-        kind: 'NamedType',
-        name: { kind: 'Name', value: 'TimedFundingRoundConfig' },
-      },
+      name: { kind: 'Name', value: 'TimedRoundConfigFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'TimedRoundConfig' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -5235,14 +5205,11 @@ export const RoundWithHouseInfoDocument = {
           },
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'timedFundingConfig' },
+            name: { kind: 'Name', value: 'timedConfig' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                {
-                  kind: 'FragmentSpread',
-                  name: { kind: 'Name', value: 'TimedFundingRoundConfigFields' },
-                },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'TimedRoundConfigFields' } },
               ],
             },
           },

@@ -1,7 +1,7 @@
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  timedFundingRoundSetup,
+  timedRoundSetup,
   generateClaimLeaf,
   generateClaimMerkleTree,
   CONTRACT_URI,
@@ -20,8 +20,8 @@ import {
   utils,
   Asset,
   ContractAddresses,
-  TimedFundingRoundContract,
-  TimedFundingRound__factory,
+  TimedRoundContract,
+  TimedRound__factory,
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
@@ -36,20 +36,20 @@ import chai, { expect } from 'chai';
 
 chai.use(solidity);
 
-describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
+describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
   const networkUrl = network.config.url!;
 
   let signer: SignerWithAddress;
   let starknetAccount: Account;
 
   let propHouse: PropHouse;
-  let timedFundingRound: TimedFundingRoundContract;
+  let timedRound: TimedRoundContract;
   let mockStarknetMessaging: MockStarknetMessaging;
 
-  let timedFundingRoundContract: StarknetContract;
+  let timedRoundContract: StarknetContract;
   let ethSigAuth: StarknetContract;
 
-  let timedFundingRoundL2Factory: StarknetContractFactory;
+  let timedRoundL2Factory: StarknetContractFactory;
 
   let l2RoundAddress: string;
 
@@ -60,10 +60,10 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
 
     [signer] = await ethers.getSigners();
 
-    const config = await timedFundingRoundSetup();
+    const config = await timedRoundSetup();
     ({
-      timedFundingRoundEthSigAuthStrategy: ethSigAuth,
-      timedFundingRoundL2Factory,
+      timedRoundEthSigAuthStrategy: ethSigAuth,
+      timedRoundL2Factory,
       mockStarknetMessaging,
       starknetAccount,
     } = config);
@@ -107,7 +107,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
             community: config.communityHouseImpl.address,
           },
           round: {
-            timedFunding: config.timedFundingRoundImpl.address,
+            timed: config.timedRoundImpl.address,
           },
         },
         starknet: {
@@ -119,15 +119,15 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
             vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
-            timedFundingEthSig: config.timedFundingRoundEthSigAuthStrategy.address,
-            timedFundingEthTx: config.ethTxAuthStrategy.address,
+            timedEthSig: config.timedRoundEthSigAuthStrategy.address,
+            timedEthTx: config.ethTxAuthStrategy.address,
           },
           herodotus: {
             factRegistry: '',
             l1HeadersStore: '',
           },
           classHashes: {
-            timedFunding: config.timedFundingRoundClassHash,
+            timed: config.timedRoundClassHash,
           },
         },
       };
@@ -153,7 +153,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
         },
       },
       {
-        roundType: RoundType.TIMED_FUNDING,
+        roundType: RoundType.TIMED,
         title: 'Test Round',
         description: 'A round used for testing purposes',
         config: {
@@ -179,7 +179,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
 
     await starknet.devnet.flush();
 
-    timedFundingRound = TimedFundingRound__factory.connect(roundAddress, signer);
+    timedRound = TimedRound__factory.connect(roundAddress, signer);
 
     // Send the pending L1 -> L2 message
     await starknet.devnet.flush();
@@ -189,7 +189,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     });
     [, l2RoundAddress] = block.transaction_receipts[0].events[1].data;
 
-    timedFundingRoundContract = timedFundingRoundL2Factory.getContractAt(
+    timedRoundContract = timedRoundL2Factory.getContractAt(
       `0x${BigInt(l2RoundAddress).toString(16)}`,
     );
 
@@ -202,11 +202,11 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       address,
       signature,
       message: data,
-    } = await propHouse.round.timedFunding.signProposeMessage({
-      round: timedFundingRoundContract.address,
+    } = await propHouse.round.timed.signProposeMessage({
+      round: timedRoundContract.address,
       metadataUri: METADATA_URI,
     });
-    const { transaction_hash } = await propHouse.round.timedFunding.relaySignedProposePayload(
+    const { transaction_hash } = await propHouse.round.timed.relaySignedProposePayload(
       starknetAccount,
       {
         address,
@@ -229,15 +229,15 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
   });
 
   it.skip('should not authenticate an invalid signature', async () => {
-    const { signature, message: data } = await propHouse.round.timedFunding.signProposeMessage({
-      round: timedFundingRoundContract.address,
+    const { signature, message: data } = await propHouse.round.timed.signProposeMessage({
+      round: timedRoundContract.address,
       metadataUri: METADATA_URI,
     });
     const [, signer2] = await ethers.getSigners();
 
     try {
       // Data is signed with accounts[0], but the proposer is accounts[1] so it should fail
-      await propHouse.round.timedFunding.relaySignedProposePayload(starknetAccount, {
+      await propHouse.round.timed.relaySignedProposePayload(starknetAccount, {
         address: signer2.address,
         signature,
         data,
@@ -256,8 +256,8 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       address,
       signature,
       message: data,
-    } = await propHouse.round.timedFunding.signVoteMessage({
-      round: timedFundingRoundContract.address,
+    } = await propHouse.round.timed.signVoteMessage({
+      round: timedRoundContract.address,
       votes: [
         {
           proposalId: 1,
@@ -265,7 +265,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
         },
       ],
     });
-    const { transaction_hash } = await propHouse.round.timedFunding.relaySignedVotePayload(
+    const { transaction_hash } = await propHouse.round.timed.relaySignedVotePayload(
       starknetAccount,
       {
         address,
@@ -293,8 +293,8 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     );
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
-    const { transaction_hash } = await propHouse.round.timedFunding.finalizeRound(starknetAccount, {
-      round: timedFundingRoundContract.address,
+    const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
+      round: timedRoundContract.address,
       awards: [{ assetId, amount }],
     });
 
@@ -309,7 +309,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     expect(winnersLen).to.equal(1);
     expect(winningProposalIds).to.have.a.lengthOf(1);
 
-    const { response } = await timedFundingRoundContract.call('get_proposal', {
+    const { response } = await timedRoundContract.call('get_proposal', {
       proposal_id: winningProposalIds[0],
     });
 
@@ -323,9 +323,9 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
 
     expect(consumed_messages.from_l2.length).to.equal(1);
 
-    const finalizeTx = timedFundingRound.finalizeRound(merkleRootLow, merkleRootHigh);
+    const finalizeTx = timedRound.finalizeRound(merkleRootLow, merkleRootHigh);
 
-    await expect(finalizeTx).to.emit(timedFundingRound, 'RoundFinalized');
+    await expect(finalizeTx).to.emit(timedRound, 'RoundFinalized');
 
     const leaf = generateClaimLeaf({
       proposalId: winner.proposalId,
@@ -336,7 +336,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const tree = generateClaimMerkleTree([leaf]);
     const proof = tree.getHexProof(leaf);
 
-    const claimTx = timedFundingRound.claimAward(
+    const claimTx = timedRound.claimAward(
       winner.proposalId,
       ONE_ETHER,
       {
@@ -348,7 +348,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       proof,
     );
     await expect(claimTx)
-      .to.emit(timedFundingRound, 'AwardClaimed')
+      .to.emit(timedRound, 'AwardClaimed')
       .withArgs(winner.proposalId, signer.address, signer.address, assetId.toHex(), amount.toHex());
   });
 });

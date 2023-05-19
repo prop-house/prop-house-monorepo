@@ -1,7 +1,7 @@
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  timedFundingRoundSetup,
+  timedRoundSetup,
   generateClaimLeaf,
   generateClaimMerkleTree,
   CONTRACT_URI,
@@ -23,8 +23,8 @@ import {
   utils,
   Asset,
   ContractAddresses,
-  TimedFundingRoundContract,
-  TimedFundingRound__factory,
+  TimedRoundContract,
+  TimedRound__factory,
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
@@ -45,28 +45,28 @@ chai.use(solidity);
  * @param proposer The address of the proposal creator
  * @param proposalId The ID of the proposal to cancel
  */
-const getTimedFundingRoundCancelProposalCalldata = (
+const getTimedRoundCancelProposalCalldata = (
   proposer: string,
   proposalId: BigNumberish,
 ): string[] => {
   return [proposer, BigNumber.from(proposalId).toHexString()];
 };
 
-describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
+describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
   const networkUrl = network.config.url!;
 
   let signer: SignerWithAddress;
   let starknetAccount: Account;
 
   let propHouse: PropHouse;
-  let timedFundingRound: TimedFundingRoundContract;
+  let timedRound: TimedRoundContract;
   let mockStarknetMessaging: MockStarknetMessaging;
   let starknetCommit: StarkNetCommit;
 
-  let timedFundingRoundContract: StarknetContract;
+  let timedRoundContract: StarknetContract;
   let ethTxAuthStrategy: StarknetContract;
 
-  let timedFundingRoundL2Factory: StarknetContractFactory;
+  let timedRoundL2Factory: StarknetContractFactory;
 
   let l2RoundAddress: string;
   let proposeCalldata: string[];
@@ -79,10 +79,10 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     [signer] = await ethers.getSigners();
 
-    const config = await timedFundingRoundSetup();
+    const config = await timedRoundSetup();
     ({
       ethTxAuthStrategy,
-      timedFundingRoundL2Factory,
+      timedRoundL2Factory,
       mockStarknetMessaging,
       starknetAccount,
       starknetCommit,
@@ -125,7 +125,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
             community: config.communityHouseImpl.address,
           },
           round: {
-            timedFunding: config.timedFundingRoundImpl.address,
+            timed: config.timedRoundImpl.address,
           },
         },
         starknet: {
@@ -137,15 +137,15 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
             vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
-            timedFundingEthSig: config.timedFundingRoundEthSigAuthStrategy.address,
-            timedFundingEthTx: config.ethTxAuthStrategy.address,
+            timedEthSig: config.timedRoundEthSigAuthStrategy.address,
+            timedEthTx: config.ethTxAuthStrategy.address,
           },
           herodotus: {
             factRegistry: '',
             l1HeadersStore: '',
           },
           classHashes: {
-            timedFunding: config.timedFundingRoundClassHash,
+            timed: config.timedRoundClassHash,
           },
         },
       };
@@ -156,7 +156,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknet: config.starknetProvider,
       evm: signer,
     });
-    proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
+    proposeCalldata = propHouse.round.timed.getProposeCalldata({
       proposer: signer.address,
       metadataUri: METADATA_URI,
       proposingStrategyIds: [],
@@ -177,7 +177,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
         },
       },
       {
-        roundType: RoundType.TIMED_FUNDING,
+        roundType: RoundType.TIMED,
         title: 'Test Round',
         description: 'A round used for testing purposes',
         config: {
@@ -203,7 +203,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     await starknet.devnet.flush();
 
-    timedFundingRound = TimedFundingRound__factory.connect(roundAddress, signer);
+    timedRound = TimedRound__factory.connect(roundAddress, signer);
 
     // Send the pending L1 -> L2 message
     await starknet.devnet.flush();
@@ -213,7 +213,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     });
     [, l2RoundAddress] = block.transaction_receipts[0].events[1].data;
 
-    timedFundingRoundContract = timedFundingRoundL2Factory.getContractAt(
+    timedRoundContract = timedRoundL2Factory.getContractAt(
       `0x${BigInt(l2RoundAddress).toString(16)}`,
     );
 
@@ -350,7 +350,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
   });
 
   it('should cancel a proposal using an Ethereum transaction', async () => {
-    const proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
+    const proposeCalldata = propHouse.round.timed.getProposeCalldata({
       proposer: signer.address,
       metadataUri: 'Test cancel proposal!',
       proposingStrategyIds: [],
@@ -381,12 +381,12 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
     const [proposalId] = events[0].data;
 
-    let { response } = await timedFundingRoundContract.call('get_proposal', {
+    let { response } = await timedRoundContract.call('get_proposal', {
       proposal_id: proposalId,
     });
     expect(response.is_cancelled).to.equal(false);
 
-    const cancelProposalCalldata = getTimedFundingRoundCancelProposalCalldata(
+    const cancelProposalCalldata = getTimedRoundCancelProposalCalldata(
       signer.address,
       proposalId,
     );
@@ -410,14 +410,14 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       }),
     });
 
-    ({ response } = await timedFundingRoundContract.call('get_proposal', {
+    ({ response } = await timedRoundContract.call('get_proposal', {
       proposal_id: proposalId,
     }));
     expect(response.is_cancelled).to.equal(true);
   });
 
   it('should create a vote using an Ethereum transaction', async () => {
-    const voteCalldata = propHouse.round.timedFunding.getVoteCalldata({
+    const voteCalldata = propHouse.round.timed.getVoteCalldata({
       voter: signer.address,
       proposalVotes: [
         {
@@ -472,8 +472,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     );
     const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
 
-    const { transaction_hash } = await propHouse.round.timedFunding.finalizeRound(starknetAccount, {
-      round: timedFundingRoundContract.address,
+    const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
+      round: timedRoundContract.address,
       awards: [{ assetId, amount }],
     });
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
@@ -487,7 +487,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(winnersLen).to.equal(1);
     expect(winningProposalIds).to.have.a.lengthOf(1);
 
-    const { response } = await timedFundingRoundContract.call('get_proposal', {
+    const { response } = await timedRoundContract.call('get_proposal', {
       proposal_id: winningProposalIds[0],
     });
 
@@ -504,9 +504,9 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     expect(consumed_messages.from_l2.length).to.equal(1);
 
-    const finalizeTx = timedFundingRound.finalizeRound(merkleRootLow, merkleRootHigh);
+    const finalizeTx = timedRound.finalizeRound(merkleRootLow, merkleRootHigh);
 
-    await expect(finalizeTx).to.emit(timedFundingRound, 'RoundFinalized');
+    await expect(finalizeTx).to.emit(timedRound, 'RoundFinalized');
 
     const leaf = generateClaimLeaf({
       proposalId: winner.proposalId,
@@ -516,7 +516,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     });
     const tree = generateClaimMerkleTree([leaf]);
     const proof = tree.getHexProof(leaf);
-    const claimTx = timedFundingRound.claimAward(
+    const claimTx = timedRound.claimAward(
       winner.proposalId,
       ONE_ETHER,
       {
@@ -528,7 +528,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       proof,
     );
     await expect(claimTx)
-      .to.emit(timedFundingRound, 'AwardClaimed')
+      .to.emit(timedRound, 'AwardClaimed')
       .withArgs(winner.proposalId, signer.address, signer.address, assetId.toHex(), amount.toHex());
   });
 });
