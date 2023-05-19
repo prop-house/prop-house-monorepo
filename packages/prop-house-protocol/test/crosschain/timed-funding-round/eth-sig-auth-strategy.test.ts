@@ -25,7 +25,7 @@ import {
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
-import { VotingStrategyType as GQLVotingStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
+import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
@@ -82,14 +82,14 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
     const vanillaGovPowerStrategy = await config.starknetSigner.deploy(vanillaGovPowerStrategyFactory);
 
     // Stub subgraph functions
-    const funcs = ['getRoundVotingStrategies', 'getVotingStrategies'] as const;
+    const funcs = ['getRoundVotingStrategies', 'getGovPowerStrategies'] as const;
     for (const func of funcs) {
       gql.QueryWrapper.prototype[func] = () =>
         Promise.resolve({
-          votingStrategies: [
+          govPowerStrategies: [
             {
               id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
-              type: GQLVotingStrategyType.Vanilla,
+              type: GQLGovPowerStrategyType.Vanilla,
               address: vanillaGovPowerStrategy.address,
               params: [],
             },
