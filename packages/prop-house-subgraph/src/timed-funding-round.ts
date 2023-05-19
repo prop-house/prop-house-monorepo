@@ -1,7 +1,7 @@
 import { log } from '@graphprotocol/graph-ts';
 import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedFundingRound/TimedFundingRound';
 import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
-import { AssetStruct, computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getVotingStrategyType } from './lib/utils';
+import { AssetStruct, computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
 
 export function handleRoundRegistered(event: RoundRegistered): void {
@@ -50,7 +50,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     let strategy = VotingStrategy.load(strategyId);
     if (!strategy) {
       strategy = new VotingStrategy(strategyId);
-      strategy.type = getVotingStrategyType(address.toHex());
+      strategy.type = getGovPowerStrategyType(address.toHex());
       strategy.address = address;
       strategy.params = params2D[i];
       strategy.save();

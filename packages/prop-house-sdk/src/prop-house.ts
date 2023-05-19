@@ -16,14 +16,14 @@ import { Overrides } from '@ethersproject/contracts';
 import { ChainBase } from './chain-base';
 import { QueryWrapper } from './gql';
 import { encoding } from './utils';
-import { Voting } from './voting';
+import { GovPowerManager } from './gov-power';
 import { HouseManager } from './houses';
 import { RoundManager } from './rounds';
 
 export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   private readonly _query: QueryWrapper;
   private _contract: PropHouseContract;
-  private _voting: Voting<CS>;
+  private _govPower: GovPowerManager<CS>;
   private _house: HouseManager;
   private _round: RoundManager<CS>;
 
@@ -42,10 +42,10 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
   }
 
   /**
-   * Voting helper methods and utilities
+   * Governance power helper methods and utilities
    */
-  public get voting() {
-    return this._voting;
+  public get govPower() {
+    return this._govPower;
   }
 
   /**
@@ -74,11 +74,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
 
     this._contract = PropHouse__factory.connect(this.addresses.evm.prophouse, this._evm);
     this._query = QueryWrapper.for(config.evmChainId);
-    this._voting = Voting.for<CS>(config);
+    this._govPower = GovPowerManager.for<CS>(config);
     this._house = HouseManager.for(config);
     this._round = RoundManager.for<CS>({
       ...config,
-      voting: this._voting,
+      govPower: this._govPower,
     });
   }
 
@@ -94,11 +94,11 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
     };
     this._evm = this.toEVMSignerOrProvider(evm);
     this._contract = this.contract.connect(evm);
-    this._voting = Voting.for<CS>(config);
+    this._govPower = GovPowerManager.for<CS>(config);
     this._house = HouseManager.for(config);
     this._round = RoundManager.for<CS>({
       ...config,
-      voting: this._voting,
+      govPower: this._govPower,
     });
     return this;
   }

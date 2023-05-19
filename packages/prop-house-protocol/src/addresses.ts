@@ -14,7 +14,7 @@ export interface RoundImpls {
   timedFunding: string;
 }
 
-export interface VotingStrategies {
+export interface GovPowerStrategies {
   balanceOf: string;
   whitelist: string;
   vanilla: string;
@@ -43,8 +43,8 @@ export interface EVMContracts {
 
 export interface StarknetContracts {
   roundFactory: string;
-  votingRegistry: string;
-  voting: VotingStrategies;
+  strategyRegistry: string;
+  govPower: GovPowerStrategies;
   auth: AuthStrategies;
   herodotus: HetodotusContracts;
   classHashes: ClassHashes;
@@ -69,11 +69,11 @@ export const contracts: Record<number, ContractAddresses> = {
     },
     starknet: {
       roundFactory: goerli.starknet.address.roundFactory,
-      votingRegistry: goerli.starknet.address.votingStrategyRegistry,
-      voting: {
-        balanceOf: goerli.starknet.address.ethereumBalanceOfVotingStrategy,
-        whitelist: goerli.starknet.address.merkleWhitelistVotingStrategy,
-        vanilla: goerli.starknet.address.vanillaVotingStrategy,
+      strategyRegistry: goerli.starknet.address.strategyRegistry,
+      govPower: {
+        balanceOf: goerli.starknet.address.ethereumBalanceOfGovPowerStrategy,
+        whitelist: goerli.starknet.address.merkleWhitelistGovPowerStrategy,
+        vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {
         timedFundingEthSig: goerli.starknet.address.timedFundingRoundEthSigAuthStrategy,

@@ -453,9 +453,7 @@ mod TimedFundingRound {
         let strategy_addresses_len = (*params.at(starting_index)).try_into().unwrap();
 
         let strategy_addresses = array_slice(params, starting_index + 1, strategy_addresses_len);
-        let strategy_params_flat_len = (*params.at(starting_index + 1 + strategy_addresses_len))
-            .try_into()
-            .unwrap();
+        let strategy_params_flat_len = (*params.at(starting_index + 1 + strategy_addresses_len)).try_into().unwrap();
 
         let strategy_params_flat = array_slice(
             params, starting_index + 2 + strategy_addresses_len, strategy_params_flat_len

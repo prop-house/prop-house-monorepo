@@ -617,6 +617,7 @@ export class QueryWrapper {
       }),
       config: {
         ...config,
+        proposalThreshold: 0, // TODO: Not yet implemented
         proposalPeriodStartTimestamp: Number(config.proposalPeriodStartTimestamp),
         proposalPeriodEndTimestamp: Number(config.proposalPeriodEndTimestamp),
         proposalPeriodDuration: Number(config.proposalPeriodDuration),
@@ -625,6 +626,7 @@ export class QueryWrapper {
         votePeriodDuration: Number(config.votePeriodDuration),
         claimPeriodEndTimestamp: Number(config.claimPeriodEndTimestamp),
       },
+      proposingStrategies: [], // TODO: Not yet implemented
       votingStrategies: round.votingStrategies.map(({ votingStrategy }) => votingStrategy),
     };
   }

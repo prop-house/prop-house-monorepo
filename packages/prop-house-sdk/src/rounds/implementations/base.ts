@@ -13,21 +13,21 @@ import {
 } from '../../types';
 import { bytes, splitUint256 } from '../../utils';
 import { ChainBase } from '../../chain-base';
-import { Voting } from '../../voting';
+import { GovPowerManager } from '../../gov-power';
 import randomBytes from 'randombytes';
 
 export abstract class RoundBase<
   RT extends RoundType,
   CS extends void | Custom = void,
 > extends ChainBase {
-  protected readonly _voting: Voting<CS>;
+  protected readonly _govPower: GovPowerManager<CS>;
   protected readonly _query: QueryWrapper;
   protected readonly _relayer: string;
 
   // prettier-ignore
   constructor(config: RoundChainConfig<CS>) {
     super(config);
-    this._voting = config.voting ?? Voting.for<CS>(config);
+    this._govPower = config.govPower ?? GovPowerManager.for<CS>(config);
     this._query = config.query ?? QueryWrapper.for(config.evmChainId);
     this._relayer = config.customStarknetRelayer || RoundBase.DEFAULT_STARKNET_RELAYERS[this._evmChainId];
   }

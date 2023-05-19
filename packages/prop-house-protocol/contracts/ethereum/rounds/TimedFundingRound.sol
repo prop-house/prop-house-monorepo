@@ -345,15 +345,15 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
 
         uint256 strategyParamsCount = vsCount + vsParamFlatCount + psCount + psParamsFlatCount;
 
-        payload = new uint256[](12 + strategyParamsCount);
+        payload = new uint256[](14 + strategyParamsCount);
 
         // `payload[0]` is reserved for the round address, which is
         // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
-        payload[2] = 9 + strategyParamsCount;
-        payload[3] = 8 + strategyParamsCount;
+        payload[2] = 11 + strategyParamsCount;
+        payload[3] = 10 + strategyParamsCount;
         payload[4] = keccak256(abi.encode(config.awards.pack())).mask250();
         payload[5] = config.proposalPeriodStartTimestamp;
         payload[6] = config.proposalPeriodDuration;
@@ -364,7 +364,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
 
         uint256 offset = 10;
         (payload, offset) = _addStrategies(payload, offset, config.proposingStrategies, config.proposingStrategyParamsFlat);
-        (payload, ) = _addStrategies(payload, offset, config.votingStrategies, config.votingStrategyParamsFlat);
+        (payload, ) = _addStrategies(payload, ++offset, config.votingStrategies, config.votingStrategyParamsFlat);
         return payload;
     }
 
@@ -380,11 +380,14 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         uint256[] memory params
     ) internal pure returns (uint256[] memory, uint256) {
         unchecked {
+            uint256 strategyCount = strategies.length;
+            uint256 paramCount = params.length;
+
             // Add strategy count
-            payload[offset++] = strategies.length;
+            payload[offset] = strategyCount;
 
             // Add strategies
-            for (uint256 i = 0; i < strategies.length; ++i) {
+            for (uint256 i = 0; i < strategyCount; ++i) {
                 uint256 strategy = strategies[i];
                 if (strategy == 0) {
                     revert INVALID_STRATEGY(strategy);
@@ -393,10 +396,10 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
             }
 
             // Add parameter count
-            payload[++offset] = params.length;
+            payload[++offset] = paramCount;
 
             // Add parameters
-            for (uint256 i = 0; i < params.length; ++i) {
+            for (uint256 i = 0; i < paramCount; ++i) {
                 payload[++offset] = params[i];
             }
             return (payload, offset);
@@ -456,13 +459,8 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
             revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
         }
-        if (config.proposalThreshold != 0) {
-            if (config.proposingStrategies.length == 0) {
-                revert NO_PROPOSING_STRATEGIES_PROVIDED();
-            }
-            if (config.proposalThreshold > MAX_250_BIT_UNSIGNED) {
-                revert PROPOSAL_THRESHOLD_EXCEEDS_MAX();
-            }
+        if (config.proposalThreshold != 0 && config.proposingStrategies.length == 0) {
+            revert NO_PROPOSING_STRATEGIES_PROVIDED();
         }
         if (config.votingStrategies.length == 0) {
             revert NO_VOTING_STRATEGIES_PROVIDED();

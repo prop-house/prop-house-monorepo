@@ -4,4 +4,4 @@ export {
   VanillaHandler,
   WhitelistHandler,
 } from './handlers';
-export { Voting } from './voting';
+export { GovPowerManager } from './manager';

@@ -17,7 +17,7 @@ interface ITimedFundingRound is IRound {
     /// @notice The timed funding round configuration
     struct RoundConfig {
         Asset[] awards;
-        uint256 proposalThreshold;
+        uint248 proposalThreshold;
         uint256[] proposingStrategies;
         uint256[] proposingStrategyParamsFlat;
         uint256[] votingStrategies;
@@ -63,9 +63,6 @@ interface ITimedFundingRound is IRound {
 
     /// @notice Thrown when the winner count is zero or greater than the maximum allowable
     error WINNER_COUNT_OUT_OF_RANGE();
-
-    /// @notice Thrown when the proposal threshold exceeds the maximum allowable
-    error PROPOSAL_THRESHOLD_EXCEEDS_MAX();
 
     /// @notice Thrown when the proposal threshold is non-zero and no proposing strategies are provided
     error NO_PROPOSING_STRATEGIES_PROVIDED();
@@ -116,7 +113,7 @@ interface ITimedFundingRound is IRound {
     /// @param winnerCount The number of possible winners
     event RoundRegistered(
         Asset[] awards,
-        uint256 proposalThreshold,
+        uint248 proposalThreshold,
         uint256[] proposingStrategies,
         uint256[] proposingStrategyParamsFlat,
         uint256[] votingStrategies,

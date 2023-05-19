@@ -3,7 +3,7 @@ import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/providers';
-import { StrategyHandlerBase, Voting } from './voting';
+import { StrategyHandlerBase, GovPowerManager } from './gov-power';
 import { QueryWrapper } from './gql';
 
 //#region Prop House
@@ -25,7 +25,7 @@ export interface ChainConfig {
 }
 
 export interface PropHouseConfig<CS extends Custom | void = void> extends ChainConfig {
-  customStrategies?: Newable<StrategyHandlerBase<VotingStrategyConfig<CS>>>[];
+  customStrategies?: Newable<StrategyHandlerBase<GovPowerStrategyConfig<CS>>>[];
   customStarknetRelayer?: string;
 }
 
@@ -105,7 +105,9 @@ export interface HouseInfo<T extends HouseType> {
 export namespace TimedFunding {
   export interface Config<CS extends Custom | void> {
     awards: Asset[];
-    strategies: VotingStrategyConfig<CS>[];
+    proposalThreshold?: BigNumberish;
+    proposingStrategies?: GovPowerStrategyConfig<CS>[];
+    votingStrategies: GovPowerStrategyConfig<CS>[];
     proposalPeriodStartUnixTimestamp: number;
     proposalPeriodDurationSecs: number;
     votePeriodDurationSecs: number;
@@ -113,6 +115,9 @@ export namespace TimedFunding {
   }
   export interface ConfigStruct {
     awards: AssetStruct[];
+    proposalThreshold: BigNumberish;
+    proposingStrategies: BigNumberish[];
+    proposingStrategyParamsFlat: BigNumberish[];
     votingStrategies: BigNumberish[];
     votingStrategyParamsFlat: BigNumberish[];
     proposalPeriodStartTimestamp: BigNumberish;
@@ -251,35 +256,42 @@ export interface RoundInfo<T extends RoundType, CS extends Custom | void = void>
 }
 
 export interface RoundChainConfig<CS extends void | Custom = void> extends ChainConfig {
-  voting?: Voting<CS>;
+  govPower?: GovPowerManager<CS>;
   query?: QueryWrapper;
   customStarknetRelayer?: string;
 }
 
 //#endregion
 
-//#region Voting Strategies
+//#region Governance Power Strategies
 
-export interface VotingChainConfig<CS extends Custom | void> extends ChainConfig {
-  customStrategies?: Newable<StrategyHandlerBase<VotingStrategyConfig<CS>>>[];
+export interface GovPowerChainConfig<CS extends Custom | void> extends ChainConfig {
+  customStrategies?: Newable<StrategyHandlerBase<GovPowerStrategyConfig<CS>>>[];
 }
 
-export enum VotingStrategyType {
+export enum GovPowerStrategyType {
   ERC1155_BALANCE_OF = 'ERC1155_BALANCE_OF',
   BALANCE_OF = 'BALANCE_OF',
   WHITELIST = 'WHITELIST',
   VANILLA = 'VANILLA',
 }
 
+// Helpful aliases
+export type ProposingStrategyType = GovPowerStrategyType;
+export type VotingStrategyType = GovPowerStrategyType;
+
+export const ProposingStrategyType = GovPowerStrategyType;
+export const VotingStrategyType = GovPowerStrategyType;
+
 export interface BalanceOf {
-  strategyType: VotingStrategyType.BALANCE_OF;
+  strategyType: GovPowerStrategyType.BALANCE_OF;
   assetType: AssetType.ERC20 | AssetType.ERC721;
   address: string;
   multiplier?: number;
 }
 
 export interface ERC1155BalanceOf {
-  strategyType: VotingStrategyType.ERC1155_BALANCE_OF;
+  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
   assetType: AssetType.ERC1155;
   address: string;
   tokenId: string;
@@ -288,38 +300,38 @@ export interface ERC1155BalanceOf {
 
 export interface WhitelistMember {
   address: string;
-  votingPower: string;
+  govPower: string;
 }
 
 export interface Whitelist {
-  strategyType: VotingStrategyType.WHITELIST;
+  strategyType: GovPowerStrategyType.WHITELIST;
   members: WhitelistMember[];
 }
 
 export interface Vanilla {
-  strategyType: VotingStrategyType.VANILLA;
+  strategyType: GovPowerStrategyType.VANILLA;
 }
 
 export interface Custom {
   strategyType: string;
 }
 
-export type DefaultVotingConfigs = BalanceOf | ERC1155BalanceOf | Whitelist | Vanilla;
+export type DefaultGovPowerConfigs = BalanceOf | ERC1155BalanceOf | Whitelist | Vanilla;
 
 // prettier-ignore
-export type VotingStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultVotingConfigs : DefaultVotingConfigs | C;
+export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;
 
-export interface VotingStrategy {
+export interface GovPowerStrategy {
   address: string;
   params: (string | number)[];
 }
 
-export interface VotingStrategyWithID extends VotingStrategy {
+export interface GovPowerStrategyWithID extends GovPowerStrategy {
   id: string;
 }
 
-export interface VotingConfig {
-  voter: string;
+export interface GovPowerConfig {
+  user: string;
   timestamp: string | number;
   address: string;
   params: (string | number)[];

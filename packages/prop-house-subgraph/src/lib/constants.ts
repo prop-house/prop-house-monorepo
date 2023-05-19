@@ -16,7 +16,7 @@ export namespace RoundEventState {
   export const CANCELLED = 'CANCELLED';
 }
 
-export namespace VotingStrategyType {
+export namespace GovPowerStrategyType {
   export const VANILLA = 'VANILLA';
   export const WHITELIST = 'WHITELIST';
   export const BALANCE_OF = 'BALANCE_OF';

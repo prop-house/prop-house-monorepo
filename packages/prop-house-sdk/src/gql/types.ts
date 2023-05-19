@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { RoundState, RoundType, VotingStrategy } from '../types';
+import { RoundState, RoundType, GovPowerStrategy } from '../types';
 
 export interface GlobalStats {
   roundCount: number;
@@ -24,10 +24,13 @@ export interface RoundCreator {
   passCount: number;
 }
 
-export interface RoundVotingStrategy extends VotingStrategy {
+export interface RoundGovPowerStrategy extends GovPowerStrategy {
   id: string;
   type: string;
 }
+
+export type ProposingStrategy = RoundGovPowerStrategy;
+export type VotingStrategy = RoundGovPowerStrategy;
 
 export interface RoundAsset {
   assetType: 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';
@@ -42,6 +45,7 @@ export interface RoundAward {
 
 export interface TimedFundingRoundConfig {
   winnerCount: number;
+  proposalThreshold: number;
   proposalPeriodStartTimestamp: number;
   proposalPeriodEndTimestamp: number;
   proposalPeriodDuration: number;
@@ -62,7 +66,8 @@ export interface Round {
   createdAt: number;
   state: RoundState;
   config: RoundConfig;
-  votingStrategies: RoundVotingStrategy[];
+  proposingStrategies: ProposingStrategy[];
+  votingStrategies: VotingStrategy[];
 }
 
 export interface RoundWithHouse extends Round {

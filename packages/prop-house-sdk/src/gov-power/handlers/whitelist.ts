@@ -1,5 +1,5 @@
 import { hash } from 'starknet';
-import { ChainConfig, VotingStrategyType, Whitelist, WhitelistMember } from '../../types';
+import { ChainConfig, GovPowerStrategyType, Whitelist, WhitelistMember } from '../../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { merkle, splitUint256 } from '../../utils';
 import { StrategyHandlerBase } from './base';
@@ -14,22 +14,22 @@ export class WhitelistHandler extends StrategyHandlerBase<Whitelist> {
   }
 
   /**
-   * The voting strategy type
+   * The governance power strategy type
    */
   public get type() {
-    return VotingStrategyType.WHITELIST;
+    return GovPowerStrategyType.WHITELIST;
   }
 
   /**
-   * The voting strategy address
+   * The governance power strategy address
    */
   public get address() {
-    return this._addresses.starknet.voting.whitelist;
+    return this._addresses.starknet.govPower.whitelist;
   }
 
   /**
-   * @notice Get the voting strategy params that will be shared amongst all users
-   * @param strategy The voting strategy information
+   * @notice Get the governance power strategy params that will be shared amongst all users
+   * @param strategy The  governance power strategy information
    */
   public async getStrategyParams(strategy: Whitelist): Promise<string[]> {
     if (!strategy.members?.length) {
@@ -39,28 +39,28 @@ export class WhitelistHandler extends StrategyHandlerBase<Whitelist> {
   }
 
   /**
-   * @notice Get the user voting strategy params
-   * For the merkle whitelist strategy, this is the address, voting power, and proof.
+   * @notice Get the user governance power strategy params
+   * For the merkle whitelist strategy, this is the address, governance power, and proof.
    */
   public async getUserParams(): Promise<string[]> {
     throw new Error('Not implemented');
   }
 
   /**
-   * @notice Get the voting power for the provided user, obtained from the whitelist
+   * @notice Get the governance power for the provided user, obtained from the whitelist
    */
-  public async getVotingPower(): Promise<BigNumber> {
+  public async getPower(): Promise<BigNumber> {
     throw new Error('Not implemented');
   }
 
   /**
    * Generate a merkle tree using the provided whitelist members
-   * @param members The whitelist addresses and voting power amounts
+   * @param members The whitelist addresses and governance power amounts
    */
   private generateMerkleTree(members: WhitelistMember[]) {
     const data = members
       .map(member => {
-        const { low, high } = splitUint256.SplitUint256.fromUint(BigInt(member.votingPower));
+        const { low, high } = splitUint256.SplitUint256.fromUint(BigInt(member.govPower));
         return [hash.computeHashOnElements([member.address, low, high]), member.address, low];
       })
       .sort((a, b) => {

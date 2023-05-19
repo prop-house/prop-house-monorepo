@@ -1,4 +1,4 @@
-import { ChainConfig, Vanilla, VotingStrategyType } from '../../types';
+import { ChainConfig, Vanilla, GovPowerStrategyType } from '../../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { StrategyHandlerBase } from './base';
 
@@ -12,21 +12,21 @@ export class VanillaHandler extends StrategyHandlerBase<Vanilla> {
   }
 
   /**
-   * The voting strategy type
+   * The governance power strategy type
    */
   public get type() {
-    return VotingStrategyType.VANILLA;
+    return GovPowerStrategyType.VANILLA;
   }
 
   /**
-   * The voting strategy address
+   * The governance power strategy address
    */
   public get address() {
-    return this._addresses.starknet.voting.vanilla;
+    return this._addresses.starknet.govPower.vanilla;
   }
 
   /**
-   * @notice Get the voting strategy params that will be shared amongst all users
+   * @notice Get the governance power strategy params that will be shared amongst all users
    * No params are required for the vanilla strategy.
    */
   public async getStrategyParams(): Promise<string[]> {
@@ -34,7 +34,7 @@ export class VanillaHandler extends StrategyHandlerBase<Vanilla> {
   }
 
   /**
-   * @notice Get the voting strategy params for a single user.
+   * @notice Get the governance power strategy params for a single user.
    * No params are required for the vanilla strategy.
    */
   public async getUserParams(): Promise<string[]> {
@@ -42,9 +42,9 @@ export class VanillaHandler extends StrategyHandlerBase<Vanilla> {
   }
 
   /**
-   * @notice Returns a voting power of `1` for all users.
+   * @notice Returns a governance power of `1` for all users.
    */
-  public async getVotingPower(): Promise<BigNumber> {
+  public async getPower(): Promise<BigNumber> {
     return BigNumber.from(1);
   }
 }

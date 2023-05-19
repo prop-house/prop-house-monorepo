@@ -10,7 +10,7 @@ export {
   ChainId,
   HouseImpls,
   RoundImpls,
-  VotingStrategies,
+  GovPowerStrategies,
   EVMContracts,
   StarknetContracts,
   ContractAddresses,
