@@ -7,7 +7,7 @@ enum AssetType {
 
 enum GovPowerStrategyType {
   VANILLA
-  WHITELIST
+  ALLOWLIST
   BALANCE_OF
   UNKNOWN
 }

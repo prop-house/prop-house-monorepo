@@ -11,12 +11,12 @@ import { Call } from 'starknet';
 import {
   BalanceOfHandler,
   VanillaHandler,
-  WhitelistHandler,
+  AllowlistHandler,
   StrategyHandlerBase,
 } from './handlers';
 
 export class GovPowerManager<CS extends Custom | void = void> {
-  private readonly _defaults = [BalanceOfHandler, VanillaHandler, WhitelistHandler];
+  private readonly _defaults = [BalanceOfHandler, VanillaHandler, AllowlistHandler];
   private readonly _all: StrategyHandlerBase<GovPowerStrategyConfig<CS>>[];
 
   constructor(private readonly _config: GovPowerChainConfig<CS>) {

@@ -7,7 +7,7 @@ interface SolidityContract {
   source: string;
 }
 
-const whitelistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'AwardRouter'];
+const allowlistedContracts = ['MockERC20', 'MockERC721', 'MockERC1155', 'AwardRouter'];
 const test = 'test/ethereum';
 
 const runBlacksmith = () => {
@@ -262,7 +262,7 @@ const getFiles = () => {
   files.forEach(file => {
     const contracts = Object.keys(file.artifacts);
     contracts
-      .filter(c => whitelistedContracts.includes(c))
+      .filter(c => allowlistedContracts.includes(c))
       .forEach(contract => {
         const dir = file.sourceName.split('/');
         if (dir[0] !== 'contracts') return;

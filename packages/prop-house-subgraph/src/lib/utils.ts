@@ -106,7 +106,7 @@ export function getGovPowerStrategyType(addr: string): string {
     return GovPowerStrategyType.BALANCE_OF;
   }
   if (addr == '0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38') {
-    return GovPowerStrategyType.WHITELIST;
+    return GovPowerStrategyType.ALLOWLIST;
   }
   if (addr == '0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9') {
     return GovPowerStrategyType.VANILLA;

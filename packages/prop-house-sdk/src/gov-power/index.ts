@@ -2,6 +2,6 @@ export {
   StrategyHandlerBase,
   BalanceOfHandler,
   VanillaHandler,
-  WhitelistHandler,
+  AllowlistHandler,
 } from './handlers';
 export { GovPowerManager } from './manager';

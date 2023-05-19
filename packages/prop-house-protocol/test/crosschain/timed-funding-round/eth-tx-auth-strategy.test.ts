@@ -132,8 +132,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
           roundFactory: config.roundFactory.address,
           strategyRegistry: config.strategyRegistry.address,
           govPower: {
+            allowlist: constants.HashZero,
             balanceOf: constants.HashZero,
-            whitelist: constants.HashZero,
             vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {

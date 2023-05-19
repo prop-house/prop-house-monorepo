@@ -18,7 +18,7 @@
       "timedFundingRoundEthTxAuthStrategy": "0x7deb0c233822a1b389ef04ce777f516e4e120de8a4d981be5bf66daa5140a",
       "timedFundingRoundEthSigAuthStrategy": "0xe7670a1aa4cb06a70552b2eb1167aa7c07d21276401b83860bba7ae5148c42",
       "vanillaGovPowerStrategy": "0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9",
-      "merkleWhitelistGovPowerStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
+      "merkleAllowlistGovPowerStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
       "ethereumBalanceOfGovPowerStrategy": "0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f",
       "herodotus": {
         "factRegistry": "0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f",

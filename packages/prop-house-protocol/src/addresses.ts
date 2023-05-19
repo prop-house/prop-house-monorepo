@@ -15,8 +15,8 @@ export interface RoundImpls {
 }
 
 export interface GovPowerStrategies {
+  allowlist: string;
   balanceOf: string;
-  whitelist: string;
   vanilla: string;
 }
 
@@ -71,8 +71,8 @@ export const contracts: Record<number, ContractAddresses> = {
       roundFactory: goerli.starknet.address.roundFactory,
       strategyRegistry: goerli.starknet.address.strategyRegistry,
       govPower: {
+        allowlist: goerli.starknet.address.merkleAllowlistGovPowerStrategy,
         balanceOf: goerli.starknet.address.ethereumBalanceOfGovPowerStrategy,
-        whitelist: goerli.starknet.address.merkleWhitelistGovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {

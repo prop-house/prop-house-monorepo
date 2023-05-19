@@ -157,8 +157,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const vanillaVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/vanilla.cairo',
     );
-    const merkleWhitelistVotingStrategyFactory = await starknet.getContractFactory(
-      './contracts/starknet/common/voting/merkle_whitelist.cairo',
+    const merkleAllowlistVotingStrategyFactory = await starknet.getContractFactory(
+      './contracts/starknet/common/voting/merkle_allowlist.cairo',
     );
     const ethereumBalanceOfVotingStrategyFactory = await starknet.getContractFactory(
       './contracts/starknet/common/voting/ethereum_balance_of.cairo',
@@ -170,7 +170,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       timedFundingRoundEthTxAuthStrategyFactory,
       timedFundingRoundEthSigAuthStrategyFactory,
       vanillaVotingStrategyFactory,
-      merkleWhitelistVotingStrategyFactory,
+      merkleAllowlistVotingStrategyFactory,
       ethereumBalanceOfVotingStrategyFactory,
     ];
     let nonce = await starknet.getNonce(starknetDeployer.address, {
@@ -270,8 +270,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         maxFee: MAX_FEE,
       },
     );
-    const merkleWhitelistVotingStrategy = await starknetDeployer.deploy(
-      merkleWhitelistVotingStrategyFactory,
+    const merkleAllowlistVotingStrategy = await starknetDeployer.deploy(
+      merkleAllowlistVotingStrategyFactory,
       undefined,
       {
         maxFee: MAX_FEE,
@@ -310,7 +310,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           timedFundingRoundEthTxAuthStrategy: timedFundingRoundEthTxAuthStrategy.address,
           timedFundingRoundEthSigAuthStrategy: timedFundingRoundEthSigAuthStrategy.address,
           vanillaVotingStrategy: vanillaVotingStrategy.address,
-          merkleWhitelistVotingStrategy: merkleWhitelistVotingStrategy.address,
+          merkleAllowlistVotingStrategy: merkleAllowlistVotingStrategy.address,
           ethereumBalanceOfVotingStrategy: ethereumBalanceOfVotingStrategy.address,
           herodotus: config.herodotus,
         },

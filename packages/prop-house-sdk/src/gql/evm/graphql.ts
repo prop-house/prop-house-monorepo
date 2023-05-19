@@ -3145,7 +3145,7 @@ export enum VotingStrategyType {
   BalanceOf = 'BALANCE_OF',
   Unknown = 'UNKNOWN',
   Vanilla = 'VANILLA',
-  Whitelist = 'WHITELIST',
+  Allowlist = 'ALLOWLIST',
 }
 
 export type VotingStrategy_Filter = {

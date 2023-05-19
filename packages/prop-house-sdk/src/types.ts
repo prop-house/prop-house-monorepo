@@ -272,7 +272,7 @@ export interface GovPowerChainConfig<CS extends Custom | void> extends ChainConf
 export enum GovPowerStrategyType {
   ERC1155_BALANCE_OF = 'ERC1155_BALANCE_OF',
   BALANCE_OF = 'BALANCE_OF',
-  WHITELIST = 'WHITELIST',
+  ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
 }
 
@@ -298,14 +298,14 @@ export interface ERC1155BalanceOf {
   multiplier?: number;
 }
 
-export interface WhitelistMember {
+export interface AllowlistMember {
   address: string;
   govPower: string;
 }
 
-export interface Whitelist {
-  strategyType: GovPowerStrategyType.WHITELIST;
-  members: WhitelistMember[];
+export interface Allowlist {
+  strategyType: GovPowerStrategyType.ALLOWLIST;
+  members: AllowlistMember[];
 }
 
 export interface Vanilla {
@@ -316,7 +316,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOf | ERC1155BalanceOf | Whitelist | Vanilla;
+export type DefaultGovPowerConfigs = BalanceOf | ERC1155BalanceOf | Allowlist | Vanilla;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;
