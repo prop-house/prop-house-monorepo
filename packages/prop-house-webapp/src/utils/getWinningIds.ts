@@ -8,7 +8,7 @@ import { sortByVotesAndHandleTies } from './sortByVotesAndHandleTies';
 
 const getWinningIds = (proposals: StoredProposalWithVotes[], auction: StoredAuctionBase) => {
   if (isInfAuction(auction))
-    return proposals.filter(p => p.voteCountFor >= auction.quorum).map(p => p.id);
+    return proposals.filter(p => p.voteCountFor >= auction.quorumFor).map(p => p.id);
 
   // empty array to store winning ids
   const winningIds: number[] = [];

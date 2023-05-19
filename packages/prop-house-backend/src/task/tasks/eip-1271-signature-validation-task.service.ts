@@ -201,7 +201,7 @@ export class EIP1271SignatureValidationTaskService {
     );
 
     return (
-      votingPeriodEnd > new Date() && proposal.voteCountFor < infRound.quorum
+      votingPeriodEnd > new Date() && proposal.voteCountFor < infRound.quorumFor
     );
   }
 }

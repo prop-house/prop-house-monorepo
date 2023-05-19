@@ -6,4 +6,4 @@ import dayjs from 'dayjs';
  */
 export const isActiveProp = (prop: StoredProposal, round: StoredInfiniteAuction) =>
   dayjs(prop.createdDate).add(round.votingPeriod, 'seconds').isAfter(dayjs()) &&
-  prop.voteCountFor < round.quorum;
+  prop.voteCountFor < round.quorumFor;

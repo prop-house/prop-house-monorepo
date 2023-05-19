@@ -10,7 +10,7 @@ const RoundModuleWinner: React.FC<{ auction: StoredInfiniteAuction }> = ({ aucti
         <>
           <p style={{ fontWeight: 'bold' }}>What determines a winning proposal?</p>
           <br />
-          <p>{`Proposals that meet the round quorum (${auction.quorum} votes) before the voting period ends.`}</p>
+          <p>{`Proposals that meet the round quorum (${auction.quorumFor} votes) before the voting period ends.`}</p>
         </>
       }
       type="winner"
