@@ -1,8 +1,27 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log, BigInt } from '@graphprotocol/graph-ts';
 import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedFundingRound/TimedFundingRound';
-import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, VotingStrategy } from '../generated/schema';
-import { AssetStruct, computeAssetID, computeVotingStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
+import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
+import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
+
+export function storeGovPowerStrategy(addresses: BigInt[], params2D: BigInt[][], index: i32): string {
+  const address = addresses[index];
+  const params = params2D[index];
+  const strategyId = computeGovPowerStrategyID(
+    address,
+    params,
+  );
+
+  let strategy = GovPowerStrategy.load(strategyId);
+  if (!strategy) {
+    strategy = new GovPowerStrategy(strategyId);
+    strategy.type = getGovPowerStrategyType(address.toHex());
+    strategy.address = address;
+    strategy.params = params;
+    strategy.save();
+  }
+  return strategyId;
+}
 
 export function handleRoundRegistered(event: RoundRegistered): void {
   const round = Round.load(event.address.toHex());
@@ -19,6 +38,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
 
   config.round = round.id;
   config.winnerCount = event.params.winnerCount;
+  config.proposalThreshold = event.params.proposalThreshold;
   config.proposalPeriodStartTimestamp = event.params.proposalPeriodStartTimestamp;
   config.proposalPeriodDuration = event.params.proposalPeriodDuration;
   config.proposalPeriodEndTimestamp = config.proposalPeriodStartTimestamp.plus(
@@ -38,30 +58,32 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   config.registrationTx = event.transaction.hash;
   config.save();
 
-  // Store voting strategies
-  const params2D = get2DArray(event.params.votingStrategyParamsFlat);
-  for (let i = 0; i < event.params.votingStrategies.length; i++) {
-    const address = event.params.votingStrategies[i];
-    const strategyId = computeVotingStrategyID(
-      address,
-      params2D[i],
-    );
-
-    let strategy = VotingStrategy.load(strategyId);
-    if (!strategy) {
-      strategy = new VotingStrategy(strategyId);
-      strategy.type = getGovPowerStrategyType(address.toHex());
-      strategy.address = address;
-      strategy.params = params2D[i];
-      strategy.save();
+  // Store proposing strategies
+  const proposingStrategyParams2D = get2DArray(event.params.proposingStrategyParamsFlat);
+  for (let i = 0; i < event.params.proposingStrategies.length; i++) {
+    const strategyId = storeGovPowerStrategy(event.params.proposingStrategies, proposingStrategyParams2D, i);
+  
+    const roundProposingStrategyId = `${round.id}-${strategyId}-proposing`;
+    let roundProposingStrategy = RoundProposingStrategy.load(roundProposingStrategyId);
+    if (!roundProposingStrategy) {
+      roundProposingStrategy = new RoundProposingStrategy(roundProposingStrategyId);
+      roundProposingStrategy.round = round.id;
+      roundProposingStrategy.strategy = strategyId;
+      roundProposingStrategy.save();
     }
+  }
 
-    const roundVotingStrategyId = `${round.id}-${strategy.id}`;
+  // Store voting strategies
+  const votingStrategyParams2D = get2DArray(event.params.votingStrategyParamsFlat);
+  for (let i = 0; i < event.params.votingStrategies.length; i++) {
+    const strategyId = storeGovPowerStrategy(event.params.votingStrategies, votingStrategyParams2D, i);
+  
+    const roundVotingStrategyId = `${round.id}-${strategyId}-voting`;
     let roundVotingStrategy = RoundVotingStrategy.load(roundVotingStrategyId);
     if (!roundVotingStrategy) {
       roundVotingStrategy = new RoundVotingStrategy(roundVotingStrategyId);
       roundVotingStrategy.round = round.id;
-      roundVotingStrategy.votingStrategy = strategy.id;
+      roundVotingStrategy.strategy = strategyId;
       roundVotingStrategy.save();
     }
   }

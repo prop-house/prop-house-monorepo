@@ -360,6 +360,7 @@ export enum Award_OrderBy {
   RoundProposalPeriodDuration = 'round__proposalPeriodDuration',
   RoundProposalPeriodEndTimestamp = 'round__proposalPeriodEndTimestamp',
   RoundProposalPeriodStartTimestamp = 'round__proposalPeriodStartTimestamp',
+  RoundProposalThreshold = 'round__proposalThreshold',
   RoundRegisteredAt = 'round__registeredAt',
   RoundRegistrationTx = 'round__registrationTx',
   RoundVotePeriodDuration = 'round__votePeriodDuration',
@@ -794,6 +795,89 @@ export enum Deposit_OrderBy {
   RoundType = 'round__type',
 }
 
+export type GovPowerStrategy = {
+  __typename?: 'GovPowerStrategy';
+  /** The governance power strategy Starknet address */
+  address: Scalars['BigInt'];
+  /** The governance power strategy ID (pedersen(address,params)) */
+  id: Scalars['ID'];
+  /** The governance power strategy params */
+  params: Array<Scalars['BigInt']>;
+  /** Rounds that use this strategy for proposing */
+  proposingStrategyRounds: Array<RoundProposingStrategy>;
+  /** The governance power strategy type (UNKNOWN if it cannot be determined) */
+  type: GovPowerStrategyType;
+  /** Rounds that use this strategy for voting */
+  votingStrategyRounds: Array<RoundVotingStrategy>;
+};
+
+export type GovPowerStrategyProposingStrategyRoundsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundProposingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundProposingStrategy_Filter>;
+};
+
+export type GovPowerStrategyVotingStrategyRoundsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundVotingStrategy_Filter>;
+};
+
+export enum GovPowerStrategyType {
+  Allowlist = 'ALLOWLIST',
+  BalanceOf = 'BALANCE_OF',
+  Unknown = 'UNKNOWN',
+  Vanilla = 'VANILLA',
+}
+
+export type GovPowerStrategy_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  address?: InputMaybe<Scalars['BigInt']>;
+  address_gt?: InputMaybe<Scalars['BigInt']>;
+  address_gte?: InputMaybe<Scalars['BigInt']>;
+  address_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  address_lt?: InputMaybe<Scalars['BigInt']>;
+  address_lte?: InputMaybe<Scalars['BigInt']>;
+  address_not?: InputMaybe<Scalars['BigInt']>;
+  address_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  and?: InputMaybe<Array<InputMaybe<GovPowerStrategy_Filter>>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  or?: InputMaybe<Array<InputMaybe<GovPowerStrategy_Filter>>>;
+  params?: InputMaybe<Array<Scalars['BigInt']>>;
+  params_contains?: InputMaybe<Array<Scalars['BigInt']>>;
+  params_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  params_not?: InputMaybe<Array<Scalars['BigInt']>>;
+  params_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
+  params_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
+  proposingStrategyRounds_?: InputMaybe<RoundProposingStrategy_Filter>;
+  type?: InputMaybe<GovPowerStrategyType>;
+  type_in?: InputMaybe<Array<GovPowerStrategyType>>;
+  type_not?: InputMaybe<GovPowerStrategyType>;
+  type_not_in?: InputMaybe<Array<GovPowerStrategyType>>;
+  votingStrategyRounds_?: InputMaybe<RoundVotingStrategy_Filter>;
+};
+
+export enum GovPowerStrategy_OrderBy {
+  Address = 'address',
+  Id = 'id',
+  Params = 'params',
+  ProposingStrategyRounds = 'proposingStrategyRounds',
+  Type = 'type',
+  VotingStrategyRounds = 'votingStrategyRounds',
+}
+
 export type House = {
   __typename?: 'House';
   /** The house metadata URI */
@@ -1213,6 +1297,8 @@ export type Query = {
   claims: Array<Claim>;
   deposit?: Maybe<Deposit>;
   deposits: Array<Deposit>;
+  govPowerStrategies: Array<GovPowerStrategy>;
+  govPowerStrategy?: Maybe<GovPowerStrategy>;
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
@@ -1227,6 +1313,8 @@ export type Query = {
   roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
+  roundProposingStrategies: Array<RoundProposingStrategy>;
+  roundProposingStrategy?: Maybe<RoundProposingStrategy>;
   roundVotingStrategies: Array<RoundVotingStrategy>;
   roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
@@ -1234,8 +1322,6 @@ export type Query = {
   timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
-  votingStrategies: Array<VotingStrategy>;
-  votingStrategy?: Maybe<VotingStrategy>;
 };
 
 export type Query_MetaArgs = {
@@ -1354,6 +1440,22 @@ export type QueryDepositsArgs = {
   where?: InputMaybe<Deposit_Filter>;
 };
 
+export type QueryGovPowerStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<GovPowerStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GovPowerStrategy_Filter>;
+};
+
+export type QueryGovPowerStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
 export type QueryHouseArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
@@ -1466,6 +1568,22 @@ export type QueryRoundImplementationsArgs = {
   where?: InputMaybe<RoundImplementation_Filter>;
 };
 
+export type QueryRoundProposingStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundProposingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundProposingStrategy_Filter>;
+};
+
+export type QueryRoundProposingStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
 export type QueryRoundVotingStrategiesArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
@@ -1522,22 +1640,6 @@ export type QueryTransfersArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Transfer_Filter>;
-};
-
-export type QueryVotingStrategiesArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VotingStrategy_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<VotingStrategy_Filter>;
-};
-
-export type QueryVotingStrategyArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 export type Reclaim = {
@@ -1863,6 +1965,8 @@ export type Round = {
   id: Scalars['ID'];
   /** The round manager */
   manager?: Maybe<Account>;
+  /** The selected proposing strategies */
+  proposingStrategies: Array<RoundProposingStrategy>;
   /** All round asset reclamations */
   reclamations?: Maybe<Array<Reclaim>>;
   /** All round asset rescues */
@@ -1901,6 +2005,14 @@ export type RoundDepositsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<Deposit_Filter>;
+};
+
+export type RoundProposingStrategiesArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundProposingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<RoundProposingStrategy_Filter>;
 };
 
 export type RoundReclamationsArgs = {
@@ -2115,14 +2227,97 @@ export enum RoundImplementation_OrderBy {
   Type = 'type',
 }
 
-export type RoundVotingStrategy = {
-  __typename?: 'RoundVotingStrategy';
-  /** A concatenation of the round address and strategy ID */
+export type RoundProposingStrategy = {
+  __typename?: 'RoundProposingStrategy';
+  /** A concatenation of the round address, strategy ID, and '-proposing' */
   id: Scalars['ID'];
   /** The round that the voting strategy belongs to */
   round: Round;
   /** The voting strategy */
-  votingStrategy: VotingStrategy;
+  strategy: GovPowerStrategy;
+};
+
+export type RoundProposingStrategy_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  and?: InputMaybe<Array<InputMaybe<RoundProposingStrategy_Filter>>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  or?: InputMaybe<Array<InputMaybe<RoundProposingStrategy_Filter>>>;
+  round?: InputMaybe<Scalars['String']>;
+  round_?: InputMaybe<Round_Filter>;
+  round_contains?: InputMaybe<Scalars['String']>;
+  round_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_ends_with?: InputMaybe<Scalars['String']>;
+  round_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_gt?: InputMaybe<Scalars['String']>;
+  round_gte?: InputMaybe<Scalars['String']>;
+  round_in?: InputMaybe<Array<Scalars['String']>>;
+  round_lt?: InputMaybe<Scalars['String']>;
+  round_lte?: InputMaybe<Scalars['String']>;
+  round_not?: InputMaybe<Scalars['String']>;
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_not_ends_with?: InputMaybe<Scalars['String']>;
+  round_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  round_not_in?: InputMaybe<Array<Scalars['String']>>;
+  round_not_starts_with?: InputMaybe<Scalars['String']>;
+  round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  round_starts_with?: InputMaybe<Scalars['String']>;
+  round_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy?: InputMaybe<Scalars['String']>;
+  strategy_?: InputMaybe<GovPowerStrategy_Filter>;
+  strategy_contains?: InputMaybe<Scalars['String']>;
+  strategy_contains_nocase?: InputMaybe<Scalars['String']>;
+  strategy_ends_with?: InputMaybe<Scalars['String']>;
+  strategy_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_gt?: InputMaybe<Scalars['String']>;
+  strategy_gte?: InputMaybe<Scalars['String']>;
+  strategy_in?: InputMaybe<Array<Scalars['String']>>;
+  strategy_lt?: InputMaybe<Scalars['String']>;
+  strategy_lte?: InputMaybe<Scalars['String']>;
+  strategy_not?: InputMaybe<Scalars['String']>;
+  strategy_not_contains?: InputMaybe<Scalars['String']>;
+  strategy_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  strategy_not_ends_with?: InputMaybe<Scalars['String']>;
+  strategy_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_not_in?: InputMaybe<Array<Scalars['String']>>;
+  strategy_not_starts_with?: InputMaybe<Scalars['String']>;
+  strategy_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_starts_with?: InputMaybe<Scalars['String']>;
+  strategy_starts_with_nocase?: InputMaybe<Scalars['String']>;
+};
+
+export enum RoundProposingStrategy_OrderBy {
+  Id = 'id',
+  Round = 'round',
+  RoundCreatedAt = 'round__createdAt',
+  RoundCreationTx = 'round__creationTx',
+  RoundDescription = 'round__description',
+  RoundEventState = 'round__eventState',
+  RoundId = 'round__id',
+  RoundTitle = 'round__title',
+  RoundType = 'round__type',
+  Strategy = 'strategy',
+  StrategyAddress = 'strategy__address',
+  StrategyId = 'strategy__id',
+  StrategyType = 'strategy__type',
+}
+
+export type RoundVotingStrategy = {
+  __typename?: 'RoundVotingStrategy';
+  /** A concatenation of the round address, strategy ID, and '-voting' */
+  id: Scalars['ID'];
+  /** The round that the voting strategy belongs to */
+  round: Round;
+  /** The voting strategy */
+  strategy: GovPowerStrategy;
 };
 
 export type RoundVotingStrategy_Filter = {
@@ -2159,27 +2354,27 @@ export type RoundVotingStrategy_Filter = {
   round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
   round_starts_with?: InputMaybe<Scalars['String']>;
   round_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy?: InputMaybe<Scalars['String']>;
-  votingStrategy_?: InputMaybe<VotingStrategy_Filter>;
-  votingStrategy_contains?: InputMaybe<Scalars['String']>;
-  votingStrategy_contains_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy_ends_with?: InputMaybe<Scalars['String']>;
-  votingStrategy_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy_gt?: InputMaybe<Scalars['String']>;
-  votingStrategy_gte?: InputMaybe<Scalars['String']>;
-  votingStrategy_in?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategy_lt?: InputMaybe<Scalars['String']>;
-  votingStrategy_lte?: InputMaybe<Scalars['String']>;
-  votingStrategy_not?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_contains?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_ends_with?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_in?: InputMaybe<Array<Scalars['String']>>;
-  votingStrategy_not_starts_with?: InputMaybe<Scalars['String']>;
-  votingStrategy_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  votingStrategy_starts_with?: InputMaybe<Scalars['String']>;
-  votingStrategy_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy?: InputMaybe<Scalars['String']>;
+  strategy_?: InputMaybe<GovPowerStrategy_Filter>;
+  strategy_contains?: InputMaybe<Scalars['String']>;
+  strategy_contains_nocase?: InputMaybe<Scalars['String']>;
+  strategy_ends_with?: InputMaybe<Scalars['String']>;
+  strategy_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_gt?: InputMaybe<Scalars['String']>;
+  strategy_gte?: InputMaybe<Scalars['String']>;
+  strategy_in?: InputMaybe<Array<Scalars['String']>>;
+  strategy_lt?: InputMaybe<Scalars['String']>;
+  strategy_lte?: InputMaybe<Scalars['String']>;
+  strategy_not?: InputMaybe<Scalars['String']>;
+  strategy_not_contains?: InputMaybe<Scalars['String']>;
+  strategy_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  strategy_not_ends_with?: InputMaybe<Scalars['String']>;
+  strategy_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_not_in?: InputMaybe<Array<Scalars['String']>>;
+  strategy_not_starts_with?: InputMaybe<Scalars['String']>;
+  strategy_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
+  strategy_starts_with?: InputMaybe<Scalars['String']>;
+  strategy_starts_with_nocase?: InputMaybe<Scalars['String']>;
 };
 
 export enum RoundVotingStrategy_OrderBy {
@@ -2192,10 +2387,10 @@ export enum RoundVotingStrategy_OrderBy {
   RoundId = 'round__id',
   RoundTitle = 'round__title',
   RoundType = 'round__type',
-  VotingStrategy = 'votingStrategy',
-  VotingStrategyAddress = 'votingStrategy__address',
-  VotingStrategyId = 'votingStrategy__id',
-  VotingStrategyType = 'votingStrategy__type',
+  Strategy = 'strategy',
+  StrategyAddress = 'strategy__address',
+  StrategyId = 'strategy__id',
+  StrategyType = 'strategy__type',
 }
 
 export type Round_Filter = {
@@ -2319,6 +2514,7 @@ export type Round_Filter = {
   manager_starts_with?: InputMaybe<Scalars['String']>;
   manager_starts_with_nocase?: InputMaybe<Scalars['String']>;
   or?: InputMaybe<Array<InputMaybe<Round_Filter>>>;
+  proposingStrategies_?: InputMaybe<RoundProposingStrategy_Filter>;
   reclamations_?: InputMaybe<Reclaim_Filter>;
   rescues_?: InputMaybe<Rescue_Filter>;
   timedFundingConfig?: InputMaybe<Scalars['String']>;
@@ -2406,6 +2602,7 @@ export enum Round_OrderBy {
   Id = 'id',
   Manager = 'manager',
   ManagerId = 'manager__id',
+  ProposingStrategies = 'proposingStrategies',
   Reclamations = 'reclamations',
   Rescues = 'rescues',
   TimedFundingConfig = 'timedFundingConfig',
@@ -2414,6 +2611,7 @@ export enum Round_OrderBy {
   TimedFundingConfigProposalPeriodDuration = 'timedFundingConfig__proposalPeriodDuration',
   TimedFundingConfigProposalPeriodEndTimestamp = 'timedFundingConfig__proposalPeriodEndTimestamp',
   TimedFundingConfigProposalPeriodStartTimestamp = 'timedFundingConfig__proposalPeriodStartTimestamp',
+  TimedFundingConfigProposalThreshold = 'timedFundingConfig__proposalThreshold',
   TimedFundingConfigRegisteredAt = 'timedFundingConfig__registeredAt',
   TimedFundingConfigRegistrationTx = 'timedFundingConfig__registrationTx',
   TimedFundingConfigVotePeriodDuration = 'timedFundingConfig__votePeriodDuration',
@@ -2444,6 +2642,8 @@ export type Subscription = {
   claims: Array<Claim>;
   deposit?: Maybe<Deposit>;
   deposits: Array<Deposit>;
+  govPowerStrategies: Array<GovPowerStrategy>;
+  govPowerStrategy?: Maybe<GovPowerStrategy>;
   house?: Maybe<House>;
   houseImplementation?: Maybe<HouseImplementation>;
   houseImplementations: Array<HouseImplementation>;
@@ -2458,6 +2658,8 @@ export type Subscription = {
   roundCreators: Array<RoundCreator>;
   roundImplementation?: Maybe<RoundImplementation>;
   roundImplementations: Array<RoundImplementation>;
+  roundProposingStrategies: Array<RoundProposingStrategy>;
+  roundProposingStrategy?: Maybe<RoundProposingStrategy>;
   roundVotingStrategies: Array<RoundVotingStrategy>;
   roundVotingStrategy?: Maybe<RoundVotingStrategy>;
   rounds: Array<Round>;
@@ -2465,8 +2667,6 @@ export type Subscription = {
   timedFundingRoundConfigs: Array<TimedFundingRoundConfig>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
-  votingStrategies: Array<VotingStrategy>;
-  votingStrategy?: Maybe<VotingStrategy>;
 };
 
 export type Subscription_MetaArgs = {
@@ -2585,6 +2785,22 @@ export type SubscriptionDepositsArgs = {
   where?: InputMaybe<Deposit_Filter>;
 };
 
+export type SubscriptionGovPowerStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<GovPowerStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<GovPowerStrategy_Filter>;
+};
+
+export type SubscriptionGovPowerStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
 export type SubscriptionHouseArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
@@ -2697,6 +2913,22 @@ export type SubscriptionRoundImplementationsArgs = {
   where?: InputMaybe<RoundImplementation_Filter>;
 };
 
+export type SubscriptionRoundProposingStrategiesArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<RoundProposingStrategy_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<RoundProposingStrategy_Filter>;
+};
+
+export type SubscriptionRoundProposingStrategyArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
 export type SubscriptionRoundVotingStrategiesArgs = {
   block?: InputMaybe<Block_Height>;
   first?: InputMaybe<Scalars['Int']>;
@@ -2755,22 +2987,6 @@ export type SubscriptionTransfersArgs = {
   where?: InputMaybe<Transfer_Filter>;
 };
 
-export type SubscriptionVotingStrategiesArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<VotingStrategy_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<VotingStrategy_Filter>;
-};
-
-export type SubscriptionVotingStrategyArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
 export type TimedFundingRoundConfig = {
   __typename?: 'TimedFundingRoundConfig';
   /** The awards offered in the round */
@@ -2785,6 +3001,8 @@ export type TimedFundingRoundConfig = {
   proposalPeriodEndTimestamp: Scalars['BigInt'];
   /** The timestamp at which the proposal period starts */
   proposalPeriodStartTimestamp: Scalars['BigInt'];
+  /** The minimum governance power required to propose */
+  proposalThreshold: Scalars['BigInt'];
   /** The unix timestamp when the round configuration was registered */
   registeredAt: Scalars['BigInt'];
   /** The registration transaction hash */
@@ -2855,6 +3073,14 @@ export type TimedFundingRoundConfig_Filter = {
   proposalPeriodStartTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodStartTimestamp_not?: InputMaybe<Scalars['BigInt']>;
   proposalPeriodStartTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  proposalThreshold?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_gt?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_gte?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  proposalThreshold_lt?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_lte?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_not?: InputMaybe<Scalars['BigInt']>;
+  proposalThreshold_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
   registeredAt?: InputMaybe<Scalars['BigInt']>;
   registeredAt_gt?: InputMaybe<Scalars['BigInt']>;
   registeredAt_gte?: InputMaybe<Scalars['BigInt']>;
@@ -2935,6 +3161,7 @@ export enum TimedFundingRoundConfig_OrderBy {
   ProposalPeriodDuration = 'proposalPeriodDuration',
   ProposalPeriodEndTimestamp = 'proposalPeriodEndTimestamp',
   ProposalPeriodStartTimestamp = 'proposalPeriodStartTimestamp',
+  ProposalThreshold = 'proposalThreshold',
   RegisteredAt = 'registeredAt',
   RegistrationTx = 'registrationTx',
   Round = 'round',
@@ -3119,77 +3346,6 @@ export enum Transfer_OrderBy {
   TransferredAt = 'transferredAt',
 }
 
-export type VotingStrategy = {
-  __typename?: 'VotingStrategy';
-  /** The voting strategy Starknet address */
-  address: Scalars['BigInt'];
-  /** The voting strategy ID (pedersen(address,params)) */
-  id: Scalars['ID'];
-  /** The voting strategy params */
-  params: Array<Scalars['BigInt']>;
-  /** Rounds that use this voting strategy */
-  rounds: Array<RoundVotingStrategy>;
-  /** The voting strategy type (UNKNOWN if it cannot be determined) */
-  type: VotingStrategyType;
-};
-
-export type VotingStrategyRoundsArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<RoundVotingStrategy_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<RoundVotingStrategy_Filter>;
-};
-
-export enum VotingStrategyType {
-  BalanceOf = 'BALANCE_OF',
-  Unknown = 'UNKNOWN',
-  Vanilla = 'VANILLA',
-  Allowlist = 'ALLOWLIST',
-}
-
-export type VotingStrategy_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  address?: InputMaybe<Scalars['BigInt']>;
-  address_gt?: InputMaybe<Scalars['BigInt']>;
-  address_gte?: InputMaybe<Scalars['BigInt']>;
-  address_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  address_lt?: InputMaybe<Scalars['BigInt']>;
-  address_lte?: InputMaybe<Scalars['BigInt']>;
-  address_not?: InputMaybe<Scalars['BigInt']>;
-  address_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  and?: InputMaybe<Array<InputMaybe<VotingStrategy_Filter>>>;
-  id?: InputMaybe<Scalars['ID']>;
-  id_gt?: InputMaybe<Scalars['ID']>;
-  id_gte?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<Scalars['ID']>>;
-  id_lt?: InputMaybe<Scalars['ID']>;
-  id_lte?: InputMaybe<Scalars['ID']>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
-  or?: InputMaybe<Array<InputMaybe<VotingStrategy_Filter>>>;
-  params?: InputMaybe<Array<Scalars['BigInt']>>;
-  params_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  params_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
-  params_not?: InputMaybe<Array<Scalars['BigInt']>>;
-  params_not_contains?: InputMaybe<Array<Scalars['BigInt']>>;
-  params_not_contains_nocase?: InputMaybe<Array<Scalars['BigInt']>>;
-  rounds_?: InputMaybe<RoundVotingStrategy_Filter>;
-  type?: InputMaybe<VotingStrategyType>;
-  type_in?: InputMaybe<Array<VotingStrategyType>>;
-  type_not?: InputMaybe<VotingStrategyType>;
-  type_not_in?: InputMaybe<Array<VotingStrategyType>>;
-};
-
-export enum VotingStrategy_OrderBy {
-  Address = 'address',
-  Id = 'id',
-  Params = 'params',
-  Rounds = 'rounds',
-  Type = 'type',
-}
-
 export type _Block_ = {
   __typename?: '_Block_';
   /** The hash of the block */
@@ -3243,10 +3399,10 @@ export type HouseFieldsFragment = {
   }>;
 };
 
-export type VotingStrategyFieldsFragment = {
-  __typename?: 'VotingStrategy';
+export type GovPowerStrategyFieldsFragment = {
+  __typename?: 'GovPowerStrategy';
   id: string;
-  type: VotingStrategyType;
+  type: GovPowerStrategyType;
   address: any;
   params: Array<any>;
 };
@@ -3254,6 +3410,7 @@ export type VotingStrategyFieldsFragment = {
 export type TimedFundingRoundConfigFieldsFragment = {
   __typename?: 'TimedFundingRoundConfig';
   winnerCount: number;
+  proposalThreshold: any;
   proposalPeriodStartTimestamp: any;
   proposalPeriodEndTimestamp: any;
   proposalPeriodDuration: any;
@@ -3277,12 +3434,22 @@ export type RoundFieldsFragment = {
   createdAt: any;
   eventState: RoundEventState;
   manager?: { __typename?: 'Account'; id: string } | null;
+  proposingStrategies: Array<{
+    __typename?: 'RoundProposingStrategy';
+    strategy: {
+      __typename?: 'GovPowerStrategy';
+      id: string;
+      type: GovPowerStrategyType;
+      address: any;
+      params: Array<any>;
+    };
+  }>;
   votingStrategies: Array<{
     __typename?: 'RoundVotingStrategy';
-    votingStrategy: {
-      __typename?: 'VotingStrategy';
+    strategy: {
+      __typename?: 'GovPowerStrategy';
       id: string;
-      type: VotingStrategyType;
+      type: GovPowerStrategyType;
       address: any;
       params: Array<any>;
     };
@@ -3290,6 +3457,7 @@ export type RoundFieldsFragment = {
   timedFundingConfig?: {
     __typename?: 'TimedFundingRoundConfig';
     winnerCount: number;
+    proposalThreshold: any;
     proposalPeriodStartTimestamp: any;
     proposalPeriodEndTimestamp: any;
     proposalPeriodDuration: any;
@@ -3380,12 +3548,22 @@ export type ManyRoundsQuery = {
     createdAt: any;
     eventState: RoundEventState;
     manager?: { __typename?: 'Account'; id: string } | null;
+    proposingStrategies: Array<{
+      __typename?: 'RoundProposingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
+        id: string;
+        type: GovPowerStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
     votingStrategies: Array<{
       __typename?: 'RoundVotingStrategy';
-      votingStrategy: {
-        __typename?: 'VotingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
         id: string;
-        type: VotingStrategyType;
+        type: GovPowerStrategyType;
         address: any;
         params: Array<any>;
       };
@@ -3393,6 +3571,7 @@ export type ManyRoundsQuery = {
     timedFundingConfig?: {
       __typename?: 'TimedFundingRoundConfig';
       winnerCount: number;
+      proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
       proposalPeriodEndTimestamp: any;
       proposalPeriodDuration: any;
@@ -3446,12 +3625,22 @@ export type ManyRoundsWithHouseInfoQuery = {
       }>;
     };
     manager?: { __typename?: 'Account'; id: string } | null;
+    proposingStrategies: Array<{
+      __typename?: 'RoundProposingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
+        id: string;
+        type: GovPowerStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
     votingStrategies: Array<{
       __typename?: 'RoundVotingStrategy';
-      votingStrategy: {
-        __typename?: 'VotingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
         id: string;
-        type: VotingStrategyType;
+        type: GovPowerStrategyType;
         address: any;
         params: Array<any>;
       };
@@ -3459,6 +3648,7 @@ export type ManyRoundsWithHouseInfoQuery = {
     timedFundingConfig?: {
       __typename?: 'TimedFundingRoundConfig';
       winnerCount: number;
+      proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
       proposalPeriodEndTimestamp: any;
       proposalPeriodDuration: any;
@@ -3490,12 +3680,22 @@ export type RoundQuery = {
     createdAt: any;
     eventState: RoundEventState;
     manager?: { __typename?: 'Account'; id: string } | null;
+    proposingStrategies: Array<{
+      __typename?: 'RoundProposingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
+        id: string;
+        type: GovPowerStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
     votingStrategies: Array<{
       __typename?: 'RoundVotingStrategy';
-      votingStrategy: {
-        __typename?: 'VotingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
         id: string;
-        type: VotingStrategyType;
+        type: GovPowerStrategyType;
         address: any;
         params: Array<any>;
       };
@@ -3503,6 +3703,7 @@ export type RoundQuery = {
     timedFundingConfig?: {
       __typename?: 'TimedFundingRoundConfig';
       winnerCount: number;
+      proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
       proposalPeriodEndTimestamp: any;
       proposalPeriodDuration: any;
@@ -3552,12 +3753,22 @@ export type RoundWithHouseInfoQuery = {
       }>;
     };
     manager?: { __typename?: 'Account'; id: string } | null;
+    proposingStrategies: Array<{
+      __typename?: 'RoundProposingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
+        id: string;
+        type: GovPowerStrategyType;
+        address: any;
+        params: Array<any>;
+      };
+    }>;
     votingStrategies: Array<{
       __typename?: 'RoundVotingStrategy';
-      votingStrategy: {
-        __typename?: 'VotingStrategy';
+      strategy: {
+        __typename?: 'GovPowerStrategy';
         id: string;
-        type: VotingStrategyType;
+        type: GovPowerStrategyType;
         address: any;
         params: Array<any>;
       };
@@ -3565,6 +3776,7 @@ export type RoundWithHouseInfoQuery = {
     timedFundingConfig?: {
       __typename?: 'TimedFundingRoundConfig';
       winnerCount: number;
+      proposalThreshold: any;
       proposalPeriodStartTimestamp: any;
       proposalPeriodEndTimestamp: any;
       proposalPeriodDuration: any;
@@ -3600,20 +3812,20 @@ export type ManyBalancesQuery = {
   }>;
 };
 
-export type ManyVotingStrategiesQueryVariables = Exact<{
+export type ManyGovPowerStrategiesQueryVariables = Exact<{
   first: Scalars['Int'];
   skip: Scalars['Int'];
-  orderBy?: InputMaybe<VotingStrategy_OrderBy>;
+  orderBy?: InputMaybe<GovPowerStrategy_OrderBy>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<VotingStrategy_Filter>;
+  where?: InputMaybe<GovPowerStrategy_Filter>;
 }>;
 
-export type ManyVotingStrategiesQuery = {
+export type ManyGovPowerStrategiesQuery = {
   __typename?: 'Query';
-  votingStrategies: Array<{
-    __typename?: 'VotingStrategy';
+  govPowerStrategies: Array<{
+    __typename?: 'GovPowerStrategy';
     id: string;
-    type: VotingStrategyType;
+    type: GovPowerStrategyType;
     address: any;
     params: Array<any>;
   }>;
@@ -3717,13 +3929,13 @@ export const HouseFieldsFragmentDoc = {
     },
   ],
 } as unknown as DocumentNode<HouseFieldsFragment, unknown>;
-export const VotingStrategyFieldsFragmentDoc = {
+export const GovPowerStrategyFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -3735,7 +3947,7 @@ export const VotingStrategyFieldsFragmentDoc = {
       },
     },
   ],
-} as unknown as DocumentNode<VotingStrategyFieldsFragment, unknown>;
+} as unknown as DocumentNode<GovPowerStrategyFieldsFragment, unknown>;
 export const TimedFundingRoundConfigFieldsFragmentDoc = {
   kind: 'Document',
   definitions: [
@@ -3750,6 +3962,7 @@ export const TimedFundingRoundConfigFieldsFragmentDoc = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -3810,19 +4023,41 @@ export const RoundFieldsFragmentDoc = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'proposingStrategies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'strategy' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'votingStrategies' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'votingStrategy' },
+                  name: { kind: 'Name', value: 'strategy' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'VotingStrategyFields' },
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
                       },
                     ],
                   },
@@ -3848,8 +4083,8 @@ export const RoundFieldsFragmentDoc = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -3871,6 +4106,7 @@ export const RoundFieldsFragmentDoc = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -4219,8 +4455,8 @@ export const ManyRoundsDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4242,6 +4478,7 @@ export const ManyRoundsDocument = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -4297,19 +4534,41 @@ export const ManyRoundsDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'proposingStrategies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'strategy' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'votingStrategies' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'votingStrategy' },
+                  name: { kind: 'Name', value: 'strategy' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'VotingStrategyFields' },
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
                       },
                     ],
                   },
@@ -4430,8 +4689,8 @@ export const ManyRoundsWithHouseInfoDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4453,6 +4712,7 @@ export const ManyRoundsWithHouseInfoDocument = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -4508,19 +4768,41 @@ export const ManyRoundsWithHouseInfoDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'proposingStrategies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'strategy' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'votingStrategies' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'votingStrategy' },
+                  name: { kind: 'Name', value: 'strategy' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'VotingStrategyFields' },
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
                       },
                     ],
                   },
@@ -4639,8 +4921,8 @@ export const RoundDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4662,6 +4944,7 @@ export const RoundDocument = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -4717,19 +5000,41 @@ export const RoundDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'proposingStrategies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'strategy' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'votingStrategies' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'votingStrategy' },
+                  name: { kind: 'Name', value: 'strategy' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'VotingStrategyFields' },
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
                       },
                     ],
                   },
@@ -4807,8 +5112,8 @@ export const RoundWithHouseInfoDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -4830,6 +5135,7 @@ export const RoundWithHouseInfoDocument = {
         kind: 'SelectionSet',
         selections: [
           { kind: 'Field', name: { kind: 'Name', value: 'winnerCount' } },
+          { kind: 'Field', name: { kind: 'Name', value: 'proposalThreshold' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodStartTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodEndTimestamp' } },
           { kind: 'Field', name: { kind: 'Name', value: 'proposalPeriodDuration' } },
@@ -4885,19 +5191,41 @@ export const RoundWithHouseInfoDocument = {
           },
           {
             kind: 'Field',
+            name: { kind: 'Name', value: 'proposingStrategies' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'strategy' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'FragmentSpread',
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            kind: 'Field',
             name: { kind: 'Name', value: 'votingStrategies' },
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
                 {
                   kind: 'Field',
-                  name: { kind: 'Name', value: 'votingStrategy' },
+                  name: { kind: 'Name', value: 'strategy' },
                   selectionSet: {
                     kind: 'SelectionSet',
                     selections: [
                       {
                         kind: 'FragmentSpread',
-                        name: { kind: 'Name', value: 'VotingStrategyFields' },
+                        name: { kind: 'Name', value: 'GovPowerStrategyFields' },
                       },
                     ],
                   },
@@ -5073,13 +5401,13 @@ export const ManyBalancesDocument = {
     },
   ],
 } as unknown as DocumentNode<ManyBalancesQuery, ManyBalancesQueryVariables>;
-export const ManyVotingStrategiesDocument = {
+export const ManyGovPowerStrategiesDocument = {
   kind: 'Document',
   definitions: [
     {
       kind: 'OperationDefinition',
       operation: 'query',
-      name: { kind: 'Name', value: 'manyVotingStrategies' },
+      name: { kind: 'Name', value: 'manyGovPowerStrategies' },
       variableDefinitions: [
         {
           kind: 'VariableDefinition',
@@ -5100,7 +5428,7 @@ export const ManyVotingStrategiesDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'orderBy' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy_orderBy' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy_orderBy' } },
         },
         {
           kind: 'VariableDefinition',
@@ -5110,7 +5438,7 @@ export const ManyVotingStrategiesDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy_filter' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy_filter' } },
         },
       ],
       selectionSet: {
@@ -5118,7 +5446,7 @@ export const ManyVotingStrategiesDocument = {
         selections: [
           {
             kind: 'Field',
-            name: { kind: 'Name', value: 'votingStrategies' },
+            name: { kind: 'Name', value: 'govPowerStrategies' },
             arguments: [
               {
                 kind: 'Argument',
@@ -5149,7 +5477,7 @@ export const ManyVotingStrategiesDocument = {
             selectionSet: {
               kind: 'SelectionSet',
               selections: [
-                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'VotingStrategyFields' } },
+                { kind: 'FragmentSpread', name: { kind: 'Name', value: 'GovPowerStrategyFields' } },
               ],
             },
           },
@@ -5158,8 +5486,8 @@ export const ManyVotingStrategiesDocument = {
     },
     {
       kind: 'FragmentDefinition',
-      name: { kind: 'Name', value: 'VotingStrategyFields' },
-      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'VotingStrategy' } },
+      name: { kind: 'Name', value: 'GovPowerStrategyFields' },
+      typeCondition: { kind: 'NamedType', name: { kind: 'Name', value: 'GovPowerStrategy' } },
       selectionSet: {
         kind: 'SelectionSet',
         selections: [
@@ -5171,7 +5499,7 @@ export const ManyVotingStrategiesDocument = {
       },
     },
   ],
-} as unknown as DocumentNode<ManyVotingStrategiesQuery, ManyVotingStrategiesQueryVariables>;
+} as unknown as DocumentNode<ManyGovPowerStrategiesQuery, ManyGovPowerStrategiesQueryVariables>;
 export const ManyDepositsDocument = {
   kind: 'Document',
   definitions: [

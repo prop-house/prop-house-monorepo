@@ -5,14 +5,14 @@ import {
   Deposit_OrderBy,
   House_OrderBy,
   Round_OrderBy,
-  VotingStrategy_OrderBy,
+  GovPowerStrategy_OrderBy,
   RoundQuery as IRoundQuery,
   RoundWithHouseInfoQuery as IRoundWithHouseInfoQuery,
   HouseQuery as IHouseQuery,
   House_Filter,
   Round_Filter,
   Balance_Filter,
-  VotingStrategy_Filter,
+  GovPowerStrategy_Filter,
   Deposit_Filter,
   Claim_Filter,
 } from './evm/graphql';
@@ -24,7 +24,7 @@ import {
   ManyHousesQuery,
   ManyRoundsQuery,
   ManyRoundsWithHouseInfoQuery,
-  ManyVotingStrategiesQuery,
+  ManyGovPowerStrategiesQuery,
   RoundQuery,
   RoundWithHouseInfoQuery,
 } from './queries.evm';
@@ -364,16 +364,34 @@ export class QueryWrapper {
   }
 
   /**
-   * Get voting strategy information
+   * Get governance power strategy information
    * @param config Filtering, pagination, and ordering configuration
    */
-  public async getVotingStrategies(
-    config: Partial<QueryConfig<VotingStrategy_OrderBy, VotingStrategy_Filter>> = {},
+  public async getGovPowerStrategies(
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
   ) {
     return this._gql.evm.request(
-      ManyVotingStrategiesQuery,
-      toPaginated(this.merge(getDefaultConfig(VotingStrategy_OrderBy.Id), config)),
+      ManyGovPowerStrategiesQuery,
+      toPaginated(this.merge(getDefaultConfig(GovPowerStrategy_OrderBy.Id), config)),
     );
+  }
+
+  /**
+   * Get proposing strategy information for a single round
+   * @param roundAddress The round address
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getRoundProposingStrategies(
+    roundAddress: Address,
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
+  ) {
+    return this.getGovPowerStrategies({
+      ...config,
+      where: {
+        ...config.where,
+        proposingStrategyRounds_: { round: roundAddress.toLowerCase() },
+      },
+    });
   }
 
   /**
@@ -383,13 +401,13 @@ export class QueryWrapper {
    */
   public async getRoundVotingStrategies(
     roundAddress: Address,
-    config: Partial<QueryConfig<VotingStrategy_OrderBy, VotingStrategy_Filter>> = {},
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
   ) {
-    return this.getVotingStrategies({
+    return this.getGovPowerStrategies({
       ...config,
       where: {
         ...config.where,
-        rounds_: { round: roundAddress.toLowerCase() },
+        votingStrategyRounds_: { round: roundAddress.toLowerCase() },
       },
     });
   }
@@ -617,7 +635,7 @@ export class QueryWrapper {
       }),
       config: {
         ...config,
-        proposalThreshold: 0, // TODO: Not yet implemented
+        proposalThreshold: Number(config.proposalThreshold),
         proposalPeriodStartTimestamp: Number(config.proposalPeriodStartTimestamp),
         proposalPeriodEndTimestamp: Number(config.proposalPeriodEndTimestamp),
         proposalPeriodDuration: Number(config.proposalPeriodDuration),
@@ -626,8 +644,8 @@ export class QueryWrapper {
         votePeriodDuration: Number(config.votePeriodDuration),
         claimPeriodEndTimestamp: Number(config.claimPeriodEndTimestamp),
       },
-      proposingStrategies: [], // TODO: Not yet implemented
-      votingStrategies: round.votingStrategies.map(({ votingStrategy }) => votingStrategy),
+      proposingStrategies: round.proposingStrategies.map(({ strategy }) => strategy),
+      votingStrategies: round.votingStrategies.map(({ strategy }) => strategy),
     };
   }
 

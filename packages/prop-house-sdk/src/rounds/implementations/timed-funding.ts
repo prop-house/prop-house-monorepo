@@ -339,7 +339,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const { votingStrategies } = await this._query.getRoundVotingStrategies(config.round);
+    const { govPowerStrategies } = await this._query.getRoundVotingStrategies(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -349,7 +349,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
       address,
       timestamp,
-      votingStrategies,
+      govPowerStrategies,
     );
     const totalVotingPower = nonZeroStrategyVotingPowers.reduce(
       (acc, { govPower }) => acc.add(govPower),
@@ -451,7 +451,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const { votingStrategies } = await this._query.getVotingStrategies({
+    const { govPowerStrategies } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.votingStrategyIds,
       },
@@ -462,7 +462,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voterAddress,
       timestamp,
-      votingStrategies,
+      govPowerStrategies,
     );
 
     const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('vote'), calldata);

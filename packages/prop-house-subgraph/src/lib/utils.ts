@@ -54,11 +54,11 @@ export function padBytes32(s: string): string {
 }
 
 /**
- * Compute a voting strategy ID
- * @param strategy The voting strategy address
- * @param params The voting strategy params
+ * Compute a governance power strategy ID
+ * @param strategy The governance power strategy address
+ * @param params The governance power strategy params
  */
-export function computeVotingStrategyID(strategy: BigInt, params: BigInt[]): string {
+export function computeGovPowerStrategyID(strategy: BigInt, params: BigInt[]): string {
   return computeHashOnElements([strategy.toString()].concat(params.map<string>((p: BigInt) => p.toString())));
 }
 

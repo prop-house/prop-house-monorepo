@@ -144,6 +144,9 @@ type Round @entity {
   "The configuration for a timed funding round (Null if type != TIMED_FUNDING)"
   timedFundingConfig: TimedFundingRoundConfig
 
+  "The selected proposing strategies"
+  proposingStrategies: [RoundProposingStrategy!]! @derivedFrom(field: "round")
+
   "The selected voting strategies"
   votingStrategies: [RoundVotingStrategy!]! @derivedFrom(field: "round")
 
@@ -193,6 +196,9 @@ type TimedFundingRoundConfig @entity {
   "The number of possible round winners"
   winnerCount: Int!
 
+  "The minimum governance power required to propose"
+  proposalThreshold: BigInt!
+
   "The timestamp at which the proposal period starts"
   proposalPeriodStartTimestamp: BigInt!
 
@@ -238,15 +244,26 @@ type RoundCreator @entity {
   passCount: Int!
 }
 
-type RoundVotingStrategy @entity {
-  "A concatenation of the round address and strategy ID"
+type RoundProposingStrategy @entity {
+  "A concatenation of the round address, strategy ID, and '-proposing'"
   id: ID!
 
   "The round that the voting strategy belongs to"
   round: Round!
 
   "The voting strategy"
-  votingStrategy: VotingStrategy!
+  strategy: GovPowerStrategy!
+}
+
+type RoundVotingStrategy @entity {
+  "A concatenation of the round address, strategy ID, and '-voting'"
+  id: ID!
+
+  "The round that the voting strategy belongs to"
+  round: Round!
+
+  "The voting strategy"
+  strategy: GovPowerStrategy!
 }
 
 type Account @entity {
@@ -367,21 +384,24 @@ type Transfer @entity(immutable: true) {
   round: Round!
 }
 
-type VotingStrategy @entity {
-  "The voting strategy ID (pedersen(address,params))"
+type GovPowerStrategy @entity {
+  "The governance power strategy ID (pedersen(address,params))"
   id: ID!
 
   "The governance power strategy type (UNKNOWN if it cannot be determined)"
   type: GovPowerStrategyType!
 
-  "The voting strategy Starknet address"
+  "The governance power strategy Starknet address"
   address: BigInt!
 
-  "The voting strategy params"
+  "The governance power strategy params"
   params: [BigInt!]!
 
-  "Rounds that use this voting strategy"
-  rounds: [RoundVotingStrategy!]! @derivedFrom(field: "votingStrategy")
+  "Rounds that use this strategy for proposing"
+  proposingStrategyRounds: [RoundProposingStrategy!]! @derivedFrom(field: "strategy")
+
+  "Rounds that use this strategy for voting"
+  votingStrategyRounds: [RoundVotingStrategy!]! @derivedFrom(field: "strategy")
 }
 
 type Asset @entity {

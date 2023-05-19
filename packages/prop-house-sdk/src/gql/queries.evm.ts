@@ -22,8 +22,8 @@ export const HouseFields = graphql(`
   }
 `);
 
-export const VotingStrategyFields = graphql(`
-  fragment VotingStrategyFields on VotingStrategy {
+export const GovPowerStrategyFields = graphql(`
+  fragment GovPowerStrategyFields on GovPowerStrategy {
     id
     type
     address
@@ -34,6 +34,7 @@ export const VotingStrategyFields = graphql(`
 export const TimedFundingRoundConfigFields = graphql(`
   fragment TimedFundingRoundConfigFields on TimedFundingRoundConfig {
     winnerCount
+    proposalThreshold
     proposalPeriodStartTimestamp
     proposalPeriodEndTimestamp
     proposalPeriodDuration
@@ -63,9 +64,14 @@ export const RoundFields = graphql(`
     manager {
       id
     }
+    proposingStrategies {
+      strategy {
+        ...GovPowerStrategyFields
+      }
+    }
     votingStrategies {
-      votingStrategy {
-        ...VotingStrategyFields
+      strategy {
+        ...GovPowerStrategyFields
       }
     }
     timedFundingConfig {
@@ -191,22 +197,22 @@ export const ManyBalancesQuery = graphql(`
   }
 `);
 
-export const ManyVotingStrategiesQuery = graphql(`
-  query manyVotingStrategies(
+export const ManyGovPowerStrategiesQuery = graphql(`
+  query manyGovPowerStrategies(
     $first: Int!
     $skip: Int!
-    $orderBy: VotingStrategy_orderBy
+    $orderBy: GovPowerStrategy_orderBy
     $orderDirection: OrderDirection
-    $where: VotingStrategy_filter
+    $where: GovPowerStrategy_filter
   ) {
-    votingStrategies(
+    govPowerStrategies(
       first: $first
       skip: $skip
       orderBy: $orderBy
       orderDirection: $orderDirection
       where: $where
     ) {
-      ...VotingStrategyFields
+      ...GovPowerStrategyFields
     }
   }
 `);

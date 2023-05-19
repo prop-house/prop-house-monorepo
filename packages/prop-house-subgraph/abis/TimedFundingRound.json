@@ -96,8 +96,14 @@
     "type": "error"
   },
   {
-    "inputs": [],
-    "name": "INVALID_VOTING_STRATEGY",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "strategy",
+        "type": "uint256"
+      }
+    ],
+    "name": "INVALID_STRATEGY",
     "type": "error"
   },
   {
@@ -122,7 +128,12 @@
   },
   {
     "inputs": [],
-    "name": "NO_STRATEGIES_PROVIDED",
+    "name": "NO_PROPOSING_STRATEGIES_PROVIDED",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NO_VOTING_STRATEGIES_PROVIDED",
     "type": "error"
   },
   {
@@ -305,6 +316,24 @@
         "internalType": "struct Asset[]",
         "name": "awards",
         "type": "tuple[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint248",
+        "name": "proposalThreshold",
+        "type": "uint248"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "proposingStrategies",
+        "type": "uint256[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256[]",
+        "name": "proposingStrategyParamsFlat",
+        "type": "uint256[]"
       },
       {
         "indexed": false,
@@ -744,6 +773,21 @@
             "internalType": "struct Asset[]",
             "name": "awards",
             "type": "tuple[]"
+          },
+          {
+            "internalType": "uint248",
+            "name": "proposalThreshold",
+            "type": "uint248"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "proposingStrategies",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "proposingStrategyParamsFlat",
+            "type": "uint256[]"
           },
           {
             "internalType": "uint256[]",
@@ -1202,6 +1246,21 @@
             "internalType": "struct Asset[]",
             "name": "awards",
             "type": "tuple[]"
+          },
+          {
+            "internalType": "uint248",
+            "name": "proposalThreshold",
+            "type": "uint248"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "proposingStrategies",
+            "type": "uint256[]"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "proposingStrategyParamsFlat",
+            "type": "uint256[]"
           },
           {
             "internalType": "uint256[]",
