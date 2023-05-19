@@ -2,9 +2,8 @@ use starknet::{
     EthAddress, Felt252TryIntoEthAddress, StorageAccess, SyscallResult, StorageBaseAddress,
     storage_read_syscall, storage_write_syscall, storage_address_from_base_and_offset
 };
-use prop_house::common::utils::u256::as_u256;
 use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
-use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU64};
+use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU64, as_u256};
 use prop_house::common::utils::constants::{TWO_POW_160, TWO_POW_224, MASK_160, MASK_64};
 use integer::{
     U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252

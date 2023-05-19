@@ -1,5 +1,5 @@
 use starknet::EthAddress;
-use prop_house::common::utils::u256::as_u256;
+use prop_house::common::utils::integer::as_u256;
 use keccak::keccak_uint256s_be;
 use integer::u128_byte_reverse;
 use hash::LegacyHash;

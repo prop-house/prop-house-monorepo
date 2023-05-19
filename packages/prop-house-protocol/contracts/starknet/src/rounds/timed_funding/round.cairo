@@ -95,7 +95,7 @@ mod TimedFundingRound {
     use prop_house::common::utils::constants::{MASK_192, MASK_250};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use prop_house::common::utils::u256::U256Zeroable;
+    use prop_house::common::utils::integer::U256Zeroable;
     use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
