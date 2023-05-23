@@ -49,7 +49,7 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
 
-  const showVotesSection =
+  const showVoteControls =
     round && isTimedAuction(round)
       ? auctionStatus === AuctionStatus.AuctionVoting ||
         auctionStatus === AuctionStatus.AuctionEnded
@@ -177,7 +177,7 @@ const ProposalCard: React.FC<{
               )}
             </div>
 
-            {showVotesSection && (
+            {showVoteControls && (
               <div className={classes.timestampAndlinkContainer}>
                 <div className={clsx(classes.avatarAndPropNumber)}>
                   <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
