@@ -49,6 +49,12 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
 
+  const showVoteDisplay =
+    round && isTimedAuction(round)
+      ? auctionStatus === AuctionStatus.AuctionVoting ||
+        auctionStatus === AuctionStatus.AuctionEnded
+      : infRoundFilter !== InfRoundFilterType.Active;
+
   const showVoteControls =
     round && isTimedAuction(round)
       ? auctionStatus === AuctionStatus.AuctionVoting ||
@@ -176,14 +182,13 @@ const ProposalCard: React.FC<{
                 </>
               )}
             </div>
-
-            {showVoteControls && (
-              <div className={classes.timestampAndlinkContainer}>
-                <div className={clsx(classes.avatarAndPropNumber)}>
-                  <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
-                    {round && isTimedAuction(round) ? (
+            <div className={classes.timestampAndlinkContainer}>
+              <div className={clsx(classes.avatarAndPropNumber)}>
+                <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
+                  {showVoteDisplay && <VotesDisplay proposal={proposal} />}
+                  {showVoteControls &&
+                    (round && isTimedAuction(round) ? (
                       <>
-                        <VotesDisplay proposal={proposal} />
                         {cardStatus === ProposalCardStatus.Voting && (
                           <div className={classes.votingArrows}>
                             <span className={classes.plusArrow}>+</span>
@@ -193,11 +198,10 @@ const ProposalCard: React.FC<{
                       </>
                     ) : (
                       <InfRoundVotingControls proposal={proposal} />
-                    )}
-                  </div>
+                    ))}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </Card>
       </div>
