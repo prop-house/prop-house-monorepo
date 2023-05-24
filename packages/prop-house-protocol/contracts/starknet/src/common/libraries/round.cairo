@@ -30,8 +30,7 @@ struct ProposalWithId {
 /// * `last_updated_at` - The last time the proposal was updated.
 /// * `is_cancelled` - Whether the proposal is cancelled.
 fn pack_proposal_fields(proposer: EthAddress, last_updated_at: u64, is_cancelled: bool) -> felt252 {
-    let mut packed = 0;
-    packed = packed | proposer.address.into();
+    let mut packed = proposer.address.into();
     packed = packed | (u256_from_felt252(last_updated_at.into()) * TWO_POW_160);
     packed = packed | (u256_from_felt252(is_cancelled.into()) * TWO_POW_224);
 

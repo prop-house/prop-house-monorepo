@@ -34,8 +34,7 @@ fn pack_round_config_fields(
     proposal_period_end_timestamp: u64,
     vote_period_end_timestamp: u64,
 ) -> felt252 {
-    let mut packed = 0;
-    packed = packed | u256_from_felt252(round_state.into());
+    let mut packed = u256_from_felt252(round_state.into());
     packed = packed | (u256_from_felt252(winner_count.into()) * TWO_POW_8);
     packed = packed | (u256_from_felt252(proposal_period_start_timestamp.into()) * TWO_POW_24);
     packed = packed | (u256_from_felt252(proposal_period_end_timestamp.into()) * TWO_POW_88);
