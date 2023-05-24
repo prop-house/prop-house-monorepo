@@ -28,7 +28,7 @@ import {
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
-import { VotingStrategyType as GQLVotingStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
+import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { hexlify, toUtf8Bytes } from 'ethers/lib/utils';
@@ -70,7 +70,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
 
   let l2RoundAddress: string;
   let proposeCalldata: string[];
-  let vanillaVotingStrategyId: string;
+  let vanillaGovPowerStrategyId: string;
 
   before(async () => {
     await starknet.devnet.restart();
@@ -88,28 +88,28 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknetCommit,
     } = config);
 
-    const vanillaVotingStrategyMetadata = getStarknetArtifactPaths('VanillaVotingStrategy');
-    const vanillaVotingStrategyFactory = new StarknetContractFactory({
+    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths('VanillaGovernancePowerStrategy');
+    const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
       hre,
-      abiPath: vanillaVotingStrategyMetadata.sierra,
-      metadataPath: vanillaVotingStrategyMetadata.sierra,
-      casmPath: vanillaVotingStrategyMetadata.casm,
+      abiPath: vanillaGovPowerStrategyMetadata.sierra,
+      metadataPath: vanillaGovPowerStrategyMetadata.sierra,
+      casmPath: vanillaGovPowerStrategyMetadata.casm,
     });
-    await config.starknetSigner.declare(vanillaVotingStrategyFactory, {
+    await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });
 
-    const vanillaVotingStrategy = await config.starknetSigner.deploy(vanillaVotingStrategyFactory);
-    vanillaVotingStrategyId = hash.computeHashOnElements([vanillaVotingStrategy.address]);
+    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(vanillaGovPowerStrategyFactory);
+    vanillaGovPowerStrategyId = hash.computeHashOnElements([vanillaGovPowerStrategy.address]);
 
     // Stub `getRoundVotingStrategies`
     gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
       Promise.resolve({
-        votingStrategies: [
+        govPowerStrategies: [
           {
-            id: hash.computeHashOnElements([vanillaVotingStrategy.address]),
-            type: GQLVotingStrategyType.Vanilla,
-            address: vanillaVotingStrategy.address,
+            id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+            type: GQLGovPowerStrategyType.Vanilla,
+            address: vanillaGovPowerStrategy.address,
             params: [],
           },
         ],
@@ -130,11 +130,11 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
         },
         starknet: {
           roundFactory: config.roundFactory.address,
-          votingRegistry: config.votingStrategyRegistry.address,
-          voting: {
+          strategyRegistry: config.strategyRegistry.address,
+          govPower: {
+            allowlist: constants.HashZero,
             balanceOf: constants.HashZero,
-            whitelist: constants.HashZero,
-            vanilla: vanillaVotingStrategy.address,
+            vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
             timedFundingEthSig: config.timedFundingRoundEthSigAuthStrategy.address,
@@ -159,6 +159,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
       proposer: signer.address,
       metadataUri: METADATA_URI,
+      proposingStrategyIds: [],
+      proposingStrategyParams: [],
     });
 
     await starknet.devnet.loadL1MessagingContract(networkUrl, mockStarknetMessaging.address);
@@ -180,7 +182,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
         description: 'A round used for testing purposes',
         config: {
           awards: [asset],
-          strategies: [
+          votingStrategies: [
             {
               strategyType: VotingStrategyType.VANILLA,
             },
@@ -351,6 +353,8 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
     const proposeCalldata = propHouse.round.timedFunding.getProposeCalldata({
       proposer: signer.address,
       metadataUri: 'Test cancel proposal!',
+      proposingStrategyIds: [],
+      proposingStrategyParams: [],
     });
 
     // Commit the hash of the payload to the StarkNet commit L1 contract
@@ -421,7 +425,7 @@ describe('TimedFundingRoundStrategy - ETH Transaction Auth Strategy', () => {
           votingPower: 1,
         },
       ],
-      votingStrategyIds: [vanillaVotingStrategyId],
+      votingStrategyIds: [vanillaGovPowerStrategyId],
       votingStrategyParams: [[]],
     });
 

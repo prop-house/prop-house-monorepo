@@ -1,9 +1,9 @@
 import {
   Custom,
-  VotingChainConfig,
-  VotingStrategy,
-  VotingStrategyConfig,
-  VotingStrategyWithID,
+  GovPowerChainConfig,
+  GovPowerStrategy,
+  GovPowerStrategyConfig,
+  GovPowerStrategyWithID,
 } from '../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { hexStripZeros } from '@ethersproject/bytes';
@@ -11,31 +11,31 @@ import { Call } from 'starknet';
 import {
   BalanceOfHandler,
   VanillaHandler,
-  WhitelistHandler,
+  AllowlistHandler,
   StrategyHandlerBase,
 } from './handlers';
 
-export class Voting<CS extends Custom | void = void> {
-  private readonly _defaults = [BalanceOfHandler, VanillaHandler, WhitelistHandler];
-  private readonly _all: StrategyHandlerBase<VotingStrategyConfig<CS>>[];
+export class GovPowerManager<CS extends Custom | void = void> {
+  private readonly _defaults = [BalanceOfHandler, VanillaHandler, AllowlistHandler];
+  private readonly _all: StrategyHandlerBase<GovPowerStrategyConfig<CS>>[];
 
-  constructor(private readonly _config: VotingChainConfig<CS>) {
+  constructor(private readonly _config: GovPowerChainConfig<CS>) {
     this._all = [...this._defaults, ...(this._config.customStrategies || [])].map(
-      Handler => new Handler(this._config) as StrategyHandlerBase<VotingStrategyConfig<CS>>,
+      Handler => new Handler(this._config) as StrategyHandlerBase<GovPowerStrategyConfig<CS>>,
     );
   }
 
   /**
-   * Returns a `Voting` instance for the provided chain configuration
-   * @param config The prop house voting config
+   * Returns a `GovPowerManager` instance for the provided chain configuration
+   * @param config The prop house governance power config
    */
-  public static for<CS extends Custom | void = void>(config: VotingChainConfig<CS>) {
-    return new Voting<CS>(config);
+  public static for<CS extends Custom | void = void>(config: GovPowerChainConfig<CS>) {
+    return new GovPowerManager<CS>(config);
   }
 
   /**
-   * Get a voting utility class instance
-   * @param typeOrAddress The voting strategy type or address
+   * Get a governance power utility class instance
+   * @param typeOrAddress The governance power strategy type or address
    */
   public get(typeOrAddress: string) {
     const strategy = this._all.find(s => {
@@ -50,16 +50,16 @@ export class Voting<CS extends Custom | void = void> {
       return searchVariations.includes(typeOrAddress.toLowerCase());
     });
     if (!strategy) {
-      throw new Error(`Unknown voting strategy type or address: ${typeOrAddress}`);
+      throw new Error(`Unknown governance power strategy type or address: ${typeOrAddress}`);
     }
     return strategy;
   }
 
   /**
-   * @notice Get the address and parameter information for the provided voting strategy
+   * @notice Get the address and parameter information for the provided governance power strategy
    * @param strategy The strategy information
    */
-  public async getStrategyAddressAndParams(strategy: VotingStrategyConfig<CS>) {
+  public async getStrategyAddressAndParams(strategy: GovPowerStrategyConfig<CS>) {
     const util = this.get(strategy.strategyType)!;
     return {
       address: util?.address,
@@ -70,7 +70,7 @@ export class Voting<CS extends Custom | void = void> {
   public async getUserParamsForStrategies(
     account: string,
     timestamp: string,
-    strategies: VotingStrategyWithID[],
+    strategies: GovPowerStrategyWithID[],
   ): Promise<string[][]> {
     return Promise.all(
       strategies.map(async strategy =>
@@ -82,7 +82,7 @@ export class Voting<CS extends Custom | void = void> {
   public async getPreCallsForStrategies(
     account: string,
     timestamp: string,
-    strategies: VotingStrategyWithID[],
+    strategies: GovPowerStrategyWithID[],
   ): Promise<Call[]> {
     const preCalls = await Promise.all(
       strategies.map(async strategy =>
@@ -92,11 +92,11 @@ export class Voting<CS extends Custom | void = void> {
     return preCalls.flat().filter(call => call !== undefined) as Call[];
   }
 
-  public async getVotingPowerForStrategies<VS extends VotingStrategy>(
-    voter: string,
+  public async getPowerForStrategies<GPS extends GovPowerStrategy>(
+    user: string,
     timestamp: string | number,
-    strategies: VS[],
-    filterZeroVotingPower = true,
+    strategies: GPS[],
+    filterZeroGovPower = true,
   ) {
     const results = await Promise.all(
       strategies.map(async strategy => {
@@ -106,27 +106,27 @@ export class Voting<CS extends Custom | void = void> {
             ...strategy,
             address: handler.address,
           },
-          votingPower: await handler.getVotingPower({
+          govPower: await handler.getPower({
             ...strategy,
             address: handler.address,
-            voter,
+            user,
             timestamp,
           }),
         };
       }),
     );
-    if (filterZeroVotingPower) {
-      return results.filter(({ votingPower }) => !votingPower.eq(0));
+    if (filterZeroGovPower) {
+      return results.filter(({ govPower }) => !govPower.eq(0));
     }
     return results;
   }
 
-  public async getTotalVotingPower(
-    voter: string,
+  public async getTotalPower(
+    user: string,
     timestamp: string | number,
-    strategies: VotingStrategy[],
+    strategies: GovPowerStrategy[],
   ) {
-    const results = await this.getVotingPowerForStrategies(voter, timestamp, strategies);
-    return results.reduce((acc, curr) => acc.add(curr.votingPower), BigNumber.from(0));
+    const results = await this.getPowerForStrategies(user, timestamp, strategies);
+    return results.reduce((acc, curr) => acc.add(curr.govPower), BigNumber.from(0));
   }
 }

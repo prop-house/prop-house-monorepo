@@ -38,6 +38,9 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
         uint256 identifier,
         uint256 amount
       )[] awards,
+      uint248 proposalThreshold,
+      uint256[] proposingStrategies,
+      uint256[] proposingStrategyParamsFlat,
       uint256[] votingStrategies,
       uint256[] votingStrategyParamsFlat,
       uint40 proposalPeriodStartTimestamp,
@@ -198,17 +201,28 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
         throw new Error(`Award must split equally between winners`);
       }
     }
-    if (config.strategies.length == 0) {
+    const proposalThreshold = BigNumber.from(config.proposalThreshold ?? 0);
+    if (proposalThreshold.gt(0) && !config.proposingStrategies?.length) {
+      throw new Error('Round must have at least one proposing strategy when threshold is non-zero');
+    }
+    if (config.votingStrategies.length == 0) {
       throw new Error('Round must have at least one voting strategy');
     }
-    const strategies = await Promise.all(
-      config.strategies.map(s => this._voting.getStrategyAddressAndParams(s)),
-    );
+
+    const [proposingStrategies, votingStrategies] = await Promise.all([
+      Promise.all(
+        (config.proposingStrategies ?? []).map(s => this._govPower.getStrategyAddressAndParams(s)),
+      ),
+      Promise.all(config.votingStrategies.map(s => this._govPower.getStrategyAddressAndParams(s))),
+    ]);
 
     return {
       awards: config.awards.map(award => encoding.getAssetStruct(award)),
-      votingStrategies: strategies.map(s => s.address),
-      votingStrategyParamsFlat: encoding.flatten2DArray(strategies.map(s => s.params)),
+      proposalThreshold,
+      proposingStrategies: proposingStrategies.map(s => s.address),
+      proposingStrategyParamsFlat: encoding.flatten2DArray(proposingStrategies.map(s => s.params)),
+      votingStrategies: votingStrategies.map(s => s.address),
+      votingStrategyParamsFlat: encoding.flatten2DArray(votingStrategies.map(s => s.params)),
       proposalPeriodStartTimestamp: config.proposalPeriodStartUnixTimestamp,
       proposalPeriodDuration: config.proposalPeriodDurationSecs,
       votePeriodDuration: config.votePeriodDurationSecs,
@@ -230,6 +244,8 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     payload[6] = configStruct.proposalPeriodDuration.toString();
     payload[7] = configStruct.votePeriodDuration.toString();
     payload[8] = configStruct.winnerCount.toString();
+
+    payload[9] = configStruct.proposalThreshold.toString();
 
     const response = (await this._starknet.estimateMessageFee({
       from_address: this._addresses.evm.messenger,
@@ -277,11 +293,21 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
+
+    // TODO: Implement proposal gating in SDK
+    const proposingStrategyIds: string[] = [];
+    const proposingStrategyParams: string[][] = [];
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
       proposerAddress: address,
+      proposingStrategyIds,
+      proposingStrategyParams,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
+      proposingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(proposingStrategyIds)),
+      proposingStrategyParamsHash: encoding.hexPadRight(
+        hash.computeHashOnElements(encoding.flatten2DArray(proposingStrategyParams)),
+      ),
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
@@ -323,20 +349,20 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const { votingStrategies } = await this._query.getRoundVotingStrategies(config.round);
+    const { govPowerStrategies } = await this._query.getRoundVotingStrategies(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
     const timestamp = await this.getSnapshotTimestamp(config.round);
-    const nonZeroStrategyVotingPowers = await this._voting.getVotingPowerForStrategies(
+    const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
       address,
       timestamp,
-      votingStrategies,
+      govPowerStrategies,
     );
     const totalVotingPower = nonZeroStrategyVotingPowers.reduce(
-      (acc, { votingPower }) => acc.add(votingPower),
+      (acc, { govPower }) => acc.add(govPower),
       BigNumber.from(0),
     );
     const spentVotingPower = await this.getSpentVotingPower(config.round, address);
@@ -345,7 +371,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       throw new Error('Not enough voting power remaining');
     }
 
-    const userParams = await this._voting.getUserParamsForStrategies(
+    const userParams = await this._govPower.getUserParamsForStrategies(
       address,
       timestamp,
       nonZeroStrategyVotingPowers.map(s => s.strategy),
@@ -406,7 +432,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     };
     const calldata = this.getProposeCalldata({
       proposer: payload.address,
-      metadataUri: payload.data.metadataUri,
+      ...payload.data,
     });
     const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('propose'), calldata);
     const fee = await account.estimateFee(call);
@@ -435,7 +461,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const { votingStrategies } = await this._query.getVotingStrategies({
+    const { govPowerStrategies } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.votingStrategyIds,
       },
@@ -443,10 +469,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
 
     // TODO: We only need to do this if they haven't voted before.
     // Remove asap.
-    const preCalls = await this._voting.getPreCallsForStrategies(
+    const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voterAddress,
       timestamp,
-      votingStrategies,
+      govPowerStrategies,
     );
 
     const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('vote'), calldata);
@@ -481,11 +507,17 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param config The information required to generate the propose calldata
    */
   public getProposeCalldata(config: TimedFunding.ProposeCalldataConfig): string[] {
+    const { proposingStrategyIds, proposingStrategyParams } = config;
+    const flattenedProposingStrategyParams = encoding.flatten2DArray(proposingStrategyParams);
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     return [
       config.proposer,
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
+      `0x${proposingStrategyIds.length.toString(16)}`,
+      ...proposingStrategyIds,
+      `0x${flattenedProposingStrategyParams.length.toString(16)}`,
+      ...flattenedProposingStrategyParams,
     ];
   }
 

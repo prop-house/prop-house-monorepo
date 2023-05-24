@@ -27,7 +27,7 @@
     "solady": "^0.0.62",
     "solmate": "^6.6.1",
     "starknet": "4.22.0",
-    "starknet-hardhat-plugin-extended": "0.8.0-alpha.6",
+    "starknet-hardhat-plugin-extended": "0.8.0-alpha.7",
     "ts-node": "^10.9.1",
     "typechain": "8.1.0"
   },
@@ -38,6 +38,7 @@
     "format:l2": "cd contracts/starknet && scarb fmt",
     "format:ts": "prettier --write '{,*/**/}*.ts'",
     "format": "concurrently 'yarn format:l1' 'yarn format:l2' 'yarn format:ts'",
+    "clean:l2": "cd contracts/starknet && scarb clean",
     "clean": "forge clean && hardhat clean && rimraf dist tsconfig.build.tsbuildinfo",
     "chain:l1": "hardhat node",
     "chain:l2": "starknet-devnet --lite-mode",

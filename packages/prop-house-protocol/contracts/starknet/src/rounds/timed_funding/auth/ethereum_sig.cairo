@@ -106,6 +106,8 @@ mod EthereumSigAuthStrategy {
         let metadata_uri = cdata.slice(2, (*cdata.at(1)).try_into().unwrap());
         let metadata_uri_hash = keccak_uint256s_be_to_be(into_u256_arr(metadata_uri).span());
 
+        // TODO: Add `used_proposing_strategies`
+
         // The message data
         let mut data = Default::default();
         data.append(TypeHash::PROPOSE);

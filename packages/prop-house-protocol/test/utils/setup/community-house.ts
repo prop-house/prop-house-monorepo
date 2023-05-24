@@ -36,12 +36,12 @@ export const communityHouseSetup = async () => {
     casmPath: ethExecutionStrategyMetadata.casm,
   });
 
-  const votingStrategyRegistryMetadata = getStarknetArtifactPaths('VotingStrategyRegistry');
-  const votingStrategyRegistryFactory = new StarknetContractFactory({
+  const strategyRegistryMetadata = getStarknetArtifactPaths('StrategyRegistry');
+  const strategyRegistryFactory = new StarknetContractFactory({
     hre,
-    abiPath: votingStrategyRegistryMetadata.sierra,
-    metadataPath: votingStrategyRegistryMetadata.sierra,
-    casmPath: votingStrategyRegistryMetadata.casm,
+    abiPath: strategyRegistryMetadata.sierra,
+    metadataPath: strategyRegistryMetadata.sierra,
+    casmPath: strategyRegistryMetadata.casm,
   });
 
   await starknetSigner.declare(roundDeployerFactory, {
@@ -50,7 +50,7 @@ export const communityHouseSetup = async () => {
   await starknetSigner.declare(ethExecutionStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
-  await starknetSigner.declare(votingStrategyRegistryFactory, {
+  await starknetSigner.declare(strategyRegistryFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
 
@@ -62,7 +62,7 @@ export const communityHouseSetup = async () => {
   const ethExecutionStrategy = await starknetSigner.deploy(ethExecutionStrategyFactory, {
     round_factory: roundFactory.address,
   });
-  const votingStrategyRegistry = await starknetSigner.deploy(votingStrategyRegistryFactory);
+  const strategyRegistry = await starknetSigner.deploy(strategyRegistryFactory);
 
   const communityHouseImpl = await communityHouseFactory.deploy(
     config.propHouse.address,
@@ -79,7 +79,7 @@ export const communityHouseSetup = async () => {
     starknetAccount,
     communityHouseImpl,
     roundFactory,
-    votingStrategyRegistry,
+    strategyRegistry,
     ethExecutionStrategy,
   };
 };
@@ -131,7 +131,7 @@ export const timedFundingRoundSetup = async () => {
 
   await config.starknetSigner.declare(timedFundingRoundL2Factory, {
     constants: {
-      '0xdead0001': config.votingStrategyRegistry.address,
+      '0xdead0001': config.strategyRegistry.address,
       '0xdead0002': config.ethExecutionStrategy.address,
       '0xdead0003': ethTxAuthStrategy.address,
       '0xdead0004': timedFundingRoundEthSigAuthStrategy.address,

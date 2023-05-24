@@ -1,5 +1,5 @@
 import { Address, BigInt, ByteArray, crypto, ethereum } from '@graphprotocol/graph-ts';
-import { AssetType, AssetTypeString, BIGINT_ONE, VotingStrategyType } from './constants';
+import { AssetType, AssetTypeString, BIGINT_ONE, GovPowerStrategyType } from './constants';
 import { computeHashOnElements } from 'as-pedersen';
 
 // Common asset struct
@@ -54,11 +54,11 @@ export function padBytes32(s: string): string {
 }
 
 /**
- * Compute a voting strategy ID
- * @param strategy The voting strategy address
- * @param params The voting strategy params
+ * Compute a governance power strategy ID
+ * @param strategy The governance power strategy address
+ * @param params The governance power strategy params
  */
-export function computeVotingStrategyID(strategy: BigInt, params: BigInt[]): string {
+export function computeGovPowerStrategyID(strategy: BigInt, params: BigInt[]): string {
   return computeHashOnElements([strategy.toString()].concat(params.map<string>((p: BigInt) => p.toString())));
 }
 
@@ -98,18 +98,18 @@ export function getAssetTypeString(assetType: AssetType): string {
 }
 
 /**
- * Get the voting strategy type
- * @param addr The voting strategy address
+ * Get the governance power strategy type
+ * @param addr The governance power strategy address
  */
-export function getVotingStrategyType(addr: string): string {
+export function getGovPowerStrategyType(addr: string): string {
   if (addr == '0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f') {
-    return VotingStrategyType.BALANCE_OF;
+    return GovPowerStrategyType.BALANCE_OF;
   }
   if (addr == '0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38') {
-    return VotingStrategyType.WHITELIST;
+    return GovPowerStrategyType.ALLOWLIST;
   }
   if (addr == '0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9') {
-    return VotingStrategyType.VANILLA;
+    return GovPowerStrategyType.VANILLA;
   }
-  return VotingStrategyType.UNKNOWN;
+  return GovPowerStrategyType.UNKNOWN;
 }

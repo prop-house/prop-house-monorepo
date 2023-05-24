@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { BalanceOf, ChainConfig, VotingStrategyType, VotingConfig } from '../../types';
+import { BalanceOf, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
 import { ChainId } from '@prophouse/protocol';
 import { SingleSlotProofHandler } from './base';
 import { storageProofs } from '../../utils';
@@ -26,17 +26,17 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   }
 
   /**
-   * The voting strategy type
+   * The governance power strategy type
    */
   public get type() {
-    return VotingStrategyType.BALANCE_OF;
+    return GovPowerStrategyType.BALANCE_OF;
   }
 
   /**
-   * The voting strategy address
+   * The governance power strategy address
    */
   public get address() {
-    return this._addresses.starknet.voting.balanceOf;
+    return this._addresses.starknet.govPower.balanceOf;
   }
 
   /**
@@ -52,8 +52,8 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   }
 
   /**
-   * @notice Get the voting strategy params that will be shared amongst all users
-   * @param strategy The voting strategy information
+   * @notice Get the governance power strategy params that will be shared amongst all users
+   * @param strategy The governance power strategy information
    */
   public async getStrategyParams(strategy: BalanceOf): Promise<string[]> {
     const { slotIndex } = await storageProofs.getBalanceOfEVMStorageSlotIndex(
@@ -102,13 +102,13 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
   }
 
   /**
-   * Get the total voting power for the provided config
-   * @param config The voting strategy config information
+   * Get the total governance power for the provided config
+   * @param config The governance power strategy config information
    */
-  public async getVotingPower(config: VotingConfig): Promise<BigNumber> {
+  public async getPower(config: GovPowerConfig): Promise<BigNumber> {
     const block = await this.getBlockNumberForTimestamp(config.address, config.timestamp);
     const token = BigNumber.from(config.params[0]).toHexString();
-    const balance = await this.contractFor(token).balanceOf(config.voter, {
+    const balance = await this.contractFor(token).balanceOf(config.user, {
       blockTag: block,
     });
     return balance.mul(config.params?.[2] ?? 1);

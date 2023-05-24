@@ -17,6 +17,9 @@ interface ITimedFundingRound is IRound {
     /// @notice The timed funding round configuration
     struct RoundConfig {
         Asset[] awards;
+        uint248 proposalThreshold;
+        uint256[] proposingStrategies;
+        uint256[] proposingStrategyParamsFlat;
         uint256[] votingStrategies;
         uint256[] votingStrategyParamsFlat;
         uint40 proposalPeriodStartTimestamp;
@@ -61,14 +64,18 @@ interface ITimedFundingRound is IRound {
     /// @notice Thrown when the winner count is zero or greater than the maximum allowable
     error WINNER_COUNT_OUT_OF_RANGE();
 
+    /// @notice Thrown when the proposal threshold is non-zero and no proposing strategies are provided
+    error NO_PROPOSING_STRATEGIES_PROVIDED();
+
     /// @notice Thrown when no voting strategies are provided
-    error NO_STRATEGIES_PROVIDED();
+    error NO_VOTING_STRATEGIES_PROVIDED();
 
     /// @notice Thrown when attempting to register a round that has already been registered on L2
     error ROUND_ALREADY_REGISTERED();
 
-    /// @notice Thrown when the address of a provided voting strategy is zero
-    error INVALID_VOTING_STRATEGY();
+    /// @notice Thrown when the address of a provided strategy is zero
+    /// @param strategy The address of the strategy
+    error INVALID_STRATEGY(uint256 strategy);
 
     /// @notice Thrown when the operation would leave an excess ETH balance in the contract
     error EXCESS_ETH_PROVIDED();
@@ -95,6 +102,9 @@ interface ITimedFundingRound is IRound {
 
     /// @notice Emitted when the round is registered on L2
     /// @param awards The awards offered to round winners
+    /// @param proposalThreshold The proposal threshold
+    /// @param proposingStrategies The proposing strategy addresses
+    /// @param proposingStrategyParamsFlat The flattened proposing strategy params
     /// @param votingStrategies The voting strategy addresses
     /// @param votingStrategyParamsFlat The flattened voting strategy params
     /// @param proposalPeriodStartTimestamp The timestamp at which the proposal period starts
@@ -103,6 +113,9 @@ interface ITimedFundingRound is IRound {
     /// @param winnerCount The number of possible winners
     event RoundRegistered(
         Asset[] awards,
+        uint248 proposalThreshold,
+        uint256[] proposingStrategies,
+        uint256[] proposingStrategyParamsFlat,
         uint256[] votingStrategies,
         uint256[] votingStrategyParamsFlat,
         uint40 proposalPeriodStartTimestamp,

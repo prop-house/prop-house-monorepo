@@ -14,7 +14,7 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
    * Fetches the inputs required to prove a mapping storage key
    * @param account The user account address
    * @param timestamp The timestamp used to query the block for the proof
-   * @param strategyId The voting strategy ID
+   * @param strategyId The governance power strategy ID
    */
   protected async fetchProofInputs(account: string, timestamp: string, strategyId: string) {
     const strategy = await this.getStrategyAddressAndParams(strategyId);
@@ -30,8 +30,8 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
 
   /**
    * Get the block number for the given timestamp. Fetch the latest block number
-   * from the header store is not present in the voting strategy store.
-   * @param strategy The voting strategy address
+   * from the header store is not present in the governance power strategy store.
+   * @param strategy The governance power strategy address
    * @param timestamp The unix timestamp
    */
   protected async getBlockNumberForTimestamp(strategy: string, timestamp: string | number) {
@@ -43,8 +43,8 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
   }
 
   /**
-   * Get the block number for the given timestamp stored on the voting strategy
-   * @param strategy The voting strategy address
+   * Get the block number for the given timestamp stored on the governance power strategy
+   * @param strategy The governance power strategy address
    * @param timestamp The unix timestamp
    */
   protected async getBlockNumberFromStrategy(strategy: string, timestamp: string | number) {

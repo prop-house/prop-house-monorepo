@@ -25,12 +25,12 @@ import {
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
-import { VotingStrategyType as GQLVotingStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
+import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
-import { BigNumber, constants, Wallet } from 'ethers';
+import { BigNumber, constants } from 'ethers';
 import { Account, hash } from 'starknet';
 import chai, { expect } from 'chai';
 
@@ -68,29 +68,29 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
       starknetAccount,
     } = config);
 
-    const vanillaVotingStrategyMetadata = getStarknetArtifactPaths('VanillaVotingStrategy');
-    const vanillaVotingStrategyFactory = new StarknetContractFactory({
+    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths('VanillaGovernancePowerStrategy');
+    const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
       hre,
-      abiPath: vanillaVotingStrategyMetadata.sierra,
-      metadataPath: vanillaVotingStrategyMetadata.sierra,
-      casmPath: vanillaVotingStrategyMetadata.casm,
+      abiPath: vanillaGovPowerStrategyMetadata.sierra,
+      metadataPath: vanillaGovPowerStrategyMetadata.sierra,
+      casmPath: vanillaGovPowerStrategyMetadata.casm,
     });
-    await config.starknetSigner.declare(vanillaVotingStrategyFactory, {
+    await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });
 
-    const vanillaVotingStrategy = await config.starknetSigner.deploy(vanillaVotingStrategyFactory);
+    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(vanillaGovPowerStrategyFactory);
 
     // Stub subgraph functions
-    const funcs = ['getRoundVotingStrategies', 'getVotingStrategies'] as const;
+    const funcs = ['getRoundVotingStrategies', 'getGovPowerStrategies'] as const;
     for (const func of funcs) {
       gql.QueryWrapper.prototype[func] = () =>
         Promise.resolve({
-          votingStrategies: [
+          govPowerStrategies: [
             {
-              id: hash.computeHashOnElements([vanillaVotingStrategy.address]),
-              type: GQLVotingStrategyType.Vanilla,
-              address: vanillaVotingStrategy.address,
+              id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+              type: GQLGovPowerStrategyType.Vanilla,
+              address: vanillaGovPowerStrategy.address,
               params: [],
             },
           ],
@@ -112,11 +112,11 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
         },
         starknet: {
           roundFactory: config.roundFactory.address,
-          votingRegistry: config.votingStrategyRegistry.address,
-          voting: {
+          strategyRegistry: config.strategyRegistry.address,
+          govPower: {
+            allowlist: constants.HashZero,
             balanceOf: constants.HashZero,
-            whitelist: constants.HashZero,
-            vanilla: vanillaVotingStrategy.address,
+            vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
             timedFundingEthSig: config.timedFundingRoundEthSigAuthStrategy.address,
@@ -158,7 +158,7 @@ describe('TimedFundingRoundStrategy - ETH Signature Auth Strategy', () => {
         description: 'A round used for testing purposes',
         config: {
           awards: [asset],
-          strategies: [
+          votingStrategies: [
             {
               strategyType: VotingStrategyType.VANILLA,
             },

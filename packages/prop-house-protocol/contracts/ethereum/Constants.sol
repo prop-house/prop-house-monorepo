@@ -4,8 +4,8 @@ pragma solidity >=0.8.17;
 // ETH pseudo-token address
 address constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-// Mask used to truncate uint256 values to 250 bits
-uint256 constant MASK_250 = 0x03FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
+// The maximum value that can be represented as an unsigned 250-bit integer
+uint256 constant MAX_250_BIT_UNSIGNED = 0x03FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 // prettier-ignore
 // print(get_selector_from_name("register_round"))

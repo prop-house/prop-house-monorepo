@@ -17,6 +17,7 @@ struct RoundConfig {
     proposal_period_start_timestamp: u64,
     proposal_period_end_timestamp: u64,
     vote_period_end_timestamp: u64,
+    proposal_threshold: felt252,
     award_hash: felt252,
 }
 
@@ -87,8 +88,11 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         ) = unpack_round_config_fields(
             StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
         );
-        let award_hash = StorageAccess::<felt252>::read_at_offset_internal(
+        let proposal_threshold = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 1
+        )?;
+        let award_hash = StorageAccess::<felt252>::read_at_offset_internal(
+            address_domain, base, offset + 2
         )?;
         Result::Ok(
             RoundConfig {
@@ -97,6 +101,7 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
                 proposal_period_start_timestamp,
                 proposal_period_end_timestamp,
                 vote_period_end_timestamp,
+                proposal_threshold,
                 award_hash
             }
         )
@@ -116,7 +121,10 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             address_domain, base, offset, packed
         )?;
         StorageAccess::<felt252>::write_at_offset_internal(
-            address_domain, base, offset + 1, value.award_hash
+            address_domain, base, offset + 1, value.proposal_threshold
+        )?;
+        StorageAccess::<felt252>::write_at_offset_internal(
+            address_domain, base, offset + 2, value.award_hash
         )
     }
     #[inline(always)]

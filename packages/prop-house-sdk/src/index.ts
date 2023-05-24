@@ -3,7 +3,7 @@ export * from './gql';
 export * from './houses';
 export * from './rounds';
 export * from './utils';
-export * from './voting';
+export * from './gov-power';
 export * from './constants';
 export * from './prop-house';
 export * from './types';
