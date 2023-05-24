@@ -22,7 +22,7 @@ mod EthereumTxAuthStrategy {
 
     impl EthereumTxAuthStrategy of IEthereumTxAuthStrategy {
         fn authenticate(target: ContractAddress, selector: felt252, cdata: Span<felt252>) {
-            let mut input = ArrayTrait::new();
+            let mut input = Default::default();
             input.append(target.into());
             input.append(selector);
             input.append_all(cdata);

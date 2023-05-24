@@ -82,7 +82,6 @@ mod TimedFundingRound {
     use prop_house::common::utils::constants::{MASK_192, MASK_250};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use prop_house::common::utils::u256::U256Zeroable;
     use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
@@ -416,7 +415,7 @@ mod TimedFundingRound {
         );
 
         let array_2d = construct_2d_array(voting_strategy_params_flat.span());
-        let mut voting_strategies = ArrayTrait::new();
+        let mut voting_strategies = Default::default();
 
         let mut i = 0;
         loop {
@@ -592,7 +591,7 @@ mod TimedFundingRound {
         let award_count = awards.len();
         let award_count_felt: felt252 = award_count.into();
 
-        let mut flattened_awards = ArrayTrait::new();
+        let mut flattened_awards = Default::default();
         flattened_awards.append(0x20.into()); // Data offset
         flattened_awards.append(award_count_felt.into()); // Array length
 
@@ -612,7 +611,7 @@ mod TimedFundingRound {
     /// Build the execution parameters that will be passed to the execution strategy.
     /// * `merkle_root` - The merkle root that will be used for asset claims.
     fn _build_execution_params(merkle_root: u256) -> Span<felt252> {
-        let mut execution_params = ArrayTrait::new();
+        let mut execution_params = Default::default();
         execution_params.append(merkle_root.low.into());
         execution_params.append(merkle_root.high.into());
 
@@ -641,7 +640,7 @@ mod TimedFundingRound {
         let proposal_len: felt252 = proposals.len().into();
         let amount_per_proposal = award_to_split.amount / proposal_len.into();
 
-        let mut leaves = ArrayTrait::new();
+        let mut leaves = Default::<Array<u256>>::default();
         let proposal_count = proposals.len();
 
         let mut i = 0;
@@ -649,12 +648,11 @@ mod TimedFundingRound {
             if i == proposal_count {
                 break leaves.span();
             }
-            leaves
-                .append(
-                    _compute_leaf_for_proposal_award(
-                        *proposals.at(i), award_to_split.asset_id, amount_per_proposal
-                    )
-                );
+            leaves.append(
+                _compute_leaf_for_proposal_award(
+                    *proposals.at(i), award_to_split.asset_id, amount_per_proposal
+                )
+            );
             i += 1;
         }
     }
@@ -669,7 +667,7 @@ mod TimedFundingRound {
         proposals: Span<ProposalWithId>, awards: Array<Award>
     ) -> Span<u256> {
         let proposal_count = proposals.len();
-        let mut leaves = ArrayTrait::new();
+        let mut leaves = Default::<Array<u256>>::default();
 
         let mut i = 0;
         loop {
@@ -678,10 +676,9 @@ mod TimedFundingRound {
             }
             let award = *awards.at(i);
 
-            leaves
-                .append(
-                    _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
-                );
+            leaves.append(
+                _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
+            );
             i += 1;
         }
     }
@@ -695,7 +692,7 @@ mod TimedFundingRound {
     ) -> u256 {
         let proposal_id: felt252 = p.proposal_id.into();
 
-        let mut leaf_input = ArrayTrait::new();
+        let mut leaf_input = Default::default();
         leaf_input.append(proposal_id.into());
         leaf_input.append(u256_from_felt252(p.proposal.proposer.into()));
         leaf_input.append(asset_id);

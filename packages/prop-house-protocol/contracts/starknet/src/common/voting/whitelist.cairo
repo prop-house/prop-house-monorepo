@@ -43,7 +43,7 @@ mod WhitelistVotingStrategy {
         assert(leaf_voter_address == voter_address, 'Whitelist: Invalid leaf');
 
         let leaf = LegacyHash::hash(leaf_voter_address, leaf_voting_power);
-        let mut proof = ArrayTrait::new();
+        let mut proof = Default::default();
 
         // Extract the proof from the user params
         let mut i = leaf_len;
