@@ -128,6 +128,9 @@ mod VotingStrategyRegistry {
         }
 
         fn register_voting_strategy_if_not_exists(mut voting_strategy: VotingStrategy) -> felt252 {
+            // The maximum parameter length is bound by the maximum storage offset.
+            assert(voting_strategy.params.len() <= 254, 'VSR: Too many parameters');
+
             let strategy_id = _compute_strategy_id(@voting_strategy);
 
             let stored_strategy = _voting_strategies::read(strategy_id);
