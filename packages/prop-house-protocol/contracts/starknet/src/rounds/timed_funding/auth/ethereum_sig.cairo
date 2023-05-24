@@ -109,7 +109,7 @@ mod EthereumSigAuthStrategy {
         // TODO: Add `used_proposing_strategies`
 
         // The message data
-        let mut data = ArrayTrait::new();
+        let mut data = Default::default();
         data.append(TypeHash::PROPOSE);
         data.append(auth_strategy_address.into());
         data.append(target.into());
@@ -176,7 +176,7 @@ mod EthereumSigAuthStrategy {
         );
 
         // The message data
-        let mut data = ArrayTrait::new();
+        let mut data = Default::default();
         data.append(TypeHash::VOTE);
         data.append(auth_strategy_address.into());
         data.append(target.into());
@@ -222,7 +222,7 @@ mod EthereumSigAuthStrategy {
         let auth_strategy_address = get_contract_address();
 
         // The message data
-        let mut data = ArrayTrait::new();
+        let mut data = Default::default();
         data.append(TypeHash::CANCEL_PROPOSAL);
         data.append(auth_strategy_address.into());
         data.append(target.into());
@@ -245,7 +245,7 @@ mod EthereumSigAuthStrategy {
     fn _hash_structured_data(message: Span<u256>) -> u256 {
         let hash_struct = keccak_uint256s_be_to_be(message);
 
-        let mut data = ArrayTrait::new();
+        let mut data = Default::default();
         data.append(ETHEREUM_PREFIX.into());
         data.append(DomainSeparator::GOERLI);
         data.append(hash_struct);

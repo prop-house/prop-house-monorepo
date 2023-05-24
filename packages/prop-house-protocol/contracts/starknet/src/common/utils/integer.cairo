@@ -40,3 +40,7 @@ impl U256TryIntoU8 of TryInto<u256, u8> {
         }
     }
 }
+
+fn as_u256(high: u128, low: u128) -> u256 {
+    u256 { low, high }
+}
