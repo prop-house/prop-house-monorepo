@@ -8,4 +8,3 @@ mod merkle;
 mod serde;
 mod storage;
 mod traits;
-mod u256;

@@ -37,7 +37,6 @@ trait IFactsRegistry {
 #[contract]
 mod SingleSlotProof {
     use starknet::ContractAddress;
-    use prop_house::common::utils::u256::U256Zeroable;
     use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::{
         IEthereumBlockRegistryDispatcherTrait, IEthereumBlockRegistryDispatcher

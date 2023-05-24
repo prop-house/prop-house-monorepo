@@ -9,7 +9,7 @@ use traits::Into;
 fn keccak_merkle_tree_test() {
     let mut merkle_tree = MerkleTreeTrait::<u256>::new();
 
-    let mut even_leaves = ArrayTrait::<u256>::new();
+    let mut even_leaves = Default::<Array<u256>>::default();
     even_leaves.append(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb);
     even_leaves.append(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510);
     even_leaves.append(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2);
@@ -21,7 +21,7 @@ fn keccak_merkle_tree_test() {
         0x9012f1e18a87790d2e01faace75aaaca38e53df437cdce2c0552464dda4af49c;
     test_case_compute_merkle_root(ref merkle_tree, even_leaves, expected_merkle_root);
 
-    let mut odd_leaves = ArrayTrait::<u256>::new();
+    let mut odd_leaves = Default::<Array<u256>>::default();
     odd_leaves.append(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb);
     odd_leaves.append(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510);
     odd_leaves.append(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2);
@@ -147,7 +147,7 @@ fn test_case_verify<
 }
 
 fn generate_proof_2_elements<T, impl TDrop: Drop<T>>(element_1: T, element_2: T) -> Array<T> {
-    let mut proof = ArrayTrait::new();
+    let mut proof = Default::default();
     proof.append(element_1);
     proof.append(element_2);
     proof
