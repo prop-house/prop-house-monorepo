@@ -128,7 +128,7 @@ mod VotingStrategyRegistry {
         }
 
         fn register_voting_strategy_if_not_exists(mut voting_strategy: VotingStrategy) -> felt252 {
-            let strategy_id = _compute_strategy_id(ref voting_strategy);
+            let strategy_id = _compute_strategy_id(@voting_strategy);
 
             let stored_strategy = _voting_strategies::read(strategy_id);
             if stored_strategy.address.is_zero() {
@@ -159,7 +159,9 @@ mod VotingStrategyRegistry {
 
     /// Computes the strategy id for the given voting strategy.
     /// * `voting_strategy` - The voting strategy.
-    fn _compute_strategy_id(ref voting_strategy: VotingStrategy) -> felt252 {
+    fn _compute_strategy_id(voting_strategy: @VotingStrategy) -> felt252 {
+        let mut voting_strategy = *voting_strategy;
+
         let mut strategy_array = Default::default();
         strategy_array.append(voting_strategy.address.into());
 
