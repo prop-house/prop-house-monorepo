@@ -1,7 +1,4 @@
-use starknet::{
-    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
-    storage_address_from_base_and_offset
-};
+use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use prop_house::common::utils::constants::{
     TWO_POW_8, TWO_POW_24, TWO_POW_88, TWO_POW_152, MASK_8, MASK_16, MASK_64
 };
@@ -37,8 +34,7 @@ fn pack_round_config_fields(
     proposal_period_end_timestamp: u64,
     vote_period_end_timestamp: u64,
 ) -> felt252 {
-    let mut packed = 0;
-    packed = packed | u256_from_felt252(round_state.into());
+    let mut packed = u256_from_felt252(round_state.into());
     packed = packed | (u256_from_felt252(winner_count.into()) * TWO_POW_8);
     packed = packed | (u256_from_felt252(proposal_period_start_timestamp.into()) * TWO_POW_24);
     packed = packed | (u256_from_felt252(proposal_period_end_timestamp.into()) * TWO_POW_88);
@@ -69,39 +65,33 @@ fn unpack_round_config_fields(packed: felt252) -> (u8, u16, u64, u64, u64) {
     )
 }
 
-// Storage packing is currently blocked by https://github.com/starkware-libs/cairo/issues/3153.
 impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<RoundConfig> {
-        let round_state = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 0)
-        )?
-            .try_into()
-            .unwrap();
-        let winner_count = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 1)
-        )?
-            .try_into()
-            .unwrap();
-        let proposal_period_start_timestamp = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 2)
-        )?
-            .try_into()
-            .unwrap();
-        let proposal_period_end_timestamp = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 3)
-        )?
-            .try_into()
-            .unwrap();
-        let vote_period_end_timestamp = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 4)
-        )?
-            .try_into()
-            .unwrap();
-        let proposal_threshold = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 5)
+        RoundConfigStorageAccess::read_at_offset_internal(address_domain, base, 0)
+    }
+    fn write(
+        address_domain: u32, base: StorageBaseAddress, value: RoundConfig
+    ) -> SyscallResult<()> {
+        RoundConfigStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+    }
+    #[inline(always)]
+    fn read_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8
+    ) -> SyscallResult<RoundConfig> {
+        let (
+            round_state,
+            winner_count,
+            proposal_period_start_timestamp,
+            proposal_period_end_timestamp,
+            vote_period_end_timestamp
+        ) = unpack_round_config_fields(
+            StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
+        );
+        let proposal_threshold = StorageAccess::<felt252>::read_at_offset_internal(
+            address_domain, base, offset + 1
         )?;
-        let award_hash = storage_read_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 6)
+        let award_hash = StorageAccess::<felt252>::read_at_offset_internal(
+            address_domain, base, offset + 2
         )?;
         Result::Ok(
             RoundConfig {
@@ -116,35 +106,26 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         )
     }
     #[inline(always)]
-    fn write(
-        address_domain: u32, base: StorageBaseAddress, value: RoundConfig
+    fn write_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8, value: RoundConfig
     ) -> SyscallResult<()> {
-        storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 0), value.round_state.into()
+        let packed = pack_round_config_fields(
+            value.round_state,
+            value.winner_count,
+            value.proposal_period_start_timestamp,
+            value.proposal_period_end_timestamp,
+            value.vote_period_end_timestamp
+        );
+        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
+        StorageAccess::<felt252>::write_at_offset_internal(
+            address_domain, base, offset + 1, value.proposal_threshold
         )?;
-        storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 1), value.winner_count.into()
-        )?;
-        storage_write_syscall(
-            address_domain,
-            storage_address_from_base_and_offset(base, 2),
-            value.proposal_period_start_timestamp.into()
-        )?;
-        storage_write_syscall(
-            address_domain,
-            storage_address_from_base_and_offset(base, 3),
-            value.proposal_period_end_timestamp.into()
-        )?;
-        storage_write_syscall(
-            address_domain,
-            storage_address_from_base_and_offset(base, 4),
-            value.vote_period_end_timestamp.into()
-        )?;
-        storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 5), value.proposal_threshold
-        )?;
-        storage_write_syscall(
-            address_domain, storage_address_from_base_and_offset(base, 6), value.award_hash
+        StorageAccess::<felt252>::write_at_offset_internal(
+            address_domain, base, offset + 2, value.award_hash
         )
+    }
+    #[inline(always)]
+    fn size_internal(value: RoundConfig) -> u8 {
+        2
     }
 }

@@ -95,7 +95,6 @@ mod TimedRound {
     use prop_house::common::utils::constants::{MASK_192, MASK_250};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use prop_house::common::utils::integer::U256Zeroable;
     use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
@@ -132,7 +131,7 @@ mod TimedRound {
     impl TimedRound of ITimedRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
             let proposal = Round::_proposals::read(proposal_id);
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             proposal
         }
@@ -155,11 +154,11 @@ mod TimedRound {
             // Ensure that the round is in the proposal period
             assert(
                 current_timestamp >= config.proposal_period_start_timestamp,
-                'TFR: Proposal period not begun',
+                'TR: Proposal period not started',
             );
             assert(
                 current_timestamp < config.proposal_period_end_timestamp,
-                'TFR: Proposal period has ended',
+                'TR: Proposal period has ended',
             );
 
             // Determine the cumulative proposition power of the user
@@ -171,7 +170,7 @@ mod TimedRound {
             );
             assert(
                 cumulative_proposition_power >= config.proposal_threshold.into(),
-                'TFR: Proposition power too low'
+                'TR: Proposition power too low'
             );
 
             let proposal_id = Round::_proposal_count::read() + 1;
@@ -201,13 +200,13 @@ mod TimedRound {
             let mut proposal = Round::_proposals::read(proposal_id);
 
             // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TFR: Proposal already cancelled');
+            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
 
             // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'TFR: Caller is not proposer');
+            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
 
             // Set the last update timestamp
             proposal.last_updated_at = get_block_timestamp();
@@ -226,13 +225,13 @@ mod TimedRound {
             let mut proposal = Round::_proposals::read(proposal_id);
 
             // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TFR: Proposal already cancelled');
+            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
 
             // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'TFR: Caller is not proposer');
+            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
 
             // Cancel the proposal
             proposal.is_cancelled = true;
@@ -261,9 +260,9 @@ mod TimedRound {
             let vote_period_start_timestamp = snapshot_timestamp + 1;
 
             // Ensure that the round is in the voting period
-            assert(current_timestamp >= vote_period_start_timestamp, 'TFR: Vote period not begun');
+            assert(current_timestamp >= vote_period_start_timestamp, 'TR: Vote period not begun');
             assert(
-                current_timestamp <= config.vote_period_end_timestamp, 'TFR: Vote period has ended'
+                current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended'
             );
 
             // Determine the cumulative voting power of the user
@@ -273,7 +272,7 @@ mod TimedRound {
                 used_voting_strategy_ids,
                 user_voting_strategy_params_flat.span(),
             );
-            assert(cumulative_voting_power.is_non_zero(), 'TFR: User has no voting power');
+            assert(cumulative_voting_power.is_non_zero(), 'TR: User has no voting power');
 
             // Cast votes, throwing if the remaining voting power is insufficient
             _cast_votes_on_one_or_more_proposals(
@@ -292,13 +291,13 @@ mod TimedRound {
             let current_timestamp = get_block_timestamp();
 
             assert(
-                current_timestamp > config.vote_period_end_timestamp, 'TFR: Vote period not ended'
+                current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
             );
 
             let proposal_count = Round::_proposal_count::read();
 
             // If no proposals were submitted, the round must be cancelled.
-            assert(proposal_count != 0, 'TFR: No proposals submitted');
+            assert(proposal_count != 0, 'TR: No proposals submitted');
 
             let active_proposals = Round::get_active_proposals();
             let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
@@ -419,12 +418,12 @@ mod TimedRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
-        assert(award_hash != 0, 'TFR: Invalid award hash');
-        assert(proposal_period_start_timestamp != 0, 'TFR: Invalid PPST', );
-        assert(proposal_period_duration != 0, 'TFR: Invalid PPD');
-        assert(vote_period_duration != 0, 'TFR: Invalid VPD');
-        assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TFR: Invalid winner count');
-        assert(voting_strategies.len() != 0, 'TFR: No voting strategies');
+        assert(award_hash != 0, 'TR: Invalid award hash');
+        assert(proposal_period_start_timestamp != 0, 'TR: Invalid PPST');
+        assert(proposal_period_duration != 0, 'TR: Invalid PPD');
+        assert(vote_period_duration != 0, 'TR: Invalid VPD');
+        assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TR: Invalid winner count');
+        assert(voting_strategies.len() != 0, 'TR: No voting strategies');
 
         let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
         let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration;
@@ -461,7 +460,7 @@ mod TimedRound {
         let array_2d = construct_2d_array(strategy_params_flat.span());
 
         let mut i = 0;
-        let mut strategies = ArrayTrait::new();
+        let mut strategies = Default::<Array<Strategy>>::default();
         loop {
             if i == strategy_addresses_len {
                 break (
@@ -507,13 +506,13 @@ mod TimedRound {
         let caller: felt252 = get_caller_address().into();
         assert(
             caller == eth_tx_auth_strategy | caller == eth_sig_auth_strategy,
-            'TFR: Invalid auth strategy'
+            'TR: Invalid auth strategy'
         );
     }
 
     /// Asserts that the round is active.
     fn _assert_round_active() {
-        assert(_config::read().round_state == RoundState::ACTIVE, 'TFR: Round not active');
+        assert(_config::read().round_state == RoundState::ACTIVE, 'TR: Round not active');
     }
 
     /// Asserts that the provided awards are valid.
@@ -522,7 +521,7 @@ mod TimedRound {
         let stored_award_hash = _config::read().award_hash.into();
         let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250;
 
-        assert(computed_award_hash == stored_award_hash, 'TFR: Invalid awards provided');
+        assert(computed_award_hash == stored_award_hash, 'TR: Invalid awards provided');
     }
 
     /// Register the provided strategies if they are not already registered.
@@ -637,15 +636,15 @@ mod TimedRound {
         let voting_power = proposal_vote.voting_power;
 
         let mut proposal = Round::_proposals::read(proposal_id);
-        assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+        assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
         // Exit early if the proposal has been cancelled
         if proposal.is_cancelled {
             return 0;
         }
 
-        assert(voting_power.is_non_zero(), 'TFR: No voting power provided');
-        assert(remaining_voting_power >= voting_power, 'TFR: Insufficient voting power');
+        assert(voting_power.is_non_zero(), 'TR: No voting power provided');
+        assert(remaining_voting_power >= voting_power, 'TR: Insufficient voting power');
 
         let new_proposal_voting_power = proposal.voting_power + voting_power;
         proposal.voting_power = new_proposal_voting_power;
@@ -662,7 +661,7 @@ mod TimedRound {
         let award_count = awards.len();
         let award_count_felt: felt252 = award_count.into();
 
-        let mut flattened_awards = ArrayTrait::new();
+        let mut flattened_awards = Default::default();
         flattened_awards.append(0x20.into()); // Data offset
         flattened_awards.append(award_count_felt.into()); // Array length
 
@@ -682,7 +681,7 @@ mod TimedRound {
     /// Build the execution parameters that will be passed to the execution strategy.
     /// * `merkle_root` - The merkle root that will be used for asset claims.
     fn _build_execution_params(merkle_root: u256) -> Span<felt252> {
-        let mut execution_params = ArrayTrait::new();
+        let mut execution_params = Default::default();
         execution_params.append(merkle_root.low.into());
         execution_params.append(merkle_root.high.into());
 
@@ -711,7 +710,7 @@ mod TimedRound {
         let proposal_len: felt252 = proposals.len().into();
         let amount_per_proposal = award_to_split.amount / proposal_len.into();
 
-        let mut leaves = ArrayTrait::new();
+        let mut leaves = Default::<Array<u256>>::default();
         let proposal_count = proposals.len();
 
         let mut i = 0;
@@ -738,7 +737,7 @@ mod TimedRound {
         proposals: Span<ProposalWithId>, awards: Array<Award>
     ) -> Span<u256> {
         let proposal_count = proposals.len();
-        let mut leaves = ArrayTrait::new();
+        let mut leaves = Default::<Array<u256>>::default();
 
         let mut i = 0;
         loop {
@@ -747,10 +746,9 @@ mod TimedRound {
             }
             let award = *awards.at(i);
 
-            leaves
-                .append(
-                    _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
-                );
+            leaves.append(
+                _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
+            );
             i += 1;
         }
     }
@@ -764,7 +762,7 @@ mod TimedRound {
     ) -> u256 {
         let proposal_id: felt252 = p.proposal_id.into();
 
-        let mut leaf_input = ArrayTrait::new();
+        let mut leaf_input = Default::default();
         leaf_input.append(proposal_id.into());
         leaf_input.append(u256_from_felt252(p.proposal.proposer.into()));
         leaf_input.append(asset_id);

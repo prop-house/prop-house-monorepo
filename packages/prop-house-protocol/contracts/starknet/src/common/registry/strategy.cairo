@@ -1,13 +1,11 @@
-use starknet::{
-    StorageAccess, SyscallResult, StorageBaseAddress, storage_read_syscall, storage_write_syscall,
-    storage_address_from_base_and_offset
-};
+use core::result::ResultTrait;
+use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use starknet::contract_address::Felt252TryIntoContractAddress;
 use starknet::{ContractAddressIntoFelt252, ContractAddress};
-use starknet::storage_access::StorageAccessContractAddress;
 use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
 use option::OptionTrait;
+use integer::downcast;
 
 #[derive(Copy, Drop, Serde)]
 struct Strategy {
@@ -15,49 +13,87 @@ struct Strategy {
     params: Span<felt252>,
 }
 
+/// Read an array of parameters from storage.
+/// * `address_domain` - The address domain.
+/// * `base` - The base address.
+/// * `offset` - The storage offset.
+fn read_params(
+    address_domain: u32, base: StorageBaseAddress, mut offset: u8
+) -> SyscallResult<Span<felt252>> {
+    let length = StorageAccess::<u32>::read_at_offset_internal(address_domain, base, offset)?;
+    let exit_at = downcast(length).unwrap() + offset;
+
+    let mut params = Default::<Array<felt252>>::default();
+    loop {
+        if offset == exit_at {
+            break Result::Ok(params.span());
+        }
+        offset += 1;
+        let param = StorageAccess::<felt252>::read_at_offset_internal(
+            address_domain, base, offset
+        )?;
+
+        params.append(param);
+    }
+}
+
+/// Write an array of parameters to storage.
+/// * `address_domain` - The address domain.
+/// * `base` - The base address.
+/// * `offset` - The storage offset.
+/// * `params` - The parameters.
+fn write_params(
+    address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut params: Span<felt252>
+) -> SyscallResult<()> {
+    StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, params.len())?;
+
+    loop {
+        match params.pop_front() {
+            Option::Some(v) => {
+                offset += 1;
+                StorageAccess::<felt252>::write_at_offset_internal(
+                    address_domain, base, offset, *v
+                )?;
+            },
+            Option::None(_) => {
+                break Result::Ok(());
+            },
+        };
+    }
+}
+
 impl StrategyStorageAccess of StorageAccess<Strategy> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Strategy> {
-        let address = StorageAccessContractAddress::read(address_domain, base)?;
-
-        let param_length_base = storage_address_from_base_and_offset(base, 1);
-        let param_length = storage_read_syscall(address_domain, param_length_base)?
-            .try_into()
-            .unwrap();
-
-        let mut i = 0;
-        let mut params = ArrayTrait::new();
-        loop {
-            if i == param_length {
-                break Result::Ok(Strategy { address, params: params.span() });
-            }
-            let param_base = storage_address_from_base_and_offset(base, i + 2);
-            params.append(storage_read_syscall(address_domain, param_base)?);
-
-            i += 1;
-        }
+        StrategyStorageAccess::read_at_offset_internal(address_domain, base, 0)
     }
-
     fn write(
         address_domain: u32, base: StorageBaseAddress, mut value: Strategy
     ) -> SyscallResult<()> {
-        StorageAccessContractAddress::write(address_domain, base, value.address)?;
+        StrategyStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+    }
+    #[inline(always)]
+    fn read_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8
+    ) -> SyscallResult<Strategy> {
+        let address = StorageAccess::<ContractAddress>::read_at_offset_internal(
+            address_domain, base, offset
+        )?;
+        let mut params = read_params(address_domain, base, offset + 1)?;
 
-        let mut offset = 1;
-        loop {
-            match value.params.pop_front() {
-                Option::Some(v) => {
-                    starknet::storage_write_syscall(
-                        address_domain,
-                        starknet::storage_address_from_base_and_offset(base, offset),
-                        *v
-                    );
-                    offset += 1;
-                },
-                Option::None(_) => {
-                    break Result::Ok(());
-                },
-            };
-        }
+        Result::Ok(Strategy { address, params })
+    }
+    #[inline(always)]
+    fn write_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8, value: Strategy
+    ) -> SyscallResult<()> {
+        StorageAccess::<ContractAddress>::write_at_offset_internal(
+            address_domain, base, offset, value.address
+        )?;
+        write_params(address_domain, base, offset + 1, value.params)
+    }
+    #[inline(always)]
+    fn size_internal(value: Strategy) -> u8 {
+        2 + downcast(value.params.len()).unwrap()
     }
 }
 
@@ -94,7 +130,10 @@ mod StrategyRegistry {
         }
 
         fn register_strategy_if_not_exists(mut strategy: Strategy) -> felt252 {
-            let strategy_id = _compute_strategy_id(ref strategy);
+            // The maximum parameter length is bound by the maximum storage offset.
+            assert(strategy.params.len() <= 254, 'VSR: Too many parameters');
+
+            let strategy_id = _compute_strategy_id(@strategy);
 
             let stored_strategy = _strategies::read(strategy_id);
             if stored_strategy.address.is_zero() {
@@ -123,10 +162,12 @@ mod StrategyRegistry {
     /// Internals
     ///
 
-    /// Computes the strategy id for the given  strategy.
-    /// * `strategy` - The  strategy.
-    fn _compute_strategy_id(ref strategy: Strategy) -> felt252 {
-        let mut strategy_array = ArrayTrait::new();
+    /// Computes the strategy id for the given strategy.
+    /// * `strategy` - The strategy.
+    fn _compute_strategy_id(strategy: @Strategy) -> felt252 {
+        let mut strategy = *strategy;
+
+        let mut strategy_array = Default::default();
         strategy_array.append(strategy.address.into());
 
         loop {

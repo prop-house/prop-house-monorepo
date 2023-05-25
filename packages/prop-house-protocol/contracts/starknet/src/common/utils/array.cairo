@@ -116,7 +116,7 @@ fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
 fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     src: Span<T>, begin: usize, end: usize
 ) -> Array<T> {
-    let mut slice = ArrayTrait::new();
+    let mut slice = Default::default();
     fill_array(ref dst: slice, :src, index: begin, count: end);
     slice
 }
@@ -124,7 +124,7 @@ fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
 /// Convert a span of `felt252` to a `u256` array.
 /// * `data` - The data to convert.
 fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
-    let mut arr = ArrayTrait::<u256>::new();
+    let mut arr = Default::<Array<u256>>::default();
     loop {
         match data.pop_front() {
             Option::Some(item) => {

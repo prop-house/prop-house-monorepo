@@ -37,7 +37,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                 break *leaves.at(0);
             }
 
-            let mut next_level_nodes = ArrayTrait::<u256>::new();
+            let mut next_level_nodes = Default::<Array<u256>>::default();
             leaves = loop {
                 match leaves.pop_front() {
                     Option::Some(left) => {
@@ -47,7 +47,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                             Option::Some(right) => {
                                 let right = *right;
 
-                                let mut hash_input = ArrayTrait::<u256>::new();
+                                let mut hash_input = Default::<Array<u256>>::default();
                                 if left < right {
                                     hash_input.append(left);
                                     hash_input.append(right);
@@ -82,7 +82,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
             match proof.pop_front() {
                 Option::Some(proof_element) => {
                     let proof_element = *proof_element;
-                    let mut node_input = ArrayTrait::new();
+                    let mut node_input = Default::default();
 
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.
@@ -138,7 +138,7 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
             match proof.pop_front() {
                 Option::Some(proof_element) => {
                     let proof_element = *proof_element;
-                    let mut node_input = ArrayTrait::<felt252>::new();
+                    let mut node_input = Default::<Array<felt252>>::default();
 
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.

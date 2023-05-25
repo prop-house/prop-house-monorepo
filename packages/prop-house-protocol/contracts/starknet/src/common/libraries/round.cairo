@@ -1,6 +1,5 @@
 use starknet::{
     EthAddress, Felt252TryIntoEthAddress, StorageAccess, SyscallResult, StorageBaseAddress,
-    storage_read_syscall, storage_write_syscall, storage_address_from_base_and_offset
 };
 use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
 use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU64, as_u256};
@@ -26,47 +25,64 @@ struct ProposalWithId {
     proposal: Proposal,
 }
 
-// Storage packing is currently blocked by https://github.com/starkware-libs/cairo/issues/3153.
+/// Pack the proposal fields into a single felt252.
+/// * `proposer` - The proposer of the proposal.
+/// * `last_updated_at` - The last time the proposal was updated.
+/// * `is_cancelled` - Whether the proposal is cancelled.
+fn pack_proposal_fields(proposer: EthAddress, last_updated_at: u64, is_cancelled: bool) -> felt252 {
+    let mut packed = proposer.address.into();
+    packed = packed | (u256_from_felt252(last_updated_at.into()) * TWO_POW_160);
+    packed = packed | (u256_from_felt252(is_cancelled.into()) * TWO_POW_224);
+
+    packed.try_into().unwrap()
+}
+
+/// Unpack the proposal fields from a single felt252.
+/// * `packed` - The packed proposal.
+fn unpack_proposal_fields(packed: felt252) -> (EthAddress, u64, bool) {
+    let packed = packed.into();
+
+    let proposer: EthAddress = (packed & MASK_160).try_into().unwrap();
+    let last_updated_at: u64 = ((packed / TWO_POW_160) & MASK_64).try_into().unwrap();
+    let is_cancelled = packed / TWO_POW_224 != 0;
+
+    (proposer, last_updated_at, is_cancelled)
+}
+
 impl ProposalStorageAccess of StorageAccess<Proposal> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Proposal> {
-        let proposer_base = storage_address_from_base_and_offset(base, 0);
-        let proposer = storage_read_syscall(address_domain, proposer_base)?.try_into().unwrap();
-
-        let last_updated_at_base = storage_address_from_base_and_offset(base, 1);
-        let last_updated_at = storage_read_syscall(address_domain, last_updated_at_base)?
-            .try_into()
-            .unwrap();
-
-        let is_cancelled_base = storage_address_from_base_and_offset(base, 2);
-        let is_cancelled = storage_read_syscall(address_domain, is_cancelled_base)?
-            .try_into()
-            .unwrap();
-
-        let voting_power_base = storage_address_from_base_and_offset(base, 3);
-        let voting_power = storage_read_syscall(address_domain, voting_power_base)?.into();
-
+        ProposalStorageAccess::read_at_offset_internal(address_domain, base, 0)
+    }
+    fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
+        ProposalStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+    }
+    #[inline(always)]
+    fn read_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8
+    ) -> SyscallResult<Proposal> {
+        let (proposer, last_updated_at, is_cancelled) = unpack_proposal_fields(
+            StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
+        );
+        let voting_power = StorageAccess::<u256>::read_at_offset_internal(
+            address_domain, base, offset + 1
+        )?;
         Result::Ok(Proposal { proposer, is_cancelled, last_updated_at, voting_power })
     }
-
-    fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
-        let proposer_base = storage_address_from_base_and_offset(base, 0);
-        storage_write_syscall(address_domain, proposer_base, value.proposer.into())?;
-
-        let last_updated_at_base = storage_address_from_base_and_offset(base, 1);
-        storage_write_syscall(address_domain, last_updated_at_base, value.last_updated_at.into())?;
-
-        let is_cancelled_base = storage_address_from_base_and_offset(base, 2);
-        storage_write_syscall(address_domain, is_cancelled_base, value.is_cancelled.into())?;
-
-        let voting_power_base_low = storage_address_from_base_and_offset(base, 3);
-        storage_write_syscall(
-            address_domain, voting_power_base_low, value.voting_power.low.into()
-        )?;
-
-        let voting_power_base_high = storage_address_from_base_and_offset(base, 4);
-        storage_write_syscall(
-            address_domain, voting_power_base_high, value.voting_power.high.into()
+    #[inline(always)]
+    fn write_at_offset_internal(
+        address_domain: u32, base: StorageBaseAddress, offset: u8, value: Proposal
+    ) -> SyscallResult<()> {
+        let packed = pack_proposal_fields(
+            value.proposer, value.last_updated_at, value.is_cancelled
+        );
+        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
+        StorageAccess::<u256>::write_at_offset_internal(
+            address_domain, base, offset + 1, value.voting_power
         )
+    }
+    #[inline(always)]
+    fn size_internal(value: Proposal) -> u8 {
+        3
     }
 }
 
@@ -82,7 +98,7 @@ mod Round {
 
     /// Get all active proposals (not cancelled), including proposal IDs.
     fn get_active_proposals() -> Array<ProposalWithId> {
-        let mut active_proposals = ArrayTrait::new();
+        let mut active_proposals = Default::default();
 
         let mut id = 1;
         let proposal_count = _proposal_count::read();
@@ -112,7 +128,7 @@ mod Round {
     /// Return an array of all the proposal IDs in the given array of proposals.
     /// * `proposals` - Array of proposals
     fn extract_proposal_ids(mut proposals: Span<ProposalWithId>) -> Span<u32> {
-        let mut proposal_ids = ArrayTrait::<u32>::new();
+        let mut proposal_ids = Default::<Array<u32>>::default();
         loop {
             match proposals.pop_front() {
                 Option::Some(p) => {
@@ -149,7 +165,7 @@ mod Round {
             right_arr, max_return_count
         );
 
-        let mut result_arr = ArrayTrait::new();
+        let mut result_arr = Default::default();
         _merge_and_slice_recursive(
             sorted_left, sorted_right, ref result_arr, 0, 0, max_return_count
         );
@@ -219,8 +235,8 @@ mod Round {
     fn _split_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
         ref arr: Array<T>, index: usize
     ) -> (Array::<T>, Array::<T>) {
-        let mut arr1 = ArrayTrait::new();
-        let mut arr2 = ArrayTrait::new();
+        let mut arr1 = Default::default();
+        let mut arr2 = Default::default();
         let len = arr.len();
 
         _fill_array(ref arr1, ref arr, 0, index);
