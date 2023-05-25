@@ -245,7 +245,7 @@ export type Round = {
   state: Scalars['String'];
   /** The transaction in which the round was registered */
   txHash: Scalars['String'];
-  /** The round type (TIMED_FUNDING) */
+  /** The round type (TIMED) */
   type: Scalars['String'];
   /** The number of unique proposers in the round */
   uniqueProposers: Scalars['Int'];

@@ -9,7 +9,7 @@ dataSources:
     source:
       abi: Manager
       address: "0xAa2e7b86176B854260E967Ce04896a65b8a419D6"
-      startBlock: 8701532
+      startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -33,7 +33,7 @@ dataSources:
           handler: handleRoundRegistered
         - event: RoundUnregistered(address,address)
           handler: handleRoundUnregistered
-    network: goerli
+    network: local
   - kind: ethereum/contract
     name: PropHouse
     source:
@@ -64,7 +64,7 @@ dataSources:
           handler: handleDepositToRound
         - event: BatchDepositToRound(address,address,(uint8,address,uint256,uint256)[])
           handler: handleBatchDepositToRound
-    network: goerli
+    network: local
   - kind: ethereum/contract
     name: CreatorPassIssuer
     source:
@@ -89,7 +89,7 @@ dataSources:
         - event: TransferBatch(indexed address,indexed address,indexed
             address,uint256[],uint256[])
           handler: handleBatchTransfer
-    network: goerli
+    network: local
 templates:
   - name: HouseMetadata
     kind: file/ipfs
@@ -103,7 +103,7 @@ templates:
       abis:
         - name: CommunityHouse
           file: ./abis/CommunityHouse.json
-    network: goerli
+    network: local
   - name: CommunityHouse
     kind: ethereum/contract
     source:
@@ -124,11 +124,11 @@ templates:
           handler: handleRoundTransfer
         - event: ContractURIUpdated(string)
           handler: handleHouseURIUpdated
-    network: goerli
-  - name: TimedFundingRound
+    network: local
+  - name: TimedRound
     kind: ethereum/contract
     source:
-      abi: TimedFundingRound
+      abi: TimedRound
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -138,8 +138,8 @@ templates:
         - House
         - Round
       abis:
-        - name: TimedFundingRound
-          file: ./abis/TimedFundingRound.json
+        - name: TimedRound
+          file: ./abis/TimedRound.json
       eventHandlers:
         - event: RoundRegistered((uint8,address,uint256,uint256)[],uint248,uint256[],uint256[],uint256[],uint256[],uint40,uint40,uint40,uint16)
           handler: handleRoundRegistered
@@ -157,4 +157,4 @@ templates:
         - event: TransferBatch(indexed address,indexed address,indexed
             address,uint256[],uint256[])
           handler: handleBatchTransfer
-    network: goerli
+    network: local

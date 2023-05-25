@@ -39,7 +39,7 @@ export {
   ProposingStrategy,
   VotingStrategy,
   RoundAsset,
-  TimedFundingRoundConfig,
+  TimedRoundConfig,
   RoundConfig,
   Round,
   RoundWithHouse,

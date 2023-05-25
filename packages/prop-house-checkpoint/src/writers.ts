@@ -34,7 +34,7 @@ export const handleRoundRegistered: CheckpointWriter = async ({
     uniqueProposers: 0,
     uniqueVoters: 0,
   };
-  instance.executeTemplate('TimedFundingRound', {
+  instance.executeTemplate('TimedRound', {
     contract: round.id,
     start: blockNumber,
   });

@@ -4,7 +4,7 @@ import { Account, Asset, Balance, Deposit, House, Round } from '../generated/sch
 import { BIGINT_ZERO, RoundEventState, ZERO_ADDRESS } from './lib/constants';
 import {
   CommunityHouse as CommunityHouseTemplate,
-  TimedFundingRound as TimedFundingRoundTemplate,
+  TimedRound as TimedRoundTemplate,
 } from '../generated/templates';
 import { AssetStruct, computeAssetID, getAssetTypeString } from './lib/utils';
 
@@ -59,7 +59,7 @@ export function handleRoundCreated(event: RoundCreated): void {
   round.createdAt = event.block.timestamp;
   round.creationTx = event.transaction.hash;
 
-  TimedFundingRoundTemplate.create(event.params.round);
+  TimedRoundTemplate.create(event.params.round);
 
   round.save();
 }

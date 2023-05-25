@@ -15,8 +15,8 @@
     }
   ],
   "templates": {
-    "TimedFundingRound": {
-      "abi": "TimedFundingRound",
+    "TimedRound": {
+      "abi": "TimedRound",
       "events": [
         {
           "name": "proposal_created",

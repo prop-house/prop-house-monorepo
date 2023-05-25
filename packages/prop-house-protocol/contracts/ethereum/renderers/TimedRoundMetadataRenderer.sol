@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 import { IMetadataEncoder } from '../interfaces/IMetadataEncoder.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 
-contract TimedFundingRoundMetadataRenderer is ITokenMetadataRenderer {
+contract TimedRoundMetadataRenderer is ITokenMetadataRenderer {
     /// @notice A contract which holds shared metadata encoding logic
     IMetadataEncoder internal immutable _encoder;
 

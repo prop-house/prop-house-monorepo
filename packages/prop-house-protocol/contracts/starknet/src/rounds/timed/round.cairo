@@ -3,7 +3,7 @@ use prop_house::common::libraries::round::Proposal;
 use starknet::EthAddress;
 use array::ArrayTrait;
 
-trait ITimedFundingRound {
+trait ITimedRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(
         proposer_address: EthAddress,
@@ -68,17 +68,17 @@ const eth_tx_auth_strategy: felt252 = 0xDEAD0003;
 const eth_sig_auth_strategy: felt252 = 0xDEAD0004;
 
 #[contract]
-mod TimedFundingRound {
+mod TimedRound {
     use starknet::{
         ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
         Felt252TryIntoContractAddress
     };
     use super::{
-        ITimedFundingRound, ProposalVote, StrategyType, RoundParams, RoundState, Award,
+        ITimedRound, ProposalVote, StrategyType, RoundParams, RoundState, Award,
         strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
         eth_sig_auth_strategy
     };
-    use prop_house::rounds::timed_funding::config::RoundConfig;
+    use prop_house::rounds::timed::config::RoundConfig;
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
     use prop_house::common::registry::strategy::{
         IStrategyRegistryDispatcherTrait, IStrategyRegistryDispatcher, Strategy
@@ -128,10 +128,10 @@ mod TimedFundingRound {
     #[event]
     fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
 
-    impl TimedFundingRound of ITimedFundingRound {
+    impl TimedRound of ITimedRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
             let proposal = Round::_proposals::read(proposal_id);
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             proposal
         }
@@ -154,11 +154,11 @@ mod TimedFundingRound {
             // Ensure that the round is in the proposal period
             assert(
                 current_timestamp >= config.proposal_period_start_timestamp,
-                'TFR: Proposal period not begun',
+                'TR: Proposal period not started',
             );
             assert(
                 current_timestamp < config.proposal_period_end_timestamp,
-                'TFR: Proposal period has ended',
+                'TR: Proposal period has ended',
             );
 
             // Determine the cumulative proposition power of the user
@@ -170,7 +170,7 @@ mod TimedFundingRound {
             );
             assert(
                 cumulative_proposition_power >= config.proposal_threshold.into(),
-                'TFR: Proposition power too low'
+                'TR: Proposition power too low'
             );
 
             let proposal_id = Round::_proposal_count::read() + 1;
@@ -200,13 +200,13 @@ mod TimedFundingRound {
             let mut proposal = Round::_proposals::read(proposal_id);
 
             // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TFR: Proposal already cancelled');
+            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
 
             // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'TFR: Caller is not proposer');
+            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
 
             // Set the last update timestamp
             proposal.last_updated_at = get_block_timestamp();
@@ -225,13 +225,13 @@ mod TimedFundingRound {
             let mut proposal = Round::_proposals::read(proposal_id);
 
             // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+            assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TFR: Proposal already cancelled');
+            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
 
             // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'TFR: Caller is not proposer');
+            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
 
             // Cancel the proposal
             proposal.is_cancelled = true;
@@ -260,9 +260,9 @@ mod TimedFundingRound {
             let vote_period_start_timestamp = snapshot_timestamp + 1;
 
             // Ensure that the round is in the voting period
-            assert(current_timestamp >= vote_period_start_timestamp, 'TFR: Vote period not begun');
+            assert(current_timestamp >= vote_period_start_timestamp, 'TR: Vote period not begun');
             assert(
-                current_timestamp <= config.vote_period_end_timestamp, 'TFR: Vote period has ended'
+                current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended'
             );
 
             // Determine the cumulative voting power of the user
@@ -272,7 +272,7 @@ mod TimedFundingRound {
                 used_voting_strategy_ids,
                 user_voting_strategy_params_flat.span(),
             );
-            assert(cumulative_voting_power.is_non_zero(), 'TFR: User has no voting power');
+            assert(cumulative_voting_power.is_non_zero(), 'TR: User has no voting power');
 
             // Cast votes, throwing if the remaining voting power is insufficient
             _cast_votes_on_one_or_more_proposals(
@@ -291,13 +291,13 @@ mod TimedFundingRound {
             let current_timestamp = get_block_timestamp();
 
             assert(
-                current_timestamp > config.vote_period_end_timestamp, 'TFR: Vote period not ended'
+                current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
             );
 
             let proposal_count = Round::_proposal_count::read();
 
             // If no proposals were submitted, the round must be cancelled.
-            assert(proposal_count != 0, 'TFR: No proposals submitted');
+            assert(proposal_count != 0, 'TR: No proposals submitted');
 
             let active_proposals = Round::get_active_proposals();
             let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
@@ -334,7 +334,7 @@ mod TimedFundingRound {
     /// * `proposal_id` - The proposal ID.
     #[view]
     fn get_proposal(proposal_id: u32) -> Proposal {
-        TimedFundingRound::get_proposal(proposal_id)
+        TimedRound::get_proposal(proposal_id)
     }
 
     /// Submit a proposal to the round.
@@ -349,7 +349,7 @@ mod TimedFundingRound {
         used_proposing_strategy_ids: Array<felt252>,
         user_proposing_strategy_params_flat: Array<felt252>,
     ) {
-        TimedFundingRound::propose(
+        TimedRound::propose(
             proposer_address,
             metadata_uri,
             used_proposing_strategy_ids,
@@ -363,7 +363,7 @@ mod TimedFundingRound {
     /// * `metadata_uri` - The updated proposal metadata URI.
     #[external]
     fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
-        TimedFundingRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
+        TimedRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
     }
 
     /// Cancel a proposal.
@@ -371,7 +371,7 @@ mod TimedFundingRound {
     /// * `proposal_id` - The ID of the proposal to cancel.
     #[external]
     fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-        TimedFundingRound::cancel_proposal(proposer_address, proposal_id);
+        TimedRound::cancel_proposal(proposer_address, proposal_id);
     }
 
     /// Cast votes on one or more proposals.
@@ -386,7 +386,7 @@ mod TimedFundingRound {
         used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_flat: Array<felt252>,
     ) {
-        TimedFundingRound::vote(
+        TimedRound::vote(
             voter_address,
             proposal_votes,
             used_voting_strategy_ids,
@@ -398,7 +398,7 @@ mod TimedFundingRound {
     /// * `awards` - The awards to distribute.
     #[external]
     fn finalize_round(awards: Array<Award>) {
-        TimedFundingRound::finalize_round(awards);
+        TimedRound::finalize_round(awards);
     }
 
     ///
@@ -418,12 +418,12 @@ mod TimedFundingRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
-        assert(award_hash != 0, 'TFR: Invalid award hash');
-        assert(proposal_period_start_timestamp != 0, 'TFR: Invalid PPST', );
-        assert(proposal_period_duration != 0, 'TFR: Invalid PPD');
-        assert(vote_period_duration != 0, 'TFR: Invalid VPD');
-        assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TFR: Invalid winner count');
-        assert(voting_strategies.len() != 0, 'TFR: No voting strategies');
+        assert(award_hash != 0, 'TR: Invalid award hash');
+        assert(proposal_period_start_timestamp != 0, 'TR: Invalid PPST');
+        assert(proposal_period_duration != 0, 'TR: Invalid PPD');
+        assert(vote_period_duration != 0, 'TR: Invalid VPD');
+        assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TR: Invalid winner count');
+        assert(voting_strategies.len() != 0, 'TR: No voting strategies');
 
         let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
         let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration;
@@ -506,13 +506,13 @@ mod TimedFundingRound {
         let caller: felt252 = get_caller_address().into();
         assert(
             caller == eth_tx_auth_strategy | caller == eth_sig_auth_strategy,
-            'TFR: Invalid auth strategy'
+            'TR: Invalid auth strategy'
         );
     }
 
     /// Asserts that the round is active.
     fn _assert_round_active() {
-        assert(_config::read().round_state == RoundState::ACTIVE, 'TFR: Round not active');
+        assert(_config::read().round_state == RoundState::ACTIVE, 'TR: Round not active');
     }
 
     /// Asserts that the provided awards are valid.
@@ -521,7 +521,7 @@ mod TimedFundingRound {
         let stored_award_hash = _config::read().award_hash.into();
         let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250;
 
-        assert(computed_award_hash == stored_award_hash, 'TFR: Invalid awards provided');
+        assert(computed_award_hash == stored_award_hash, 'TR: Invalid awards provided');
     }
 
     /// Register the provided strategies if they are not already registered.
@@ -636,15 +636,15 @@ mod TimedFundingRound {
         let voting_power = proposal_vote.voting_power;
 
         let mut proposal = Round::_proposals::read(proposal_id);
-        assert(proposal.proposer.is_non_zero(), 'TFR: Proposal does not exist');
+        assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
         // Exit early if the proposal has been cancelled
         if proposal.is_cancelled {
             return 0;
         }
 
-        assert(voting_power.is_non_zero(), 'TFR: No voting power provided');
-        assert(remaining_voting_power >= voting_power, 'TFR: Insufficient voting power');
+        assert(voting_power.is_non_zero(), 'TR: No voting power provided');
+        assert(remaining_voting_power >= voting_power, 'TR: Insufficient voting power');
 
         let new_proposal_voting_power = proposal.voting_power + voting_power;
         proposal.voting_power = new_proposal_voting_power;

@@ -29,7 +29,9 @@ fn read_params(
             break Result::Ok(params.span());
         }
         offset += 1;
-        let param = StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?;
+        let param = StorageAccess::<felt252>::read_at_offset_internal(
+            address_domain, base, offset
+        )?;
 
         params.append(param);
     }

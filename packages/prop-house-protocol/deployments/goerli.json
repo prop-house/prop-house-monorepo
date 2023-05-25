@@ -7,7 +7,7 @@
       "creatorPassIssuer": "0x76D4c1B098D2e729e1cD2cFcaF6c1fB8828C5588",
       "starknetCommit": "0x0FE38B1f9be81c36B5588F77248886fd5b9B7a6c",
       "communityHouseImpl": "0x7FD871f9203Cb8Ec1F30938A88c1EbF7CF0282b2",
-      "timedFundingRoundImpl": "0xd7BC117555Afe9E124c99d03E36FAD58C8bD1340"
+      "timedRoundImpl": "0xd7BC117555Afe9E124c99d03E36FAD58C8bD1340"
     }
   },
   "starknet": {
@@ -15,8 +15,8 @@
       "roundFactory": "0x75b622d8d42a1c6b3fde044b868abd3e23e1ee27e00716f672890985a4be4ac",
       "ethExecutionStrategy": "0x2a3b90a2745d67ea17eba97a9352c3fe5c0d1cb384087db3aad64cad42d91a7",
       "strategyRegistry": "0x5caee82756bd3679092015549a2e274c62cee637f812eb2fe548aa505395eff",
-      "timedFundingRoundEthTxAuthStrategy": "0x7deb0c233822a1b389ef04ce777f516e4e120de8a4d981be5bf66daa5140a",
-      "timedFundingRoundEthSigAuthStrategy": "0xe7670a1aa4cb06a70552b2eb1167aa7c07d21276401b83860bba7ae5148c42",
+      "timedRoundEthTxAuthStrategy": "0x7deb0c233822a1b389ef04ce777f516e4e120de8a4d981be5bf66daa5140a",
+      "timedRoundEthSigAuthStrategy": "0xe7670a1aa4cb06a70552b2eb1167aa7c07d21276401b83860bba7ae5148c42",
       "vanillaGovPowerStrategy": "0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9",
       "merkleAllowlistGovPowerStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
       "ethereumBalanceOfGovPowerStrategy": "0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f",
@@ -26,7 +26,7 @@
       }
     },
     "classHash": {
-      "timedFundingRound": "0x28ca9869cca275b2720cbcf509c92f0050787e373732954e53f58633c865576"
+      "timedRound": "0x28ca9869cca275b2720cbcf509c92f0050787e373732954e53f58633c865576"
     }
   }
 }

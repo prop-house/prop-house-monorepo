@@ -25,7 +25,7 @@ type Round {
   "The round address on the source chain"
   sourceChainRound: String!
 
-  "The round type (TIMED_FUNDING)"
+  "The round type (TIMED)"
   type: String!
 
   "The round state"

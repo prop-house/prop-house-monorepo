@@ -9,7 +9,7 @@ const {
 } = getContractAddressesForChainOrThrow(parseInt(process.env.SOURCE_CHAIN_ID!));
 
 export const CLASS_HASH_TO_ROUND_TYPE = {
-  [classHashes.timedFunding]: RoundType.TIMED_FUNDING,
+  [classHashes.timed]: RoundType.TIMED,
 };
 
 export const getRoundType = (hash: string) => {

@@ -4,8 +4,8 @@ pragma solidity >=0.8.17;
 import { Clone } from 'solady/src/utils/Clone.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
-import { ITimedFundingRound } from '../interfaces/ITimedFundingRound.sol';
-import { REGISTER_ROUND_SELECTOR, TIMED_FUNDING_ROUND_TYPE, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
+import { ITimedRound } from '../interfaces/ITimedRound.sol';
+import { REGISTER_ROUND_SELECTOR, TIMED_ROUND_TYPE, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
@@ -20,7 +20,7 @@ import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { ERC1155 } from '../lib/token/ERC1155.sol';
 
-contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, ERC1155Supply, ReceiptIssuer, Clone {
+contract TimedRound is ITimedRound, AssetController, TokenHolder, ERC1155Supply, ReceiptIssuer, Clone {
     using { Uint256.mask250 } for bytes32;
     using { Uint256.toUint256 } for address;
     using { AssetHelper.toID } for Asset;
@@ -79,7 +79,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         return address(this).toUint256();
     }
 
-    /// @notice The current state of the timed funding round
+    /// @notice The current state of the timed round
     RoundState public state;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
@@ -129,7 +129,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         uint256 _roundFactory,
         uint256 _executionRelayer
     ) {
-        kind = TIMED_FUNDING_ROUND_TYPE;
+        kind = TIMED_ROUND_TYPE;
 
         classHash = _classHash;
         propHouse = IPropHouse(_propHouse);
@@ -190,7 +190,7 @@ contract TimedFundingRound is ITimedFundingRound, AssetController, TokenHolder, 
         _batchMint(to, identifiers, amounts, new bytes(0));
     }
 
-    /// @notice Cancel the timed funding round
+    /// @notice Cancel the timed round
     /// @dev This function is only callable by the round manager
     function cancel() external onlyRoundManager {
         if (state != RoundState.AwaitingRegistration && state != RoundState.Registered) {

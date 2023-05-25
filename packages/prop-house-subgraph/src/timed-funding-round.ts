@@ -1,6 +1,6 @@
 import { log, BigInt } from '@graphprotocol/graph-ts';
-import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedFundingRound/TimedFundingRound';
-import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedFundingRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
+import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
+import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
 
@@ -34,7 +34,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   }
   round.eventState = RoundEventState.REGISTERED;
 
-  const config = new TimedFundingRoundConfig(`${round.id}-timed-funding-round-config`);
+  const config = new TimedRoundConfig(`${round.id}-timed-funding-round-config`);
 
   config.round = round.id;
   config.winnerCount = event.params.winnerCount;
@@ -109,7 +109,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     award.save();
   }
 
-  round.timedFundingConfig = config.id;
+  round.timedConfig = config.id;
   round.save();
 }
 
@@ -136,19 +136,19 @@ export function handleRoundFinalized(event: RoundFinalized): void {
     ]);
     return;
   }
-  if (round.timedFundingConfig) {
-    const timedFundingConfig = TimedFundingRoundConfig.load(round.timedFundingConfig!);
-    if (!timedFundingConfig) {
-      log.error('[handleRoundFinalized] Timed funding config not found: {}. Finalization Hash: {}', [
+  if (round.timedConfig) {
+    const timedConfig = TimedRoundConfig.load(round.timedConfig!);
+    if (!timedConfig) {
+      log.error('[handleRoundFinalized] Timed round config not found: {}. Finalization Hash: {}', [
         event.address.toHex(),
         event.transaction.hash.toHex(),
       ]);
       return;
     }
-    timedFundingConfig.claimPeriodEndTimestamp = event.block.timestamp.plus(
+    timedConfig.claimPeriodEndTimestamp = event.block.timestamp.plus(
       BIGINT_8_WEEKS_IN_SECONDS,
     );
-    timedFundingConfig.save();
+    timedConfig.save();
   }
 
   round.eventState = RoundEventState.FINALIZED;

@@ -116,9 +116,7 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             value.proposal_period_end_timestamp,
             value.vote_period_end_timestamp
         );
-        StorageAccess::<felt252>::write_at_offset_internal(
-            address_domain, base, offset, packed
-        )?;
+        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
         StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 1, value.proposal_threshold
         )?;

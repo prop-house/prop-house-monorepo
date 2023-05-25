@@ -1,5 +1,5 @@
 {
-  "goerli": {
+  "local": {
     "Manager": {
       "address": "0xAa2e7b86176B854260E967Ce04896a65b8a419D6",
       "startBlock": 8701532      

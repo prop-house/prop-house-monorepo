@@ -4,8 +4,8 @@ pragma solidity >=0.8.17;
 import { IRound } from './IRound.sol';
 import { Asset } from '../lib/types/Common.sol';
 
-/// @notice Interface implemented by the timed funding round
-interface ITimedFundingRound is IRound {
+/// @notice Interface implemented by the timed round
+interface ITimedRound is IRound {
     /// @notice All possible round states
     enum RoundState {
         AwaitingRegistration,
@@ -14,7 +14,7 @@ interface ITimedFundingRound is IRound {
         Cancelled
     }
 
-    /// @notice The timed funding round configuration
+    /// @notice The timed round configuration
     struct RoundConfig {
         Asset[] awards;
         uint248 proposalThreshold;
@@ -130,7 +130,7 @@ interface ITimedFundingRound is IRound {
     /// @notice Emitted when a round is cancelled by the round manager
     event RoundCancelled();
 
-    /// @notice The current state of the timed funding round
+    /// @notice The current state of the timed round
     function state() external view returns (RoundState);
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.

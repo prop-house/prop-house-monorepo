@@ -1,2 +1,2 @@
 export { RoundBase } from './base';
-export { TimedFundingRound } from './timed-funding';
+export { TimedRound } from './timed';

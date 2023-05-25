@@ -1,4 +1,4 @@
-import { CommunityHouseContract, TimedFundingRoundContract } from '@prophouse/protocol';
+import { CommunityHouseContract, TimedRoundContract } from '@prophouse/protocol';
 import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
@@ -100,9 +100,9 @@ export interface HouseInfo<T extends HouseType> {
 
 //#endregion
 
-//#region Timed Funding Round
+//#region Timed Round
 
-export namespace TimedFunding {
+export namespace Timed {
   export interface Config<CS extends Custom | void> {
     awards: Asset[];
     proposalThreshold?: BigNumberish;
@@ -160,7 +160,7 @@ export namespace TimedFunding {
   }
   export interface VoteConfig {
     round: string;
-    votes: TimedFunding.ProposalVote[];
+    votes: Timed.ProposalVote[];
   }
   export interface ProposeConfig {
     round: string;
@@ -180,7 +180,7 @@ export namespace TimedFunding {
     action: Action;
     data: ActionData[A];
   }
-  export type Contract = TimedFundingRoundContract;
+  export type Contract = TimedRoundContract;
   export interface Award {
     assetId: Uint256;
     amount: Uint256;
@@ -208,7 +208,7 @@ export namespace TimedFunding {
 //#region Round
 
 export enum RoundType {
-  TIMED_FUNDING = 'TIMED_FUNDING',
+  TIMED = 'TIMED',
 }
 
 export enum RoundState {
@@ -231,20 +231,20 @@ export enum RoundEventState {
 }
 
 export interface RoundConfigs<CS extends Custom | void = void> {
-  [RoundType.TIMED_FUNDING]: TimedFunding.Config<CS>;
+  [RoundType.TIMED]: Timed.Config<CS>;
 }
 
 export interface RoundConfigStruct {
-  [RoundType.TIMED_FUNDING]: TimedFunding.ConfigStruct;
+  [RoundType.TIMED]: Timed.ConfigStruct;
 }
 
 export interface RoundContract {
-  [RoundType.TIMED_FUNDING]: TimedFunding.Contract;
+  [RoundType.TIMED]: Timed.Contract;
 }
 
 export interface GetRoundStateConfig {
-  [RoundType.TIMED_FUNDING]: Pick<
-    TimedFunding.ConfigStruct,
+  [RoundType.TIMED]: Pick<
+    Timed.ConfigStruct,
     'proposalPeriodStartTimestamp' | 'proposalPeriodDuration' | 'votePeriodDuration'
   >;
 }

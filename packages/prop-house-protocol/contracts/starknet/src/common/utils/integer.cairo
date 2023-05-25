@@ -1,4 +1,5 @@
 use starknet::{EthAddress, Felt252TryIntoEthAddress};
+use zeroable::Zeroable;
 use traits::TryInto;
 
 impl U256TryIntoEthAddress of TryInto<u256, EthAddress> {

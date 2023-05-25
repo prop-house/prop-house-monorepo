@@ -31,8 +31,8 @@ export const GovPowerStrategyFields = graphql(`
   }
 `);
 
-export const TimedFundingRoundConfigFields = graphql(`
-  fragment TimedFundingRoundConfigFields on TimedFundingRoundConfig {
+export const TimedRoundConfigFields = graphql(`
+  fragment TimedRoundConfigFields on TimedRoundConfig {
     winnerCount
     proposalThreshold
     proposalPeriodStartTimestamp
@@ -74,8 +74,8 @@ export const RoundFields = graphql(`
         ...GovPowerStrategyFields
       }
     }
-    timedFundingConfig {
-      ...TimedFundingRoundConfigFields
+    timedConfig {
+      ...TimedRoundConfigFields
     }
   }
 `);

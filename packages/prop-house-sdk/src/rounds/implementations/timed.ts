@@ -3,13 +3,13 @@ import {
   AssetType,
   Custom,
   RoundType,
-  TimedFunding,
+  Timed,
   RoundChainConfig,
   RoundState,
   RoundEventState,
   GetRoundStateParams,
 } from '../../types';
-import { TimedFundingRound__factory } from '@prophouse/protocol';
+import { TimedRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';
@@ -18,10 +18,7 @@ import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
 import { isAddress } from '@ethersproject/address';
 
-export class TimedFundingRound<CS extends void | Custom = void> extends RoundBase<
-  RoundType.TIMED_FUNDING,
-  CS
-> {
+export class TimedRound<CS extends void | Custom = void> extends RoundBase<RoundType.TIMED, CS> {
   // Storage variable name helpers
   protected readonly _SPENT_VOTING_POWER_STORE = 'spent_voting_power_store';
   protected readonly _ROUND_TIMESTAMPS_STORE = 'round_timestamps_store';
@@ -65,7 +62,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   public static MAX_WINNER_COUNT = 255;
 
   /**
-   * EIP712 timed funding round propose types
+   * EIP712 timed round propose types
    */
   public static PROPOSE_TYPES = {
     Propose: [
@@ -78,7 +75,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   };
 
   /**
-   * EIP712 timed funding round vote types
+   * EIP712 timed round vote types
    */
   public static VOTE_TYPES = {
     Vote: [
@@ -93,11 +90,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   };
 
   /**
-   * Returns a `TimedFundingRound` instance for the provided chain configuration
+   * Returns a `TimedRound` instance for the provided chain configuration
    * @param config The chain config
    */
   public static for<CS extends void | Custom = void>(config: RoundChainConfig<CS>) {
-    return new TimedFundingRound<CS>(config);
+    return new TimedRound<CS>(config);
   }
 
   /**
@@ -105,7 +102,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param params The information required to get the round state
    */
   // prettier-ignore
-  public static getState(params: GetRoundStateParams<RoundType.TIMED_FUNDING>) {
+  public static getState(params: GetRoundStateParams<RoundType.TIMED>) {
     const { eventState, config } = params;
     if (!eventState || !config) {
       return RoundState.UNKNOWN;
@@ -141,50 +138,48 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * The Starknet relayer path
    */
   public get relayerPath() {
-    return 'timed_funding_round';
+    return 'timed_round';
   }
 
   /**
    * The round type
    */
   public get type() {
-    return RoundType.TIMED_FUNDING;
+    return RoundType.TIMED;
   }
 
   /**
    * The round implementation contract address
    */
   public get impl() {
-    return this._addresses.evm.round.timedFunding;
+    return this._addresses.evm.round.timed;
   }
 
   /**
    * The round implementation contract interface
    */
   public get interface() {
-    return TimedFundingRound__factory.createInterface();
+    return TimedRound__factory.createInterface();
   }
 
   /**
    * Convert the provided round configuration to a config struct
-   * @param config The timed funding round config
+   * @param config The timed round config
    */
-  public async getConfigStruct(
-    config: TimedFunding.Config<CS>,
-  ): Promise<TimedFunding.ConfigStruct> {
+  public async getConfigStruct(config: Timed.Config<CS>): Promise<Timed.ConfigStruct> {
     // prettier-ignore
-    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < TimedFundingRound._TIMESTAMP_SECS + TimedFundingRound.MIN_PROPOSAL_PERIOD_DURATION) {
+    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < TimedRound._TIMESTAMP_SECS + TimedRound.MIN_PROPOSAL_PERIOD_DURATION) {
       throw new Error('Remaining proposal period duration is too short');
     }
-    if (config.votePeriodDurationSecs < TimedFundingRound.MIN_VOTE_PERIOD_DURATION) {
+    if (config.votePeriodDurationSecs < TimedRound.MIN_VOTE_PERIOD_DURATION) {
       throw new Error('Vote period duration is too short');
     }
     if (config.winnerCount == 0) {
       throw new Error('Round must have at least one winner');
     }
-    if (config.winnerCount > TimedFundingRound.MAX_WINNER_COUNT) {
+    if (config.winnerCount > TimedRound.MAX_WINNER_COUNT) {
       throw new Error(
-        `Winner count too high. Maximum winners: ${TimedFundingRound.MAX_WINNER_COUNT}. Got: ${config.winnerCount}.`,
+        `Winner count too high. Maximum winners: ${TimedRound.MAX_WINNER_COUNT}. Got: ${config.winnerCount}.`,
       );
     }
     if (config.awards.length !== 1 && config.awards.length !== config.winnerCount) {
@@ -234,7 +229,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Estimate the round registration message fee cost (in wei)
    * @param configStruct The round configuration struct
    */
-  public async estimateMessageFee(configStruct: TimedFunding.ConfigStruct) {
+  public async estimateMessageFee(configStruct: Timed.ConfigStruct) {
     const rawPayload = await this.getContract(this.impl).getL2Payload(configStruct);
     const payload = [
       encoding.hexPadLeft(ADDRESS_ONE).toLowerCase(),
@@ -260,34 +255,34 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
   }
 
   /**
-   * ABI-encode the timed funding round configuration
-   * @param config The timed funding round config
+   * ABI-encode the timed round configuration
+   * @param config The timed round config
    */
-  public encode(configStruct: TimedFunding.ConfigStruct): string {
-    return defaultAbiCoder.encode([TimedFundingRound.CONFIG_STRUCT_TYPE], [configStruct]);
+  public encode(configStruct: Timed.ConfigStruct): string {
+    return defaultAbiCoder.encode([TimedRound.CONFIG_STRUCT_TYPE], [configStruct]);
   }
 
   /**
    * Given the provided params, return the round state
    * @param params The information required to get the round state
    */
-  public getState(params: GetRoundStateParams<RoundType.TIMED_FUNDING>) {
-    return TimedFundingRound.getState(params);
+  public getState(params: GetRoundStateParams<RoundType.TIMED>) {
+    return TimedRound.getState(params);
   }
 
   /**
-   * Given a round address, return a `TimedFundingRound` contract instance
+   * Given a round address, return a `TimedRound` contract instance
    * @param address The round address
    */
   public getContract(address: string) {
-    return TimedFundingRound__factory.connect(address, this._evm);
+    return TimedRound__factory.connect(address, this._evm);
   }
 
   /**
    * Sign a propose message and return the proposer, signature, and signed message
    * @param config The round address and proposal metadata URI
    */
-  public async signProposeMessage(config: TimedFunding.ProposeConfig) {
+  public async signProposeMessage(config: Timed.ProposeConfig) {
     const address = await this.signer.getAddress();
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -303,8 +298,10 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       proposerAddress: address,
       proposingStrategyIds,
       proposingStrategyParams,
-      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
-      proposingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(proposingStrategyIds)),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedEthSig),
+      proposingStrategiesHash: encoding.hexPadRight(
+        hash.computeHashOnElements(proposingStrategyIds),
+      ),
       proposingStrategyParamsHash: encoding.hexPadRight(
         hash.computeHashOnElements(encoding.flatten2DArray(proposingStrategyParams)),
       ),
@@ -312,7 +309,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
-      TimedFundingRound.PROPOSE_TYPES,
+      TimedRound.PROPOSE_TYPES,
       message,
     );
     return {
@@ -326,12 +323,12 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Sign a propose message and submit it to the Starknet relayer
    * @param config The round address and proposal metadata URI
    */
-  public async proposeViaSignature(config: TimedFunding.ProposeConfig) {
+  public async proposeViaSignature(config: Timed.ProposeConfig) {
     const { address, signature, message } = await this.signProposeMessage(config);
-    return this.sendToRelayer<TimedFunding.RequestParams>({
+    return this.sendToRelayer<Timed.RequestParams>({
       address,
       signature,
-      action: TimedFunding.Action.PROPOSE,
+      action: Timed.Action.PROPOSE,
       data: message,
     });
   }
@@ -340,7 +337,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Sign proposal votes and return the voter, signature, and signed message
    * @param config The round address and proposal vote(s)
    */
-  public async signVoteMessage(config: TimedFunding.VoteConfig) {
+  public async signVoteMessage(config: Timed.VoteConfig) {
     const address = await this.signer.getAddress();
     const suppliedVotingPower = config.votes.reduce(
       (acc, { votingPower }) => acc.add(votingPower),
@@ -382,7 +379,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       votingStrategyIds,
       proposalVotes: config.votes,
       votingStrategyParams: userParams,
-      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedFundingEthSig),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedEthSig),
       voterAddress: address,
       proposalVotesHash: encoding.hexPadRight(this.hashProposalVotes(config.votes)),
       votingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(votingStrategyIds)),
@@ -391,11 +388,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
       ),
       salt: this.generateSalt(),
     };
-    const signature = await this.signer._signTypedData(
-      this.DOMAIN,
-      TimedFundingRound.VOTE_TYPES,
-      message,
-    );
+    const signature = await this.signer._signTypedData(this.DOMAIN, TimedRound.VOTE_TYPES, message);
     return {
       address,
       message,
@@ -407,12 +400,12 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Sign proposal votes and submit them to the Starknet relayer
    * @param config The round address and proposal vote(s)
    */
-  public async voteViaSignature(config: TimedFunding.VoteConfig) {
+  public async voteViaSignature(config: Timed.VoteConfig) {
     const { address, signature, message } = await this.signVoteMessage(config);
-    return this.sendToRelayer<TimedFunding.RequestParams>({
+    return this.sendToRelayer<Timed.RequestParams>({
       address,
       signature,
-      action: TimedFunding.Action.VOTE,
+      action: Timed.Action.VOTE,
       data: message,
     });
   }
@@ -424,11 +417,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedProposePayload(
     account: Account,
-    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.PROPOSE>, 'action'>,
+    params: Omit<Timed.RequestParams<Timed.Action.PROPOSE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: TimedFunding.Action.PROPOSE,
+      action: Timed.Action.PROPOSE,
     };
     const calldata = this.getProposeCalldata({
       proposer: payload.address,
@@ -448,11 +441,11 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    */
   public async relaySignedVotePayload(
     account: Account,
-    params: Omit<TimedFunding.RequestParams<TimedFunding.Action.VOTE>, 'action'>,
+    params: Omit<Timed.RequestParams<Timed.Action.VOTE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: TimedFunding.Action.VOTE,
+      action: Timed.Action.VOTE,
     };
     const calldata = this.getVoteCalldata({
       voter: params.address,
@@ -487,7 +480,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param account The Starknet account used to submit the transaction
    * @param config The round finalization config
    */
-  public async finalizeRound(account: Account, config: TimedFunding.FinalizationConfig) {
+  public async finalizeRound(account: Account, config: Timed.FinalizationConfig) {
     const calldata = [config.awards.length.toString()].concat(
       config.awards.map(a => [a.assetId.low, a.assetId.high, a.amount.low, a.amount.high]).flat(),
     );
@@ -506,7 +499,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Generates a calldata array used to submit a proposal through an authenticator
    * @param config The information required to generate the propose calldata
    */
-  public getProposeCalldata(config: TimedFunding.ProposeCalldataConfig): string[] {
+  public getProposeCalldata(config: Timed.ProposeCalldataConfig): string[] {
     const { proposingStrategyIds, proposingStrategyParams } = config;
     const flattenedProposingStrategyParams = encoding.flatten2DArray(proposingStrategyParams);
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
@@ -525,7 +518,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Generates a calldata array used to cast a vote through an authenticator
    * @param config The information required to generate the vote calldata
    */
-  public getVoteCalldata(config: TimedFunding.VoteCalldataConfig): string[] {
+  public getVoteCalldata(config: Timed.VoteCalldataConfig): string[] {
     const { votingStrategyIds, votingStrategyParams, proposalVotes } = config;
     const flattenedVotingStrategyParams = encoding.flatten2DArray(votingStrategyParams);
     const flattenedProposalVotes = proposalVotes
@@ -557,11 +550,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * @param selector The function selector
    * @param calldata The transaction calldata
    */
-  public createEVMSigAuthCall(
-    params: TimedFunding.RequestParams,
-    selector: string,
-    calldata: string[],
-  ) {
+  public createEVMSigAuthCall(params: Timed.RequestParams, selector: string, calldata: string[]) {
     const { round, authStrategy, salt } = params.data;
     const { r, s, v } = encoding.getRSVFromSig(params.signature);
     const rawSalt = splitUint256.SplitUint256.fromHex(`0x${salt.toString(16)}`);
@@ -610,7 +599,7 @@ export class TimedFundingRound<CS extends void | Custom = void> extends RoundBas
    * Return the pedersen hash of the provided proposal votes
    * @param votes The voting power to allocate to one or more proposals
    */
-  protected hashProposalVotes(votes: TimedFunding.ProposalVote[]) {
+  protected hashProposalVotes(votes: Timed.ProposalVote[]) {
     return hash.computeHashOnElements(
       votes
         .map(vote => {
