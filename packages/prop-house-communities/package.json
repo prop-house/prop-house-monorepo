@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/communities",
-  "version": "0.1.5",
+  "version": "0.1.8",
   "description": "Voting strategies for Prop House rounds.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
