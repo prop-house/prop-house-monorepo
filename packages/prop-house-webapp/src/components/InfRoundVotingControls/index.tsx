@@ -1,6 +1,5 @@
 import { Row, Col } from 'react-bootstrap';
 import classes from './InfRoundVotingControls.module.css';
-import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { allotVotes } from '../../state/slices/voting';
 import { Direction, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
@@ -9,10 +8,9 @@ import {
   countVotesAllottedToProp,
   countVotesAllottedToPropWithDirection,
 } from '../../utils/countVotesAllottedToProp';
-import { FiThumbsUp, FiThumbsDown } from 'react-icons/fi';
-import TruncateThousands from '../TruncateThousands';
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 import { countNumVotesForPropWithDirection } from '../../utils/countNumVotesForPropWithDirection';
+import ThumbsUpDownButton from '../ThumbsUpButton';
 
 const InfRoundVotingControls: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -125,23 +123,20 @@ const InfRoundVotingControls: React.FC<{
     <Row>
       <Col xs={12} className={classes.bottomContainer} onClick={(e: any) => e.stopPropagation()}>
         <div className={classes.votingBtnsContainer}>
-          <button
-            onClick={e => handleClickVote(e, Direction.Up)}
+          <ThumbsUpDownButton
+            thumbsUp={true}
+            handleClick={handleClickVote}
             disabled={upVotesDisabled}
-            className={clsx(classes.votingBtn, classes.up)}
-          >
-            <FiThumbsUp />
-            <TruncateThousands amount={submittedUpVotesForProp + allotedUpVotesForProp} />
-          </button>
-
-          <button
-            onClick={e => handleClickVote(e, Direction.Down)}
+            selected={upVotesDisabled}
+            amount={submittedUpVotesForProp + allotedUpVotesForProp}
+          />
+          <ThumbsUpDownButton
+            thumbsUp={false}
+            handleClick={handleClickVote}
             disabled={downVotesDisabled}
-            className={clsx(classes.votingBtn, classes.down)}
-          >
-            <FiThumbsDown />
-            <TruncateThousands amount={submittedDownVotesForProp + allotedDownVotesForProp} />
-          </button>
+            selected={downVotesDisabled}
+            amount={submittedDownVotesForProp + allotedDownVotesForProp}
+          />
         </div>
       </Col>
     </Row>
