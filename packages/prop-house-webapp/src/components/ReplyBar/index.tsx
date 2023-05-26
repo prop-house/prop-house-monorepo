@@ -155,6 +155,11 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     </div>
   );
 
+  const handleClose = () => {
+    setComment('');
+    setShowRepliesModal(false);
+  };
+
   const repliesModal = (
     <Modal
       title={proposal.title}
@@ -174,10 +179,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           </div>
         )
       }
-      onRequestClose={() => {
-        setComment('');
-        setShowRepliesModal(false);
-      }}
+      handleClose={handleClose}
       bottomContainer={
         isInCommentPeriod() ? (
           !signer ? (

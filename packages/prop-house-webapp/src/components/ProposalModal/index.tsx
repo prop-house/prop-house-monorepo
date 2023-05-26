@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
-import Modal from 'react-modal';
+import ReactModal from 'react-modal';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
@@ -189,6 +189,11 @@ const ProposalModal = () => {
     }
   };
 
+  const handleClose = () => {
+    setEditProposalMode(false);
+    handleClosePropModal();
+  };
+
   return (
     <>
       {showVoteConfirmationModal && round && (
@@ -221,7 +226,6 @@ const ProposalModal = () => {
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}
-          handleClosePropModal={handleClosePropModal}
         />
       )}
 
@@ -230,16 +234,12 @@ const ProposalModal = () => {
           id={activeProposal.id}
           setShowDeletePropModal={setShowDeletePropModal}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}
-          handleClosePropModal={handleClosePropModal}
         />
       )}
 
-      <Modal
+      <ReactModal
         isOpen={true}
-        onRequestClose={() => {
-          setEditProposalMode(false);
-          handleClosePropModal();
-        }}
+        onRequestClose={handleClose}
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
@@ -273,7 +273,7 @@ const ProposalModal = () => {
             />
           </>
         )}
-      </Modal>
+      </ReactModal>
     </>
   );
 };
