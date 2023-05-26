@@ -51,7 +51,7 @@ mod EthereumSigAuthStrategy {
             } else if selector == Selector::CANCEL_PROPOSAL {
                 _verify_cancel_proposal_sig(r, s, v, salt, target, selector, cdata);
             } else {
-                return ();
+                return;
             }
 
             // Execute the function call with the supplied calldata

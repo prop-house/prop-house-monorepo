@@ -176,7 +176,7 @@ mod StrategyRegistry {
                     strategy_array.append(*v);
                 },
                 Option::None(_) => {
-                    break ();
+                    break;
                 },
             };
         };

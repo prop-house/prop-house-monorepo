@@ -104,7 +104,7 @@ mod Round {
         let proposal_count = _proposal_count::read();
         loop {
             if id > proposal_count {
-                break ();
+                break;
             }
 
             let proposal = _proposals::read(id);
@@ -117,6 +117,7 @@ mod Round {
     }
 
     /// Get the top N proposals by descending voting power.
+    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
     /// * `proposals` - Array of proposals to sort
     /// * `max_return_count` - Max number of proposals to return
     fn get_n_proposals_by_voting_power_desc(
@@ -135,14 +136,15 @@ mod Round {
                     proposal_ids.append(*p.proposal_id);
                 },
                 Option::None(_) => {
-                    break ();
+                    break;
                 },
             };
         };
         proposal_ids.span()
     }
 
-    /// Merge sort and slice an array of proposals by descending voting power
+    /// Merge sort and slice an array of proposals by descending voting power.
+    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
     /// * `arr` - Array of proposals to sort
     /// * `max_return_count` - Max return count
     fn _mergesort_proposals_by_voting_power_desc_and_slice(
@@ -188,43 +190,37 @@ mod Round {
         max_return_count: u32,
     ) {
         if result_arr.len() == left_arr.len() + right_arr.len() {
-            return ();
+            return;
         }
 
         // Exit early if the max return count has been reached
         if result_arr.len() == max_return_count {
-            return ();
+            return;
         }
 
-        if left_arr_ix == left_arr.len() {
-            result_arr.append(*right_arr[right_arr_ix]);
-            return _merge_and_slice_recursive(
-                left_arr, right_arr, ref result_arr, left_arr_ix, right_arr_ix + 1, max_return_count
-            );
-        }
-
-        if right_arr_ix == right_arr.len() {
-            result_arr.append(*left_arr[left_arr_ix]);
-            return _merge_and_slice_recursive(
-                left_arr, right_arr, ref result_arr, left_arr_ix + 1, right_arr_ix, max_return_count
-            );
-        }
-
-        if *left_arr[left_arr_ix]
-            .proposal
-            .voting_power >= *right_arr[right_arr_ix]
-            .proposal
-            .voting_power {
-            result_arr.append(*left_arr[left_arr_ix]);
-            _merge_and_slice_recursive(
-                left_arr, right_arr, ref result_arr, left_arr_ix + 1, right_arr_ix, max_return_count
-            )
+        let (append, next_left_ix, next_right_ix) = if left_arr_ix == left_arr.len() {
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        } else if right_arr_ix == right_arr.len() {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
+        } else if *left_arr[left_arr_ix].proposal.voting_power > *right_arr[right_arr_ix].proposal.voting_power {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
+        } else if *left_arr[left_arr_ix].proposal.voting_power < *right_arr[right_arr_ix].proposal.voting_power {
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        } else if *left_arr[left_arr_ix].proposal.last_updated_at <= *right_arr[right_arr_ix].proposal.last_updated_at {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
         } else {
-            result_arr.append(*right_arr[right_arr_ix]);
-            _merge_and_slice_recursive(
-                left_arr, right_arr, ref result_arr, left_arr_ix, right_arr_ix + 1, max_return_count
-            )
-        }
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        };
+
+        result_arr.append(append);
+        _merge_and_slice_recursive(
+            left_arr,
+            right_arr,
+            ref result_arr,
+            next_left_ix,
+            next_right_ix,
+            max_return_count,
+        );
     }
 
     // Split an array into two arrays.
@@ -256,7 +252,7 @@ mod Round {
         ref arr: Array<T>, ref fill_arr: Array<T>, index: usize, count: usize
     ) {
         if count == 0 {
-            return ();
+            return;
         }
 
         arr.append(*fill_arr[index]);

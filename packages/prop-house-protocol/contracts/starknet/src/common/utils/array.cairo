@@ -73,13 +73,13 @@ fn assert_no_duplicates<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TParti
 ) {
     let arr_len = arr.len();
     if arr_len == 0 {
-        return ();
+        return;
     }
 
     let mut i = 0;
     loop {
         if i == arr_len {
-            break ();
+            break;
         }
 
         assert(arr.occurrences_of(*arr.at(i)) == 1, 'Duplicate element found');
@@ -96,10 +96,10 @@ fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
     ref dst: Array<T>, src: Span<T>, index: u32, count: u32
 ) {
     if count == 0 {
-        return ();
+        return;
     }
     if index >= src.len() {
-        return ();
+        return;
     }
     let element = src.at(index);
     dst.append(*element);
@@ -132,7 +132,7 @@ fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
                 arr.append(item.into());
             },
             Option::None(_) => {
-                break ();
+                break;
             },
         };
     };

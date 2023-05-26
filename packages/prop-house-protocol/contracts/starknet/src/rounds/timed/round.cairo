@@ -545,7 +545,7 @@ mod TimedRound {
                     }
                 },
                 Option::None(_) => {
-                    break ();
+                    break;
                 },
             };
         };
@@ -619,7 +619,7 @@ mod TimedRound {
                 Option::None(_) => {
                     // Update the spent voting power for the user
                     _spent_voting_power::write(voter_address, spent_voting_power);
-                    break ();
+                    break;
                 },
             };
         };
