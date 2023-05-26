@@ -134,19 +134,12 @@ const EditVotersModal: React.FC<{
       setShowModal={setShowVotersModal}
       button={
         <Button
-          text={'Cancel'}
-          bgColor={ButtonColor.Black}
-          onClick={() => setShowVotersModal(false)}
-        />
-      }
-      secondButton={
-        <Button
           text={'Add a voter'}
           bgColor={ButtonColor.Green}
           onClick={() => setIsAddingVoter(true)}
         />
       }
-      thirdButton={
+      secondButton={
         // If the voter list has changed, show the save button
         hasVoterListChanged(round.voters, editedVoters) && (
           <Button

@@ -1,11 +1,8 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
-import { useTranslation } from 'react-i18next';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { useDispatch } from 'react-redux';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import { useSigner } from 'wagmi';
@@ -13,20 +10,15 @@ import { useSigner } from 'wagmi';
 const DeleteProposalModal: React.FC<{
   id: number;
   setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
-  handleClosePropModal: () => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
-  const { t } = useTranslation();
+  const { id, setShowDeletePropModal, dismissModalAndRefreshProps } = props;
+
   const { data: signer } = useSigner();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
 
-  const dispatch = useDispatch();
-
-  const round = useAppSelector(state => state.propHouse.activeRound);
-  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
@@ -47,7 +39,11 @@ const DeleteProposalModal: React.FC<{
     }
   };
 
-  const closeModal = () => () => setShowDeletePropModal(false);
+  const handleClose = () => {
+    setShowDeletePropModal(false);
+
+    if (hasBeenDeleted) dismissModalAndRefreshProps();
+  };
 
   return (
     <Modal
@@ -71,42 +67,14 @@ const DeleteProposalModal: React.FC<{
       }
       image={errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null}
       setShowModal={setShowDeletePropModal}
-      onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : closeModal}
+      handleClose={handleClose}
       button={
-        errorDeleting ? (
+        !hasBeenDeleted && (
           <Button
-            text={t('Close')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-            }}
+            text={errorDeleting ? 'Retry' : 'Delete Prop'}
+            bgColor={errorDeleting ? ButtonColor.Purple : ButtonColor.Red}
+            onClick={handleDeleteProposal}
           />
-        ) : hasBeenDeleted ? (
-          <Button
-            text={t('Close')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-              refreshActiveProposals(client.current, round!, dispatch);
-              refreshActiveProposal(client.current, activeProposal!, dispatch);
-              handleClosePropModal();
-            }}
-          />
-        ) : (
-          <Button
-            text={t('Cancel')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-            }}
-          />
-        )
-      }
-      secondButton={
-        errorDeleting ? (
-          <Button text={'Retry'} bgColor={ButtonColor.Purple} onClick={handleDeleteProposal} />
-        ) : hasBeenDeleted ? null : (
-          <Button text={'Delete Prop'} bgColor={ButtonColor.Red} onClick={handleDeleteProposal} />
         )
       }
     />

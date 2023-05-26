@@ -33,13 +33,6 @@ const EditAwardsModal: React.FC<{
       setShowModal={setShowAwardsModal}
       button={
         <Button
-          text={'Cancel'}
-          bgColor={ButtonColor.Black}
-          onClick={() => setShowAwardsModal(false)}
-        />
-      }
-      secondButton={
-        <Button
           text={'Save Changes'}
           bgColor={ButtonColor.Pink}
           onClick={handleEditModeSave}

@@ -39,14 +39,12 @@ const ProposalSuccessModal: React.FC<{
       }
       subtitle={
         <>
-          {' '}
           {t(`successfulSubmission`)} <b>{round.title}</b> for <b>{house.name}</b>.
         </>
       }
       image={NounImage.Heart}
-      onRequestClose={backToRound}
-      button={<Button text={t('backToRound')} bgColor={ButtonColor.White} onClick={backToRound} />}
-      secondButton={
+      handleClose={backToRound}
+      button={
         <Button
           text={'Share on Twitter'}
           bgColor={ButtonColor.Purple}

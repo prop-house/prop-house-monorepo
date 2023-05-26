@@ -240,7 +240,7 @@ const SplitAwards: React.FC<{
         <Modal
           title="Edit award"
           subtitle=""
-          onRequestClose={handleModalClose}
+          handleClose={handleModalClose}
           body={
             <>
               <ERC20Buttons
@@ -263,8 +263,7 @@ const SplitAwards: React.FC<{
               </Group>
             </>
           }
-          button={<Button text={'Cancel'} bgColor={ButtonColor.White} onClick={handleModalClose} />}
-          secondButton={
+          button={
             <Button
               text={'Save Changes'}
               bgColor={ButtonColor.Purple}

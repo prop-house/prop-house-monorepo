@@ -259,7 +259,7 @@ const IndividualAwards: React.FC<{
             award.state === 'success' ? `Edit ${getNumberWithOrdinal(awardIdx)} place` : 'Add award'
           }
           subtitle=""
-          onRequestClose={handleModalClose}
+          handleClose={handleModalClose}
           body={
             <>
               <AddAward
@@ -277,8 +277,7 @@ const IndividualAwards: React.FC<{
               />
             </>
           }
-          button={<Button text={'Cancel'} bgColor={ButtonColor.White} onClick={handleModalClose} />}
-          secondButton={
+          button={
             <Button
               text={'Save Changes'}
               bgColor={ButtonColor.Purple}

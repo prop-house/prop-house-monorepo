@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import Button, { ButtonColor } from '../Button';
 import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
@@ -22,18 +21,10 @@ const SuccessVotingModal: React.FC<{
   return (
     <Modal
       setShowModal={setShowSuccessVotingModal}
+      handleClose={() => setShowSuccessVotingModal(false)}
       title={t('veryNounish')}
       subtitle={signerIsContract ? contractSignerMsg : eoaSignerMsg}
       image={NounImage.Glasses}
-      button={
-        <Button
-          text={t('close')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            setShowSuccessVotingModal(false);
-          }}
-        />
-      }
     />
   );
 };

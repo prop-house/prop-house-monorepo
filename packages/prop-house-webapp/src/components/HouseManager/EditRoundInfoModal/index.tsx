@@ -44,9 +44,9 @@ const EditRoundInfoModal: React.FC<{
       title="Edit round name and description"
       subtitle=""
       body={<RoundFields editMode round={editedRound} setEditedRound={setEditedRound} />}
+      handleClose={handleCancel}
       setShowModal={setShowRoundInfoModal}
-      button={<Button text={'Cancel'} bgColor={ButtonColor.Black} onClick={handleCancel} />}
-      secondButton={
+      button={
         <Button
           text={'Save Changes'}
           bgColor={ButtonColor.Pink}

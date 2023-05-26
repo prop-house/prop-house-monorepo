@@ -37,13 +37,6 @@ const EditDatesModal: React.FC<{
       setShowModal={setShowDatesModal}
       button={
         <Button
-          text={'Cancel'}
-          bgColor={ButtonColor.Black}
-          onClick={() => setShowDatesModal(false)}
-        />
-      }
-      secondButton={
-        <Button
           text={'Save Changes'}
           bgColor={ButtonColor.Pink}
           onClick={handleDateSave}

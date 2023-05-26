@@ -161,9 +161,9 @@ const UploadCSVModal: React.FC<{
       setShowModal={setShowUploadCSVModal}
       title={'Add Voters'}
       subtitle={'Upload a CSV file with addresses and voting power.'}
+      handleClose={handleCancel}
       body={data}
-      button={<Button text={'Cancel'} bgColor={ButtonColor.White} onClick={handleCancel} />}
-      secondButton={
+      button={
         <Button
           text={'Upload'}
           disabled={!readyToUpload}
