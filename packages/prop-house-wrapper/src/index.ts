@@ -252,7 +252,7 @@ export class PropHouseWrapper {
       );
       return (await axios.patch(`${this.host}/proposals`, signedPayload)).data;
     } catch (e: any) {
-      throw e.response.data.message;
+      throw e;
     }
   }
 
