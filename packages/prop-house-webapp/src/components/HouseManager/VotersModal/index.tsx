@@ -50,7 +50,7 @@ const VotersModal: React.FC<{
         className={classes.modal}
       >
         <AddVoter
-          editMode
+          editMode={editMode}
           voter={voter}
           voters={voters}
           selectedStrategy={selectedStrategy}
