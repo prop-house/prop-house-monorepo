@@ -285,17 +285,17 @@ const VotersConfig = () => {
               <></>
             ) : // if it's a whitelist, we need to map over the members
             s.strategyType === VotingStrategyType.WHITELIST ? (
-              s.members
-                .slice(0, displayCount)
-                .map((m, idx) => (
-                  <Voter
-                    key={idx}
-                    type={s.strategyType}
-                    address={m.address}
-                    multiplier={Number(m.votingPower)}
-                    removeVoter={handleRemoveVoter}
-                  />
-                ))
+              s.members.slice(0, displayCount).map((m, idx) => (
+                <Voter
+                  key={idx}
+                  type={s.strategyType}
+                  address={m.address}
+                  multiplier={Number(m.votingPower)}
+                  removeVoter={handleRemoveVoter}
+                  // if there's 1 voter, we don't want to allow them to remove it
+                  isDisabled={s.members.length === 1}
+                />
+              ))
             ) : (
               // otherwise, proceed as normal
               <Voter
@@ -304,12 +304,13 @@ const VotersConfig = () => {
                 address={s.address}
                 multiplier={s.multiplier}
                 removeVoter={handleRemoveVoter}
+                // if there's 1 voter, we don't want to allow them to remove it
+                isDisabled={voters.length === 1}
               />
             ),
           )}
         </Group>
       </OverflowScroll>
-      {/*  */}
 
       {/* This will only show if there are more than 10 voters and the display count is less than the total number of voters */}
       {getVoterCount() > 10 && displayCount !== getVoterCount() && (
