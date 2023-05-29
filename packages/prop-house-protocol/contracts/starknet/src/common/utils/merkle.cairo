@@ -1,4 +1,4 @@
-use prop_house::common::utils::hash::keccak_uint256s_be_to_be;
+use prop_house::common::utils::hash::keccak_u256s_be;
 use array::{ArrayTrait, SpanTrait};
 use integer::u256_from_felt252;
 use option::OptionTrait;
@@ -55,7 +55,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                                     hash_input.append(right);
                                     hash_input.append(left);
                                 }
-                                next_level_nodes.append(keccak_uint256s_be_to_be(hash_input.span()));
+                                next_level_nodes.append(keccak_u256s_be(hash_input.span()));
                             },
                             Option::None(_) => {
                                 next_level_nodes.append(left);
@@ -94,7 +94,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                         node_input.append(proof_element);
                         node_input.append(current_node);
                     }
-                    current_node = keccak_uint256s_be_to_be(node_input.span());
+                    current_node = keccak_u256s_be(node_input.span());
                 },
                 Option::None(_) => {
                     break current_node;

@@ -91,7 +91,7 @@ mod TimedRound {
         assert_no_duplicates, construct_2d_array, Immutable2DArray, get_sub_array, ArrayTraitExt,
         array_slice
     };
-    use prop_house::common::utils::hash::{keccak_uint256s_be_to_be, LegacyHashEthAddress};
+    use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
     use prop_house::common::utils::constants::{MASK_192, MASK_250};
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
@@ -519,7 +519,7 @@ mod TimedRound {
     fn _assert_awards_valid(awards: Span<Award>) {
         let flattened_awards = _flatten_and_abi_encode_awards(awards);
         let stored_award_hash = _config::read().award_hash.into();
-        let computed_award_hash = keccak_uint256s_be_to_be(flattened_awards) & MASK_250;
+        let computed_award_hash = keccak_u256s_be(flattened_awards) & MASK_250;
 
         assert(computed_award_hash == stored_award_hash, 'TR: Invalid awards provided');
     }
@@ -768,6 +768,6 @@ mod TimedRound {
         leaf_input.append(asset_id);
         leaf_input.append(asset_amount);
 
-        keccak_uint256s_be_to_be(leaf_input.span())
+        keccak_u256s_be(leaf_input.span())
     }
 }

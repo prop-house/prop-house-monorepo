@@ -7,6 +7,9 @@ description = "Public infrastructure by Nouns DAO"
 sierra = "cairo-compile . -r"
 test = "cairo-test . --starknet"
 
+[dependencies]
+starknet = ">=1.1.0-rc0"
+
 [[target.starknet-contract]]
 
 # Enable CASM codegen.

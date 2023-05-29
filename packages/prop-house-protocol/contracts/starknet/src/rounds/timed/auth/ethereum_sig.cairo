@@ -1,5 +1,5 @@
-use core::zeroable::Zeroable;
 use starknet::ContractAddress;
+use zeroable::Zeroable;
 
 #[abi]
 trait IEthereumSigAuthStrategy {
@@ -19,7 +19,7 @@ mod EthereumSigAuthStrategy {
     use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
     use prop_house::rounds::timed::constants::{DomainSeparator, TypeHash, Selector};
     use prop_house::common::utils::contract_address::ContractAddressIntoU256;
-    use prop_house::common::utils::hash::keccak_uint256s_be_to_be;
+    use prop_house::common::utils::hash::keccak_u256s_be;
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
     use prop_house::common::utils::array::into_u256_arr;
     use prop_house::common::utils::serde::SpanSerde;
@@ -104,7 +104,7 @@ mod EthereumSigAuthStrategy {
 
         let auth_strategy_address = get_contract_address();
         let metadata_uri = cdata.slice(2, (*cdata.at(1)).try_into().unwrap());
-        let metadata_uri_hash = keccak_uint256s_be_to_be(into_u256_arr(metadata_uri).span());
+        let metadata_uri_hash = keccak_u256s_be(into_u256_arr(metadata_uri).span());
 
         // TODO: Add `used_proposing_strategies`
 
@@ -153,12 +153,12 @@ mod EthereumSigAuthStrategy {
 
         let proposal_votes_len = (*cdata.at(1)).try_into().unwrap();
         let proposal_votes = cdata.slice(2, proposal_votes_len);
-        let proposal_votes_hash = keccak_uint256s_be_to_be(into_u256_arr(proposal_votes).span());
+        let proposal_votes_hash = keccak_u256s_be(into_u256_arr(proposal_votes).span());
 
         let used_voting_strategy_ids_len = (*cdata.at(2 + proposal_votes_len)).try_into().unwrap();
         let used_voting_strategy_ids = cdata
             .slice(3 + proposal_votes_len, used_voting_strategy_ids_len);
-        let used_voting_strategy_ids_hash = keccak_uint256s_be_to_be(
+        let used_voting_strategy_ids_hash = keccak_u256s_be(
             into_u256_arr(used_voting_strategy_ids).span()
         );
 
@@ -171,7 +171,7 @@ mod EthereumSigAuthStrategy {
                 4 + proposal_votes_len + used_voting_strategy_ids_len,
                 user_voting_strategy_params_flat_len
             );
-        let user_voting_strategy_params_flat_hash = keccak_uint256s_be_to_be(
+        let user_voting_strategy_params_flat_hash = keccak_u256s_be(
             into_u256_arr(user_voting_strategy_params_flat).span(), 
         );
 
@@ -243,13 +243,13 @@ mod EthereumSigAuthStrategy {
     // domain separator, and the message itself.
     /// * `message` - The message to hash.
     fn _hash_structured_data(message: Span<u256>) -> u256 {
-        let hash_struct = keccak_uint256s_be_to_be(message);
+        let hash_struct = keccak_u256s_be(message);
 
         let mut data = Default::default();
         data.append(ETHEREUM_PREFIX.into());
         data.append(DomainSeparator::GOERLI);
         data.append(hash_struct);
 
-        keccak_uint256s_be_to_be(data.span())
+        keccak_u256s_be(data.span())
     }
 }
