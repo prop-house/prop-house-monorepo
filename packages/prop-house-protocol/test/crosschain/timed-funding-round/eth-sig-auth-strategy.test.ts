@@ -68,7 +68,9 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       starknetAccount,
     } = config);
 
-    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths('VanillaGovernancePowerStrategy');
+    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
+      'VanillaGovernancePowerStrategy',
+    );
     const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
       hre,
       abiPath: vanillaGovPowerStrategyMetadata.sierra,
@@ -79,7 +81,9 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       maxFee: STARKNET_MAX_FEE,
     });
 
-    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(vanillaGovPowerStrategyFactory);
+    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
+      vanillaGovPowerStrategyFactory,
+    );
 
     // Stub subgraph functions
     const funcs = ['getRoundVotingStrategies', 'getGovPowerStrategies'] as const;

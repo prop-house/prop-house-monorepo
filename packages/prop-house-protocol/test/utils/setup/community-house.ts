@@ -105,8 +105,7 @@ export const timedRoundSetup = async () => {
     casmPath: ethTxAuthStrategyMetadata.casm,
   });
 
-  const timedRoundEthSigAuthStrategyMetadata =
-    getStarknetArtifactPaths('EthereumSigAuthStrategy');
+  const timedRoundEthSigAuthStrategyMetadata = getStarknetArtifactPaths('EthereumSigAuthStrategy');
   const timedRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
     hre,
     abiPath: timedRoundEthSigAuthStrategyMetadata.sierra,
@@ -150,10 +149,7 @@ export const timedRoundSetup = async () => {
     config.ethExecutionStrategy.address,
   );
 
-  await config.manager.registerRound(
-    config.communityHouseImpl.address,
-    timedRoundImpl.address,
-  );
+  await config.manager.registerRound(config.communityHouseImpl.address, timedRoundImpl.address);
 
   return {
     ...config,

@@ -284,12 +284,15 @@ mod TimedRound {
             // Verify that the funding round is active
             _assert_round_active();
 
-            // Verify the validity of the provided awards
-            _assert_awards_valid(awards.span());
-
+            // If no awards were offered in the config, the awards array must be empty.
+            // Otherwise, assert the validity of the provided awards.
             let config = _config::read();
-            let current_timestamp = get_block_timestamp();
+            match config.award_hash {
+                0 => assert(awards.is_empty(), 'TR: Awards not empty'),
+                _ => _assert_awards_valid(awards.span()),
+            }
 
+            let current_timestamp = get_block_timestamp();
             assert(
                 current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
             );
@@ -303,8 +306,6 @@ mod TimedRound {
             let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
                 active_proposals, config.winner_count.into()
             );
-
-            // TODO: Support arbitrary execution.
 
             // Compute the merkle root for the given leaves.
             let leaves = _compute_leaves(winning_proposals, awards);
@@ -418,7 +419,6 @@ mod TimedRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
-        assert(award_hash != 0, 'TR: Invalid award hash');
         assert(proposal_period_start_timestamp != 0, 'TR: Invalid PPST');
         assert(proposal_period_duration != 0, 'TR: Invalid PPD');
         assert(vote_period_duration != 0, 'TR: Invalid VPD');
@@ -692,10 +692,33 @@ mod TimedRound {
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to compute the leaves for.
     fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Award>) -> Span<u256> {
+        if awards.is_empty() {
+            return _compute_leaves_with_no_awards(proposals);
+        }
         if awards.len() == 1 {
             return _compute_leaves_for_split_award(proposals, *awards.at(0));
         }
         _compute_leaves_for_assigned_awards(proposals, awards)
+    }
+
+    /// Compute the leaves for the given proposals using the proposer address
+    /// and rank of the proposal.
+    /// * `proposals` - The proposals to compute the leaves for.
+    fn _compute_leaves_with_no_awards(mut proposals: Span<ProposalWithId>) -> Span<u256> {
+        let mut leaves = Default::<Array<u256>>::default();
+
+        let mut position = 1;
+        loop {
+            match proposals.pop_front() {
+                Option::Some(p) => {
+                    leaves.append(_compute_winner_leaf((*p).proposal.proposer, position));
+                    position += 1;
+                },
+                Option::None(_) => {
+                    break leaves.span();
+                },
+            };
+        }
     }
 
     /// Compute the leaves for the given proposals using an award that is to be split
@@ -718,12 +741,14 @@ mod TimedRound {
             if i == proposal_count {
                 break leaves.span();
             }
+            let p = *proposals.at(i);
+
+            i += 1;
             leaves.append(
-                _compute_leaf_for_proposal_award(
-                    *proposals.at(i), award_to_split.asset_id, amount_per_proposal
+                _compute_winner_leaf_with_award(
+                    p.proposal.proposer, i, award_to_split.asset_id, amount_per_proposal
                 )
             );
-            i += 1;
         }
     }
 
@@ -745,26 +770,37 @@ mod TimedRound {
                 break leaves.span();
             }
             let award = *awards.at(i);
+            let p = *proposals.at(i);
 
-            leaves.append(
-                _compute_leaf_for_proposal_award(*proposals.at(i), award.asset_id, award.amount)
-            );
             i += 1;
+            leaves.append(
+                _compute_winner_leaf_with_award(p.proposal.proposer, i, award.asset_id, award.amount)
+            );
         }
     }
 
+    /// Compute a single leaf consisting of a proposer address and proposal rank.
+    /// * `proposer` - The proposer of the proposal.
+    /// * `position` - The rank of the proposal in the winning set.
+    fn _compute_winner_leaf(proposer: EthAddress, position: u32) -> u256 {
+        let mut leaf_input = Default::default();
+        leaf_input.append(u256_from_felt252(position.into()));
+        leaf_input.append(u256_from_felt252(proposer.into()));
+
+        keccak_u256s_be(leaf_input.span())
+    }
+
     /// Compute a single leaf consisting of a proposal ID, proposer address, asset ID, and asset amount.
-    /// * `p` - The proposal to compute the leaf for.
+    /// * `proposer` - The proposer of the proposal.
+    /// * `position` - The rank of the proposal in the winning set.
     /// * `asset_id` - The ID of the asset to award.
     /// * `asset_amount` - The amount of the asset to award.
-    fn _compute_leaf_for_proposal_award(
-        p: ProposalWithId, asset_id: u256, asset_amount: u256
+    fn _compute_winner_leaf_with_award(
+        proposer: EthAddress, position: u32, asset_id: u256, asset_amount: u256
     ) -> u256 {
-        let proposal_id: felt252 = p.proposal_id.into();
-
         let mut leaf_input = Default::default();
-        leaf_input.append(proposal_id.into());
-        leaf_input.append(u256_from_felt252(p.proposal.proposer.into()));
+        leaf_input.append(u256_from_felt252(position.into()));
+        leaf_input.append(u256_from_felt252(proposer.into()));
         leaf_input.append(asset_id);
         leaf_input.append(asset_amount);
 

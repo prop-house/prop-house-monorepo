@@ -88,7 +88,9 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknetCommit,
     } = config);
 
-    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths('VanillaGovernancePowerStrategy');
+    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
+      'VanillaGovernancePowerStrategy',
+    );
     const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
       hre,
       abiPath: vanillaGovPowerStrategyMetadata.sierra,
@@ -99,7 +101,9 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       maxFee: STARKNET_MAX_FEE,
     });
 
-    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(vanillaGovPowerStrategyFactory);
+    const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
+      vanillaGovPowerStrategyFactory,
+    );
     vanillaGovPowerStrategyId = hash.computeHashOnElements([vanillaGovPowerStrategy.address]);
 
     // Stub `getRoundVotingStrategies`
@@ -386,10 +390,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     });
     expect(response.is_cancelled).to.equal(false);
 
-    const cancelProposalCalldata = getTimedRoundCancelProposalCalldata(
-      signer.address,
-      proposalId,
-    );
+    const cancelProposalCalldata = getTimedRoundCancelProposalCalldata(signer.address, proposalId);
     await starknetCommit.commit(
       ethTxAuthStrategy.address,
       utils.encoding.getCommit(l2RoundAddress, CANCEL_PROPOSAL_SELECTOR, cancelProposalCalldata),

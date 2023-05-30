@@ -153,6 +153,14 @@ contract TimedRound is ITimedRound, AssetController, TokenHolder, ERC1155Supply,
         return ReceiptIssuer.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 
+    /// @notice Checks if the `user` at a given `position` is a winner in the round using a Merkle proof
+    /// @param user The Ethereum address of the user to check
+    /// @param position The rank or order of a winner in the round
+    /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
+    function isWinner(address user, uint256 position, bytes32[] calldata proof) external view returns (bool) {
+        return MerkleProof.verify(proof, winnerMerkleRoot, keccak256(abi.encode(user, position)));
+    }
+
     /// @notice Initialize the round by optionally defining the
     /// rounds configuration and registering it on L2.
     /// @dev This function is only callable by the prop house contract

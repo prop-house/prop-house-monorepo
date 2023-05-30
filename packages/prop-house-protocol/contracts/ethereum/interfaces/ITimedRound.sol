@@ -150,4 +150,10 @@ interface ITimedRound is IRound {
 
     /// @notice The merkle root that allows winners to claim their awards. `bytes32(0)` if not finalized.
     function winnerMerkleRoot() external view returns (bytes32);
+
+    /// @notice Checks if the `user` at a given `position` is a winner in the round using a Merkle proof
+    /// @param user The Ethereum address of the user to check
+    /// @param position The rank or order of a winner in the round
+    /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
+    function isWinner(address user, uint256 position, bytes32[] calldata proof) external view returns (bool);
 }
