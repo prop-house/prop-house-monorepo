@@ -12,7 +12,7 @@ mod EthereumExecutionStrategy {
     use array::ArrayTrait;
 
     struct Storage {
-        _round_factory: ContractAddress, 
+        _round_factory: ContractAddress,
     }
 
     impl EthereumExecutionStrategy of IExecutionStrategy {
