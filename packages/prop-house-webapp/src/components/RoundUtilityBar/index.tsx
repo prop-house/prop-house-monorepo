@@ -124,7 +124,9 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
                   </>
                 }
                 progress={
-                  isInfAuction(auction) && proposals ? infRoundBalance(proposals, auction) : 0
+                  isInfAuction(auction) && proposals
+                    ? (infRoundBalance(proposals, auction) / auction.fundingAmount) * 100
+                    : 0
                 }
               />
             </>
