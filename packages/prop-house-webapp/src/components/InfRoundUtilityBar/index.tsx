@@ -16,9 +16,9 @@ const InfRoundUtilityBar: React.FC<{
   return (
     <>
       <RoundUtilBarItemTooltip
-        title="Quorum"
-        content={`${infRound.quorumFor} votes`}
-        tooltipContent={'Votes required to get funded'}
+        title="Quorums"
+        content={`${infRound.quorumFor} / ${infRound.quorumAgainst} votes`}
+        tooltipContent={`Votes required to pass or reject a proposal: ${infRound.quorumFor} FOR / ${infRound.quorumAgainst} AGAINST.`}
       />
 
       <RoundUtilBarItemTooltip
