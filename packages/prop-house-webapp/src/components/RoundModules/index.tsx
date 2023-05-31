@@ -25,6 +25,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import RoundModuleRejected from '../RoundModuleRejected';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -48,7 +49,8 @@ const RoundModules: React.FC<{
     auctionStatus(auction) === AuctionStatus.AuctionEnded ||
     (isInfAuction(auction) && infRoundBalance(proposals, auction) === 0);
 
-  const getVoteTotal = () => proposals.reduce((total, prop) => (total = total + prop.voteCount), 0);
+  const getVoteTotal = () =>
+    proposals.reduce((total, prop) => (total = total + prop.voteCountFor), 0);
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
 
   useEffect(() => {
@@ -60,8 +62,8 @@ const RoundModules: React.FC<{
       setUserProposals(
         proposals
           .filter(p => isSameAddress(p.address, account))
-          .sort((a: { voteCount: any }, b: { voteCount: any }) =>
-            a.voteCount < b.voteCount ? 1 : -1,
+          .sort((a: { voteCountFor: any }, b: { voteCountFor: any }) =>
+            a.voteCountFor < b.voteCountFor ? 1 : -1,
           ),
       );
 
@@ -95,6 +97,10 @@ const RoundModules: React.FC<{
   const roundWinnerModule = isInfAuction(auction) &&
     !isRoundOver &&
     infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+
+  const roundRejectedModule = isInfAuction(auction) &&
+    !isRoundOver &&
+    infRoundFilter === InfRoundFilterType.Rejected && <RoundModuleRejected auction={auction} />;
 
   const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
     <RoundModuleStale auction={auction} />
@@ -130,6 +136,7 @@ const RoundModules: React.FC<{
     timedRoundVotingModule,
     infRoundVotingModule,
     roundWinnerModule,
+    roundRejectedModule,
     roundStaleModule,
     roundOverModule,
     userPropCardModule,

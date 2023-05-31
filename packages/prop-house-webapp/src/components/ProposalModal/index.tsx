@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
 import {
-  Direction,
   SignatureState,
   StoredProposalWithVotes,
   Vote,
@@ -130,7 +129,7 @@ const ProposalModal = () => {
     };
   }, [handleKeyPress]);
 
-  const handleDirectionalArrowClick = (direction: Direction) => {
+  const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
       !activeProposal ||
       !proposals ||
@@ -165,7 +164,7 @@ const ProposalModal = () => {
         .map(
           a =>
             new Vote(
-              1,
+              a.direction,
               a.proposalId,
               a.votes,
               community!.contractAddress,

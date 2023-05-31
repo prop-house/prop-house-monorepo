@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import Buffer from 'https://deno.land/std@0.110.0/node/buffer.ts';
-import prophouse from 'https://esm.sh/@prophouse/communities@0.1.6';
+import prophouse from 'https://esm.sh/@prophouse/communities@0.1.8';
 import { ethers } from 'https://esm.sh/ethers@5.7.2';
 import { isProposer as _isProposer } from '../_shared/isProposer.ts';
 import { insertReply } from '../_shared/insertReply.ts';

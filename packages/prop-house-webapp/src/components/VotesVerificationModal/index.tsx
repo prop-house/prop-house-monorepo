@@ -1,5 +1,10 @@
 import classes from './VotesVerificationModal.module.css';
-import { SignatureState, StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  Direction,
+  SignatureState,
+  StoredProposalWithVotes,
+  StoredVote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
 import { MdOutlinePendingActions } from 'react-icons/md';
@@ -9,18 +14,22 @@ import Modal from '../Modal';
 const VotesVerificationModal: React.FC<{
   setDisplayVotesVerifModal: Dispatch<SetStateAction<boolean>>;
   proposal: StoredProposalWithVotes;
+  votes: StoredVote[];
+  direction?: Direction;
 }> = props => {
-  const { proposal, setDisplayVotesVerifModal } = props;
+  const { proposal, setDisplayVotesVerifModal, votes, direction } = props;
   const { t } = useTranslation();
 
   const verifiedVotes = (
     <div className={classes.votesContainer}>
-      {proposal.votes
+      {votes
         .filter(v => v.signatureState !== SignatureState.FAILED_VALIDATION)
         .map((vote, index) => (
           <div key={index} className={classes.votesRow}>
             <div className={classes.voteRowTitle}>
-              {`${vote.weight}  ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
+              {`${vote.weight} ${
+                direction ? (direction === Direction.Up ? 'FOR' : 'AGAINST') : ''
+              } ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
               <EthAddress address={vote.address} />
             </div>
 
@@ -38,9 +47,9 @@ const VotesVerificationModal: React.FC<{
     <div onClick={e => e.stopPropagation()}>
       <Modal
         title={proposal.title}
-        subtitle={`${proposal.voteCount} ${proposal.voteCount === 1 ? t('vote') : t('votes')} ${t(
-          'haveBeenCast',
-        )}`}
+        subtitle={`${proposal.voteCountFor} ${
+          proposal.voteCountFor === 1 ? t('vote') : t('votes')
+        } ${t('haveBeenCast')}`}
         body={verifiedVotes}
         setShowModal={setDisplayVotesVerifModal}
       />

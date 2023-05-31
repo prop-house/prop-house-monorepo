@@ -117,7 +117,7 @@ const RoundCard: React.FC<{
                     </p>
                     <p className={classes.info}>
                       {isInfAuction(round)
-                        ? round.quorum
+                        ? round.quorumFor
                         : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
                   </>

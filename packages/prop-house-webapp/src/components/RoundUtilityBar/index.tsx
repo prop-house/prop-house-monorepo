@@ -49,7 +49,6 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
           </div>
         )}
       </div>
-
       {/** ROUND DATA */}
       <div className={classes.utilitySection}>
         <Col
@@ -99,7 +98,7 @@ const RoundUtilityBar = ({ auction }: RoundUtilityBarProps) => {
               {/** QUORUM */}
               <RoundUtilBarItemTooltip
                 title="Quorum"
-                content={`${auction.quorum} votes`}
+                content={`${auction.quorumFor} votes`}
                 tooltipContent={'Votes required to get funded'}
               />
 

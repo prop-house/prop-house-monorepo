@@ -8,7 +8,6 @@ import { ProposalCardStatus } from '../../utils/cardStatus';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
-import VotingControls from '../VotingControls';
 import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
 import { openInNewTab } from '../../utils/openInNewTab';
 import VotesDisplay from '../VotesDisplay';
@@ -29,6 +28,8 @@ import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
+import InfRoundVotingControls from '../InfRoundVotingControls';
+import TimedRoundVotingControls from '../TimedRoundVotingControls';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -48,7 +49,13 @@ const ProposalCard: React.FC<{
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
 
-  const showVotesSection =
+  const showVoteDisplay =
+    round && isTimedAuction(round)
+      ? auctionStatus === AuctionStatus.AuctionVoting ||
+        auctionStatus === AuctionStatus.AuctionEnded
+      : infRoundFilter !== InfRoundFilterType.Active;
+
+  const showVoteControls =
     round && isTimedAuction(round)
       ? auctionStatus === AuctionStatus.AuctionVoting ||
         auctionStatus === AuctionStatus.AuctionEnded
@@ -175,22 +182,26 @@ const ProposalCard: React.FC<{
                 </>
               )}
             </div>
-
-            {showVotesSection && (
-              <div className={classes.timestampAndlinkContainer}>
-                <div className={clsx(classes.avatarAndPropNumber)}>
-                  <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
-                    <VotesDisplay proposal={proposal} />
-                    {cardStatus === ProposalCardStatus.Voting && (
-                      <div className={classes.votingArrows}>
-                        <span className={classes.plusArrow}>+</span>
-                        <VotingControls proposal={proposal} />
-                      </div>
-                    )}
-                  </div>
+            <div className={classes.timestampAndlinkContainer}>
+              <div className={clsx(classes.avatarAndPropNumber)}>
+                <div className={classes.voteCountCopy} title={detailedTime(proposal.createdDate)}>
+                  {showVoteDisplay && <VotesDisplay proposal={proposal} />}
+                  {showVoteControls &&
+                    (round && isTimedAuction(round) ? (
+                      <>
+                        {cardStatus === ProposalCardStatus.Voting && (
+                          <div className={classes.votingArrows}>
+                            <span className={classes.plusArrow}>+</span>
+                            <TimedRoundVotingControls proposal={proposal} />
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <InfRoundVotingControls proposal={proposal} />
+                    ))}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </Card>
       </div>
