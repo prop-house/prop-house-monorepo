@@ -10,7 +10,7 @@ const RoundModuleRejected: React.FC<{ auction: StoredInfiniteAuction }> = ({ auc
         <>
           <p style={{ fontWeight: 'bold' }}>What determines a rejected proposal?</p>
           <br />
-          <p>{`Proposals that receive ${auction.quorumAgainst} or more against votes before the voting period ends.`}</p>
+          <p>{`Proposals that receive ${auction.quorumAgainst} or more AGAINST votes before the voting period ends.`}</p>
         </>
       }
       type="rejected"
