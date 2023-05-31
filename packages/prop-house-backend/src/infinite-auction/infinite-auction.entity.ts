@@ -53,12 +53,18 @@ export class InfiniteAuction implements AuctionBase {
   @Field(() => String)
   description: string;
 
-  @Column({ type: 'integer' })
+  @Column({ type: 'integer', default: 0 })
+  @Field(() => Int, {
+    description: 'The minimum vote count that a proposal must have to pass',
+  })
+  quorumFor: number;
+
+  @Column({ type: 'integer', default: 0 })
   @Field(() => Int, {
     description:
-      'The minimum vote count that a proposal must have to be funded',
+      'The minimum vote count that a proposal must have to be rejected',
   })
-  quorum: number;
+  quorumAgainst: number;
 
   @OneToMany(() => InfiniteAuctionProposal, (proposal) => proposal.auction)
   @JoinColumn()
@@ -105,7 +111,7 @@ export class InfiniteAuction implements AuctionBase {
    * Get the proposals that have been funded
    */
   fundedProposals = async () =>
-    (await this.proposals).filter(isProposalFunded(this.quorum));
+    (await this.proposals).filter(isProposalFunded(this.quorumFor));
 
   /**
    * Get the number of proposals that have been funded

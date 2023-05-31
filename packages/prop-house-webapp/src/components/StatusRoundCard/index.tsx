@@ -232,7 +232,7 @@ const StatusRoundCard: React.FC<{
                     </p>
                     <p className={classes.info}>
                       {isInfAuction(round)
-                        ? `${round.quorum * 100}%`
+                        ? `${round.quorumFor * 100}%`
                         : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
                     </p>
                   </>

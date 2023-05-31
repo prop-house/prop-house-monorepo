@@ -5,8 +5,8 @@ import {
   InfiniteAuction,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import dayjs from 'dayjs';
-import { sortByVotesAndHandleTies } from '../../utils/sortByVotesAndHandleTies';
+import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
+import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
 
 export interface PropHouseSlice {
   activeRound?: StoredAuctionBase;
@@ -18,7 +18,7 @@ export interface PropHouseSlice {
   infRoundFilterType: InfRoundFilterType;
 }
 
-interface TimedRoundSortProps {
+export interface TimedRoundSortProps {
   sortType: TimedRoundSortType;
   ascending: boolean;
 }
@@ -32,65 +32,13 @@ export enum TimedRoundSortType {
 export enum InfRoundFilterType {
   Active,
   Winners,
+  Rejected,
   Stale,
 }
 
 const initialState: PropHouseSlice = {
   modalActive: false,
   infRoundFilterType: InfRoundFilterType.Active,
-};
-
-const sortHelper = (a: any, b: any, ascending: boolean) => {
-  return ascending ? (a < b ? -1 : 1) : a < b ? 1 : -1;
-};
-
-const sortTimedRoundProps = (proposals: StoredProposalWithVotes[], props: TimedRoundSortProps) => {
-  switch (props.sortType) {
-    case TimedRoundSortType.VoteCount:
-      return sortByVotesAndHandleTies(proposals, props.ascending);
-    case TimedRoundSortType.Random:
-      return proposals.sort(() => Math.random() - 0.5);
-    case TimedRoundSortType.CreatedAt:
-      return proposals.sort((a, b) =>
-        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
-      );
-    default:
-      return proposals.sort((a, b) =>
-        sortHelper(dayjs(a.createdDate), dayjs(b.createdDate), props.ascending),
-      );
-  }
-};
-
-const filterInfRoundProps = (
-  props: StoredProposalWithVotes[],
-  type: InfRoundFilterType,
-  round: InfiniteAuction,
-) => {
-  const now = dayjs();
-  switch (type) {
-    case InfRoundFilterType.Active:
-      return props
-        .filter(
-          p =>
-            p.voteCount < round.quorum &&
-            dayjs(p.createdDate).isAfter(now.subtract(round.votingPeriod, 's')),
-        )
-        .sort((a, b) => sortHelper(a.voteCount, b.voteCount, false));
-    case InfRoundFilterType.Winners:
-      return props
-        .filter(p => p.voteCount >= round.quorum)
-        .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
-    case InfRoundFilterType.Stale:
-      return props
-        .filter(
-          p =>
-            p.voteCount < round.quorum &&
-            dayjs(p.createdDate).isBefore(now.subtract(round.votingPeriod, 's')),
-        )
-        .sort((a, b) => sortHelper(a.createdDate, b.createdDate, false));
-    default:
-      return props;
-  }
 };
 
 export const propHouseSlice = createSlice({
