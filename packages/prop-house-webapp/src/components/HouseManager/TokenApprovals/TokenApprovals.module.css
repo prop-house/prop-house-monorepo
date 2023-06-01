@@ -1,0 +1,45 @@
+.titleAndCheckbox {
+  align-items: flex-start;
+  gap: 10px;
+}
+/* Hide the original checkbox */
+.titleAndCheckbox input[type='checkbox'] {
+  display: none !important;
+}
+/* Create a new custom checkbox */
+.titleAndCheckbox input[type='checkbox'] + label {
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+}
+.titleAndCheckbox input[type='checkbox'] + label:before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--brand-gray-semi-transparent);
+  border-radius: 4px; /* round the corners */
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: all 0.3s ease-in-out;
+}
+.titleAndCheckbox input[type='checkbox'] + label:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+.titleAndCheckbox input[type='checkbox']:checked + label:after {
+  display: block;
+  left: 8px;
+  top: 2px;
+  width: 8px;
+  height: 17px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+/* Style for checked state */
+.titleAndCheckbox input[type='checkbox']:checked + label:before {
+  background: var(--brand-purple);
+}

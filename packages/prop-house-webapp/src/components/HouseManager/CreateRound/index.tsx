@@ -12,18 +12,19 @@ import Footer from '../Footer';
 import Group from '../Group';
 import VoterCard from '../VoterCard';
 import Text from '../Text';
-import { useDispatch } from 'react-redux';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
+import { useDispatch } from 'react-redux';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import { VotingStrategyType } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
 import { getDateFromDuration } from '../utils/getDateFromDuration';
+import OverflowScroll from '../OverflowScroll';
 import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
 import EditAwardsModal from '../EditAwardsModal';
-import OverflowScroll from '../OverflowScroll';
 import EditVotersModal from '../EditVotersModal';
+import TokenApprovals from '../TokenApprovals';
 
 /**
  * @overview
@@ -43,7 +44,6 @@ import EditVotersModal from '../EditVotersModal';
 
 const CreateRound = () => {
   const round = useAppSelector(state => state.round.round);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -153,6 +153,10 @@ const CreateRound = () => {
           </CardWrapper>
         </OverflowScroll>
       </Group>
+
+      <Divider />
+
+      <TokenApprovals />
 
       <Footer />
     </>

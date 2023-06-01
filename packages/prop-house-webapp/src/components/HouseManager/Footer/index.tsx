@@ -176,7 +176,7 @@ const Footer: React.FC = () => {
                 ? 'Pending'
                 : waitForTransaction.isSuccess
                 ? 'Success'
-                : 'Create'
+                : `Create round${round.depositingFunds ? ' and deposit funds' : ''}`
             }
             disabled={stepDisabledArray[5]}
             bgColor={ButtonColor.Pink}

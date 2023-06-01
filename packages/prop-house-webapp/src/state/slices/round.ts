@@ -36,6 +36,7 @@ export interface NewRound {
   awards: Award[];
   splitAwards: boolean;
   roundType: RoundType;
+  depositingFunds: boolean;
 }
 
 export const initialRound: NewRound = {
@@ -51,6 +52,7 @@ export const initialRound: NewRound = {
   awards: [NewAward],
   splitAwards: true,
   roundType: RoundType.TIMED_FUNDING,
+  depositingFunds: false,
 };
 
 interface RoundState {
