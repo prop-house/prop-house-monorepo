@@ -30,6 +30,7 @@
   overflow: hidden;
   background: #fff;
   line-height: 1px;
+  min-width: 14px;
 }
 .image {
   height: 14px;
