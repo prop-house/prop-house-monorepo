@@ -23,11 +23,29 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.fou
 
 RUN foundryup
 
+RUN curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+
 ADD . .
 
 RUN yarn
 
-WORKDIR /app/packages/prop-house-contracts
+RUN rustup override set stable && \
+    rustup update
+
+RUN mkdir -p ~/Bin
+
+RUN cd ~/Bin && \
+    git clone https://github.com/starkware-libs/cairo.git && \
+    cd cairo
+
+RUN git fetch --all --tags && \
+    git describe --tags `git rev-list --tags` && \
+    git checkout tags/v1.0.0-alpha.6 && \
+    cargo build --all --release
+
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.foundry/bin:/root/Bin/cairo/target/release
+
+WORKDIR /app/packages/prop-house-protocol
 
 RUN pip3 install wheel && \
     pip3 install cairo-lang && \
