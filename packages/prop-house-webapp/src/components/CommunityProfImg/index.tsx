@@ -16,6 +16,7 @@ const CommunityProfImg: React.FC<{
     <Link to={`/${nameToSlug(community.name)}`}>
       <img
         src={community.profileImageUrl}
+        crossOrigin="anonymous"
         alt="community profile "
         className={clsx(classes.img, hover && classes.hoverImg)}
       />
