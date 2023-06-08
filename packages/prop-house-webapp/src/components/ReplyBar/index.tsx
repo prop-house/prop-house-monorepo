@@ -96,6 +96,12 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     }
   };
 
+  // update replies on prop change
+  useEffect(() => {
+    setReplies([]);
+    setShouldFetchReplies(true);
+  }, [proposal.id]);
+
   // fetch replies
   useEffect(() => {
     if (!shouldFetchReplies) return;
