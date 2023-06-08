@@ -7,6 +7,7 @@ import { VoteAllotment } from '../../types/VoteAllotment';
 import { useTranslation } from 'react-i18next';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
 import Modal from '../Modal';
+import { isTimedAuction } from '../../utils/auctionType';
 
 const VoteConfirmationModal: React.FC<{
   setShowVoteConfirmationModal: Dispatch<SetStateAction<boolean>>;
@@ -14,6 +15,7 @@ const VoteConfirmationModal: React.FC<{
 }> = props => {
   const { setShowVoteConfirmationModal, submitVote } = props;
 
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
@@ -41,9 +43,13 @@ const VoteConfirmationModal: React.FC<{
         </>
       }
       subtitle={
-        <>
-          {t('youllHave')} {votesLeft} {t('votesRemaining')}
-        </>
+        round && isTimedAuction(round) ? (
+          <>
+            {t('youllHave')} {votesLeft} {t('votesRemaining')}
+          </>
+        ) : (
+          ''
+        )
       }
       body={
         <div className={classes.propsContainer}>
