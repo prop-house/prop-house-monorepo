@@ -22,15 +22,6 @@ trait ITimedRound {
     fn finalize_round(awards: Array<Award>);
 }
 
-mod RoundState {
-    /// The round is active. It has not been cancelled or finalized.
-    const ACTIVE: u8 = 0;
-    /// The round has been cancelled. No more proposals or votes can be submitted. It cannot be finalized.
-    const CANCELLED: u8 = 1;
-    /// The round has been finalized. No more proposals or votes can be submitted.
-    const FINALIZED: u8 = 2;
-}
-
 #[derive(Copy, Drop, Serde)]
 enum StrategyType {
     Voting: (),
@@ -74,11 +65,11 @@ mod TimedRound {
         Felt252TryIntoContractAddress
     };
     use super::{
-        ITimedRound, ProposalVote, StrategyType, RoundParams, RoundState, Award,
+        ITimedRound, ProposalVote, StrategyType, RoundParams, Award,
         strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
         eth_sig_auth_strategy
     };
-    use prop_house::rounds::timed::config::RoundConfig;
+    use prop_house::rounds::timed::config::{RoundState, RoundConfig};
     use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
     use prop_house::common::registry::strategy::{
         IStrategyRegistryDispatcherTrait, IStrategyRegistryDispatcher, Strategy
@@ -319,7 +310,7 @@ mod TimedRound {
 
             let mut config = _config::read();
 
-            config.round_state = RoundState::FINALIZED;
+            config.round_state = RoundState::Finalized(());
             _config::write(config);
 
             RoundFinalized(Round::extract_proposal_ids(winning_proposals), merkle_root);
@@ -430,7 +421,7 @@ mod TimedRound {
 
         _config::write(
             RoundConfig {
-                round_state: RoundState::ACTIVE,
+                round_state: RoundState::Active(()),
                 winner_count,
                 proposal_period_start_timestamp,
                 proposal_period_end_timestamp,
@@ -512,7 +503,7 @@ mod TimedRound {
 
     /// Asserts that the round is active.
     fn _assert_round_active() {
-        assert(_config::read().round_state == RoundState::ACTIVE, 'TR: Round not active');
+        assert(_config::read().round_state == RoundState::Active(()), 'TR: Round not active');
     }
 
     /// Asserts that the provided awards are valid.

@@ -10,9 +10,45 @@ use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
+#[derive(Copy, Drop, Serde, PartialEq)]
+enum RoundState {
+    /// The round is active. It has not been cancelled or finalized.
+    Active: (),
+    /// The round has been cancelled. No more proposals or votes can be submitted. It cannot be finalized.
+    Cancelled: (),
+    /// The round has been finalized. No more proposals or votes can be submitted.
+    Finalized: (),
+}
+
+impl RoundStateIntoFelt252 of Into<RoundState, felt252> {
+    fn into(self: RoundState) -> felt252 {
+        match self {
+            RoundState::Active(()) => 0,
+            RoundState::Cancelled(()) => 1,
+            RoundState::Finalized(()) => 2,
+        }
+    }
+}
+
+impl U256TryIntoRoundState of TryInto<u256, RoundState> {
+    // Note that `match` is less clean due to its limited support.
+    fn try_into(self: u256) -> Option<RoundState> {
+        if self == 0 {
+            return Option::Some(RoundState::Active(()));
+        }
+        if self == 1 {
+            return Option::Some(RoundState::Cancelled(()));
+        }
+        if self == 2 {
+            return Option::Some(RoundState::Finalized(()));
+        }
+        Option::None(())
+    }
+}
+
 #[derive(Copy, Drop, Serde)]
 struct RoundConfig {
-    round_state: u8,
+    round_state: RoundState,
     winner_count: u16,
     proposal_period_start_timestamp: u64,
     proposal_period_end_timestamp: u64,
@@ -28,7 +64,7 @@ struct RoundConfig {
 /// * `proposal_period_end_timestamp` - The proposal period end timestamp.
 /// * `vote_period_end_timestamp` - The vote period end timestamp.
 fn pack_round_config_fields(
-    round_state: u8,
+    round_state: RoundState,
     winner_count: u16,
     proposal_period_start_timestamp: u64,
     proposal_period_end_timestamp: u64,
@@ -45,10 +81,10 @@ fn pack_round_config_fields(
 
 /// Unpack the round config fields from a single felt252.
 /// * `packed` - The packed fields.
-fn unpack_round_config_fields(packed: felt252) -> (u8, u16, u64, u64, u64) {
+fn unpack_round_config_fields(packed: felt252) -> (RoundState, u16, u64, u64, u64) {
     let packed = packed.into();
 
-    let round_state: u8 = (packed & MASK_8).try_into().unwrap();
+    let round_state: RoundState = (packed & MASK_8).try_into().unwrap();
     let winner_count: u16 = ((packed / TWO_POW_8) & MASK_16).try_into().unwrap();
     let proposal_period_start_timestamp: u64 = ((packed / TWO_POW_24) & MASK_64)
         .try_into()
