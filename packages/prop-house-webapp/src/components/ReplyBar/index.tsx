@@ -162,8 +162,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           </div>
         ) : (
           <div className={classes.repliesModalBodyContainer} ref={repliesModalBodyRef}>
-            {replies.map(r => (
-              <Reply reply={r} isProposer={proposal.address === r.address} />
+            {replies.map((r, i) => (
+              <Reply reply={r} isProposer={proposal.address === r.address} key={i} />
             ))}
           </div>
         )
@@ -218,8 +218,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           {`${replies.length} comment${replies.length === 1 ? '' : 's'}`}
         </div>
         <div className={classes.avatarContainer}>
-          {repliesAddresses.map(address => (
-            <Avatar key={address} diameter={12} address={address} />
+          {repliesAddresses.map((address, i) => (
+            <Avatar key={i} diameter={12} address={address} />
           ))}
         </div>
       </div>
