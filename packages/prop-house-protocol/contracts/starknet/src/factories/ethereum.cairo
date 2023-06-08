@@ -1,16 +1,16 @@
 use starknet::ContractAddress;
 
 #[abi]
-trait IRoundFactory {
+trait IEthereumRoundFactory {
     fn origin_round(starknet_round: ContractAddress) -> felt252;
     fn origin_messenger() -> felt252;
 }
 
 #[contract]
-mod RoundFactory {
+mod EthereumRoundFactory {
     use starknet::syscalls::deploy_syscall;
     use starknet::{ContractAddress, ClassHash};
-    use super::IRoundFactory;
+    use super::IEthereumRoundFactory;
     use array::ArrayTrait;
 
     struct Storage {
@@ -23,7 +23,7 @@ mod RoundFactory {
         origin_round: felt252, starknet_round: ContractAddress, round_class_hash: ClassHash
     ) {}
 
-    impl RoundFactory of IRoundFactory {
+    impl EthereumRoundFactory of IEthereumRoundFactory {
         fn origin_round(starknet_round: ContractAddress) -> felt252 {
             _origin_round::read(starknet_round)
         }
@@ -42,13 +42,13 @@ mod RoundFactory {
     /// * `starknet_round` - The starknet round address.
     #[view]
     fn origin_round(starknet_round: ContractAddress) -> felt252 {
-        RoundFactory::origin_round(starknet_round)
+        EthereumRoundFactory::origin_round(starknet_round)
     }
 
     /// Returns the origin messenger address.
     #[view]
     fn origin_messenger() -> felt252 {
-        RoundFactory::origin_messenger()
+        EthereumRoundFactory::origin_messenger()
     }
 
     /// Registers a new round.
@@ -85,6 +85,6 @@ mod RoundFactory {
     /// * `from_address_` - The address of the sender.
     fn _only_origin_messenger(from_address_: felt252) {
         let messenger = _origin_messenger::read();
-        assert(from_address_ == messenger, 'RoundFactory: Not messenger');
+        assert(from_address_ == messenger, 'EthereumRF: Not messenger');
     }
 }
