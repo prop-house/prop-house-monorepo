@@ -2,6 +2,7 @@ use core::result::ResultTrait;
 use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use starknet::contract_address::Felt252TryIntoContractAddress;
 use starknet::{ContractAddressIntoFelt252, ContractAddress};
+use prop_house::common::utils::storage::SpanStorageAccess;
 use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
 use option::OptionTrait;
@@ -11,55 +12,6 @@ use integer::downcast;
 struct Strategy {
     address: ContractAddress,
     params: Span<felt252>,
-}
-
-/// Read an array of parameters from storage.
-/// * `address_domain` - The address domain.
-/// * `base` - The base address.
-/// * `offset` - The storage offset.
-fn read_params(
-    address_domain: u32, base: StorageBaseAddress, mut offset: u8
-) -> SyscallResult<Span<felt252>> {
-    let length = StorageAccess::<u32>::read_at_offset_internal(address_domain, base, offset)?;
-    let exit_at = downcast(length).unwrap() + offset;
-
-    let mut params = Default::<Array<felt252>>::default();
-    loop {
-        if offset == exit_at {
-            break Result::Ok(params.span());
-        }
-        offset += 1;
-        let param = StorageAccess::<felt252>::read_at_offset_internal(
-            address_domain, base, offset
-        )?;
-
-        params.append(param);
-    }
-}
-
-/// Write an array of parameters to storage.
-/// * `address_domain` - The address domain.
-/// * `base` - The base address.
-/// * `offset` - The storage offset.
-/// * `params` - The parameters.
-fn write_params(
-    address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut params: Span<felt252>
-) -> SyscallResult<()> {
-    StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, params.len())?;
-
-    loop {
-        match params.pop_front() {
-            Option::Some(v) => {
-                offset += 1;
-                StorageAccess::<felt252>::write_at_offset_internal(
-                    address_domain, base, offset, *v
-                )?;
-            },
-            Option::None(_) => {
-                break Result::Ok(());
-            },
-        };
-    }
 }
 
 impl StrategyStorageAccess of StorageAccess<Strategy> {
@@ -78,8 +30,9 @@ impl StrategyStorageAccess of StorageAccess<Strategy> {
         let address = StorageAccess::<ContractAddress>::read_at_offset_internal(
             address_domain, base, offset
         )?;
-        let mut params = read_params(address_domain, base, offset + 1)?;
-
+        let mut params = SpanStorageAccess::read_at_offset_internal(
+            address_domain, base, offset + 1
+        )?;
         Result::Ok(Strategy { address, params })
     }
     #[inline(always)]
@@ -89,11 +42,13 @@ impl StrategyStorageAccess of StorageAccess<Strategy> {
         StorageAccess::<ContractAddress>::write_at_offset_internal(
             address_domain, base, offset, value.address
         )?;
-        write_params(address_domain, base, offset + 1, value.params)
+        SpanStorageAccess::write_at_offset_internal(
+            address_domain, base, offset + 1, value.params
+        )
     }
     #[inline(always)]
     fn size_internal(value: Strategy) -> u8 {
-        2 + downcast(value.params.len()).unwrap()
+        1 + SpanStorageAccess::size_internal(value.params)
     }
 }
 
