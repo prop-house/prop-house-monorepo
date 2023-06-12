@@ -1,41 +1,47 @@
 import classes from './ApprovalWidget.module.css';
-// import { useState } from 'react';
-import { useEffect, useState } from 'react';
-import {
-  useAccount,
-  // useSigner,
-  useBalance,
-} from 'wagmi';
+import { useState } from 'react';
+// import { useEffect, useState } from 'react';
+// import { useAccount, useSigner, useBalance } from 'wagmi';
 // import { Contract } from 'ethers';
 import { AssetType } from '@prophouse/sdk-react';
-import { Award } from '../AssetSelector';
 import Group from '../Group';
 import Text from '../Text';
 import Button, { ButtonColor } from '../../Button';
 import { ProgressBar } from 'react-bootstrap';
+import { Token } from '../../../state/slices/round';
+// import { useDispatch } from 'react-redux';
+// import { useAppSelector } from '../../../hooks';
+// import { saveRound } from '../../../state/thunks';
 
-const ApprovalWidget: React.FC<{ award: Award; amount: number }> = props => {
-  const {
-    award,
-    // amount
-  } = props;
-  const { address: account } = useAccount();
+const ApprovalWidget: React.FC<{
+  award: Token;
+  handleAllocation: (allocated: number, award: Token) => void;
+  total: number;
+}> = props => {
+  const { award, handleAllocation, total } = props;
+
+  // const dispatch = useDispatch();
+  // const round = useAppSelector(state => state.round.round);
+
+  // const { address: account } = useAccount();
   // const { data: signer } = useSigner();
   // const { data: balance } = useBalance({ address: account });
-  const { data: balance } = useBalance({
-    address: account,
-    // address: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
-    // token: '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
-    // chainId: 1,
-  });
+  // const { data: balance } = useBalance({
+  //   address: account,
+  //   // address: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
+  //   // token: '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
+  //   // chainId: 1,
+  // });
 
-  useEffect(() => {
-    // if (balance) console.log(`User's balance of ${award.symbol}: ${balance.toString()}`);
-    if (balance) console.log(`b: ${balance}`);
-  }, [balance, award.symbol]);
+  // useEffect(() => {
+  //   // if (balance) console.log(`User's balance of ${award.symbol}: ${balance.toString()}`);
+  //   if (balance) console.log(`b: ${balance}`);
+  // }, [balance, award.symbol]);
+  // const total = round.tokensDict[award.address].total;
 
   async function handleApproval() {
     setIsApproved(true);
+
     // if (!signer || !account) {
     //   console.log('Please connect to a wallet.');
     //   return;
@@ -60,30 +66,43 @@ const ApprovalWidget: React.FC<{ award: Award; amount: number }> = props => {
     // }
   }
 
-  const amountTotal: number = 100;
   const [hasBeenClicked, setHasBeenClicked] = useState(true);
   const [approvedAmount, setApprovedAmount] = useState(0.0);
 
   const handleSwitch = () => setHasBeenClicked(!hasBeenClicked);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) return;
+
     let value = e.target.value;
 
     // if it's not a number or a decimal, don't change the input
     if (isNaN(Number(value)) && !value.match(/^\d*\.?\d*$/)) return;
 
-    setApprovedAmount(parseFloat(value) || 0.0);
+    let allocated = parseFloat(value) || 0.0;
+
+    // if the allocated amount is greater than the total, set it to the total
+    if (allocated > total) allocated = total;
+
+    setApprovedAmount(allocated);
+
+    handleAllocation!(allocated, award);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) return;
+
     handleSwitch();
+
     let value = parseFloat(e.target.value);
 
     if (isNaN(value)) value = 0.0;
 
-    if (value > amountTotal) setApprovedAmount(amountTotal);
-    else if (value < 0) setApprovedAmount(0);
-    else setApprovedAmount(value);
+    if (total && value > total) value = total;
+    else if (value < 0) value = 0;
+
+    setApprovedAmount(value);
+    handleAllocation!(value, award);
   };
 
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
@@ -125,16 +144,16 @@ const ApprovalWidget: React.FC<{ award: Award; amount: number }> = props => {
             <Text type="body" classNames={classes.amount}>
               {award.type === AssetType.ERC1155 || award.type === AssetType.ERC721
                 ? `#${award.tokenId}`
-                : `${approvedAmount} of ${amountTotal} ${award.symbol || award.name}`}
+                : `${approvedAmount} of ${total} ${award.symbol || award.name}`}
             </Text>
           </Group>
         </Group>
 
-        {award.type === AssetType.ETH || isApproved ? (
+        {total && (award.type === AssetType.ETH || isApproved) ? (
           <Group classNames={classes.progressBar}>
             <ProgressBar>
-              <ProgressBar now={(approvedAmount / amountTotal) * 100} />
-              <ProgressBar now={amountTotal - approvedAmount} variant="warning" />
+              <ProgressBar now={(approvedAmount / total) * 100} />
+              <ProgressBar now={100 - (approvedAmount / total) * 100} variant="warning" />
             </ProgressBar>
           </Group>
         ) : (
@@ -143,7 +162,7 @@ const ApprovalWidget: React.FC<{ award: Award; amount: number }> = props => {
       </Group>
 
       <Group classNames={classes.row}>
-        {award.type === AssetType.ETH || isApproved ? (
+        {total && (award.type === AssetType.ETH || isApproved) ? (
           <>
             <Group row classNames={classes.addFunds}>
               <Text type="body" classNames={classes.addFundsText}>
@@ -151,8 +170,11 @@ const ApprovalWidget: React.FC<{ award: Award; amount: number }> = props => {
               </Text>
               <Text
                 type="link"
-                onClick={() => setApprovedAmount(amountTotal)}
-                disabled={approvedAmount === amountTotal}
+                onClick={() => {
+                  setApprovedAmount(total);
+                  handleAllocation!(total, award);
+                }}
+                disabled={approvedAmount === total}
                 classNames={classes.maxText}
               >
                 Max{' '}

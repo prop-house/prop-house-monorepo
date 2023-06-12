@@ -7,44 +7,118 @@ import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import InstructionBox from '../InstructionBox';
 import ApprovalWidget from '../ApprovalWidget';
-import { Award } from '../AssetSelector';
 import { saveRound } from '../../../state/thunks';
 import { AssetType } from '@prophouse/sdk-react';
+import { NewRound, Token } from '../../../state/slices/round';
+
+import { useEffect } from 'react';
 
 const TokenApprovals = () => {
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
 
-  // Initialize empty arrays for tokens and NFTs. We only want to show one card per token/NFT for approval purposes, even if there are multiple awards for that token/NFT.
-  const tokens: Award[] = [];
-  const nfts: Award[] = [];
+  useEffect(() => {
+    // Calculate the total amount required for each unique token
+    const totalTokenAmounts: { [address: string]: number } = {};
 
-  // Loop through each award in the round.
-  round.awards.forEach(award => {
-    // Check if the award is a token (either ETH or ERC20 type).
-    if (award.type === AssetType.ETH || award.type === AssetType.ERC20) {
-      // Try to find an existing award in the tokens array that has the same type and address as the current award.
-      const existingEthAward = tokens.find(
-        item => item.type === award.type && item.address === award.address,
-      );
+    round.awards.forEach(award => {
+      const key = award.type === AssetType.ETH ? 'ETH' : award.address;
 
-      // If there isn't an existing award with the same type and address in the tokens array, add the current award.
-      if (!existingEthAward) tokens.push(award);
+      if (!totalTokenAmounts[key]) totalTokenAmounts[key] = 0;
+
+      totalTokenAmounts[key] += award.amount;
+    });
+
+    // Create tokens array
+    const tokens: Token[] = [];
+
+    for (const [address, total] of Object.entries(totalTokenAmounts)) {
+      // Find the first award with the same address
+
+      const award =
+        address === 'ETH'
+          ? round.awards.find(a => a.type === AssetType.ETH)
+          : round.awards.find(a => a.address === address);
+
+      tokens.push({
+        type: address === 'ETH' ? AssetType.ETH : AssetType.ERC20,
+        address,
+        total,
+        allocated: 0,
+        image: award?.image,
+        symbol: award?.symbol,
+        name: award?.name,
+        tokenId: award?.tokenId,
+      });
     }
-    // Check if the award is an NFT (either ERC721 or ERC1155 type).
-    else if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
-      // Try to find an existing award in the NFTs array that has the same type, address, and id as the current award.
-      const existingNftAward = nfts.find(
-        item => item.type === award.type && item.address === award.address && item.id === award.id,
+
+    // Update the round with the new tokens array
+    let updated = {
+      ...round,
+      funding: {
+        ...round.funding,
+        tokens,
+      },
+    };
+
+    // Dispatch an action to save the new round
+    dispatch(saveRound(updated));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [round.awards]); // Only run when awards change
+
+  const erc20AndEthTokens = round.funding.tokens.filter(
+    token => token.type === AssetType.ETH || token.type === AssetType.ERC20,
+  );
+  const erc721And1155Tokens = round.funding.tokens.filter(
+    token => token.type === AssetType.ERC721 || token.type === AssetType.ERC1155,
+  );
+
+  const allocateFundsAndCheckFundingStatus = (allocated: number, award: Token) => {
+    let updatedRound: NewRound;
+
+    // Update the allocated amount in the funding.tokens array
+    updatedRound = {
+      ...round,
+      funding: {
+        ...round.funding,
+        tokens: round.funding.tokens.map(token => {
+          if (token.address === award.address) {
+            return { ...token, allocated };
+          } else {
+            return token;
+          }
+        }),
+      },
+    };
+
+    // Update the round in the state
+    dispatch(saveRound(updatedRound));
+  };
+
+  const handleCheckboxChange = () => {
+    if (!round.funding.depositingFunds)
+      dispatch(
+        saveRound({
+          ...round,
+          funding: {
+            ...round.funding,
+            depositingFunds: true,
+          },
+        }),
       );
-
-      // If there isn't an existing award with the same type, address, and id in the NFTs array, add the current award.
-      if (!existingNftAward) nfts.push(award);
-    }
-  });
-
-  const handleCheckboxChange = () =>
-    dispatch(saveRound({ ...round, depositingFunds: !round.depositingFunds }));
+    // if we're toggling off 'deposit funds now' then we want to reset the fullyFunded flag as well
+    else
+      dispatch(
+        saveRound({
+          ...round,
+          funding: {
+            ...round.funding,
+            depositingFunds: false,
+          },
+          //  fullyFunded: false
+        }),
+      );
+  };
 
   return (
     <>
@@ -55,7 +129,7 @@ const TokenApprovals = () => {
             type="checkbox"
             id="depositFunds"
             name="depositFunds"
-            checked={round.depositingFunds}
+            checked={round.funding.depositingFunds}
             onChange={handleCheckboxChange}
           />
           <label htmlFor="depositFunds"></label>
@@ -66,14 +140,21 @@ const TokenApprovals = () => {
           text="You can add either contract addresses allowing anyone that holds the relevant ERC20/ERC721 to participate, or add any specific wallet addresses for individual access to the round."
         />
 
-        {round.depositingFunds ? (
+        {/* {round.depositingFunds ? ( */}
+        {round.funding.depositingFunds ? (
           <>
-            {tokens.length ? (
+            {round.funding.tokens.length ? (
               <Group gap={8}>
                 <Text type="title">Tokens</Text>
+
                 <CardWrapper>
-                  {tokens.map(token => (
-                    <ApprovalWidget award={token} amount={token.amount} />
+                  {erc20AndEthTokens.map(token => (
+                    <ApprovalWidget
+                      key={token.address}
+                      award={token}
+                      handleAllocation={allocateFundsAndCheckFundingStatus}
+                      total={token.total}
+                    />
                   ))}
                 </CardWrapper>
               </Group>
@@ -81,14 +162,23 @@ const TokenApprovals = () => {
               <> </>
             )}
 
-            {tokens.length && nfts.length ? <Divider noMarginDown /> : <></>}
+            {erc20AndEthTokens.length && erc721And1155Tokens.length ? (
+              <Divider noMarginDown />
+            ) : (
+              <></>
+            )}
 
-            {nfts.length ? (
+            {erc721And1155Tokens.length ? (
               <Group gap={8}>
                 <Text type="title">NFTs</Text>
                 <CardWrapper>
-                  {nfts.map(nft => (
-                    <ApprovalWidget award={nft} amount={nft.amount} />
+                  {erc721And1155Tokens.map(nft => (
+                    <ApprovalWidget
+                      key={nft.address}
+                      award={nft}
+                      handleAllocation={allocateFundsAndCheckFundingStatus}
+                      total={nft.total}
+                    />
                   ))}
                 </CardWrapper>
               </Group>

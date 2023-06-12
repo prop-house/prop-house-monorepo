@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
-import { HouseType, RoundType, VotingStrategyConfig } from '@prophouse/sdk-react';
+import { AssetType, HouseType, RoundType, VotingStrategyConfig } from '@prophouse/sdk-react';
 import { Award, NewAward } from '../../components/HouseManager/AssetSelector';
 
 export interface HouseProps {
@@ -23,6 +23,22 @@ export const HouseForRound: HouseProps = {
   contractURI: '',
 };
 
+interface Funding {
+  tokens: Token[];
+  depositingFunds: boolean;
+}
+
+export interface Token {
+  type: AssetType;
+  address: string;
+  total: number;
+  allocated: number;
+  image?: string;
+  symbol?: string;
+  name?: string;
+  tokenId?: string;
+}
+
 export interface NewRound {
   house: HouseProps;
   title: string;
@@ -36,7 +52,7 @@ export interface NewRound {
   awards: Award[];
   splitAwards: boolean;
   roundType: RoundType;
-  depositingFunds: boolean;
+  funding: Funding;
 }
 
 export const initialRound: NewRound = {
@@ -52,7 +68,7 @@ export const initialRound: NewRound = {
   awards: [NewAward],
   splitAwards: true,
   roundType: RoundType.TIMED_FUNDING,
-  depositingFunds: false,
+  funding: { tokens: [], depositingFunds: false },
 };
 
 interface RoundState {
@@ -104,6 +120,7 @@ export const roundSlice = createSlice({
         state.activeStep = 2;
       }
     },
+
     setNextStep: state => {
       removeIncompleteAwards(state.round);
       state.activeStep = Math.min(state.activeStep + 1, 6);

@@ -46,6 +46,7 @@ export interface Award {
   price: number;
   state: 'input' | 'success' | 'error' | 'dummy';
   error?: string;
+  allocated: number;
 }
 
 export const NewAward: Award = {
@@ -62,6 +63,7 @@ export const NewAward: Award = {
   state: 'input',
   price: 0,
   error: '',
+  allocated: 0,
 };
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {

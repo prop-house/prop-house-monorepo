@@ -12,6 +12,7 @@ import { Award } from '../AssetSelector';
 import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
+import { isRoundFullyFunded } from '../utils/isRoundFullyFunded';
 
 /**
  * @overview
@@ -40,9 +41,8 @@ const Footer: React.FC = () => {
 
   const handleNext = () => {
     const isDisabled = stepDisabledArray[activeStep - 1];
-    if (!isDisabled) {
-      dispatch(setNextStep());
-    }
+
+    if (!isDisabled) dispatch(setNextStep());
   };
 
   const handlePrev = () => dispatch(setPrevStep());
@@ -139,6 +139,8 @@ const Footer: React.FC = () => {
     }
   };
 
+  const isAnyTokenAllocated = round.funding.tokens.some(token => token.allocated > 0);
+
   return (
     <>
       {createRoundModal && (
@@ -176,7 +178,20 @@ const Footer: React.FC = () => {
                 ? 'Pending'
                 : waitForTransaction.isSuccess
                 ? 'Success'
-                : `Create round${round.depositingFunds ? ' and deposit funds' : ''}`
+                : `Create ${
+                    // If the user has opted to deposit funds
+                    round.funding.depositingFunds
+                      ? // there is at least one token with a non-zero allocation
+                        isAnyTokenAllocated
+                        ? // if round is fully funded
+                          isRoundFullyFunded(round)
+                          ? ' & fully fund round'
+                          : ' & partially fund round'
+                        : // If no token has a non-zero allocation
+                          'round'
+                      : // If the user has not opted to deposit funds
+                        'round'
+                  }`
             }
             disabled={stepDisabledArray[5]}
             bgColor={ButtonColor.Pink}
