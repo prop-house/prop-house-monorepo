@@ -30,9 +30,7 @@ fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcces
             break Result::Ok(arr.span());
         }
         offset += 1;
-        let value = StorageAccess::read_at_offset_internal(
-            address_domain, base, offset
-        )?;
+        let value = StorageAccess::read_at_offset_internal(address_domain, base, offset)?;
         arr.append(value);
     }
 }
@@ -51,9 +49,7 @@ fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcce
         match value.pop_front() {
             Option::Some(s) => {
                 offset += 1;
-                StorageAccess::write_at_offset_internal(
-                    address_domain, base, offset, *s
-                )?;
+                StorageAccess::write_at_offset_internal(address_domain, base, offset, *s)?;
             },
             Option::None(_) => {
                 break Result::Ok(());
@@ -62,7 +58,9 @@ fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcce
     }
 }
 
-impl SpanStorageAccess<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>> of StorageAccess<Span<T>> {
+impl SpanStorageAccess<
+    T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>
+> of StorageAccess<Span<T>> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Span<T>> {
         SpanStorageAccess::read_at_offset_internal(address_domain, base, 0)
     }

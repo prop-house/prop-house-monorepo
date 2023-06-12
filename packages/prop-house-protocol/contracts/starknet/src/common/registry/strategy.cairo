@@ -42,9 +42,7 @@ impl StrategyStorageAccess of StorageAccess<Strategy> {
         StorageAccess::<ContractAddress>::write_at_offset_internal(
             address_domain, base, offset, value.address
         )?;
-        SpanStorageAccess::write_at_offset_internal(
-            address_domain, base, offset + 1, value.params
-        )
+        SpanStorageAccess::write_at_offset_internal(address_domain, base, offset + 1, value.params)
     }
     #[inline(always)]
     fn size_internal(value: Strategy) -> u8 {

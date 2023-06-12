@@ -4,6 +4,7 @@ mod constants;
 mod contract_address;
 mod hash;
 mod integer;
+mod math;
 mod merkle;
 mod serde;
 mod storage;

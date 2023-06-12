@@ -1,9 +1,27 @@
 use prop_house::common::utils::hash::keccak_u256s_be;
+use prop_house::common::utils::math::pow;
+use nullable::{NullableTrait, nullable_from_box};
+use integer::{u256_from_felt252, U32IntoU128};
 use array::{ArrayTrait, SpanTrait};
-use integer::u256_from_felt252;
+use dict::Felt252DictTrait;
 use option::OptionTrait;
 use hash::LegacyHash;
+use box::BoxTrait;
 use traits::Into;
+
+/// Pre-computed zero hashes for the first 10 levels of an incremental merkle tree.
+mod ZeroHashes {
+    const Z_0: u256 = 0x0;
+    const Z_1: u256 = 0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5;
+    const Z_2: u256 = 0xb4c11951957c6f8f642c4af61cd6b24640fec6dc7fc607ee8206a99e92410d30;
+    const Z_3: u256 = 0x21ddb9a356815c3fac1026b6dec5df3124afbadb485c9ba5a3e3398a04b7ba85;
+    const Z_4: u256 = 0xe58769b32a1beaf1ea27375a44095a0d1fb664ce2dd358e7fcbfb78c26a19344;
+    const Z_5: u256 = 0xeb01ebfc9ed27500cd4dfc979272d1f0913cc9f66540d7e8005811109e1cf2d;
+    const Z_6: u256 = 0x887c22bd8750d34016ac3c66b5ff102dacdd73f6b014e710b51e8022af9a1968;
+    const Z_7: u256 = 0xffd70157e48063fc33c97a050f7f640233bf646cc98d9524c6b92bcf3ab56f83;
+    const Z_8: u256 = 0x9867cc5f7f196b93bae1e27e6320742445d290f2263827498b54fec539f756af;
+    const Z_9: u256 = 0xcefad4e508c098b9a7e1d8feb19955fb02ba9675585078710969d3440f5054e0;
+}
 
 /// MerkleTree representation.
 #[derive(Drop)]
@@ -165,5 +183,113 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
     ) -> bool {
         let computed_root = self.compute_proof_root(leaf, proof);
         computed_root == root
+    }
+}
+
+/// IncrementalMerkleTree representation.
+#[derive(Destruct)]
+struct IncrementalMerkleTree {
+    depth: u32,
+    max_leaves: u32,
+    zeroes: Span<u256>,
+    current_leaf_count: u32,
+    sub_trees: Felt252Dict<Nullable<Span<u256>>>,
+    merkle_root: Option<u256>,
+}
+
+/// IncrementalMerkleTree trait.
+trait IncrementalMerkleTreeTrait<T> {
+    /// Create a new IncrementalMerkleTree instance.
+    fn new(depth: u32, current_leaf_count: u32, sub_trees: Felt252Dict<Nullable<Span<T>>>) -> IncrementalMerkleTree;
+    /// Add a leaf to the merkle tree.
+    fn append_leaf(ref self: IncrementalMerkleTree, leaf: T) -> T;
+    /// Get the merkle root of the tree.
+    fn get_merkle_root(ref self: IncrementalMerkleTree) -> Option<T>;
+}
+
+/// Pre-computed zero hashes.
+fn _get_zero_hashes() -> Span<u256> {
+    let mut zeroes = Default::default();
+    zeroes.append(ZeroHashes::Z_0);
+    zeroes.append(ZeroHashes::Z_1);
+    zeroes.append(ZeroHashes::Z_2);
+    zeroes.append(ZeroHashes::Z_3);
+    zeroes.append(ZeroHashes::Z_4);
+    zeroes.append(ZeroHashes::Z_5);
+    zeroes.append(ZeroHashes::Z_6);
+    zeroes.append(ZeroHashes::Z_7);
+    zeroes.append(ZeroHashes::Z_8);
+    zeroes.append(ZeroHashes::Z_9);
+
+    zeroes.span()
+}
+
+/// Compute the root of an incremental merkle tree using the current sub-trees and other state.
+/// * `sub_trees` - The sub-trees of the merkle tree.
+/// * `hash` - The current hash.
+/// * `size` - The current size of the tree.
+/// * `max_depth` - The maximum depth of the tree.
+/// * `zeroes` - The pre-computed zero hashes.
+fn _compute_root(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>, mut hash: u256, mut size: u32, max_depth: felt252, zeroes: Span<u256>) -> u256 {
+    let mut curr_depth = 0;
+
+    loop {
+        if curr_depth.into() == max_depth {
+            break;
+        }
+        let mut sub_tree = Default::default();
+        if (size.into() & 1_u128) == 0 {
+            sub_tree.append(hash);
+            sub_tree.append(*zeroes.at(curr_depth));
+        } else {
+            sub_tree.append(*sub_trees.get(curr_depth.into()).deref().at(0));
+            sub_tree.append(hash);
+        }
+        let mut sub_tree = sub_tree.span();
+        
+        sub_trees.insert(curr_depth.into(), nullable_from_box(BoxTrait::new(sub_tree)));
+        hash = keccak_u256s_be(sub_tree);
+
+        size /= 2;
+        curr_depth += 1;
+    };
+    hash
+}
+
+/// KeccakIncrementalMerkleTree implementation.
+impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait<u256> {
+    /// Create a new incremental merkle tree instance.
+    fn new(depth: u32, current_leaf_count: u32, sub_trees: Felt252Dict<Nullable<Span<u256>>>) -> IncrementalMerkleTree {
+        let max_leaves = pow(2, depth);
+
+        assert(depth <= 10, 'Depth must be <= 10');
+        assert(current_leaf_count <= max_leaves, 'Leaf count must be <= 2^depth');        
+
+        IncrementalMerkleTree {
+            depth,
+            max_leaves,
+            sub_trees,
+            current_leaf_count,
+            zeroes: _get_zero_hashes(),
+            merkle_root: Option::None(()),
+        }
+    }
+
+    /// Append a leaf to the merkle tree.
+    /// * `leaf` - The leaf to append.
+    fn append_leaf(ref self: IncrementalMerkleTree, leaf: u256) -> u256 {
+        assert(self.current_leaf_count < self.max_leaves, 'Tree is full');
+
+        self.merkle_root = Option::Some(_compute_root(ref self.sub_trees, leaf, self.current_leaf_count, self.depth.into(), self.zeroes));
+        self.current_leaf_count += 1;
+
+        self.merkle_root.unwrap()
+    }
+
+    /// Get the merkle root of the tree.
+    /// Note that the root will be empty until a leaf is appended.
+    /// This is true even when tree is initialized with existing state.
+    fn get_merkle_root(ref self: IncrementalMerkleTree) -> Option<u256> {
+        self.merkle_root
     }
 }
