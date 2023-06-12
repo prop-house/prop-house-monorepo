@@ -19,7 +19,7 @@ trait ITimedRound {
         used_voting_strategy_ids: Array<felt252>,
         user_voting_strategy_params_flat: Array<felt252>,
     );
-    fn finalize_round(awards: Array<Award>);
+    fn finalize_round(awards: Array<Asset>);
 }
 
 #[derive(Copy, Drop, Serde)]
@@ -40,7 +40,7 @@ struct RoundParams {
 }
 
 #[derive(Copy, Drop, Serde)]
-struct Award {
+struct Asset {
     asset_id: u256,
     amount: u256,
 }
@@ -65,7 +65,7 @@ mod TimedRound {
         Felt252TryIntoContractAddress
     };
     use super::{
-        ITimedRound, ProposalVote, StrategyType, RoundParams, Award,
+        ITimedRound, ProposalVote, StrategyType, RoundParams, Asset,
         strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
         eth_sig_auth_strategy
     };
@@ -271,7 +271,7 @@ mod TimedRound {
             );
         }
 
-        fn finalize_round(awards: Array<Award>) {
+        fn finalize_round(awards: Array<Asset>) {
             // Verify that the funding round is active
             _assert_round_active();
 
@@ -389,7 +389,7 @@ mod TimedRound {
     /// Finalize the round by determining winners and relaying execution.
     /// * `awards` - The awards to distribute.
     #[external]
-    fn finalize_round(awards: Array<Award>) {
+    fn finalize_round(awards: Array<Asset>) {
         TimedRound::finalize_round(awards);
     }
 
@@ -507,7 +507,7 @@ mod TimedRound {
     }
 
     /// Asserts that the provided awards are valid.
-    fn _assert_awards_valid(awards: Span<Award>) {
+    fn _assert_awards_valid(awards: Span<Asset>) {
         let flattened_awards = _flatten_and_abi_encode_awards(awards);
         let stored_award_hash = _config::read().award_hash.into();
         let computed_award_hash = keccak_u256s_be(flattened_awards) & MASK_250;
@@ -648,7 +648,7 @@ mod TimedRound {
 
     // Flatten and ABI-encode (adds data offset + array length prefix) an array of award assets.
     /// * `awards` - The array of awards to flatten and encode.
-    fn _flatten_and_abi_encode_awards(mut awards: Span<Award>) -> Span<u256> {
+    fn _flatten_and_abi_encode_awards(mut awards: Span<Asset>) -> Span<u256> {
         let award_count = awards.len();
         let award_count_felt: felt252 = award_count.into();
 
@@ -682,7 +682,7 @@ mod TimedRound {
     /// Compute the leaves for the given proposals and awards.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to compute the leaves for.
-    fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Award>) -> Span<u256> {
+    fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Asset>) -> Span<u256> {
         if awards.is_empty() {
             return _compute_leaves_with_no_awards(proposals);
         }
@@ -719,7 +719,7 @@ mod TimedRound {
     /// TODO: Support instant reclamation of remaining assets when the submitted
     /// proposal count is less than the defined number of winners.
     fn _compute_leaves_for_split_award(
-        proposals: Span<ProposalWithId>, award_to_split: Award
+        proposals: Span<ProposalWithId>, award_to_split: Asset
     ) -> Span<u256> {
         let proposal_len: felt252 = proposals.len().into();
         let amount_per_proposal = award_to_split.amount / proposal_len.into();
@@ -750,7 +750,7 @@ mod TimedRound {
     /// TODO: Support instant reclamation of remainder assets when the submitted
     /// proposal count is less than the defined number of winners.
     fn _compute_leaves_for_assigned_awards(
-        proposals: Span<ProposalWithId>, awards: Array<Award>
+        proposals: Span<ProposalWithId>, awards: Array<Asset>
     ) -> Span<u256> {
         let proposal_count = proposals.len();
         let mut leaves = Default::<Array<u256>>::default();
