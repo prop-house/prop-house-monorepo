@@ -20,7 +20,7 @@ export const communityHouseSetup = async () => {
   });
   const starknetAccount = new Account(starknetProvider, address, starknetSigner.keyPair);
 
-  const roundFactoryMetadata = getStarknetArtifactPaths('RoundFactory');
+  const roundFactoryMetadata = getStarknetArtifactPaths('EthereumRoundFactory');
   const roundDeployerFactory = new StarknetContractFactory({
     hre,
     abiPath: roundFactoryMetadata.sierra,
