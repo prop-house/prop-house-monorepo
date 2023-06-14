@@ -31,3 +31,6 @@ string constant COMMUNITY_HOUSE_SYMBOL = 'COMM';
 
 // The Timed Round type
 bytes32 constant TIMED_ROUND_TYPE = 'TIMED';
+
+// The Infinite Round type
+bytes32 constant INFINITE_ROUND_TYPE = 'INFINITE';

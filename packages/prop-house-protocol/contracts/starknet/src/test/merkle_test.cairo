@@ -1,6 +1,8 @@
 use core::dict::Felt252DictTrait;
 use core::option::OptionTrait;
-use prop_house::common::utils::merkle::{MerkleTree, MerkleTreeTrait, IncrementalMerkleTree, IncrementalMerkleTreeTrait};
+use prop_house::common::utils::merkle::{
+    MerkleTree, MerkleTreeTrait, IncrementalMerkleTree, IncrementalMerkleTreeTrait
+};
 use array::{ArrayTrait, SpanTrait};
 use integer::U128IntoFelt252;
 use hash::LegacyHash;
@@ -199,7 +201,7 @@ fn keccak_incremental_merkle_tree_test() {
 #[test]
 #[available_gas(100000000)]
 #[should_panic(expected: ('Tree is full', ))]
-fn keccak_incremental_merkle_tree_full_test() {
+fn keccak_incremental_merkle_tree_test_fail() {
     let mut full_tree = IncrementalMerkleTreeTrait::<u256>::new(
         2, // height
         0, // leaf count

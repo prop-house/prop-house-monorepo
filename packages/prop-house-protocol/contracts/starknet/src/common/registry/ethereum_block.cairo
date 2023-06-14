@@ -46,6 +46,7 @@ mod EthereumBlockRegistry {
     }
 
     /// Returns the closest ethereum block number for the given timestamp.
+    /// * `timestamp` - The timestamp to query.
     #[external]
     fn get_eth_block_number(timestamp: felt252) -> felt252 {
         EthereumBlockRegistry::get_eth_block_number(timestamp)

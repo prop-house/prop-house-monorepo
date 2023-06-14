@@ -1,7 +1,7 @@
 mod array;
 mod bool;
 mod constants;
-mod contract_address;
+mod contract;
 mod hash;
 mod integer;
 mod math;

@@ -1,1 +1,2 @@
+mod infinite;
 mod timed;

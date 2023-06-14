@@ -60,7 +60,8 @@ trait IStrategyRegistry {
 mod StrategyRegistry {
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::{ContractAddress, ContractAddressIntoFelt252};
-    use prop_house::common::utils::array::{ArrayTraitExt, compute_hash_on_elements};
+    use prop_house::common::utils::hash::compute_hash_on_elements;
+    use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::serde::SpanSerde;
     use super::{IStrategyRegistry, Strategy};
     use array::{ArrayTrait, SpanTrait};
@@ -97,7 +98,7 @@ mod StrategyRegistry {
         }
     }
 
-    /// Returns the  strategy for the given strategy id.
+    /// Returns the strategy for the given strategy id.
     /// * `strategy_id` - The strategy id.
     #[view]
     fn get_strategy(strategy_id: felt252) -> Strategy {
@@ -133,6 +134,6 @@ mod StrategyRegistry {
                 },
             };
         };
-        compute_hash_on_elements(@strategy_array)
+        compute_hash_on_elements(strategy_array.span())
     }
 }

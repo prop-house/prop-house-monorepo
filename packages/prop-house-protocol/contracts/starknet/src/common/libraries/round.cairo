@@ -1,262 +1,204 @@
-use starknet::{
-    EthAddress, Felt252TryIntoEthAddress, StorageAccess, SyscallResult, StorageBaseAddress,
-};
-use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
-use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU64};
-use prop_house::common::utils::constants::{TWO_POW_160, TWO_POW_224, MASK_160, MASK_64};
-use integer::{
-    U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252
-};
-use traits::{TryInto, Into};
-use option::OptionTrait;
-use array::ArrayTrait;
+use prop_house::common::utils::serde::SpanSerde;
+use prop_house::common::registry::strategy::Strategy;
 
 #[derive(Copy, Drop, Serde)]
-struct Proposal {
-    proposer: EthAddress,
-    last_updated_at: u64,
-    is_cancelled: bool,
-    voting_power: u256,
+struct Asset {
+    asset_id: u256,
+    amount: u256,
 }
 
 #[derive(Copy, Drop, Serde)]
-struct ProposalWithId {
-    proposal_id: u32,
-    proposal: Proposal,
+struct StrategyGroup {
+    strategy_type: u8,
+    strategies: Span<Strategy>,
 }
 
-/// Pack the proposal fields into a single felt252.
-/// * `proposer` - The proposer of the proposal.
-/// * `last_updated_at` - The last time the proposal was updated.
-/// * `is_cancelled` - Whether the proposal is cancelled.
-fn pack_proposal_fields(proposer: EthAddress, last_updated_at: u64, is_cancelled: bool) -> felt252 {
-    let mut packed = proposer.address.into();
-    packed = packed | (u256_from_felt252(last_updated_at.into()) * TWO_POW_160);
-    packed = packed | (u256_from_felt252(is_cancelled.into()) * TWO_POW_224);
-
-    packed.try_into().unwrap()
-}
-
-/// Unpack the proposal fields from a single felt252.
-/// * `packed` - The packed proposal.
-fn unpack_proposal_fields(packed: felt252) -> (EthAddress, u64, bool) {
-    let packed = packed.into();
-
-    let proposer: EthAddress = (packed & MASK_160).try_into().unwrap();
-    let last_updated_at: u64 = ((packed / TWO_POW_160) & MASK_64).try_into().unwrap();
-    let is_cancelled = packed / TWO_POW_224 != 0;
-
-    (proposer, last_updated_at, is_cancelled)
-}
-
-impl ProposalStorageAccess of StorageAccess<Proposal> {
-    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Proposal> {
-        ProposalStorageAccess::read_at_offset_internal(address_domain, base, 0)
-    }
-    fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
-        ProposalStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
-    }
-    #[inline(always)]
-    fn read_at_offset_internal(
-        address_domain: u32, base: StorageBaseAddress, offset: u8
-    ) -> SyscallResult<Proposal> {
-        let (proposer, last_updated_at, is_cancelled) = unpack_proposal_fields(
-            StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
-        );
-        let voting_power = StorageAccess::<u256>::read_at_offset_internal(
-            address_domain, base, offset + 1
-        )?;
-        Result::Ok(Proposal { proposer, is_cancelled, last_updated_at, voting_power })
-    }
-    #[inline(always)]
-    fn write_at_offset_internal(
-        address_domain: u32, base: StorageBaseAddress, offset: u8, value: Proposal
-    ) -> SyscallResult<()> {
-        let packed = pack_proposal_fields(
-            value.proposer, value.last_updated_at, value.is_cancelled
-        );
-        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<u256>::write_at_offset_internal(
-            address_domain, base, offset + 1, value.voting_power
-        )
-    }
-    #[inline(always)]
-    fn size_internal(value: Proposal) -> u8 {
-        3
-    }
+#[derive(Copy, Drop, Serde)]
+struct UserStrategy {
+    id: felt252,
+    user_params: Span<felt252>,
 }
 
 #[contract]
 mod Round {
-    use super::{Proposal, ProposalWithId};
+    use starknet::{
+        get_caller_address, EthAddress, EthAddressIntoFelt252, Felt252TryIntoContractAddress,
+    };
+    use prop_house::common::registry::strategy::{IStrategyRegistryDispatcherTrait, Strategy};
+    use prop_house::common::utils::traits::{
+        IGovernancePowerStrategyDispatcherTrait, IGovernancePowerStrategyDispatcher,
+        IRoundDependencyRegistryDispatcherTrait,
+    };
+    use prop_house::common::utils::array::{construct_2d_array, get_sub_array, SpanTraitExt};
+    use prop_house::common::utils::contract::{get_strategy_registry, get_round_dependency_registry};
+    use prop_house::common::utils::constants::{MASK_250, DependencyKey};
+    use prop_house::common::utils::integer::{u250, U256TryIntoU250};
+    use prop_house::common::utils::hash::keccak_u256s_be;
+    use super::{Asset, UserStrategy, StrategyGroup};
     use array::{ArrayTrait, SpanTrait};
+    use integer::U32IntoFelt252;
+    use traits::{TryInto, Into};
+    use dict::Felt252DictTrait;
+    use option::OptionTrait;
+    use zeroable::Zeroable;
 
     struct Storage {
-        _proposals: LegacyMap<u32, Proposal>,
-        _proposal_count: u32,
+        _chain_id: u64,
+        _is_strategy_registered: LegacyMap<(u8, felt252), bool>,
     }
 
-    /// Get all active proposals (not cancelled), including proposal IDs.
-    fn get_active_proposals() -> Array<ProposalWithId> {
-        let mut active_proposals = Default::default();
+    /// Initializes the contract by setting the chain ID and registering the provided strategy groups.
+    fn initializer(chain_id_: u64, mut strategy_groups_: Span<StrategyGroup>) {
+        _chain_id::write(chain_id_);
+        _register_strategy_groups(strategy_groups_);
+    }
 
-        let mut id = 1;
-        let proposal_count = _proposal_count::read();
+    /// Returns the origin chain ID.
+    fn chain_id() -> u64 {
+        _chain_id::read()
+    }
+
+    /// Parse strategies from a flattened array of parameters.
+    /// * `params` - The flattened array of parameters.
+    /// * `starting_index` - The index of the first parameter to parse.
+    fn parse_strategies(
+        params: Span<felt252>, mut starting_index: usize
+    ) -> (Span<Strategy>, usize) {
+        let strategy_addresses_len = (*params.at(starting_index)).try_into().unwrap();
+        let strategy_addresses = params.slice(starting_index + 1, strategy_addresses_len);
+
+        let strategy_params_flat_len = (*params.at(starting_index + 1 + strategy_addresses_len)).try_into().unwrap();
+        let strategy_params_flat = params.slice(
+            starting_index + 2 + strategy_addresses_len,
+            strategy_params_flat_len
+        );
+        let array_2d = construct_2d_array(strategy_params_flat);
+
+        let mut i = 0;
+        let mut strategies = Default::<Array<Strategy>>::default();
         loop {
-            if id > proposal_count {
-                break;
+            if i == strategy_addresses_len {
+                break (
+                    strategies.span(),
+                    starting_index + 2 + strategy_addresses_len + strategy_params_flat_len
+                );
             }
+            let address = (*strategy_addresses.at(i)).try_into().unwrap();
+            let params = get_sub_array(array_2d, i);
 
-            let proposal = _proposals::read(id);
-            if !proposal.is_cancelled {
-                active_proposals.append(ProposalWithId { proposal_id: id, proposal });
-            }
-            id += 1;
-        };
-        active_proposals
+            strategies.append(Strategy { address, params });
+            i += 1;
+        }
     }
 
-    /// Get the top N proposals by descending voting power.
-    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
-    /// * `proposals` - Array of proposals to sort
-    /// * `max_return_count` - Max number of proposals to return
-    fn get_n_proposals_by_voting_power_desc(
-        mut proposals: Array<ProposalWithId>, max_return_count: u32
-    ) -> Span<ProposalWithId> {
-        _mergesort_proposals_by_voting_power_desc_and_slice(proposals, max_return_count).span()
+    /// Asserts that the caller is a valid auth strategy.
+    fn assert_caller_is_valid_auth_strategy() {
+        let auth_strategies = get_round_dependency_registry().get_caller_dependencies_at_key(
+            chain_id(), DependencyKey::AUTH_STRATEGIES,
+        );
+        assert(auth_strategies.contains(get_caller_address()), 'Invalid auth strategy');
     }
 
-    /// Return an array of all the proposal IDs in the given array of proposals.
-    /// * `proposals` - Array of proposals
-    fn extract_proposal_ids(mut proposals: Span<ProposalWithId>) -> Span<u32> {
-        let mut proposal_ids = Default::<Array<u32>>::default();
+    /// Returns the cumulative governance power of the given user for the provided strategies.
+    /// * `timestamp` - The timestamp at which to calculate the cumulative governance power.
+    /// * `user_address` - The address of the user.
+    /// * `strategy_type` - The type of strategy to calculate the cumulative governance power for.
+    /// * `used_strategies` - The strategies used to calculate the cumulative governance power of the user.
+    fn get_cumulative_governance_power(
+        timestamp: u64,
+        user_address: EthAddress,
+        strategy_type: u8,
+        mut used_strategies: Span<UserStrategy>,
+    ) -> u256 {
+        let mut is_used = Default::<Felt252Dict<felt252>>::default();
+        let strategy_registry = get_strategy_registry();
+
+        let mut i = 0;
+        let mut cumulative_power = 0;
         loop {
-            match proposals.pop_front() {
-                Option::Some(p) => {
-                    proposal_ids.append(*p.proposal_id);
+            match used_strategies.pop_front() {
+                Option::Some(s) => {
+                    let s = *s;
+
+                    assert(_is_strategy_registered::read((strategy_type, s.id)), 'Strategy not registered');
+                    assert(is_used.get(s.id).is_zero(), 'Duplicate strategy ID');
+
+                    let strategy = strategy_registry.get_strategy(s.id);
+                    let governance_power_strategy = IGovernancePowerStrategyDispatcher {
+                        contract_address: strategy.address
+                    };
+                    let power = governance_power_strategy.get_power(
+                        timestamp,
+                        user_address.into(),
+                        strategy.params,
+                        s.user_params,
+                    );
+
+                    i += 1;
+                    cumulative_power += power;
+                    is_used.insert(s.id, 1);
                 },
                 Option::None(_) => {
                     break;
                 },
             };
         };
-        proposal_ids.span()
+        is_used.squash();
+        cumulative_power
     }
 
-    /// Merge sort and slice an array of proposals by descending voting power.
-    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
-    /// * `arr` - Array of proposals to sort
-    /// * `max_return_count` - Max return count
-    fn _mergesort_proposals_by_voting_power_desc_and_slice(
-        mut arr: Array<ProposalWithId>, max_return_count: u32
-    ) -> Array<ProposalWithId> {
-        let len = arr.len();
-        if len <= 1 {
-            return arr;
+    // Flatten and ABI-encode (adds data offset + array length prefix) an array of assets.
+    /// * `assets` - The array of assets to flatten and encode.
+    fn flatten_and_abi_encode_assets(mut assets: Span<Asset>) -> Span<u256> {
+        let asset_count: felt252 = assets.len().into();
+
+        let mut flattened_assets = Default::default();
+        flattened_assets.append(0x20.into()); // Data offset
+        flattened_assets.append(asset_count.into()); // Array length
+
+        loop {
+            match assets.pop_front() {
+                Option::Some(a) => {
+                    flattened_assets.append(*a.asset_id);
+                    flattened_assets.append(*a.amount);
+                },
+                Option::None(_) => {
+                    break flattened_assets.span();
+                },
+            };
         }
-
-        // Create left and right arrays
-        let middle = len / 2;
-        let (mut left_arr, mut right_arr) = _split_array(ref arr, middle);
-
-        // Recursively sort the left and right arrays
-        let mut sorted_left = _mergesort_proposals_by_voting_power_desc_and_slice(
-            left_arr, max_return_count
-        );
-        let mut sorted_right = _mergesort_proposals_by_voting_power_desc_and_slice(
-            right_arr, max_return_count
-        );
-
-        let mut result_arr = Default::default();
-        _merge_and_slice_recursive(
-            sorted_left, sorted_right, ref result_arr, 0, 0, max_return_count
-        );
-        result_arr
     }
 
-    /// Merge two sorted proposal arrays.
-    /// * `left_arr` - Left array
-    /// * `right_arr` - Right array
-    /// * `result_arr` - Result array
-    /// * `left_arr_ix` - Left array index
-    /// * `right_arr_ix` - Right array index
-    /// * `max_return_count` - Max return count
-    fn _merge_and_slice_recursive(
-        mut left_arr: Array<ProposalWithId>,
-        mut right_arr: Array<ProposalWithId>,
-        ref result_arr: Array<ProposalWithId>,
-        left_arr_ix: usize,
-        right_arr_ix: usize,
-        max_return_count: u32,
-    ) {
-        if result_arr.len() == left_arr.len() + right_arr.len() {
-            return;
-        }
+    /// ABI-encodes the provided asset array, keccak256 hashes it,
+    /// and returns the lower 250 bits of the hash.
+    /// * `assets` - The array of assets to hash.
+    fn compute_asset_hash(assets: Span<Asset>) -> u250 {
+        (keccak_u256s_be(flatten_and_abi_encode_assets(assets)) & MASK_250).try_into().unwrap()
+    }
 
-        // Exit early if the max return count has been reached
-        if result_arr.len() == max_return_count {
-            return;
-        }
-
-        let (append, next_left_ix, next_right_ix) = if left_arr_ix == left_arr.len() {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
-        } else if right_arr_ix == right_arr.len() {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else if *left_arr[left_arr_ix].proposal.voting_power > *right_arr[right_arr_ix].proposal.voting_power {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else if *left_arr[left_arr_ix].proposal.voting_power < *right_arr[right_arr_ix].proposal.voting_power {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
-        } else if *left_arr[left_arr_ix].proposal.last_updated_at <= *right_arr[right_arr_ix].proposal.last_updated_at {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+    /// Register the provided strategy groups if they are not already registered.
+    /// * `strategy_groups` - The strategy groups to register.
+    fn _register_strategy_groups(mut strategy_groups: Span<StrategyGroup>) {
+        let strategy_registry = get_strategy_registry();
+        loop {
+            match strategy_groups.pop_front() {
+                Option::Some(group) => {
+                    let group = *group;
+                    let mut strategies = group.strategies;
+                    match strategies.pop_front() {
+                        Option::Some(strategy) => {
+                            let strategy_id = strategy_registry.register_strategy_if_not_exists(*strategy);
+                            _is_strategy_registered::write((group.strategy_type, strategy_id), true);
+                        },
+                        Option::None(_) => {
+                            break;
+                        },
+                    }
+                },
+                Option::None(_) => {
+                    break;
+                },
+            };
         };
-
-        result_arr.append(append);
-        _merge_and_slice_recursive(
-            left_arr,
-            right_arr,
-            ref result_arr,
-            next_left_ix,
-            next_right_ix,
-            max_return_count,
-        );
-    }
-
-    // Split an array into two arrays.
-    /// * `arr` - The array to split.
-    /// * `index` - The index to split the array at.
-    /// # Returns
-    /// * `(Array<T>, Array<T>)` - The two arrays.
-    fn _split_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-        ref arr: Array<T>, index: usize
-    ) -> (Array::<T>, Array::<T>) {
-        let mut arr1 = Default::default();
-        let mut arr2 = Default::default();
-        let len = arr.len();
-
-        _fill_array(ref arr1, ref arr, 0, index);
-        _fill_array(ref arr2, ref arr, index, len - index);
-
-        (arr1, arr2)
-    }
-
-    // Fill an array with a value.
-    /// * `arr` - The array to fill.
-    /// * `fill_arr` - The array to fill with.
-    /// * `index` - The index to start filling at.
-    /// * `count` - The number of elements to fill.
-    /// # Returns
-    /// * `Array<T>` - The filled array.
-    fn _fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-        ref arr: Array<T>, ref fill_arr: Array<T>, index: usize, count: usize
-    ) {
-        if count == 0 {
-            return;
-        }
-
-        arr.append(*fill_arr[index]);
-
-        _fill_array(ref arr, ref fill_arr, index + 1, count - 1)
     }
 }

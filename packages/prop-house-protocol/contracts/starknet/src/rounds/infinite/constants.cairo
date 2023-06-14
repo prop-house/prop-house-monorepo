@@ -1,5 +1,8 @@
-/// The maximum number of winners that can be specified for a round.
-const MAX_WINNERS: u16 = 25;
+/// The maximum depth of the winner merkle tree.
+const MAX_WINNER_TREE_DEPTH: u32 = 10;
+
+/// The maximum number of assets that can be requested in a single proposal.
+const MAX_REQUESTED_ASSET_COUNT: u32 = 10;
 
 /// Timed round function selectors
 mod Selector {

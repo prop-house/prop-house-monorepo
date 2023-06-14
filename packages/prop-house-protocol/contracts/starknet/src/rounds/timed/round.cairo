@@ -1,5 +1,7 @@
+use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::registry::strategy::Strategy;
-use prop_house::common::libraries::round::Proposal;
+use prop_house::rounds::timed::config::Proposal;
+use prop_house::common::utils::integer::u250;
 use starknet::EthAddress;
 use array::ArrayTrait;
 
@@ -8,41 +10,27 @@ trait ITimedRound {
     fn propose(
         proposer_address: EthAddress,
         metadata_uri: Array<felt252>,
-        used_proposing_strategy_ids: Array<felt252>,
-        user_proposing_strategy_params_flat: Array<felt252>,
+        used_proposing_strategies: Array<UserStrategy>,
     );
     fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
     fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
     fn vote(
         voter_address: EthAddress,
         proposal_votes: Array<ProposalVote>,
-        used_voting_strategy_ids: Array<felt252>,
-        user_voting_strategy_params_flat: Array<felt252>,
+        used_voting_strategies: Array<UserStrategy>,
     );
-    fn finalize_round(awards: Array<Asset>);
-}
-
-#[derive(Copy, Drop, Serde)]
-enum StrategyType {
-    Voting: (),
-    Proposing: (),
+    fn finalize_round(awards: Array<Asset>); // TODO: Rename `report_results`?
 }
 
 struct RoundParams {
-    award_hash: felt252,
+    award_hash: u250,
     proposal_period_start_timestamp: u64,
     proposal_period_duration: u64,
     vote_period_duration: u64,
     winner_count: u16,
-    proposal_threshold: felt252,
+    proposal_threshold: u250,
     proposing_strategies: Span<Strategy>,
     voting_strategies: Span<Strategy>,
-}
-
-#[derive(Copy, Drop, Serde)]
-struct Asset {
-    asset_id: u256,
-    amount: u256,
 }
 
 #[derive(Copy, Drop, Serde)]
@@ -51,39 +39,24 @@ struct ProposalVote {
     voting_power: u256,
 }
 
-// TODO: Move these to registry that's indexed by chain ID
-// Deployment-time constants
-const strategy_registry_address: felt252 = 0xDEAD0001;
-const eth_execution_strategy: felt252 = 0xDEAD0002;
-const eth_tx_auth_strategy: felt252 = 0xDEAD0003;
-const eth_sig_auth_strategy: felt252 = 0xDEAD0004;
-
 #[contract]
 mod TimedRound {
     use starknet::{
         ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
         Felt252TryIntoContractAddress
     };
-    use super::{
-        ITimedRound, ProposalVote, StrategyType, RoundParams, Asset,
-        strategy_registry_address, eth_execution_strategy, eth_tx_auth_strategy,
-        eth_sig_auth_strategy
-    };
-    use prop_house::rounds::timed::config::{RoundState, RoundConfig};
-    use prop_house::common::libraries::round::{Round, Proposal, ProposalWithId};
-    use prop_house::common::registry::strategy::{
-        IStrategyRegistryDispatcherTrait, IStrategyRegistryDispatcher, Strategy
-    };
+    use super::{ITimedRound, ProposalVote, RoundParams};
+    use prop_house::rounds::timed::config::{RoundState, RoundConfig, Proposal, ProposalWithId};
+    use prop_house::rounds::timed::constants::MAX_WINNERS;
+    use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
+    use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
-        IGovernancePowerStrategyDispatcherTrait, IGovernancePowerStrategyDispatcher,
-        IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher
-    };
-    use prop_house::common::utils::array::{
-        assert_no_duplicates, construct_2d_array, Immutable2DArray, get_sub_array, ArrayTraitExt,
-        array_slice
+        IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
+        IRoundDependencyRegistryDispatcherTrait,
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
-    use prop_house::common::utils::constants::{MASK_192, MASK_250};
+    use prop_house::common::utils::constants::{MASK_192, MASK_250, DependencyKey, StrategyType};
+    use prop_house::common::utils::integer::Felt252TryIntoU250;
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
     use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
@@ -92,13 +65,10 @@ mod TimedRound {
     use option::OptionTrait;
     use zeroable::Zeroable;
 
-    /// The maximum number of winners that can be specified for a round.
-    const MAX_WINNERS: u16 = 255;
-
     struct Storage {
         _config: RoundConfig,
-        _is_proposing_strategy_registered: LegacyMap<felt252, bool>,
-        _is_voting_strategy_registered: LegacyMap<felt252, bool>,
+        _proposal_count: u32,
+        _proposals: LegacyMap<u32, Proposal>,
         _spent_voting_power: LegacyMap<EthAddress, u256>,
     }
 
@@ -121,7 +91,7 @@ mod TimedRound {
 
     impl TimedRound of ITimedRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
-            let proposal = Round::_proposals::read(proposal_id);
+            let proposal = _proposals::read(proposal_id);
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
             proposal
@@ -130,13 +100,12 @@ mod TimedRound {
         fn propose(
             proposer_address: EthAddress,
             metadata_uri: Array<felt252>,
-            used_proposing_strategy_ids: Array<felt252>,
-            user_proposing_strategy_params_flat: Array<felt252>,
+            used_proposing_strategies: Array<UserStrategy>,
         ) {
             // Verify that the caller is a valid auth strategy
-            _assert_caller_is_valid_auth_strategy();
+            Round::assert_caller_is_valid_auth_strategy();
 
-            // Verify that the funding round is active
+            // Verify that the round is active
             _assert_round_active();
 
             let config = _config::read();
@@ -153,18 +122,18 @@ mod TimedRound {
             );
 
             // Determine the cumulative proposition power of the user
-            let cumulative_proposition_power = _get_cumulative_governance_power(
+            let cumulative_proposition_power = Round::get_cumulative_governance_power(
                 config.proposal_period_start_timestamp,
                 proposer_address,
-                used_proposing_strategy_ids,
-                user_proposing_strategy_params_flat.span(),
+                StrategyType::PROPOSING,
+                used_proposing_strategies.span(),
             );
             assert(
-                cumulative_proposition_power >= config.proposal_threshold.into(),
+                cumulative_proposition_power >= config.proposal_threshold.inner.into(),
                 'TR: Proposition power too low'
             );
 
-            let proposal_id = Round::_proposal_count::read() + 1;
+            let proposal_id = _proposal_count::read() + 1;
             let proposal = Proposal {
                 proposer: proposer_address,
                 last_updated_at: current_timestamp,
@@ -173,8 +142,8 @@ mod TimedRound {
             };
 
             // Store the proposal and increment the proposal count
-            Round::_proposals::write(proposal_id, proposal);
-            Round::_proposal_count::write(proposal_id);
+            _proposals::write(proposal_id, proposal);
+            _proposal_count::write(proposal_id);
 
             ProposalCreated(proposal_id, proposer_address, metadata_uri);
         }
@@ -183,12 +152,12 @@ mod TimedRound {
             proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
         ) {
             // Verify that the caller is a valid auth strategy
-            _assert_caller_is_valid_auth_strategy();
+            Round::assert_caller_is_valid_auth_strategy();
 
-            // Verify that the funding round is active
+            // Verify that the round is active
             _assert_round_active();
 
-            let mut proposal = Round::_proposals::read(proposal_id);
+            let mut proposal = _proposals::read(proposal_id);
 
             // Ensure that the proposal exists
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
@@ -201,19 +170,19 @@ mod TimedRound {
 
             // Set the last update timestamp
             proposal.last_updated_at = get_block_timestamp();
-            Round::_proposals::write(proposal_id, proposal);
+            _proposals::write(proposal_id, proposal);
 
             ProposalEdited(proposal_id, metadata_uri);
         }
 
         fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
             // Verify that the caller is a valid auth strategy
-            _assert_caller_is_valid_auth_strategy();
+            Round::assert_caller_is_valid_auth_strategy();
 
-            // Verify that the funding round is active
+            // Verify that the round is active
             _assert_round_active();
 
-            let mut proposal = Round::_proposals::read(proposal_id);
+            let mut proposal = _proposals::read(proposal_id);
 
             // Ensure that the proposal exists
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
@@ -226,7 +195,7 @@ mod TimedRound {
 
             // Cancel the proposal
             proposal.is_cancelled = true;
-            Round::_proposals::write(proposal_id, proposal);
+            _proposals::write(proposal_id, proposal);
 
             ProposalCancelled(proposal_id);
         }
@@ -234,13 +203,12 @@ mod TimedRound {
         fn vote(
             voter_address: EthAddress,
             proposal_votes: Array<ProposalVote>,
-            used_voting_strategy_ids: Array<felt252>,
-            user_voting_strategy_params_flat: Array<felt252>,
+            used_voting_strategies: Array<UserStrategy>,
         ) {
             // Verify that the caller is a valid auth strategy
-            _assert_caller_is_valid_auth_strategy();
+            Round::assert_caller_is_valid_auth_strategy();
 
-            // Verify that the funding round is active
+            // Verify that the round is active
             _assert_round_active();
 
             let config = _config::read();
@@ -257,11 +225,11 @@ mod TimedRound {
             );
 
             // Determine the cumulative voting power of the user
-            let cumulative_voting_power = _get_cumulative_governance_power(
+            let cumulative_voting_power = Round::get_cumulative_governance_power(
                 snapshot_timestamp,
                 voter_address,
-                used_voting_strategy_ids,
-                user_voting_strategy_params_flat.span(),
+                StrategyType::VOTING,
+                used_voting_strategies.span(),
             );
             assert(cumulative_voting_power.is_non_zero(), 'TR: User has no voting power');
 
@@ -272,13 +240,13 @@ mod TimedRound {
         }
 
         fn finalize_round(awards: Array<Asset>) {
-            // Verify that the funding round is active
+            // Verify that the round is active
             _assert_round_active();
 
             // If no awards were offered in the config, the awards array must be empty.
             // Otherwise, assert the validity of the provided awards.
             let config = _config::read();
-            match config.award_hash {
+            match config.award_hash.into() {
                 0 => assert(awards.is_empty(), 'TR: Awards not empty'),
                 _ => _assert_awards_valid(awards.span()),
             }
@@ -288,13 +256,13 @@ mod TimedRound {
                 current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
             );
 
-            let proposal_count = Round::_proposal_count::read();
+            let proposal_count = _proposal_count::read();
 
             // If no proposals were submitted, the round must be cancelled.
-            assert(proposal_count != 0, 'TR: No proposals submitted');
+            assert(proposal_count.is_non_zero(), 'TR: No proposals submitted');
 
-            let active_proposals = Round::get_active_proposals();
-            let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
+            let active_proposals = _get_active_proposals();
+            let winning_proposals = _get_n_proposals_by_voting_power_desc(
                 active_proposals, config.winner_count.into()
             );
 
@@ -303,17 +271,23 @@ mod TimedRound {
 
             let mut merkle_tree = MerkleTreeTrait::<u256>::new();
             let merkle_root = merkle_tree.compute_merkle_root(leaves);
-            let execution_strategy = IExecutionStrategyDispatcher {
-                contract_address: eth_execution_strategy.try_into().unwrap(), 
-            };
-            execution_strategy.execute(_build_execution_params(merkle_root));
+
+            let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
+                Round::chain_id(), DependencyKey::EXECUTION_STRATEGY
+            );
+            if execution_strategy_address.is_non_zero() {
+                let execution_strategy = IExecutionStrategyDispatcher {
+                    contract_address: execution_strategy_address,
+                };
+                execution_strategy.execute(_build_execution_params(merkle_root));
+            }
 
             let mut config = _config::read();
 
             config.round_state = RoundState::Finalized(());
             _config::write(config);
 
-            RoundFinalized(Round::extract_proposal_ids(winning_proposals), merkle_root);
+            RoundFinalized(_extract_proposal_ids(winning_proposals), merkle_root);
         }
     }
 
@@ -332,20 +306,17 @@ mod TimedRound {
     /// Submit a proposal to the round.
     /// * `proposer_address` - The address of the proposer.
     /// * `metadata_uri` - The proposal metadata URI.
-    /// * `used_proposing_strategy_ids` - The IDs of the strategies used to propose.
-    /// * `user_proposing_strategy_params_flat` - The flattened parameters for the strategies used to propose.
+    /// * `used_proposing_strategies` - The strategies used to propose.
     #[external]
     fn propose(
         proposer_address: EthAddress,
         metadata_uri: Array<felt252>,
-        used_proposing_strategy_ids: Array<felt252>,
-        user_proposing_strategy_params_flat: Array<felt252>,
+        used_proposing_strategies: Array<UserStrategy>,
     ) {
         TimedRound::propose(
             proposer_address,
             metadata_uri,
-            used_proposing_strategy_ids,
-            user_proposing_strategy_params_flat,
+            used_proposing_strategies,
         );
     }
 
@@ -369,20 +340,17 @@ mod TimedRound {
     /// Cast votes on one or more proposals.
     /// * `voter_address` - The address of the voter.
     /// * `proposal_votes` - The votes to cast.
-    /// * `used_voting_strategy_ids` - The IDs of the voting strategies used to cast the votes.
-    /// * `user_voting_strategy_params_flat` - The flattened parameters for the voting strategies used to cast the votes.
+    /// * `used_voting_strategies` - The strategies used to vote.
     #[external]
     fn vote(
         voter_address: EthAddress,
         proposal_votes: Array<ProposalVote>,
-        used_voting_strategy_ids: Array<felt252>,
-        user_voting_strategy_params_flat: Array<felt252>,
+        used_voting_strategies: Array<UserStrategy>,
     ) {
         TimedRound::vote(
             voter_address,
             proposal_votes,
-            used_voting_strategy_ids,
-            user_voting_strategy_params_flat,
+            used_voting_strategies,
         );
     }
 
@@ -410,11 +378,11 @@ mod TimedRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
-        assert(proposal_period_start_timestamp != 0, 'TR: Invalid PPST');
-        assert(proposal_period_duration != 0, 'TR: Invalid PPD');
-        assert(vote_period_duration != 0, 'TR: Invalid VPD');
-        assert(winner_count != 0 & winner_count <= MAX_WINNERS, 'TR: Invalid winner count');
-        assert(voting_strategies.len() != 0, 'TR: No voting strategies');
+        assert(proposal_period_start_timestamp.is_non_zero(), 'TR: Invalid PPST');
+        assert(proposal_period_duration.is_non_zero(), 'TR: Invalid PPD');
+        assert(vote_period_duration.is_non_zero(), 'TR: Invalid VPD');
+        assert(winner_count.is_non_zero() & winner_count <= MAX_WINNERS, 'TR: Invalid winner count');
+        assert(voting_strategies.len().is_non_zero(), 'TR: No voting strategies');
 
         let proposal_period_end_timestamp = proposal_period_start_timestamp + proposal_period_duration;
         let vote_period_end_timestamp = proposal_period_end_timestamp + vote_period_duration;
@@ -430,55 +398,35 @@ mod TimedRound {
                 award_hash,
             }
         );
-        _register_strategies(StrategyType::Proposing(()), proposing_strategies);
-        _register_strategies(StrategyType::Voting(()), voting_strategies);
-    }
 
-    /// Parse strategies from a flattened array of parameters.
-    /// * `params` - The flattened array of parameters.
-    /// * `starting_index` - The index of the first parameter to parse.
-    fn _parse_strategies(
-        params: Span<felt252>, mut starting_index: usize
-    ) -> (Span<Strategy>, usize) {
-        let strategy_addresses_len = (*params.at(starting_index)).try_into().unwrap();
-
-        let strategy_addresses = array_slice(params, starting_index + 1, strategy_addresses_len);
-        let strategy_params_flat_len = (*params.at(starting_index + 1 + strategy_addresses_len)).try_into().unwrap();
-
-        let strategy_params_flat = array_slice(
-            params, starting_index + 2 + strategy_addresses_len, strategy_params_flat_len
+        let mut strategy_groups = Default::default();
+        strategy_groups.append(
+            StrategyGroup {
+                strategy_type: StrategyType::PROPOSING,
+                strategies: proposing_strategies
+            },
         );
-        let array_2d = construct_2d_array(strategy_params_flat.span());
-
-        let mut i = 0;
-        let mut strategies = Default::<Array<Strategy>>::default();
-        loop {
-            if i == strategy_addresses_len {
-                break (
-                    strategies.span(),
-                    starting_index + 2 + strategy_addresses_len + strategy_params_flat_len
-                );
-            }
-            let address = (*strategy_addresses.at(i)).try_into().unwrap();
-            let params = get_sub_array(@array_2d, i);
-
-            strategies.append(Strategy { address, params: params.span() });
-            i += 1;
-        }
+        strategy_groups.append(
+            StrategyGroup {
+                strategy_type: StrategyType::VOTING,
+                strategies: voting_strategies
+            },
+        );
+        Round::initializer(1, strategy_groups.span()); // TODO: How to get chain ID?
     }
 
     /// Decode the round parameters from an array of felt252s.
     /// * `params` - The array of felt252s.
     fn _decode_param_array(params: Span<felt252>) -> RoundParams {
-        let award_hash = *params.at(0).into();
+        let award_hash = (*params.at(0)).try_into().unwrap();
         let proposal_period_start_timestamp = (*params.at(1)).try_into().unwrap();
         let proposal_period_duration = (*params.at(2)).try_into().unwrap();
         let vote_period_duration = (*params.at(3)).try_into().unwrap();
         let winner_count = (*params.at(4)).try_into().unwrap();
-        let proposal_threshold = *params.at(5);
+        let proposal_threshold = (*params.at(5)).try_into().unwrap();
 
-        let (proposing_strategies, offset) = _parse_strategies(params, 6);
-        let (voting_strategies, _) = _parse_strategies(params, offset);
+        let (proposing_strategies, offset) = Round::parse_strategies(params, 6);
+        let (voting_strategies, _) = Round::parse_strategies(params, offset);
 
         RoundParams {
             award_hash,
@@ -492,15 +440,6 @@ mod TimedRound {
         }
     }
 
-    /// Asserts that the caller is a valid auth strategy.
-    fn _assert_caller_is_valid_auth_strategy() {
-        let caller: felt252 = get_caller_address().into();
-        assert(
-            caller == eth_tx_auth_strategy | caller == eth_sig_auth_strategy,
-            'TR: Invalid auth strategy'
-        );
-    }
-
     /// Asserts that the round is active.
     fn _assert_round_active() {
         assert(_config::read().round_state == RoundState::Active(()), 'TR: Round not active');
@@ -508,83 +447,10 @@ mod TimedRound {
 
     /// Asserts that the provided awards are valid.
     fn _assert_awards_valid(awards: Span<Asset>) {
-        let flattened_awards = _flatten_and_abi_encode_awards(awards);
-        let stored_award_hash = _config::read().award_hash.into();
-        let computed_award_hash = keccak_u256s_be(flattened_awards) & MASK_250;
+        let computed_award_hash = Round::compute_asset_hash(awards);
+        let stored_award_hash = _config::read().award_hash;
 
         assert(computed_award_hash == stored_award_hash, 'TR: Invalid awards provided');
-    }
-
-    /// Register the provided strategies if they are not already registered.
-    /// * `strategy_type` - The type of strategy to register.
-    /// * `strategies` - The strategies to register.
-    fn _register_strategies(strategy_type: StrategyType, mut strategies: Span<Strategy>) {
-        let strategy_registry = IStrategyRegistryDispatcher {
-            contract_address: strategy_registry_address.try_into().unwrap(), 
-        };
-        loop {
-            match strategies.pop_front() {
-                Option::Some(s) => {
-                    let strategy_id = strategy_registry.register_strategy_if_not_exists(*s);
-                    match strategy_type {
-                        StrategyType::Voting(()) => _is_voting_strategy_registered::write(
-                            strategy_id, true
-                        ),
-                        StrategyType::Proposing(()) => _is_proposing_strategy_registered::write(
-                            strategy_id, true
-                        ),
-                    }
-                },
-                Option::None(_) => {
-                    break;
-                },
-            };
-        };
-    }
-
-    /// Returns the cumulative governance power of the given user for the provided strategies.
-    /// * `timestamp` - The timestamp at which to calculate the cumulative governance power.
-    /// * `user_address` - The address of the user.
-    /// * `used_strategy_ids` - The IDs of the strategies used to calculate the cumulative governance power.
-    /// * `user_strategy_params_all` - The strategy parameters for all governance power strategies.
-    fn _get_cumulative_governance_power(
-        timestamp: u64,
-        user_address: EthAddress,
-        mut used_strategy_ids: Array<felt252>,
-        user_strategy_params_all: Span<felt252>,
-    ) -> u256 {
-        // Ensure there are no duplicates to prevent double counting
-        assert_no_duplicates(ref used_strategy_ids);
-
-        let strategy_registry = IStrategyRegistryDispatcher {
-            contract_address: strategy_registry_address.try_into().unwrap(), 
-        };
-        let user_strategy_params = construct_2d_array(user_strategy_params_all);
-
-        let mut i = 0;
-        let mut cumulative_power = 0;
-        loop {
-            match used_strategy_ids.pop_front() {
-                Option::Some(strategy_id) => {
-                    let strategy = strategy_registry.get_strategy(strategy_id);
-                    let governance_power_strategy = IGovernancePowerStrategyDispatcher {
-                        contract_address: strategy.address
-                    };
-                    let power = governance_power_strategy.get_power(
-                        timestamp,
-                        user_address.into(),
-                        strategy.params,
-                        get_sub_array(@user_strategy_params, i).span(),
-                    );
-
-                    i += 1;
-                    cumulative_power += power;
-                },
-                Option::None(_) => {
-                    break cumulative_power;
-                },
-            };
-        }
     }
 
     /// Cast votes on one or more proposals.
@@ -626,7 +492,7 @@ mod TimedRound {
         let proposal_id = proposal_vote.proposal_id;
         let voting_power = proposal_vote.voting_power;
 
-        let mut proposal = Round::_proposals::read(proposal_id);
+        let mut proposal = _proposals::read(proposal_id);
         assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
 
         // Exit early if the proposal has been cancelled
@@ -637,36 +503,49 @@ mod TimedRound {
         assert(voting_power.is_non_zero(), 'TR: No voting power provided');
         assert(remaining_voting_power >= voting_power, 'TR: Insufficient voting power');
 
-        let new_proposal_voting_power = proposal.voting_power + voting_power;
-        proposal.voting_power = new_proposal_voting_power;
-        Round::_proposals::write(proposal_id, proposal);
+        proposal.voting_power += voting_power;
+        _proposals::write(proposal_id, proposal);
 
         VoteCast(proposal_id, voter_address, voting_power);
 
         voting_power
     }
 
-    // Flatten and ABI-encode (adds data offset + array length prefix) an array of award assets.
-    /// * `awards` - The array of awards to flatten and encode.
-    fn _flatten_and_abi_encode_awards(mut awards: Span<Asset>) -> Span<u256> {
-        let award_count = awards.len();
-        let award_count_felt: felt252 = award_count.into();
+    /// Get all active proposals (not cancelled), including proposal IDs.
+    fn _get_active_proposals() -> Array<ProposalWithId> {
+        let mut active_proposals = Default::default();
 
-        let mut flattened_awards = Default::default();
-        flattened_awards.append(0x20.into()); // Data offset
-        flattened_awards.append(award_count_felt.into()); // Array length
-
+        let mut id = 1;
+        let proposal_count = _proposal_count::read();
         loop {
-            match awards.pop_front() {
-                Option::Some(a) => {
-                    flattened_awards.append(*a.asset_id);
-                    flattened_awards.append(*a.amount);
+            if id > proposal_count {
+                break;
+            }
+
+            let proposal = _proposals::read(id);
+            if !proposal.is_cancelled {
+                active_proposals.append(ProposalWithId { proposal_id: id, proposal });
+            }
+            id += 1;
+        };
+        active_proposals
+    }
+
+    /// Return an array of all the proposal IDs in the given array of proposals.
+    /// * `proposals` - Array of proposals
+    fn _extract_proposal_ids(mut proposals: Span<ProposalWithId>) -> Span<u32> {
+        let mut proposal_ids = Default::<Array<u32>>::default();
+        loop {
+            match proposals.pop_front() {
+                Option::Some(p) => {
+                    proposal_ids.append(*p.proposal_id);
                 },
                 Option::None(_) => {
-                    break flattened_awards.span();
+                    break;
                 },
             };
-        }
+        };
+        proposal_ids.span()
     }
 
     /// Build the execution parameters that will be passed to the execution strategy.
@@ -796,5 +675,125 @@ mod TimedRound {
         leaf_input.append(asset_amount);
 
         keccak_u256s_be(leaf_input.span())
+    }
+
+    /// Get the top N proposals by descending voting power.
+    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
+    /// * `proposals` - Array of proposals to sort
+    /// * `max_return_count` - Max number of proposals to return
+    fn _get_n_proposals_by_voting_power_desc(
+        mut proposals: Array<ProposalWithId>, max_return_count: u32
+    ) -> Span<ProposalWithId> {
+        _mergesort_proposals_by_voting_power_desc_and_slice(proposals, max_return_count).span()
+    }
+
+    /// Merge sort and slice an array of proposals by descending voting power.
+    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
+    /// * `arr` - Array of proposals to sort
+    /// * `max_return_count` - Max return count
+    fn _mergesort_proposals_by_voting_power_desc_and_slice(
+        mut arr: Array<ProposalWithId>, max_return_count: u32
+    ) -> Array<ProposalWithId> {
+        let len = arr.len();
+        if len <= 1 {
+            return arr;
+        }
+
+        // Create left and right arrays
+        let middle = len / 2;
+        let (mut left_arr, mut right_arr) = _split_array(ref arr, middle);
+
+        // Recursively sort the left and right arrays
+        let mut sorted_left = _mergesort_proposals_by_voting_power_desc_and_slice(
+            left_arr, max_return_count
+        );
+        let mut sorted_right = _mergesort_proposals_by_voting_power_desc_and_slice(
+            right_arr, max_return_count
+        );
+
+        let mut result_arr = Default::default();
+        _merge_and_slice_recursive(
+            sorted_left, sorted_right, ref result_arr, 0, 0, max_return_count
+        );
+        result_arr
+    }
+
+    /// Merge two sorted proposal arrays.
+    /// * `left_arr` - Left array
+    /// * `right_arr` - Right array
+    /// * `result_arr` - Result array
+    /// * `left_arr_ix` - Left array index
+    /// * `right_arr_ix` - Right array index
+    /// * `max_return_count` - Max return count
+    fn _merge_and_slice_recursive(
+        mut left_arr: Array<ProposalWithId>,
+        mut right_arr: Array<ProposalWithId>,
+        ref result_arr: Array<ProposalWithId>,
+        left_arr_ix: usize,
+        right_arr_ix: usize,
+        max_return_count: u32,
+    ) {
+        if result_arr.len() == left_arr.len() + right_arr.len() {
+            return;
+        }
+
+        // Exit early if the max return count has been reached
+        if result_arr.len() == max_return_count {
+            return;
+        }
+
+        let (append, next_left_ix, next_right_ix) = if left_arr_ix == left_arr.len() {
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        } else if right_arr_ix == right_arr.len() {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
+        } else if *left_arr[left_arr_ix].proposal.voting_power > *right_arr[right_arr_ix].proposal.voting_power {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
+        } else if *left_arr[left_arr_ix].proposal.voting_power < *right_arr[right_arr_ix].proposal.voting_power {
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        } else if *left_arr[left_arr_ix].proposal.last_updated_at <= *right_arr[right_arr_ix].proposal.last_updated_at {
+            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
+        } else {
+            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        };
+
+        result_arr.append(append);
+        _merge_and_slice_recursive(left_arr, right_arr, ref result_arr, next_left_ix, next_right_ix, max_return_count);
+    }
+
+    // Split an array into two arrays.
+    /// * `arr` - The array to split.
+    /// * `index` - The index to split the array at.
+    /// # Returns
+    /// * `(Array<T>, Array<T>)` - The two arrays.
+    fn _split_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
+        ref arr: Array<T>, index: usize
+    ) -> (Array::<T>, Array::<T>) {
+        let mut arr1 = Default::default();
+        let mut arr2 = Default::default();
+        let len = arr.len();
+
+        _fill_array(ref arr1, ref arr, 0, index);
+        _fill_array(ref arr2, ref arr, index, len - index);
+
+        (arr1, arr2)
+    }
+
+    // Fill an array with a value.
+    /// * `arr` - The array to fill.
+    /// * `fill_arr` - The array to fill with.
+    /// * `index` - The index to start filling at.
+    /// * `count` - The number of elements to fill.
+    /// # Returns
+    /// * `Array<T>` - The filled array.
+    fn _fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
+        ref arr: Array<T>, ref fill_arr: Array<T>, index: usize, count: usize
+    ) {
+        if count == 0 {
+            return;
+        }
+
+        arr.append(*fill_arr[index]);
+
+        _fill_array(ref arr, ref fill_arr, index + 1, count - 1)
     }
 }

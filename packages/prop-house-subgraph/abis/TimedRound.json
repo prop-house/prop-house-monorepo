@@ -42,7 +42,7 @@
   },
   {
     "inputs": [],
-    "name": "AWARD_ALREADY_CLAIMED",
+    "name": "ALREADY_CLAIMED",
     "type": "error"
   },
   {
@@ -470,7 +470,7 @@
   },
   {
     "inputs": [],
-    "name": "AWARD_RECLAMATION_AFTER",
+    "name": "AWARD_RECLAIM_UNCLAIMED_AWARD_AFTER",
     "outputs": [
       {
         "internalType": "uint256",

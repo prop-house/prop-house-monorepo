@@ -59,7 +59,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   /**
    * Maximum winner count for this strategy
    */
-  public static MAX_WINNER_COUNT = 255;
+  public static MAX_WINNER_COUNT = 25;
 
   /**
    * EIP712 timed round propose types

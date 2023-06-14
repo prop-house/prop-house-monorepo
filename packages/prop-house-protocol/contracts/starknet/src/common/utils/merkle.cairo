@@ -9,8 +9,8 @@ use hash::LegacyHash;
 use box::BoxTrait;
 use traits::Into;
 
-/// Pre-computed zero hashes for the first 10 levels of an incremental merkle tree.
-mod ZeroHashes {
+/// Pre-computed zero hashes for the first 10 levels of a keccak incremental merkle tree.
+mod KeccakZeroHashes {
     const Z_0: u256 = 0x0;
     const Z_1: u256 = 0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5;
     const Z_2: u256 = 0xb4c11951957c6f8f642c4af61cd6b24640fec6dc7fc607ee8206a99e92410d30;
@@ -207,19 +207,19 @@ trait IncrementalMerkleTreeTrait<T> {
     fn get_merkle_root(ref self: IncrementalMerkleTree) -> Option<T>;
 }
 
-/// Pre-computed zero hashes.
-fn _get_zero_hashes() -> Span<u256> {
+/// Pre-computed keccak zero hashes.
+fn _get_keccak_zero_hashes() -> Span<u256> {
     let mut zeroes = Default::default();
-    zeroes.append(ZeroHashes::Z_0);
-    zeroes.append(ZeroHashes::Z_1);
-    zeroes.append(ZeroHashes::Z_2);
-    zeroes.append(ZeroHashes::Z_3);
-    zeroes.append(ZeroHashes::Z_4);
-    zeroes.append(ZeroHashes::Z_5);
-    zeroes.append(ZeroHashes::Z_6);
-    zeroes.append(ZeroHashes::Z_7);
-    zeroes.append(ZeroHashes::Z_8);
-    zeroes.append(ZeroHashes::Z_9);
+    zeroes.append(KeccakZeroHashes::Z_0);
+    zeroes.append(KeccakZeroHashes::Z_1);
+    zeroes.append(KeccakZeroHashes::Z_2);
+    zeroes.append(KeccakZeroHashes::Z_3);
+    zeroes.append(KeccakZeroHashes::Z_4);
+    zeroes.append(KeccakZeroHashes::Z_5);
+    zeroes.append(KeccakZeroHashes::Z_6);
+    zeroes.append(KeccakZeroHashes::Z_7);
+    zeroes.append(KeccakZeroHashes::Z_8);
+    zeroes.append(KeccakZeroHashes::Z_9);
 
     zeroes.span()
 }
@@ -270,7 +270,7 @@ impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait<u256> {
             max_leaves,
             sub_trees,
             current_leaf_count,
-            zeroes: _get_zero_hashes(),
+            zeroes: _get_keccak_zero_hashes(),
             merkle_root: Option::None(()),
         }
     }

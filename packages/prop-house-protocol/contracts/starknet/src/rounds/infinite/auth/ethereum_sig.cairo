@@ -1,9 +1,9 @@
 #[contract]
-mod TimedRoundEthereumSigAuthStrategy {
+mod InfiniteRoundEthereumSigAuthStrategy {
     use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
     use prop_house::rounds::timed::constants::{DomainSeparator, TypeHash, Selector};
-    use prop_house::common::utils::integer::ContractAddressIntoU256;
     use prop_house::common::utils::traits::IEthereumSigAuthStrategy;
+    use prop_house::common::utils::integer::ContractAddressIntoU256;
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
     use prop_house::common::utils::hash::keccak_u256s_be;
     use prop_house::common::utils::array::into_u256_arr;
@@ -18,7 +18,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         _salts: LegacyMap<(felt252, u256), bool>, 
     }
 
-    impl TimedRoundEthereumSigAuthStrategy of IEthereumSigAuthStrategy {
+    impl InfiniteRoundEthereumSigAuthStrategy of IEthereumSigAuthStrategy {
         fn authenticate(
             r: u256,
             s: u256,
@@ -35,14 +35,14 @@ mod TimedRoundEthereumSigAuthStrategy {
             } else if selector == Selector::CANCEL_PROPOSAL {
                 _verify_cancel_proposal_sig(r, s, v, salt, target, selector, cdata);
             } else {
-                return;
+                return ();
             }
 
             // Execute the function call with the supplied calldata
             starknet::call_contract_syscall(
                 address: target, entry_point_selector: selector, calldata: cdata, 
             )
-                .unwrap_syscall();
+            .unwrap_syscall();
         }
     }
 
@@ -56,7 +56,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         selector: felt252,
         cdata: Span<felt252>,
     ) {
-        TimedRoundEthereumSigAuthStrategy::authenticate(r, s, v, salt, target, selector, cdata);
+        InfiniteRoundEthereumSigAuthStrategy::authenticate(r, s, v, salt, target, selector, cdata);
     }
 
     ///
@@ -231,7 +231,7 @@ mod TimedRoundEthereumSigAuthStrategy {
 
         let mut data = Default::default();
         data.append(ETHEREUM_PREFIX.into());
-        data.append(DomainSeparator::GOERLI); // TODO: Needs to be dynamic.
+        data.append(DomainSeparator::GOERLI);
         data.append(hash_struct);
 
         keccak_u256s_be(data.span())

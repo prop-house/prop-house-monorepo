@@ -1,38 +1,59 @@
+use nullable::{match_nullable, FromNullableResult};
+use traits::{Into, TryInto, Destruct};
 use array::{ArrayTrait, SpanTrait};
-use integer::Felt252TryIntoU32;
-use traits::{Into, TryInto};
+use integer::U128IntoFelt252;
+use dict::Felt252DictTrait;
 use option::OptionTrait;
-use hash::LegacyHash;
+use zeroable::Zeroable;
+use box::BoxTrait;
 
 trait ArrayTraitExt<T> {
-    fn append_all(ref self: Array<T>, arr: Span<T>);
-    fn occurrences_of<impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
-        ref self: Array<T>, item: T
-    ) -> usize;
+    fn append_all(ref self: Array<T>, span: Span<T>);
+    fn contains<impl TPartialEq: PartialEq<T>>(self: @Array<T>, item: T) -> bool;
+}
+
+trait SpanTraitExt<T> {
+    fn contains<impl TPartialEq: PartialEq<T>>(self: Span<T>, item: T) -> bool;
 }
 
 impl ArrayImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of ArrayTraitExt<T> {
-    fn append_all(ref self: Array<T>, mut arr: Span<T>) {
-        match arr.pop_front() {
+    fn append_all(ref self: Array<T>, mut span: Span<T>) {
+        match span.pop_front() {
             Option::Some(v) => {
                 self.append(*v);
-                self.append_all(arr);
+                self.append_all(span);
             },
             Option::None(()) => (),
         }
     }
 
-    fn occurrences_of<impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
-        ref self: Array<T>, item: T
-    ) -> usize {
-        _occurrences_of_internal(ref self, item, 0, 0)
+    fn contains<impl TPartialEq: PartialEq<T>>(self: @Array<T>, item: T) -> bool {
+        self.span().contains(item)
     }
 }
 
-#[derive(Drop)]
+impl SpanImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of SpanTraitExt<T> {
+    fn contains<impl TPartialEq: PartialEq<T>>(mut self: Span<T>, item: T) -> bool {
+        loop {
+            match self.pop_front() {
+                Option::Some(v) => {
+                    if *v == item {
+                        break true;
+                    }
+                },
+                Option::None(_) => {
+                    break false;
+                },
+            };
+        }
+    }
+}
+
+// TODO: Optimally, we remove the need for this.
+#[derive(Copy, Drop)]
 struct Immutable2DArray {
-    offsets: Array<felt252>,
-    elements: Array<felt252>,
+    offsets: Span<felt252>,
+    elements: Span<felt252>,
 }
 
 /// Construct an Immutable2D array from a flat encoding.
@@ -43,9 +64,9 @@ struct Immutable2DArray {
 /// * `flat_array` - The flat array to construct the 2D array from.
 fn construct_2d_array(flat_array: Span<felt252>) -> Immutable2DArray {
     let offsets_len = (*flat_array.at(0)).try_into().unwrap();
-    let offsets = array_slice(flat_array, 1, offsets_len);
+    let offsets = flat_array.slice(1, offsets_len);
     let elements_len = flat_array.len() - offsets_len - 1;
-    let elements = array_slice(flat_array, offsets_len + 1, elements_len);
+    let elements = flat_array.slice(offsets_len + 1, elements_len);
 
     Immutable2DArray { offsets, elements }
 }
@@ -53,7 +74,7 @@ fn construct_2d_array(flat_array: Span<felt252>) -> Immutable2DArray {
 /// Extracts a sub array at the specified index from an Immutable2DArray
 /// * `array_2d` - The 2D array to extract the sub array from.
 /// * `index` - The index of the sub array to extract.
-fn get_sub_array(array_2d: @Immutable2DArray, index: u32) -> Array<felt252> {
+fn get_sub_array(array_2d: Immutable2DArray, index: u32) -> Span<felt252> {
     let offset = (*array_2d.offsets.at(index)).try_into().unwrap();
     let last_index = array_2d.offsets.len() - 1;
 
@@ -63,62 +84,49 @@ fn get_sub_array(array_2d: @Immutable2DArray, index: u32) -> Array<felt252> {
     } else {
         array_len = (*array_2d.offsets.at(index + 1)).try_into().unwrap() - offset;
     }
-    array_slice(array_2d.elements.span(), offset, array_len)
+    array_2d.elements.slice(offset, array_len)
 }
 
-/// Asserts that the array does not contain any duplicates.
-/// * `arr` - The array to check.
-fn assert_no_duplicates<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>>(
-    ref arr: Array<T>
-) {
-    let arr_len = arr.len();
-    if arr_len == 0 {
+/// Asserts that the felt252 span does not contain any duplicates.
+/// * `span` - The span to check.
+fn assert_no_duplicates(mut span: Span<felt252>) {
+    if span.len() < 2 {
         return;
     }
 
-    let mut i = 0;
+    let mut dict: Felt252Dict<felt252> = Default::default();
     loop {
-        if i == arr_len {
-            break;
-        }
-
-        assert(arr.occurrences_of(*arr.at(i)) == 1, 'Duplicate element found');
-        i += 1;
-    }
+        match span.pop_front() {
+            Option::Some(v) => {
+                assert(dict.get(*v).is_zero(), 'Duplicate element found');
+                dict.insert(*v, 1);
+            },
+            Option::None(()) => {
+                break;
+            },
+        };
+    };
+    dict.squash();
 }
 
-// Fill an array with a value.
-/// * `dst` - The array to fill.
-/// * `src` - The array to fill with.
-/// * `index` - The index to start filling at.
-/// * `count` - The number of elements to fill.
-fn fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-    ref dst: Array<T>, src: Span<T>, index: u32, count: u32
-) {
-    if count == 0 {
+/// Asserts that the u256 span does not contain any duplicates.
+/// * `span` - The span to check.
+fn assert_no_duplicates_u256(mut span: Span<u256>) {
+    if span.len() < 2 {
         return;
     }
-    if index >= src.len() {
-        return;
+
+    // TODO: Consider sorting and comparing. This is a naive implementation.
+    loop {
+        match span.pop_front() {
+            Option::Some(v) => {
+                assert(span.contains(*v) == false, 'Duplicate element found');
+            },
+            Option::None(()) => {
+                break;
+            },
+        };
     }
-    let element = src.at(index);
-    dst.append(*element);
-
-    fill_array(ref dst, src, index + 1, count - 1)
-}
-
-/// Returns the slice of an array.
-/// * `arr` - The array to slice.
-/// * `begin` - The index to start the slice at.
-/// * `end` - The index to end the slice at (not included).
-/// # Returns
-/// * `Array<T>` - The slice of the array.
-fn array_slice<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-    src: Span<T>, begin: usize, end: usize
-) -> Array<T> {
-    let mut slice = Default::default();
-    fill_array(ref dst: slice, :src, index: begin, count: end);
-    slice
 }
 
 /// Convert a span of `felt252` to a `u256` array.
@@ -137,42 +145,4 @@ fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
         };
     };
     arr
-}
-
-/// Computes the pedersen hash of an array of felts.
-/// * `arr` - The array to hash.
-fn compute_hash_on_elements(arr: @Array<felt252>) -> felt252 {
-    _compute_hash_on_elements_internal(arr, 0, 0)
-}
-
-/// Recursively computes the pedersen hash of an array of felts.
-/// * `arr` - The array to hash.
-/// * `state` - The current hash state.
-/// * `index` - The current index.
-fn _compute_hash_on_elements_internal(
-    arr: @Array<felt252>, mut state: felt252, index: u32
-) -> felt252 {
-    if (index == arr.len()) {
-        return LegacyHash::hash(state, arr.len());
-    }
-    _compute_hash_on_elements_internal(arr, LegacyHash::hash(state, *arr.at(index)), index + 1)
-}
-
-/// Returns the number of occurrences of an item in an array.
-/// * `arr` - The array to search.
-/// * `item` - The item to search for.
-/// * `index` - The current index.
-/// * `count` - The current count.
-fn _occurrences_of_internal<
-    T, impl TDrop: Drop<T>, impl TPartialEq: PartialEq<T>, impl TCopy: Copy<T>
->(
-    ref arr: Array<T>, item: T, index: usize, count: usize
-) -> usize {
-    if index >= arr.len() {
-        count
-    } else if *arr.at(index) == item {
-        _occurrences_of_internal(ref arr, item, index + 1, count + 1)
-    } else {
-        _occurrences_of_internal(ref arr, item, index + 1, count)
-    }
 }

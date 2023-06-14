@@ -19,12 +19,21 @@ mod AllowlistGovernancePowerStrategy {
         }
     }
 
+    /// Returns the governance power of a user.
+    /// * `timestamp` - The timestamp at which to get the governance power.
+    /// * `user_address` - The address of the user.
+    /// * `params` - The params, containing the merkle root.
+    /// * `user_params` - The user params, containing the user address, power, and proof.
     #[external]
     fn get_power(
         timestamp: u64, user_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         AllowlistGovernancePowerStrategy::get_power(timestamp, user_address, params, user_params)
     }
+
+    ///
+    /// Internals
+    ///
 
     /// Returns the governance power of a user.
     /// * `timestamp` - The timestamp at which to get the governance power.

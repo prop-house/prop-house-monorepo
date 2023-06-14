@@ -6,6 +6,8 @@ use integer::downcast;
 use traits::Into;
 
 /// Returns the key for `mapping_key` at slot `slot_index`.
+/// * `slot_index` - The slot index.
+/// * `mapping_key` - The mapping key.
 fn get_slot_key(slot_index: felt252, mapping_key: felt252) -> u256 {
     let mut encoded_array = Default::default();
     encoded_array.append(mapping_key.into());

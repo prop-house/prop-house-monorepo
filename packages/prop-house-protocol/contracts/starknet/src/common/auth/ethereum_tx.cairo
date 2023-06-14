@@ -8,7 +8,8 @@ trait IEthereumTxAuthStrategy {
 #[contract]
 mod EthereumTxAuthStrategy {
     use starknet::{ContractAddress, ContractAddressIntoFelt252, call_contract_syscall};
-    use prop_house::common::utils::array::{compute_hash_on_elements, ArrayTraitExt};
+    use prop_house::common::utils::hash::compute_hash_on_elements;
+    use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::serde::SpanSerde;
     use super::IEthereumTxAuthStrategy;
     use array::{ArrayTrait, SpanTrait};
@@ -28,13 +29,13 @@ mod EthereumTxAuthStrategy {
             input.append_all(cdata);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(*cdata.at(0), compute_hash_on_elements(@input));
+            _consume_commit(*cdata.at(0), compute_hash_on_elements(input.span()));
 
             // Execute the function call with the supplied calldata
             starknet::call_contract_syscall(
                 address: target, entry_point_selector: selector, calldata: cdata, 
             )
-                .unwrap_syscall();
+            .unwrap_syscall();
         }
     }
 
@@ -43,11 +44,19 @@ mod EthereumTxAuthStrategy {
         initializer(commit_address);
     }
 
+    /// Authenticates a function call using a commit from Ethereum.
+    /// * `target` - The address of the contract to call.
+    /// * `selector` - The selector of the function to call.
+    /// * `cdata` - The calldata to pass to the function.
     #[external]
     fn authenticate(target: ContractAddress, selector: felt252, cdata: Span<felt252>) {
         EthereumTxAuthStrategy::authenticate(target, selector, cdata);
     }
 
+    /// Commits a hash from Ethereum to be consumed at a later time.
+    /// * `from_address` - The address from which the L1 message was sent.
+    /// * `sender` - The sender of the commit on L1.
+    /// * `hash` - The commit hash.
     #[l1_handler]
     fn commit(from_address: felt252, sender: felt252, hash: felt252) {
         _only_commit_address(from_address);
@@ -66,6 +75,9 @@ mod EthereumTxAuthStrategy {
         _commit_address::write(commit_address_);
     }
 
+    /// Consumes a commit from Ethereum.
+    /// * `sender_` - The sender of the commit on L1.
+    /// * `hash_` - The commit hash.
     fn _consume_commit(sender_: felt252, hash_: felt252) {
         let stored_address = _commits::read(hash_);
 
@@ -79,6 +91,8 @@ mod EthereumTxAuthStrategy {
         _commits::write(hash_, 0);
     }
 
+    /// Checks that `from_address_` is the commit address.
+    /// * `from_address_` - The address from which the L1 message was sent.
     fn _only_commit_address(from_address_: felt252) {
         let commit_address = _commit_address::read();
         assert(from_address_ == commit_address.into(), 'EthereumTx: Not commit address');

@@ -26,6 +26,7 @@ mod EthereumExecutionStrategy {
         initializer(round_factory);
     }
 
+    /// Sends a message call to the origin round.
     #[external]
     fn execute(params: Span<felt252>) {
         EthereumExecutionStrategy::execute(params);
@@ -35,10 +36,13 @@ mod EthereumExecutionStrategy {
     /// Internals
     ///
 
+    /// Initializes the contract by setting the round factory address.
     fn initializer(round_factory_: ContractAddress) {
         _round_factory::write(round_factory_);
     }
 
+    /// Returns the origin round address for the calling round.
+    /// Throws if the caller is not a valid round.
     fn _origin_round_for_caller() -> felt252 {
         let round_factory = _round_factory::read();
         let caller = get_caller_address();
