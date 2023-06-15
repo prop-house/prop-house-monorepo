@@ -8,6 +8,7 @@ import { IPropHouse } from '../../interfaces/IPropHouse.sol';
 import { IStarknetCore } from '../../interfaces/IStarknetCore.sol';
 import { IMessenger } from '../../interfaces/IMessenger.sol';
 import { Uint256 } from '../../lib/utils/Uint256.sol';
+import { Selector } from '../../Constants.sol';
 
 abstract contract Round is IRound, Clone {
     using { Uint256.toUint256 } for address;
@@ -87,13 +88,19 @@ abstract contract Round is IRound, Clone {
         _;
     }
 
-    // /// @notice Checks if the `user` at a given `position` is a winner in the round using a Merkle proof
-    // /// @param user The Ethereum address of the user to check
-    // /// @param proposalId The ID of the proposal to check
-    // /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
-    // function isWinner(address user, uint256 proposalId, bytes32[] calldata proof) external view returns (bool) {
-    //     return MerkleProof.verify(proof, winnerMerkleRoot, keccak256(abi.encode(user, proposalId)));
-    // }
+    /// @notice Route a call to the round contract on Starknet
+    /// @param payload The payload to send to the round contract on Starknet
+    function _callStarknetRound(uint256[] memory payload) internal {
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.ROUTE_CALL_TO_ROUND, payload);
+    }
+
+    /// @notice Route a round cancellation to the round contract on Starknet
+    function _cancelRound() internal {
+        uint256[] memory payload = new uint256[](3);
+        payload[1] = Selector.CANCEL_ROUND;
+
+        _callStarknetRound(payload);
+    }
 
     /// @notice Add strategies and parameters to the payload
     /// @param payload The payload to add to

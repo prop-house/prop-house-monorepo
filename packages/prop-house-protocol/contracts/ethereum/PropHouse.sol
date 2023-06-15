@@ -3,7 +3,6 @@ pragma solidity >=0.8.17;
 
 import { IManager } from './interfaces/IManager.sol';
 import { AssetController } from './lib/utils/AssetController.sol';
-import { PROP_HOUSE_NAME, PROP_HOUSE_SYMBOL, PROP_HOUSE_URI } from './Constants.sol';
 import { IReceiptIssuer } from './interfaces/IReceiptIssuer.sol';
 import { AssetHelper } from './lib/utils/AssetHelper.sol';
 import { AssetType, Asset } from './lib/types/Common.sol';
@@ -13,6 +12,7 @@ import { Uint256 } from './lib/utils/Uint256.sol';
 import { IHouse } from './interfaces/IHouse.sol';
 import { IRound } from './interfaces/IRound.sol';
 import { ERC721 } from './lib/token/ERC721.sol';
+import { PHMetadata } from './Constants.sol';
 
 /// @notice The entrypoint for house and round creation
 contract PropHouse is IPropHouse, ERC721, AssetController {
@@ -24,10 +24,10 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     IManager public immutable manager;
 
     /// @param _manager The Prop House Manager contract address
-    constructor(address _manager) ERC721(PROP_HOUSE_NAME, PROP_HOUSE_SYMBOL) {
+    constructor(address _manager) ERC721(PHMetadata.NAME, PHMetadata.SYMBOL) {
         manager = IManager(_manager);
 
-        _setContractURI(PROP_HOUSE_URI);
+        _setContractURI(PHMetadata.URI);
     }
 
     /// @notice Deposit an asset to the provided round and return any remaining

@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 import { AssetRound } from './base/AssetRound.sol';
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { IInfiniteRound } from '../interfaces/IInfiniteRound.sol';
-import { REGISTER_ROUND_SELECTOR, INFINITE_ROUND_TYPE, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
+import { Selector, RoundType, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
 import { AssetController } from '../lib/utils/AssetController.sol';
 import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
@@ -51,54 +51,33 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         uint256 _roundFactory,
         uint256 _executionRelayer,
         address _renderer
-    ) AssetRound(INFINITE_ROUND_TYPE, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
+    ) AssetRound(RoundType.INFINITE, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
 
-    /// @notice If the contract implements an interface
-    /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view override(AssetRound, IERC165) returns (bool) {
-        return AssetRound.supportsInterface(interfaceId);
-    }
-
-    // /// @notice Checks if `proposalId` was submitted by `user` and is a winner in the round using a Merkle proof
-    // /// @param user The Ethereum address of the user to check
-    // /// @param proposalId The ID of the proposal submitted by the user
-    // /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
-    // function isWinner(address user, uint256 proposalId, bytes32[] calldata proof) external view returns (bool) {
-    //     return MerkleProof.verify(proof, winnerMerkleRoot, keccak256(abi.encode(user, proposalId))); // TODO: Allow additional data to be passed?
-    // }
-
-    /// @notice Initialize the round by optionally defining the
-    /// rounds configuration and registering it on L2.
+    /// @notice Initialize the round by defining the round's configuration
+    /// and registering it on L2.
     /// @dev This function is only callable by the prop house contract
     function initialize(bytes calldata data) external payable onlyPropHouse {
-        if (data.length != 0) {
-            return _register(abi.decode(data, (RoundConfig)));
-        }
-        if (msg.value != 0) {
-            revert EXCESS_ETH_PROVIDED();
-        }
-    }
-
-    /// @notice Define the configuration and register the round on L2.
-    /// @param config The round configuration
-    /// @dev This function is only callable by the round manager
-    function register(RoundConfig calldata config) external payable onlyRoundManager {
-        _register(config);
+        _register(abi.decode(data, (RoundConfig)));
     }
 
     /// @notice Cancel the infinite round
     /// @dev This function is only callable by the round manager
     function cancel() external onlyRoundManager {
-        if (state != RoundState.AwaitingRegistration && state != RoundState.Registered) {
+        if (state != RoundState.Active) {
             revert CANCELLATION_NOT_AVAILABLE();
         }
         state = RoundState.Cancelled;
 
-        // TODO: Cancel the round on L2 using a state proof
+        // Notify Starknet of the cancellation
+        _cancelRound();
 
         emit RoundCancelled();
     }
 
+    /// @notice Update the winner count and merkle root
+    /// @param newWinnerCount The new winner count
+    /// @param merkleRootLow The low 128 bits of the new merkle root
+    /// @param merkleRootHigh The high 128 bits of the new merkle root
     function updateWinners(uint64 newWinnerCount, uint256 merkleRootLow, uint256 merkleRootHigh) external {
         if (newWinnerCount <= currentWinnerCount) {
             revert WINNERS_ALREADY_PROCESSED();
@@ -119,19 +98,28 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         emit WinnersUpdated(newWinnerCount);
     }
 
-    /// @notice Finalize a round by unlocking all remaining funds.
-    /// @dev This function is only callable by the round manager
-    function finalizeRound() external onlyRoundManager {
-        if (state != RoundState.Registered) {
+    /// @notice Finalize the round by consuming the final winner count from
+    /// Starknet and validating that all winners have been processed.
+    /// @param winnerCount The final number of winners in the round
+    function finalizeRound(uint256 winnerCount) external {
+        if (state != RoundState.Active) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
+        if (winnerCount != currentWinnerCount) {
+            revert MUST_PROCESS_REMAINING_WINNERS();
+        }
+
+        uint256[] memory payload = new uint256[](1);
+        payload[0] = winnerCount;
+
+        // This function will revert if the message does not exist
+        starknet.consumeMessageFromL2(executionRelayer, payload);
 
         roundFinalizedAt = uint40(block.timestamp);
         state = RoundState.Finalized;
 
         emit RoundFinalized();
     }
-
 
     /// @notice Claim many round award assets to a custom recipient
     /// @param recipient The asset recipient
@@ -160,9 +148,9 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param assets The assets to reclaim
     function reclaimTo(address recipient, Asset[] calldata assets) public {
         // prettier-ignore
-        // Reclamation is only available when the round is awaiting registration or
-        // cancelled OR the round has been finalized and is in the reclamation period
-        if (state == RoundState.Registered || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
+        // Reclamation is only available when the round has been cancelled OR
+        // the round has been finalized and is in the reclamation period
+        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);
@@ -177,7 +165,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     // prettier-ignore
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
-    function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
+    function getRegistrationPayload(RoundConfig memory config) public view returns (uint256[] memory payload) {
         uint256 vsCount = config.votingStrategies.length;
         uint256 vsParamFlatCount = config.votingStrategyParamsFlat.length;
         uint256 psCount = config.proposingStrategies.length;
@@ -212,19 +200,16 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// Duplicate voting strategies are handled on L2.
     /// @param config The round configuration
     function _register(RoundConfig memory config) internal {
-        if (state != RoundState.AwaitingRegistration) {
-            revert ROUND_ALREADY_REGISTERED();
-        }
-        _assertConfigValid(config);
+        _validate(config);
 
         // Write round metadata to storage. This will be consumed by the token URI later.
-        startTimestamp = _min(config.startTimestamp, uint40(block.timestamp));
+        startTimestamp = _max(config.startTimestamp, uint40(block.timestamp));
         votePeriodDuration = config.votePeriodDuration;
 
-        state = RoundState.Registered;
+        state = RoundState.Active;
 
         // Register the round on L2
-        messenger.sendMessageToL2{ value: msg.value }(roundFactory, REGISTER_ROUND_SELECTOR, getL2Payload(config));
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
 
         emit RoundRegistered(
             config.awards,
@@ -242,7 +227,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
 
     /// @notice Revert if the round configuration is invalid
     /// @param config The round configuration
-    function _assertConfigValid(RoundConfig memory config) internal view {
+    function _validate(RoundConfig memory config) internal pure {
         if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
             revert VOTE_PERIOD_DURATION_TOO_SHORT();
         }
@@ -260,10 +245,10 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         }
     }
 
-    /// Returns the smallest of two numbers.
+    /// Returns the largest of two numbers.
     /// @param a The first number
     /// @param b The second number
-    function _min(uint40 a, uint40 b) internal pure returns (uint40) {
-        return a < b ? a : b;
+    function _max(uint40 a, uint40 b) internal pure returns (uint40) {
+        return a > b ? a : b;
     }
 }

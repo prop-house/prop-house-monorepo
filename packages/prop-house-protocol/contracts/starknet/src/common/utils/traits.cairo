@@ -2,6 +2,11 @@ use starknet::ContractAddress;
 use prop_house::common::utils::serde::SpanSerde;
 
 #[abi]
+trait IRoundFactory {
+    fn origin_chain_id() -> u64;
+}
+
+#[abi]
 trait IGovernancePowerStrategy {
     fn get_power(
         timestamp: u64, user_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 

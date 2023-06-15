@@ -1,6 +1,6 @@
 #[contract]
 mod TimedRound {
-    use starknet::{EthAddress, get_block_timestamp};
+    use starknet::{EthAddress, get_block_timestamp, get_caller_address};
     use prop_house::rounds::timed::config::{
         ITimedRound, RoundState, RoundConfig, RoundParams, Proposal, ProposalWithId, ProposalVote
     };
@@ -8,6 +8,7 @@ mod TimedRound {
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
+        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
@@ -183,7 +184,7 @@ mod TimedRound {
             let merkle_root = merkle_tree.compute_merkle_root(leaves);
 
             let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
-                Round::chain_id(), DependencyKey::EXECUTION_STRATEGY
+                Round::origin_chain_id(), DependencyKey::EXECUTION_STRATEGY
             );
             if execution_strategy_address.is_non_zero() {
                 let execution_strategy = IExecutionStrategyDispatcher {
@@ -312,7 +313,10 @@ mod TimedRound {
                 strategies: voting_strategies
             },
         );
-        Round::initializer(1, strategy_groups.span()); // TODO: How to get chain ID?
+        let factory = IRoundFactoryDispatcher {
+            contract_address:  get_caller_address(),
+        };
+        Round::initializer(factory.origin_chain_id(), strategy_groups.span());
     }
 
     /// Decode the round parameters from an array of felt252s.
@@ -347,10 +351,7 @@ mod TimedRound {
 
     /// Asserts that caller is a valid auth strategy and that the round is active.
     fn _assert_caller_valid_and_round_active() {
-        // Verify that the caller is a valid auth strategy
         Round::assert_caller_is_valid_auth_strategy();
-
-        // Verify that the round is active
         _assert_round_active();
     }
 

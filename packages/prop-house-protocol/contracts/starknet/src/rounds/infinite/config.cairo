@@ -32,7 +32,8 @@ trait IInfiniteRound {
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     );
-    fn report_results(); // TODO: Maybe rename to `report_winner_results`?
+    fn process_winners();
+    fn finalize_round();
 }
 
 struct RoundParams {

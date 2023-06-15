@@ -48,7 +48,7 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
     // prettier-ignore
     /// @notice If the contract implements an interface
     /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view override(ReceiptIssuer, TokenHolder, ERC1155, IERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ReceiptIssuer, TokenHolder, ERC1155, IERC165) returns (bool) {
         return ReceiptIssuer.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 

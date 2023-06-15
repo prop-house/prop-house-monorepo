@@ -3,17 +3,11 @@ pragma solidity >=0.8.17;
 
 import { AssetRound } from './base/AssetRound.sol';
 import { ITimedRound } from '../interfaces/ITimedRound.sol';
-import { REGISTER_ROUND_SELECTOR, TIMED_ROUND_TYPE } from '../Constants.sol';
 import { AssetHelper } from '../lib/utils/AssetHelper.sol';
+import { Selector, RoundType } from '../Constants.sol';
 import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { Asset } from '../lib/types/Common.sol';
-
-// TODO: Implement
-enum ExecutionType {
-    AssetClaim,
-    OutOfProtocol
-}
 
 contract TimedRound is ITimedRound, AssetRound {
     using { Uint256.mask250 } for bytes32;
@@ -23,9 +17,6 @@ contract TimedRound is ITimedRound, AssetRound {
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
     uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
-
-    /// @notice The amount of time before the round manager can rescue assets
-    uint256 public constant RESCUE_ASSETS_AFTER = 26 weeks; // TODO: Worth keeping?
 
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 25;
@@ -62,61 +53,34 @@ contract TimedRound is ITimedRound, AssetRound {
         uint256 _roundFactory,
         uint256 _executionRelayer,
         address _renderer
-    ) AssetRound(TIMED_ROUND_TYPE, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
+    ) AssetRound(RoundType.TIMED, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
 
-    /// @notice If the contract implements an interface
-    /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view override(AssetRound, IERC165) returns (bool) {
-        return AssetRound.supportsInterface(interfaceId);
-    }
-
-    // TODO: Move to base
-
-    // /// @notice Checks if the `user` at a given `position` is a winner in the round using a Merkle proof
-    // /// @param user The Ethereum address of the user to check
-    // /// @param position The rank or order of a winner in the round
-    // /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
-    // function isWinner(address user, uint256 position, bytes32[] calldata proof) external view returns (bool) {
-    //     return MerkleProof.verify(proof, winnerMerkleRoot, keccak256(abi.encode(user, position)));
-    // }
-
-    /// @notice Initialize the round by optionally defining the
-    /// rounds configuration and registering it on L2.
+    /// @notice Initialize the round by defining the round's configuration
+    /// and registering it on L2.
     /// @dev This function is only callable by the prop house contract
     function initialize(bytes calldata data) external payable onlyPropHouse {
-        if (data.length != 0) {
-            return _register(abi.decode(data, (RoundConfig)));
-        }
-        if (msg.value != 0) {
-            revert EXCESS_ETH_PROVIDED();
-        }
-    }
-
-    /// @notice Define the configuration and register the round on L2.
-    /// @param config The round configuration
-    /// @dev This function is only callable by the round manager
-    function register(RoundConfig calldata config) external payable onlyRoundManager {
-        _register(config);
+        _register(abi.decode(data, (RoundConfig)));
     }
 
     /// @notice Cancel the timed round
     /// @dev This function is only callable by the round manager
-    function cancel() external onlyRoundManager {
-        if (state != RoundState.AwaitingRegistration && state != RoundState.Registered) {
+    function cancel() external payable onlyRoundManager {
+        if (state != RoundState.Active) {
             revert CANCELLATION_NOT_AVAILABLE();
         }
         state = RoundState.Cancelled;
 
-        // TODO: Cancel the round on L2 using a state proof
+        // Notify Starknet of the cancellation
+        _cancelRound();
 
         emit RoundCancelled();
     }
 
-    /// @notice Finalize a round by consuming the merkle root from Starknet.
+    /// @notice Finalize the round by consuming the merkle root from Starknet.
     /// @param merkleRootLow The lower half of the split merkle root
     /// @param merkleRootHigh The higher half of the split merkle root
     function finalizeRound(uint256 merkleRootLow, uint256 merkleRootHigh) external {
-        if (state != RoundState.Registered) {
+        if (state != RoundState.Active) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
 
@@ -162,9 +126,9 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @param assets The assets to reclaim
     function reclaimTo(address recipient, Asset[] calldata assets) public {
         // prettier-ignore
-        // Reclamation is only available when the round is awaiting registration or
-        // cancelled OR the round has been finalized and is in the reclamation period
-        if (state == RoundState.Registered || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
+        // Reclamation is only available when the round has been cancelled OR
+        // the round has been finalized and is in the reclamation period
+        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);
@@ -176,32 +140,10 @@ contract TimedRound is ITimedRound, AssetRound {
         _reclaimTo(msg.sender, assets);
     }
 
-    // TODO: Worth keeping?
-    // /// @notice Rescue assets that were accidentally deposited directly to this contract
-    // /// @param recipient The recipient of the rescued assets
-    // /// @param assets The assets to rescue
-    // function rescueTo(address recipient, Asset[] calldata assets) external onlyRoundManager {
-    //     // prettier-ignore
-    //     // Rescue is only available when the round is awaiting registration or
-    //     // cancelled OR the round has been finalized and is in the reclamation period
-    //     uint256 votingPeriodEndTimestamp = proposalPeriodStartTimestamp + proposalPeriodDuration + votePeriodDuration;
-    //     if (state != RoundState.AwaitingRegistration && block.timestamp - votingPeriodEndTimestamp < RESCUE_ASSETS_AFTER) {
-    //         revert RESCUE_NOT_AVAILABLE();
-    //     }
-
-    //     uint256 assetCount = assets.length;
-    //     for (uint256 i = 0; i < assetCount; ) {
-    //         _transfer(assets[i], address(this), recipient);
-    //         unchecked {
-    //             ++i;
-    //         }
-    //     }
-    // }
-
     // prettier-ignore
     /// @notice Generate the payload required to register the round on L2
     /// @param config The round configuration
-    function getL2Payload(RoundConfig memory config) public view returns (uint256[] memory payload) {
+    function getRegistrationPayload(RoundConfig memory config) public view returns (uint256[] memory payload) {
         uint256 vsCount = config.votingStrategies.length;
         uint256 vsParamFlatCount = config.votingStrategyParamsFlat.length;
         uint256 psCount = config.proposingStrategies.length;
@@ -236,10 +178,7 @@ contract TimedRound is ITimedRound, AssetRound {
     /// Duplicate voting strategies are handled on L2.
     /// @param config The round configuration
     function _register(RoundConfig memory config) internal {
-        if (state != RoundState.AwaitingRegistration) {
-            revert ROUND_ALREADY_REGISTERED();
-        }
-        _assertConfigValid(config);
+        _validate(config);
 
         // Write round metadata to storage. This will be consumed by the token URI later.
         proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
@@ -247,10 +186,10 @@ contract TimedRound is ITimedRound, AssetRound {
         votePeriodDuration = config.votePeriodDuration;
         winnerCount = config.winnerCount;
 
-        state = RoundState.Registered;
+        state = RoundState.Active;
 
         // Register the round on L2
-        messenger.sendMessageToL2{ value: msg.value }(roundFactory, REGISTER_ROUND_SELECTOR, getL2Payload(config));
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
 
         emit RoundRegistered(
             config.awards,
@@ -269,7 +208,7 @@ contract TimedRound is ITimedRound, AssetRound {
     // prettier-ignore
     /// @notice Revert if the round configuration is invalid
     /// @param config The round configuration
-    function _assertConfigValid(RoundConfig memory config) internal view {
+    function _validate(RoundConfig memory config) internal view {
         if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
             revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
         }

@@ -30,7 +30,7 @@ trait ITimedRound {
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     );
-    fn finalize_round(awards: Array<Asset>); // TODO: Maybe rename to `report_round_results`
+    fn finalize_round(awards: Array<Asset>);
 }
 
 struct RoundParams {

@@ -42,19 +42,20 @@ mod Round {
     use zeroable::Zeroable;
 
     struct Storage {
-        _chain_id: u64,
+        _origin_chain_id: u64,
         _is_strategy_registered: LegacyMap<(u8, felt252), bool>,
     }
 
-    /// Initializes the contract by setting the chain ID and registering the provided strategy groups.
-    fn initializer(chain_id_: u64, mut strategy_groups_: Span<StrategyGroup>) {
-        _chain_id::write(chain_id_);
+    /// Initializes the contract by setting the origin chain ID
+    /// and registering the provided strategy groups.
+    fn initializer(origin_chain_id_: u64, mut strategy_groups_: Span<StrategyGroup>) {
+        _origin_chain_id::write(origin_chain_id_);
         _register_strategy_groups(strategy_groups_);
     }
 
     /// Returns the origin chain ID.
-    fn chain_id() -> u64 {
-        _chain_id::read()
+    fn origin_chain_id() -> u64 {
+        _origin_chain_id::read()
     }
 
     /// Parse strategies from a flattened array of parameters.
@@ -93,7 +94,7 @@ mod Round {
     /// Asserts that the caller is a valid auth strategy.
     fn assert_caller_is_valid_auth_strategy() {
         let auth_strategies = get_round_dependency_registry().get_caller_dependencies_at_key(
-            chain_id(), DependencyKey::AUTH_STRATEGIES,
+            origin_chain_id(), DependencyKey::AUTH_STRATEGIES,
         );
         assert(auth_strategies.contains(get_caller_address()), 'Invalid auth strategy');
     }

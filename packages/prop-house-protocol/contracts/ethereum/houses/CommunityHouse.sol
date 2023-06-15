@@ -4,11 +4,11 @@ pragma solidity >=0.8.17;
 import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { ICreatorPassIssuer } from '../interfaces/ICreatorPassIssuer.sol';
 import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
-import { COMMUNITY_HOUSE_TYPE, COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL } from '../Constants.sol';
 import { LibClone } from 'solady/src/utils/LibClone.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { IHouse } from '../interfaces/IHouse.sol';
 import { ERC721 } from '../lib/token/ERC721.sol';
+import { CHMetadata } from '../Constants.sol';
 
 /// @notice The community house is designed for teams who want to create rounds under a single organization
 contract CommunityHouse is IHouse, ERC721 {
@@ -50,8 +50,8 @@ contract CommunityHouse is IHouse, ERC721 {
         address _propHouse,
         address _renderer,
         address _creatorPassIssuer
-    ) ERC721(COMMUNITY_HOUSE_NAME, COMMUNITY_HOUSE_SYMBOL) {
-        kind = COMMUNITY_HOUSE_TYPE;
+    ) ERC721(CHMetadata.NAME, CHMetadata.SYMBOL) {
+        kind = CHMetadata.TYPE;
 
         propHouse = IPropHouse(_propHouse);
         renderer = ITokenMetadataRenderer(_renderer);

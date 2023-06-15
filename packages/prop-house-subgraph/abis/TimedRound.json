@@ -825,7 +825,7 @@
         "type": "tuple"
       }
     ],
-    "name": "getL2Payload",
+    "name": "getRegistrationPayload",
     "outputs": [
       {
         "internalType": "uint256[]",

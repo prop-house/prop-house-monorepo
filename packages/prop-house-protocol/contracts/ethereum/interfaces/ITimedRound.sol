@@ -1,25 +1,21 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { IRound } from './IRound.sol';
 import { Asset } from '../lib/types/Common.sol';
 
 /// @notice Interface implemented by the timed round
-interface ITimedRound is IRound {
+interface ITimedRound {
     /// @notice All possible round states
     enum RoundState {
-        AwaitingRegistration,
-        Registered,
-        Finalized,
-        Cancelled
+        Active,
+        Cancelled,
+        Finalized
     }
 
     /// @notice The timed round configuration
     struct RoundConfig {
         Asset[] awards;
         uint248 proposalThreshold;
-
-        // TODO: Should these be 248?
         uint256[] proposingStrategies;
         uint256[] proposingStrategyParamsFlat;
         uint256[] votingStrategies;
@@ -29,12 +25,6 @@ interface ITimedRound is IRound {
         uint40 votePeriodDuration;
         uint16 winnerCount;
     }
-
-    /// @notice Thrown when an award has already been claimed
-    error ALREADY_CLAIMED();
-
-    /// @notice Thrown when the provided merkle proof is invalid
-    error INVALID_MERKLE_PROOF();
 
     /// @notice Thrown when cancellation is attempted and the round is not active
     error CANCELLATION_NOT_AVAILABLE();
@@ -65,12 +55,6 @@ interface ITimedRound is IRound {
 
     /// @notice Thrown when no voting strategies are provided
     error NO_VOTING_STRATEGIES_PROVIDED();
-
-    /// @notice Thrown when attempting to register a round that has already been registered on L2
-    error ROUND_ALREADY_REGISTERED();
-
-    /// @notice Thrown when the operation would leave an excess ETH balance in the contract
-    error EXCESS_ETH_PROVIDED();
 
     /// @notice Emitted when the round is registered on L2
     /// @param awards The awards offered to round winners
@@ -119,12 +103,4 @@ interface ITimedRound is IRound {
 
     /// @notice The number of possible winners. `0` when in pending state.
     function winnerCount() external view returns (uint16);
-
-    // TODO: Ultimately re-add
-
-    /// @notice Checks if the `user` at a given `position` is a winner in the round using a Merkle proof
-    /// @param user The Ethereum address of the user to check
-    /// @param position The rank or order of a winner in the round
-    /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
-    // function isWinner(address user, uint256 position, bytes32[] calldata proof) external view returns (bool);
 }

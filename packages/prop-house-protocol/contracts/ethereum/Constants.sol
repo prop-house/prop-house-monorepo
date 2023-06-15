@@ -8,29 +8,46 @@ address constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 uint256 constant MAX_250_BIT_UNSIGNED = 0x03FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 // prettier-ignore
-// print(get_selector_from_name("register_round"))
-uint256 constant REGISTER_ROUND_SELECTOR = 0x26490f901ea8ad5a245d987479919f1d20fbb0c164367e33ef09a9ea4ba8d04;
+library Selector {
+  // print(get_selector_from_name("register_round"))
+  uint256 constant REGISTER_ROUND = 0x26490f901ea8ad5a245d987479919f1d20fbb0c164367e33ef09a9ea4ba8d04;
 
-// The Prop House entrypoint NFT name
-string constant PROP_HOUSE_NAME = 'Prop House';
+  // print(get_selector_from_name("cancel_round"))
+  uint256 constant CANCEL_ROUND = 0x8af3ea41808c9515720e56add54a2d8008458a8bc5e347b791c6d75cd0e407;
 
-// The Prop House entrypoint NFT symbol
-string constant PROP_HOUSE_SYMBOL = 'PROP';
+  // print(get_selector_from_name("finalize_round"))
+  uint256 constant FINALIZE_ROUND = 0x2445872c1b7a1219e1e75f2a60719ce0a68a8442fee1bdbee6c3c649340e6f3;
 
-// The Prop House entrypoint NFT contract URI
-string constant PROP_HOUSE_URI = 'ipfs://bafkreifzufef7c2von6dxlcx2en4fwtfpha5qreurdhqyar7vurjmrqi3a';
+  // print(get_selector_from_name("round_call_to_round"))
+  uint256 constant ROUTE_CALL_TO_ROUND = 0x24931ca109ce0ffa87913d91f12d6ac327550c015a573c7b17a187c29ed8c1a;
+}
 
-// The Community House type
-bytes32 constant COMMUNITY_HOUSE_TYPE = 'COMMUNITY';
+library PHMetadata {
+  // The Prop House NFT name
+  string constant NAME = 'Prop House';
 
-// The Community House NFT name
-string constant COMMUNITY_HOUSE_NAME = 'Community House';
+  // The Prop House entrypoint NFT symbol
+  string constant SYMBOL = 'PROP';
 
-// The Community House NFT symbol
-string constant COMMUNITY_HOUSE_SYMBOL = 'COMM';
+  // The Prop House entrypoint NFT contract URI
+  string constant URI = 'ipfs://bafkreifzufef7c2von6dxlcx2en4fwtfpha5qreurdhqyar7vurjmrqi3a';
+}
 
-// The Timed Round type
-bytes32 constant TIMED_ROUND_TYPE = 'TIMED';
+library CHMetadata {
+  // The Community House type
+  bytes32 constant TYPE = 'COMMUNITY';
 
-// The Infinite Round type
-bytes32 constant INFINITE_ROUND_TYPE = 'INFINITE';
+  // The Community House NFT name
+  string constant NAME = 'Community House';
+
+  // The Community House NFT symbol
+  string constant SYMBOL = 'COMM';
+}
+
+library RoundType {
+  // The Timed Round type
+  bytes32 constant TIMED = 'TIMED';
+
+  // The Infinite Round type
+  bytes32 constant INFINITE = 'INFINITE';
+}

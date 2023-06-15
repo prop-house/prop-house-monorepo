@@ -1,6 +1,6 @@
 #[contract]
 mod InfiniteRound {
-    use starknet::{EthAddress, get_block_timestamp};
+    use starknet::{EthAddress, get_block_timestamp, get_caller_address};
     use prop_house::rounds::infinite::config::{
         IInfiniteRound, RoundState, RoundParams, RoundConfig, Proposal, ProposalState,
         ProposalVote, VoteDirection,
@@ -9,6 +9,7 @@ mod InfiniteRound {
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
+        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
@@ -31,7 +32,7 @@ mod InfiniteRound {
         _config: RoundConfig,
         _proposal_count: u32,
         _winner_count: u32,
-        _last_reported_winner_count: u32,
+        _processed_winner_count: u32,
         _winner_merkle_root: u256,
         _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
@@ -60,7 +61,10 @@ mod InfiniteRound {
     fn VoteCast(proposal_id: u32, voter_address: EthAddress, voting_power: u256, direction: VoteDirection) {}
 
     #[event]
-    fn ResultsReported(winner_count: u32, merkle_root: u256) {}
+    fn WinnersProcessed(total_winner_count: u32, merkle_root: u256) {}
+
+    #[event]
+    fn RoundFinalized() {}
 
     impl InfiniteRound of IInfiniteRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
@@ -171,29 +175,40 @@ mod InfiniteRound {
             };
         }
 
-        /// Report new winners to a consuming contract. Revert if there are no new winners.
-        fn report_results() {
-            // Verify that the round is active
+        fn process_winners() {
+            _assert_round_active();
+            _process_winners();
+        }
+
+        fn finalize_round() {
             _assert_round_active();
 
             let winner_count = _winner_count::read();
-            assert(winner_count > 0 & winner_count > _last_reported_winner_count::read(), 'IR: No new winners');
 
-            // Update the last reported winner count
-            _last_reported_winner_count::write(winner_count);
+            // A round must have at least one winner to be finalized. Otherwise, the creator should cancel.
+            assert(winner_count.is_non_zero(), 'IR: Finalization not available');
 
-            let merkle_root = _winner_merkle_root::read();
+            // Process any unprocessed winners
+            let processed_winner_count = _processed_winner_count::read();
+            if winner_count > processed_winner_count {
+                _process_winners();
+            }
+
             let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
-                Round::chain_id(), DependencyKey::EXECUTION_STRATEGY
+                Round::origin_chain_id(), DependencyKey::EXECUTION_STRATEGY
             );
             if execution_strategy_address.is_non_zero() {
                 let execution_strategy = IExecutionStrategyDispatcher {
                     contract_address: execution_strategy_address,
                 };
-                execution_strategy.execute(_build_execution_params(merkle_root));
+                execution_strategy.execute(_build_finalize_round_execution_params(winner_count));
             }
 
-            ResultsReported(winner_count, merkle_root);
+            let mut config = _config::read();
+            config.round_state = RoundState::Finalized(());
+            _config::write(config);
+
+            RoundFinalized();
         }
     }
 
@@ -264,10 +279,16 @@ mod InfiniteRound {
         );
     }
 
-    /// Report all round winners since the last report.
+    /// Process all new round winners by submitting their information to the consuming chain.
     #[external]
-    fn report_results() {
-        InfiniteRound::report_results();
+    fn process_winners() {
+        InfiniteRound::process_winners();
+    }
+
+    /// Finalize the round by processing remaining winners and changing the round state.
+    #[external]
+    fn finalize_round() {
+        InfiniteRound::finalize_round();
     }
 
     ///
@@ -317,7 +338,10 @@ mod InfiniteRound {
                 strategies: voting_strategies
             },
         );
-        Round::initializer(1, strategy_groups.span()); // TODO: How to get chain ID?
+        let factory = IRoundFactoryDispatcher {
+            contract_address:  get_caller_address(),
+        };
+        Round::initializer(factory.origin_chain_id(), strategy_groups.span());
     }
 
     /// Decode the round parameters from an array of felt252s.
@@ -350,10 +374,7 @@ mod InfiniteRound {
 
     /// Asserts that caller is a valid auth strategy and that the round is active.
     fn _assert_caller_valid_and_round_active() {
-        // Verify that the caller is a valid auth strategy
         Round::assert_caller_is_valid_auth_strategy();
-
-        // Verify that the round is active
         _assert_round_active();
     }
 
@@ -494,12 +515,24 @@ mod InfiniteRound {
         ProposalRejected(proposal_id);
     }
 
-    /// Build the execution parameters that will be passed to the execution strategy.
+    /// Build the execution parameters necessary to process winners on an origin chain.
+    /// * `winner_count` - The current winner count.
     /// * `merkle_root` - The merkle root that will be used for asset claims.
-    fn _build_execution_params(merkle_root: u256) -> Span<felt252> {
+    fn _build_process_winners_execution_params(winner_count: u32, merkle_root: u256) -> Span<felt252> {
         let mut execution_params = Default::default();
+        execution_params.append(winner_count.into());
         execution_params.append(merkle_root.low.into());
         execution_params.append(merkle_root.high.into());
+
+        execution_params.span()
+    }
+
+    /// Build the execution parameters necessary to finalize the round on an origin chain.
+    /// * `winner_count` - The current winner count.
+    /// * `merkle_root` - The merkle root that will be used for asset claims.
+    fn _build_finalize_round_execution_params(winner_count: u32) -> Span<felt252> {
+        let mut execution_params = Default::default();
+        execution_params.append(winner_count.into());
 
         execution_params.span()
     }
@@ -550,6 +583,29 @@ mod InfiniteRound {
                 },
             };
         };
+    }
+
+
+    /// Process all new round winners by submitting their information to the consuming chain.
+    /// This function will revert if there are no new winners to process.
+    fn _process_winners() {
+        let winner_count = _winner_count::read();
+        assert(winner_count > 0 & winner_count > _processed_winner_count::read(), 'IR: No new winners');
+
+        // Update the processed winner count
+        _processed_winner_count::write(winner_count);
+
+        let merkle_root = _winner_merkle_root::read();
+        let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
+            Round::origin_chain_id(), DependencyKey::EXECUTION_STRATEGY
+        );
+        if execution_strategy_address.is_non_zero() {
+            let execution_strategy = IExecutionStrategyDispatcher {
+                contract_address: execution_strategy_address,
+            };
+            execution_strategy.execute(_build_process_winners_execution_params(winner_count, merkle_root));
+        }
+        WinnersProcessed(winner_count, merkle_root);
     }
 
     /// Get the state of the given proposal.
