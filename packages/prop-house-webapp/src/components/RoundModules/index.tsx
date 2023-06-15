@@ -72,10 +72,7 @@ const RoundModules: React.FC<{
   }, [account, proposals]);
 
   const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
-    (isInfAuction(auction) &&
-      !isRoundOver &&
-      votingPower === 0 &&
-      infRoundFilter === InfRoundFilterType.Active)) && (
+    (isInfAuction(auction) && !isRoundOver && infRoundFilter === InfRoundFilterType.Active)) && (
     <AcceptingPropsModule auction={auction} community={community} />
   );
 
