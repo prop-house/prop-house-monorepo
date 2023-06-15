@@ -7,12 +7,48 @@ use prop_house::common::utils::constants::{
 use prop_house::common::utils::integer::{
     u250, U256TryIntoU64, U256TryIntoEthAddress, U256TryIntoU16, U256TryIntoU8,
 };
+use prop_house::common::libraries::round::{Asset, UserStrategy};
+use prop_house::common::registry::strategy::Strategy;
 use integer::{
     U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252
 };
 use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
+
+trait ITimedRound {
+    fn get_proposal(proposal_id: u32) -> Proposal;
+    fn propose(
+        proposer_address: EthAddress,
+        metadata_uri: Array<felt252>,
+        used_proposing_strategies: Array<UserStrategy>,
+    );
+    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
+    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
+    fn vote(
+        voter_address: EthAddress,
+        proposal_votes: Array<ProposalVote>,
+        used_voting_strategies: Array<UserStrategy>,
+    );
+    fn finalize_round(awards: Array<Asset>); // TODO: Maybe rename to `report_round_results`
+}
+
+struct RoundParams {
+    award_hash: u250,
+    proposal_period_start_timestamp: u64,
+    proposal_period_duration: u64,
+    vote_period_duration: u64,
+    winner_count: u16,
+    proposal_threshold: u250,
+    proposing_strategies: Span<Strategy>,
+    voting_strategies: Span<Strategy>,
+}
+
+#[derive(Copy, Drop, Serde)]
+struct ProposalVote {
+    proposal_id: u32,
+    voting_power: u256,
+}
 
 #[derive(Copy, Drop, Serde, PartialEq)]
 enum RoundState {

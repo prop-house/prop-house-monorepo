@@ -1,65 +1,10 @@
-use prop_house::common::libraries::round::{Asset, UserStrategy};
-use prop_house::common::registry::strategy::Strategy;
-use prop_house::rounds::infinite::config::Proposal;
-use prop_house::common::utils::integer::u250;
-use starknet::EthAddress;
-use array::ArrayTrait;
-
-// TODO: Need to revert if voting for a proposal in which the asset balance is no longer available.
-
-// selected -> used? Also maybe rename `SelectedStategy` to `GovPoweStrategy` or something? Strategy -> RawStrategy?
-
-trait IInfiniteRound {
-    fn get_proposal(proposal_id: u32) -> Proposal;
-    fn propose(
-        proposer_address: EthAddress,
-        metadata_uri: Array<felt252>,
-        requested_assets: Array<Asset>,
-        used_proposing_strategies: Array<UserStrategy>,
-    );
-    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>);
-    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
-    fn vote(
-        voter_address: EthAddress,
-        proposal_votes: Array<ProposalVote>,
-        used_voting_strategies: Array<UserStrategy>,
-    );
-    fn report_results();
-    // fn finalize_round(awards: Array<Asset>);
-}
-
-struct RoundParams {
-    start_timestamp: u64,
-    vote_period: u64,
-    quorum_for: u250,
-    quorum_against: u250,
-    proposal_threshold: u250,
-    proposing_strategies: Span<Strategy>,
-    voting_strategies: Span<Strategy>,
-}
-
-#[derive(Copy, Drop, Serde)]
-enum VoteDirection {
-    For: (),
-    Against: (),
-}
-
-#[derive(Copy, Drop, Serde)]
-struct ProposalVote {
-    proposal_id: u32,
-    asset_metadata_hash: felt252,
-    voting_power: u256,
-    direction: VoteDirection
-}
-
 #[contract]
 mod InfiniteRound {
-    use starknet::{
-        ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
-        Felt252TryIntoContractAddress
+    use starknet::{EthAddress, get_block_timestamp};
+    use prop_house::rounds::infinite::config::{
+        IInfiniteRound, RoundState, RoundParams, RoundConfig, Proposal, ProposalState,
+        ProposalVote, VoteDirection,
     };
-    use super::{IInfiniteRound, ProposalVote, RoundParams, VoteDirection};
-    use prop_house::rounds::infinite::config::{RoundState, RoundConfig, Proposal, ProposalState, ProposalWithId};
     use prop_house::rounds::infinite::constants::{MAX_WINNER_TREE_DEPTH, MAX_REQUESTED_ASSET_COUNT};
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
@@ -67,24 +12,29 @@ mod InfiniteRound {
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
-    use prop_house::common::utils::array::{assert_no_duplicates_u256, into_u256_arr};
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
-    use prop_house::common::utils::constants::{MASK_192, MASK_250, DependencyKey, StrategyType};
+    use prop_house::common::utils::constants::{DependencyKey, StrategyType};
     use prop_house::common::utils::merkle::IncrementalMerkleTreeTrait;
+    use prop_house::common::utils::array::assert_no_duplicates_u256;
     use prop_house::common::utils::integer::Felt252TryIntoU250;
+    use prop_house::common::utils::storage::SpanStorageAccess;
     use prop_house::common::utils::serde::SpanSerde;
-    use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
+    use nullable::{match_nullable, FromNullableResult};
     use array::{ArrayTrait, SpanTrait};
+    use integer::u256_from_felt252;
     use traits::{TryInto, Into};
+    use dict::Felt252DictTrait;
     use option::OptionTrait;
     use zeroable::Zeroable;
+    use box::BoxTrait;
 
     struct Storage {
         _config: RoundConfig,
-        _winner_count: u32,
-        _winner_merkle_root: u256,
-        _last_reported_winner_count: u32,
         _proposal_count: u32,
+        _winner_count: u32,
+        _last_reported_winner_count: u32,
+        _winner_merkle_root: u256,
+        _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
         _spent_voting_power: LegacyMap<(EthAddress, u32), u256>,
         _asset_balances: LegacyMap<u256, u256>,
@@ -113,9 +63,6 @@ mod InfiniteRound {
     #[event]
     fn ResultsReported(winner_count: u32, merkle_root: u256) {}
 
-    // #[event]
-    // fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
-
     impl InfiniteRound of IInfiniteRound {
         fn get_proposal(proposal_id: u32) -> Proposal {
             let proposal = _proposals::read(proposal_id);
@@ -130,20 +77,8 @@ mod InfiniteRound {
             requested_assets: Array<Asset>,
             used_proposing_strategies: Array<UserStrategy>,
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
-            // Verify that the asset request is reasonably sized
-            assert(requested_assets.len() < MAX_REQUESTED_ASSET_COUNT, 'IR: Too many assets requested');
-
-            // Verify there are no duplicate assets
-            _assert_no_duplicate_assets(requested_assets.span()); // TODO: Only convert to span once
-
-            // Verify that the round has sufficient balances of the requested assets
-            _assert_sufficient_asset_balances(requested_assets.span());
+            _assert_caller_valid_and_round_active();
+            _assert_asset_request_valid(requested_assets.span());
 
             let config = _config::read();
 
@@ -181,58 +116,27 @@ mod InfiniteRound {
         fn edit_proposal(
             proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>,
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
-            // Verify that the asset request is reasonably sized
-            assert(requested_assets.len() < MAX_REQUESTED_ASSET_COUNT, 'IR: Too many assets requested');
-
-            // Verify there are no duplicate assets
-            _assert_no_duplicate_assets(requested_assets.span()); // TODO: Only convert to span once
-
-            // Verify that the round has sufficient balances of the requested assets
-            _assert_sufficient_asset_balances(requested_assets.span());
-
             let mut proposal = _proposals::read(proposal_id);
-            let requested_assets_hash = Round::compute_asset_hash(requested_assets.span());
 
-            // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'IR: Proposal does not exist');
+            _assert_caller_valid_and_round_active();
+            _assert_can_modify_proposal(proposer_address, proposal);
+            _assert_asset_request_valid(requested_assets.span());
 
-            // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'IR: Caller is not proposer');
-
-            // Ensure that the proposal is active
-            assert(_get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active');        
-
-            // Increment the proposal version, update the requested assets, and emit the metadata URI
+            // Increment the proposal version, update the requested assets, clear 'for' votes,
+            // and emit the metadata URI.
             proposal.version += 1;
-            proposal.requested_assets_hash = requested_assets_hash;
+            proposal.voting_power_for = 0;
+            proposal.requested_assets_hash = Round::compute_asset_hash(requested_assets.span());
             _proposals::write(proposal_id, proposal);
 
             ProposalEdited(proposal_id, metadata_uri, requested_assets);
         }
 
         fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
             let mut proposal = _proposals::read(proposal_id);
 
-            // Ensure that the proposal exists
-            assert(proposal.proposer.is_non_zero(), 'IR: Proposal does not exist');
-
-            // Ensure that the caller is the proposer
-            assert(proposer_address == proposal.proposer, 'IR: Caller is not proposer');
-
-            // Ensure that the proposal is active
-            assert(_get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active');
+            _assert_caller_valid_and_round_active();
+            _assert_can_modify_proposal(proposer_address, proposal);
 
             // Cancel the proposal
             proposal.state = ProposalState::Cancelled(());
@@ -246,27 +150,26 @@ mod InfiniteRound {
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
-            let config = _config::read();
+            _assert_caller_valid_and_round_active();
 
             // Determine the cumulative voting power of the user
             let cumulative_voting_power = Round::get_cumulative_governance_power(
-                config.start_timestamp,
+                _config::read().start_timestamp,
                 voter_address,
                 StrategyType::VOTING,
                 used_voting_strategies.span(),
             );
             assert(cumulative_voting_power.is_non_zero(), 'IR: User has no voting power');
 
-            // Cast votes, throwing if the remaining voting power is insufficient
-            _cast_votes_on_one_or_more_proposals(
-                voter_address, cumulative_voting_power, proposal_votes.span()
-            );
+            let mut proposal_votes = proposal_votes.span();
+            loop {
+                match proposal_votes.pop_front() {
+                    Option::Some(proposal_vote) => _cast_votes_on_proposal(voter_address, *proposal_vote, cumulative_voting_power),
+                    Option::None(_) => {
+                        break;
+                    },
+                };
+            };
         }
 
         /// Report new winners to a consuming contract. Revert if there are no new winners.
@@ -293,59 +196,6 @@ mod InfiniteRound {
 
             ResultsReported(winner_count, merkle_root);
         }
-
-        // TODO: Need function to report proposal results
-        // fn finalize_round(awards: Array<Asset>) {
-        //     // Verify that the round is active
-        //     _assert_round_active();
-
-        //     // Verify the validity of the provided awards
-        //     _assert_awards_valid(awards.span());
-
-        //     let config = _config::read();
-        //     let current_timestamp = get_block_timestamp();
-
-        //     assert(
-        //         current_timestamp > config.vote_period_end_timestamp, 'IR: Vote period not ended'
-        //     );
-
-        //     let proposal_count = Round::_proposal_count::read();
-
-        //     // If no proposals were submitted, the round must be cancelled.
-        //     assert(proposal_count != 0, 'IR: No proposals submitted');
-
-        //     let active_proposals = Round::get_active_proposals();
-        //     let winning_proposals = Round::get_n_proposals_by_voting_power_desc(
-        //         active_proposals, config.winner_count.into()
-        //     );
-
-        //     // Compute the merkle root for the given leaves.
-        //     let leaves = _compute_leaves(winning_proposals, awards);
-
-        //     let mut merkle_tree = MerkleTreeTrait::<u256>::new();
-        //     let merkle_root = merkle_tree.compute_merkle_root(leaves);
-
-        //     let round_dependency_registry = IRoundDependencyRegistryDispatcher {
-        //         contract_address: RegistryAddress::ROUND_DEPENDENCY_REGISTRY,
-        //     };
-        //     let execution_strategy_address = round_dependency_registry.get_caller_dependency_at_key(
-        //         // TODO: Populate chain ID
-        //         Round::chain_id(), DependencyKey::EXECUTION_STRATEGY
-        //     );
-        //     if execution_strategy_address.is_non_zero() {
-        //         let execution_strategy = IExecutionStrategyDispatcher {
-        //             contract_address: execution_strategy_address,
-        //         };
-        //         execution_strategy.execute(_build_execution_params(merkle_root));
-        //     }
-
-        //     let mut config = _config::read();
-
-        //     config.round_state = RoundState::Finalized(());
-        //     _config::write(config);
-
-        //     RoundFinalized(Round::extract_proposal_ids(winning_proposals), merkle_root);
-        // }
     }
 
     #[constructor]
@@ -499,6 +349,35 @@ mod InfiniteRound {
         assert(_config::read().round_state == RoundState::Active(()), 'IR: Round not active');
     }
 
+    /// Asserts that caller is a valid auth strategy and that the round is active.
+    fn _assert_caller_valid_and_round_active() {
+        // Verify that the caller is a valid auth strategy
+        Round::assert_caller_is_valid_auth_strategy();
+
+        // Verify that the round is active
+        _assert_round_active();
+    }
+
+    /// Asserts that `proposer_address` can modify `proposal`. This includes
+    /// an assertion that the proposal exists, that `proposer_address` is the proposer,
+    /// and that the proposal is active.
+    fn _assert_can_modify_proposal(proposer_address: EthAddress, proposal: Proposal) {
+        assert(proposal.proposer.is_non_zero(), 'IR: Proposal does not exist');
+        assert(proposer_address == proposal.proposer, 'IR: Caller is not proposer');
+        assert(_get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active');     
+    }
+
+    /// Assert the validity of an asset request. This includes an assertion
+    /// that the request is not too large, that there are no duplicate assets,
+    /// and that the round has sufficient balances of the requested assets.
+    /// * `requested_assets` - The requested assets.
+    fn _assert_asset_request_valid(mut requested_assets: Span<Asset>) {
+        assert(requested_assets.len() < MAX_REQUESTED_ASSET_COUNT, 'IR: Too many assets requested');
+
+        _assert_no_duplicate_assets(requested_assets);
+        _assert_sufficient_asset_balances(requested_assets);
+    }
+
     /// Reverts if the asset array contains duplicate assets.
     /// * `assets` - The array of assets.
     fn _assert_no_duplicate_assets(mut assets: Span<Asset>) {
@@ -535,28 +414,6 @@ mod InfiniteRound {
         };
     }
 
-    /// Cast votes on one or more proposals.
-    /// * `voter_address` - The address of the voter.
-    /// * `cumulative_voting_power` - The cumulative voting power of the voter.
-    /// * `proposal_votes` - The votes to cast.
-    fn _cast_votes_on_one_or_more_proposals(
-        voter_address: EthAddress,
-        cumulative_voting_power: u256,
-        mut proposal_votes: Span<ProposalVote>
-    ) {
-        loop {
-            match proposal_votes.pop_front() {
-                Option::Some(proposal_vote) => {
-                    // Cast the votes for the proposal
-                    _cast_votes_on_proposal(voter_address, *proposal_vote, cumulative_voting_power);
-                },
-                Option::None(_) => {
-                    break;
-                },
-            };
-        };
-    }
-
     /// Cast votes on a single proposal.
     /// * `voter_address` - The address of the voter.
     /// * `proposal_vote` - The proposal vote information.
@@ -573,6 +430,10 @@ mod InfiniteRound {
 
         // Exit early if the proposal is not active
         if _get_proposal_state(proposal) != ProposalState::Active(()) {
+            return;
+        }
+        // Exit early if the proposal version has changed
+        if proposal_vote.proposal_version != proposal.version {
             return;
         }
 
@@ -593,31 +454,45 @@ mod InfiniteRound {
 
         let config = _config::read();
         if proposal.voting_power_for >= config.quorum_for.inner.into() {
-            proposal.state = ProposalState::Approved(());
-
-            // TODO: Move to its own function.
-            let winner_count = _winner_count::read();
-            let mut incremental_merkle_tree = IncrementalMerkleTreeTrait::<u256>::new(
-                MAX_WINNER_TREE_DEPTH,
-                winner_count,
-                Default::default(), // TODO: Need to store this information :/
-            );
-            let leaf = 1; // TODO: compute leaf. put in `Round`?
-
-            _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
-            _winner_count::write(winner_count + 1);
-
-            // TODO: If winner count == max_winner_count, then end round.
-
-            ProposalApproved(proposal_id);
+            _approve_proposal(proposal_id, ref proposal);
         } else if proposal.voting_power_against >= config.quorum_against.inner.into() {
-            proposal.state = ProposalState::Rejected(());
-            ProposalRejected(proposal_id);
+            _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);
         _spent_voting_power::write((voter_address, proposal_id), spent_voting_power);
 
         VoteCast(proposal_id, voter_address, voting_power, direction);
+    }
+
+    /// Approve a proposal, setting its state to `Approved`, and appending the
+    /// proposal's leaf to the incremental merkle tree.
+    /// * `proposal_id` - The ID of the proposal to approve.
+    /// * `proposal` - The proposal to approve.
+    fn _approve_proposal(proposal_id: u32, ref proposal: Proposal) {
+        proposal.state = ProposalState::Approved(());
+
+        let winner_count = _winner_count::read();
+        let mut incremental_merkle_tree = IncrementalMerkleTreeTrait::<u256>::new(
+            MAX_WINNER_TREE_DEPTH,
+            winner_count,
+            _read_sub_trees_from_storage(),
+        );
+        let leaf = _compute_leaf(proposal_id, proposal);
+
+        // The maximum winner count for this round is 2^10 (1024). If the max
+        // count is reached, then no `append_leaf` will revert.
+        _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
+        _winner_count::write(winner_count + 1);
+
+        ProposalApproved(proposal_id);
+    }
+
+    /// Reject a proposal, setting its state to `Rejected`.
+    /// * `proposal_id` - The ID of the proposal to reject.
+    /// * `proposal` - The proposal to reject.
+    fn _reject_proposal(proposal_id: u32, ref proposal: Proposal) {
+        proposal.state = ProposalState::Rejected(());
+        ProposalRejected(proposal_id);
     }
 
     /// Build the execution parameters that will be passed to the execution strategy.
@@ -630,27 +505,52 @@ mod InfiniteRound {
         execution_params.span()
     }
 
-    fn _append_to_winner_merkle_tree() {
-        
-    }
-
-    /// Compute a single leaf consisting of a proposal ID, proposer address, asset ID, and asset amount.
-    /// * `p` - The proposal to compute the leaf for.
-    /// * `asset_id` - The ID of the asset to award.
-    /// * `asset_amount` - The amount of the asset to award.
-    fn _compute_leaf_for_proposal_award(
-        p: ProposalWithId, asset_id: u256, asset_amount: u256
-    ) -> u256 {
-        let proposal_id: felt252 = p.proposal_id.into();
-
+    /// Compute a single leaf consisting of a proposal ID, proposer address, and requested asset hash.
+    /// * `proposal_id` - The ID of the proposal to compute the leaf for.
+    /// * `proposal` - The proposal to compute the leaf for.
+    fn _compute_leaf(proposal_id: u32, proposal: Proposal) -> u256 {
         let mut leaf_input = Default::default();
-        leaf_input.append(proposal_id.into());
-        leaf_input.append(u256_from_felt252(p.proposal.proposer.into()));
-        // TODO: leaf_input.append(asset_request_hash);
-        // leaf_input.append(asset_id);
-        // leaf_input.append(asset_amount);
+        leaf_input.append(u256_from_felt252(proposal_id.into()));
+        leaf_input.append(u256_from_felt252(proposal.proposer.into()));
+        leaf_input.append(u256_from_felt252(proposal.requested_assets_hash.into()));
 
         keccak_u256s_be(leaf_input.span())
+    }
+
+    /// Read existing incremental merkle tree sub trees from storage.
+    fn _read_sub_trees_from_storage() -> Felt252Dict<Nullable<Span<u256>>> {
+        let mut sub_trees = Default::default();
+
+        let mut curr_depth = 0;
+        loop {
+            if curr_depth > MAX_WINNER_TREE_DEPTH {
+                break;
+            }
+            let sub_tree = _winner_merkle_sub_trees::read(curr_depth);
+            if sub_tree.len().is_zero() {
+                break;
+            }
+            sub_trees.insert(curr_depth.into(), nullable_from_box(BoxTrait::new(sub_tree)));
+        };
+        sub_trees
+    }
+
+    /// Write the incrmeental merkle tree sub trees to storage.
+    /// The user will not be charged storage costs for sub trees that are already in storage.
+    /// * `sub_trees` - The sub trees to write to storage.
+    fn _write_sub_trees_to_storage(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
+        let mut curr_depth = 0;
+        loop {
+            match match_nullable(sub_trees.get(curr_depth.into())) {
+                FromNullableResult::Null(()) => {
+                    break;
+                },
+                FromNullableResult::NotNull(sub_tree) => {
+                    _winner_merkle_sub_trees::write(curr_depth, sub_tree.unbox());
+                    curr_depth += 1;
+                },
+            };
+        };
     }
 
     /// Get the state of the given proposal.

@@ -8,12 +8,56 @@ use prop_house::common::utils::constants::{
 use prop_house::common::utils::integer::{
     u250, U256TryIntoU64, U256TryIntoU16, U256TryIntoU8, U256TryIntoEthAddress,
 };
+use prop_house::common::libraries::round::{Asset, UserStrategy};
+use prop_house::common::registry::strategy::Strategy;
 use integer::{
     U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252
 };
 use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
+
+trait IInfiniteRound {
+    fn get_proposal(proposal_id: u32) -> Proposal;
+    fn propose(
+        proposer_address: EthAddress,
+        metadata_uri: Array<felt252>,
+        requested_assets: Array<Asset>,
+        used_proposing_strategies: Array<UserStrategy>,
+    );
+    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>);
+    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
+    fn vote(
+        voter_address: EthAddress,
+        proposal_votes: Array<ProposalVote>,
+        used_voting_strategies: Array<UserStrategy>,
+    );
+    fn report_results(); // TODO: Maybe rename to `report_winner_results`?
+}
+
+struct RoundParams {
+    start_timestamp: u64,
+    vote_period: u64,
+    quorum_for: u250,
+    quorum_against: u250,
+    proposal_threshold: u250,
+    proposing_strategies: Span<Strategy>,
+    voting_strategies: Span<Strategy>,
+}
+
+#[derive(Copy, Drop, Serde)]
+enum VoteDirection {
+    For: (),
+    Against: (),
+}
+
+#[derive(Copy, Drop, Serde)]
+struct ProposalVote {
+    proposal_id: u32,
+    proposal_version: u16,
+    voting_power: u256,
+    direction: VoteDirection
+}
 
 #[derive(Copy, Drop, Serde, PartialEq)]
 enum RoundState {
@@ -69,12 +113,6 @@ struct Proposal {
     requested_assets_hash: u250,
     voting_power_for: u256,
     voting_power_against: u256,
-}
-
-#[derive(Copy, Drop, Serde)]
-struct ProposalWithId {
-    proposal_id: u32,
-    proposal: Proposal,
 }
 
 impl ProposalStateIntoFelt252 of Into<ProposalState, u256> {

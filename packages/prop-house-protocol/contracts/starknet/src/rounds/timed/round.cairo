@@ -1,52 +1,9 @@
-use prop_house::common::libraries::round::{Asset, UserStrategy};
-use prop_house::common::registry::strategy::Strategy;
-use prop_house::rounds::timed::config::Proposal;
-use prop_house::common::utils::integer::u250;
-use starknet::EthAddress;
-use array::ArrayTrait;
-
-trait ITimedRound {
-    fn get_proposal(proposal_id: u32) -> Proposal;
-    fn propose(
-        proposer_address: EthAddress,
-        metadata_uri: Array<felt252>,
-        used_proposing_strategies: Array<UserStrategy>,
-    );
-    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
-    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
-    fn vote(
-        voter_address: EthAddress,
-        proposal_votes: Array<ProposalVote>,
-        used_voting_strategies: Array<UserStrategy>,
-    );
-    fn finalize_round(awards: Array<Asset>); // TODO: Rename `report_results`?
-}
-
-struct RoundParams {
-    award_hash: u250,
-    proposal_period_start_timestamp: u64,
-    proposal_period_duration: u64,
-    vote_period_duration: u64,
-    winner_count: u16,
-    proposal_threshold: u250,
-    proposing_strategies: Span<Strategy>,
-    voting_strategies: Span<Strategy>,
-}
-
-#[derive(Copy, Drop, Serde)]
-struct ProposalVote {
-    proposal_id: u32,
-    voting_power: u256,
-}
-
 #[contract]
 mod TimedRound {
-    use starknet::{
-        ContractAddress, EthAddress, get_block_timestamp, get_caller_address,
-        Felt252TryIntoContractAddress
+    use starknet::{EthAddress, get_block_timestamp};
+    use prop_house::rounds::timed::config::{
+        ITimedRound, RoundState, RoundConfig, RoundParams, Proposal, ProposalWithId, ProposalVote
     };
-    use super::{ITimedRound, ProposalVote, RoundParams};
-    use prop_house::rounds::timed::config::{RoundState, RoundConfig, Proposal, ProposalWithId};
     use prop_house::rounds::timed::constants::MAX_WINNERS;
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
@@ -55,12 +12,12 @@ mod TimedRound {
         IRoundDependencyRegistryDispatcherTrait,
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
-    use prop_house::common::utils::constants::{MASK_192, MASK_250, DependencyKey, StrategyType};
+    use prop_house::common::utils::constants::{DependencyKey, StrategyType};
     use prop_house::common::utils::integer::Felt252TryIntoU250;
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
-    use integer::{u256_from_felt252, U16IntoFelt252, U32IntoFelt252};
     use array::{ArrayTrait, SpanTrait};
+    use integer::u256_from_felt252;
     use traits::{TryInto, Into};
     use option::OptionTrait;
     use zeroable::Zeroable;
@@ -102,24 +59,11 @@ mod TimedRound {
             metadata_uri: Array<felt252>,
             used_proposing_strategies: Array<UserStrategy>,
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
             let config = _config::read();
             let current_timestamp = get_block_timestamp();
 
-            // Ensure that the round is in the proposal period
-            assert(
-                current_timestamp >= config.proposal_period_start_timestamp,
-                'TR: Proposal period not started',
-            );
-            assert(
-                current_timestamp < config.proposal_period_end_timestamp,
-                'TR: Proposal period has ended',
-            );
+            _assert_caller_valid_and_round_active();
+            _assert_in_proposal_period(config, current_timestamp);
 
             // Determine the cumulative proposition power of the user
             let cumulative_proposition_power = Round::get_cumulative_governance_power(
@@ -151,22 +95,15 @@ mod TimedRound {
         fn edit_proposal(
             proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
+            _assert_caller_valid_and_round_active();
+            _assert_in_proposal_period(_config::read(), get_block_timestamp());
 
             let mut proposal = _proposals::read(proposal_id);
 
-            // Ensure that the proposal exists
+            // Ensure the proposal exists, the caller is the proposer, and the proposal hasn't been cancelled
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
-
-            // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
-
-            // Ensure that the caller is the proposer
             assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
+            assert(!proposal.is_cancelled, 'TR: Proposal is cancelled');
 
             // Set the last update timestamp
             proposal.last_updated_at = get_block_timestamp();
@@ -176,22 +113,14 @@ mod TimedRound {
         }
 
         fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
+            _assert_caller_valid_and_round_active();
 
             let mut proposal = _proposals::read(proposal_id);
 
-            // Ensure that the proposal exists
+            // Ensure the proposal exists, the caller is the proposer, and the proposal hasn't been cancelled
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
-
-            // Ensure that the proposal has not already been cancelled
-            assert(!proposal.is_cancelled, 'TR: Proposal already cancelled');
-
-            // Ensure that the caller is the proposer
             assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
+            assert(!proposal.is_cancelled, 'TR: Proposal is cancelled');
 
             // Cancel the proposal
             proposal.is_cancelled = true;
@@ -205,26 +134,14 @@ mod TimedRound {
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
-            // Verify that the caller is a valid auth strategy
-            Round::assert_caller_is_valid_auth_strategy();
-
-            // Verify that the round is active
-            _assert_round_active();
-
             let config = _config::read();
             let current_timestamp = get_block_timestamp();
+            
+            _assert_caller_valid_and_round_active();
+            _assert_in_vote_period(config, current_timestamp);
 
-            // The snapshot is taken at the proposal period end timestamp
+            // Determine the cumulative voting power of the user at the snapshot timestamp
             let snapshot_timestamp = config.proposal_period_end_timestamp;
-            let vote_period_start_timestamp = snapshot_timestamp + 1;
-
-            // Ensure that the round is in the voting period
-            assert(current_timestamp >= vote_period_start_timestamp, 'TR: Vote period not begun');
-            assert(
-                current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended'
-            );
-
-            // Determine the cumulative voting power of the user
             let cumulative_voting_power = Round::get_cumulative_governance_power(
                 snapshot_timestamp,
                 voter_address,
@@ -240,33 +157,27 @@ mod TimedRound {
         }
 
         fn finalize_round(awards: Array<Asset>) {
-            // Verify that the round is active
+            let mut config = _config::read();
+
             _assert_round_active();
+            _assert_vote_period_has_ended(config);
 
             // If no awards were offered in the config, the awards array must be empty.
             // Otherwise, assert the validity of the provided awards.
-            let config = _config::read();
             match config.award_hash.into() {
                 0 => assert(awards.is_empty(), 'TR: Awards not empty'),
                 _ => _assert_awards_valid(awards.span()),
             }
 
-            let current_timestamp = get_block_timestamp();
-            assert(
-                current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
-            );
-
-            let proposal_count = _proposal_count::read();
-
             // If no proposals were submitted, the round must be cancelled.
+            let proposal_count = _proposal_count::read();
             assert(proposal_count.is_non_zero(), 'TR: No proposals submitted');
 
+            // Determine the winners and compute the a merkle root with the claim information.
             let active_proposals = _get_active_proposals();
             let winning_proposals = _get_n_proposals_by_voting_power_desc(
                 active_proposals, config.winner_count.into()
             );
-
-            // Compute the merkle root for the given leaves.
             let leaves = _compute_leaves(winning_proposals, awards);
 
             let mut merkle_tree = MerkleTreeTrait::<u256>::new();
@@ -281,8 +192,6 @@ mod TimedRound {
                 };
                 execution_strategy.execute(_build_execution_params(merkle_root));
             }
-
-            let mut config = _config::read();
 
             config.round_state = RoundState::Finalized(());
             _config::write(config);
@@ -313,11 +222,7 @@ mod TimedRound {
         metadata_uri: Array<felt252>,
         used_proposing_strategies: Array<UserStrategy>,
     ) {
-        TimedRound::propose(
-            proposer_address,
-            metadata_uri,
-            used_proposing_strategies,
-        );
+        TimedRound::propose(proposer_address, metadata_uri, used_proposing_strategies);
     }
 
     /// Edit a proposal.
@@ -347,11 +252,7 @@ mod TimedRound {
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     ) {
-        TimedRound::vote(
-            voter_address,
-            proposal_votes,
-            used_voting_strategies,
-        );
+        TimedRound::vote(voter_address, proposal_votes, used_voting_strategies);
     }
 
     /// Finalize the round by determining winners and relaying execution.
@@ -445,12 +346,56 @@ mod TimedRound {
         assert(_config::read().round_state == RoundState::Active(()), 'TR: Round not active');
     }
 
+    /// Asserts that caller is a valid auth strategy and that the round is active.
+    fn _assert_caller_valid_and_round_active() {
+        // Verify that the caller is a valid auth strategy
+        Round::assert_caller_is_valid_auth_strategy();
+
+        // Verify that the round is active
+        _assert_round_active();
+    }
+
     /// Asserts that the provided awards are valid.
     fn _assert_awards_valid(awards: Span<Asset>) {
         let computed_award_hash = Round::compute_asset_hash(awards);
         let stored_award_hash = _config::read().award_hash;
 
         assert(computed_award_hash == stored_award_hash, 'TR: Invalid awards provided');
+    }
+
+    /// Asserts that the round is in the proposal period.
+    /// * `config` - The round config.
+    /// * `current_timestamp` - The current timestamp.
+    fn _assert_in_proposal_period(config: RoundConfig, current_timestamp: u64) {
+        assert(
+            current_timestamp >= config.proposal_period_start_timestamp,
+            'TR: Proposal period not started',
+        );
+        assert(
+            current_timestamp < config.proposal_period_end_timestamp,
+            'TR: Proposal period has ended',
+        );
+    }
+
+    /// Asserts that the round is in the vote period.
+    /// * `config` - The round config.
+    /// * `current_timestamp` - The current timestamp.
+    fn _assert_in_vote_period(config: RoundConfig, current_timestamp: u64) {
+        let vote_period_start_timestamp = config.proposal_period_end_timestamp + 1;
+
+        assert(current_timestamp >= vote_period_start_timestamp, 'TR: Vote period not started');
+        assert(
+            current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended'
+        );
+    }
+
+    /// Asserts that the vote period has ended.
+    /// * `config` - The round config.
+    fn _assert_vote_period_has_ended(config: RoundConfig) {
+        let current_timestamp = get_block_timestamp();
+        assert(
+            current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
+        );
     }
 
     /// Cast votes on one or more proposals.
@@ -558,12 +503,12 @@ mod TimedRound {
         execution_params.span()
     }
 
-    /// Compute the leaves for the given proposals and awards.
+    /// Compute the leaves for the given proposals and awards, if present.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to compute the leaves for.
     fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Asset>) -> Span<u256> {
         if awards.is_empty() {
-            return _compute_leaves_with_no_awards(proposals);
+            return _compute_leaves_for_no_awards(proposals);
         }
         if awards.len() == 1 {
             return _compute_leaves_for_split_award(proposals, *awards.at(0));
@@ -574,7 +519,7 @@ mod TimedRound {
     /// Compute the leaves for the given proposals using the proposer address
     /// and rank of the proposal.
     /// * `proposals` - The proposals to compute the leaves for.
-    fn _compute_leaves_with_no_awards(mut proposals: Span<ProposalWithId>) -> Span<u256> {
+    fn _compute_leaves_for_no_awards(mut proposals: Span<ProposalWithId>) -> Span<u256> {
         let mut leaves = Default::<Array<u256>>::default();
 
         let mut position = 1;
@@ -669,7 +614,7 @@ mod TimedRound {
         proposer: EthAddress, position: u32, asset_id: u256, asset_amount: u256
     ) -> u256 {
         let mut leaf_input = Default::default();
-        leaf_input.append(u256_from_felt252(position.into()));
+        leaf_input.append(u256_from_felt252(position.into())); // TODO: Need to decide if this is what we're doing...
         leaf_input.append(u256_from_felt252(proposer.into()));
         leaf_input.append(asset_id);
         leaf_input.append(asset_amount);

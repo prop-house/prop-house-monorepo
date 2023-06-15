@@ -1,4 +1,3 @@
-use nullable::{match_nullable, FromNullableResult};
 use traits::{Into, TryInto, Destruct};
 use array::{ArrayTrait, SpanTrait};
 use integer::U128IntoFelt252;
