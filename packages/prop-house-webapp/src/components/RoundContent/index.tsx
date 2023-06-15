@@ -54,7 +54,6 @@ const RoundContent: React.FC<{
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const host = useAppSelector(state => state.configuration.backendHost);
 
   const client = useRef(new PropHouseWrapper(host));
@@ -170,7 +169,7 @@ const RoundContent: React.FC<{
         <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
       ) : (
         <>
-          {community && !modalActive && (
+          {community && (
             <Row className={classes.propCardsRow}>
               <Col xl={8} className={classes.propCardsCol}>
                 {proposals &&
