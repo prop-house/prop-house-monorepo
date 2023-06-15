@@ -8,6 +8,7 @@ address constant ETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 uint256 constant MAX_250_BIT_UNSIGNED = 0x03FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;
 
 // prettier-ignore
+/// @notice Starknet function selector constants
 library Selector {
   // print(get_selector_from_name("register_round"))
   uint256 constant REGISTER_ROUND = 0x26490f901ea8ad5a245d987479919f1d20fbb0c164367e33ef09a9ea4ba8d04;
@@ -22,6 +23,7 @@ library Selector {
   uint256 constant ROUTE_CALL_TO_ROUND = 0x24931ca109ce0ffa87913d91f12d6ac327550c015a573c7b17a187c29ed8c1a;
 }
 
+/// @notice Prop House metadata constants
 library PHMetadata {
   // The Prop House NFT name
   string constant NAME = 'Prop House';
@@ -33,6 +35,7 @@ library PHMetadata {
   string constant URI = 'ipfs://bafkreifzufef7c2von6dxlcx2en4fwtfpha5qreurdhqyar7vurjmrqi3a';
 }
 
+/// @notice Community house metadata constants
 library CHMetadata {
   // The Community House type
   bytes32 constant TYPE = 'COMMUNITY';
@@ -44,6 +47,7 @@ library CHMetadata {
   string constant SYMBOL = 'COMM';
 }
 
+/// @notice Round type constants
 library RoundType {
   // The Timed Round type
   bytes32 constant TIMED = 'TIMED';
