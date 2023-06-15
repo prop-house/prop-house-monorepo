@@ -58,7 +58,7 @@ export const communities = new CaseInsensitiveMap(
     // Anata
     '0xf729f878F95548BC7F14B127c96089cf121505F8': balanceOfErc721(),
     // Builder
-    '0xdf9B7D26c8Fc806b1Ae6273684556761FF02d422': balanceOfErc721(20),
+    '0xdf9B7D26c8Fc806b1Ae6273684556761FF02d422': balanceOfErc721(1),
     // NSFW
     '0xa0aaf3b8a71dcb51fb61845899ab6df3e2c81ae3': balanceOfErc721(10),
     // Shark DAO
