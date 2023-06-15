@@ -13,7 +13,6 @@ mod TimedRound {
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
     use prop_house::common::utils::constants::{DependencyKey, StrategyType};
-    use prop_house::common::utils::integer::Felt252TryIntoU250;
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::serde::SpanSerde;
     use array::{ArrayTrait, SpanTrait};
@@ -73,7 +72,7 @@ mod TimedRound {
                 used_proposing_strategies.span(),
             );
             assert(
-                cumulative_proposition_power >= config.proposal_threshold.inner.into(),
+                cumulative_proposition_power >= config.proposal_threshold.into(),
                 'TR: Proposition power too low'
             );
 
@@ -319,12 +318,12 @@ mod TimedRound {
     /// Decode the round parameters from an array of felt252s.
     /// * `params` - The array of felt252s.
     fn _decode_param_array(params: Span<felt252>) -> RoundParams {
-        let award_hash = (*params.at(0)).try_into().unwrap();
+        let award_hash = *params.at(0);
         let proposal_period_start_timestamp = (*params.at(1)).try_into().unwrap();
         let proposal_period_duration = (*params.at(2)).try_into().unwrap();
         let vote_period_duration = (*params.at(3)).try_into().unwrap();
         let winner_count = (*params.at(4)).try_into().unwrap();
-        let proposal_threshold = (*params.at(5)).try_into().unwrap();
+        let proposal_threshold = *params.at(5);
 
         let (proposing_strategies, offset) = Round::parse_strategies(params, 6);
         let (voting_strategies, _) = Round::parse_strategies(params, offset);

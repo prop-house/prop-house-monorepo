@@ -49,7 +49,7 @@ fn timed_round_config_init_test() {
 
     let config = TimedRound::_config::read();
 
-    assert(config.award_hash.inner == *round_params.at(0), 'wrong award hash');
+    assert(config.award_hash == *round_params.at(0), 'wrong award hash');
     assert(
         config.proposal_period_start_timestamp == (*round_params.at(1)).try_into().unwrap(),
         'wrong start timestamp'
@@ -63,8 +63,5 @@ fn timed_round_config_init_test() {
         'wrong vote period end timestamp'
     );
     assert(config.winner_count == (*round_params.at(4)).try_into().unwrap(), 'wrong winner count');
-    assert(
-        config.proposal_threshold == (*round_params.at(5)).try_into().unwrap(),
-        'wrong proposal threshold'
-    );
+    assert(config.proposal_threshold == *round_params.at(5), 'wrong proposal threshold');
 }

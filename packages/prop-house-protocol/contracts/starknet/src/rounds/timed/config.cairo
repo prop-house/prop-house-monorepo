@@ -5,7 +5,7 @@ use prop_house::common::utils::constants::{
     MASK_64, MASK_160,
 };
 use prop_house::common::utils::integer::{
-    u250, U256TryIntoU64, U256TryIntoEthAddress, U256TryIntoU16, U256TryIntoU8,
+    U256TryIntoU64, U256TryIntoEthAddress, U256TryIntoU16, U256TryIntoU8,
 };
 use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::registry::strategy::Strategy;
@@ -34,12 +34,12 @@ trait ITimedRound {
 }
 
 struct RoundParams {
-    award_hash: u250,
+    award_hash: felt252,
     proposal_period_start_timestamp: u64,
     proposal_period_duration: u64,
     vote_period_duration: u64,
     winner_count: u16,
-    proposal_threshold: u250,
+    proposal_threshold: felt252,
     proposing_strategies: Span<Strategy>,
     voting_strategies: Span<Strategy>,
 }
@@ -168,8 +168,8 @@ struct RoundConfig {
     proposal_period_start_timestamp: u64,
     proposal_period_end_timestamp: u64,
     vote_period_end_timestamp: u64,
-    proposal_threshold: u250,
-    award_hash: u250,
+    proposal_threshold: felt252,
+    award_hash: felt252,
 }
 
 /// Pack the provided round config fields into a single felt252.
@@ -238,10 +238,10 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         ) = unpack_round_config_fields(
             StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
         );
-        let proposal_threshold = StorageAccess::<u250>::read_at_offset_internal(
+        let proposal_threshold = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 1
         )?;
-        let award_hash = StorageAccess::<u250>::read_at_offset_internal(
+        let award_hash = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 2
         )?;
         Result::Ok(
@@ -268,10 +268,10 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             value.vote_period_end_timestamp
         );
         StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 1, value.proposal_threshold
         )?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 2, value.award_hash
         )
     }

@@ -16,7 +16,6 @@ mod InfiniteRound {
     use prop_house::common::utils::constants::{DependencyKey, StrategyType};
     use prop_house::common::utils::merkle::IncrementalMerkleTreeTrait;
     use prop_house::common::utils::array::assert_no_duplicates_u256;
-    use prop_house::common::utils::integer::Felt252TryIntoU250;
     use prop_house::common::utils::storage::SpanStorageAccess;
     use prop_house::common::utils::serde::SpanSerde;
     use nullable::{match_nullable, FromNullableResult};
@@ -90,7 +89,7 @@ mod InfiniteRound {
                 used_proposing_strategies.span(),
             );
             assert(
-                cumulative_proposition_power >= config.proposal_threshold.inner.into(),
+                cumulative_proposition_power >= config.proposal_threshold.into(),
                 'IR: Proposition power too low'
             );
 
@@ -326,9 +325,9 @@ mod InfiniteRound {
     fn _decode_param_array(params: Span<felt252>) -> RoundParams {
         let start_timestamp = (*params.at(0)).try_into().unwrap();
         let vote_period = (*params.at(1)).try_into().unwrap();
-        let quorum_for = (*params.at(2)).try_into().unwrap();
-        let quorum_against = (*params.at(3)).try_into().unwrap();
-        let proposal_threshold = (*params.at(4)).try_into().unwrap();
+        let quorum_for = *params.at(2);
+        let quorum_against = *params.at(3);
+        let proposal_threshold = *params.at(4);
 
         let (proposing_strategies, offset) = Round::parse_strategies(params, 5);
         let (voting_strategies, _) = Round::parse_strategies(params, offset);
@@ -453,9 +452,9 @@ mod InfiniteRound {
         };
 
         let config = _config::read();
-        if proposal.voting_power_for >= config.quorum_for.inner.into() {
+        if proposal.voting_power_for >= config.quorum_for.into() {
             _approve_proposal(proposal_id, ref proposal);
-        } else if proposal.voting_power_against >= config.quorum_against.inner.into() {
+        } else if proposal.voting_power_against >= config.quorum_against.into() {
             _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);

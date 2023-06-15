@@ -6,7 +6,7 @@ use prop_house::common::utils::constants::{
     TWO_POW_8, TWO_POW_72, TWO_POW_168, TWO_POW_232, MASK_8, MASK_16, MASK_64, MASK_160,
 };
 use prop_house::common::utils::integer::{
-    u250, U256TryIntoU64, U256TryIntoU16, U256TryIntoU8, U256TryIntoEthAddress,
+    U256TryIntoU64, U256TryIntoU16, U256TryIntoU8, U256TryIntoEthAddress,
 };
 use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::registry::strategy::Strategy;
@@ -38,9 +38,9 @@ trait IInfiniteRound {
 struct RoundParams {
     start_timestamp: u64,
     vote_period: u64,
-    quorum_for: u250,
-    quorum_against: u250,
-    proposal_threshold: u250,
+    quorum_for: felt252,
+    quorum_against: felt252,
+    proposal_threshold: felt252,
     proposing_strategies: Span<Strategy>,
     voting_strategies: Span<Strategy>,
 }
@@ -110,7 +110,7 @@ struct Proposal {
     proposer: EthAddress,
     received_at: u64,
     version: u16,
-    requested_assets_hash: u250,
+    requested_assets_hash: felt252,
     voting_power_for: u256,
     voting_power_against: u256,
 }
@@ -189,7 +189,7 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
         let (state, proposer, received_at, version) = unpack_proposal_fields(
             StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
         );
-        let requested_assets_hash = StorageAccess::<u250>::read_at_offset_internal(
+        let requested_assets_hash = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 1
         )?;
         let voting_power_for = StorageAccess::<u256>::read_at_offset_internal(
@@ -208,7 +208,7 @@ impl ProposalStorageAccess of StorageAccess<Proposal> {
             value.state, value.proposer, value.received_at, value.version
         );
         StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 1, value.requested_assets_hash,
         )?;
         StorageAccess::<u256>::write_at_offset_internal(
@@ -230,9 +230,9 @@ struct RoundConfig {
     round_state: RoundState,
     start_timestamp: u64,
     vote_period: u64,
-    proposal_threshold: u250,
-    quorum_for: u250,
-    quorum_against: u250,
+    proposal_threshold: felt252,
+    quorum_for: felt252,
+    quorum_against: felt252,
 }
 
 /// Pack the provided round config fields into a single felt252.
@@ -281,13 +281,13 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         ) = unpack_round_config_fields(
             StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
         );
-        let proposal_threshold = StorageAccess::<u250>::read_at_offset_internal(
+        let proposal_threshold = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 1
         )?;
-        let quorum_for = StorageAccess::<u250>::read_at_offset_internal(
+        let quorum_for = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 2
         )?;
-        let quorum_against = StorageAccess::<u250>::read_at_offset_internal(
+        let quorum_against = StorageAccess::<felt252>::read_at_offset_internal(
             address_domain, base, offset + 3
         )?;
         Result::Ok(
@@ -311,13 +311,13 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             value.vote_period
         );
         StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 1, value.proposal_threshold
         )?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 2, value.quorum_for
         )?;
-        StorageAccess::<u250>::write_at_offset_internal(
+        StorageAccess::<felt252>::write_at_offset_internal(
             address_domain, base, offset + 3, value.quorum_against
         )
     }

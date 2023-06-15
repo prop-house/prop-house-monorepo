@@ -32,7 +32,6 @@ mod Round {
     use prop_house::common::utils::array::{construct_2d_array, get_sub_array, SpanTraitExt};
     use prop_house::common::utils::contract::{get_strategy_registry, get_round_dependency_registry};
     use prop_house::common::utils::constants::{MASK_250, DependencyKey};
-    use prop_house::common::utils::integer::{u250, U256TryIntoU250};
     use prop_house::common::utils::hash::keccak_u256s_be;
     use super::{Asset, UserStrategy, StrategyGroup};
     use array::{ArrayTrait, SpanTrait};
@@ -172,7 +171,7 @@ mod Round {
     /// ABI-encodes the provided asset array, keccak256 hashes it,
     /// and returns the lower 250 bits of the hash.
     /// * `assets` - The array of assets to hash.
-    fn compute_asset_hash(assets: Span<Asset>) -> u250 {
+    fn compute_asset_hash(assets: Span<Asset>) -> felt252 {
         (keccak_u256s_be(flatten_and_abi_encode_assets(assets)) & MASK_250).try_into().unwrap()
     }
 
