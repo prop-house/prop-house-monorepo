@@ -101,21 +101,31 @@ export const communities = new CaseInsensitiveMap(
     // Nouns OTG
     '0x92c950729E292573Fbbc9C12F4b06656E0DAe91A': balanceOfErc721(10),
     // Seneca
-    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100),
+    '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F': fixedVotes(100, [
+      '0xba2b9804FbffA8F1A8F7DC8dd600E21268beF09F',
+    ]),
     // Index card
     '0x538eb7f9baef0a48b6d385d83f2f78d1d629166b': erc1155(1, 50),
     // Explorer Grants
-    '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100),
+    '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191': fixedVotes(100, [
+      '0x93D94557824AC07A30b5B0f44f7CB3E00f9c4191',
+    ]),
     // Trait works
     '0xe8f0b57a805b9a15fee874fdd8f6bc250a0d2c55': balanceOfErc721(10),
     // Own the Doge
     '0x07887Ee0Bd24E774903963d50cF4Ec6a0a16977D': balanceOfErc721(),
     // Noun 40
-    '0xaE65E700f3f8904ac1007d47a5309dD26f8146c0': fixedVotes(100),
+    '0xaE65E700f3f8904ac1007d47a5309dD26f8146c0': fixedVotes(100, [
+      '0xaE65E700f3f8904ac1007d47a5309dD26f8146c0',
+    ]),
     // Ed Cruz
-    '0x7426B39865D11207B8F795b10D70843FC3289051': fixedVotes(100),
+    '0x7426B39865D11207B8F795b10D70843FC3289051': fixedVotes(100, [
+      '0x7426B39865D11207B8F795b10D70843FC3289051',
+    ]),
     // Eu
-    '0xa47f60564085b8792BaE197BE7762C7f7930eC67': fixedVotes(100),
+    '0xa47f60564085b8792BaE197BE7762C7f7930eC67': fixedVotes(100, [
+      '0xa47f60564085b8792BaE197BE7762C7f7930eC67',
+    ]),
     // Juicebox
     '0x3abF2A4f8452cCC2CF7b4C1e4663147600646f66': balanceOfErc20(18),
     // Infinite Retro Round
@@ -125,14 +135,23 @@ export const communities = new CaseInsensitiveMap(
     // mxtter
     '0xBe2d48C0752713E342c869A50a7c33e00bf4C409': balanceOfErc721(),
     // nounish
-    '0x89A814E79ce54B9bdc443779BEC7d9699De85D45': fixedVotes(100),
+    '0x89A814E79ce54B9bdc443779BEC7d9699De85D45': fixedVotes(100, [
+      '0x89A814E79ce54B9bdc443779BEC7d9699De85D45',
+    ]),
     // nouns esports
     '0x9a64c732c284fd248e71fb2d9850f47e6ef6e32d': balanceOfErc721(),
     // turbo voting token
     '0x141b0AD442a7Fc4B3742eCbc081f7110fE9bDD10': balanceOfErc721(),
     // nounfred
-    '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487': fixedVotes(100),
+    '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487': fixedVotes(100, [
+      '0x6802c9c19d1dE1325e0814eF61a92dCEb392C487',
+    ]),
     // panama dao
     '0xe403248c8F078Fd6729309635cdD0A668DDD20f9': balanceOfErc721(10),
+    // rug radio grants
+    '0x6066F888BF55366d13f83dF6a1fD355453D313EA': fixedVotes(1, [
+      '0x6066F888BF55366d13f83dF6a1fD355453D313EA',
+      '0xd9A9A52bc1529D3FF8Be57Af1AF7Ac09457F03cf',
+    ]),
   }),
 );
