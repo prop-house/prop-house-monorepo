@@ -79,7 +79,7 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @notice Finalize the round by consuming the merkle root from Starknet.
     /// @param merkleRootLow The lower half of the split merkle root
     /// @param merkleRootHigh The higher half of the split merkle root
-    function finalizeRound(uint256 merkleRootLow, uint256 merkleRootHigh) external {
+    function finalize(uint256 merkleRootLow, uint256 merkleRootHigh) external {
         if (state != RoundState.Active) {
             revert FINALIZATION_NOT_AVAILABLE();
         }

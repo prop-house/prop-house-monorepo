@@ -101,7 +101,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @notice Finalize the round by consuming the final winner count from
     /// Starknet and validating that all winners have been processed.
     /// @param winnerCount The final number of winners in the round
-    function finalizeRound(uint256 winnerCount) external {
+    function finalize(uint256 winnerCount) external {
         if (state != RoundState.Active) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
