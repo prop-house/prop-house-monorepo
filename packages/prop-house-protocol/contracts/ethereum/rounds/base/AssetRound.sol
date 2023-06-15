@@ -171,54 +171,6 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
         }
     }
 
-    // TODO: Put in higher-level round
-    // function _rescueTo(address recipient, Asset[] calldata assets) external onlyRoundManager {
-    //     uint256 assetCount = assets.length;
-
-    //     for (uint256 i = 0; i < assetCount; ) {
-    //         // uint256 assetId = assets[i].toID();
-    //         // uint256 balanceOf = _balanceOf(assets[i], address(this));
-    //         // if (balanceOf - assets[i].amount < totalSupply(assetId)) {
-    //         //     revert NO_EXCESS_BALANCE();
-    //         // }
-    //         // // Transfer the excess amount to the recipient
-    //         _transfer(assets[i], address(this), payable(recipient));
-    //         // TODO: Re-Add event
-    //         // emit AssetRescued(msg.sender, recipient, assetId, assets[i].amount);
-    //         unchecked {
-    //             ++i;
-    //         }
-    //     }
-    // }
-
-    // TODO: Figure out what to do here.
-
-    // /// @notice Rescue assets that were accidentally deposited directly to this contract
-    // /// @param recipient The recipient of the rescued assets
-    // /// @param assets The assets to rescue
-    // /// @dev This function is only callable by the round manager
-    // function rescueAssets(address recipient, Asset[] calldata assets) external onlyRoundManager {
-    //     uint256 assetCount = assets.length;
-
-    //     for (uint256 i = 0; i < assetCount; ) {
-    //         uint256 assetId = assets[i].toID();
-    //         uint256 balanceOf = _balanceOf(assets[i], address(this));
-
-    //         if (balanceOf - assets[i].amount < totalSupply(assetId)) {
-    //             revert NO_EXCESS_BALANCE();
-    //         }
-
-    //         // Transfer the excess amount to the recipient
-    //         _transfer(assets[i], address(this), payable(recipient));
-
-    //         emit AssetRescued(msg.sender, recipient, assetId, assets[i].amount);
-
-    //         unchecked {
-    //             ++i;
-    //         }
-    //     }
-    // }
-
     /// @notice Determine whether an asset has been claimed for a specific proposal ID
     /// @param proposalId The proposal ID
     function isClaimed(uint256 proposalId) public view returns (bool claimed) {
