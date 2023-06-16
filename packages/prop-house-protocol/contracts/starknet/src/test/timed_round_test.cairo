@@ -57,7 +57,10 @@ fn test_timed_round_decode_params() {
         decoded_params.vote_period_duration == (*round_params.at(3)).try_into().unwrap(),
         'wrong vote period end timestamp'
     );
-    assert(decoded_params.winner_count == (*round_params.at(4)).try_into().unwrap(), 'wrong winner count');
+    assert(
+        decoded_params.winner_count == (*round_params.at(4)).try_into().unwrap(),
+        'wrong winner count'
+    );
     assert(decoded_params.proposal_threshold == *round_params.at(5), 'wrong proposal threshold');
     assert(decoded_params.proposing_strategies.len() == 0, 'wrong proposing strategy length');
     assert(decoded_params.voting_strategies.len() == 1, 'wrong voting strategy length');

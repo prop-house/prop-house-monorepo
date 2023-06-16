@@ -22,3 +22,9 @@ struct PackedAsset {
     uint256 assetId;
     uint256 amount;
 }
+
+/// @notice Merkle proof information for an incremental tree
+struct IncrementalTreeProof {
+    bytes32[] siblings;
+    uint8[] pathIndices;
+}

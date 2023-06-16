@@ -45,7 +45,7 @@ abstract contract AssetController {
     }
 
     /// @dev Transfer a given asset from the provided `from` address to the `to` address
-    /// @param asset The asset to transfer, including an amount and a recipient
+    /// @param asset The asset to transfer, including the asset amount
     /// @param source The account supplying the asset
     /// @param recipient The asset recipient
     function _transfer(Asset memory asset, address source, address payable recipient) internal {
@@ -69,6 +69,20 @@ abstract contract AssetController {
             _transferERC1155(asset.token, asset.identifier, source, recipient, asset.amount);
         } else {
             revert INVALID_ASSET_TYPE();
+        }
+    }
+
+    /// @notice Transfers one or more assets from the provided `from` address to the `to` address
+    /// @param assets The assets to transfer, including the asset amounts
+    /// @param source The account supplying the assets
+    /// @param recipient The asset recipient
+    function _transferMany(Asset[] memory assets, address source, address payable recipient) internal {
+        uint256 assetCount = assets.length;
+        for (uint256 i = 0; i < assetCount; ) {
+            _transfer(assets[i], source, recipient);
+            unchecked {
+                ++i;
+            }
         }
     }
 

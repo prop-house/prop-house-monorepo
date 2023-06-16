@@ -8,7 +8,7 @@ import { Uint256 } from '../lib/utils/Uint256.sol';
 /// @dev This contract is designed to be a generic standard that that can be used by any StarkNet protocol that wants to allow interactions via an L1 transaction.
 contract StarkNetCommit {
     using Uint256 for address;
-    
+
     /// @notice The StarkNet core contract
     MockStarknetMessaging public immutable starknetCore;
 

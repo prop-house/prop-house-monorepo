@@ -2,11 +2,20 @@
 pragma solidity >=0.8.17;
 
 import { AssetRound } from './base/AssetRound.sol';
+import { AssetHelper } from '../lib/utils/AssetHelper.sol';
 import { IInfiniteRound } from '../interfaces/IInfiniteRound.sol';
+import { IncrementalMerkleProof } from '../lib/utils/IncrementalMerkleProof.sol';
+import { Asset, PackedAsset, IncrementalTreeProof } from '../lib/types/Common.sol';
 import { Selector, RoundType } from '../Constants.sol';
-import { Asset } from '../lib/types/Common.sol';
+import { Uint256 } from '../lib/utils/Uint256.sol';
 
 contract InfiniteRound is IInfiniteRound, AssetRound {
+    using { Uint256.mask250 } for bytes32;
+    using { AssetHelper.packMany } for Asset[];
+
+    /// The maximum depth of the winner merkle tree
+    uint256 public constant MAX_WINNER_TREE_DEPTH = 10;
+
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
     uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
 
@@ -36,13 +45,43 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         uint256 _roundFactory,
         uint256 _executionRelayer,
         address _renderer
-    ) AssetRound(RoundType.INFINITE, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
+    )
+        AssetRound(
+            RoundType.INFINITE,
+            _classHash,
+            _propHouse,
+            _starknet,
+            _messenger,
+            _roundFactory,
+            _executionRelayer,
+            _renderer
+        )
+    {}
 
     /// @notice Initialize the round by defining the round's configuration
     /// and registering it on L2.
     /// @dev This function is only callable by the prop house contract
     function initialize(bytes calldata data) external payable onlyPropHouse {
         _register(abi.decode(data, (RoundConfig)));
+    }
+
+    /// @notice Checks if the `user` is a winner in the round
+    /// @param user The Ethereum address of the user
+    /// @param proposalId The winning proposal ID
+    /// @param assets The assets that were requested by the user
+    /// @param proof The Merkle proof verifying the user's inclusion in the round's winner list
+    function isAssetWinner(
+        address user,
+        uint256 proposalId,
+        Asset[] calldata assets,
+        IncrementalTreeProof calldata proof
+    ) public view returns (bool) {
+        return IncrementalMerkleProof.verify(
+            proof,
+            MAX_WINNER_TREE_DEPTH,
+            winnerMerkleRoot,
+            _computeLeaf(proposalId, user, assets.packMany())
+        );
     }
 
     /// @notice Update the winner count and merkle root, allowing new winners to claim their assets
@@ -111,12 +150,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param proposalId The winning proposal ID
     /// @param assets The assets to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
-    function claimManyTo(
-        address recipient,
-        uint256 proposalId,
-        Asset[] calldata assets,
-        bytes32[] calldata proof
-    ) external {
+    function claimManyTo(address recipient, uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
         _claimManyTo(recipient, proposalId, assets, proof);
     }
 
@@ -124,7 +158,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param proposalId The winning proposal ID
     /// @param assets The assets to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
-    function claimMany(uint256 proposalId, Asset[] calldata assets, bytes32[] calldata proof) external {
+    function claimMany(uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
         _claimManyTo(msg.sender, proposalId, assets, proof);
     }
 
@@ -229,7 +263,39 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         }
     }
 
-    /// Returns the largest of two numbers.
+    /// @notice Claim many round award assets to a custom recipient
+    /// @param recipient The asset recipient
+    /// @param proposalId The winning proposal ID
+    /// @param assets The assets to claim
+    /// @param proof The merkle proof used to verify the validity of the asset payout
+    function _claimManyTo(
+        address recipient,
+        uint256 proposalId,
+        Asset[] memory assets,
+        IncrementalTreeProof memory proof
+    ) internal {
+        if (isClaimed(proposalId)) {
+            revert ALREADY_CLAIMED();
+        }
+        PackedAsset[] memory packed = assets.packMany();
+        if (!IncrementalMerkleProof.verify(proof, MAX_WINNER_TREE_DEPTH, winnerMerkleRoot, _computeLeaf(proposalId, msg.sender, packed))) {
+            revert INVALID_MERKLE_PROOF();
+        }
+        _setClaimed(proposalId);
+        _transferMany(assets, address(this), payable(recipient));
+
+        emit AssetsClaimed(proposalId, msg.sender, recipient, packed);
+    }
+
+    /// @dev Computes a leaf in the incremental merkle tree used to release assets to winners.
+    /// @param proposalId The winning proposal ID
+    /// @param user The user claiming the assets
+    /// @param packed The packed assets being claimed
+    function _computeLeaf(uint256 proposalId, address user, PackedAsset[] memory packed) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proposalId, user, keccak256(abi.encode(packed)).mask250()));
+    }
+
+    /// @dev Returns the largest of two numbers.
     /// @param a The first number
     /// @param b The second number
     function _max(uint40 a, uint40 b) internal pure returns (uint40) {

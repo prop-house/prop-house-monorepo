@@ -308,9 +308,7 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         address_domain: u32, base: StorageBaseAddress, offset: u8, value: RoundConfig
     ) -> SyscallResult<()> {
         let packed = pack_round_config_fields(
-            value.round_state,
-            value.start_timestamp,
-            value.vote_period
+            value.round_state, value.start_timestamp, value.vote_period
         );
         StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
         StorageAccess::<felt252>::write_at_offset_internal(

@@ -50,9 +50,7 @@ mod Round {
     /// Initializes the contract by setting the origin chain ID
     /// and registering the provided strategy groups.
     fn initializer(mut strategy_groups_: Span<StrategyGroup>) {
-        _deployer::write(IRoundFactoryDispatcher { 
-            contract_address: get_caller_address(),
-        });
+        _deployer::write(IRoundFactoryDispatcher { contract_address: get_caller_address(),  });
         _register_strategy_groups(strategy_groups_);
     }
 
@@ -71,10 +69,7 @@ mod Round {
         let strategy_addresses = params.slice(starting_index + 1, strategy_addresses_len);
 
         let strategy_params_flat_len = (*params.at(starting_index + 1 + strategy_addresses_len)).try_into().unwrap();
-        let strategy_params_flat = params.slice(
-            starting_index + 2 + strategy_addresses_len,
-            strategy_params_flat_len
-        );
+        let strategy_params_flat = params.slice(starting_index + 2 + strategy_addresses_len, strategy_params_flat_len);
         let array_2d = construct_2d_array(strategy_params_flat);
 
         let mut i = 0;
@@ -136,10 +131,7 @@ mod Round {
                         contract_address: strategy.address
                     };
                     let power = governance_power_strategy.get_power(
-                        timestamp,
-                        user_address.into(),
-                        strategy.params,
-                        s.user_params,
+                        timestamp, user_address.into(), strategy.params, s.user_params,
                     );
 
                     i += 1;
@@ -195,7 +187,9 @@ mod Round {
                     let mut strategies = group.strategies;
                     match strategies.pop_front() {
                         Option::Some(strategy) => {
-                            let strategy_id = strategy_registry.register_strategy_if_not_exists(*strategy);
+                            let strategy_id = strategy_registry.register_strategy_if_not_exists(
+                                *strategy,
+                            );
                             _is_strategy_registered::write((group.strategy_type, strategy_id), true);
                         },
                         Option::None(_) => {

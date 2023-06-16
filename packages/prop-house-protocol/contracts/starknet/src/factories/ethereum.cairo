@@ -96,10 +96,7 @@ mod EthereumRoundFactory {
     /// * `cdata` - The calldata to pass to the entry point.
     #[l1_handler]
     fn route_call_to_round(
-        from_address: felt252,
-        origin_round: felt252,
-        selector: felt252,
-        cdata: Array<felt252>,
+        from_address: felt252, origin_round: felt252, selector: felt252, cdata: Array<felt252>, 
     ) {
         _only_origin_messenger(from_address);
 

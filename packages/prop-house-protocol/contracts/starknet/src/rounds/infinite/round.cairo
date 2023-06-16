@@ -2,8 +2,8 @@
 mod InfiniteRound {
     use starknet::{EthAddress, get_block_timestamp, get_caller_address};
     use prop_house::rounds::infinite::config::{
-        IInfiniteRound, RoundState, RoundParams, RoundConfig, Proposal, ProposalState,
-        ProposalVote, VoteDirection,
+        IInfiniteRound, RoundState, RoundParams, RoundConfig, Proposal, ProposalState, ProposalVote,
+        VoteDirection,
     };
     use prop_house::rounds::infinite::constants::{MAX_WINNER_TREE_DEPTH, MAX_REQUESTED_ASSET_COUNT};
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
@@ -165,7 +165,9 @@ mod InfiniteRound {
             let mut proposal_votes = proposal_votes.span();
             loop {
                 match proposal_votes.pop_front() {
-                    Option::Some(proposal_vote) => _cast_votes_on_proposal(voter_address, *proposal_vote, cumulative_voting_power),
+                    Option::Some(proposal_vote) => _cast_votes_on_proposal(
+                        voter_address, *proposal_vote, cumulative_voting_power
+                    ),
                     Option::None(_) => {
                         break;
                     },
@@ -207,7 +209,7 @@ mod InfiniteRound {
             );
             if execution_strategy_address.is_non_zero() {
                 let execution_strategy = IExecutionStrategyDispatcher {
-                    contract_address: execution_strategy_address,
+                    contract_address: execution_strategy_address, 
                 };
                 execution_strategy.execute(_build_finalize_round_execution_params(winner_count));
             }
@@ -245,10 +247,7 @@ mod InfiniteRound {
         used_proposing_strategies: Array<UserStrategy>,
     ) {
         InfiniteRound::propose(
-            proposer_address,
-            metadata_uri,
-            requested_assets,
-            used_proposing_strategies,
+            proposer_address, metadata_uri, requested_assets, used_proposing_strategies, 
         );
     }
 
@@ -280,11 +279,7 @@ mod InfiniteRound {
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     ) {
-        InfiniteRound::vote(
-            voter_address,
-            proposal_votes,
-            used_voting_strategies,
-        );
+        InfiniteRound::vote(voter_address, proposal_votes, used_voting_strategies);
     }
 
     /// Process all new round winners by submitting their information to the consuming chain.
@@ -321,7 +316,6 @@ mod InfiniteRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
-
         assert(start_timestamp.is_non_zero(), 'IR: Invalid start timestamp');
         assert(vote_period.is_non_zero(), 'IR: Invalid vote period');
         assert(quorum_for.is_non_zero(), 'IR: Quorums must be non-zero');
@@ -342,14 +336,12 @@ mod InfiniteRound {
         let mut strategy_groups = Default::default();
         strategy_groups.append(
             StrategyGroup {
-                strategy_type: StrategyType::PROPOSING,
-                strategies: proposing_strategies
+                strategy_type: StrategyType::PROPOSING, strategies: proposing_strategies
             },
         );
         strategy_groups.append(
             StrategyGroup {
-                strategy_type: StrategyType::VOTING,
-                strategies: voting_strategies
+                strategy_type: StrategyType::VOTING, strategies: voting_strategies
             },
         );
         Round::initializer(strategy_groups.span());
@@ -395,13 +387,16 @@ mod InfiniteRound {
     fn _assert_can_modify_proposal(proposer_address: EthAddress, proposal: Proposal) {
         assert(proposal.proposer.is_non_zero(), 'IR: Proposal does not exist');
         assert(proposer_address == proposal.proposer, 'IR: Caller is not proposer');
-        assert(_get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active');     
+        assert(
+            _get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active'
+        );
     }
 
     /// Assert the validity of an asset request. This includes an assertion
-    /// that the request is not too large and that there are no duplicate assets.
+    /// that the request size is valid and that there are no duplicate assets.
     /// * `requested_assets` - The requested assets.
     fn _assert_asset_request_valid(mut requested_assets: Span<Asset>) {
+        assert(requested_assets.len() >= 1, 'IR: No assets requested');
         assert(requested_assets.len() < MAX_REQUESTED_ASSET_COUNT, 'IR: Too many assets requested');
 
         _assert_no_duplicate_assets(requested_assets);
@@ -483,9 +478,7 @@ mod InfiniteRound {
 
         let winner_count = _winner_count::read();
         let mut incremental_merkle_tree = IncrementalMerkleTreeTrait::<u256>::new(
-            MAX_WINNER_TREE_DEPTH,
-            winner_count,
-            _read_sub_trees_from_storage(),
+            MAX_WINNER_TREE_DEPTH, winner_count, _read_sub_trees_from_storage(), 
         );
         let leaf = _compute_leaf(proposal_id, proposal);
 
@@ -579,7 +572,9 @@ mod InfiniteRound {
     /// This function will revert if there are no new winners to process.
     fn _process_winners() {
         let winner_count = _winner_count::read();
-        assert(winner_count > 0 & winner_count > _processed_winner_count::read(), 'IR: No new winners');
+        assert(
+            winner_count > 0 & winner_count > _processed_winner_count::read(), 'IR: No new winners'
+        );
 
         // Update the processed winner count
         _processed_winner_count::write(winner_count);
@@ -590,7 +585,7 @@ mod InfiniteRound {
         );
         if execution_strategy_address.is_non_zero() {
             let execution_strategy = IExecutionStrategyDispatcher {
-                contract_address: execution_strategy_address,
+                contract_address: execution_strategy_address, 
             };
             execution_strategy.execute(_build_process_winners_execution_params(winner_count, merkle_root));
         }

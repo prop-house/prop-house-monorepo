@@ -61,7 +61,15 @@ abstract contract Round is IRound, Clone {
     /// @param _messenger The Starknet Messenger contract
     /// @param _roundFactory The Round Factory contract address on Starknet
     /// @param _executionRelayer The execution relayer contract on Starknet
-    constructor(bytes32 _kind, uint256 _classHash, address _propHouse, address _starknet, address _messenger, uint256 _roundFactory, uint256 _executionRelayer) {
+    constructor(
+        bytes32 _kind,
+        uint256 _classHash,
+        address _propHouse,
+        address _starknet,
+        address _messenger,
+        uint256 _roundFactory,
+        uint256 _executionRelayer
+    ) {
         kind = _kind;
         classHash = _classHash;
 

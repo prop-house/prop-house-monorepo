@@ -4,8 +4,7 @@ mod EthereumExecutionStrategy {
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::syscalls::send_message_to_l1_syscall;
     use prop_house::common::utils::traits::{
-        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
-        IExecutionStrategy,
+        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher, IExecutionStrategy,
     };
     use prop_house::common::utils::serde::SpanSerde;
     use zeroable::Zeroable;

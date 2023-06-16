@@ -2,14 +2,16 @@
 pragma solidity >=0.8.17;
 
 import { AssetRound } from './base/AssetRound.sol';
+import { Asset, PackedAsset } from '../lib/types/Common.sol';
 import { ITimedRound } from '../interfaces/ITimedRound.sol';
 import { AssetHelper } from '../lib/utils/AssetHelper.sol';
+import { MerkleProof } from '../lib/utils/MerkleProof.sol';
 import { Selector, RoundType } from '../Constants.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
-import { Asset } from '../lib/types/Common.sol';
 
 contract TimedRound is ITimedRound, AssetRound {
     using { Uint256.mask250 } for bytes32;
+    using { AssetHelper.pack } for Asset;
     using { AssetHelper.packMany } for Asset[];
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
@@ -50,13 +52,58 @@ contract TimedRound is ITimedRound, AssetRound {
         uint256 _roundFactory,
         uint256 _executionRelayer,
         address _renderer
-    ) AssetRound(RoundType.TIMED, _classHash, _propHouse, _starknet, _messenger, _roundFactory, _executionRelayer, _renderer) {}
+    )
+        AssetRound(
+            RoundType.TIMED,
+            _classHash,
+            _propHouse,
+            _starknet,
+            _messenger,
+            _roundFactory,
+            _executionRelayer,
+            _renderer
+        )
+    {}
 
     /// @notice Initialize the round by defining the round's configuration
     /// and registering it on L2.
     /// @dev This function is only callable by the prop house contract
     function initialize(bytes calldata data) external payable onlyPropHouse {
         _register(abi.decode(data, (RoundConfig)));
+    }
+
+    /// @notice Checks if the `user` is a winner in the round when no assets were offered
+    /// @param user The Ethereum address of the user
+    /// @param proposalId The winning proposal ID
+    /// @param position The rank or order of a winner in the round
+    /// @param proof The Merkle proof verifying the user's inclusion at the specified position in the round's winner list
+    function isWinner(
+        address user,
+        uint256 proposalId,
+        uint256 position,
+        bytes32[] calldata proof
+    ) external view returns (bool) {
+        return MerkleProof.verify(proof, winnerMerkleRoot, keccak256(abi.encode(user, proposalId, position)));
+    }
+
+    /// @notice Checks if the `user` is a winner in the round when assets were offered
+    /// @param user The Ethereum address of the user
+    /// @param proposalId The winning proposal ID
+    /// @param position The rank or order of a winner in the round
+    /// @param asset The asset that was won by the user
+    /// @param proof The Merkle proof verifying the user's inclusion in the round's winner list
+    function isAssetWinner(
+        address user,
+        uint256 proposalId,
+        uint256 position,
+        Asset calldata asset,
+        bytes32[] calldata proof
+    ) public view returns (bool) {
+        return MerkleProof.verify(
+            proof,
+            winnerMerkleRoot,
+            _computeClaimLeaf(proposalId, position, user, asset.pack())
+        );
     }
 
     /// @notice Cancel the timed round
@@ -99,23 +146,26 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @notice Claim a round award asset to a custom recipient
     /// @param recipient The asset recipient
     /// @param proposalId The winning proposal ID
+    /// @param position The rank or order of the winner in the round
     /// @param asset The asset to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
     function claimTo(
         address recipient,
         uint256 proposalId,
+        uint256 position,
         Asset calldata asset,
         bytes32[] calldata proof
     ) external {
-        _claimTo(recipient, proposalId, asset, proof);
+        _claimTo(recipient, proposalId, position, asset, proof);
     }
 
     /// @notice Claim a round award asset to the caller
     /// @param proposalId The winning proposal ID
+    /// @param position The rank or order of the winner in the round
     /// @param asset The asset to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
-    function claim(uint256 proposalId, Asset calldata asset, bytes32[] calldata proof) external {
-        _claimTo(msg.sender, proposalId, asset, proof);
+    function claim(uint256 proposalId, uint256 position, Asset calldata asset, bytes32[] calldata proof) external {
+        _claimTo(msg.sender, proposalId, position, asset, proof);
     }
 
     /// @notice Reclaim assets to a custom recipient
@@ -157,7 +207,7 @@ contract TimedRound is ITimedRound, AssetRound {
         // L2 strategy params
         payload[2] = 11 + strategyParamsCount;
         payload[3] = 10 + strategyParamsCount;
-        payload[4] = keccak256(abi.encode(config.awards.packMany())).mask250();
+        payload[4] = _computeAwardHash(config.awards);
         payload[5] = config.proposalPeriodStartTimestamp;
         payload[6] = config.proposalPeriodDuration;
         payload[7] = config.votePeriodDuration;
@@ -215,17 +265,63 @@ contract TimedRound is ITimedRound, AssetRound {
         if (config.winnerCount == 0 || config.winnerCount > MAX_WINNER_COUNT) {
             revert WINNER_COUNT_OUT_OF_RANGE();
         }
-        if (config.awards.length != 1 && config.awards.length != config.winnerCount) {
-            revert AWARD_LENGTH_MISMATCH();
-        }
-        if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
-            revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
-        }
         if (config.proposalThreshold != 0 && config.proposingStrategies.length == 0) {
             revert NO_PROPOSING_STRATEGIES_PROVIDED();
         }
         if (config.votingStrategies.length == 0) {
             revert NO_VOTING_STRATEGIES_PROVIDED();
         }
+        if (config.awards.length != 0 && config.awards.length != config.winnerCount) {
+            if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
+                revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
+            } else {
+                revert AWARD_LENGTH_MISMATCH();
+            }
+        }
+    }
+
+    /// @notice Claim a round award asset to a custom recipient
+    /// @param recipient The asset recipient
+    /// @param proposalId The winning proposal ID
+    /// @param position The position or rank of the proposal in the winners list
+    /// @param asset The asset to claim
+    /// @param proof The merkle proof used to verify the validity of the asset payout
+    function _claimTo(
+        address recipient,
+        uint256 proposalId,
+        uint256 position,
+        Asset calldata asset,
+        bytes32[] calldata proof
+    ) internal {
+        if (isClaimed(proposalId)) {
+            revert ALREADY_CLAIMED();
+        }
+        PackedAsset memory packed = asset.pack();
+        if (!MerkleProof.verify(proof, winnerMerkleRoot, _computeClaimLeaf(proposalId, position, msg.sender, packed))) {
+            revert INVALID_MERKLE_PROOF();
+        }
+        _setClaimed(proposalId);
+        _transfer(asset, address(this), payable(recipient));
+
+        emit AssetClaimed(proposalId, msg.sender, recipient, packed);
+    }
+
+    /// @dev Computes a leaf in the winner merkle tree used to release assets to winners.
+    /// @param proposalId The winning proposal ID
+    /// @param position The position or rank of the proposal in the winners list
+    /// @param user The user claiming the assets
+    /// @param packed The packed asset that's being claimed
+    function _computeClaimLeaf(uint256 proposalId, uint256 position, address user, PackedAsset memory packed) internal pure returns (bytes32) {
+        return keccak256(abi.encode(proposalId, position, user, packed));
+    }
+
+    /// @notice Compute the award hash for the round, returning `0` if
+    /// there are no awards.
+    /// @param awards The round awards
+    function _computeAwardHash(Asset[] memory awards) internal pure returns (uint256) {
+        if (awards.length == 0) {
+            return 0;
+        }
+        return keccak256(abi.encode(awards.packMany())).mask250();
     }
 }

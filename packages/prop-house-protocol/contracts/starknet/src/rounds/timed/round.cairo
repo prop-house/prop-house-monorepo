@@ -135,7 +135,7 @@ mod TimedRound {
         ) {
             let config = _config::read();
             let current_timestamp = get_block_timestamp();
-            
+
             _assert_caller_valid_and_round_active();
             _assert_in_vote_period(config, current_timestamp);
 
@@ -197,7 +197,7 @@ mod TimedRound {
             );
             if execution_strategy_address.is_non_zero() {
                 let execution_strategy = IExecutionStrategyDispatcher {
-                    contract_address: execution_strategy_address,
+                    contract_address: execution_strategy_address, 
                 };
                 execution_strategy.execute(_build_execution_params(merkle_root));
             }
@@ -318,14 +318,12 @@ mod TimedRound {
         let mut strategy_groups = Default::default();
         strategy_groups.append(
             StrategyGroup {
-                strategy_type: StrategyType::PROPOSING,
-                strategies: proposing_strategies
+                strategy_type: StrategyType::PROPOSING, strategies: proposing_strategies
             },
         );
         strategy_groups.append(
             StrategyGroup {
-                strategy_type: StrategyType::VOTING,
-                strategies: voting_strategies
+                strategy_type: StrategyType::VOTING, strategies: voting_strategies
             },
         );
         Round::initializer(strategy_groups.span());
@@ -396,18 +394,14 @@ mod TimedRound {
         let vote_period_start_timestamp = config.proposal_period_end_timestamp + 1;
 
         assert(current_timestamp >= vote_period_start_timestamp, 'TR: Vote period not started');
-        assert(
-            current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended'
-        );
+        assert(current_timestamp <= config.vote_period_end_timestamp, 'TR: Vote period has ended');
     }
 
     /// Asserts that the vote period has ended.
     /// * `config` - The round config.
     fn _assert_vote_period_has_ended(config: RoundConfig) {
         let current_timestamp = get_block_timestamp();
-        assert(
-            current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended'
-        );
+        assert(current_timestamp > config.vote_period_end_timestamp, 'TR: Vote period not ended');
     }
 
     /// Cast votes on one or more proposals.
@@ -538,7 +532,9 @@ mod TimedRound {
         loop {
             match proposals.pop_front() {
                 Option::Some(p) => {
-                    leaves.append(_compute_winner_leaf((*p).proposal.proposer, position));
+                    let proposal_id = *p.proposal_id;
+                    let proposer = *p.proposal.proposer;
+                    leaves.append(_compute_winner_leaf(proposal_id, position, proposer));
                     position += 1;
                 },
                 Option::None(_) => {
@@ -563,17 +559,17 @@ mod TimedRound {
         let mut leaves = Default::<Array<u256>>::default();
         let proposal_count = proposals.len();
 
-        let mut i = 0;
+        let mut position = 0;
         loop {
-            if i == proposal_count {
+            if position == proposal_count {
                 break leaves.span();
             }
-            let p = *proposals.at(i);
+            let p = *proposals.at(position);
 
-            i += 1;
+            position += 1;
             leaves.append(
                 _compute_winner_leaf_with_award(
-                    p.proposal.proposer, i, award_to_split.asset_id, amount_per_proposal
+                    p.proposal_id, position, p.proposal.proposer, award_to_split.asset_id, amount_per_proposal
                 )
             );
         }
@@ -583,50 +579,56 @@ mod TimedRound {
     /// to each proposal individually.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to assign to each proposal.
-    /// TODO: Support instant reclamation of remainder assets when the submitted
-    /// proposal count is less than the defined number of winners.
     fn _compute_leaves_for_assigned_awards(
         proposals: Span<ProposalWithId>, awards: Array<Asset>
     ) -> Span<u256> {
         let proposal_count = proposals.len();
         let mut leaves = Default::<Array<u256>>::default();
 
-        let mut i = 0;
+        let mut position = 0;
         loop {
-            if i == proposal_count {
+            if position == proposal_count {
                 break leaves.span();
             }
-            let award = *awards.at(i);
-            let p = *proposals.at(i);
+            let award = *awards.at(position);
+            let p = *proposals.at(position);
 
-            i += 1;
+            position += 1;
             leaves.append(
-                _compute_winner_leaf_with_award(p.proposal.proposer, i, award.asset_id, award.amount)
+                _compute_winner_leaf_with_award(
+                    p.proposal_id, position, p.proposal.proposer, award.asset_id, award.amount
+                )
             );
         }
     }
 
-    /// Compute a single leaf consisting of a proposer address and proposal rank.
+    /// Compute a single leaf consisting of a proposal id, proposal rank,
+    /// and proposer address.
+    /// * `proposal_id` - The ID of the proposal.
     /// * `proposer` - The proposer of the proposal.
     /// * `position` - The rank of the proposal in the winning set.
-    fn _compute_winner_leaf(proposer: EthAddress, position: u32) -> u256 {
+    fn _compute_winner_leaf(proposal_id: u32, position: u32, proposer: EthAddress) -> u256 {
         let mut leaf_input = Default::default();
+        leaf_input.append(u256_from_felt252(proposal_id.into()));
         leaf_input.append(u256_from_felt252(position.into()));
         leaf_input.append(u256_from_felt252(proposer.into()));
 
         keccak_u256s_be(leaf_input.span())
     }
 
-    /// Compute a single leaf consisting of a proposal ID, proposer address, asset ID, and asset amount.
-    /// * `proposer` - The proposer of the proposal.
+    /// Compute a single leaf consisting of a proposal ID, proposal rank,
+    /// proposer address, asset ID, and asset amount.
+    /// * `proposal_id` - The ID of the proposal.
     /// * `position` - The rank of the proposal in the winning set.
+    /// * `proposer` - The proposer of the proposal.
     /// * `asset_id` - The ID of the asset to award.
     /// * `asset_amount` - The amount of the asset to award.
     fn _compute_winner_leaf_with_award(
-        proposer: EthAddress, position: u32, asset_id: u256, asset_amount: u256
+        proposal_id: u32, position: u32, proposer: EthAddress, asset_id: u256, asset_amount: u256
     ) -> u256 {
         let mut leaf_input = Default::default();
-        leaf_input.append(u256_from_felt252(position.into())); // TODO: Need to decide if this is what we're doing...
+        leaf_input.append(u256_from_felt252(proposal_id.into()));
+        leaf_input.append(u256_from_felt252(position.into()));
         leaf_input.append(u256_from_felt252(proposer.into()));
         leaf_input.append(asset_id);
         leaf_input.append(asset_amount);
