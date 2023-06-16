@@ -3,6 +3,9 @@ use prop_house::common::utils::serde::SpanSerde;
 
 #[abi]
 trait IRoundFactory {
+    fn starknet_round(origin_round: felt252) -> ContractAddress;
+    fn origin_round(starknet_round: ContractAddress) -> felt252;
+    fn origin_messenger() -> felt252;
     fn origin_chain_id() -> u64;
 }
 

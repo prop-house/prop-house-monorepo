@@ -1,18 +1,8 @@
-use starknet::ContractAddress;
-
-#[abi]
-trait IEthereumRoundFactory {
-    fn starknet_round(origin_round: felt252) -> ContractAddress;
-    fn origin_round(starknet_round: ContractAddress) -> felt252;
-    fn origin_messenger() -> felt252;
-    fn origin_chain_id() -> u64;
-}
-
 #[contract]
 mod EthereumRoundFactory {
     use starknet::syscalls::deploy_syscall;
     use starknet::{ContractAddress, ClassHash};
-    use super::IEthereumRoundFactory;
+    use prop_house::common::utils::traits::IRoundFactory;
     use zeroable::Zeroable;
     use array::ArrayTrait;
 
@@ -27,7 +17,7 @@ mod EthereumRoundFactory {
         origin_round: felt252, starknet_round: ContractAddress, round_class_hash: ClassHash
     ) {}
 
-    impl EthereumRoundFactory of IEthereumRoundFactory {
+    impl EthereumRoundFactory of IRoundFactory {
         fn starknet_round(origin_round: felt252) -> ContractAddress {
             _starknet_round::read(origin_round)
         }
