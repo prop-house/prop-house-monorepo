@@ -2,6 +2,7 @@
 pragma solidity >=0.8.17;
 
 import { IRound } from './IRound.sol';
+import { PackedAsset } from '../lib/types/Common.sol';
 
 interface IAssetRound is IRound {
     /// @notice Thrown when an asset has already been claimed
@@ -14,15 +15,13 @@ interface IAssetRound is IRound {
     /// @param proposalId The ID of the winning proposal
     /// @param claimer The address of the claimer (winner)
     /// @param recipient The recipient of the asset
-    /// @param assetId The ID of the asset being claimed
-    /// @param amount The amount of `asset` being claimed
-    event AssetClaimed(uint256 proposalId, address claimer, address recipient, uint256 assetId, uint256 amount);
+    /// @param asset The ID and amount of the asset being claimed
+    event AssetClaimed(uint256 proposalId, address claimer, address recipient, PackedAsset asset);
 
     /// @notice Emitted when an asset is claimed by a winner
     /// @param proposalId The ID of the winning proposal
     /// @param claimer The address of the claimer (winner)
     /// @param recipient The recipient of the asset
-    /// @param assetId The ID of the asset being claimed
-    /// @param amount The amount of `asset` being claimed
-    event AssetsClaimed(uint256 proposalId, address claimer, address recipient, uint256 assetId, uint256 amount);
+    /// @param assets The ID and amount of the assets being claimed
+    event AssetsClaimed(uint256 proposalId, address claimer, address recipient, PackedAsset[] assets);
 }

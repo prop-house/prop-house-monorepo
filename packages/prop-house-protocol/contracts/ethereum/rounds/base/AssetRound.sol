@@ -2,10 +2,10 @@
 pragma solidity >=0.8.17;
 
 import { Round } from './Round.sol';
-import { Asset } from '../../lib/types/Common.sol';
 import { IERC165 } from '../../interfaces/IERC165.sol';
 import { AssetHelper } from '../../lib/utils/AssetHelper.sol';
 import { IAssetRound } from '../../interfaces/IAssetRound.sol';
+import { PackedAsset, Asset } from '../../lib/types/Common.sol';
 import { AssetController } from '../../lib/utils/AssetController.sol';
 import { ITokenMetadataRenderer } from '../../interfaces/ITokenMetadataRenderer.sol';
 import { ReceiptIssuer } from '../../lib/utils/ReceiptIssuer.sol';
@@ -16,8 +16,8 @@ import { Uint256 } from '../../lib/utils/Uint256.sol';
 
 abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder, ERC1155, ReceiptIssuer {
     using { Uint256.mask250 } for bytes32;
-    using { AssetHelper.toID } for Asset;
-    using { AssetHelper.pack } for Asset[];
+    using { AssetHelper.packMany } for Asset[];
+    using { AssetHelper.toID, AssetHelper.pack } for Asset;
 
     /// @notice The Asset Metadata Renderer contract
     ITokenMetadataRenderer public immutable renderer;
@@ -85,16 +85,16 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
         if (isClaimed(proposalId)) {
             revert ALREADY_CLAIMED();
         }
-        uint256 assetId = asset.toID();
+        PackedAsset memory packed = asset.pack();
 
-        bytes32 leaf = keccak256(abi.encode(proposalId, caller, assetId, asset.amount));
+        bytes32 leaf = keccak256(abi.encode(proposalId, caller, packed));
         if (!MerkleProof.verify(proof, winnerMerkleRoot, leaf)) {
             revert INVALID_MERKLE_PROOF();
         }
         _setClaimed(proposalId);
         _transfer(asset, address(this), payable(recipient));
 
-        emit AssetClaimed(proposalId, caller, recipient, assetId, asset.amount);
+        emit AssetClaimed(proposalId, caller, recipient, packed);
     }
 
     /// @notice Claim many round award assets to a custom recipient
@@ -112,8 +112,9 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
         if (isClaimed(proposalId)) {
             revert ALREADY_CLAIMED();
         }
+        PackedAsset[] memory packed = assets.packMany();
         bytes32 leaf = keccak256(
-            abi.encode(proposalId, caller, keccak256(abi.encode(assets.pack())).mask250())
+            abi.encode(proposalId, caller, keccak256(abi.encode(packed)).mask250())
         );
         if (!MerkleProof.verify(proof, winnerMerkleRoot, leaf)) {
             revert INVALID_MERKLE_PROOF();
@@ -127,27 +128,8 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
                 ++i;
             }
         }
-
-        // TODO: Why not just emit the assets? It's cheap.
-        // Otherwise, let's just be lazy and loop the same event.
-        // emit AssetsClaimed(proposalId, caller, recipient, assetId, asset.amount);
+        emit AssetsClaimed(proposalId, caller, recipient, packed);
     }
-
-    // /// @notice Claim an award asset to the caller
-    // /// @param proposalId The winning proposal ID
-    // /// @param asset The asset to claim
-    // /// @param proof The merkle proof used to verify the validity of the asset payout
-    // function _claim(uint256 proposalId, Asset calldata asset, bytes32[] calldata proof) internal {
-    //     _claimTo(msg.sender, proposalId, asset, proof);
-    // }
-
-    // /// @notice Claim many award assets to the caller
-    // /// @param proposalId The winning proposal ID
-    // /// @param assets The assets to claim
-    // /// @param proof The merkle proof used to verify the validity of the asset payout
-    // function _claimMany(uint256 proposalId, Asset[] calldata assets, bytes32[] calldata proof) internal {
-    //     _claimManyTo(msg.sender, proposalId, assets, proof);
-    // }
 
     /// @notice Reclaim assets to a custom recipient
     /// @param recipient The asset recipient

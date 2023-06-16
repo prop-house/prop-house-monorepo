@@ -13,7 +13,7 @@ contract TimedRound is ITimedRound, AssetRound {
     using { Uint256.mask250 } for bytes32;
     using { Uint256.toUint256 } for address;
     using { AssetHelper.toID } for Asset;
-    using { AssetHelper.pack } for Asset[];
+    using { AssetHelper.packMany } for Asset[];
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
     uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
@@ -160,7 +160,7 @@ contract TimedRound is ITimedRound, AssetRound {
         // L2 strategy params
         payload[2] = 11 + strategyParamsCount;
         payload[3] = 10 + strategyParamsCount;
-        payload[4] = keccak256(abi.encode(config.awards.pack())).mask250();
+        payload[4] = keccak256(abi.encode(config.awards.packMany())).mask250();
         payload[5] = config.proposalPeriodStartTimestamp;
         payload[6] = config.proposalPeriodDuration;
         payload[7] = config.votePeriodDuration;

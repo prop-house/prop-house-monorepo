@@ -4,15 +4,23 @@ pragma solidity >=0.8.17;
 import { Asset, AssetType, PackedAsset } from '../types/Common.sol';
 
 library AssetHelper {
+    /// @notice Returns the packed asset information for a single asset
+    /// @param asset The asset information
+    function pack(Asset memory asset) internal pure returns (PackedAsset memory packed) {
+        unchecked {
+            packed = PackedAsset({ assetId: toID(asset), amount: asset.amount });
+        }
+    }
+
     /// @notice Returns the packed asset information for the provided assets
     /// @param assets The asset information
-    function pack(Asset[] memory assets) internal pure returns (PackedAsset[] memory packed) {
+    function packMany(Asset[] memory assets) internal pure returns (PackedAsset[] memory packed) {
         unchecked {
             uint256 assetCount = assets.length;
             packed = new PackedAsset[](assetCount);
 
             for (uint256 i = 0; i < assetCount; ++i) {
-                packed[i] = PackedAsset({ assetId: toID(assets[i]), amount: assets[i].amount });
+                packed[i] = pack(assets[i]);
             }
         }
     }
