@@ -6,11 +6,6 @@ trait IEthereumRoundFactory {
     fn origin_messenger() -> felt252;
 }
 
-// TODO: Need a router as well?
-// This solves our chain id issue as well.
-
-// Maybe call it Ethereum entry point?
-
 #[contract]
 mod EthereumRoundFactory {
     use starknet::syscalls::deploy_syscall;

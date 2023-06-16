@@ -33,6 +33,7 @@ trait ITimedRound {
     fn finalize_round(awards: Array<Asset>);
 }
 
+#[derive(Drop)]
 struct RoundParams {
     award_hash: felt252,
     proposal_period_start_timestamp: u64,

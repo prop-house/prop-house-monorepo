@@ -10,7 +10,7 @@ use traits::Into;
 
 #[test]
 #[available_gas(100000000)]
-fn keccak_merkle_tree_test() {
+fn test_keccak_merkle_tree() {
     let mut merkle_tree = MerkleTreeTrait::<u256>::new();
 
     let mut even_leaves = Default::<Array<u256>>::default();
@@ -77,7 +77,7 @@ fn keccak_merkle_tree_test() {
 
 #[test]
 #[available_gas(2000000)]
-fn pedersen_merkle_tree_test() {
+fn test_pedersen_merkle_tree() {
     let mut merkle_tree = MerkleTreeTrait::<felt252>::new();
     // Create a proof.
     let proof = generate_proof_2_elements(
@@ -123,7 +123,7 @@ fn pedersen_merkle_tree_test() {
 
 #[test]
 #[available_gas(100000000)]
-fn keccak_incremental_merkle_tree_test() {
+fn test_keccak_incremental_merkle_tree() {
     let mut even_leaves = IncrementalMerkleTreeTrait::<u256>::new(
         10, // height
         0, // leaf count
@@ -201,7 +201,7 @@ fn keccak_incremental_merkle_tree_test() {
 #[test]
 #[available_gas(100000000)]
 #[should_panic(expected: ('Tree is full', ))]
-fn keccak_incremental_merkle_tree_test_fail() {
+fn test_keccak_incremental_merkle_tree_full_failure() {
     let mut full_tree = IncrementalMerkleTreeTrait::<u256>::new(
         2, // height
         0, // leaf count
