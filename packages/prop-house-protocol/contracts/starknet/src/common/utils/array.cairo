@@ -1,5 +1,6 @@
 use traits::{Into, TryInto, Destruct};
 use array::{ArrayTrait, SpanTrait};
+use poseidon::poseidon_hash_span;
 use integer::U128IntoFelt252;
 use dict::Felt252DictTrait;
 use option::OptionTrait;
@@ -48,7 +49,6 @@ impl SpanImpl<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>> of SpanTraitExt<T> {
     }
 }
 
-// TODO: Optimally, we remove the need for this.
 #[derive(Copy, Drop)]
 struct Immutable2DArray {
     offsets: Span<felt252>,
@@ -115,17 +115,25 @@ fn assert_no_duplicates_u256(mut span: Span<u256>) {
         return;
     }
 
-    // TODO: Consider sorting and comparing. This is a naive implementation.
+    let mut dict: Felt252Dict<felt252> = Default::default();
     loop {
         match span.pop_front() {
             Option::Some(v) => {
-                assert(span.contains(*v) == false, 'Duplicate element found');
+                let v = *v;
+                let mut parts = Default::default();
+                parts.append(v.low.into());
+                parts.append(v.high.into());
+
+                let key = poseidon_hash_span(parts.span());
+                assert(dict.get(key).is_zero(), 'Duplicate element found');
+                dict.insert(key, 1);
             },
             Option::None(()) => {
                 break;
             },
         };
-    }
+    };
+    dict.squash();
 }
 
 /// Convert a span of `felt252` to a `u256` array.
