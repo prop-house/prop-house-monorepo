@@ -36,7 +36,6 @@ mod InfiniteRound {
         _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
         _spent_voting_power: LegacyMap<(EthAddress, u32), u256>,
-        _asset_balances: LegacyMap<u256, u256>,
     }
 
     #[event]
@@ -400,14 +399,12 @@ mod InfiniteRound {
     }
 
     /// Assert the validity of an asset request. This includes an assertion
-    /// that the request is not too large, that there are no duplicate assets,
-    /// and that the round has sufficient balances of the requested assets.
+    /// that the request is not too large and that there are no duplicate assets.
     /// * `requested_assets` - The requested assets.
     fn _assert_asset_request_valid(mut requested_assets: Span<Asset>) {
         assert(requested_assets.len() < MAX_REQUESTED_ASSET_COUNT, 'IR: Too many assets requested');
 
         _assert_no_duplicate_assets(requested_assets);
-        _assert_sufficient_asset_balances(requested_assets);
     }
 
     /// Reverts if the asset array contains duplicate assets.
@@ -425,25 +422,6 @@ mod InfiniteRound {
             };
         };
         assert_no_duplicates_u256(asset_ids.span());
-    }
-
-    /// Reverts if the strategy does not have sufficient balances to fulfill the request.
-    /// Note that this function does NOT handle duplicate asset requests. Ensure duplicate
-    /// validation has occurred prior to calling this function.
-    /// * `requested_assets` - The assets requested by the proposer.
-    fn _assert_sufficient_asset_balances(mut requested_assets: Span<Asset>) {
-        loop {
-            match requested_assets.pop_front() {
-                Option::Some(a) => {
-                    let a = *a;
-                    let asset_balance = _asset_balances::read(a.asset_id);
-                    assert(asset_balance >= a.amount, 'IR: Insufficient balance');
-                },
-                Option::None(_) => {
-                    break;
-                },
-            };
-        };
     }
 
     /// Cast votes on a single proposal.
