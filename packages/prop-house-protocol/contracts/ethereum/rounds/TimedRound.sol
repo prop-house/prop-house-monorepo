@@ -5,14 +5,11 @@ import { AssetRound } from './base/AssetRound.sol';
 import { ITimedRound } from '../interfaces/ITimedRound.sol';
 import { AssetHelper } from '../lib/utils/AssetHelper.sol';
 import { Selector, RoundType } from '../Constants.sol';
-import { IERC165 } from '../interfaces/IERC165.sol';
 import { Uint256 } from '../lib/utils/Uint256.sol';
 import { Asset } from '../lib/types/Common.sol';
 
 contract TimedRound is ITimedRound, AssetRound {
     using { Uint256.mask250 } for bytes32;
-    using { Uint256.toUint256 } for address;
-    using { AssetHelper.toID } for Asset;
     using { AssetHelper.packMany } for Asset[];
 
     /// @notice The amount of time before an award provider can reclaim unclaimed awards

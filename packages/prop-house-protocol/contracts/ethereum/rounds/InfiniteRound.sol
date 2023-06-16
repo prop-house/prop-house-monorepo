@@ -2,26 +2,11 @@
 pragma solidity >=0.8.17;
 
 import { AssetRound } from './base/AssetRound.sol';
-import { IPropHouse } from '../interfaces/IPropHouse.sol';
 import { IInfiniteRound } from '../interfaces/IInfiniteRound.sol';
-import { Selector, RoundType, MAX_250_BIT_UNSIGNED } from '../Constants.sol';
-import { ITokenMetadataRenderer } from '../interfaces/ITokenMetadataRenderer.sol';
-import { AssetController } from '../lib/utils/AssetController.sol';
-import { IStarknetCore } from '../interfaces/IStarknetCore.sol';
-import { ReceiptIssuer } from '../lib/utils/ReceiptIssuer.sol';
-import { Asset, PackedAsset } from '../lib/types/Common.sol';
-import { AssetHelper } from '../lib/utils/AssetHelper.sol';
-import { MerkleProof } from '../lib/utils/MerkleProof.sol';
-import { TokenHolder } from '../lib/utils/TokenHolder.sol';
-import { IMessenger } from '../interfaces/IMessenger.sol';
-import { IERC165 } from '../interfaces/IERC165.sol';
-import { Uint256 } from '../lib/utils/Uint256.sol';
+import { Selector, RoundType } from '../Constants.sol';
+import { Asset } from '../lib/types/Common.sol';
 
 contract InfiniteRound is IInfiniteRound, AssetRound {
-    using { Uint256.mask250 } for bytes32;
-    using { Uint256.toUint256 } for address;
-    using { AssetHelper.packMany } for Asset[];
-
     /// @notice The amount of time before an award provider can reclaim unclaimed awards
     uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
 
@@ -173,24 +158,23 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
 
         uint256 strategyParamsCount = vsCount + vsParamFlatCount + psCount + psParamsFlatCount;
 
-        payload = new uint256[](14 + strategyParamsCount);
+        payload = new uint256[](13 + strategyParamsCount);
 
         // `payload[0]` is reserved for the round address, which is
         // set in the messenger contract for security purposes.
         payload[1] = classHash;
 
         // L2 strategy params
-        payload[2] = 11 + strategyParamsCount;
-        payload[3] = 10 + strategyParamsCount;
-        payload[4] = keccak256(abi.encode(config.awards.packMany())).mask250();
-        payload[5] = config.startTimestamp;
-        payload[6] = config.votePeriodDuration;
-        payload[7] = config.quorumFor;
-        payload[8] = config.quorumAgainst;
+        payload[2] = 10 + strategyParamsCount;
+        payload[3] = 9 + strategyParamsCount;
+        payload[4] = config.startTimestamp;
+        payload[5] = config.votePeriodDuration;
+        payload[6] = config.quorumFor;
+        payload[7] = config.quorumAgainst;
 
         payload[9] = config.proposalThreshold;
 
-        uint256 offset = 10;
+        uint256 offset = 9;
         (payload, offset) = _addStrategies(payload, offset, config.proposingStrategies, config.proposingStrategyParamsFlat);
         (payload, ) = _addStrategies(payload, ++offset, config.votingStrategies, config.votingStrategyParamsFlat);
         return payload;
