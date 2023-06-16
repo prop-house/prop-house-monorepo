@@ -174,27 +174,15 @@ fn test_keccak_incremental_merkle_tree() {
     let root: u256 = full_tree.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
 
-    let mut sub_tree_0 = Default::default();
-    sub_tree_0.append(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb_u256);
-    sub_tree_0.append(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510_u256);
-
-    let mut sub_tree_1 = Default::default();
-    sub_tree_1.append(0x805b21d846b189efaeb0377d6bb0d201b3872a363e607c25088f025b0c6ae1f8_u256);
-    sub_tree_1.append(0xad3228b676f7d3cd4284a5443f17f1962b36e491b30a40b2405849e597ba5fb5_u256);
-
-    let mut sub_trees = Default::<Felt252Dict<Nullable<Span<u256>>>>::default();
-    sub_trees.insert(0, nullable_from_box(BoxTrait::new(sub_tree_0.span())));
-    sub_trees.insert(1, nullable_from_box(BoxTrait::new(sub_tree_1.span())));
-
-    let mut pre_populated_tree_even = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut pre_populated_tree = IncrementalMerkleTreeTrait::<u256>::new(
         4, // height
         2, // leaf count
-        sub_trees, // sub-trees
+        generate_sub_trees(), // sub-trees
     );
-    pre_populated_tree_even.append_leaf(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2_u256);
+    pre_populated_tree.append_leaf(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2_u256);
 
     let expected_merkle_root: u256 = 0x5f977373dabeb815a2b219434449d9b71fbc68780486f5d5d0b2451f84f95df7;
-    let root: u256 = pre_populated_tree_even.get_merkle_root().unwrap();
+    let root: u256 = pre_populated_tree.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
 }
 
@@ -250,4 +238,16 @@ fn generate_proof_2_elements<T, impl TDrop: Drop<T>>(element_1: T, element_2: T)
     proof.append(element_1);
     proof.append(element_2);
     proof
+}
+
+fn generate_sub_trees() -> Felt252Dict<Nullable<Span<u256>>> {
+    let mut sub_tree_generation_tree = IncrementalMerkleTreeTrait::<u256>::new(
+        4, // height
+        0, // leaf count
+        Default::default(), // sub-trees
+    );
+    sub_tree_generation_tree.append_leaf(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb_u256);
+    sub_tree_generation_tree.append_leaf(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510_u256);
+
+    sub_tree_generation_tree.sub_trees
 }

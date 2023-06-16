@@ -597,7 +597,6 @@ mod InfiniteRound {
         };
     }
 
-
     /// Process all new round winners by submitting their information to the consuming chain.
     /// This function will revert if there are no new winners to process.
     fn _process_winners() {
