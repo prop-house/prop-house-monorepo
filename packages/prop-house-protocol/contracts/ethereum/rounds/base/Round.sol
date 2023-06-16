@@ -7,6 +7,7 @@ import { IRound } from '../../interfaces/IRound.sol';
 import { IPropHouse } from '../../interfaces/IPropHouse.sol';
 import { IStarknetCore } from '../../interfaces/IStarknetCore.sol';
 import { IMessenger } from '../../interfaces/IMessenger.sol';
+import { PackedAsset } from '../../lib/types/Common.sol';
 import { Uint256 } from '../../lib/utils/Uint256.sol';
 import { Selector } from '../../Constants.sol';
 
@@ -100,6 +101,35 @@ abstract contract Round is IRound, Clone {
         payload[1] = Selector.CANCEL_ROUND;
 
         _callStarknetRound(payload);
+    }
+
+    /// @notice Notify Starknet that a deposit has been received
+    /// @param identifier The asset identifier
+    /// @param amount The asset amount
+    function _notifyDepositReceived(uint256 identifier, uint256 amount) internal {
+        uint256[] memory identifiers = new uint256[](1);
+        identifiers[0] = identifier;
+
+        uint256[] memory amounts = new uint256[](1);
+        amounts[0] = amount;
+
+        _notifyDepositsReceived(identifiers, amounts);
+    }
+
+    /// @notice Notify Starknet that a deposit has been received
+    /// @param identifiers The asset identifiers
+    /// @param amounts The asset amounts
+    function _notifyDepositsReceived(uint256[] memory identifiers, uint256[] memory amounts) internal {
+        uint256[] memory payload = new uint256[](identifiers.length + amounts.length);
+        for (uint256 i = 0; i < identifiers.length; ) {
+            payload[i] = identifiers[i];
+            payload[i + 1] = amounts[i];
+
+            unchecked {
+                ++i;
+            }
+        }
+        messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.RECORD_DEPOSIT, payload);
     }
 
     /// @notice Add strategies and parameters to the payload

@@ -5,6 +5,8 @@ use prop_house::common::utils::serde::SpanSerde;
 trait IRoundFactory {
     fn starknet_round(origin_round: felt252) -> ContractAddress;
     fn origin_round(starknet_round: ContractAddress) -> felt252;
+    fn origin_round_balance(starknet_round: ContractAddress, asset_id: u256) -> u256;
+    fn origin_round_balances(starknet_round: ContractAddress, asset_ids: Span<u256>) -> Span<u256>;
     fn origin_messenger() -> felt252;
     fn origin_chain_id() -> u64;
 }

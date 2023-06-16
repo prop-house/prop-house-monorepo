@@ -52,22 +52,22 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
         return DepositReceiver.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 
-    /// @notice Issue a deposit receipt
-    /// @param depositor The depositor address
-    /// @param id The token identifier
+    /// @notice Issue a deposit receipt to the provided address
+    /// @param to The recipient address
+    /// @param identifier The token identifier
     /// @param amount The token amount
     /// @dev This function is only callable by the prop house contract
-    function onDepositReceived(address depositor, uint256 id, uint256 amount) external onlyPropHouse {
-        _mint(depositor, id, amount, new bytes(0));
+    function _issueReceipt(address to, uint256 identifier, uint256 amount) internal {
+        _mint(to, identifier, amount, new bytes(0));
     }
 
-    /// @notice Issue deposit receipts
-    /// @param depositor The depositor address
-    /// @param ids The token identifiers
+    /// @notice Issue one or more deposit receipts to the provided address
+    /// @param to The recipient address
+    /// @param identifiers The token identifiers
     /// @param amounts The token amounts
     /// @dev This function is only callable by the prop house contract
-    function onDepositsReceived(address depositor, uint256[] calldata ids, uint256[] calldata amounts) external onlyPropHouse {
-        _batchMint(depositor, ids, amounts, new bytes(0));
+    function _issueReceipts(address to, uint256[] memory identifiers, uint256[] memory amounts) internal {
+        _batchMint(to, identifiers, amounts, new bytes(0));
     }
 
     /// @notice Claim a round award asset to a custom recipient

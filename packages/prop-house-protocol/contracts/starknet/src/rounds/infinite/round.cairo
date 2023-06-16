@@ -1,6 +1,6 @@
 #[contract]
 mod InfiniteRound {
-    use starknet::{EthAddress, get_block_timestamp, get_caller_address};
+    use starknet::{EthAddress, get_block_timestamp, get_caller_address, get_contract_address};
     use prop_house::rounds::infinite::config::{
         IInfiniteRound, RoundState, RoundParams, RoundConfig, Proposal, ProposalState,
         ProposalVote, VoteDirection,
@@ -10,7 +10,7 @@ mod InfiniteRound {
     use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
-        IRoundDependencyRegistryDispatcherTrait,
+        IRoundFactoryDispatcherTrait, IRoundDependencyRegistryDispatcherTrait,
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
     use prop_house::common::utils::constants::{DependencyKey, StrategyType};
@@ -36,7 +36,7 @@ mod InfiniteRound {
         _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
         _spent_voting_power: LegacyMap<(EthAddress, u32), u256>,
-        _asset_balances: LegacyMap<u256, u256>,
+        _spent_balances: LegacyMap<u256, u256>,
     }
 
     #[event]
@@ -432,11 +432,13 @@ mod InfiniteRound {
     /// validation has occurred prior to calling this function.
     /// * `requested_assets` - The assets requested by the proposer.
     fn _assert_sufficient_asset_balances(mut requested_assets: Span<Asset>) {
+        let deployer = Round::_deployer::read();
+        let contract = get_contract_address();
         loop {
             match requested_assets.pop_front() {
                 Option::Some(a) => {
                     let a = *a;
-                    let asset_balance = _asset_balances::read(a.asset_id);
+                    let asset_balance = deployer.origin_round_balance(contract, a.asset_id);
                     assert(asset_balance >= a.amount, 'IR: Insufficient balance');
                 },
                 Option::None(_) => {

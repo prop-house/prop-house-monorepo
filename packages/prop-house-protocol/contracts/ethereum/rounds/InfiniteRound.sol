@@ -106,6 +106,26 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         emit RoundFinalized();
     }
 
+    /// @notice Notify Starknet of the deposit and issue a deposit receipt
+    /// @param depositor The depositor address
+    /// @param id The token identifier
+    /// @param amount The token amount
+    /// @dev This function is only callable by the prop house contract
+    function onDepositReceived(address depositor, uint256 id, uint256 amount) external onlyPropHouse {
+        _notifyDepositReceived(id, amount);
+        _issueReceipt(depositor, id, amount);
+    }
+
+    /// @notice Notify Starknet of the deposits and issue deposit receipts
+    /// @param depositor The depositor address
+    /// @param ids The token identifiers
+    /// @param amounts The token amounts
+    /// @dev This function is only callable by the prop house contract
+    function onDepositsReceived(address depositor, uint256[] calldata ids, uint256[] calldata amounts) external onlyPropHouse {
+        _notifyDepositsReceived(ids, amounts);
+        _issueReceipts(depositor, ids, amounts);
+    }
+
     /// @notice Claim many round award assets to a custom recipient
     /// @param recipient The asset recipient
     /// @param proposalId The winning proposal ID
