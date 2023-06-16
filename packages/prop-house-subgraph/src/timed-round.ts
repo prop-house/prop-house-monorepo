@@ -34,7 +34,7 @@ export function handleRoundRegistered(event: RoundRegistered): void {
   }
   round.eventState = RoundEventState.REGISTERED;
 
-  const config = new TimedRoundConfig(`${round.id}-timed-funding-round-config`);
+  const config = new TimedRoundConfig(`${round.id}-timed-round-config`);
 
   config.round = round.id;
   config.winnerCount = event.params.winnerCount;
