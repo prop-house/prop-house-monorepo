@@ -26,6 +26,7 @@ mod Round {
     };
     use prop_house::common::registry::strategy::{IStrategyRegistryDispatcherTrait, Strategy};
     use prop_house::common::utils::traits::{
+        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
         IGovernancePowerStrategyDispatcherTrait, IGovernancePowerStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
@@ -42,20 +43,22 @@ mod Round {
     use zeroable::Zeroable;
 
     struct Storage {
-        _origin_chain_id: u64,
+        _deployer: IRoundFactoryDispatcher,
         _is_strategy_registered: LegacyMap<(u8, felt252), bool>,
     }
 
     /// Initializes the contract by setting the origin chain ID
     /// and registering the provided strategy groups.
-    fn initializer(origin_chain_id_: u64, mut strategy_groups_: Span<StrategyGroup>) {
-        _origin_chain_id::write(origin_chain_id_);
+    fn initializer(mut strategy_groups_: Span<StrategyGroup>) {
+        _deployer::write(IRoundFactoryDispatcher { 
+            contract_address: get_caller_address(),
+        });
         _register_strategy_groups(strategy_groups_);
     }
 
     /// Returns the origin chain ID.
     fn origin_chain_id() -> u64 {
-        _origin_chain_id::read()
+        _deployer::read().origin_chain_id()
     }
 
     /// Parse strategies from a flattened array of parameters.
@@ -97,6 +100,11 @@ mod Round {
             origin_chain_id(), DependencyKey::AUTH_STRATEGIES,
         );
         assert(auth_strategies.contains(get_caller_address()), 'Invalid auth strategy');
+    }
+
+    /// Asserts that the caller is the deployer.
+    fn assert_caller_is_deployer() {
+        assert(get_caller_address() == _deployer::read().contract_address, 'Caller is not deployer');
     }
 
     /// Returns the cumulative governance power of the given user for the provided strategies.

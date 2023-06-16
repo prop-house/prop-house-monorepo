@@ -33,6 +33,7 @@ trait IInfiniteRound {
         used_voting_strategies: Array<UserStrategy>,
     );
     fn process_winners();
+    fn cancel_round();
     fn finalize_round();
 }
 

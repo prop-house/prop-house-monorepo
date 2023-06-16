@@ -9,7 +9,6 @@ mod InfiniteRound {
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
-        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
@@ -180,6 +179,16 @@ mod InfiniteRound {
             _process_winners();
         }
 
+        fn cancel_round() {
+            // Round cancellations can only come from an origin chain round
+            Round::assert_caller_is_deployer();
+            _assert_round_active();
+
+            let mut config = _config::read();
+            config.round_state = RoundState::Cancelled(());
+            _config::write(config);
+        }
+
         fn finalize_round() {
             _assert_round_active();
 
@@ -285,6 +294,12 @@ mod InfiniteRound {
         InfiniteRound::process_winners();
     }
 
+    /// Cancel the round.
+    #[external]
+    fn cancel_round() {
+        InfiniteRound::cancel_round();
+    }
+
     /// Finalize the round by processing remaining winners and changing the round state.
     #[external]
     fn finalize_round() {
@@ -338,10 +353,7 @@ mod InfiniteRound {
                 strategies: voting_strategies
             },
         );
-        let factory = IRoundFactoryDispatcher {
-            contract_address:  get_caller_address(),
-        };
-        Round::initializer(factory.origin_chain_id(), strategy_groups.span());
+        Round::initializer(strategy_groups.span());
     }
 
     /// Decode the round parameters from an array of felt252s.

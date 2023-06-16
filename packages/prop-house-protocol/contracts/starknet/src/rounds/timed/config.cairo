@@ -30,6 +30,7 @@ trait ITimedRound {
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     );
+    fn cancel_round();
     fn finalize_round(awards: Array<Asset>);
 }
 

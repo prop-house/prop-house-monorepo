@@ -2,8 +2,10 @@ use starknet::ContractAddress;
 
 #[abi]
 trait IEthereumRoundFactory {
+    fn starknet_round(origin_round: felt252) -> ContractAddress;
     fn origin_round(starknet_round: ContractAddress) -> felt252;
     fn origin_messenger() -> felt252;
+    fn origin_chain_id() -> u64;
 }
 
 #[contract]
@@ -26,12 +28,20 @@ mod EthereumRoundFactory {
     ) {}
 
     impl EthereumRoundFactory of IEthereumRoundFactory {
+        fn starknet_round(origin_round: felt252) -> ContractAddress {
+            _starknet_round::read(origin_round)
+        }
+
         fn origin_round(starknet_round: ContractAddress) -> felt252 {
             _origin_round::read(starknet_round)
         }
 
         fn origin_messenger() -> felt252 {
             _origin_messenger::read()
+        }
+
+        fn origin_chain_id() -> u64 {
+            1
         }
     }
 
@@ -40,10 +50,11 @@ mod EthereumRoundFactory {
         initializer(origin_messenger);
     }
 
-    /// Returns the origin chain ID for all rounds deployed by this factory.
+    /// Returns the starknet round address for a given origin round address.
+    /// * `origin_round` - The origin round address.
     #[view]
-    fn origin_chain_id() -> u64 {
-        1
+    fn starknet_round(origin_round: felt252) -> ContractAddress {
+        EthereumRoundFactory::starknet_round(origin_round)
     }
 
     /// Returns the origin round address for a given starknet round address.
@@ -57,6 +68,12 @@ mod EthereumRoundFactory {
     #[view]
     fn origin_messenger() -> felt252 {
         EthereumRoundFactory::origin_messenger()
+    }
+
+    /// Returns the origin chain ID for all rounds deployed by this factory.
+    #[view]
+    fn origin_chain_id() -> u64 {
+        EthereumRoundFactory::origin_chain_id()
     }
 
     /// Registers a new round.

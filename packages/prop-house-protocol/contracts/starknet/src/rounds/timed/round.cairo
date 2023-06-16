@@ -8,7 +8,6 @@ mod TimedRound {
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
     use prop_house::common::utils::contract::get_round_dependency_registry;
     use prop_house::common::utils::traits::{
-        IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher,
         IExecutionStrategyDispatcherTrait, IExecutionStrategyDispatcher,
         IRoundDependencyRegistryDispatcherTrait,
     };
@@ -156,6 +155,16 @@ mod TimedRound {
             );
         }
 
+        fn cancel_round() {
+            // Round cancellations can only come from an origin chain round
+            Round::assert_caller_is_deployer();
+            _assert_round_active();
+
+            let mut config = _config::read();
+            config.round_state = RoundState::Cancelled(());
+            _config::write(config);
+        }
+
         fn finalize_round(awards: Array<Asset>) {
             let mut config = _config::read();
 
@@ -255,6 +264,12 @@ mod TimedRound {
         TimedRound::vote(voter_address, proposal_votes, used_voting_strategies);
     }
 
+    /// Cancel the round.
+    #[external]
+    fn cancel_round() {
+        TimedRound::cancel_round();
+    }
+
     /// Finalize the round by determining winners and relaying execution.
     /// * `awards` - The awards to distribute.
     #[external]
@@ -313,10 +328,7 @@ mod TimedRound {
                 strategies: voting_strategies
             },
         );
-        let factory = IRoundFactoryDispatcher {
-            contract_address:  get_caller_address(),
-        };
-        Round::initializer(factory.origin_chain_id(), strategy_groups.span());
+        Round::initializer(strategy_groups.span());
     }
 
     /// Decode the round parameters from an array of felt252s.
