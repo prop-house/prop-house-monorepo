@@ -548,8 +548,6 @@ mod TimedRound {
     /// evenly among the them.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `award_to_split` - The award to split evenly among the proposals.
-    /// TODO: Support instant reclamation of remaining assets when the submitted
-    /// proposal count is less than the defined number of winners.
     fn _compute_leaves_for_split_award(
         proposals: Span<ProposalWithId>, award_to_split: Asset
     ) -> Span<u256> {
