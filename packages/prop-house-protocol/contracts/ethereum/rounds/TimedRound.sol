@@ -68,7 +68,7 @@ contract TimedRound is ITimedRound, AssetRound {
         state = RoundState.Cancelled;
 
         // Notify Starknet of the cancellation
-        _cancelRound();
+        _notifyRoundCancelled();
 
         emit RoundCancelled();
     }

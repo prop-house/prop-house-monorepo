@@ -45,21 +45,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         _register(abi.decode(data, (RoundConfig)));
     }
 
-    /// @notice Cancel the infinite round
-    /// @dev This function is only callable by the round manager
-    function cancel() external onlyRoundManager {
-        if (state != RoundState.Active) {
-            revert CANCELLATION_NOT_AVAILABLE();
-        }
-        state = RoundState.Cancelled;
-
-        // Notify Starknet of the cancellation
-        _cancelRound();
-
-        emit RoundCancelled();
-    }
-
-    /// @notice Update the winner count and merkle root
+    /// @notice Update the winner count and merkle root, allowing new winners to claim their assets
     /// @param newWinnerCount The new winner count
     /// @param merkleRootLow The low 128 bits of the new merkle root
     /// @param merkleRootHigh The high 128 bits of the new merkle root
@@ -81,6 +67,20 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         currentWinnerCount = newWinnerCount;
 
         emit WinnersUpdated(newWinnerCount);
+    }
+
+    /// @notice Cancel the infinite round
+    /// @dev This function is only callable by the round manager
+    function cancel() external onlyRoundManager {
+        if (state != RoundState.Active) {
+            revert CANCELLATION_NOT_AVAILABLE();
+        }
+        state = RoundState.Cancelled;
+
+        // Notify Starknet of the cancellation
+        _notifyRoundCancelled();
+
+        emit RoundCancelled();
     }
 
     /// @notice Finalize the round by consuming the final winner count from

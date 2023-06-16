@@ -8,13 +8,13 @@ import { IAssetRound } from '../../interfaces/IAssetRound.sol';
 import { PackedAsset, Asset } from '../../lib/types/Common.sol';
 import { AssetController } from '../../lib/utils/AssetController.sol';
 import { ITokenMetadataRenderer } from '../../interfaces/ITokenMetadataRenderer.sol';
-import { ReceiptIssuer } from '../../lib/utils/ReceiptIssuer.sol';
+import { DepositReceiver } from '../../lib/utils/DepositReceiver.sol';
 import { MerkleProof } from '../../lib/utils/MerkleProof.sol';
 import { TokenHolder } from '../../lib/utils/TokenHolder.sol';
 import { ERC1155 } from '../../lib/token/ERC1155.sol';
 import { Uint256 } from '../../lib/utils/Uint256.sol';
 
-abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder, ERC1155, ReceiptIssuer {
+abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder, ERC1155, DepositReceiver {
     using { Uint256.mask250 } for bytes32;
     using { AssetHelper.packMany } for Asset[];
     using { AssetHelper.toID, AssetHelper.pack } for Asset;
@@ -48,26 +48,26 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
     // prettier-ignore
     /// @notice If the contract implements an interface
     /// @param interfaceId The interface id
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ReceiptIssuer, TokenHolder, ERC1155, IERC165) returns (bool) {
-        return ReceiptIssuer.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override(DepositReceiver, TokenHolder, ERC1155, IERC165) returns (bool) {
+        return DepositReceiver.supportsInterface(interfaceId) || TokenHolder.supportsInterface(interfaceId) || ERC1155.supportsInterface(interfaceId);
     }
 
-    /// @notice Issue a deposit receipt to the provided address
-    /// @param to The recipient address
-    /// @param identifier The token identifier
+    /// @notice Issue a deposit receipt
+    /// @param depositor The depositor address
+    /// @param id The token identifier
     /// @param amount The token amount
     /// @dev This function is only callable by the prop house contract
-    function issueReceipt(address to, uint256 identifier, uint256 amount) external onlyPropHouse {
-        _mint(to, identifier, amount, new bytes(0));
+    function onDepositReceived(address depositor, uint256 id, uint256 amount) external onlyPropHouse {
+        _mint(depositor, id, amount, new bytes(0));
     }
 
-    /// @notice Issue one or more deposit receipts to the provided address
-    /// @param to The recipient address
-    /// @param identifiers The token identifiers
+    /// @notice Issue deposit receipts
+    /// @param depositor The depositor address
+    /// @param ids The token identifiers
     /// @param amounts The token amounts
     /// @dev This function is only callable by the prop house contract
-    function issueReceipts(address to, uint256[] memory identifiers, uint256[] memory amounts) external onlyPropHouse {
-        _batchMint(to, identifiers, amounts, new bytes(0));
+    function onDepositsReceived(address depositor, uint256[] calldata ids, uint256[] calldata amounts) external onlyPropHouse {
+        _batchMint(depositor, ids, amounts, new bytes(0));
     }
 
     /// @notice Claim a round award asset to a custom recipient

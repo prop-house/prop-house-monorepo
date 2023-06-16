@@ -3,7 +3,7 @@ pragma solidity >=0.8.17;
 
 import { IManager } from './interfaces/IManager.sol';
 import { AssetController } from './lib/utils/AssetController.sol';
-import { IReceiptIssuer } from './interfaces/IReceiptIssuer.sol';
+import { IDepositReceiver } from './interfaces/IDepositReceiver.sol';
 import { AssetHelper } from './lib/utils/AssetHelper.sol';
 import { AssetType, Asset } from './lib/types/Common.sol';
 import { IPropHouse } from './interfaces/IPropHouse.sol';
@@ -213,10 +213,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         emit DepositToRound(user, round, asset);
 
-        // If applicable, issue a deposit receipt to the caller, which is used to recoup
-        // assets in the event of claim failure or cancellation.
-        if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
-            IReceiptIssuer(round).issueReceipt(user, asset.toID(), asset.amount);
+        // If supported, call the round's deposit receiver callback
+        if (IRound(round).supportsInterface(type(IDepositReceiver).interfaceId)) {
+            IDepositReceiver(round).onDepositReceived(user, asset.toID(), asset.amount);
         }
         return etherRemaining;
     }
@@ -259,10 +258,9 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
 
         emit BatchDepositToRound(user, round, assets);
 
-        // If applicable, issue one or more deposit receipts to the caller, which is used to recoup
-        // assets in the event of claim failure or cancellation.
-        if (IRound(round).supportsInterface(type(IReceiptIssuer).interfaceId)) {
-            IReceiptIssuer(round).issueReceipts(user, assetIds, assetAmounts);
+        // If supported, call the round's deposit receiver callback
+        if (IRound(round).supportsInterface(type(IDepositReceiver).interfaceId)) {
+            IDepositReceiver(round).onDepositsReceived(user, assetIds, assetAmounts);
         }
         return etherRemaining;
     }

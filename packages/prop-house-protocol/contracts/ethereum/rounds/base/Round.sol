@@ -95,7 +95,7 @@ abstract contract Round is IRound, Clone {
     }
 
     /// @notice Route a round cancellation to the round contract on Starknet
-    function _cancelRound() internal {
+    function _notifyRoundCancelled() internal {
         uint256[] memory payload = new uint256[](3);
         payload[1] = Selector.CANCEL_ROUND;
 
