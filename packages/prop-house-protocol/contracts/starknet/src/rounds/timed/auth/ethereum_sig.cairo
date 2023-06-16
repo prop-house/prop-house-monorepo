@@ -1,7 +1,7 @@
 #[contract]
 mod TimedRoundEthereumSigAuthStrategy {
     use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
-    use prop_house::rounds::timed::constants::{DomainSeparator, TypeHash, Selector};
+    use prop_house::rounds::timed::constants::{TypeHash, Selector};
     use prop_house::common::utils::integer::ContractAddressIntoU256;
     use prop_house::common::utils::traits::IEthereumSigAuthStrategy;
     use prop_house::common::utils::constants::ETHEREUM_PREFIX;
@@ -15,6 +15,7 @@ mod TimedRoundEthereumSigAuthStrategy {
     use zeroable::Zeroable;
 
     struct Storage {
+        _domain_separator: u256,
         _salts: LegacyMap<(felt252, u256), bool>, 
     }
 
@@ -46,6 +47,11 @@ mod TimedRoundEthereumSigAuthStrategy {
         }
     }
 
+    #[constructor]
+    fn constructor(domain_separator: u256) {
+        initializer(domain_separator);
+    }
+
     #[external]
     fn authenticate(
         r: u256,
@@ -62,6 +68,11 @@ mod TimedRoundEthereumSigAuthStrategy {
     ///
     /// Internals
     ///
+
+    /// Initializes the contract by setting the domain separator.
+    fn initializer(domain_separator_: u256) {
+        _domain_separator::write(domain_separator_);
+    }
 
     /// Verifies a `propose` signature.
     /// * `r` - The `r` component of the signature.
@@ -231,7 +242,7 @@ mod TimedRoundEthereumSigAuthStrategy {
 
         let mut data = Default::default();
         data.append(ETHEREUM_PREFIX.into());
-        data.append(DomainSeparator::GOERLI); // TODO: Needs to be dynamic.
+        data.append(_domain_separator::read());
         data.append(hash_struct);
 
         keccak_u256s_be(data.span())

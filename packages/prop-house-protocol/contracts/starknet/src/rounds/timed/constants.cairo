@@ -13,15 +13,6 @@ mod Selector {
     const CANCEL_PROPOSAL: felt252 = 0xf58b7fa5874c036308bea0b54ae78e8ecf78d868aa18e666aa7fc4e0cbed6d;
 }
 
-/// EIP-712 domain separator hashes
-mod DomainSeparator {
-    /// The domain separator hash for the Goerli testnet.
-    /// name: 'prop-house',
-    /// version: '1'
-    /// chainId: '5'
-    const GOERLI: u256 = 0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81;
-}
-
 /// Timed round EIP-712 type hashes used for authentication
 mod TypeHash {
     /// The type hash for the propose function.
