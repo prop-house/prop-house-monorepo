@@ -1,10 +1,80 @@
 # @prophouse/protocol
 
-The Prop House protocol helps internet communities & creators allocate resources.
+Prop House is a multichain protocol that helps internet communities & creators allocate resources.
 
-## Installing Dependencies
+## Concepts
 
-### Step 1: Install Foundry
+Prop House consists of [houses](#houses) and [rounds](#rounds). A house is a collection of rounds. Every house has an owner. 
+
+Each house owner has two responsibilities:
+
+1. They can create rounds on the house.
+2. They can invite others to create rounds on the house.
+
+So, what is a round and why might you want to create one?
+
+A round is a competition of sorts. Ethereum users compete by offering skills, ideas, or other services in an effort to win the competition.
+
+The exact rules of the competition depend on the selections made by the creator of the round. Regardless, several things are always true:
+
+1. Users present their offer in the form of a proposal.
+2. Voters evaluate the proposals, and decide if each submitter should be a winner, or not.
+3. If a proposal accumulates enough votes to be declared a winner, the proposer gets something for their efforts. This is likely to be an asset, like ETH, ERC20 tokens, or NFTs.
+
+See [rounds](#rounds) for more rules.
+
+### Houses
+
+There is currently only one type of house. In the future, there may be many types with varying rules.
+
+#### Community House
+
+As mentioned above, the community house has two rules:
+
+1. You can create rounds on your house.
+2. You can invite others to create rounds on your house.
+
+The house itself is an NFT. Whoever holds the NFT is the house owner. House ownership can be transferred at any time.
+
+In addition, each round on the community house is an NFT. This NFT is minted to the creator of the round. Like house ownership, whoever holds this NFT controls the round. We call them the round manager. Round management permissions can be transferred at any time.
+
+### Rounds
+
+There are currently two types of rounds.
+
+#### Timed
+
+Timed rounds have two distinct periods:
+
+1. A timed proposing period, in which users can submit proposals for consideration.
+2. A timed voting period, in which voters cast votes for their favorite proposals.
+
+Timed rounds have a pre-defined number of winners, selected by the round creator.
+
+At the end of the voting period, proposals are sorted by voting power, and winners are automatically selected.
+
+#### Infinite
+
+Infinite rounds run until they are cancelled or finalized.
+
+There are no periods specific to proposing or voting. Instead, users submit proposals for consideration, specifying an exact ask, and voters either vote "for" or "against" their proposal.
+
+There is a vote quorum in both directions ("for" or "against"). If the "for" quorum is hit, the proposal ask will be paid to the proposer. If the "against" quorum is hit, the proposal will be marked as rejected.
+
+If either quorum is not met, the proposal will be marked as "stale", and will be hidden in the UI.
+
+Infinite round balances can be topped up at any time.
+
+## Development
+
+### Current Versions
+
+* Scarb: [d4e43e07](https://github.com/software-mansion/scarb/commit/d4e43e07)
+* Cairo: [b4c156ff](https://github.com/starkware-libs/cairo/commit/b4c156ff)
+
+### Installing Dependencies
+
+#### Step 1: Install Foundry
 
 Follow the installation guide in [the Foundry Book](https://book.getfoundry.sh/getting-started/installation).
 
@@ -12,7 +82,7 @@ Follow the installation guide in [the Foundry Book](https://book.getfoundry.sh/g
 
 Follow the installation guide in [Scarb's Repository](https://github.com/software-mansion/scarb).
 
-### Step 3: Install Cairo 1.0
+#### Step 3: Install Cairo 1.0
 
 **NOTE: By installing Scarb, you already have an accompanying Cairo 1.0 version which can be viewed by running `$ scarb --version`. This installation step is included to allow you maintain an independent version of Cairo. This step will also prove useful when setting up the language server in [Step 5](#step-5-setup-language-server).**
 
@@ -49,7 +119,7 @@ is pull the latest changes and rebuild as follows:
 cd ~/Bin/cairo && git fetch && git pull && cargo build --all --release
 ```
 
-### Step 4: Add Cairo 1.0 executables to your path
+#### Step 4: Add Cairo 1.0 executables to your path
 
 ```bash
 export PATH="$HOME/Bin/cairo/target/release:$PATH"
@@ -59,15 +129,15 @@ export PATH="$HOME/Bin/cairo/target/release:$PATH"
 
 This will make available several binaries. The one we use is called `cairo-test`.
 
-### Step 5: Setup Language Server
+#### Step 5: Setup Language Server
 
-#### VS Code Extension
+##### VS Code Extension
 
 - Disable previous Cairo 0.x extension
 - Install the Cairo 1 extension for proper syntax highlighting and code navigation.
 Just follow the steps indicated [here](https://github.com/starkware-libs/cairo/blob/main/vscode-cairo/README.md).
 
-#### Cairo Language Server
+##### Cairo Language Server
 
 From [Step 3](#step-3-install-cairo-10-guide-by-abdel), the `cairo-language-server` binary should be built and executing this command will copy its path into your clipboard.
 
@@ -77,21 +147,21 @@ $ which cairo-language-server | pbcopy
 
 Update the `languageServerPath` of the Cairo 1.0 extension by pasting the path.
 
-## Testing
+### Testing
 
-### Solidity
+#### Solidity
 
 ```sh
 yarn test:l1
 ```
 
-### Cairo
+#### Cairo
 
 ```sh
 yarn test:l2
 ```
 
-### Cross-Chain
+#### Cross-Chain
 
 1. Install [starknet-devnet](https://0xspaceshard.github.io/starknet-devnet/docs/intro/)
 2. Run local chains:
@@ -103,7 +173,7 @@ yarn test:l2
     yarn test:crosschain
     ```
 
-### Troubleshooting
+#### Troubleshooting
 
 If on an M1 mac, you may receive the following error when running `starknet-devnet`:
 
@@ -118,7 +188,7 @@ If so, please add the following to `~/.bash_profile`:
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
 
-## Format Code
+### Format Code
 
 ```sh
 yarn format
