@@ -4,45 +4,32 @@ Prop House is a multichain protocol that helps internet communities & creators a
 
 ## Concepts
 
-Prop House consists of [houses](#houses) and [rounds](#rounds). A house is a collection of rounds. Every house has an owner. 
-
-Each house owner has two responsibilities:
-
-1. They can create rounds on the house.
-2. They can invite others to create rounds on the house.
-
-So, what is a round and why might you want to create one?
-
-A round is a competition of sorts. Ethereum users compete by offering skills, ideas, or other services in an effort to win the competition.
-
-The exact rules of the competition depend on the selections made by the creator of the round. Regardless, several things are always true:
-
-1. Users present their offer in the form of a proposal.
-2. Voters evaluate the proposals, and decide if each submitter should be a winner, or not.
-3. If a proposal accumulates enough votes to be declared a winner, the proposer gets something for their efforts. This is likely to be an asset, like ETH, ERC20 tokens, or NFTs.
-
-See [rounds](#rounds) for more rules.
+Prop House consists of two key concepts: [Houses](#Houses) and [Rounds](#Rounds)
 
 ### Houses
+A **house** is a collection of rounds. Each house has an owner.
 
-There is currently only one type of house. In the future, there may be many types with varying rules.
+The responsibilities of a house owner include:
+- Creating new rounds on the house.
+- Inviting others to create rounds on the house.
 
 #### Community House
 
-As mentioned above, the community house has two rules:
+Currently, only one type of house exists – the Community house. It operates based on the rules mentioned above. The house itself is an NFT and ownership of the house can be transferred at any point. 
 
-1. You can create rounds on your house.
-2. You can invite others to create rounds on your house.
-
-The house itself is an NFT. Whoever holds the NFT is the house owner. House ownership can be transferred at any time.
-
-In addition, each round on the community house is an NFT. This NFT is minted to the creator of the round. Like house ownership, whoever holds this NFT controls the round. We call them the round manager. Round management permissions can be transferred at any time.
+Each round within the Community house is also an NFT, minted to the creator of the round. The holder of this NFT, referred to as the round Manager, controls the round. Similar to house ownership, round management permissions can also be transferred at will.
 
 ### Rounds
 
-There are currently two types of rounds.
+A **round** is a competition of sorts. Ethereum users compete by offering skills, ideas, or other services in an effort to win the competition.
 
-#### Timed
+The exact rules of the competition depend on the selections made by the creator of the round. However, certain principles remain constant:
+
+- Users submit their offer as a proposal.
+- Voters evaluate the proposals, determining whether each submitter should be declared a winner.
+- If a proposal accumulates enough votes to be declared a winner, the proposer gets something for their efforts. This is likely to be an asset, like ETH, ERC20 tokens, or NFTs.
+
+#### Timed Round
 
 Timed rounds have two distinct periods:
 
@@ -53,7 +40,7 @@ Timed rounds have a pre-defined number of winners, selected by the round creator
 
 At the end of the voting period, proposals are sorted by voting power, and winners are automatically selected.
 
-#### Infinite
+#### Infinite Rounds
 
 Infinite rounds run until they are cancelled or finalized.
 
