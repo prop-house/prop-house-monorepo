@@ -20,14 +20,14 @@ use array::ArrayTrait;
 trait ITimedRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(
-        proposer_address: EthAddress,
+        proposer: EthAddress,
         metadata_uri: Array<felt252>,
         used_proposing_strategies: Array<UserStrategy>,
     );
-    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
-    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32);
+    fn edit_proposal(proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
+    fn cancel_proposal(proposer: EthAddress, proposal_id: u32);
     fn vote(
-        voter_address: EthAddress,
+        voter: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     );

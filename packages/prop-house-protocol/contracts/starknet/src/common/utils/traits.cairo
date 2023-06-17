@@ -12,13 +12,18 @@ trait IRoundFactory {
 #[abi]
 trait IGovernancePowerStrategy {
     fn get_power(
-        timestamp: u64, user_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+        timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256;
 }
 
 #[abi]
 trait IExecutionStrategy {
     fn execute(params: Span<felt252>);
+}
+
+#[abi]
+trait IEthereumCommitInbox {
+    fn commit_exists(sender: felt252, commit_hash: felt252) -> bool;
 }
 
 #[abi]

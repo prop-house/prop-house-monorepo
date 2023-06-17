@@ -105,12 +105,12 @@ mod Round {
 
     /// Returns the cumulative governance power of the given user for the provided strategies.
     /// * `timestamp` - The timestamp at which to calculate the cumulative governance power.
-    /// * `user_address` - The address of the user.
+    /// * `user` - The address of the user.
     /// * `strategy_type` - The type of strategy to calculate the cumulative governance power for.
     /// * `used_strategies` - The strategies used to calculate the cumulative governance power of the user.
     fn get_cumulative_governance_power(
         timestamp: u64,
-        user_address: EthAddress,
+        user: EthAddress,
         strategy_type: u8,
         mut used_strategies: Span<UserStrategy>,
     ) -> u256 {
@@ -132,7 +132,7 @@ mod Round {
                         contract_address: strategy.address
                     };
                     let power = governance_power_strategy.get_power(
-                        timestamp, user_address.into(), strategy.params, s.user_params,
+                        timestamp, user.into(), strategy.params, s.user_params,
                     );
 
                     i += 1;

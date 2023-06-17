@@ -61,11 +61,11 @@ mod SingleSlotProof {
 
     /// Returns the value of the mapping storage slot at the given timestamp.
     /// * `timestamp` - The timestamp of the block to query.
-    /// * `mapping_key` - The storage mapping key.
+    /// * `user` - The user address to query.
     /// * `params` - The params, containing the contract address and slot index.
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     fn get_slot_value(
-        timestamp: u64, voter_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+        timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         let ethereum_block_registry = IEthereumBlockRegistryDispatcher {
             contract_address: _ethereum_block_registry::read()
@@ -82,7 +82,7 @@ mod SingleSlotProof {
         let slot_index = *params.at(1);
 
         // Ensure the slot proof is for the correct slot
-        let valid_slot = get_slot_key(slot_index, voter_address);
+        let valid_slot = get_slot_key(slot_index, user);
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };

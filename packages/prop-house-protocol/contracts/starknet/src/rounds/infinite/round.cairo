@@ -40,7 +40,7 @@ mod InfiniteRound {
 
     #[event]
     fn ProposalCreated(
-        proposal_id: u32, proposer_address: EthAddress, metadata_uri: Array<felt252>, requested_assets: Array<Asset>,
+        proposal_id: u32, proposer: EthAddress, metadata_uri: Array<felt252>, requested_assets: Array<Asset>,
     ) {}
 
     #[event]
@@ -56,7 +56,7 @@ mod InfiniteRound {
     fn ProposalRejected(proposal_id: u32) {}
 
     #[event]
-    fn VoteCast(proposal_id: u32, voter_address: EthAddress, voting_power: u256, direction: VoteDirection) {}
+    fn VoteCast(proposal_id: u32, voter: EthAddress, voting_power: u256, direction: VoteDirection) {}
 
     #[event]
     fn WinnersProcessed(total_winner_count: u32, merkle_root: u256) {}
@@ -73,7 +73,7 @@ mod InfiniteRound {
         }
 
         fn propose(
-            proposer_address: EthAddress,
+            proposer: EthAddress,
             metadata_uri: Array<felt252>,
             requested_assets: Array<Asset>,
             used_proposing_strategies: Array<UserStrategy>,
@@ -86,7 +86,7 @@ mod InfiniteRound {
             // Determine the cumulative proposition power of the user
             let cumulative_proposition_power = Round::get_cumulative_governance_power(
                 config.start_timestamp,
-                proposer_address,
+                proposer,
                 StrategyType::PROPOSING,
                 used_proposing_strategies.span(),
             );
@@ -98,10 +98,10 @@ mod InfiniteRound {
             let requested_assets_hash = Round::compute_asset_hash(requested_assets.span());
             let proposal_id = _proposal_count::read() + 1;
             let proposal = Proposal {
+                proposer,
                 version: 1,
                 state: ProposalState::Active(()),
                 received_at: get_block_timestamp(),
-                proposer: proposer_address,
                 requested_assets_hash,
                 voting_power_for: 0,
                 voting_power_against: 0,
@@ -111,16 +111,16 @@ mod InfiniteRound {
             _proposals::write(proposal_id, proposal);
             _proposal_count::write(proposal_id);
 
-            ProposalCreated(proposal_id, proposer_address, metadata_uri, requested_assets);
+            ProposalCreated(proposal_id, proposer, metadata_uri, requested_assets);
         }
 
         fn edit_proposal(
-            proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>,
+            proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>,
         ) {
             let mut proposal = _proposals::read(proposal_id);
 
             _assert_caller_valid_and_round_active();
-            _assert_can_modify_proposal(proposer_address, proposal);
+            _assert_can_modify_proposal(proposer, proposal);
             _assert_asset_request_valid(requested_assets.span());
 
             // Increment the proposal version, update the requested assets, clear 'for' votes,
@@ -133,11 +133,11 @@ mod InfiniteRound {
             ProposalEdited(proposal_id, metadata_uri, requested_assets);
         }
 
-        fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
+        fn cancel_proposal(proposer: EthAddress, proposal_id: u32) {
             let mut proposal = _proposals::read(proposal_id);
 
             _assert_caller_valid_and_round_active();
-            _assert_can_modify_proposal(proposer_address, proposal);
+            _assert_can_modify_proposal(proposer, proposal);
 
             // Cancel the proposal
             proposal.state = ProposalState::Cancelled(());
@@ -147,7 +147,7 @@ mod InfiniteRound {
         }
 
         fn vote(
-            voter_address: EthAddress,
+            voter: EthAddress,
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
@@ -156,7 +156,7 @@ mod InfiniteRound {
             // Determine the cumulative voting power of the user
             let cumulative_voting_power = Round::get_cumulative_governance_power(
                 _config::read().start_timestamp,
-                voter_address,
+                voter,
                 StrategyType::VOTING,
                 used_voting_strategies.span(),
             );
@@ -166,7 +166,7 @@ mod InfiniteRound {
             loop {
                 match proposal_votes.pop_front() {
                     Option::Some(proposal_vote) => _cast_votes_on_proposal(
-                        voter_address, *proposal_vote, cumulative_voting_power
+                        voter, *proposal_vote, cumulative_voting_power
                     ),
                     Option::None(_) => {
                         break;
@@ -235,51 +235,51 @@ mod InfiniteRound {
     }
 
     /// Submit a proposal to the round.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `metadata_uri` - The proposal metadata URI.
     /// * `requested_assets` - The assets requested by the proposal.
     /// * `used_proposing_strategies` - The strategies used to propose.
     #[external]
     fn propose(
-        proposer_address: EthAddress,
+        proposer: EthAddress,
         metadata_uri: Array<felt252>,
         requested_assets: Array<Asset>,
         used_proposing_strategies: Array<UserStrategy>,
     ) {
         InfiniteRound::propose(
-            proposer_address, metadata_uri, requested_assets, used_proposing_strategies, 
+            proposer, metadata_uri, requested_assets, used_proposing_strategies, 
         );
     }
 
     /// Edit a proposal.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal to cancel.
     /// * `metadata_uri` - The updated proposal metadata URI.
     /// * `requested_assets` - The updated assets requested by the proposal.
     #[external]
-    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>) {
-        InfiniteRound::edit_proposal(proposer_address, proposal_id, metadata_uri, requested_assets);
+    fn edit_proposal(proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>, requested_assets: Array<Asset>) {
+        InfiniteRound::edit_proposal(proposer, proposal_id, metadata_uri, requested_assets);
     }
 
     /// Cancel a proposal.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal to cancel.
     #[external]
-    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-        InfiniteRound::cancel_proposal(proposer_address, proposal_id);
+    fn cancel_proposal(proposer: EthAddress, proposal_id: u32) {
+        InfiniteRound::cancel_proposal(proposer, proposal_id);
     }
 
     /// Cast votes on one or more proposals.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `proposal_votes` - The votes to cast.
     /// * `used_voting_strategies` - The strategies used to vote.
     #[external]
     fn vote(
-        voter_address: EthAddress,
+        voter: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     ) {
-        InfiniteRound::vote(voter_address, proposal_votes, used_voting_strategies);
+        InfiniteRound::vote(voter, proposal_votes, used_voting_strategies);
     }
 
     /// Process all new round winners by submitting their information to the consuming chain.
@@ -381,12 +381,12 @@ mod InfiniteRound {
         _assert_round_active();
     }
 
-    /// Asserts that `proposer_address` can modify `proposal`. This includes
-    /// an assertion that the proposal exists, that `proposer_address` is the proposer,
+    /// Asserts that `proposer` can modify `proposal`. This includes
+    /// an assertion that the proposal exists, that `proposer` is the proposer,
     /// and that the proposal is active.
-    fn _assert_can_modify_proposal(proposer_address: EthAddress, proposal: Proposal) {
+    fn _assert_can_modify_proposal(proposer: EthAddress, proposal: Proposal) {
         assert(proposal.proposer.is_non_zero(), 'IR: Proposal does not exist');
-        assert(proposer_address == proposal.proposer, 'IR: Caller is not proposer');
+        assert(proposer == proposal.proposer, 'IR: Caller is not proposer');
         assert(
             _get_proposal_state(proposal) == ProposalState::Active(()), 'IR: Proposal is not active'
         );
@@ -420,12 +420,10 @@ mod InfiniteRound {
     }
 
     /// Cast votes on a single proposal.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `proposal_vote` - The proposal vote information.
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
-    fn _cast_votes_on_proposal(
-        voter_address: EthAddress, proposal_vote: ProposalVote, cumulative_voting_power: u256, 
-    ) {
+    fn _cast_votes_on_proposal(voter: EthAddress, proposal_vote: ProposalVote, cumulative_voting_power: u256) {
         let proposal_id = proposal_vote.proposal_id;
         let voting_power = proposal_vote.voting_power;
         let direction = proposal_vote.direction;
@@ -442,7 +440,7 @@ mod InfiniteRound {
             return;
         }
 
-        let mut spent_voting_power = _spent_voting_power::read((voter_address, proposal_id));
+        let mut spent_voting_power = _spent_voting_power::read((voter, proposal_id));
         let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
 
         assert(voting_power.is_non_zero(), 'IR: No voting power provided');
@@ -464,9 +462,9 @@ mod InfiniteRound {
             _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);
-        _spent_voting_power::write((voter_address, proposal_id), spent_voting_power);
+        _spent_voting_power::write((voter, proposal_id), spent_voting_power);
 
-        VoteCast(proposal_id, voter_address, voting_power, direction);
+        VoteCast(proposal_id, voter, voting_power, direction);
     }
 
     /// Approve a proposal, setting its state to `Approved`, and appending the

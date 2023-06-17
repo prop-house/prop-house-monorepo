@@ -11,7 +11,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
     impl EthereumBalanceOfGovernancePowerStrategy of IGovernancePowerStrategy {
         fn get_power(
             timestamp: u64,
-            user_address: felt252,
+            user: felt252,
             params: Span<felt252>,
             user_params: Span<felt252>,
         ) -> u256 {
@@ -21,7 +21,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
             assert(params_len == 2 | params_len == 3, 'EthBO: Bad param length');
 
             let governance_power = SingleSlotProof::get_slot_value(
-                timestamp, user_address, params, user_params
+                timestamp, user, params, user_params
             );
             if params_len == 2 {
                 return governance_power;
@@ -41,15 +41,15 @@ mod EthereumBalanceOfGovernancePowerStrategy {
 
     /// Returns the governance power of the user at the given timestamp.
     /// * `timestamp` - The timestamp at which to get the governance power.
-    /// * `user_address` - The address of the user.
+    /// * `user` - The address of the user.
     /// * `params` - The params, containing the contract address and slot index.
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     #[external]
     fn get_power(
-        timestamp: u64, user_address: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+        timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         EthereumBalanceOfGovernancePowerStrategy::get_power(
-            timestamp, user_address, params, user_params
+            timestamp, user, params, user_params
         )
     }
 }

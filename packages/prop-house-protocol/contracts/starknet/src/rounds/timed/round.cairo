@@ -30,7 +30,7 @@ mod TimedRound {
 
     #[event]
     fn ProposalCreated(
-        proposal_id: u32, proposer_address: EthAddress, metadata_uri: Array<felt252>
+        proposal_id: u32, proposer: EthAddress, metadata_uri: Array<felt252>
     ) {}
 
     #[event]
@@ -40,7 +40,7 @@ mod TimedRound {
     fn ProposalCancelled(proposal_id: u32) {}
 
     #[event]
-    fn VoteCast(proposal_id: u32, voter_address: EthAddress, voting_power: u256) {}
+    fn VoteCast(proposal_id: u32, voter: EthAddress, voting_power: u256) {}
 
     #[event]
     fn RoundFinalized(winning_proposal_ids: Span<u32>, merkle_root: u256) {}
@@ -54,7 +54,7 @@ mod TimedRound {
         }
 
         fn propose(
-            proposer_address: EthAddress,
+            proposer: EthAddress,
             metadata_uri: Array<felt252>,
             used_proposing_strategies: Array<UserStrategy>,
         ) {
@@ -67,7 +67,7 @@ mod TimedRound {
             // Determine the cumulative proposition power of the user
             let cumulative_proposition_power = Round::get_cumulative_governance_power(
                 config.proposal_period_start_timestamp,
-                proposer_address,
+                proposer,
                 StrategyType::PROPOSING,
                 used_proposing_strategies.span(),
             );
@@ -78,7 +78,7 @@ mod TimedRound {
 
             let proposal_id = _proposal_count::read() + 1;
             let proposal = Proposal {
-                proposer: proposer_address,
+                proposer: proposer,
                 last_updated_at: current_timestamp,
                 is_cancelled: false,
                 voting_power: 0,
@@ -88,11 +88,11 @@ mod TimedRound {
             _proposals::write(proposal_id, proposal);
             _proposal_count::write(proposal_id);
 
-            ProposalCreated(proposal_id, proposer_address, metadata_uri);
+            ProposalCreated(proposal_id, proposer, metadata_uri);
         }
 
         fn edit_proposal(
-            proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
+            proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
         ) {
             _assert_caller_valid_and_round_active();
             _assert_in_proposal_period(_config::read(), get_block_timestamp());
@@ -101,7 +101,7 @@ mod TimedRound {
 
             // Ensure the proposal exists, the caller is the proposer, and the proposal hasn't been cancelled
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
-            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
+            assert(proposer == proposal.proposer, 'TR: Caller is not proposer');
             assert(!proposal.is_cancelled, 'TR: Proposal is cancelled');
 
             // Set the last update timestamp
@@ -111,14 +111,14 @@ mod TimedRound {
             ProposalEdited(proposal_id, metadata_uri);
         }
 
-        fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
+        fn cancel_proposal(proposer: EthAddress, proposal_id: u32) {
             _assert_caller_valid_and_round_active();
 
             let mut proposal = _proposals::read(proposal_id);
 
             // Ensure the proposal exists, the caller is the proposer, and the proposal hasn't been cancelled
             assert(proposal.proposer.is_non_zero(), 'TR: Proposal does not exist');
-            assert(proposer_address == proposal.proposer, 'TR: Caller is not proposer');
+            assert(proposer == proposal.proposer, 'TR: Caller is not proposer');
             assert(!proposal.is_cancelled, 'TR: Proposal is cancelled');
 
             // Cancel the proposal
@@ -129,7 +129,7 @@ mod TimedRound {
         }
 
         fn vote(
-            voter_address: EthAddress,
+            voter: EthAddress,
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
@@ -143,7 +143,7 @@ mod TimedRound {
             let snapshot_timestamp = config.proposal_period_end_timestamp;
             let cumulative_voting_power = Round::get_cumulative_governance_power(
                 snapshot_timestamp,
-                voter_address,
+                voter,
                 StrategyType::VOTING,
                 used_voting_strategies.span(),
             );
@@ -151,7 +151,7 @@ mod TimedRound {
 
             // Cast votes, throwing if the remaining voting power is insufficient
             _cast_votes_on_one_or_more_proposals(
-                voter_address, cumulative_voting_power, proposal_votes.span()
+                voter, cumulative_voting_power, proposal_votes.span()
             );
         }
 
@@ -222,46 +222,46 @@ mod TimedRound {
     }
 
     /// Submit a proposal to the round.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `metadata_uri` - The proposal metadata URI.
     /// * `used_proposing_strategies` - The strategies used to propose.
     #[external]
     fn propose(
-        proposer_address: EthAddress,
+        proposer: EthAddress,
         metadata_uri: Array<felt252>,
         used_proposing_strategies: Array<UserStrategy>,
     ) {
-        TimedRound::propose(proposer_address, metadata_uri, used_proposing_strategies);
+        TimedRound::propose(proposer, metadata_uri, used_proposing_strategies);
     }
 
     /// Edit a proposal.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal to cancel.
     /// * `metadata_uri` - The updated proposal metadata URI.
     #[external]
-    fn edit_proposal(proposer_address: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
-        TimedRound::edit_proposal(proposer_address, proposal_id, metadata_uri);
+    fn edit_proposal(proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
+        TimedRound::edit_proposal(proposer, proposal_id, metadata_uri);
     }
 
     /// Cancel a proposal.
-    /// * `proposer_address` - The address of the proposer.
+    /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal to cancel.
     #[external]
-    fn cancel_proposal(proposer_address: EthAddress, proposal_id: u32) {
-        TimedRound::cancel_proposal(proposer_address, proposal_id);
+    fn cancel_proposal(proposer: EthAddress, proposal_id: u32) {
+        TimedRound::cancel_proposal(proposer, proposal_id);
     }
 
     /// Cast votes on one or more proposals.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `proposal_votes` - The votes to cast.
     /// * `used_voting_strategies` - The strategies used to vote.
     #[external]
     fn vote(
-        voter_address: EthAddress,
+        voter: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     ) {
-        TimedRound::vote(voter_address, proposal_votes, used_voting_strategies);
+        TimedRound::vote(voter, proposal_votes, used_voting_strategies);
     }
 
     /// Cancel the round.
@@ -405,28 +405,28 @@ mod TimedRound {
     }
 
     /// Cast votes on one or more proposals.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
     /// * `proposal_votes` - The votes to cast.
     fn _cast_votes_on_one_or_more_proposals(
-        voter_address: EthAddress,
+        voter: EthAddress,
         cumulative_voting_power: u256,
         mut proposal_votes: Span<ProposalVote>
     ) {
-        let mut spent_voting_power = _spent_voting_power::read(voter_address);
+        let mut spent_voting_power = _spent_voting_power::read(voter);
         let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
         loop {
             match proposal_votes.pop_front() {
                 Option::Some(proposal_vote) => {
                     // Cast the votes for the proposal
                     spent_voting_power += _cast_votes_on_proposal(
-                        voter_address, *proposal_vote, remaining_voting_power, 
+                        voter, *proposal_vote, remaining_voting_power, 
                     );
                     remaining_voting_power -= spent_voting_power;
                 },
                 Option::None(_) => {
                     // Update the spent voting power for the user
-                    _spent_voting_power::write(voter_address, spent_voting_power);
+                    _spent_voting_power::write(voter, spent_voting_power);
                     break;
                 },
             };
@@ -434,11 +434,11 @@ mod TimedRound {
     }
 
     /// Cast votes on a single proposal.
-    /// * `voter_address` - The address of the voter.
+    /// * `voter` - The address of the voter.
     /// * `proposal_vote` - The proposal vote information.
     /// * `remaining_voting_power` - The remaining voting power of the voter.
     fn _cast_votes_on_proposal(
-        voter_address: EthAddress, proposal_vote: ProposalVote, remaining_voting_power: u256, 
+        voter: EthAddress, proposal_vote: ProposalVote, remaining_voting_power: u256, 
     ) -> u256 {
         let proposal_id = proposal_vote.proposal_id;
         let voting_power = proposal_vote.voting_power;
@@ -457,7 +457,7 @@ mod TimedRound {
         proposal.voting_power += voting_power;
         _proposals::write(proposal_id, proposal);
 
-        VoteCast(proposal_id, voter_address, voting_power);
+        VoteCast(proposal_id, voter, voting_power);
 
         voting_power
     }
