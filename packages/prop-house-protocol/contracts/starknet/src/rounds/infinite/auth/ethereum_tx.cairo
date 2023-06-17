@@ -162,7 +162,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     /// * `requested_assets` - The assets requested by the proposer.
     /// * `used_proposing_strategies` - The strategies used by the proposer.
     #[external]
-    fn propose(
+    fn authenticate_propose(
         round: ContractAddress,
         proposer: EthAddress,
         metadata_uri: Array<felt252>,
@@ -185,7 +185,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     /// * `requested_assets` - The assets requested by the proposer.
     /// * `metadata_uri` - The metadata URI of the proposal.
     #[external]
-    fn edit_proposal(
+    fn authenticate_edit_proposal(
         round: ContractAddress,
         proposer: EthAddress,
         proposal_id: u32,
@@ -206,7 +206,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal.
     #[external]
-    fn cancel_proposal(round: ContractAddress, proposer: EthAddress, proposal_id: u32) {
+    fn authenticate_cancel_proposal(round: ContractAddress, proposer: EthAddress, proposal_id: u32) {
         InfiniteRoundEthereumTxAuthStrategy::authenticate_cancel_proposal(
             round,
             proposer,
@@ -220,7 +220,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     /// * `proposal_votes` - The votes of the voter.
     /// * `used_voting_strategies` - The strategies used by the voter.
     #[external]
-    fn vote(
+    fn authenticate_vote(
         round: ContractAddress,
         voter: EthAddress,
         proposal_votes: Array<ProposalVote>,

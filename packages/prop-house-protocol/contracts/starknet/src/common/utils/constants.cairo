@@ -43,8 +43,8 @@ mod StrategyType {
 /// Shared EIP-712 type hashes
 mod TypeHash {
     /// The type hash for the user strategy struct.
-    /// keccak256("UserStrategy(uint256 id,uint256 userParams)")
-    const USER_STRATEGY: u256 = 0x8aaa80dfcb3cca3d568544a9ec6b47935b08f24f605db3783699672fed2de807;
+    /// keccak256("UserStrategy(uint256 id,uint256[] userParams)")
+    const USER_STRATEGY: u256 = 0x64bc811a2e7443fa3d1997efea6318bad77b8d6bc32a9004b1b8c9a535213c3b;
 
     /// The type hash for the asset struct.
     /// keccak256("Asset(uint256 assetId,uint256 amount)")

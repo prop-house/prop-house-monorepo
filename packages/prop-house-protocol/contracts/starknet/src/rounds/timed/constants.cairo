@@ -27,8 +27,8 @@ mod TypeHash {
     const PROPOSE: u256 = 0x724212666a31b9d7095b620ba1e97e95a1ad973bec4c7aa47cc541cadf2f1fa0;
 
     /// The type hash for the edit proposal function.
-    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256 salt)")
-    const EDIT_PROPOSAL: u256 = 0xc138dd6683b84a84f0a6050feae27c3c0bc6476473547b901f5bbc03e0231933;
+    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,string metadataUri,uint256 salt)")
+    const EDIT_PROPOSAL: u256 = 0x96cde7b06a74d1b06ee7398da5e3bf9d79a7a3c6c8e5f2e3d3bee896929acc7e;
 
     /// The type hash for the proposal cancellation function.
     /// keccak256("CancelProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256 salt)")
