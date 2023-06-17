@@ -23,12 +23,12 @@ contract StarkNetCommit {
     }
 
     /// @notice Commit a hash and the sender address to StarkNet
-    /// @param starknetAuthenticator The Starknet ETH transaction authenticator contract
+    /// @param commitInbox The commit inbox contract
     /// @param _hash The hash to commit
-    function commit(uint256 starknetAuthenticator, uint256 _hash) external payable {
+    function commit(uint256 commitInbox, uint256 _hash) external payable {
         uint256[] memory payload = new uint256[](2);
         payload[0] = msg.sender.toUint256();
         payload[1] = _hash;
-        starknetCore.sendMessageToL2{ value: msg.value }(starknetAuthenticator, L1_COMMIT_HANDLER, payload);
+        starknetCore.sendMessageToL2{ value: msg.value }(commitInbox, L1_COMMIT_HANDLER, payload);
     }
 }
