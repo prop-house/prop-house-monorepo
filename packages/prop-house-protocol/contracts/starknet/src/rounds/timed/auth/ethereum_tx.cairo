@@ -143,8 +143,8 @@ mod TimedRoundEthereumTxAuthStrategy {
     }
 
     #[constructor]
-    fn constructor(commit_address: ContractAddress) {
-        initializer(commit_address);
+    fn constructor(ethereum_commit_inbox: ContractAddress) {
+        initializer(ethereum_commit_inbox);
     }
 
     /// Verify an Ethereum propose commit and call the `propose` function on the round.
