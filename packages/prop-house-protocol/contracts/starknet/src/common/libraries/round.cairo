@@ -90,9 +90,10 @@ mod Round {
     }
 
     /// Asserts that the caller is a valid auth strategy.
-    fn assert_caller_is_valid_auth_strategy() {
-        let auth_strategies = get_round_dependency_registry().get_caller_dependencies_at_key(
-            origin_chain_id(), DependencyKey::AUTH_STRATEGIES,
+    /// * `round_type` - The type of round to check the auth strategy for.
+    fn assert_caller_is_valid_auth_strategy(round_type: felt252) {
+        let auth_strategies = get_round_dependency_registry().get_dependencies_at_key(
+            origin_chain_id(), round_type, DependencyKey::AUTH_STRATEGIES,
         );
         assert(auth_strategies.contains(get_caller_address()), 'Invalid auth strategy');
     }

@@ -19,6 +19,13 @@ const TWO_POW_232: u256 = 0x1000000000000000000000000000000000000000000000000000
 
 const ETHEREUM_PREFIX: felt252 = 0x1901;
 
+mod RoundType {
+    /// The infinite round type.
+    const INFINITE: felt252 = 'INFINITE';
+    /// The timed round type.
+    const TIMED: felt252 = 'TIMED';
+}
+
 mod DependencyKey {
     /// The key of the execution strategy dependency.
     const EXECUTION_STRATEGY: felt252 = 'EXECUTION_STRATEGY';

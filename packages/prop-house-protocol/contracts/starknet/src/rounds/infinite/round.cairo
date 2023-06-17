@@ -13,7 +13,7 @@ mod InfiniteRound {
         IRoundDependencyRegistryDispatcherTrait,
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
-    use prop_house::common::utils::constants::{DependencyKey, StrategyType};
+    use prop_house::common::utils::constants::{DependencyKey, RoundType, StrategyType};
     use prop_house::common::utils::merkle::IncrementalMerkleTreeTrait;
     use prop_house::common::utils::array::assert_no_duplicates_u256;
     use prop_house::common::utils::storage::SpanStorageAccess;
@@ -204,8 +204,8 @@ mod InfiniteRound {
                 _process_winners();
             }
 
-            let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
-                Round::origin_chain_id(), DependencyKey::EXECUTION_STRATEGY
+            let execution_strategy_address = get_round_dependency_registry().get_dependency_at_key(
+                Round::origin_chain_id(), RoundType::INFINITE, DependencyKey::EXECUTION_STRATEGY
             );
             if execution_strategy_address.is_non_zero() {
                 let execution_strategy = IExecutionStrategyDispatcher {
@@ -377,7 +377,7 @@ mod InfiniteRound {
 
     /// Asserts that caller is a valid auth strategy and that the round is active.
     fn _assert_caller_valid_and_round_active() {
-        Round::assert_caller_is_valid_auth_strategy();
+        Round::assert_caller_is_valid_auth_strategy(RoundType::INFINITE);
         _assert_round_active();
     }
 
@@ -580,8 +580,8 @@ mod InfiniteRound {
         _processed_winner_count::write(winner_count);
 
         let merkle_root = _winner_merkle_root::read();
-        let execution_strategy_address = get_round_dependency_registry().get_caller_dependency_at_key(
-            Round::origin_chain_id(), DependencyKey::EXECUTION_STRATEGY
+        let execution_strategy_address = get_round_dependency_registry().get_dependency_at_key(
+            Round::origin_chain_id(), RoundType::INFINITE, DependencyKey::EXECUTION_STRATEGY
         );
         if execution_strategy_address.is_non_zero() {
             let execution_strategy = IExecutionStrategyDispatcher {

@@ -7,6 +7,7 @@ mod EthereumRoundFactory {
     use array::ArrayTrait;
 
     struct Storage {
+        _origin_chain_id: u64,
         _origin_messenger: felt252,
         _origin_round: LegacyMap<ContractAddress, felt252>,
         _starknet_round: LegacyMap<felt252, ContractAddress>,
@@ -31,13 +32,13 @@ mod EthereumRoundFactory {
         }
 
         fn origin_chain_id() -> u64 {
-            1
+            _origin_chain_id::read()
         }
     }
 
     #[constructor]
-    fn constructor(origin_messenger: felt252) {
-        initializer(origin_messenger);
+    fn constructor(origin_chain_id: u64, origin_messenger: felt252) {
+        initializer(origin_chain_id, origin_messenger);
     }
 
     /// Returns the starknet round address for a given origin round address.
@@ -113,7 +114,8 @@ mod EthereumRoundFactory {
     /// Internals
     ///
 
-    fn initializer(origin_messenger_: felt252) {
+    fn initializer(origin_chain_id_: u64, origin_messenger_: felt252) {
+        _origin_chain_id::write(origin_chain_id_);
         _origin_messenger::write(origin_messenger_);
     }
 
