@@ -11,10 +11,11 @@ mod Ownable {
     #[event]
     fn OwnershipTransferred(previous_owner: ContractAddress, new_owner: ContractAddress) {}
 
-    /// Initializes the contract, setting the caller (deployer) as the initial owner.
-    fn initializer() {
-        let caller = get_caller_address();
-        _transfer_ownership(caller);
+    /// Initializes the contract, transferring ownership to the provided address.
+    /// * `initial_owner` - The address to transfer ownership to.
+    fn initializer(initial_owner: ContractAddress) {
+        assert(initial_owner.is_non_zero(), 'Owner is the zero address');
+        _transfer_ownership(initial_owner);
     }
 
     /// Returns the current owner.
@@ -26,14 +27,14 @@ mod Ownable {
     fn assert_only_owner() {
         let owner = _owner::read();
         let caller = get_caller_address();
-        assert(!caller.is_zero(), 'Caller is the zero address');
+        assert(caller.is_non_zero(), 'Caller is the zero address');
         assert(caller == owner, 'Caller is not the owner');
     }
 
     /// Transfers ownership of the contract to a new account (`new_owner`).
     /// * `new_owner` - The address to transfer ownership to.
     fn transfer_ownership(new_owner: ContractAddress) {
-        assert(!new_owner.is_zero(), 'New owner is the zero address');
+        assert(new_owner.is_non_zero(), 'New owner is the zero address');
         assert_only_owner();
         _transfer_ownership(new_owner);
     }

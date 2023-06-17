@@ -16,6 +16,7 @@ use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
+#[abi]
 trait ITimedRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(

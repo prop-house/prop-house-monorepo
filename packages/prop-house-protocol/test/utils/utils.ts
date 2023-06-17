@@ -1,3 +1,5 @@
+import { utils } from 'ethers';
+
 const getStarknetArtifactPath = (contract: string, ext: 'sierra' | 'casm') =>
   `./contracts/starknet/target/dev/prop_house_${contract}.${ext}.json`;
 const getSierraPath = (contract: string) => getStarknetArtifactPath(contract, 'sierra');
@@ -7,3 +9,5 @@ export const getStarknetArtifactPaths = (contract: string) => ({
   sierra: getSierraPath(contract),
   casm: getCasmPath(contract),
 });
+
+export const asciiToHex = (s: string) => utils.hexlify(utils.toUtf8Bytes(s));

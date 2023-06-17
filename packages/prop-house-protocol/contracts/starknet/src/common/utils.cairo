@@ -7,5 +7,6 @@ mod integer;
 mod math;
 mod merkle;
 mod serde;
+mod signature;
 mod storage;
 mod traits;

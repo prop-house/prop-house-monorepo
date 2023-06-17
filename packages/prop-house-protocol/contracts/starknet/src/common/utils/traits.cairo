@@ -30,16 +30,3 @@ trait IRoundDependencyRegistry {
     fn update_dependencies_if_not_locked(origin_chain_id: u64, round_type: felt252, key: felt252, dependencies: Span<ContractAddress>);
     fn lock_key(origin_chain_id: u64, round_type: felt252, key: felt252);
 }
-
-#[abi]
-trait IEthereumSigAuthStrategy {
-    fn authenticate(
-        r: u256,
-        s: u256,
-        v: u8,
-        salt: u256,
-        target: ContractAddress,
-        selector: felt252,
-        cdata: Span<felt252>,
-    );
-}

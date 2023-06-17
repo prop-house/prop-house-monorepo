@@ -39,3 +39,14 @@ mod StrategyType {
     /// The voting strategy type.
     const VOTING: u8 = 1;
 }
+
+/// Shared EIP-712 type hashes
+mod TypeHash {
+    /// The type hash for the user strategy struct.
+    /// keccak256("UserStrategy(uint256 id,uint256 userParams)")
+    const USER_STRATEGY: u256 = 0x8aaa80dfcb3cca3d568544a9ec6b47935b08f24f605db3783699672fed2de807;
+
+    /// The type hash for the asset struct.
+    /// keccak256("Asset(uint256 assetId,uint256 amount)")
+    const ASSET: u256 = 0x02dc1e9b01d93582b7ab99b2d9cbb7ea32206fb5e17210680b8ed1f4e41f4f84;
+}

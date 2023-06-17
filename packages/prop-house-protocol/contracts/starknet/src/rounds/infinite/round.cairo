@@ -449,11 +449,11 @@ mod InfiniteRound {
         assert(remaining_voting_power >= voting_power, 'IR: Insufficient voting power');
 
         match direction {
-            VoteDirection::For(()) => {
-                proposal.voting_power_for += voting_power;
-            },
             VoteDirection::Against(()) => {
                 proposal.voting_power_against += voting_power;
+            },
+            VoteDirection::For(()) => {
+                proposal.voting_power_for += voting_power;
             },
         };
 

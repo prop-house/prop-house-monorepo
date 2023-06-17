@@ -17,6 +17,7 @@ use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
+#[abi]
 trait IInfiniteRound {
     fn get_proposal(proposal_id: u32) -> Proposal;
     fn propose(
@@ -49,8 +50,17 @@ struct RoundParams {
 
 #[derive(Copy, Drop, Serde)]
 enum VoteDirection {
-    For: (),
     Against: (),
+    For: (),
+}
+
+impl VoteDirectionIntoU256 of Into<VoteDirection, u256> {
+    fn into(self: VoteDirection) -> u256 {
+        match self {
+            VoteDirection::Against(()) => 0,
+            VoteDirection::For(()) => 1,
+        }
+    }
 }
 
 #[derive(Copy, Drop, Serde)]

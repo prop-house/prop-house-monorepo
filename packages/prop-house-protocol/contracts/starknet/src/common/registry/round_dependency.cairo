@@ -84,8 +84,8 @@ mod RoundDependencyRegistry {
     }
 
     #[constructor]
-    fn constructor() {
-        Ownable::initializer();
+    fn constructor(initial_owner: ContractAddress) {
+        Ownable::initializer(initial_owner);
     }
 
     /// Returns true if the key is locked for the given chain id and round.

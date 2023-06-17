@@ -7,6 +7,22 @@ use option::OptionTrait;
 use zeroable::Zeroable;
 use box::BoxTrait;
 
+impl Felt252SpanIntoU256Span of Into<Span<felt252>, Span<u256>> {
+    fn into(mut self: Span<felt252>) -> Span<u256> {
+        let mut arr = Default::<Array<u256>>::default();
+        loop {
+            match self.pop_front() {
+                Option::Some(item) => {
+                    arr.append((*item).into());
+                },
+                Option::None(_) => {
+                    break arr.span();
+                },
+            };
+        }
+    }
+}
+
 trait ArrayTraitExt<T> {
     fn append_all(ref self: Array<T>, span: Span<T>);
     fn contains<impl TPartialEq: PartialEq<T>>(self: @Array<T>, item: T) -> bool;
@@ -134,22 +150,4 @@ fn assert_no_duplicates_u256(mut span: Span<u256>) {
         };
     };
     dict.squash();
-}
-
-/// Convert a span of `felt252` to a `u256` array.
-/// * `data` - The data to convert.
-fn into_u256_arr(mut data: Span<felt252>) -> Array<u256> {
-    let mut arr = Default::<Array<u256>>::default();
-    loop {
-        match data.pop_front() {
-            Option::Some(item) => {
-                let item = *item;
-                arr.append(item.into());
-            },
-            Option::None(_) => {
-                break;
-            },
-        };
-    };
-    arr
 }

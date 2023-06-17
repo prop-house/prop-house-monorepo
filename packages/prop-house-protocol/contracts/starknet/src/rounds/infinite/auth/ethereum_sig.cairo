@@ -1,49 +1,170 @@
+use starknet::{ContractAddress, EthAddress};
+use prop_house::common::utils::signature::KeccakTypeHash;
+use prop_house::common::libraries::round::{Asset, UserStrategy};
+use prop_house::rounds::infinite::config::{ProposalVote, VoteDirectionIntoU256};
+use prop_house::common::utils::hash::keccak_u256s_be;
+use prop_house::rounds::infinite::constants::TypeHash;
+use array::{ArrayTrait, SpanTrait};
+use integer::u256_from_felt252;
+use traits::Into;
+
+#[abi]
+trait IInfiniteRoundEthereumSigAuthStrategy {
+    fn authenticate_propose(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        metadata_uri: Array<felt252>,
+        requested_assets: Array<Asset>,
+        used_proposing_strategies: Array<UserStrategy>,
+    );
+    fn authenticate_edit_proposal(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
+        metadata_uri: Array<felt252>,
+        requested_assets: Array<Asset>,
+    );
+    fn authenticate_cancel_proposal(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
+    );
+    fn authenticate_vote(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        voter_address: EthAddress,
+        proposal_votes: Array<ProposalVote>,
+        used_voting_strategies: Array<UserStrategy>,
+    );
+}
+
+impl KeccakTypeHashProposalVote of KeccakTypeHash<ProposalVote> {
+    fn hash(self: ProposalVote) -> u256 {
+        let mut encoded_data = Default::default();
+        encoded_data.append(TypeHash::PROPOSAL_VOTE);
+        encoded_data.append(u256_from_felt252(self.proposal_id.into()));
+        encoded_data.append(u256_from_felt252(self.proposal_version.into()));
+        encoded_data.append(self.voting_power);
+        encoded_data.append(self.direction.into());
+        keccak_u256s_be(encoded_data.span())
+    }
+}
+
 #[contract]
 mod InfiniteRoundEthereumSigAuthStrategy {
-    use starknet::{ContractAddress, get_contract_address, call_contract_syscall};
-    use prop_house::rounds::timed::constants::{TypeHash, Selector};
-    use prop_house::common::utils::traits::IEthereumSigAuthStrategy;
+    use starknet::{ContractAddress, EthAddress, get_contract_address,};
+    use prop_house::rounds::infinite::config::{
+        IInfiniteRoundDispatcherTrait, IInfiniteRoundDispatcher, ProposalVote
+    };
+    use prop_house::common::utils::signature::{KeccakTypeHash, hash_structured_data};
+    use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
+    use prop_house::common::libraries::round::{Asset, UserStrategy};
     use prop_house::common::utils::integer::ContractAddressIntoU256;
-    use prop_house::common::utils::constants::ETHEREUM_PREFIX;
-    use prop_house::common::utils::hash::keccak_u256s_be;
-    use prop_house::common::utils::array::into_u256_arr;
+    use prop_house::common::utils::array::Felt252SpanIntoU256Span;
+    use prop_house::rounds::infinite::constants::TypeHash;
     use prop_house::common::utils::serde::SpanSerde;
+    use super::{
+        IInfiniteRoundEthereumSigAuthStrategy, KeccakTypeHashProposalVote,
+    };
     use array::{ArrayTrait, SpanTrait};
-    use integer::Felt252TryIntoU32;
+    use integer::u256_from_felt252;
     use traits::{Into, TryInto};
     use option::OptionTrait;
     use zeroable::Zeroable;
 
     struct Storage {
         _domain_separator: u256,
-        _salts: LegacyMap<(felt252, u256), bool>, 
+        _salts: LegacyMap<(EthAddress, u256), bool>, 
     }
 
-    impl InfiniteRoundEthereumSigAuthStrategy of IEthereumSigAuthStrategy {
-        fn authenticate(
+    impl InfiniteRoundEthereumSigAuthStrategy of IInfiniteRoundEthereumSigAuthStrategy {
+        fn authenticate_propose(
             r: u256,
             s: u256,
             v: u8,
             salt: u256,
-            target: ContractAddress,
-            selector: felt252,
-            cdata: Span<felt252>,
+            round: ContractAddress,
+            proposer_address: EthAddress,
+            metadata_uri: Array<felt252>,
+            requested_assets: Array<Asset>,
+            used_proposing_strategies: Array<UserStrategy>,
         ) {
-            if selector == Selector::PROPOSE {
-                _verify_propose_sig(r, s, v, salt, target, selector, cdata);
-            } else if selector == Selector::VOTE {
-                _verify_vote_sig(r, s, v, salt, target, selector, cdata);
-            } else if selector == Selector::CANCEL_PROPOSAL {
-                _verify_cancel_proposal_sig(r, s, v, salt, target, selector, cdata);
-            } else {
-                return ();
-            }
+            _verify_propose_sig(r, s, v, salt, round, proposer_address, metadata_uri.span(), requested_assets.span(), used_proposing_strategies.span());
+            IInfiniteRoundDispatcher { contract_address: round }.propose(
+                proposer_address,
+                metadata_uri,
+                requested_assets,
+                used_proposing_strategies,
+            );
+        }
 
-            // Execute the function call with the supplied calldata
-            starknet::call_contract_syscall(
-                address: target, entry_point_selector: selector, calldata: cdata, 
-            )
-            .unwrap_syscall();
+        fn authenticate_edit_proposal(
+            r: u256,
+            s: u256,
+            v: u8,
+            salt: u256,
+            round: ContractAddress,
+            proposer_address: EthAddress,
+            proposal_id: u32,
+            metadata_uri: Array<felt252>,
+            requested_assets: Array<Asset>,
+        ) {
+            _verify_edit_proposal_sig(r, s, v, salt, round, proposer_address, proposal_id, metadata_uri.span(), requested_assets.span());
+            IInfiniteRoundDispatcher { contract_address: round }.edit_proposal(
+                proposer_address,
+                proposal_id,
+                metadata_uri,
+                requested_assets,
+            );
+        }
+
+        fn authenticate_cancel_proposal(
+            r: u256,
+            s: u256,
+            v: u8,
+            salt: u256,
+            round: ContractAddress,
+            proposer_address: EthAddress,
+            proposal_id: u32,
+        ) {
+            _verify_cancel_proposal_sig(r, s, v, salt, round, proposer_address, proposal_id);
+            IInfiniteRoundDispatcher { contract_address: round }.cancel_proposal(
+                proposer_address,
+                proposal_id,
+            );
+        }
+
+        fn authenticate_vote(
+            r: u256,
+            s: u256,
+            v: u8,
+            salt: u256,
+            round: ContractAddress,
+            voter_address: EthAddress,
+            proposal_votes: Array<ProposalVote>,
+            used_voting_strategies: Array<UserStrategy>,
+        ) {
+            _verify_vote_sig(r, s, v, salt, round, voter_address, proposal_votes.span(), used_voting_strategies.span());
+            IInfiniteRoundDispatcher { contract_address: round }.vote(
+                voter_address,
+                proposal_votes,
+                used_voting_strategies,
+            );
         }
     }
 
@@ -52,17 +173,127 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         initializer(domain_separator);
     }
 
+    /// Verify a propose signature and call the `propose` function on the round.
+    /// * `r`, `s`, `v` - The signature.
+    /// * `salt` - The salt used to generate the signature.
+    /// * `round` - The address of the round contract.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `metadata_uri` - The metadata URI of the proposal.
+    /// * `requested_assets` - The assets requested by the proposer.
+    /// * `used_proposing_strategies` - The strategies used by the proposer.
     #[external]
-    fn authenticate(
+    fn authenticate_propose(
         r: u256,
         s: u256,
         v: u8,
         salt: u256,
-        target: ContractAddress,
-        selector: felt252,
-        cdata: Span<felt252>,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        metadata_uri: Array<felt252>,
+        requested_assets: Array<Asset>,
+        used_proposing_strategies: Array<UserStrategy>,
     ) {
-        InfiniteRoundEthereumSigAuthStrategy::authenticate(r, s, v, salt, target, selector, cdata);
+        InfiniteRoundEthereumSigAuthStrategy::authenticate_propose(
+            r,
+            s,
+            v,
+            salt,
+            round,
+            proposer_address,
+            metadata_uri,
+            requested_assets,
+            used_proposing_strategies,
+        );
+    }
+
+    /// Verify an edit_proposal signature and call the `edit_proposal` function on the round.
+    /// * `r`, `s`, `v` - The signature.
+    /// * `salt` - The salt used to generate the signature.
+    /// * `round` - The address of the round contract.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `proposal_id` - The id of the proposal to edit.
+    /// * `metadata_uri` - The metadata URI of the proposal.
+    /// * `requested_assets` - The assets requested by the proposal.
+    #[external]
+    fn authenticate_edit_proposal(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
+        metadata_uri: Array<felt252>,
+        requested_assets: Array<Asset>,
+    ) {
+        InfiniteRoundEthereumSigAuthStrategy::authenticate_edit_proposal(
+            r,
+            s,
+            v,
+            salt,
+            round,
+            proposer_address,
+            proposal_id,
+            metadata_uri,
+            requested_assets,
+        );
+    }
+
+    /// Verify a cancel_proposal signature and call the `cancel_proposal` function on the round.
+    /// * `r`, `s`, `v` - The signature.
+    /// * `salt` - The salt used to generate the signature.
+    /// * `round` - The address of the round contract.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `proposal_id` - The id of the proposal to cancel.
+    #[external]
+    fn authenticate_cancel_proposal(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
+    ) {
+        InfiniteRoundEthereumSigAuthStrategy::authenticate_cancel_proposal(
+            r,
+            s,
+            v,
+            salt,
+            round,
+            proposer_address,
+            proposal_id,
+        );
+    }
+
+    /// Verify a vote signature and call the `vote` function on the round.
+    /// * `r`, `s`, `v` - The signature.
+    /// * `salt` - The salt used to generate the signature.
+    /// * `round` - The address of the round contract.
+    /// * `voter_address` - The address of the voter.
+    /// * `proposal_votes` - The votes of the voter.
+    /// * `used_voting_strategies` - The strategies used by the voter.
+    #[external]
+    fn authenticate_vote(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        voter_address: EthAddress,
+        proposal_votes: Array<ProposalVote>,
+        used_voting_strategies: Array<UserStrategy>,
+    ) {
+        InfiniteRoundEthereumSigAuthStrategy::authenticate_vote(
+            r,
+            s,
+            v,
+            salt,
+            round,
+            voter_address,
+            proposal_votes,
+            used_voting_strategies,
+        );
     }
 
     ///
@@ -74,45 +305,44 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         _domain_separator::write(domain_separator_);
     }
 
+
     /// Verifies a `propose` signature.
-    /// * `r` - The `r` component of the signature.
-    /// * `s` - The `s` component of the signature.
-    /// * `v` - The `v` component of the signature.
+    /// * `r`, `s`, `v` - The signature.
     /// * `salt` - The salt used to prevent replay attacks.
-    /// * `target` - The address of the contract to call.
-    /// * `selector` - The selector of the function to call.
-    /// * `cdata` - The calldata to pass to the function.
+    /// * `round` - The address of the round to call.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `metadata_uri` - The metadata URI of the proposal.
+    /// * `requested_assets` - The assets requested by the proposer.
+    /// * `used_proposing_strategies` - The strategies used by the proposer.
     fn _verify_propose_sig(
         r: u256,
         s: u256,
         v: u8,
         salt: u256,
-        target: ContractAddress,
-        selector: felt252,
-        cdata: Span<felt252>,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        metadata_uri: Span<felt252>,
+        requested_assets: Span<Asset>,
+        used_proposing_strategies: Span<UserStrategy>,
     ) {
-        // Proposer address should be located in calldata[0]
-        let proposer_address = *cdata.at(0);
-
         // Ensure proposer has not already used this salt in a previous action
         assert(!_salts::read((proposer_address, salt)), 'EthereumSig: Salt already used');
 
         let auth_strategy_address = get_contract_address();
-        let metadata_uri = cdata.slice(2, (*cdata.at(1)).try_into().unwrap());
-        let metadata_uri_hash = keccak_u256s_be(into_u256_arr(metadata_uri).span());
-
-        // TODO: Add `used_proposing_strategies`
+        let metadata_uri_hash = keccak_u256s_be(metadata_uri.into());
 
         // The message data
         let mut data = Default::default();
         data.append(TypeHash::PROPOSE);
         data.append(auth_strategy_address.into());
-        data.append(target.into());
-        data.append(proposer_address.into());
+        data.append(round.into());
+        data.append(u256_from_felt252(proposer_address.into()));
         data.append(metadata_uri_hash);
+        data.append(requested_assets.hash());
+        data.append(used_proposing_strategies.hash());
         data.append(salt);
 
-        let hash = _hash_structured_data(data.span());
+        let hash = hash_structured_data(_domain_separator::read(), data.span());
 
         // TODO: eth signature verification not yet supported
         // _verify_eth_signature(hash, r, s, v - 27, proposer_address);
@@ -121,96 +351,66 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         _salts::write((proposer_address, salt), true);
     }
 
-    /// Verifies a `vote` signature.
-    /// * `r` - The `r` component of the signature.
-    /// * `s` - The `s` component of the signature.
-    /// * `v` - The `v` component of the signature.
+    /// Verifies a `edit_proposal` signature.
+    /// * `r`, `s`, `v` - The signature.
     /// * `salt` - The salt used to prevent replay attacks.
-    /// * `target` - The address of the contract to call.
-    /// * `selector` - The selector of the function to call.
-    /// * `cdata` - The calldata to pass to the function.
-    fn _verify_vote_sig(
+    /// * `round` - The address of the round to call.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `proposal_id` - The ID of the proposal.
+    /// * `metadata_uri` - The metadata URI of the proposal.
+    /// * `requested_assets` - The assets requested by the proposer.
+    fn _verify_edit_proposal_sig(
         r: u256,
         s: u256,
         v: u8,
         salt: u256,
-        target: ContractAddress,
-        selector: felt252,
-        cdata: Span<felt252>,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
+        metadata_uri: Span<felt252>,
+        requested_assets: Span<Asset>,
     ) {
-        // Voter address should be located in calldata[0]
-        let voter_address = *cdata.at(0);
-
-        // Ensure voter has not already used this salt in a previous action
-        assert(!_salts::read((voter_address, salt)), 'EthereumSig: Salt already used');
+        // Ensure proposer has not already used this salt in a previous action
+        assert(!_salts::read((proposer_address, salt)), 'EthereumSig: Salt already used');
 
         let auth_strategy_address = get_contract_address();
 
-        let proposal_votes_len = (*cdata.at(1)).try_into().unwrap();
-        let proposal_votes = cdata.slice(2, proposal_votes_len);
-        let proposal_votes_hash = keccak_u256s_be(into_u256_arr(proposal_votes).span());
-
-        let used_voting_strategy_ids_len = (*cdata.at(2 + proposal_votes_len)).try_into().unwrap();
-        let used_voting_strategy_ids = cdata
-            .slice(3 + proposal_votes_len, used_voting_strategy_ids_len);
-        let used_voting_strategy_ids_hash = keccak_u256s_be(
-            into_u256_arr(used_voting_strategy_ids).span()
-        );
-
-        let user_voting_strategy_params_flat_len = (*cdata
-            .at(3 + proposal_votes_len + used_voting_strategy_ids_len))
-            .try_into()
-            .unwrap();
-        let user_voting_strategy_params_flat = cdata
-            .slice(
-                4 + proposal_votes_len + used_voting_strategy_ids_len,
-                user_voting_strategy_params_flat_len
-            );
-        let user_voting_strategy_params_flat_hash = keccak_u256s_be(
-            into_u256_arr(user_voting_strategy_params_flat).span(), 
-        );
-
         // The message data
         let mut data = Default::default();
-        data.append(TypeHash::VOTE);
+        data.append(TypeHash::EDIT_PROPOSAL);
         data.append(auth_strategy_address.into());
-        data.append(target.into());
-        data.append(voter_address.into());
-        data.append(proposal_votes_hash);
-        data.append(used_voting_strategy_ids_hash);
-        data.append(user_voting_strategy_params_flat_hash);
+        data.append(round.into());
+        data.append(u256_from_felt252(proposer_address.into()));
+        data.append(u256_from_felt252(proposal_id.into()));
+        data.append(metadata_uri.hash());
+        data.append(requested_assets.hash());
         data.append(salt);
 
-        let hash = _hash_structured_data(data.span());
+        let hash = hash_structured_data(_domain_separator::read(), data.span());
 
         // TODO: eth signature verification not yet supported
-        // _verify_eth_signature(hash, r, s, v - 27, voter_address);
+        // _verify_eth_signature(hash, r, s, v - 27, proposer_address);
 
         // Write the salt to prevent replay attack
-        _salts::write((voter_address, salt), true);
+        _salts::write((proposer_address, salt), true);
     }
 
+
     /// Verifies a `cancel_proposal` signature.
-    /// * `r` - The `r` component of the signature.
-    /// * `s` - The `s` component of the signature.
-    /// * `v` - The `v` component of the signature.
+    /// * `r`, `s`, `v` - The signature.
     /// * `salt` - The salt used to prevent replay attacks.
-    /// * `target` - The address of the contract to call.
-    /// * `selector` - The selector of the function to call.
-    /// * `cdata` - The calldata to pass to the function.
+    /// * `round` - The address of the round to call.
+    /// * `proposer_address` - The address of the proposer.
+    /// * `proposal_id` - The ID of the proposal.
     fn _verify_cancel_proposal_sig(
         r: u256,
         s: u256,
         v: u8,
         salt: u256,
-        target: ContractAddress,
-        selector: felt252,
-        cdata: Span<felt252>,
+        round: ContractAddress,
+        proposer_address: EthAddress,
+        proposal_id: u32,
     ) {
-        // Proposer address should be located in calldata[0], proposal_id in calldata[1]
-        let proposer_address = *cdata.at(0);
-        let proposal_id = *cdata.at(1);
-
         // Ensure proposer has not already used this salt in a previous action
         assert(!_salts::read((proposer_address, salt)), 'EthereumSig: Salt already used');
 
@@ -220,12 +420,12 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         let mut data = Default::default();
         data.append(TypeHash::CANCEL_PROPOSAL);
         data.append(auth_strategy_address.into());
-        data.append(target.into());
-        data.append(proposer_address.into());
-        data.append(proposal_id.into());
+        data.append(round.into());
+        data.append(u256_from_felt252(proposer_address.into()));
+        data.append(u256_from_felt252(proposal_id.into()));
         data.append(salt);
 
-        let hash = _hash_structured_data(data.span());
+        let hash = hash_structured_data(_domain_separator::read(), data.span());
 
         // TODO: eth signature verification not yet supported
         // _verify_eth_signature(hash, r, s, v - 27, proposer_address);
@@ -234,17 +434,44 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         _salts::write((proposer_address, salt), true);
     }
 
-    /// Hash the structured EIP-712 data, including the ethereum prefix,
-    // domain separator, and the message itself.
-    /// * `message` - The message to hash.
-    fn _hash_structured_data(message: Span<u256>) -> u256 {
-        let hash_struct = keccak_u256s_be(message);
+    /// Verifies a `vote` signature.
+    /// * `r`, `s`, `v` - The signature.
+    /// * `salt` - The salt used to prevent replay attacks.
+    /// * `round` - The address of the round to call.
+    /// * `voter_address` - The address of the voter.
+    /// * `proposal_votes` - The votes of the voter.
+    /// * `used_voting_strategies` - The strategies used by the voter.
+    fn _verify_vote_sig(
+        r: u256,
+        s: u256,
+        v: u8,
+        salt: u256,
+        round: ContractAddress,
+        voter_address: EthAddress,
+        proposal_votes: Span<ProposalVote>,
+        used_voting_strategies: Span<UserStrategy>,
+    ) {
+        // Ensure voter has not already used this salt in a previous action
+        assert(!_salts::read((voter_address, salt)), 'EthereumSig: Salt already used');
 
+        let auth_strategy_address = get_contract_address();
+
+        // The message data
         let mut data = Default::default();
-        data.append(ETHEREUM_PREFIX.into());
-        data.append(_domain_separator::read());
-        data.append(hash_struct);
+        data.append(TypeHash::VOTE);
+        data.append(auth_strategy_address.into());
+        data.append(round.into());
+        data.append(u256_from_felt252(voter_address.into()));
+        data.append(proposal_votes.hash());
+        data.append(used_voting_strategies.hash());
+        data.append(salt);
 
-        keccak_u256s_be(data.span())
+        let hash = hash_structured_data(_domain_separator::read(), data.span());
+
+        // TODO: eth signature verification not yet supported
+        // _verify_eth_signature(hash, r, s, v - 27, voter_address);
+
+        // Write the salt to prevent replay attack
+        _salts::write((voter_address, salt), true);
     }
 }

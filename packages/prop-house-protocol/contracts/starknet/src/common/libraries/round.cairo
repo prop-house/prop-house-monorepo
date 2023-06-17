@@ -50,7 +50,7 @@ mod Round {
     /// Initializes the contract by setting the origin chain ID
     /// and registering the provided strategy groups.
     fn initializer(mut strategy_groups_: Span<StrategyGroup>) {
-        _deployer::write(IRoundFactoryDispatcher { contract_address: get_caller_address(),  });
+        _deployer::write(IRoundFactoryDispatcher { contract_address: get_caller_address() });
         _register_strategy_groups(strategy_groups_);
     }
 

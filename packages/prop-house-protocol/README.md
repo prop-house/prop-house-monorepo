@@ -2,7 +2,7 @@
 
 Prop House is a multichain protocol that helps internet communities & creators allocate resources.
 
-## Concepts
+## Overview
 
 Prop House consists of two key concepts: [Houses](#Houses) and [Rounds](#Rounds)
 
