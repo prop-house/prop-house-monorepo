@@ -3,9 +3,16 @@ import { Account, SequencerProvider } from 'starknet';
 import { commonL1Setup } from './common';
 import { CommunityHouse__factory, TimedRound__factory } from '../../../typechain';
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
-import { getStarknetArtifactPaths } from '../utils';
+import { asciiToHex, getStarknetArtifactPaths } from '../utils';
+import { EIP_712_DOMAIN_SEPARATOR_GOERLI, STARKNET_MAX_FEE } from '../constants';
+import { RoundType } from '@prophouse/sdk';
 import { constants } from 'ethers';
-import { STARKNET_MAX_FEE } from '../constants';
+import { ChainId } from '../../../src';
+
+const DependencyKey = {
+  EXECUTION_STRATEGY: asciiToHex('EXECUTION_STRATEGY'),
+  AUTH_STRATEGIES: asciiToHex('AUTH_STRATEGIES'),
+};
 
 export const communityHouseSetup = async () => {
   const config = await commonL1Setup();
@@ -44,6 +51,14 @@ export const communityHouseSetup = async () => {
     casmPath: strategyRegistryMetadata.casm,
   });
 
+  const roundDependencyRegistryMetadata = getStarknetArtifactPaths('RoundDependencyRegistry');
+  const roundDependencyRegistryFactory = new StarknetContractFactory({
+    hre,
+    abiPath: roundDependencyRegistryMetadata.sierra,
+    metadataPath: roundDependencyRegistryMetadata.sierra,
+    casmPath: roundDependencyRegistryMetadata.casm,
+  });
+
   await starknetSigner.declare(roundDeployerFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
@@ -53,16 +68,23 @@ export const communityHouseSetup = async () => {
   await starknetSigner.declare(strategyRegistryFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
+  await starknetSigner.declare(roundDependencyRegistryFactory, {
+    maxFee: STARKNET_MAX_FEE,
+  });
 
   const communityHouseFactory = new CommunityHouse__factory(config.deployer);
 
   const roundFactory = await starknetSigner.deploy(roundDeployerFactory, {
+    origin_chain_id: ChainId.EthereumHardhat,
     origin_messenger: config.messenger.address,
   });
   const ethExecutionStrategy = await starknetSigner.deploy(ethExecutionStrategyFactory, {
     round_factory: roundFactory.address,
   });
   const strategyRegistry = await starknetSigner.deploy(strategyRegistryFactory);
+  const roundDependencyRegistry = await starknetSigner.deploy(roundDependencyRegistryFactory, {
+    initial_owner: address,
+  });
 
   const communityHouseImpl = await communityHouseFactory.deploy(
     config.propHouse.address,
@@ -81,6 +103,7 @@ export const communityHouseSetup = async () => {
     roundFactory,
     strategyRegistry,
     ethExecutionStrategy,
+    roundDependencyRegistry,
   };
 };
 
@@ -97,15 +120,15 @@ export const timedRoundSetup = async () => {
     casmPath: timedRoundL2Metadata.casm,
   });
 
-  const ethTxAuthStrategyMetadata = getStarknetArtifactPaths('EthereumTxAuthStrategy');
-  const ethTxAuthStrategyFactory = new StarknetContractFactory({
+  const timedRoundEthTxAuthStrategyMetadata = getStarknetArtifactPaths('TimedRoundEthereumTxAuthStrategy');
+  const timedRoundEthTxAuthStrategyFactory = new StarknetContractFactory({
     hre,
-    abiPath: ethTxAuthStrategyMetadata.sierra,
-    metadataPath: ethTxAuthStrategyMetadata.sierra,
-    casmPath: ethTxAuthStrategyMetadata.casm,
+    abiPath: timedRoundEthTxAuthStrategyMetadata.sierra,
+    metadataPath: timedRoundEthTxAuthStrategyMetadata.sierra,
+    casmPath: timedRoundEthTxAuthStrategyMetadata.casm,
   });
 
-  const timedRoundEthSigAuthStrategyMetadata = getStarknetArtifactPaths('EthereumSigAuthStrategy');
+  const timedRoundEthSigAuthStrategyMetadata = getStarknetArtifactPaths('TimedRoundEthereumSigAuthStrategy');
   const timedRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
     hre,
     abiPath: timedRoundEthSigAuthStrategyMetadata.sierra,
@@ -113,27 +136,67 @@ export const timedRoundSetup = async () => {
     casmPath: timedRoundEthSigAuthStrategyMetadata.casm,
   });
 
-  await config.starknetSigner.declare(ethTxAuthStrategyFactory, {
+  await config.starknetSigner.declare(timedRoundEthTxAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
   await config.starknetSigner.declare(timedRoundEthSigAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
   });
 
-  const ethTxAuthStrategy = await config.starknetSigner.deploy(ethTxAuthStrategyFactory, {
+  const timedRoundEthTxAuthStrategy = await config.starknetSigner.deploy(timedRoundEthTxAuthStrategyFactory, {
     commit_address: config.starknetCommit.address,
   });
   // prettier-ignore
   const timedRoundEthSigAuthStrategy = await config.starknetSigner.deploy(
     timedRoundEthSigAuthStrategyFactory,
+    {
+      domain_separator: EIP_712_DOMAIN_SEPARATOR_GOERLI,
+    },
   );
 
+  // Add Ethereum auth strategies
+  await config.starknetSigner.invoke(
+    config.roundDependencyRegistry,
+    'update_dependencies_if_not_locked',
+    {
+      origin_chain_id: ChainId.EthereumHardhat,
+      round_type: asciiToHex(RoundType.TIMED),
+      key: DependencyKey.AUTH_STRATEGIES,
+      dependencies: [timedRoundEthTxAuthStrategy.address, timedRoundEthSigAuthStrategy.address],
+    },
+  );
+
+  // Add Ethereum execution strategy
+  await config.starknetSigner.invoke(
+    config.roundDependencyRegistry,
+    'update_dependency_if_not_locked',
+    {
+      origin_chain_id: ChainId.EthereumHardhat,
+      round_type: asciiToHex(RoundType.TIMED),
+      key: DependencyKey.EXECUTION_STRATEGY,
+      dependency: config.ethExecutionStrategy.address,
+    },
+  );
+
+  for (const key of Object.values(DependencyKey)) {
+    await config.starknetSigner.invoke(
+      config.roundDependencyRegistry,
+      'lock_key',
+      {
+        origin_chain_id: ChainId.EthereumHardhat,
+        round_type: asciiToHex(RoundType.TIMED),
+        key,
+      },
+    );
+  }
+
+  // Write auth and execution strategies to the round dependency registry
+  const STRATEGY_REGISTRY_ADDRESS_KEY = asciiToHex('STRATEGY_REGISTRY_ADDRESS');
+  const ROUND_DEP_REGISTRY_ADDRESS_KEY = asciiToHex('ROUND_DEP_REGISTRY_ADDRESS');
   await config.starknetSigner.declare(timedRoundL2Factory, {
     constants: {
-      '0xdead0001': config.strategyRegistry.address,
-      '0xdead0002': config.ethExecutionStrategy.address,
-      '0xdead0003': ethTxAuthStrategy.address,
-      '0xdead0004': timedRoundEthSigAuthStrategy.address,
+      [STRATEGY_REGISTRY_ADDRESS_KEY]: config.strategyRegistry.address,
+      [ROUND_DEP_REGISTRY_ADDRESS_KEY]: config.roundDependencyRegistry.address,
     },
     maxFee: STARKNET_MAX_FEE,
   });
@@ -144,19 +207,18 @@ export const timedRoundSetup = async () => {
     config.propHouse.address,
     config.mockStarknetMessaging.address,
     config.messenger.address,
-    constants.AddressZero,
     config.roundFactory.address,
     config.ethExecutionStrategy.address,
+    constants.AddressZero,
   );
 
   await config.manager.registerRound(config.communityHouseImpl.address, timedRoundImpl.address);
-
   return {
     ...config,
     timedRoundImpl,
     timedRoundL2Factory,
     timedRoundClassHash,
-    ethTxAuthStrategy,
+    timedRoundEthTxAuthStrategy,
     timedRoundEthSigAuthStrategy,
   };
 };

@@ -132,30 +132,21 @@ export namespace Timed {
   export interface ProposeMessage {
     round: string;
     authStrategy: string;
-    proposingStrategyIds: string[];
-    proposingStrategyParams: string[][];
+    usedProposingStrategies: GovPowerUserStrategy[];
     metadataUri: string;
   }
   export interface VoteMessage {
     round: string;
     authStrategy: string;
-    votingStrategyIds: string[];
-    votingStrategyParams: string[][];
+    usedVotingStrategies: GovPowerUserStrategy[];
     proposalVotes: ProposalVote[];
   }
   export interface EVMSigProposeMessage extends ProposeMessage {
-    proposingStrategiesHash: string;
-    proposingStrategyParamsHash: string;
-    proposerAddress: string;
+    proposer: string;
     salt: string | number;
   }
   export interface EVMSigVoteMessage extends VoteMessage {
-    round: string;
-    authStrategy: string;
-    voterAddress: string;
-    proposalVotesHash: string;
-    votingStrategiesHash: string;
-    votingStrategyParamsHash: string;
+    voter: string;
     salt: string | number;
   }
   export interface VoteConfig {
@@ -188,14 +179,12 @@ export namespace Timed {
   export interface ProposeCalldataConfig {
     proposer: string;
     metadataUri: string;
-    proposingStrategyIds: string[];
-    proposingStrategyParams: string[][];
+    usedProposingStrategies: GovPowerUserStrategy[];
   }
   export interface VoteCalldataConfig {
     voter: string;
-    votingStrategyIds: string[];
-    votingStrategyParams: string[][];
     proposalVotes: ProposalVote[];
+    usedVotingStrategies: GovPowerUserStrategy[];
   }
   export interface FinalizationConfig {
     round: string;
@@ -330,6 +319,11 @@ export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends v
 export interface GovPowerStrategy {
   address: string;
   params: (string | number)[];
+}
+
+export interface GovPowerUserStrategy {
+  id: string;
+  userParams: (string | number)[];
 }
 
 export interface GovPowerStrategyWithID extends GovPowerStrategy {

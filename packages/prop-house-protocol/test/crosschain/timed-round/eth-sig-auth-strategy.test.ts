@@ -124,7 +124,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
           },
           auth: {
             timedEthSig: config.timedRoundEthSigAuthStrategy.address,
-            timedEthTx: config.ethTxAuthStrategy.address,
+            timedEthTx: config.timedRoundEthTxAuthStrategy.address,
           },
           herodotus: {
             factRegistry: '',
@@ -226,9 +226,9 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     expect(proposerAddress).to.equal(signer.address.toLowerCase());
     expect(parseInt(metadataUriLength, 16)).to.equal(3);
 
-    const expectedMetdataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
+    const expectedMetadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
     for (let i = 0; i < actualMetadataUri.length; i++) {
-      expect(actualMetadataUri[i]).to.equal(expectedMetdataUri.values[i]);
+      expect(actualMetadataUri[i]).to.equal(expectedMetadataUri.values[i]);
     }
   });
 
@@ -318,6 +318,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     });
 
     const winner = {
+      position: 1,
       proposalId: winningProposalIds[0],
       proposer: BigNumber.from(response.proposer).toHexString(),
       votingPower: response.voting_power,
@@ -327,22 +328,23 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
     expect(consumed_messages.from_l2.length).to.equal(1);
 
-    const finalizeTx = timedRound.finalizeRound(merkleRootLow, merkleRootHigh);
+    const finalizeTx = timedRound.finalize(merkleRootLow, merkleRootHigh);
 
     await expect(finalizeTx).to.emit(timedRound, 'RoundFinalized');
 
     const leaf = generateClaimLeaf({
       proposalId: winner.proposalId,
-      proposerAddress: signer.address,
+      position: winner.position,
+      proposer: signer.address,
       assetId: utils.encoding.getETHAssetID(),
       assetAmount: amount.toHex(),
     });
     const tree = generateClaimMerkleTree([leaf]);
     const proof = tree.getHexProof(leaf);
 
-    const claimTx = timedRound.claimAward(
+    const claimTx = timedRound.claim(
       winner.proposalId,
-      ONE_ETHER,
+      winner.position,
       {
         assetType: AssetType.ETH,
         amount: ONE_ETHER,
@@ -352,7 +354,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       proof,
     );
     await expect(claimTx)
-      .to.emit(timedRound, 'AwardClaimed')
-      .withArgs(winner.proposalId, signer.address, signer.address, assetId.toHex(), amount.toHex());
+      .to.emit(timedRound, 'AssetClaimed')
+      .withArgs(winner.proposalId, signer.address, signer.address, [assetId.toHex(), amount.toHex()]);
   });
 });

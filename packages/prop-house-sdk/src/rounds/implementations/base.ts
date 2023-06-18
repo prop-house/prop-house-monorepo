@@ -43,6 +43,21 @@ export abstract class RoundBase<
     chainId: ChainId.EthereumGoerli.toString(),
   };
 
+
+  /**
+   * Shared EIP712 types
+   */
+  public static EIP_712_TYPES = {
+    UserStrategy: [
+      { name: 'id', type: 'uint256' },
+      { name: 'userParams', type: 'uint256[]' },
+    ],
+    Asset: [
+      { name: 'assetId', type: 'uint256' },
+      { name: 'amount', type: 'uint256' },
+    ],
+  };
+
   /**
    * Default Starknet relayers
    */
@@ -143,5 +158,21 @@ export abstract class RoundBase<
    */
   protected generateSalt() {
     return Number(splitUint256.SplitUint256.fromHex(bytes.bytesToHex(randomBytes(4))).toHex());
+  }
+
+  /**
+   * Pick the provided keys from the provided object
+   * @param object The object to pick from
+   * @param keys The keys to pick
+   */
+  protected pick<T, K extends keyof T>(object: T, keys: K[]): Pick<T, K> {
+    return Object.assign(
+      {},
+      ...keys.map(key => {
+        if (object && Object.prototype.hasOwnProperty.call(object, key)) {
+          return { [key]: object[key] };
+        }
+      })
+    );
   }
 }

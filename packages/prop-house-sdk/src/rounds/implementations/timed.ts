@@ -62,29 +62,43 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   public static MAX_WINNER_COUNT = 25;
 
   /**
-   * EIP712 timed round propose types
+   * EIP712 timed round types
    */
-  public static PROPOSE_TYPES = {
+  public static readonly EIP_712_TYPES = {
+    ...super.EIP_712_TYPES,
+    ProposalVote: [
+      { name: 'proposalId', type: 'uint32' },
+      { name: 'votingPower', type: 'uint256' },
+    ],
     Propose: [
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
-      { name: 'proposerAddress', type: 'address' },
+      { name: 'proposer', type: 'address' },
+      { name: 'metadataUri', type: 'string' },
+      { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
+      { name: 'salt', type: 'uint256' },
+    ],
+    EditProposal: [
+      { name: 'authStrategy', type: 'bytes32' },
+      { name: 'round', type: 'bytes32' },
+      { name: 'proposer', type: 'address' },
+      { name: 'proposalId', type: 'uint32' },
       { name: 'metadataUri', type: 'string' },
       { name: 'salt', type: 'uint256' },
     ],
-  };
-
-  /**
-   * EIP712 timed round vote types
-   */
-  public static VOTE_TYPES = {
+    CancelProposal: [
+      { name: 'authStrategy', type: 'bytes32' },
+      { name: 'round', type: 'bytes32' },
+      { name: 'proposer', type: 'address' },
+      { name: 'proposalId', type: 'uint32' },
+      { name: 'salt', type: 'uint256' },
+    ],
     Vote: [
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
-      { name: 'voterAddress', type: 'address' },
-      { name: 'proposalVotesHash', type: 'bytes32' },
-      { name: 'votingStrategiesHash', type: 'bytes32' },
-      { name: 'votingStrategyParamsHash', type: 'bytes32' },
+      { name: 'voter', type: 'address' },
+      { name: 'proposalVotes', type: 'ProposalVote[]' },
+      { name: 'usedVotingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
     ],
   };
@@ -230,7 +244,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param configStruct The round configuration struct
    */
   public async estimateMessageFee(configStruct: Timed.ConfigStruct) {
-    const rawPayload = await this.getContract(this.impl).getL2Payload(configStruct);
+    const rawPayload = await this.getContract(this.impl).getRegistrationPayload(configStruct);
     const payload = [
       encoding.hexPadLeft(ADDRESS_ONE).toLowerCase(),
       ...rawPayload.slice(1).map(p => p.toString()),
@@ -289,27 +303,17 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
-    // TODO: Implement proposal gating in SDK
-    const proposingStrategyIds: string[] = [];
-    const proposingStrategyParams: string[][] = [];
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
-      proposerAddress: address,
-      proposingStrategyIds,
-      proposingStrategyParams,
+      proposer: address,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedEthSig),
-      proposingStrategiesHash: encoding.hexPadRight(
-        hash.computeHashOnElements(proposingStrategyIds),
-      ),
-      proposingStrategyParamsHash: encoding.hexPadRight(
-        hash.computeHashOnElements(encoding.flatten2DArray(proposingStrategyParams)),
-      ),
+      usedProposingStrategies: [], // TODO: Add SDK support for proposing strategies
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
-      TimedRound.PROPOSE_TYPES,
+      this.pick(TimedRound.EIP_712_TYPES, ['Propose', 'UserStrategy']),
       message,
     );
     return {
@@ -373,22 +377,22 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       timestamp,
       nonZeroStrategyVotingPowers.map(s => s.strategy),
     );
-    const votingStrategyIds = nonZeroStrategyVotingPowers.map(({ strategy }) => strategy.id);
     const message = {
       round: encoding.hexPadLeft(config.round),
-      votingStrategyIds,
+      voter: address,
       proposalVotes: config.votes,
-      votingStrategyParams: userParams,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timedEthSig),
-      voterAddress: address,
-      proposalVotesHash: encoding.hexPadRight(this.hashProposalVotes(config.votes)),
-      votingStrategiesHash: encoding.hexPadRight(hash.computeHashOnElements(votingStrategyIds)),
-      votingStrategyParamsHash: encoding.hexPadRight(
-        hash.computeHashOnElements(encoding.flatten2DArray(userParams)),
-      ),
+      usedVotingStrategies: nonZeroStrategyVotingPowers.map(({ strategy }, i) => ({
+        id: strategy.id,
+        userParams: userParams[i],
+      })),
       salt: this.generateSalt(),
     };
-    const signature = await this.signer._signTypedData(this.DOMAIN, TimedRound.VOTE_TYPES, message);
+    const signature = await this.signer._signTypedData(
+      this.DOMAIN,
+      this.pick(TimedRound.EIP_712_TYPES, ['Vote', 'ProposalVote', 'UserStrategy']),
+      message,
+    );
     return {
       address,
       message,
@@ -423,11 +427,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       ...params,
       action: Timed.Action.PROPOSE,
     };
-    const calldata = this.getProposeCalldata({
-      proposer: payload.address,
-      ...payload.data,
-    });
-    const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('propose'), calldata);
+    const call = this.createEVMSigAuthCall(payload, 'authenticate_propose', this.getProposeCalldata(params.data));
     const fee = await account.estimateFee(call);
     return account.execute(call, undefined, {
       maxFee: fee.suggestedMaxFee,
@@ -447,28 +447,24 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       ...params,
       action: Timed.Action.VOTE,
     };
-    const calldata = this.getVoteCalldata({
-      voter: params.address,
-      ...params.data,
-    });
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
     const { govPowerStrategies } = await this._query.getGovPowerStrategies({
       where: {
-        id_in: params.data.votingStrategyIds,
+        id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
     });
 
     // TODO: We only need to do this if they haven't voted before.
     // Remove asap.
     const preCalls = await this._govPower.getPreCallsForStrategies(
-      params.data.voterAddress,
+      params.data.voter,
       timestamp,
       govPowerStrategies,
     );
 
-    const call = this.createEVMSigAuthCall(payload, hash.getSelectorFromName('vote'), calldata);
+    const call = this.createEVMSigAuthCall(payload, 'authenticate_vote', this.getVoteCalldata(params.data));
     const fee = await account.estimateFee([...preCalls, call]);
     return account.execute([...preCalls, call], undefined, {
       maxFee: fee.suggestedMaxFee,
@@ -500,17 +496,15 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param config The information required to generate the propose calldata
    */
   public getProposeCalldata(config: Timed.ProposeCalldataConfig): string[] {
-    const { proposingStrategyIds, proposingStrategyParams } = config;
-    const flattenedProposingStrategyParams = encoding.flatten2DArray(proposingStrategyParams);
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     return [
       config.proposer,
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
-      `0x${proposingStrategyIds.length.toString(16)}`,
-      ...proposingStrategyIds,
-      `0x${flattenedProposingStrategyParams.length.toString(16)}`,
-      ...flattenedProposingStrategyParams,
+      `0x${config.usedProposingStrategies.length.toString(16)}`,
+      ...config.usedProposingStrategies.flatMap(({ id, userParams }) => 
+        [id, userParams.length, ...userParams],
+      ).map(v => v.toString()),
     ];
   }
 
@@ -519,44 +513,33 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param config The information required to generate the vote calldata
    */
   public getVoteCalldata(config: Timed.VoteCalldataConfig): string[] {
-    const { votingStrategyIds, votingStrategyParams, proposalVotes } = config;
-    const flattenedVotingStrategyParams = encoding.flatten2DArray(votingStrategyParams);
-    const flattenedProposalVotes = proposalVotes
-      .map(vote => {
-        const { low, high } = splitUint256.SplitUint256.fromUint(
-          BigInt(vote.votingPower.toString()),
-        );
-        return [
-          `0x${vote.proposalId.toString(16)}`,
-          BigNumber.from(low).toHexString(),
-          BigNumber.from(high).toHexString(),
-        ];
-      })
-      .flat();
     return [
       config.voter,
-      `0x${proposalVotes.length.toString(16)}`,
-      ...flattenedProposalVotes,
-      `0x${votingStrategyIds.length.toString(16)}`,
-      ...votingStrategyIds,
-      `0x${flattenedVotingStrategyParams.length.toString(16)}`,
-      ...flattenedVotingStrategyParams,
-    ];
+      `0x${config.proposalVotes.length.toString(16)}`,
+      ...config.proposalVotes.flatMap(({ proposalId, votingPower }) => {
+        const p = splitUint256.SplitUint256.fromUint(BigInt(votingPower.toString()));
+        return [proposalId, p.low, p.high];
+      }),
+      `0x${config.usedVotingStrategies.length.toString(16)}`,
+      ...config.usedVotingStrategies.flatMap(({ id, userParams }) => 
+        [id, userParams.length, ...userParams],
+      ),
+    ].map(v => v.toString());
   }
 
   /**
    * Create an EVM sig auth call using the provided parameters and calldata
    * @param params The request parameters
-   * @param selector The function selector
-   * @param calldata The transaction calldata
+   * @param entrypoint The function selector
+   * @param calldata Calldata specific to the entrypoint
    */
-  public createEVMSigAuthCall(params: Timed.RequestParams, selector: string, calldata: string[]) {
+  public createEVMSigAuthCall(params: Timed.RequestParams, entrypoint: string, calldata: (string | number)[]) {
     const { round, authStrategy, salt } = params.data;
     const { r, s, v } = encoding.getRSVFromSig(params.signature);
     const rawSalt = splitUint256.SplitUint256.fromHex(`0x${salt.toString(16)}`);
     return {
       contractAddress: authStrategy,
-      entrypoint: 'authenticate',
+      entrypoint,
       calldata: [
         r.low,
         r.high,
@@ -566,8 +549,6 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
         rawSalt.low,
         rawSalt.high,
         round,
-        selector,
-        calldata.length,
         ...calldata,
       ],
     };

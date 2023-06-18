@@ -4,7 +4,8 @@ import MerkleTree from 'merkletreejs';
 
 interface Winner {
   proposalId: BigNumberish;
-  proposerAddress: string;
+  position: BigNumberish;
+  proposer: string;
   assetId: string;
   assetAmount: BigNumberish;
 }
@@ -14,11 +15,11 @@ interface Winner {
  * @param winner Information relating to a round winner
  */
 export const generateClaimLeaf = (winner: Winner) => {
-  const { proposalId, proposerAddress, assetId, assetAmount } = winner;
+  const { proposalId, position, proposer, assetId, assetAmount } = winner;
   return Buffer.from(
     solidityKeccak256(
-      ['uint256', 'uint256', 'bytes32', 'uint256'],
-      [proposalId, proposerAddress, assetId, assetAmount],
+      ['uint256', 'uint256', 'uint256', 'bytes32', 'uint256'],
+      [proposalId, position, proposer, assetId, assetAmount],
     ).slice(2),
     'hex',
   ).toString('hex');

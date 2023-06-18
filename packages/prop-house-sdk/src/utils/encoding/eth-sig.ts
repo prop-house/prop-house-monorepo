@@ -1,4 +1,17 @@
+import { hexlify, isHexString } from '@ethersproject/bytes';
+import { toUtf8Bytes } from '@ethersproject/strings';
 import { SplitUint256 } from '../split-uint256';
+
+/**
+ * Convert an ascii string to hex. Return the string if it is already hex.
+ * @param ascii The ascii string to convert to hex
+ */
+export const asciiToHex = (ascii: string) => {
+  if (isHexString(ascii)) {
+    return ascii;
+  }
+  return hexlify(toUtf8Bytes(ascii));
+};
 
 export const hexPadLeft = (s: string) => {
   // Remove prefix
