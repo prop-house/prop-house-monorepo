@@ -22,11 +22,6 @@ trait IExecutionStrategy {
 }
 
 #[abi]
-trait IEthereumCommitInbox {
-    fn commit_exists(sender: felt252, commit_hash: felt252) -> bool;
-}
-
-#[abi]
 trait IRoundDependencyRegistry {
     fn is_key_locked(origin_chain_id: u64, round_type: felt252, key: felt252) -> bool;
     fn get_dependency_at_key(origin_chain_id: u64, round_type: felt252, key: felt252) -> ContractAddress;

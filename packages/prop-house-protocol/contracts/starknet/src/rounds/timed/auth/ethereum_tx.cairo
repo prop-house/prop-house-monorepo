@@ -35,9 +35,7 @@ mod TimedRoundEthereumTxAuthStrategy {
     use prop_house::rounds::timed::config::{
         ITimedRoundDispatcherTrait, ITimedRoundDispatcher, ProposalVote
     };
-    use prop_house::common::utils::traits::{
-        IEthereumCommitInboxDispatcherTrait, IEthereumCommitInboxDispatcher
-    };
+    use prop_house::common::libraries::commit_receiver::CommitReceiver;
     use prop_house::common::libraries::round::UserStrategy;
     use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::rounds::timed::constants::Selector;
@@ -48,11 +46,6 @@ mod TimedRoundEthereumTxAuthStrategy {
     use zeroable::Zeroable;
     use traits::Into;
     use serde::Serde;
-
-    struct Storage {
-        _ethereum_commit_inbox: IEthereumCommitInboxDispatcher,
-        _commit_used: LegacyMap<felt252, bool>,
-    }
 
     impl TimedRoundEthereumTxAuthStrategy of ITimedRoundEthereumTxAuthStrategy {
         fn authenticate_propose(
@@ -69,7 +62,7 @@ mod TimedRoundEthereumTxAuthStrategy {
             used_proposing_strategies.serialize(ref input);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(proposer.into(), poseidon_hash_span(input.span()));
+            CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
             ITimedRoundDispatcher { contract_address: round }.propose(
                 proposer,
@@ -92,7 +85,7 @@ mod TimedRoundEthereumTxAuthStrategy {
             metadata_uri.serialize(ref input);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(proposer.into(), poseidon_hash_span(input.span()));
+            CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
             ITimedRoundDispatcher { contract_address: round }.edit_proposal(
                 proposer,
@@ -113,7 +106,7 @@ mod TimedRoundEthereumTxAuthStrategy {
             input.append(proposal_id.into());
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(proposer.into(), poseidon_hash_span(input.span()));
+            CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
             ITimedRoundDispatcher { contract_address: round }.cancel_proposal(proposer, proposal_id);
         }
@@ -132,7 +125,7 @@ mod TimedRoundEthereumTxAuthStrategy {
             used_voting_strategies.serialize(ref input);
 
             // Check that the hash matches a commit and that the commit was created by the correct address
-            _consume_commit(voter.into(), poseidon_hash_span(input.span()));
+            CommitReceiver::consume_commit(voter.into(), poseidon_hash_span(input.span()));
 
             ITimedRoundDispatcher { contract_address: round }.vote(
                 voter,
@@ -143,8 +136,8 @@ mod TimedRoundEthereumTxAuthStrategy {
     }
 
     #[constructor]
-    fn constructor(ethereum_commit_inbox: ContractAddress) {
-        initializer(ethereum_commit_inbox);
+    fn constructor(commit_address: ContractAddress) {
+        CommitReceiver::initializer(commit_address);
     }
 
     /// Verify an Ethereum propose commit and call the `propose` function on the round.
@@ -220,26 +213,12 @@ mod TimedRoundEthereumTxAuthStrategy {
         );
     }
 
-    ///
-    /// Internals
-    ///
-
-    /// Initializes the contract by setting the EthereumCommitInbox contract address.
-    fn initializer(ethereum_commit_inbox_: ContractAddress) {
-        _ethereum_commit_inbox::write(
-            IEthereumCommitInboxDispatcher {
-                contract_address: ethereum_commit_inbox_,
-            }
-        );
-    }
-
-    /// Consumes a commit from Ethereum.
+    /// Commits a hash from Ethereum to be consumed at a later time.
+    /// * `from_address` - The address from which the L1 message was sent.
     /// * `sender` - The sender of the commit on L1.
     /// * `commit_hash` - The commit hash.
-    fn _consume_commit(sender: felt252, commit_hash: felt252) {
-        assert(_ethereum_commit_inbox::read().commit_exists(sender, commit_hash), 'EthereumTx: Invalid commit');
-        assert(!_commit_used::read(commit_hash), 'EthereumTx: Commit already used');
-
-        _commit_used::write(commit_hash, true);
+    #[l1_handler]
+    fn commit(from_address: felt252, sender: felt252, commit_hash: felt252) {
+        CommitReceiver::commit(from_address, sender, commit_hash);
     }
 }
