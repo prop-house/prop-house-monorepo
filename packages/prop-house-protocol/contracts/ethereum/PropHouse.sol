@@ -185,9 +185,11 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
     /// @notice Returns `true` if the passed `round` address is valid on any house
     /// @param round The round address
     function isRound(address round) public view returns (bool) {
-        address house = IRound(round).house();
-
-        return isHouse(house) && IHouse(house).isRound(round);
+        try IRound(round).house() returns (address house) {
+            return isHouse(house) && IHouse(house).isRound(round);
+        } catch {
+            return false;
+        }
     }
 
     /// @notice Deposit an asset to the provided round
@@ -232,8 +234,6 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         uint256[] memory assetIds = new uint256[](assetCount);
         uint256[] memory assetAmounts = new uint256[](assetCount);
         for (uint256 i = 0; i < assetCount; ) {
-            _transfer(assets[i], user, round);
-
             // Populate asset IDs and amounts in preparation for deposit token minting
             assetIds[i] = assets[i].toID();
             assetAmounts[i] = assets[i].amount;
@@ -250,6 +250,8 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
                     etherRemaining -= assets[i].amount;
                 }
             }
+
+            _transfer(assets[i], user, round);
 
             unchecked {
                 ++i;

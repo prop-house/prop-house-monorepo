@@ -3,8 +3,8 @@ pragma solidity >=0.8.17;
 
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
-import { Asset } from '../../contracts/ethereum/lib/types/Common.sol';
 import { Messenger } from '../../contracts/ethereum/Messenger.sol';
+import { Asset, AssetType } from '../../contracts/ethereum/lib/types/Common.sol';
 import { CreatorPassIssuer } from '../../contracts/ethereum/CreatorPassIssuer.sol';
 import { CommunityHouse } from '../../contracts/ethereum/houses/CommunityHouse.sol';
 import { TimedRound } from '../../contracts/ethereum/rounds/TimedRound.sol';
@@ -121,6 +121,74 @@ contract TestUtil is Test {
             proposalPeriodDuration: uint40(block.timestamp + 2 days),
             votePeriodDuration: 2 days,
             winnerCount: 5
+        });
+    }
+
+    function ethAsset(uint256 amount) internal pure returns (Asset[] memory assets) {
+        assets = new Asset[](1);
+        assets[0] = Asset({
+            assetType: AssetType.Native,
+            token: address(0),
+            identifier: 0,
+            amount: amount
+        });
+    }
+
+    function erc20Asset(uint256 amount) internal view returns (Asset[] memory assets) {
+        assets = new Asset[](1);
+        assets[0] = Asset({
+            assetType: AssetType.ERC20,
+            token: erc20,
+            identifier: 0,
+            amount: amount
+        });
+    }
+
+    function erc721Asset(uint256 tokenId) internal view returns (Asset[] memory assets) {
+        assets = new Asset[](1);
+        assets[0] = Asset({
+            assetType: AssetType.ERC721,
+            token: erc721,
+            identifier: tokenId,
+            amount: 1
+        });
+    }
+
+    function erc1155Asset(uint256 tokenId, uint256 amount) internal view returns (Asset[] memory assets) {
+        assets = new Asset[](1);
+        assets[0] = Asset({
+            assetType: AssetType.ERC1155,
+            token: erc1155,
+            identifier: tokenId,
+            amount: amount
+        });
+    }
+
+    function allAssets(uint256 tokenId, uint256 amount) internal view returns (Asset[] memory assets) {
+        assets = new Asset[](4);
+        assets[0] = Asset({
+            assetType: AssetType.Native,
+            token: address(0),
+            identifier: 0,
+            amount: amount
+        });
+        assets[1] = Asset({
+            assetType: AssetType.ERC20,
+            token: erc20,
+            identifier: 0,
+            amount: amount
+        });
+        assets[2] = Asset({
+            assetType: AssetType.ERC721,
+            token: erc721,
+            identifier: tokenId,
+            amount: 1
+        });
+        assets[3] = Asset({
+            assetType: AssetType.ERC1155,
+            token: erc1155,
+            identifier: tokenId,
+            amount: amount
         });
     }
 }
