@@ -3,7 +3,6 @@ pragma solidity >=0.8.17;
 
 import { TestUtil } from './TestUtil.sol';
 import { Asset } from '../../contracts/ethereum/lib/types/Common.sol';
-import { Manager } from '../../contracts/ethereum/Manager.sol';
 import { IPropHouse } from '../../contracts/ethereum/interfaces/IPropHouse.sol';
 import { IOwnable } from '../../contracts/ethereum/interfaces/IOwnable.sol';
 import { MockHouse } from '../../contracts/ethereum/mocks/MockHouse.sol';
@@ -24,48 +23,48 @@ contract ManagerTest is TestUtil {
         round = address(new MockRound('MOCK_ROUND'));
     }
 
-    function testRegisterHouse() public {
+    function test_registerHouse() public {
         alice.manager.registerHouse(house);
 
-        assertEq(alice.manager.isHouseRegistered(house), true);
+        assertTrue(alice.manager.isHouseRegistered(house));
     }
 
-    function testUnregisterHouse() public {
+    function test_unregisterHouse() public {
         alice.manager.registerHouse(house);
         alice.manager.unregisterHouse(house);
 
-        assertEq(alice.manager.isHouseRegistered(house), false);
+        assertFalse(alice.manager.isHouseRegistered(house));
     }
 
-    function testRegisterRound() public {
+    function test_registerRound() public {
         alice.manager.registerRound(house, round);
 
-        assertEq(alice.manager.isRoundRegistered(house, round), true);
+        assertTrue(alice.manager.isRoundRegistered(house, round));
     }
 
-    function testUnregisterRound() public {
+    function test_unregisterRound() public {
         alice.manager.registerRound(house, round);
         alice.manager.unregisterRound(house, round);
 
-        assertEq(alice.manager.isRoundRegistered(house, round), false);
+        assertFalse(alice.manager.isRoundRegistered(house, round));
     }
 
-    function testRegisterHouseNonOwnerReverts() public {
+    function test_registerHouseNonOwnerReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IOwnable.ONLY_OWNER.selector));
         bob.manager.registerHouse(house);
     }
 
-    function testUnregisterHouseNonOwnerReverts() public {
+    function test_unregisterHouseNonOwnerReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IOwnable.ONLY_OWNER.selector));
         bob.manager.unregisterHouse(house);
     }
 
-    function testRegisterRoundNonOwnerReverts() public {
+    function test_registerRoundNonOwnerReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IOwnable.ONLY_OWNER.selector));
         bob.manager.registerRound(house, round);
     }
 
-    function testUnregisterRoundNonOwnerReverts() public {
+    function test_unregisterRoundNonOwnerReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IOwnable.ONLY_OWNER.selector));
         bob.manager.unregisterRound(house, round);
     }

@@ -3,11 +3,13 @@ pragma solidity >=0.8.17;
 
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
+import { Asset } from '../../contracts/ethereum/lib/types/Common.sol';
 import { Messenger } from '../../contracts/ethereum/Messenger.sol';
 import { CreatorPassIssuer } from '../../contracts/ethereum/CreatorPassIssuer.sol';
 import { CommunityHouse } from '../../contracts/ethereum/houses/CommunityHouse.sol';
 import { TimedRound } from '../../contracts/ethereum/rounds/TimedRound.sol';
 import { InfiniteRound } from '../../contracts/ethereum/rounds/InfiniteRound.sol';
+import { ITimedRound } from '../../contracts/ethereum/interfaces/ITimedRound.sol';
 import { MockStarknetMessaging } from '../../contracts/ethereum/mocks/MockStarknetMessaging.sol';
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
 import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
@@ -65,6 +67,10 @@ contract TestUtil is Test {
         user.erc20.mint(user.addr, INITIAL_BALANCE);
         user.erc721.mint(user.addr, tokenId);
         user.erc1155.mint(user.addr, tokenId, INITIAL_BALANCE, '');
+
+        user.erc20.approve(address(propHouse), INITIAL_BALANCE);
+        user.erc721.approve(address(propHouse), tokenId);
+        user.erc1155.setApprovalForAll(address(propHouse), true);
     }
 
     function setUpContract() public {
@@ -90,10 +96,31 @@ contract TestUtil is Test {
             0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0)
         ));
 
+        manager.registerHouse(address(communityHouseImpl));
+        manager.registerRound(address(communityHouseImpl), address(timedRoundImpl));
+        manager.registerRound(address(communityHouseImpl), address(infiniteRoundImpl));
+
         vm.label(erc20, 'ERC20');
         vm.label(erc721, 'ERC721');
         vm.label(erc1155, 'ERC1155');
         vm.label(address(manager), 'MANAGER');
         vm.label(address(propHouse), 'PROPHOUSE');
+    }
+
+    function validTimedRoundConfig() public view returns (ITimedRound.RoundConfig memory) {
+        uint256[] memory votingStrategies = new uint256[](1);
+        votingStrategies[0] = 1;
+        return ITimedRound.RoundConfig({
+            awards: new Asset[](0),
+            proposalThreshold: 0,
+            proposingStrategies: new uint256[](0),
+            proposingStrategyParamsFlat: new uint256[](0),
+            votingStrategies: votingStrategies,
+            votingStrategyParamsFlat: new uint256[](0),
+            proposalPeriodStartTimestamp: uint40(block.timestamp),
+            proposalPeriodDuration: uint40(block.timestamp + 2 days),
+            votePeriodDuration: 2 days,
+            winnerCount: 5
+        });
     }
 }
