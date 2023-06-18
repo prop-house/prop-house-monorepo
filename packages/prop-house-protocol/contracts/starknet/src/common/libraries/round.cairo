@@ -186,17 +186,19 @@ mod Round {
                 Option::Some(group) => {
                     let group = *group;
                     let mut strategies = group.strategies;
-                    match strategies.pop_front() {
-                        Option::Some(strategy) => {
-                            let strategy_id = strategy_registry.register_strategy_if_not_exists(
-                                *strategy,
-                            );
-                            _is_strategy_registered::write((group.strategy_type, strategy_id), true);
-                        },
-                        Option::None(_) => {
-                            break;
-                        },
-                    }
+                    loop {
+                        match strategies.pop_front() {
+                            Option::Some(strategy) => {
+                                let strategy_id = strategy_registry.register_strategy_if_not_exists(
+                                    *strategy,
+                                );
+                                _is_strategy_registered::write((group.strategy_type, strategy_id), true);
+                            },
+                            Option::None(_) => {
+                                break;
+                            },
+                        };
+                    };
                 },
                 Option::None(_) => {
                     break;
