@@ -3,8 +3,6 @@ pragma solidity >=0.8.17;
 
 import { Test } from 'forge-std/Test.sol';
 import { Blacksmith } from './blacksmith/Blacksmith.sol';
-import { Manager } from '../../contracts/ethereum/Manager.sol';
-import { PropHouse } from '../../contracts/ethereum/PropHouse.sol';
 import { Messenger } from '../../contracts/ethereum/Messenger.sol';
 import { CreatorPassIssuer } from '../../contracts/ethereum/CreatorPassIssuer.sol';
 import { CommunityHouse } from '../../contracts/ethereum/houses/CommunityHouse.sol';
@@ -14,6 +12,8 @@ import { MockStarknetMessaging } from '../../contracts/ethereum/mocks/MockStarkn
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
 import { MockERC721, MockERC721BS } from './blacksmith/MockERC721.bs.sol';
 import { MockERC1155, MockERC1155BS } from './blacksmith/MockERC1155.bs.sol';
+import { Manager, ManagerBS } from './blacksmith/Manager.bs.sol';
+import { PropHouse, PropHouseBS } from './blacksmith/PropHouse.bs.sol';
 
 contract TestUtil is Test {
     struct User {
@@ -23,6 +23,8 @@ contract TestUtil is Test {
         MockERC20BS erc20;
         MockERC721BS erc721;
         MockERC1155BS erc1155;
+        ManagerBS manager;
+        PropHouseBS propHouse;
     }
 
     User alice;
@@ -50,8 +52,11 @@ contract TestUtil is Test {
         MockERC721BS _erc721 = new MockERC721BS(_addr, _privateKey, erc721);
         MockERC1155BS _erc1155 = new MockERC1155BS(_addr, _privateKey, erc1155);
 
+        ManagerBS _manager = new ManagerBS(_addr, _privateKey, address(manager));
+        PropHouseBS _propHouse = new PropHouseBS(_addr, _privateKey, address(propHouse));
+
         base.deal(INITIAL_BALANCE);
-        return User(base.addr(), base.pkey(), base, _erc20, _erc721, _erc1155);
+        return User(base.addr(), base.pkey(), base, _erc20, _erc721, _erc1155, _manager, _propHouse);
     }
 
     function setUpUser(uint256 privateKey, uint256 tokenId) public returns (User memory user) {
