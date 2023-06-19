@@ -1,8 +1,17 @@
-# @prophouse/sdk-react
-
-[![NPM Version](https://img.shields.io/npm/v/@prophouse/sdk.svg?style=flat)](https://www.npmjs.com/package/@prophouse/sdk-react)
-
-Useful tools for interacting with the Prop House protocol from React applications
+<h1 align="center">
+  @prophouse/sdk-react
+</h1>
+<p align="center">
+  Useful tools for interacting with the Prop House protocol from React applications
+</p>
+<p align="center">
+  <a href="https://www.npmjs.com/package/@prophouse/sdk-react">
+    <img src="https://img.shields.io/npm/v/@prophouse/sdk-react.svg?style=flat" />
+  </a>
+  <a href="https://prop.house/">
+    <img src="https://img.shields.io/badge/website-prop.house-blue?style=flat-square">
+  </a>
+</p>
 
 ## Installation
 
