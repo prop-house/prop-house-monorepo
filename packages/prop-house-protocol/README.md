@@ -149,6 +149,8 @@ Update the `languageServerPath` of the Cairo 1.0 extension by pasting the path.
 
 #### Solidity
 
+If it's your first time running the Solidity tests, you'll need to run `yarn test:setup` to generate the test users.
+
 ```sh
 yarn test:l1
 ```
