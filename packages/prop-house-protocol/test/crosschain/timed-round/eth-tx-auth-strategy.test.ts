@@ -116,6 +116,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
             community: config.communityHouseImpl.address,
           },
           round: {
+            infinite: constants.AddressZero,
             timed: config.timedRoundImpl.address,
           },
         },
@@ -128,14 +129,21 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
             vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
-            timedEthSig: config.timedRoundEthSigAuthStrategy.address,
-            timedEthTx: config.timedRoundEthTxAuthStrategy.address,
+            infinite: {
+              sig: constants.HashZero,
+              tx: constants.HashZero,
+            },
+            timed: {
+              sig: config.timedRoundEthSigAuthStrategy.address,
+              tx: config.timedRoundEthTxAuthStrategy.address,
+            },
           },
           herodotus: {
             factRegistry: '',
             l1HeadersStore: '',
           },
           classHashes: {
+            infinite: constants.HashZero,
             timed: config.timedRoundClassHash,
           },
         },
@@ -444,15 +452,16 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
     await starknet.devnet.createBlock();
 
-    // Finalize the round
-    const assetId = utils.splitUint256.SplitUint256.fromUint(
-      BigInt(utils.encoding.getETHAssetID()),
-    );
-    const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
-
+    const assetId = utils.encoding.getETHAssetID();
+    const amount = ONE_ETHER.toHexString()
     const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
       round: timedRoundContract.address,
-      awards: [{ assetId, amount }],
+      awards: [
+        {
+          assetId,
+          amount,
+        },
+      ],
     });
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
     const winnersLen = parseInt(events[0].data[0], 16);
@@ -492,7 +501,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       position: winner.position,
       proposer: signer.address,
       assetId: utils.encoding.getETHAssetID(),
-      assetAmount: amount.toHex(),
+      assetAmount: amount,
     });
     const tree = generateClaimMerkleTree([leaf]);
     const proof = tree.getHexProof(leaf);
@@ -509,6 +518,6 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     );
     await expect(claimTx)
       .to.emit(timedRound, 'AssetClaimed')
-      .withArgs(winner.proposalId, signer.address, signer.address, [assetId.toHex(), amount.toHex()]);
+      .withArgs(winner.proposalId, signer.address, signer.address, [assetId, amount]);
   });
 });

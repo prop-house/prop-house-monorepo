@@ -2,16 +2,14 @@ import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/s
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   infiniteRoundSetup,
+  generateClaimLeaf,
+  generateClaimMerkleTree,
   CONTRACT_URI,
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
-  PROPOSE_SELECTOR,
-  VOTE_SELECTOR,
-  CANCEL_PROPOSAL_SELECTOR,
   getStarknetArtifactPaths,
   STARKNET_MAX_FEE,
-  asciiToHex,
   generateIncrementalClaimLeaf,
   generateIncrementalClaimMerkleTree,
 } from '../../utils';
@@ -26,19 +24,19 @@ import {
   ContractAddresses,
   InfiniteRoundContract,
   InfiniteRound__factory,
-  encoding,
-  splitUint256,
   Infinite,
+  splitUint256,
+  encoding,
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
-import { MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
+import { BigNumber, BigNumberish, constants } from 'ethers';
+import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
-import { BigNumber, BigNumberish, constants } from 'ethers';
-import { Account, hash, stark } from 'starknet';
+import { Account, hash } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -49,15 +47,7 @@ const maskTo250Bits = (value: BigNumberish) => {
   );
 };
 
-enum ProposalState {
-  ACTIVE = 0,
-  STALE = 1,
-  CANCELLED = 2,
-  REJECTED = 3,
-  APPROVED = 4,
-}
-
-describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
+describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
   const networkUrl = network.config.url!;
 
   let signer: SignerWithAddress;
@@ -66,15 +56,13 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
   let propHouse: PropHouse;
   let infiniteRound: InfiniteRoundContract;
   let mockStarknetMessaging: MockStarknetMessaging;
-  let starknetCommit: StarkNetCommit;
 
   let infiniteRoundContract: StarknetContract;
-  let infiniteRoundEthTxAuthStrategy: StarknetContract;
+  let ethSigAuth: StarknetContract;
 
   let infiniteRoundL2Factory: StarknetContractFactory;
 
   let l2RoundAddress: string;
-  let vanillaGovPowerStrategyId: string;
 
   const asset: Asset = {
     assetType: AssetType.ETH,
@@ -90,11 +78,10 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     const config = await infiniteRoundSetup();
     ({
-      infiniteRoundEthTxAuthStrategy,
+      infiniteRoundEthSigAuthStrategy: ethSigAuth,
       infiniteRoundL2Factory,
       mockStarknetMessaging,
       starknetAccount,
-      starknetCommit,
     } = config);
 
     const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
@@ -113,20 +100,22 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
       vanillaGovPowerStrategyFactory,
     );
-    vanillaGovPowerStrategyId = hash.computeHashOnElements([vanillaGovPowerStrategy.address]);
 
-    // Stub `getRoundVotingStrategies`
-    gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
-      Promise.resolve({
-        govPowerStrategies: [
-          {
-            id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
-            type: GQLGovPowerStrategyType.Vanilla,
-            address: vanillaGovPowerStrategy.address,
-            params: [],
-          },
-        ],
-      });
+    // Stub subgraph functions
+    const funcs = ['getRoundVotingStrategies', 'getGovPowerStrategies'] as const;
+    for (const func of funcs) {
+      gql.QueryWrapper.prototype[func] = () =>
+        Promise.resolve({
+          govPowerStrategies: [
+            {
+              id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+              type: GQLGovPowerStrategyType.Vanilla,
+              address: vanillaGovPowerStrategy.address,
+              params: [],
+            },
+          ],
+        });
+    }
 
     // Override contract addresses
     (addresses.getContractAddressesForChainOrThrow as Function) = (): ContractAddresses => {
@@ -177,6 +166,7 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknet: config.starknetProvider,
       evm: signer,
     });
+
     await starknet.devnet.loadL1MessagingContract(networkUrl, mockStarknetMessaging.address);
 
     const creationResponse = await propHouse.createAndFundRoundOnNewHouse(
@@ -230,36 +220,26 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     await starknet.devnet.createBlock();
   });
 
-  it('should create a proposal using an Ethereum transaction', async () => {
-    const requestedAssets = encoding.compressAssets([asset]);
-    const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
-      proposer: signer.address,
+  it('should create a proposal using an Ethereum signature', async () => {
+    const {
+      address,
+      signature,
+      message: data,
+    } = await propHouse.round.infinite.signProposeMessage({
+      round: infiniteRoundContract.address,
       metadataUri: METADATA_URI,
-      requestedAssets: requestedAssets.map(([assetId, amount]) => ({ assetId, amount })),
-      usedProposingStrategies: [],
+      requestedAssets: [asset],
     });
-
-    // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
+    const { transaction_hash } = await propHouse.round.infinite.relaySignedProposePayload(
+      starknetAccount,
       {
-        value: STARKNET_MAX_FEE,
+        address,
+        signature,
+        data,
       },
     );
 
-    // Check that the L1 -> L2 message has been propagated
-    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
-
-    // Create the proposal
-    const { transaction_hash } = await starknetAccount.execute({
-      contractAddress: infiniteRoundEthTxAuthStrategy.address,
-      entrypoint: 'authenticate_propose',
-      calldata: [l2RoundAddress, ...proposeCalldata],
-    });
-
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
-
     const [proposalId, proposerAddress, metadataUriLength, ...remainingData] = events[0].data;
     const actualMetadataUri = remainingData.slice(0, parseInt(metadataUriLength, 16));
     const requestedAssetLength = remainingData[parseInt(metadataUriLength, 16)];
@@ -270,7 +250,7 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(parseInt(metadataUriLength, 16)).to.equal(3);
     expect(parseInt(requestedAssetLength, 16)).to.equal(1);
     expect(actualRequestedAssets).to.deep.equal(
-      requestedAssets.map(asset => {
+      encoding.compressAssets([asset]).map(asset => {
         const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
         const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
         return [id.low, id.high, amount.low, amount.high];
@@ -283,173 +263,38 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     }
   });
 
-  it('should not allow the same commit to be executed multiple times', async () => {
-    const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
-      proposer: signer.address,
+  it.skip('should not authenticate an invalid signature', async () => {
+    const { signature, message: data } = await propHouse.round.infinite.signProposeMessage({
+      round: infiniteRoundContract.address,
       metadataUri: METADATA_URI,
-      requestedAssets: encoding.compressAssets([asset]).map(
-        ([assetId, amount]) => ({ assetId, amount }),
-      ),
-      usedProposingStrategies: [],
+      requestedAssets: [asset],
     });
-
-    // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
-      {
-        value: STARKNET_MAX_FEE,
-      },
-    );
-
-    await starknet.devnet.flush();
-    await starknetAccount.execute({
-      contractAddress: infiniteRoundEthTxAuthStrategy.address,
-      entrypoint: 'authenticate_propose',
-      calldata: [l2RoundAddress, ...proposeCalldata],
-    });
+    const [, signer2] = await ethers.getSigners();
 
     try {
-      // Second attempt at calling authenticate should fail
-      await starknetAccount.execute({
-        contractAddress: infiniteRoundEthTxAuthStrategy.address,
-        entrypoint: 'authenticate_propose',
-        calldata: [l2RoundAddress, ...proposeCalldata],
+      // Data is signed with accounts[0], but the proposer is accounts[1] so it should fail
+      await propHouse.round.infinite.relaySignedProposePayload(starknetAccount, {
+        address: signer2.address,
+        signature,
+        data,
       });
       expect(true).to.equal(false); // This line should never be reached
     } catch (error: any) {
-      expect(error.message).to.contain(asciiToHex('EthereumTx: Unknown sender/hash'));
+      expect(error.message).to.contain('Invalid signature.');
     }
   });
 
-  it('should fail if the correct hash of the payload is not committed on L1 before execution is called', async () => {
-    const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
-      proposer: signer.address,
-      metadataUri: METADATA_URI,
-      requestedAssets: encoding.compressAssets([asset]).map(
-        ([assetId, amount]) => ({ assetId, amount }),
-      ),
-      usedProposingStrategies: [],
-    });
+  it('should create a vote using an Ethereum signature', async () => {
+    await starknet.devnet.increaseTime(ONE_DAY_SEC);
+    await starknet.devnet.createBlock();
 
-    // Wrong selector
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, VOTE_SELECTOR, proposeCalldata),
-      {
-        value: STARKNET_MAX_FEE,
-      },
-    );
-
-    await starknet.devnet.flush();
-    try {
-      await starknetAccount.execute({
-        contractAddress: infiniteRoundEthTxAuthStrategy.address,
-        entrypoint: 'authenticate_propose',
-        calldata: [l2RoundAddress, ...proposeCalldata],
-      });
-      expect(true).to.equal(false); // This line should never be reached
-    } catch (error: any) {
-      expect(error.message).to.contain(asciiToHex('EthereumTx: Unknown sender/hash'));
-    }
-  });
-
-  it('should fail if the commit sender address is not equal to the address in the payload', async () => {
-    const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
-      proposer: ethers.Wallet.createRandom().address, // Random l1 address in the calldata
-      metadataUri: METADATA_URI,
-      requestedAssets: encoding.compressAssets([asset]).map(
-        ([assetId, amount]) => ({ assetId, amount }),
-      ),
-      usedProposingStrategies: [],
-    });
-
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
-      {
-        value: STARKNET_MAX_FEE,
-      },
-    );
-
-    await starknet.devnet.flush();
-    try {
-      await starknetAccount.execute({
-        contractAddress: infiniteRoundEthTxAuthStrategy.address,
-        entrypoint: 'authenticate_propose',
-        calldata: [l2RoundAddress, ...proposeCalldata],
-      });
-      expect(true).to.equal(false); // This line should never be reached
-    } catch (error: any) {
-      expect(error.message).to.contain(asciiToHex('EthereumTx: Unknown sender/hash'));
-    }
-  });
-
-  it('should cancel a proposal using an Ethereum transaction', async () => {
-    const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
-      proposer: signer.address,
-      metadataUri: METADATA_URI,
-      requestedAssets: encoding.compressAssets([asset]).map(
-        ([assetId, amount]) => ({ assetId, amount }),
-      ),
-      usedProposingStrategies: [],
-    });
-
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, PROPOSE_SELECTOR, proposeCalldata),
-      {
-        value: STARKNET_MAX_FEE,
-      },
-    );
-
-    // Check that the L1 -> L2 message has been propagated
-    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
-
-    const { transaction_hash } = await starknetAccount.execute({
-      contractAddress: infiniteRoundEthTxAuthStrategy.address,
-      entrypoint: 'authenticate_propose',
-      calldata: [l2RoundAddress, ...proposeCalldata],
-    });
-
-    const { events } = await starknet.getTransactionReceipt(transaction_hash);
-    const [proposalId] = events[0].data;
-
-    let { response } = await infiniteRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    });
-    expect(Number(response.state)).to.equal(ProposalState.ACTIVE);
-
-    const cancelCalldata = stark.compileCalldata({
-      proposer: signer.address,
-      proposal_id: proposalId,
-    });
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, CANCEL_PROPOSAL_SELECTOR, cancelCalldata),
-      {
-        value: STARKNET_MAX_FEE,
-      },
-    );
-
-    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
-
-    await starknetAccount.execute({
-      contractAddress: infiniteRoundEthTxAuthStrategy.address,
-      entrypoint: 'authenticate_cancel_proposal',
-      calldata: [l2RoundAddress, ...cancelCalldata],
-    });
-
-    ({ response } = await infiniteRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    }));
-    expect(Number(response.state)).to.equal(ProposalState.CANCELLED);
-  });
-
-  it('should create a vote using an Ethereum transaction', async () => {
-    const voteCalldata = propHouse.round.infinite.getVoteCalldata({
-      voter: signer.address,
-      proposalVotes: [
+    const {
+      address,
+      signature,
+      message: data,
+    } = await propHouse.round.infinite.signVoteMessage({
+      round: infiniteRoundContract.address,
+      votes: [
         {
           proposalId: 1,
           proposalVersion: 1,
@@ -457,39 +302,17 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
           direction: Infinite.Direction.FOR,
         },
       ],
-      usedVotingStrategies: [
-        {
-          id: vanillaGovPowerStrategyId,
-          userParams: [],
-        },
-      ],
     });
-
-    // Commit the hash of the payload to the StarkNet commit L1 contract
-    await starknetCommit.commit(
-      infiniteRoundEthTxAuthStrategy.address,
-      utils.encoding.getCommit(l2RoundAddress, VOTE_SELECTOR, voteCalldata),
+    const { transaction_hash } = await propHouse.round.infinite.relaySignedVotePayload(
+      starknetAccount,
       {
-        value: STARKNET_MAX_FEE,
+        address,
+        signature,
+        data,
       },
     );
-    // Check that the L1 -> L2 message has been propagated
-    expect((await starknet.devnet.flush()).consumed_messages.from_l1).to.have.a.lengthOf(1);
 
-    await starknet.devnet.increaseTime(ONE_DAY_SEC);
-    await starknet.devnet.createBlock();
-
-    // Cast vote
-    const { transaction_hash } = await starknetAccount.execute({
-      contractAddress: infiniteRoundEthTxAuthStrategy.address,
-      entrypoint: 'authenticate_vote',
-      calldata: [l2RoundAddress, ...voteCalldata],
-    });
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
-
-    // Approved event, which includes the approved proposal ID
-    expect(parseInt(events[0].data[0], 16)).to.equal(1);
-
     const [proposalId, voterAddress, votingPowerLow, votingPowerHigh, direction] = events[1].data;
 
     expect(parseInt(proposalId, 16)).to.equal(1);

@@ -111,6 +111,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
             community: config.communityHouseImpl.address,
           },
           round: {
+            infinite: constants.AddressZero,
             timed: config.timedRoundImpl.address,
           },
         },
@@ -123,14 +124,21 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
             vanilla: vanillaGovPowerStrategy.address,
           },
           auth: {
-            timedEthSig: config.timedRoundEthSigAuthStrategy.address,
-            timedEthTx: config.timedRoundEthTxAuthStrategy.address,
+            infinite: {
+              sig: constants.HashZero,
+              tx: constants.HashZero,
+            },
+            timed: {
+              sig: config.timedRoundEthSigAuthStrategy.address,
+              tx: config.timedRoundEthTxAuthStrategy.address,
+            },
           },
           herodotus: {
             factRegistry: '',
             l1HeadersStore: '',
           },
           classHashes: {
+            infinite: constants.HashZero,
             timed: config.timedRoundClassHash,
           },
         },
@@ -288,18 +296,18 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
   it('should finalize a round and allow a winner to claim their award', async () => {
     await starknet.devnet.increaseTime(ONE_DAY_SEC);
-
     await starknet.devnet.createBlock();
 
-    // Finalize the round
-    const assetId = utils.splitUint256.SplitUint256.fromUint(
-      BigInt(utils.encoding.getETHAssetID()),
-    );
-    const amount = utils.splitUint256.SplitUint256.fromUint(ONE_ETHER.toBigInt());
-
+    const assetId = utils.encoding.getETHAssetID();
+    const amount = ONE_ETHER.toHexString()
     const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
       round: timedRoundContract.address,
-      awards: [{ assetId, amount }],
+      awards: [
+        {
+          assetId: utils.encoding.getETHAssetID(),
+          amount: ONE_ETHER,
+        },
+      ],
     });
 
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
@@ -337,7 +345,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       position: winner.position,
       proposer: signer.address,
       assetId: utils.encoding.getETHAssetID(),
-      assetAmount: amount.toHex(),
+      assetAmount: amount,
     });
     const tree = generateClaimMerkleTree([leaf]);
     const proof = tree.getHexProof(leaf);
@@ -355,6 +363,6 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     );
     await expect(claimTx)
       .to.emit(timedRound, 'AssetClaimed')
-      .withArgs(winner.proposalId, signer.address, signer.address, [assetId.toHex(), amount.toHex()]);
+      .withArgs(winner.proposalId, signer.address, signer.address, [assetId, amount]);
   });
 });
