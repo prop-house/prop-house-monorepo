@@ -51,7 +51,6 @@ export const generateClaimMerkleTree = (winnersOrLeaves: TimedRoundWinner[] | st
  */
 export const generateIncrementalClaimLeaf = (winner: InfiniteRoundWinner) => {
   const { proposalId, proposer, requestedAssetsHash } = winner;
-  console.log({ proposalId, proposer, requestedAssetsHash })
   return `0x${Buffer.from(
     solidityKeccak256(
       ['uint256', 'uint256', 'bytes32'],

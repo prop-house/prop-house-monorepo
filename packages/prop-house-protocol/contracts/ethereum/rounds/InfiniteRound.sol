@@ -17,7 +17,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     uint256 public constant MAX_WINNER_TREE_DEPTH = 10;
 
     /// @notice The amount of time before an asset provider can reclaim unclaimed assets
-    uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 4 weeks;
+    uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 1 weeks;
 
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
@@ -35,7 +35,10 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     uint40 public votePeriodDuration;
 
     /// @notice The number of winners that have been reported to date.
-    uint64 public currentWinnerCount;
+    uint32 public currentWinnerCount;
+
+    /// @notice The number of winners that have claimed their assets to date.
+    uint32 public claimedWinnerCount;
 
     constructor(
         uint256 _classHash,
@@ -88,7 +91,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param newWinnerCount The new winner count
     /// @param merkleRootLow The low 128 bits of the new merkle root
     /// @param merkleRootHigh The high 128 bits of the new merkle root
-    function updateWinners(uint64 newWinnerCount, uint256 merkleRootLow, uint256 merkleRootHigh) external {
+    function updateWinners(uint32 newWinnerCount, uint256 merkleRootLow, uint256 merkleRootHigh) external {
         if (newWinnerCount <= currentWinnerCount) {
             revert WINNERS_ALREADY_PROCESSED();
         }
@@ -179,10 +182,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param recipient The asset recipient
     /// @param assets The assets to reclaim
     function reclaimTo(address recipient, Asset[] calldata assets) public {
-        // prettier-ignore
-        // Reclamation is only available when the round has been cancelled OR
-        // the round has been finalized and is in the reclamation period
-        if (state != RoundState.Cancelled || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_ASSETS_AFTER)) {
+        if (!_canReclaim()) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);
@@ -289,6 +289,10 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         if (isClaimed(proposalId)) {
             revert ALREADY_CLAIMED();
         }
+        unchecked {
+            ++claimedWinnerCount;
+        }
+
         PackedAsset[] memory packed = assets.packMany();
         if (!IncrementalMerkleProof.verify(proof, MAX_WINNER_TREE_DEPTH, winnerMerkleRoot, _computeLeaf(proposalId, msg.sender, packed))) {
             revert INVALID_MERKLE_PROOF();
@@ -305,6 +309,20 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param packed The packed assets being claimed
     function _computeLeaf(uint256 proposalId, address user, PackedAsset[] memory packed) internal pure returns (bytes32) {
         return keccak256(abi.encode(proposalId, user, keccak256(abi.encode(packed)).mask250()));
+    }
+
+    /// Returns true if reclamation is available
+    function _canReclaim() internal view returns (bool) {
+        // Reclamation is immediately available when the round has been cancelled
+        if (state == RoundState.Cancelled) {
+            return true;
+        }
+        // Reclamation is available when the round has been finalized and the reclamation period has passed
+        // or when all winners have claimed
+        if (state == RoundState.Finalized) {
+            return block.timestamp - roundFinalizedAt >= RECLAIM_UNCLAIMED_ASSETS_AFTER || claimedWinnerCount == currentWinnerCount;
+        }
+        return false;
     }
 
     /// @dev Route a round finalization call to the round contract on Starknet
