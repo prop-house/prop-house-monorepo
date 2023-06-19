@@ -184,7 +184,7 @@ contract TimedRound is ITimedRound, AssetRound {
     /// @notice Reclaim assets to the caller
     /// @param assets The assets to reclaim
     function reclaim(Asset[] calldata assets) external {
-        _reclaimTo(msg.sender, assets);
+        reclaimTo(msg.sender, assets);
     }
 
     // prettier-ignore
@@ -272,10 +272,11 @@ contract TimedRound is ITimedRound, AssetRound {
             revert NO_VOTING_STRATEGIES_PROVIDED();
         }
         if (config.awards.length != 0 && config.awards.length != config.winnerCount) {
-            if (config.awards.length == 1 && config.winnerCount > 1 && config.awards[0].amount % config.winnerCount != 0) {
-                revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
-            } else {
+            if (config.awards.length != 1) {
                 revert AWARD_LENGTH_MISMATCH();
+            }
+            if (config.awards[0].amount % config.winnerCount != 0) {
+                revert AWARD_AMOUNT_NOT_MULTIPLE_OF_WINNER_COUNT();
             }
         }
     }

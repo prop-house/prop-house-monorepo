@@ -154,6 +154,22 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         house = _createHouse(newHouse);
     }
 
+    /// @notice Returns `true` if the passed `house` address is valid
+    /// @param house The house address
+    function isHouse(address house) public view returns (bool) {
+        return exists(house.toUint256());
+    }
+
+    /// @notice Returns `true` if the passed `round` address is valid on any house
+    /// @param round The round address
+    function isRound(address round) public view returns (bool) {
+        try IRound(round).house() returns (address house) {
+            return isHouse(house) && IHouse(house).isRound(round);
+        } catch {
+            return false;
+        }
+    }
+
     /// @notice Create and initialize a new house contract
     /// @param newHouse The house creation data
     function _createHouse(House memory newHouse) internal returns (address house) {
@@ -174,22 +190,6 @@ contract PropHouse is IPropHouse, ERC721, AssetController {
         round = IHouse(house).createRound(newRound.impl, newRound.title, msg.sender);
 
         emit RoundCreated(msg.sender, house, round, IRound(round).kind(), newRound.title, newRound.description);
-    }
-
-    /// @notice Returns `true` if the passed `house` address is valid
-    /// @param house The house address
-    function isHouse(address house) public view returns (bool) {
-        return exists(house.toUint256());
-    }
-
-    /// @notice Returns `true` if the passed `round` address is valid on any house
-    /// @param round The round address
-    function isRound(address round) public view returns (bool) {
-        try IRound(round).house() returns (address house) {
-            return isHouse(house) && IHouse(house).isRound(round);
-        } catch {
-            return false;
-        }
     }
 
     /// @notice Deposit an asset to the provided round
