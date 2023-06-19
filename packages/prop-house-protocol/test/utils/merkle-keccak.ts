@@ -64,18 +64,20 @@ export const generateIncrementalClaimLeaf = (winner: InfiniteRoundWinner) => {
  * Generate a claim incremental merkle tree
  * @param winnersOrLeaves Round winner information or leaves
  */
-export const generateIncrementalClaimMerkleTree = (winnersOrLeaves: InfiniteRoundWinner[] | string[]) => {
+export const generateIncrementalClaimMerkleTree = (
+  winnersOrLeaves: InfiniteRoundWinner[] | string[],
+) => {
   const keccak = (inputs: unknown[]) => {
     const hash = ethers.utils.solidityKeccak256(
       inputs.map(() => 'uint256'),
       inputs,
     );
     return IncrementalMerkleTree.bigNumberify(hash);
-  }
+  };
   const tree = new IncrementalMerkleTree(keccak, {
     depth: 10,
     arity: 2,
-    zeroValue: 0
+    zeroValue: 0,
   });
   winnersOrLeaves.forEach(winner => {
     if (typeof winner !== 'string') {

@@ -76,9 +76,7 @@ mod TimedRoundEthereumSigAuthStrategy {
     use prop_house::common::libraries::round::UserStrategy;
     use prop_house::rounds::timed::constants::TypeHash;
     use prop_house::common::utils::serde::SpanSerde;
-    use super::{
-        ITimedRoundEthereumSigAuthStrategy, KeccakTypeHashProposalVote,
-    };
+    use super::{ITimedRoundEthereumSigAuthStrategy, KeccakTypeHashProposalVote, };
     use integer::{Felt252TryIntoU32, u256_from_felt252};
     use array::{ArrayTrait, SpanTrait};
     use traits::{Into, TryInto};
@@ -87,7 +85,7 @@ mod TimedRoundEthereumSigAuthStrategy {
 
     struct Storage {
         _domain_separator: u256,
-        _salts: LegacyMap<(EthAddress, u256), bool>, 
+        _salts: LegacyMap<(EthAddress, u256), bool>,
     }
 
     impl TimedRoundEthereumSigAuthStrategy of ITimedRoundEthereumSigAuthStrategy {
@@ -101,12 +99,19 @@ mod TimedRoundEthereumSigAuthStrategy {
             metadata_uri: Array<felt252>,
             used_proposing_strategies: Array<UserStrategy>,
         ) {
-            _verify_propose_sig(r, s, v, salt, round, proposer, metadata_uri.span(), used_proposing_strategies.span());
-            ITimedRoundDispatcher { contract_address: round }.propose(
+            _verify_propose_sig(
+                r,
+                s,
+                v,
+                salt,
+                round,
                 proposer,
-                metadata_uri,
-                used_proposing_strategies,
+                metadata_uri.span(),
+                used_proposing_strategies.span()
             );
+            ITimedRoundDispatcher {
+                contract_address: round
+            }.propose(proposer, metadata_uri, used_proposing_strategies, );
         }
 
         fn authenticate_edit_proposal(
@@ -119,12 +124,12 @@ mod TimedRoundEthereumSigAuthStrategy {
             proposal_id: u32,
             metadata_uri: Array<felt252>,
         ) {
-            _verify_edit_proposal_sig(r, s, v, salt, round, proposer, proposal_id, metadata_uri.span());
-            ITimedRoundDispatcher { contract_address: round }.edit_proposal(
-                proposer,
-                proposal_id,
-                metadata_uri,
+            _verify_edit_proposal_sig(
+                r, s, v, salt, round, proposer, proposal_id, metadata_uri.span()
             );
+            ITimedRoundDispatcher {
+                contract_address: round
+            }.edit_proposal(proposer, proposal_id, metadata_uri, );
         }
 
         fn authenticate_cancel_proposal(
@@ -137,10 +142,9 @@ mod TimedRoundEthereumSigAuthStrategy {
             proposal_id: u32,
         ) {
             _verify_cancel_proposal_sig(r, s, v, salt, round, proposer, proposal_id);
-            ITimedRoundDispatcher { contract_address: round }.cancel_proposal(
-                proposer,
-                proposal_id,
-            );
+            ITimedRoundDispatcher {
+                contract_address: round
+            }.cancel_proposal(proposer, proposal_id, );
         }
 
         fn authenticate_vote(
@@ -153,12 +157,12 @@ mod TimedRoundEthereumSigAuthStrategy {
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
-            _verify_vote_sig(r, s, v, salt, round, voter, proposal_votes.span(), used_voting_strategies.span());
-            ITimedRoundDispatcher { contract_address: round }.vote(
-                voter,
-                proposal_votes,
-                used_voting_strategies,
+            _verify_vote_sig(
+                r, s, v, salt, round, voter, proposal_votes.span(), used_voting_strategies.span()
             );
+            ITimedRoundDispatcher {
+                contract_address: round
+            }.vote(voter, proposal_votes, used_voting_strategies, );
         }
     }
 
@@ -186,14 +190,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         used_proposing_strategies: Array<UserStrategy>,
     ) {
         TimedRoundEthereumSigAuthStrategy::authenticate_propose(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            proposer,
-            metadata_uri,
-            used_proposing_strategies,
+            r, s, v, salt, round, proposer, metadata_uri, used_proposing_strategies, 
         );
     }
 
@@ -216,14 +213,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         metadata_uri: Array<felt252>,
     ) {
         TimedRoundEthereumSigAuthStrategy::authenticate_edit_proposal(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            proposer,
-            proposal_id,
-            metadata_uri,
+            r, s, v, salt, round, proposer, proposal_id, metadata_uri, 
         );
     }
 
@@ -244,13 +234,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         proposal_id: u32,
     ) {
         TimedRoundEthereumSigAuthStrategy::authenticate_cancel_proposal(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            proposer,
-            proposal_id,
+            r, s, v, salt, round, proposer, proposal_id, 
         );
     }
 
@@ -273,14 +257,7 @@ mod TimedRoundEthereumSigAuthStrategy {
         used_voting_strategies: Array<UserStrategy>,
     ) {
         TimedRoundEthereumSigAuthStrategy::authenticate_vote(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            voter,
-            proposal_votes,
-            used_voting_strategies,
+            r, s, v, salt, round, voter, proposal_votes, used_voting_strategies, 
         );
     }
 

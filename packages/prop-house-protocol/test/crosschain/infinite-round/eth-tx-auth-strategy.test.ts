@@ -45,9 +45,7 @@ import chai, { expect } from 'chai';
 chai.use(solidity);
 
 const maskTo250Bits = (value: BigNumberish) => {
-  return BigNumber.from(value).and(
-    ethers.BigNumber.from(2).pow(250).sub(1),
-  );
+  return BigNumber.from(value).and(ethers.BigNumber.from(2).pow(250).sub(1));
 };
 
 enum ProposalState {
@@ -114,8 +112,10 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
       vanillaGovPowerStrategyFactory,
     );
-    vanillaGovPowerStrategyId = `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`;
-  
+    vanillaGovPowerStrategyId = `0x${poseidonHashMany([
+      BigInt(vanillaGovPowerStrategy.address),
+    ]).toString(16)}`;
+
     // Stub `getRoundVotingStrategies`
     gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
       Promise.resolve({
@@ -271,11 +271,13 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(parseInt(metadataUriLength, 16)).to.equal(3);
     expect(parseInt(requestedAssetLength, 16)).to.equal(1);
     expect(actualRequestedAssets).to.deep.equal(
-      requestedAssets.map(asset => {
-        const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
-        const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
-        return [id.low, id.high, amount.low, amount.high];
-      }).flat(),
+      requestedAssets
+        .map(asset => {
+          const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
+          const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
+          return [id.low, id.high, amount.low, amount.high];
+        })
+        .flat(),
     );
 
     const expectedMetadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
@@ -288,9 +290,9 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const proposeCalldata = propHouse.round.infinite.getProposeCalldata({
       proposer: signer.address,
       metadataUri: METADATA_URI,
-      requestedAssets: encoding.compressAssets([asset]).map(
-        ([assetId, amount]) => ({ assetId, amount }),
-      ),
+      requestedAssets: encoding
+        .compressAssets([asset])
+        .map(([assetId, amount]) => ({ assetId, amount })),
       usedProposingStrategies: [],
     });
 
@@ -519,19 +521,18 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
 
     expect((await starknet.devnet.flush()).consumed_messages.from_l2).to.have.a.lengthOf(1);
 
-    const updateWinnersTx = infiniteRound.updateWinners(
-      winnerCount,
-      merkleRootLow,
-      merkleRootHigh,
-    );
+    const updateWinnersTx = infiniteRound.updateWinners(winnerCount, merkleRootLow, merkleRootHigh);
     await expect(updateWinnersTx).to.emit(infiniteRound, 'WinnersUpdated').withArgs(winnerCount);
 
     const proposalId = 1;
-    const requestedAssetsHash = maskTo250Bits(ethers.utils.keccak256(
-      ethers.utils.defaultAbiCoder.encode(
-        ['tuple(bytes32,uint256)[]'], [[[utils.encoding.getETHAssetID(), ONE_ETHER]]]
+    const requestedAssetsHash = maskTo250Bits(
+      ethers.utils.keccak256(
+        ethers.utils.defaultAbiCoder.encode(
+          ['tuple(bytes32,uint256)[]'],
+          [[[utils.encoding.getETHAssetID(), ONE_ETHER]]],
+        ),
       ),
-    ));
+    );
     const leaf = generateIncrementalClaimLeaf({
       proposalId,
       proposer: signer.address,

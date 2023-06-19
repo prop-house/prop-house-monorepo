@@ -90,7 +90,7 @@ interface ITimedRound {
     function state() external view returns (RoundState);
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
-    function roundFinalizedAt() external view returns (uint40);
+    function finalizedAt() external view returns (uint40);
 
     /// @notice The timestamp at which the proposal period starts. `0` when in pending state.
     function proposalPeriodStartTimestamp() external view returns (uint40);

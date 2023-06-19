@@ -67,7 +67,7 @@ impl KeccakTypeHashProposalVote of KeccakTypeHash<ProposalVote> {
 
 #[contract]
 mod InfiniteRoundEthereumSigAuthStrategy {
-    use starknet::{ContractAddress, EthAddress, get_contract_address,};
+    use starknet::{ContractAddress, EthAddress, get_contract_address};
     use prop_house::rounds::infinite::config::{
         IInfiniteRoundDispatcherTrait, IInfiniteRoundDispatcher, ProposalVote
     };
@@ -78,9 +78,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
     use prop_house::common::utils::array::Felt252SpanIntoU256Span;
     use prop_house::rounds::infinite::constants::TypeHash;
     use prop_house::common::utils::serde::SpanSerde;
-    use super::{
-        IInfiniteRoundEthereumSigAuthStrategy, KeccakTypeHashProposalVote,
-    };
+    use super::{IInfiniteRoundEthereumSigAuthStrategy, KeccakTypeHashProposalVote, };
     use array::{ArrayTrait, SpanTrait};
     use integer::u256_from_felt252;
     use traits::{Into, TryInto};
@@ -89,7 +87,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
 
     struct Storage {
         _domain_separator: u256,
-        _salts: LegacyMap<(EthAddress, u256), bool>, 
+        _salts: LegacyMap<(EthAddress, u256), bool>,
     }
 
     impl InfiniteRoundEthereumSigAuthStrategy of IInfiniteRoundEthereumSigAuthStrategy {
@@ -104,13 +102,20 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             requested_assets: Array<Asset>,
             used_proposing_strategies: Array<UserStrategy>,
         ) {
-            _verify_propose_sig(r, s, v, salt, round, proposer, metadata_uri.span(), requested_assets.span(), used_proposing_strategies.span());
-            IInfiniteRoundDispatcher { contract_address: round }.propose(
+            _verify_propose_sig(
+                r,
+                s,
+                v,
+                salt,
+                round,
                 proposer,
-                metadata_uri,
-                requested_assets,
-                used_proposing_strategies,
+                metadata_uri.span(),
+                requested_assets.span(),
+                used_proposing_strategies.span()
             );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.propose(proposer, metadata_uri, requested_assets, used_proposing_strategies, );
         }
 
         fn authenticate_edit_proposal(
@@ -124,13 +129,20 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             metadata_uri: Array<felt252>,
             requested_assets: Array<Asset>,
         ) {
-            _verify_edit_proposal_sig(r, s, v, salt, round, proposer, proposal_id, metadata_uri.span(), requested_assets.span());
-            IInfiniteRoundDispatcher { contract_address: round }.edit_proposal(
+            _verify_edit_proposal_sig(
+                r,
+                s,
+                v,
+                salt,
+                round,
                 proposer,
                 proposal_id,
-                metadata_uri,
-                requested_assets,
+                metadata_uri.span(),
+                requested_assets.span()
             );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.edit_proposal(proposer, proposal_id, metadata_uri, requested_assets, );
         }
 
         fn authenticate_cancel_proposal(
@@ -143,10 +155,9 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             proposal_id: u32,
         ) {
             _verify_cancel_proposal_sig(r, s, v, salt, round, proposer, proposal_id);
-            IInfiniteRoundDispatcher { contract_address: round }.cancel_proposal(
-                proposer,
-                proposal_id,
-            );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.cancel_proposal(proposer, proposal_id, );
         }
 
         fn authenticate_vote(
@@ -159,12 +170,12 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             proposal_votes: Array<ProposalVote>,
             used_voting_strategies: Array<UserStrategy>,
         ) {
-            _verify_vote_sig(r, s, v, salt, round, voter, proposal_votes.span(), used_voting_strategies.span());
-            IInfiniteRoundDispatcher { contract_address: round }.vote(
-                voter,
-                proposal_votes,
-                used_voting_strategies,
+            _verify_vote_sig(
+                r, s, v, salt, round, voter, proposal_votes.span(), used_voting_strategies.span()
             );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.vote(voter, proposal_votes, used_voting_strategies, );
         }
     }
 
@@ -227,15 +238,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         requested_assets: Array<Asset>,
     ) {
         InfiniteRoundEthereumSigAuthStrategy::authenticate_edit_proposal(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            proposer,
-            proposal_id,
-            metadata_uri,
-            requested_assets,
+            r, s, v, salt, round, proposer, proposal_id, metadata_uri, requested_assets, 
         );
     }
 
@@ -256,13 +259,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         proposal_id: u32,
     ) {
         InfiniteRoundEthereumSigAuthStrategy::authenticate_cancel_proposal(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            proposer,
-            proposal_id,
+            r, s, v, salt, round, proposer, proposal_id, 
         );
     }
 
@@ -285,14 +282,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         used_voting_strategies: Array<UserStrategy>,
     ) {
         InfiniteRoundEthereumSigAuthStrategy::authenticate_vote(
-            r,
-            s,
-            v,
-            salt,
-            round,
-            voter,
-            proposal_votes,
-            used_voting_strategies,
+            r, s, v, salt, round, voter, proposal_votes, used_voting_strategies, 
         );
     }
 

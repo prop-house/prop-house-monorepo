@@ -19,9 +19,7 @@ trait IInfiniteRoundEthereumTxAuthStrategy {
         requested_assets: Array<Asset>,
     );
     fn authenticate_cancel_proposal(
-        round: ContractAddress,
-        proposer: EthAddress,
-        proposal_id: u32,
+        round: ContractAddress, proposer: EthAddress, proposal_id: u32, 
     );
     fn authenticate_vote(
         round: ContractAddress,
@@ -68,12 +66,9 @@ mod InfiniteRoundEthereumTxAuthStrategy {
             // Check that the hash matches a commit and that the commit was created by the correct address
             CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
-            IInfiniteRoundDispatcher { contract_address: round }.propose(
-                proposer,
-                metadata_uri,
-                requested_assets,
-                used_proposing_strategies,
-            );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.propose(proposer, metadata_uri, requested_assets, used_proposing_strategies, );
         }
 
         fn authenticate_edit_proposal(
@@ -94,18 +89,13 @@ mod InfiniteRoundEthereumTxAuthStrategy {
             // Check that the hash matches a commit and that the commit was created by the correct address
             CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
-            IInfiniteRoundDispatcher { contract_address: round }.edit_proposal(
-                proposer,
-                proposal_id,
-                metadata_uri,
-                requested_assets,
-            );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.edit_proposal(proposer, proposal_id, metadata_uri, requested_assets, );
         }
 
         fn authenticate_cancel_proposal(
-            round: ContractAddress,
-            proposer: EthAddress,
-            proposal_id: u32,
+            round: ContractAddress, proposer: EthAddress, proposal_id: u32, 
         ) {
             let mut input = Default::default();
             input.append(round.into());
@@ -116,7 +106,9 @@ mod InfiniteRoundEthereumTxAuthStrategy {
             // Check that the hash matches a commit and that the commit was created by the correct address
             CommitReceiver::consume_commit(proposer.into(), poseidon_hash_span(input.span()));
 
-            IInfiniteRoundDispatcher { contract_address: round }.cancel_proposal(proposer, proposal_id);
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.cancel_proposal(proposer, proposal_id);
         }
 
         fn authenticate_vote(
@@ -135,11 +127,9 @@ mod InfiniteRoundEthereumTxAuthStrategy {
             // Check that the hash matches a commit and that the commit was created by the correct address
             CommitReceiver::consume_commit(voter.into(), poseidon_hash_span(input.span()));
 
-            IInfiniteRoundDispatcher { contract_address: round }.vote(
-                voter,
-                proposal_votes,
-                used_voting_strategies,
-            );
+            IInfiniteRoundDispatcher {
+                contract_address: round
+            }.vote(voter, proposal_votes, used_voting_strategies, );
         }
     }
 
@@ -163,11 +153,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
         used_proposing_strategies: Array<UserStrategy>,
     ) {
         InfiniteRoundEthereumTxAuthStrategy::authenticate_propose(
-            round,
-            proposer,
-            metadata_uri,
-            requested_assets,
-            used_proposing_strategies,
+            round, proposer, metadata_uri, requested_assets, used_proposing_strategies, 
         );
     }
 
@@ -186,11 +172,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
         requested_assets: Array<Asset>,
     ) {
         InfiniteRoundEthereumTxAuthStrategy::authenticate_edit_proposal(
-            round,
-            proposer,
-            proposal_id,
-            metadata_uri,
-            requested_assets,
+            round, proposer, proposal_id, metadata_uri, requested_assets, 
         );
     }
 
@@ -199,11 +181,11 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     /// * `proposer` - The address of the proposer.
     /// * `proposal_id` - The ID of the proposal.
     #[external]
-    fn authenticate_cancel_proposal(round: ContractAddress, proposer: EthAddress, proposal_id: u32) {
+    fn authenticate_cancel_proposal(
+        round: ContractAddress, proposer: EthAddress, proposal_id: u32
+    ) {
         InfiniteRoundEthereumTxAuthStrategy::authenticate_cancel_proposal(
-            round,
-            proposer,
-            proposal_id,
+            round, proposer, proposal_id, 
         );
     }
 
@@ -220,10 +202,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
         used_voting_strategies: Array<UserStrategy>,
     ) {
         InfiniteRoundEthereumTxAuthStrategy::authenticate_vote(
-            round,
-            voter,
-            proposal_votes,
-            used_voting_strategies,
+            round, voter, proposal_votes, used_voting_strategies, 
         );
     }
 

@@ -24,4 +24,6 @@ export const METADATA_URI = 'My first proposal!';
 // name: 'prop-house',
 // version: '1'
 // chainId: '5'
-export const EIP_712_DOMAIN_SEPARATOR_GOERLI = BigInt('0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81');
+export const EIP_712_DOMAIN_SEPARATOR_GOERLI = BigInt(
+  '0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81',
+);

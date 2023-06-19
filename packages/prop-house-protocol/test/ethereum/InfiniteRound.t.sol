@@ -13,10 +13,7 @@ contract InfiniteRoundTest is TestUtil {
         setUpContract();
         alice = setUpUser(42, 1);
         house = alice.propHouse.createHouse(
-            IPropHouse.House({
-              impl: communityHouseImpl,
-              config: abi.encode('Test House URI')
-            })
+            IPropHouse.House({ impl: communityHouseImpl, config: abi.encode('Test House URI') })
         );
     }
 
@@ -29,10 +26,10 @@ contract InfiniteRoundTest is TestUtil {
         alice.propHouse.createRoundOnExistingHouse(
             house,
             IPropHouse.Round({
-              impl: infiniteRoundImpl,
-              config: abi.encode(config),
-              title: 'Test Round',
-              description: 'Test Round Description'
+                impl: infiniteRoundImpl,
+                config: abi.encode(config),
+                title: 'Test Round',
+                description: 'Test Round Description'
             })
         );
     }
@@ -46,10 +43,10 @@ contract InfiniteRoundTest is TestUtil {
         alice.propHouse.createRoundOnExistingHouse(
             house,
             IPropHouse.Round({
-              impl: infiniteRoundImpl,
-              config: abi.encode(config),
-              title: 'Test Round',
-              description: 'Test Round Description'
+                impl: infiniteRoundImpl,
+                config: abi.encode(config),
+                title: 'Test Round',
+                description: 'Test Round Description'
             })
         );
     }
@@ -63,10 +60,10 @@ contract InfiniteRoundTest is TestUtil {
         alice.propHouse.createRoundOnExistingHouse(
             house,
             IPropHouse.Round({
-              impl: infiniteRoundImpl,
-              config: abi.encode(config),
-              title: 'Test Round',
-              description: 'Test Round Description'
+                impl: infiniteRoundImpl,
+                config: abi.encode(config),
+                title: 'Test Round',
+                description: 'Test Round Description'
             })
         );
     }
@@ -80,10 +77,10 @@ contract InfiniteRoundTest is TestUtil {
         alice.propHouse.createRoundOnExistingHouse(
             house,
             IPropHouse.Round({
-              impl: infiniteRoundImpl,
-              config: abi.encode(config),
-              title: 'Test Round',
-              description: 'Test Round Description'
+                impl: infiniteRoundImpl,
+                config: abi.encode(config),
+                title: 'Test Round',
+                description: 'Test Round Description'
             })
         );
     }
@@ -97,10 +94,10 @@ contract InfiniteRoundTest is TestUtil {
         alice.propHouse.createRoundOnExistingHouse(
             house,
             IPropHouse.Round({
-              impl: infiniteRoundImpl,
-              config: abi.encode(config),
-              title: 'Test Round',
-              description: 'Test Round Description'
+                impl: infiniteRoundImpl,
+                config: abi.encode(config),
+                title: 'Test Round',
+                description: 'Test Round Description'
             })
         );
     }

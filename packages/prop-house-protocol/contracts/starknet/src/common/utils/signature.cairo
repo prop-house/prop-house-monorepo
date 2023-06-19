@@ -16,7 +16,9 @@ impl KeccakTypeHashFelt252Span of KeccakTypeHash<Span<felt252>> {
     }
 }
 
-impl KeccakTypeHashStructSpan<T, impl TCopy: Copy<T>, impl TKeccakTypeHash: KeccakTypeHash<T>> of KeccakTypeHash<Span<T>> {
+impl KeccakTypeHashStructSpan<
+    T, impl TCopy: Copy<T>, impl TKeccakTypeHash: KeccakTypeHash<T>
+> of KeccakTypeHash<Span<T>> {
     fn hash(mut self: Span<T>) -> u256 {
         let mut encoded_data = Default::default();
         loop {

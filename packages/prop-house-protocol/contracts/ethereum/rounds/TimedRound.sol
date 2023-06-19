@@ -30,7 +30,7 @@ contract TimedRound is ITimedRound, AssetRound {
     RoundState public state;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
-    uint40 public roundFinalizedAt;
+    uint40 public finalizedAt;
 
     /// @notice The timestamp at which the proposal period starts. `0` if not registered.
     uint40 public proposalPeriodStartTimestamp;
@@ -137,7 +137,7 @@ contract TimedRound is ITimedRound, AssetRound {
 
         // Reconstruct the merkle root, store it, and move the round to the finalized state
         winnerMerkleRoot = bytes32((merkleRootHigh << 128) + merkleRootLow);
-        roundFinalizedAt = uint40(block.timestamp);
+        finalizedAt = uint40(block.timestamp);
         state = RoundState.Finalized;
 
         emit RoundFinalized();
@@ -175,7 +175,7 @@ contract TimedRound is ITimedRound, AssetRound {
         // prettier-ignore
         // Reclamation is only available when the round has been cancelled OR
         // the round has been finalized and is in the reclamation period
-        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_ASSETS_AFTER)) {
+        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - finalizedAt < RECLAIM_UNCLAIMED_ASSETS_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);

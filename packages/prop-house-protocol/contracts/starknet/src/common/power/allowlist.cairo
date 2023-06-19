@@ -10,10 +10,7 @@ mod AllowlistGovernancePowerStrategy {
 
     impl AllowlistGovernancePowerStrategy of IGovernancePowerStrategy {
         fn get_power(
-            timestamp: u64,
-            user: felt252,
-            params: Span<felt252>,
-            user_params: Span<felt252>,
+            timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
         ) -> u256 {
             _get_power(timestamp, user, params, user_params)
         }

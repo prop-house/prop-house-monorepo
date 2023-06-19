@@ -41,9 +41,7 @@ import chai, { expect } from 'chai';
 chai.use(solidity);
 
 const maskTo250Bits = (value: BigNumberish) => {
-  return BigNumber.from(value).and(
-    ethers.BigNumber.from(2).pow(250).sub(1),
-  );
+  return BigNumber.from(value).and(ethers.BigNumber.from(2).pow(250).sub(1));
 };
 
 describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
@@ -249,11 +247,14 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
     expect(parseInt(metadataUriLength, 16)).to.equal(3);
     expect(parseInt(requestedAssetLength, 16)).to.equal(1);
     expect(actualRequestedAssets).to.deep.equal(
-      encoding.compressAssets([asset]).map(asset => {
-        const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
-        const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
-        return [id.low, id.high, amount.low, amount.high];
-      }).flat(),
+      encoding
+        .compressAssets([asset])
+        .map(asset => {
+          const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
+          const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
+          return [id.low, id.high, amount.low, amount.high];
+        })
+        .flat(),
     );
 
     const expectedMetadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
@@ -340,19 +341,18 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
 
     expect((await starknet.devnet.flush()).consumed_messages.from_l2).to.have.a.lengthOf(1);
 
-    const updateWinnersTx = infiniteRound.updateWinners(
-      winnerCount,
-      merkleRootLow,
-      merkleRootHigh,
-    );
+    const updateWinnersTx = infiniteRound.updateWinners(winnerCount, merkleRootLow, merkleRootHigh);
     await expect(updateWinnersTx).to.emit(infiniteRound, 'WinnersUpdated').withArgs(winnerCount);
 
     const proposalId = 1;
-    const requestedAssetsHash = maskTo250Bits(ethers.utils.keccak256(
-      ethers.utils.defaultAbiCoder.encode(
-        ['tuple(bytes32,uint256)[]'], [[[utils.encoding.getETHAssetID(), ONE_ETHER]]]
+    const requestedAssetsHash = maskTo250Bits(
+      ethers.utils.keccak256(
+        ethers.utils.defaultAbiCoder.encode(
+          ['tuple(bytes32,uint256)[]'],
+          [[[utils.encoding.getETHAssetID(), ONE_ETHER]]],
+        ),
       ),
-    ));
+    );
     const leaf = generateIncrementalClaimLeaf({
       proposalId,
       proposer: signer.address,

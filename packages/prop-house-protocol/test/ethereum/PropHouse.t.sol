@@ -20,10 +20,7 @@ contract PropHouseTest is TestUtil {
         setUpContract();
         alice = setUpUser(42, 1);
 
-        communityHouseConfig = IPropHouse.House({
-            impl: communityHouseImpl,
-            config: abi.encode('Test House URI')
-        });
+        communityHouseConfig = IPropHouse.House({ impl: communityHouseImpl, config: abi.encode('Test House URI') });
         timedRoundConfig = IPropHouse.Round({
             impl: timedRoundImpl,
             config: abi.encode(validTimedRoundConfig()),
@@ -35,10 +32,7 @@ contract PropHouseTest is TestUtil {
     }
 
     function test_createRoundOnNewHouse() public {
-        (address house, address round) = alice.propHouse.createRoundOnNewHouse(
-            communityHouseConfig,
-            timedRoundConfig
-        );
+        (address house, address round) = alice.propHouse.createRoundOnNewHouse(communityHouseConfig, timedRoundConfig);
         assertNotEq(house, address(0));
         assertNotEq(round, address(0));
     }
@@ -46,10 +40,7 @@ contract PropHouseTest is TestUtil {
     function test_createRoundOnNewHouseUnregisteredHouseReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IPropHouse.INVALID_HOUSE_IMPL.selector));
         alice.propHouse.createRoundOnNewHouse(
-            IPropHouse.House({
-                impl: address(111),
-                config: abi.encode('Test House URI')
-            }),
+            IPropHouse.House({ impl: address(111), config: abi.encode('Test House URI') }),
             timedRoundConfig
         );
     }
@@ -73,10 +64,7 @@ contract PropHouseTest is TestUtil {
 
         vm.expectRevert(abi.encodeWithSelector(IPropHouse.INVALID_ROUND_IMPL_FOR_HOUSE.selector));
         alice.propHouse.createRoundOnNewHouse(
-            IPropHouse.House({
-                impl: wrongHouseImpl,
-                config: abi.encode('Test House URI')
-            }),
+            IPropHouse.House({ impl: wrongHouseImpl, config: abi.encode('Test House URI') }),
             timedRoundConfig
         );
     }
@@ -160,19 +148,13 @@ contract PropHouseTest is TestUtil {
     }
 
     function test_createRoundOnExistingHouse() public {
-        address round = alice.propHouse.createRoundOnExistingHouse(
-            existingHouse,
-            timedRoundConfig
-        );
+        address round = alice.propHouse.createRoundOnExistingHouse(existingHouse, timedRoundConfig);
         assertNotEq(round, address(0));
     }
 
     function test_createRoundOnExistingHouseNonExistentHouseReverts() public {
         vm.expectRevert(abi.encodeWithSelector(IPropHouse.INVALID_HOUSE.selector));
-        alice.propHouse.createRoundOnExistingHouse(
-            address(111),
-            timedRoundConfig
-        );
+        alice.propHouse.createRoundOnExistingHouse(address(111), timedRoundConfig);
     }
 
     function test_createRoundOnExistingHouseUnregisteredRoundReverts() public {
@@ -268,10 +250,7 @@ contract PropHouseTest is TestUtil {
 
     function test_depositToWithExactETHAmount() public {
         uint256 amount = 1e18;
-        alice.propHouse.depositTo{ value: amount }(
-            payable(existingRound),
-            ethAsset(amount)[0]
-        );
+        alice.propHouse.depositTo{ value: amount }(payable(existingRound), ethAsset(amount)[0]);
         assertEq(existingRound.balance, amount);
     }
 
@@ -281,24 +260,16 @@ contract PropHouseTest is TestUtil {
 
         uint256 startingBalance = alice.addr.balance;
 
-        alice.propHouse.depositTo{ value: amount + extra }(
-            payable(existingRound),
-            ethAsset(amount)[0]
-        );
+        alice.propHouse.depositTo{ value: amount + extra }(payable(existingRound), ethAsset(amount)[0]);
         assertEq(existingRound.balance, amount);
         assertEq(alice.addr.balance, startingBalance - amount);
     }
 
     function test_depositToWithETHNoValue() public {
-        vm.expectRevert(abi.encodeWithSelector(
-            IPropHouse.INSUFFICIENT_ETHER_SUPPLIED.selector
-        ));
+        vm.expectRevert(abi.encodeWithSelector(IPropHouse.INSUFFICIENT_ETHER_SUPPLIED.selector));
 
         uint256 amount = 1e18;
-        alice.propHouse.depositTo{ value: 0 }(
-            payable(existingRound),
-            ethAsset(amount)[0]
-        );
+        alice.propHouse.depositTo{ value: 0 }(payable(existingRound), ethAsset(amount)[0]);
     }
 
     function test_depositToWithERC20s() public {
@@ -324,18 +295,12 @@ contract PropHouseTest is TestUtil {
         vm.expectRevert(abi.encodeWithSelector(IPropHouse.INVALID_ROUND.selector));
 
         uint256 amount = 1e18;
-        alice.propHouse.depositTo{ value: amount }(
-            payable(existingHouse),
-            ethAsset(amount)[0]
-        );
+        alice.propHouse.depositTo{ value: amount }(payable(existingHouse), ethAsset(amount)[0]);
     }
 
     function test_batchDepositToWithExactETHAmount() public {
         uint256 amount = 1e18;
-        alice.propHouse.batchDepositTo{ value: amount }(
-            payable(existingRound),
-            ethAsset(amount)
-        );
+        alice.propHouse.batchDepositTo{ value: amount }(payable(existingRound), ethAsset(amount));
         assertEq(existingRound.balance, amount);
     }
 
@@ -345,24 +310,16 @@ contract PropHouseTest is TestUtil {
 
         uint256 startingBalance = alice.addr.balance;
 
-        alice.propHouse.batchDepositTo{ value: amount + extra }(
-            payable(existingRound),
-            ethAsset(amount)
-        );
+        alice.propHouse.batchDepositTo{ value: amount + extra }(payable(existingRound), ethAsset(amount));
         assertEq(existingRound.balance, amount);
         assertEq(alice.addr.balance, startingBalance - amount);
     }
 
     function test_batchDepositToWithETHNoValue() public {
-        vm.expectRevert(abi.encodeWithSelector(
-            IPropHouse.INSUFFICIENT_ETHER_SUPPLIED.selector
-        ));
+        vm.expectRevert(abi.encodeWithSelector(IPropHouse.INSUFFICIENT_ETHER_SUPPLIED.selector));
 
         uint256 amount = 1e18;
-        alice.propHouse.batchDepositTo{ value: 0 }(
-            payable(existingRound),
-            ethAsset(amount)
-        );
+        alice.propHouse.batchDepositTo{ value: 0 }(payable(existingRound), ethAsset(amount));
     }
 
     function test_batchDepositToWithERC20s() public {
@@ -398,9 +355,6 @@ contract PropHouseTest is TestUtil {
         vm.expectRevert(abi.encodeWithSelector(IPropHouse.INVALID_ROUND.selector));
 
         uint256 amount = 1e18;
-        alice.propHouse.batchDepositTo{ value: amount }(
-            payable(existingHouse),
-            ethAsset(amount)
-        );
+        alice.propHouse.batchDepositTo{ value: amount }(payable(existingHouse), ethAsset(amount));
     }
 }

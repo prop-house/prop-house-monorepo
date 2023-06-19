@@ -26,7 +26,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     RoundState public state;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
-    uint40 public roundFinalizedAt;
+    uint40 public finalizedAt;
 
     /// @notice The timestamp at which the round starts.
     uint40 public startTimestamp;
@@ -157,7 +157,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         // This function will revert if the message does not exist
         starknet.consumeMessageFromL2(executionRelayer, payload);
 
-        roundFinalizedAt = uint40(block.timestamp);
+        finalizedAt = uint40(block.timestamp);
         state = RoundState.Finalized;
 
         emit RoundFinalized();
@@ -322,7 +322,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         // Reclamation is available when the round has been finalized and the reclamation period has passed
         // or when all winners have claimed
         if (state == RoundState.Finalized) {
-            return block.timestamp - roundFinalizedAt >= RECLAIM_UNCLAIMED_ASSETS_AFTER || claimedWinnerCount == currentWinnerCount;
+            return block.timestamp - finalizedAt >= RECLAIM_UNCLAIMED_ASSETS_AFTER || claimedWinnerCount == currentWinnerCount;
         }
         return false;
     }

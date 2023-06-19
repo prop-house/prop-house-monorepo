@@ -83,19 +83,15 @@ contract TestUtil is Test {
         manager = new Manager();
         propHouse = new PropHouse(address(manager));
         messenger = new Messenger(starknetCore, address(propHouse));
-        creatorPassIssuer = new CreatorPassIssuer(
-            address(propHouse), address(0)
-        );
+        creatorPassIssuer = new CreatorPassIssuer(address(propHouse), address(0));
 
-        communityHouseImpl = address(new CommunityHouse(
-            address(propHouse), address(0), address(creatorPassIssuer)
-        ));
-        timedRoundImpl = address(new TimedRound(
-            0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0)
-        ));
-        infiniteRoundImpl = address(new InfiniteRound(
-            0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0)
-        ));
+        communityHouseImpl = address(new CommunityHouse(address(propHouse), address(0), address(creatorPassIssuer)));
+        timedRoundImpl = address(
+            new TimedRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0))
+        );
+        infiniteRoundImpl = address(
+            new InfiniteRound(0, address(propHouse), starknetCore, address(messenger), 0, 0, address(0))
+        );
 
         manager.registerHouse(address(communityHouseImpl));
         manager.registerRound(address(communityHouseImpl), address(timedRoundImpl));
@@ -143,69 +139,29 @@ contract TestUtil is Test {
 
     function ethAsset(uint256 amount) internal pure returns (Asset[] memory assets) {
         assets = new Asset[](1);
-        assets[0] = Asset({
-            assetType: AssetType.Native,
-            token: address(0),
-            identifier: 0,
-            amount: amount
-        });
+        assets[0] = Asset({ assetType: AssetType.Native, token: address(0), identifier: 0, amount: amount });
     }
 
     function erc20Asset(uint256 amount) internal view returns (Asset[] memory assets) {
         assets = new Asset[](1);
-        assets[0] = Asset({
-            assetType: AssetType.ERC20,
-            token: erc20,
-            identifier: 0,
-            amount: amount
-        });
+        assets[0] = Asset({ assetType: AssetType.ERC20, token: erc20, identifier: 0, amount: amount });
     }
 
     function erc721Asset(uint256 tokenId) internal view returns (Asset[] memory assets) {
         assets = new Asset[](1);
-        assets[0] = Asset({
-            assetType: AssetType.ERC721,
-            token: erc721,
-            identifier: tokenId,
-            amount: 1
-        });
+        assets[0] = Asset({ assetType: AssetType.ERC721, token: erc721, identifier: tokenId, amount: 1 });
     }
 
     function erc1155Asset(uint256 tokenId, uint256 amount) internal view returns (Asset[] memory assets) {
         assets = new Asset[](1);
-        assets[0] = Asset({
-            assetType: AssetType.ERC1155,
-            token: erc1155,
-            identifier: tokenId,
-            amount: amount
-        });
+        assets[0] = Asset({ assetType: AssetType.ERC1155, token: erc1155, identifier: tokenId, amount: amount });
     }
 
     function allAssets(uint256 tokenId, uint256 amount) internal view returns (Asset[] memory assets) {
         assets = new Asset[](4);
-        assets[0] = Asset({
-            assetType: AssetType.Native,
-            token: address(0),
-            identifier: 0,
-            amount: amount
-        });
-        assets[1] = Asset({
-            assetType: AssetType.ERC20,
-            token: erc20,
-            identifier: 0,
-            amount: amount
-        });
-        assets[2] = Asset({
-            assetType: AssetType.ERC721,
-            token: erc721,
-            identifier: tokenId,
-            amount: 1
-        });
-        assets[3] = Asset({
-            assetType: AssetType.ERC1155,
-            token: erc1155,
-            identifier: tokenId,
-            amount: amount
-        });
+        assets[0] = Asset({ assetType: AssetType.Native, token: address(0), identifier: 0, amount: amount });
+        assets[1] = Asset({ assetType: AssetType.ERC20, token: erc20, identifier: 0, amount: amount });
+        assets[2] = Asset({ assetType: AssetType.ERC721, token: erc721, identifier: tokenId, amount: 1 });
+        assets[3] = Asset({ assetType: AssetType.ERC1155, token: erc1155, identifier: tokenId, amount: amount });
     }
 }

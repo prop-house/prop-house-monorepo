@@ -92,7 +92,9 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
       vanillaGovPowerStrategyFactory,
     );
-    vanillaGovPowerStrategyId = `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`;
+    vanillaGovPowerStrategyId = `0x${poseidonHashMany([
+      BigInt(vanillaGovPowerStrategy.address),
+    ]).toString(16)}`;
 
     // Stub `getRoundVotingStrategies`
     gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
@@ -454,7 +456,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     await starknet.devnet.createBlock();
 
     const assetId = utils.encoding.getETHAssetID();
-    const amount = ONE_ETHER.toHexString()
+    const amount = ONE_ETHER.toHexString();
     const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
       round: timedRoundContract.address,
       awards: [

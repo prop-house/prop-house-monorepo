@@ -300,7 +300,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     await starknet.devnet.createBlock();
 
     const assetId = utils.encoding.getETHAssetID();
-    const amount = ONE_ETHER.toHexString()
+    const amount = ONE_ETHER.toHexString();
     const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
       round: timedRoundContract.address,
       awards: [
