@@ -1,8 +1,11 @@
+use starknet::{get_block_timestamp, Felt252TryIntoEthAddress};
 use prop_house::common::utils::array::ArrayTraitExt;
+use prop_house::rounds::timed::config::{Proposal, ProposalWithId};
 use prop_house::rounds::timed::round::TimedRound;
 use array::{ArrayTrait, SpanTrait};
+use integer::u256_from_felt252;
+use traits::{Into, TryInto};
 use option::OptionTrait;
-use traits::TryInto;
 
 #[test]
 #[available_gas(100000000)]
@@ -63,4 +66,43 @@ fn test_timed_round_decode_params() {
     assert(decoded_params.proposal_threshold == *round_params.at(5), 'wrong proposal threshold');
     assert(decoded_params.proposing_strategies.len() == 0, 'wrong proposing strategy length');
     assert(decoded_params.voting_strategies.len() == 1, 'wrong voting strategy length');
+}
+
+#[test]
+#[available_gas(100000000)]
+fn test_timed_round_get_n_proposals_by_voting_power_desc() {
+    let mut proposals = Default::default();
+
+    let count: u32 = 200;
+    let mut i = 1;
+    loop {
+        if i == count {
+            break;
+        }
+        let proposer_felt: felt252 = i.into();
+        proposals.append(
+            ProposalWithId {
+                proposal_id: i,
+                proposal: Proposal {
+                    proposer: proposer_felt.try_into().unwrap(),
+                    last_updated_at: get_block_timestamp(),
+                    is_cancelled: false,
+                    voting_power: u256_from_felt252(i.into()),
+                },
+            },
+        );
+        i += 1;
+    };
+
+    let sorted_proposals = TimedRound::_get_n_proposals_by_voting_power_desc(proposals, 10);
+    assert(sorted_proposals.len() == 10, 'wrong length');
+
+    let mut i = 0;
+    loop {
+        if i == 10 {
+            break;
+        }
+        assert((*sorted_proposals.at(i)).proposal_id == count - i - 1, 'wrong proposal id');
+        i += 1;
+    };
 }
