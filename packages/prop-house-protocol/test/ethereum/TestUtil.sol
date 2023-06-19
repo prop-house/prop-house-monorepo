@@ -9,6 +9,7 @@ import { CreatorPassIssuer } from '../../contracts/ethereum/CreatorPassIssuer.so
 import { CommunityHouse } from '../../contracts/ethereum/houses/CommunityHouse.sol';
 import { TimedRound } from '../../contracts/ethereum/rounds/TimedRound.sol';
 import { InfiniteRound } from '../../contracts/ethereum/rounds/InfiniteRound.sol';
+import { IInfiniteRound } from '../../contracts/ethereum/interfaces/IInfiniteRound.sol';
 import { ITimedRound } from '../../contracts/ethereum/interfaces/ITimedRound.sol';
 import { MockStarknetMessaging } from '../../contracts/ethereum/mocks/MockStarknetMessaging.sol';
 import { MockERC20, MockERC20BS } from './blacksmith/MockERC20.bs.sol';
@@ -105,6 +106,22 @@ contract TestUtil is Test {
         vm.label(erc1155, 'ERC1155');
         vm.label(address(manager), 'MANAGER');
         vm.label(address(propHouse), 'PROPHOUSE');
+    }
+
+    function validInfiniteRoundConfig() public view returns (IInfiniteRound.RoundConfig memory) {
+        uint256[] memory votingStrategies = new uint256[](1);
+        votingStrategies[0] = 1;
+        return IInfiniteRound.RoundConfig({
+            proposalThreshold: 0,
+            proposingStrategies: new uint256[](0),
+            proposingStrategyParamsFlat: new uint256[](0),
+            votingStrategies: votingStrategies,
+            votingStrategyParamsFlat: new uint256[](0),
+            startTimestamp: uint40(block.timestamp),
+            votePeriodDuration: 2 days,
+            quorumFor: 1,
+            quorumAgainst: 1
+        });
     }
 
     function validTimedRoundConfig() public view returns (ITimedRound.RoundConfig memory) {
