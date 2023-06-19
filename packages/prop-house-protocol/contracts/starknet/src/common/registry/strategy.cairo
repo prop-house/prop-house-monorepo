@@ -1,4 +1,3 @@
-use core::result::ResultTrait;
 use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use starknet::contract_address::Felt252TryIntoContractAddress;
 use starknet::{ContractAddressIntoFelt252, ContractAddress};
@@ -60,11 +59,11 @@ trait IStrategyRegistry {
 mod StrategyRegistry {
     use starknet::contract_address::ContractAddressZeroable;
     use starknet::{ContractAddress, ContractAddressIntoFelt252};
-    use prop_house::common::utils::hash::compute_hash_on_elements;
     use prop_house::common::utils::array::ArrayTraitExt;
     use prop_house::common::utils::serde::SpanSerde;
     use super::{IStrategyRegistry, Strategy};
     use array::{ArrayTrait, SpanTrait};
+    use poseidon::poseidon_hash_span;
     use zeroable::Zeroable;
     use traits::Into;
 
@@ -134,6 +133,6 @@ mod StrategyRegistry {
                 },
             };
         };
-        compute_hash_on_elements(strategy_array.span())
+        poseidon_hash_span(strategy_array.span())
     }
 }

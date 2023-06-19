@@ -1,6 +1,17 @@
-# @prophouse/protocol
-
-Prop House is a multichain protocol that helps internet communities & creators allocate resources.
+<p align="center">
+  <img src="https://i.imgur.com/XXbv8r6.jpg">
+</p>
+<h1 align="center">
+  @prophouse/protocol
+</h1>
+<p align="center">
+  A multichain protocol that helps internet communities & creators allocate resources
+</p>
+<p align="center">
+  <a href="https://prop.house/">
+    <img src="https://img.shields.io/badge/website-prop.house-blue?style=flat-square">
+  </a>
+</p>
 
 ## Overview
 
@@ -17,7 +28,7 @@ The responsibilities of a house owner include:
 
 Currently, only one type of house exists – the Community house. It operates based on the rules mentioned above. The house itself is an NFT and ownership of the house can be transferred at any point. 
 
-Each round within the Community house is also an NFT, minted to the creator of the round. The holder of this NFT, referred to as the round Manager, controls the round. Similar to house ownership, round management permissions can also be transferred at will.
+Each round within the Community house is also an NFT, minted to the creator of the round. The holder of this NFT, referred to as the round manager, controls the round. Similar to house ownership, round management permissions can be transferred at will.
 
 ### Rounds
 

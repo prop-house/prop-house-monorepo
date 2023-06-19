@@ -8,6 +8,7 @@ import {
   HouseInfo,
   HouseType,
   PropHouseConfig,
+  RoundConfigStruct,
   RoundInfo,
   RoundType,
 } from './types';
@@ -172,7 +173,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         title: round.title,
         description: round.description,
         impl: this.round.getImpl(round.roundType),
-        config: this.round.encode(round.roundType, struct),
+        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
       {
         ...overrides,
@@ -202,7 +203,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         title: round.title,
         description: round.description,
         impl: this.round.getImpl(round.roundType),
-        config: this.round.encode(round.roundType, struct),
+        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
       assets,
       {
@@ -235,7 +236,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         title: round.title,
         description: round.description,
         impl: this.round.getImpl(round.roundType),
-        config: this.round.encode(round.roundType, struct),
+        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]),
       },
       {
         ...overrides,
@@ -268,7 +269,7 @@ export class PropHouse<CS extends Custom | void = void> extends ChainBase {
         title: round.title,
         description: round.description,
         impl: this.round.getImpl(round.roundType),
-        config: this.round.encode(round.roundType, struct),
+        config: this.round.encode(round.roundType, struct as RoundConfigStruct[RT]), // TODO: Fix later
       },
       assets,
       {

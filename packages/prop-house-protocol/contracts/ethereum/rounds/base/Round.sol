@@ -96,13 +96,15 @@ abstract contract Round is IRound, Clone {
         _;
     }
 
-    /// @notice Route a call to the round contract on Starknet
+    /// @dev Route a call to the round contract on Starknet
     /// @param payload The payload to send to the round contract on Starknet
     function _callStarknetRound(uint256[] memory payload) internal {
         messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.ROUTE_CALL_TO_ROUND, payload);
     }
 
-    /// @notice Route a round cancellation to the round contract on Starknet
+    /// @dev Route a round cancellation call to the round contract on Starknet
+    /// `payload[0]` - Round address
+    /// `payload[2]` - Empty calldata array length
     function _notifyRoundCancelled() internal {
         uint256[] memory payload = new uint256[](3);
         payload[1] = Selector.CANCEL_ROUND;
@@ -110,7 +112,7 @@ abstract contract Round is IRound, Clone {
         _callStarknetRound(payload);
     }
 
-    /// @notice Add strategies and parameters to the payload
+    /// @dev Add strategies and parameters to the payload
     /// @param payload The payload to add to
     /// @param offset The starting offset index
     /// @param strategies The strategy addresses to add

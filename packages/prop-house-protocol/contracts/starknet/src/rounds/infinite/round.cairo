@@ -191,6 +191,8 @@ mod InfiniteRound {
         }
 
         fn finalize_round() {
+            // Round finalizations can only come from an origin chain round
+            Round::assert_caller_is_deployer();
             _assert_round_active();
 
             let winner_count = _winner_count::read();
@@ -569,6 +571,7 @@ mod InfiniteRound {
     /// Process all new round winners by submitting their information to the consuming chain.
     /// This function will revert if there are no new winners to process.
     fn _process_winners() {
+        // This bitand will be replaced with && once short-circuiting is supported.
         let winner_count = _winner_count::read();
         assert(
             winner_count > 0 & winner_count > _processed_winner_count::read(), 'IR: No new winners'

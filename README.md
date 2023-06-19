@@ -1,10 +1,18 @@
-# Prop House
+<div align="center">
+  <p align="center">
+    <a href="https://prop.house/" target="blank"><img src="https://i.imgur.com/tPLjLwA.png" width="200" alt="Prop House Logo" /></a>
+  </p>
+  <h1>Prop House</h1>
+  <p>A public infrastructure project by <a href="https://nouns.wtf/" target="blank">Nouns DAO</a></p>
 
-Nouns Proposal Auction House (or Prop House) is a public infrastructure project by [Nouns DAO](https://nouns.wtf).
+  <a href="./packages/prop-house-protocol">Protocol</a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="./packages/prop-house-sdk">SDK</a>
+</div>
 
 ## About
 
-Prop House uses a novel mechanism for communities to deploy capital within their ecosystems: auctions of ETH where the bids placed are proposals. At the end of each auction, members of corresponding communities vote on which proposals get funded. Learn more by reading the [FAQs](https://prop.house/faq) or joining the [Discord](https://discord.gg/SKPzM8GHts).
+Prop House offers a novel mechanism for communities to deploy capital within their ecosystems: asset auctions where the bids placed are proposals. At the end of each auction, members of corresponding communities vote on which proposals get funded. Learn more by reading the [FAQs](https://prop.house/faq) or joining the [Discord](https://discord.gg/SKPzM8GHts).
 
 ## Packages
 

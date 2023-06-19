@@ -1,15 +1,15 @@
 import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
-  timedRoundSetup,
-  generateClaimLeaf,
-  generateClaimMerkleTree,
+  infiniteRoundSetup,
   CONTRACT_URI,
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
   getStarknetArtifactPaths,
   STARKNET_MAX_FEE,
+  generateIncrementalClaimLeaf,
+  generateIncrementalClaimMerkleTree,
 } from '../../utils';
 import {
   AssetType,
@@ -20,39 +20,53 @@ import {
   utils,
   Asset,
   ContractAddresses,
-  TimedRoundContract,
-  TimedRound__factory,
+  InfiniteRoundContract,
+  InfiniteRound__factory,
+  Infinite,
+  splitUint256,
+  encoding,
 } from '@prophouse/sdk';
 import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
+import { BigNumber, BigNumberish, constants } from 'ethers';
 import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
-import { BigNumber, constants } from 'ethers';
 import { Account } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
 
-describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
+const maskTo250Bits = (value: BigNumberish) => {
+  return BigNumber.from(value).and(
+    ethers.BigNumber.from(2).pow(250).sub(1),
+  );
+};
+
+describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
   const networkUrl = network.config.url!;
 
   let signer: SignerWithAddress;
   let starknetAccount: Account;
 
   let propHouse: PropHouse;
-  let timedRound: TimedRoundContract;
+  let infiniteRound: InfiniteRoundContract;
   let mockStarknetMessaging: MockStarknetMessaging;
 
-  let timedRoundContract: StarknetContract;
+  let infiniteRoundContract: StarknetContract;
   let ethSigAuth: StarknetContract;
 
-  let timedRoundL2Factory: StarknetContractFactory;
+  let infiniteRoundL2Factory: StarknetContractFactory;
 
   let l2RoundAddress: string;
+
+  const asset: Asset = {
+    assetType: AssetType.ETH,
+    amount: ONE_ETHER,
+  };
 
   before(async () => {
     await starknet.devnet.restart();
@@ -61,10 +75,10 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
     [signer] = await ethers.getSigners();
 
-    const config = await timedRoundSetup();
+    const config = await infiniteRoundSetup();
     ({
-      timedRoundEthSigAuthStrategy: ethSigAuth,
-      timedRoundL2Factory,
+      infiniteRoundEthSigAuthStrategy: ethSigAuth,
+      infiniteRoundL2Factory,
       mockStarknetMessaging,
       starknetAccount,
     } = config);
@@ -112,8 +126,8 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
             community: config.communityHouseImpl.address,
           },
           round: {
-            infinite: constants.AddressZero,
-            timed: config.timedRoundImpl.address,
+            infinite: config.infiniteRoundImpl.address,
+            timed: constants.AddressZero,
           },
         },
         starknet: {
@@ -126,12 +140,12 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
           },
           auth: {
             infinite: {
-              sig: constants.HashZero,
-              tx: constants.HashZero,
+              sig: config.infiniteRoundEthSigAuthStrategy.address,
+              tx: config.infiniteRoundEthTxAuthStrategy.address,
             },
             timed: {
-              sig: config.timedRoundEthSigAuthStrategy.address,
-              tx: config.timedRoundEthTxAuthStrategy.address,
+              sig: constants.HashZero,
+              tx: constants.HashZero,
             },
           },
           herodotus: {
@@ -139,8 +153,8 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
             l1HeadersStore: '',
           },
           classHashes: {
-            infinite: constants.HashZero,
-            timed: config.timedRoundClassHash,
+            infinite: config.infiniteRoundClassHash,
+            timed: constants.HashZero,
           },
         },
       };
@@ -154,10 +168,6 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
     await starknet.devnet.loadL1MessagingContract(networkUrl, mockStarknetMessaging.address);
 
-    const asset: Asset = {
-      assetType: AssetType.ETH,
-      amount: ONE_ETHER,
-    };
     const creationResponse = await propHouse.createAndFundRoundOnNewHouse(
       {
         houseType: HouseType.COMMUNITY,
@@ -166,20 +176,19 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
         },
       },
       {
-        roundType: RoundType.TIMED,
+        roundType: RoundType.INFINITE,
         title: 'Test Round',
         description: 'A round used for testing purposes',
         config: {
-          awards: [asset],
           votingStrategies: [
             {
               strategyType: VotingStrategyType.VANILLA,
             },
           ],
-          proposalPeriodStartUnixTimestamp: block_timestamp + ONE_DAY_SEC,
-          proposalPeriodDurationSecs: ONE_DAY_SEC,
-          votePeriodDurationSecs: ONE_DAY_SEC,
-          winnerCount: 1,
+          startUnixTimestamp: block_timestamp,
+          votePeriodDurationSecs: ONE_DAY_SEC * 2,
+          quorumFor: 1,
+          quorumAgainst: 1,
         },
       },
       [asset],
@@ -192,7 +201,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
 
     await starknet.devnet.flush();
 
-    timedRound = TimedRound__factory.connect(roundAddress, signer);
+    infiniteRound = InfiniteRound__factory.connect(roundAddress, signer);
 
     // Send the pending L1 -> L2 message
     await starknet.devnet.flush();
@@ -202,7 +211,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     });
     [, l2RoundAddress] = block.transaction_receipts[0].events[1].data;
 
-    timedRoundContract = timedRoundL2Factory.getContractAt(
+    infiniteRoundContract = infiniteRoundL2Factory.getContractAt(
       `0x${BigInt(l2RoundAddress).toString(16)}`,
     );
 
@@ -215,11 +224,12 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       address,
       signature,
       message: data,
-    } = await propHouse.round.timed.signProposeMessage({
-      round: timedRoundContract.address,
+    } = await propHouse.round.infinite.signProposeMessage({
+      round: infiniteRoundContract.address,
       metadataUri: METADATA_URI,
+      requestedAssets: [asset],
     });
-    const { transaction_hash } = await propHouse.round.timed.relaySignedProposePayload(
+    const { transaction_hash } = await propHouse.round.infinite.relaySignedProposePayload(
       starknetAccount,
       {
         address,
@@ -229,11 +239,22 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     );
 
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
-    const [proposalId, proposerAddress, metadataUriLength, ...actualMetadataUri] = events[0].data;
+    const [proposalId, proposerAddress, metadataUriLength, ...remainingData] = events[0].data;
+    const actualMetadataUri = remainingData.slice(0, parseInt(metadataUriLength, 16));
+    const requestedAssetLength = remainingData[parseInt(metadataUriLength, 16)];
+    const actualRequestedAssets = remainingData.slice(parseInt(metadataUriLength, 16) + 1);
 
     expect(parseInt(proposalId, 16)).to.equal(1);
     expect(proposerAddress).to.equal(signer.address.toLowerCase());
     expect(parseInt(metadataUriLength, 16)).to.equal(3);
+    expect(parseInt(requestedAssetLength, 16)).to.equal(1);
+    expect(actualRequestedAssets).to.deep.equal(
+      encoding.compressAssets([asset]).map(asset => {
+        const id = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[0]).toBigInt());
+        const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(asset[1]).toBigInt());
+        return [id.low, id.high, amount.low, amount.high];
+      }).flat(),
+    );
 
     const expectedMetadataUri = utils.intsSequence.IntsSequence.LEFromString(METADATA_URI);
     for (let i = 0; i < actualMetadataUri.length; i++) {
@@ -242,15 +263,16 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
   });
 
   it.skip('should not authenticate an invalid signature', async () => {
-    const { signature, message: data } = await propHouse.round.timed.signProposeMessage({
-      round: timedRoundContract.address,
+    const { signature, message: data } = await propHouse.round.infinite.signProposeMessage({
+      round: infiniteRoundContract.address,
       metadataUri: METADATA_URI,
+      requestedAssets: [asset],
     });
     const [, signer2] = await ethers.getSigners();
 
     try {
       // Data is signed with accounts[0], but the proposer is accounts[1] so it should fail
-      await propHouse.round.timed.relaySignedProposePayload(starknetAccount, {
+      await propHouse.round.infinite.relaySignedProposePayload(starknetAccount, {
         address: signer2.address,
         signature,
         data,
@@ -269,16 +291,18 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       address,
       signature,
       message: data,
-    } = await propHouse.round.timed.signVoteMessage({
-      round: timedRoundContract.address,
+    } = await propHouse.round.infinite.signVoteMessage({
+      round: infiniteRoundContract.address,
       votes: [
         {
           proposalId: 1,
+          proposalVersion: 1,
           votingPower: 1,
+          direction: Infinite.Direction.FOR,
         },
       ],
     });
-    const { transaction_hash } = await propHouse.round.timed.relaySignedVotePayload(
+    const { transaction_hash } = await propHouse.round.infinite.relaySignedVotePayload(
       starknetAccount,
       {
         address,
@@ -288,82 +312,88 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     );
 
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
-    const [proposalId, voterAddress, votingPower] = events[0].data;
+    const [proposalId, voterAddress, votingPowerLow, votingPowerHigh, direction] = events[1].data;
 
     expect(parseInt(proposalId, 16)).to.equal(1);
     expect(voterAddress).to.equal(signer.address.toLowerCase());
-    expect(parseInt(votingPower, 16)).to.equal(1);
+    expect(parseInt(votingPowerLow, 16)).to.equal(1);
+    expect(parseInt(votingPowerHigh, 16)).to.equal(0);
+    expect(parseInt(direction, 16)).to.equal(Infinite.Direction.FOR);
   });
 
-  it('should finalize a round and allow a winner to claim their award', async () => {
-    await starknet.devnet.increaseTime(ONE_DAY_SEC);
-    await starknet.devnet.createBlock();
+  it('should allow a winner to claim their award', async () => {
+    const { transaction_hash } = await starknetAccount.execute({
+      contractAddress: infiniteRoundContract.address,
+      entrypoint: 'process_winners',
+      calldata: [],
+    });
+    const { events } = await starknet.getTransactionReceipt(transaction_hash);
 
-    const assetId = utils.encoding.getETHAssetID();
-    const amount = ONE_ETHER.toHexString()
-    const { transaction_hash } = await propHouse.round.timed.finalizeRound(starknetAccount, {
-      round: timedRoundContract.address,
-      awards: [
+    const [winnerCount, merkleRootLow, merkleRootHigh] = events[0].data;
+    const merkleRoot = splitUint256.SplitUint256.fromObj({
+      low: merkleRootLow,
+      high: merkleRootHigh,
+    });
+
+    expect(parseInt(winnerCount, 16)).to.equal(1);
+    expect(merkleRoot.toUint()).to.not.equal(0n);
+
+    expect((await starknet.devnet.flush()).consumed_messages.from_l2).to.have.a.lengthOf(1);
+
+    const updateWinnersTx = infiniteRound.updateWinners(
+      winnerCount,
+      merkleRootLow,
+      merkleRootHigh,
+    );
+    await expect(updateWinnersTx).to.emit(infiniteRound, 'WinnersUpdated').withArgs(winnerCount);
+
+    const proposalId = 1;
+    const requestedAssetsHash = maskTo250Bits(ethers.utils.keccak256(
+      ethers.utils.defaultAbiCoder.encode(
+        ['tuple(bytes32,uint256)[]'], [[[utils.encoding.getETHAssetID(), ONE_ETHER]]]
+      ),
+    ));
+    const leaf = generateIncrementalClaimLeaf({
+      proposalId,
+      proposer: signer.address,
+      requestedAssetsHash: requestedAssetsHash.toHexString(),
+    });
+
+    const tree = generateIncrementalClaimMerkleTree([leaf]);
+    const proof = tree.getProof(0);
+    const claimTx = await infiniteRound.claim(
+      proposalId,
+      [
         {
-          assetId: utils.encoding.getETHAssetID(),
+          assetType: AssetType.ETH,
           amount: ONE_ETHER,
+          token: constants.AddressZero,
+          identifier: 0,
         },
       ],
-    });
-
-    const { events } = await starknet.getTransactionReceipt(transaction_hash);
-    const winnersLen = parseInt(events[0].data[0], 16);
-    const winningProposalIds = events[0].data.slice(1, -2).map(id => parseInt(id, 16));
-    const merkleRootLow = events[0].data.at(-2)!;
-    const merkleRootHigh = events[0].data.at(-1)!;
-
-    expect(merkleRootLow.length).to.equal(34);
-    expect(merkleRootHigh.length).to.equal(34);
-    expect(winnersLen).to.equal(1);
-    expect(winningProposalIds).to.have.a.lengthOf(1);
-
-    const { response } = await timedRoundContract.call('get_proposal', {
-      proposal_id: winningProposalIds[0],
-    });
-
-    const winner = {
-      position: 1,
-      proposalId: winningProposalIds[0],
-      proposer: BigNumber.from(response.proposer).toHexString(),
-      votingPower: response.voting_power,
-    };
-
-    const { consumed_messages } = await starknet.devnet.flush();
-
-    expect(consumed_messages.from_l2.length).to.equal(1);
-
-    const finalizeTx = timedRound.finalize(merkleRootLow, merkleRootHigh);
-
-    await expect(finalizeTx).to.emit(timedRound, 'RoundFinalized');
-
-    const leaf = generateClaimLeaf({
-      proposalId: winner.proposalId,
-      position: winner.position,
-      proposer: signer.address,
-      assetId: utils.encoding.getETHAssetID(),
-      assetAmount: amount,
-    });
-    const tree = generateClaimMerkleTree([leaf]);
-    const proof = tree.getHexProof(leaf);
-
-    const claimTx = timedRound.claim(
-      winner.proposalId,
-      winner.position,
       {
-        assetType: AssetType.ETH,
-        amount: ONE_ETHER,
-        token: constants.AddressZero,
-        identifier: 0,
+        pathIndices: proof.pathIndices,
+        siblings: proof.siblings.flat().map((s: BigNumberish) => encoding.hexPadLeft(
+          BigNumber.from(s).toHexString(),
+        )),
       },
-      proof,
     );
-    await expect(claimTx)
-      .to.emit(timedRound, 'AssetClaimed')
-      .withArgs(winner.proposalId, signer.address, signer.address, [assetId, amount]);
+    await expect(claimTx).to.emit(infiniteRound, 'AssetsClaimed');
+  });
+
+  it('should finalize a round and allow the winner to claim their award', async () => {
+    const startFinalizationTx = infiniteRound.startFinalization({
+      value: STARKNET_MAX_FEE,
+    });
+    await expect(startFinalizationTx).to.emit(infiniteRound, 'RoundFinalizationStarted');
+
+    // Process L1 -> L2 message (finalize_round)
+    await starknet.devnet.flush();
+
+    // Process L2 -> L1 message (completeFinalization)
+    await starknet.devnet.flush();
+
+    const completeFinalizationTx = infiniteRound.completeFinalization(1);
+    await expect(completeFinalizationTx).to.emit(infiniteRound, 'RoundFinalized');
   });
 });

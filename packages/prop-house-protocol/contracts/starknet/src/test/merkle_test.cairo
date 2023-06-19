@@ -1,10 +1,10 @@
-use core::dict::Felt252DictTrait;
-use core::option::OptionTrait;
 use prop_house::common::utils::merkle::{
     MerkleTree, MerkleTreeTrait, IncrementalMerkleTree, IncrementalMerkleTreeTrait
 };
 use array::{ArrayTrait, SpanTrait};
 use integer::U128IntoFelt252;
+use dict::Felt252DictTrait;
+use option::OptionTrait;
 use hash::LegacyHash;
 use traits::Into;
 

@@ -18,6 +18,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
             let params_len = params.len();
 
             // Expects contract_address slot_index, with an optional governance_power_multiplier
+            // This bitor will be replaced with || once short-circuiting is supported.
             assert(params_len == 2 | params_len == 3, 'EthBO: Bad param length');
 
             let governance_power = SingleSlotProof::get_slot_value(

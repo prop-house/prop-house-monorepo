@@ -294,6 +294,7 @@ mod TimedRound {
             voting_strategies,
         } = _decode_param_array(round_params_);
 
+        // The following bitand will be replaced with && once short-circuiting is supported.
         assert(proposal_period_start_timestamp.is_non_zero(), 'TR: Invalid PPST');
         assert(proposal_period_duration.is_non_zero(), 'TR: Invalid PPD');
         assert(vote_period_duration.is_non_zero(), 'TR: Invalid VPD');
