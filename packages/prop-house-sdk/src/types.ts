@@ -1,4 +1,4 @@
-import { CommunityHouseContract, TimedRoundContract } from '@prophouse/protocol';
+import { CommunityHouseContract, InfiniteRoundContract, TimedRoundContract } from '@prophouse/protocol';
 import { SequencerProvider, SequencerProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
@@ -70,6 +70,11 @@ export interface AssetStruct {
   assetType: BigNumberish;
   token: string;
   identifier: BigNumberish;
+  amount: BigNumberish;
+}
+
+export interface PackedAsset {
+  assetId: BigNumberish;
   amount: BigNumberish;
 }
 
@@ -172,10 +177,6 @@ export namespace Timed {
     data: ActionData[A];
   }
   export type Contract = TimedRoundContract;
-  export interface Award {
-    assetId: Uint256;
-    amount: Uint256;
-  }
   export interface ProposeCalldataConfig {
     proposer: string;
     metadataUri: string;
@@ -188,7 +189,103 @@ export namespace Timed {
   }
   export interface FinalizationConfig {
     round: string;
-    awards: Award[];
+    awards: PackedAsset[];
+  }
+}
+
+//#endregion
+
+//#region Infinite Round
+
+export namespace Infinite {
+  export interface Config<CS extends Custom | void> {
+    proposalThreshold?: BigNumberish;
+    proposingStrategies?: GovPowerStrategyConfig<CS>[];
+    votingStrategies: GovPowerStrategyConfig<CS>[];
+    startUnixTimestamp: number;
+    votePeriodDurationSecs: number;
+    quorumFor: BigNumberish;
+    quorumAgainst: BigNumberish;
+  }
+  export interface ConfigStruct {
+    proposalThreshold: BigNumberish;
+    proposingStrategies: BigNumberish[];
+    proposingStrategyParamsFlat: BigNumberish[];
+    votingStrategies: BigNumberish[];
+    votingStrategyParamsFlat: BigNumberish[];
+    startTimestamp: BigNumberish;
+    votePeriodDuration: BigNumberish;
+    quorumFor: BigNumberish;
+    quorumAgainst: BigNumberish;
+  }
+  export enum Direction {
+    AGAINST = 0,
+    FOR = 1,
+  }
+  export interface ProposalVote {
+    proposalId: number;
+    proposalVersion: number;
+    votingPower: BigNumberish;
+    direction: Direction;
+  }
+  export interface ProposeMessage {
+    round: string;
+    authStrategy: string;
+    usedProposingStrategies: GovPowerUserStrategy[];
+    requestedAssets: PackedAsset[];
+    metadataUri: string;
+  }
+  export interface VoteMessage {
+    round: string;
+    authStrategy: string;
+    usedVotingStrategies: GovPowerUserStrategy[];
+    proposalVotes: ProposalVote[];
+  }
+  export interface EVMSigProposeMessage extends ProposeMessage {
+    proposer: string;
+    salt: string | number;
+  }
+  export interface EVMSigVoteMessage extends VoteMessage {
+    voter: string;
+    salt: string | number;
+  }
+  export interface VoteConfig {
+    round: string;
+    votes: Infinite.ProposalVote[];
+  }
+  export interface ProposeConfig {
+    round: string;
+    metadataUri: string;
+    requestedAssets: Asset[];
+  }
+  export enum Action {
+    PROPOSE = 'PROPOSE',
+    VOTE = 'VOTE',
+  }
+  export interface ActionData {
+    [Action.PROPOSE]: EVMSigProposeMessage;
+    [Action.VOTE]: EVMSigVoteMessage;
+  }
+  export interface RequestParams<A extends Action = Action> {
+    address: string;
+    signature: string;
+    action: Action;
+    data: ActionData[A];
+  }
+  export type Contract = InfiniteRoundContract;
+  export interface ProposeCalldataConfig {
+    proposer: string;
+    metadataUri: string;
+    requestedAssets: PackedAsset[];
+    usedProposingStrategies: GovPowerUserStrategy[];
+  }
+  export interface VoteCalldataConfig {
+    voter: string;
+    proposalVotes: ProposalVote[];
+    usedVotingStrategies: GovPowerUserStrategy[];
+  }
+  export interface FinalizationConfig {
+    round: string;
   }
 }
 
@@ -197,9 +294,11 @@ export namespace Timed {
 //#region Round
 
 export enum RoundType {
+  INFINITE = 'INFINITE',
   TIMED = 'TIMED',
 }
 
+// TODO: Move to timed and update
 export enum RoundState {
   UNKNOWN,
   CANCELLED,
@@ -211,8 +310,8 @@ export enum RoundState {
   COMPLETE,
 }
 
+// TODO: These are stale
 export enum RoundEventState {
-  // TODO: Rename to awaiting configuration.
   AWAITING_REGISTRATION = 'AWAITING_REGISTRATION',
   REGISTERED = 'REGISTERED',
   FINALIZED = 'FINALIZED',
@@ -220,22 +319,26 @@ export enum RoundEventState {
 }
 
 export interface RoundConfigs<CS extends Custom | void = void> {
+  [RoundType.INFINITE]: Infinite.Config<CS>;
   [RoundType.TIMED]: Timed.Config<CS>;
 }
 
 export interface RoundConfigStruct {
+  [RoundType.INFINITE]: Infinite.ConfigStruct;
   [RoundType.TIMED]: Timed.ConfigStruct;
 }
 
 export interface RoundContract {
+  [RoundType.INFINITE]: Infinite.Contract;
   [RoundType.TIMED]: Timed.Contract;
 }
 
 export interface GetRoundStateConfig {
+  [RoundType.INFINITE]: Pick<Infinite.ConfigStruct, 'startTimestamp'>;
   [RoundType.TIMED]: Pick<
-    Timed.ConfigStruct,
-    'proposalPeriodStartTimestamp' | 'proposalPeriodDuration' | 'votePeriodDuration'
-  >;
+  Timed.ConfigStruct,
+  'proposalPeriodStartTimestamp' | 'proposalPeriodDuration' | 'votePeriodDuration'
+>;
 }
 
 export interface GetRoundStateParams<T extends RoundType = RoundType> {

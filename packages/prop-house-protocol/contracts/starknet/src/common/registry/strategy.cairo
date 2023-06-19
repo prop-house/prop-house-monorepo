@@ -1,4 +1,3 @@
-use core::result::ResultTrait;
 use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use starknet::contract_address::Felt252TryIntoContractAddress;
 use starknet::{ContractAddressIntoFelt252, ContractAddress};

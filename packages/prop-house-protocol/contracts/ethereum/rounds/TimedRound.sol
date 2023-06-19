@@ -14,8 +14,8 @@ contract TimedRound is ITimedRound, AssetRound {
     using { AssetHelper.pack } for Asset;
     using { AssetHelper.packMany } for Asset[];
 
-    /// @notice The amount of time before an award provider can reclaim unclaimed awards
-    uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
+    /// @notice The amount of time before an asset provider can reclaim unclaimed assets
+    uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 4 weeks;
 
     /// @notice Maximum winner count for this strategy
     uint256 public constant MAX_WINNER_COUNT = 25;
@@ -175,7 +175,7 @@ contract TimedRound is ITimedRound, AssetRound {
         // prettier-ignore
         // Reclamation is only available when the round has been cancelled OR
         // the round has been finalized and is in the reclamation period
-        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
+        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_ASSETS_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);

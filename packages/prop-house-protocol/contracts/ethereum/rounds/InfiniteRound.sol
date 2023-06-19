@@ -16,8 +16,8 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// The maximum depth of the winner merkle tree
     uint256 public constant MAX_WINNER_TREE_DEPTH = 10;
 
-    /// @notice The amount of time before an award provider can reclaim unclaimed awards
-    uint256 public constant RECLAIM_UNCLAIMED_AWARD_AFTER = 8 weeks;
+    /// @notice The amount of time before an asset provider can reclaim unclaimed assets
+    uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 4 weeks;
 
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
@@ -122,11 +122,24 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         emit RoundCancelled();
     }
 
-    /// @notice Finalize the round by consuming the final winner count from
-    /// Starknet and validating that all winners have been processed.
-    /// @param winnerCount The final number of winners in the round
-    function finalize(uint256 winnerCount) external {
+    /// @notice Start the round finalization process
+    function startFinalization() external payable onlyRoundManager {
         if (state != RoundState.Active) {
+            revert FINALIZATION_NOT_AVAILABLE();
+        }
+        state = RoundState.FinalizationPending;
+
+        // Finalize the round on Starknet
+        _notifyFinalizeRound();
+
+        emit RoundFinalizationStarted();
+    }
+
+    /// @notice Complete round finalization by consuming the final winner count
+    /// from Starknet and validating that all winners have been processed.
+    /// @param winnerCount The final number of winners in the round
+    function completeFinalization(uint256 winnerCount) external {
+        if (state != RoundState.FinalizationPending) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
         if (winnerCount != currentWinnerCount) {
@@ -145,20 +158,20 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         emit RoundFinalized();
     }
 
-    /// @notice Claim many round award assets to a custom recipient
+    /// @notice Claim one or more round award assets to a custom recipient
     /// @param recipient The asset recipient
     /// @param proposalId The winning proposal ID
     /// @param assets The assets to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
-    function claimManyTo(address recipient, uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
+    function claimTo(address recipient, uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
         _claimManyTo(recipient, proposalId, assets, proof);
     }
 
-    /// @notice Claim many round award assets to the caller
+    /// @notice Claim one or more round award assets to the caller
     /// @param proposalId The winning proposal ID
     /// @param assets The assets to claim
     /// @param proof The merkle proof used to verify the validity of the asset payout
-    function claimMany(uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
+    function claim(uint256 proposalId, Asset[] calldata assets, IncrementalTreeProof calldata proof) external {
         _claimManyTo(msg.sender, proposalId, assets, proof);
     }
 
@@ -169,7 +182,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         // prettier-ignore
         // Reclamation is only available when the round has been cancelled OR
         // the round has been finalized and is in the reclamation period
-        if (state == RoundState.Active || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_AWARD_AFTER)) {
+        if (state != RoundState.Cancelled || (state == RoundState.Finalized && block.timestamp - roundFinalizedAt < RECLAIM_UNCLAIMED_ASSETS_AFTER)) {
             revert RECLAMATION_NOT_AVAILABLE();
         }
         _reclaimTo(recipient, assets);
@@ -206,7 +219,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         payload[6] = config.quorumFor;
         payload[7] = config.quorumAgainst;
 
-        payload[9] = config.proposalThreshold;
+        payload[8] = config.proposalThreshold;
 
         uint256 offset = 9;
         (payload, offset) = _addStrategies(payload, offset, config.proposingStrategies, config.proposingStrategyParamsFlat);
@@ -230,7 +243,6 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
 
         emit RoundRegistered(
-            config.awards,
             config.proposalThreshold,
             config.proposingStrategies,
             config.proposingStrategyParamsFlat,
@@ -293,6 +305,16 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @param packed The packed assets being claimed
     function _computeLeaf(uint256 proposalId, address user, PackedAsset[] memory packed) internal pure returns (bytes32) {
         return keccak256(abi.encode(proposalId, user, keccak256(abi.encode(packed)).mask250()));
+    }
+
+    /// @dev Route a round finalization call to the round contract on Starknet
+    /// `payload[0]` - Round address
+    /// `payload[2]` - Empty calldata array length
+    function _notifyFinalizeRound() internal {
+        uint256[] memory payload = new uint256[](3);
+        payload[1] = Selector.FINALIZE_ROUND;
+
+        _callStarknetRound(payload);
     }
 
     /// @dev Returns the largest of two numbers.

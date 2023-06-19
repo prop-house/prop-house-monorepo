@@ -32,7 +32,7 @@ interface ITimedRound {
     /// @notice Thrown when finalization is attempted and the round is not active
     error FINALIZATION_NOT_AVAILABLE();
 
-    /// @notice Thrown when award reclamation is not available
+    /// @notice Thrown when asset reclamation is not available
     error RECLAMATION_NOT_AVAILABLE();
 
     /// @notice Thrown when the remaining proposal period is too short

@@ -1,24 +1,22 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import {
-  AssetType,
   Custom,
   RoundType,
-  Timed,
+  Infinite,
   RoundChainConfig,
-  RoundState,
-  RoundEventState,
   GetRoundStateParams,
+  RoundState,
 } from '../../types';
-import { TimedRound__factory } from '@prophouse/protocol';
+import { InfiniteRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
+import { isAddress } from '@ethersproject/address';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';
 import { Account, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
-import { isAddress } from '@ethersproject/address';
 
-export class TimedRound<CS extends void | Custom = void> extends RoundBase<RoundType.TIMED, CS> {
+export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<RoundType.INFINITE, CS> {
   // Storage variable name helpers
   protected readonly _SPENT_VOTING_POWER_STORE = 'spent_voting_power_store';
   protected readonly _ROUND_TIMESTAMPS_STORE = 'round_timestamps_store';
@@ -29,27 +27,16 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   // prettier-ignore
   public static CONFIG_STRUCT_TYPE = `
     tuple(
-      tuple(
-        uint8 assetType,
-        address token,
-        uint256 identifier,
-        uint256 amount
-      )[] awards,
       uint248 proposalThreshold,
       uint256[] proposingStrategies,
       uint256[] proposingStrategyParamsFlat,
       uint256[] votingStrategies,
       uint256[] votingStrategyParamsFlat,
-      uint40 proposalPeriodStartTimestamp,
-      uint40 proposalPeriodDuration,
+      uint40 startTimestamp,
       uint40 votePeriodDuration,
-      uint16 winnerCount
+      uint248 quorumFor,
+      uint248 quorumAgainst
   )`;
-
-  /**
-   * The minimum proposal submission period duration
-   */
-  public static MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
 
   /**
    * The minimum vote period duration
@@ -57,24 +44,22 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
 
   /**
-   * Maximum winner count for this strategy
-   */
-  public static MAX_WINNER_COUNT = 25;
-
-  /**
-   * EIP712 timed round types
+   * EIP712 infinite round types
    */
   public static readonly EIP_712_TYPES = {
     ...super.EIP_712_TYPES,
     ProposalVote: [
       { name: 'proposalId', type: 'uint32' },
+      { name: 'proposalVersion', type: 'uint16' },
       { name: 'votingPower', type: 'uint256' },
+      { name: 'direction', type: 'uint8' },
     ],
     Propose: [
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
       { name: 'metadataUri', type: 'string' },
+      { name: 'requestedAssets', type: 'Asset[]' },
       { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
     ],
@@ -83,6 +68,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
       { name: 'proposalId', type: 'uint32' },
+      { name: 'requestedAssets', type: 'Asset[]' },
       { name: 'metadataUri', type: 'string' },
       { name: 'salt', type: 'uint256' },
     ],
@@ -104,111 +90,62 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   };
 
   /**
-   * Returns a `TimedRound` instance for the provided chain configuration
+   * Returns a `InfiniteRound` instance for the provided chain configuration
    * @param config The chain config
    */
   public static for<CS extends void | Custom = void>(config: RoundChainConfig<CS>) {
-    return new TimedRound<CS>(config);
+    return new InfiniteRound<CS>(config);
   }
 
   /**
    * Given the provided params, return the round state
-   * @param params The information required to get the round state
+   * @param _params The information required to get the round state
    */
-  // prettier-ignore
-  public static getState(params: GetRoundStateParams<RoundType.TIMED>) {
-    const { eventState, config } = params;
-    if (!eventState || !config) {
-      return RoundState.UNKNOWN;
-    }
-    const eventStateLookup: Record<string, RoundState> = {
-      [RoundEventState.AWAITING_REGISTRATION]: RoundState.AWAITING_REGISTRATION,
-      [RoundEventState.CANCELLED]: RoundState.CANCELLED,
-    };
-    if (eventStateLookup[eventState]) {
-      return eventStateLookup[eventState];
-    }
-
-    const timestamp = BigNumber.from(this._TIMESTAMP_SECS);
-    const proposalPeriodEndTimestamp = BigNumber.from(config.proposalPeriodStartTimestamp).add(
-      config.proposalPeriodDuration,
-    );
-    if (timestamp.lt(config.proposalPeriodStartTimestamp)) {
-      return RoundState.NOT_STARTED;
-    }
-    if (timestamp.lt(proposalPeriodEndTimestamp)) {
-      return RoundState.IN_PROPOSING_PERIOD;
-    }
-    if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration))) {
-      return RoundState.IN_VOTING_PERIOD;
-    }
-    if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration).add(Time.toSeconds(56, TimeUnit.Days)))) {
-      return RoundState.IN_CLAIMING_PERIOD;
-    }
-    return RoundState.COMPLETE;
+  public static getState(_params: GetRoundStateParams<RoundType.INFINITE>): RoundState {
+    throw new Error('Method not implemented.');
   }
 
   /**
    * The Starknet relayer path
    */
   public get relayerPath() {
-    return 'timed_round';
+    return 'infinite_round';
   }
 
   /**
    * The round type
    */
   public get type() {
-    return RoundType.TIMED as const;
+    return RoundType.INFINITE as const;
   }
 
   /**
    * The round implementation contract address
    */
   public get impl() {
-    return this._addresses.evm.round.timed;
+    return this._addresses.evm.round.infinite;
   }
 
   /**
    * The round implementation contract interface
    */
   public get interface() {
-    return TimedRound__factory.createInterface();
+    return InfiniteRound__factory.createInterface();
   }
 
   /**
    * Convert the provided round configuration to a config struct
-   * @param config The timed round config
+   * @param config The infinite round config
    */
-  public async getConfigStruct(config: Timed.Config<CS>): Promise<Timed.ConfigStruct> {
-    // prettier-ignore
-    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < TimedRound._TIMESTAMP_SECS + TimedRound.MIN_PROPOSAL_PERIOD_DURATION) {
-      throw new Error('Remaining proposal period duration is too short');
-    }
-    if (config.votePeriodDurationSecs < TimedRound.MIN_VOTE_PERIOD_DURATION) {
+  public async getConfigStruct(config: Infinite.Config<CS>): Promise<Infinite.ConfigStruct> {
+    if (config.votePeriodDurationSecs < InfiniteRound.MIN_VOTE_PERIOD_DURATION) {
       throw new Error('Vote period duration is too short');
     }
-    if (config.winnerCount == 0) {
-      throw new Error('Round must have at least one winner');
+    if (BigNumber.from(config.quorumFor).isZero()) {
+      throw new Error('No FOR quorum provided');
     }
-    if (config.winnerCount > TimedRound.MAX_WINNER_COUNT) {
-      throw new Error(
-        `Winner count too high. Maximum winners: ${TimedRound.MAX_WINNER_COUNT}. Got: ${config.winnerCount}.`,
-      );
-    }
-    if (config.awards.length !== 1 && config.awards.length !== config.winnerCount) {
-      throw new Error(
-        `Must specify a single award asset to split or one asset per winner. Winners: ${config.winnerCount}. Awards: ${config.awards.length}.`,
-      );
-    }
-    if (config.awards.length === 1 && config.winnerCount > 1) {
-      if (config.awards[0].assetType === AssetType.ERC721) {
-        throw new Error(`Cannot split ERC721 between multiple winners`);
-      }
-      // prettier-ignore
-      if (!BigNumber.from(config.awards[0].amount).mod(config.winnerCount).eq(0)) {
-        throw new Error(`Award must split equally between winners`);
-      }
+    if (BigNumber.from(config.quorumAgainst).isZero()) {
+      throw new Error('No AGAINST quorum provided');
     }
     const proposalThreshold = BigNumber.from(config.proposalThreshold ?? 0);
     if (proposalThreshold.gt(0) && !config.proposingStrategies?.length) {
@@ -226,16 +163,15 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     ]);
 
     return {
-      awards: config.awards.map(award => encoding.getAssetStruct(award)),
       proposalThreshold,
       proposingStrategies: proposingStrategies.map(s => s.address),
       proposingStrategyParamsFlat: encoding.flatten2DArray(proposingStrategies.map(s => s.params)),
       votingStrategies: votingStrategies.map(s => s.address),
       votingStrategyParamsFlat: encoding.flatten2DArray(votingStrategies.map(s => s.params)),
-      proposalPeriodStartTimestamp: config.proposalPeriodStartUnixTimestamp,
-      proposalPeriodDuration: config.proposalPeriodDurationSecs,
+      startTimestamp: config.startUnixTimestamp,
       votePeriodDuration: config.votePeriodDurationSecs,
-      winnerCount: config.winnerCount,
+      quorumFor: config.quorumFor,
+      quorumAgainst: config.quorumAgainst,
     };
   }
 
@@ -243,18 +179,18 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Estimate the round registration message fee cost (in wei)
    * @param configStruct The round configuration struct
    */
-  public async estimateMessageFee(configStruct: Timed.ConfigStruct) {
+  public async estimateMessageFee(configStruct: Infinite.ConfigStruct) {
     const rawPayload = await this.getContract(this.impl).getRegistrationPayload(configStruct);
     const payload = [
       encoding.hexPadLeft(ADDRESS_ONE).toLowerCase(),
       ...rawPayload.slice(1).map(p => p.toString()),
     ];
-    payload[5] = configStruct.proposalPeriodStartTimestamp.toString();
-    payload[6] = configStruct.proposalPeriodDuration.toString();
-    payload[7] = configStruct.votePeriodDuration.toString();
-    payload[8] = configStruct.winnerCount.toString();
+    payload[4] = configStruct.startTimestamp.toString();
+    payload[5] = configStruct.votePeriodDuration.toString();
+    payload[6] = configStruct.quorumFor.toString();
+    payload[7] = configStruct.quorumAgainst.toString();
 
-    payload[9] = configStruct.proposalThreshold.toString();
+    payload[8] = configStruct.proposalThreshold.toString();
 
     const response = (await this._starknet.estimateMessageFee({
       from_address: this._addresses.evm.messenger,
@@ -269,34 +205,34 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
-   * ABI-encode the timed round configuration
-   * @param config The timed round config
+   * ABI-encode the infinite round configuration
+   * @param config The infinite round config
    */
-  public encode(configStruct: Timed.ConfigStruct): string {
-    return defaultAbiCoder.encode([TimedRound.CONFIG_STRUCT_TYPE], [configStruct]);
+  public encode(configStruct: Infinite.ConfigStruct): string {
+    return defaultAbiCoder.encode([InfiniteRound.CONFIG_STRUCT_TYPE], [configStruct]);
   }
 
   /**
    * Given the provided params, return the round state
    * @param params The information required to get the round state
    */
-  public getState(params: GetRoundStateParams<RoundType.TIMED>) {
-    return TimedRound.getState(params);
+  public getState(params: GetRoundStateParams<RoundType.INFINITE>) {
+    return InfiniteRound.getState(params);
   }
 
   /**
-   * Given a round address, return a `TimedRound` contract instance
+   * Given a round address, return a `InfiniteRound` contract instance
    * @param address The round address
    */
   public getContract(address: string) {
-    return TimedRound__factory.connect(address, this._evm);
+    return InfiniteRound__factory.connect(address, this._evm);
   }
 
   /**
    * Sign a propose message and return the proposer, signature, and signed message
    * @param config The round address and proposal metadata URI
    */
-  public async signProposeMessage(config: Timed.ProposeConfig) {
+  public async signProposeMessage(config: Infinite.ProposeConfig) {
     const address = await this.signer.getAddress();
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -307,13 +243,17 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
       proposer: address,
-      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.infinite.sig),
+      requestedAssets: encoding.compressAssets(config.requestedAssets).map(([assetId, amount]) => ({
+        assetId,
+        amount,
+      })),
       usedProposingStrategies: [], // TODO: Add SDK support for proposing strategies
       salt: this.generateSalt(),
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
-      this.pick(TimedRound.EIP_712_TYPES, ['Propose', 'UserStrategy']),
+      this.pick(InfiniteRound.EIP_712_TYPES, ['Propose', 'UserStrategy', 'Asset']),
       message,
     );
     return {
@@ -327,12 +267,12 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Sign a propose message and submit it to the Starknet relayer
    * @param config The round address and proposal metadata URI
    */
-  public async proposeViaSignature(config: Timed.ProposeConfig) {
+  public async proposeViaSignature(config: Infinite.ProposeConfig) {
     const { address, signature, message } = await this.signProposeMessage(config);
-    return this.sendToRelayer<Timed.RequestParams>({
+    return this.sendToRelayer<Infinite.RequestParams>({
       address,
       signature,
-      action: Timed.Action.PROPOSE,
+      action: Infinite.Action.PROPOSE,
       data: message,
     });
   }
@@ -341,7 +281,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Sign proposal votes and return the voter, signature, and signed message
    * @param config The round address and proposal vote(s)
    */
-  public async signVoteMessage(config: Timed.VoteConfig) {
+  public async signVoteMessage(config: Infinite.VoteConfig) {
     const address = await this.signer.getAddress();
     const suppliedVotingPower = config.votes.reduce(
       (acc, { votingPower }) => acc.add(votingPower),
@@ -381,7 +321,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       round: encoding.hexPadLeft(config.round),
       voter: address,
       proposalVotes: config.votes,
-      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.infinite.sig),
       usedVotingStrategies: nonZeroStrategyVotingPowers.map(({ strategy }, i) => ({
         id: strategy.id,
         userParams: userParams[i],
@@ -390,7 +330,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     };
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
-      this.pick(TimedRound.EIP_712_TYPES, ['Vote', 'ProposalVote', 'UserStrategy']),
+      this.pick(InfiniteRound.EIP_712_TYPES, ['Vote', 'ProposalVote', 'UserStrategy']),
       message,
     );
     return {
@@ -404,12 +344,12 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Sign proposal votes and submit them to the Starknet relayer
    * @param config The round address and proposal vote(s)
    */
-  public async voteViaSignature(config: Timed.VoteConfig) {
+  public async voteViaSignature(config: Infinite.VoteConfig) {
     const { address, signature, message } = await this.signVoteMessage(config);
-    return this.sendToRelayer<Timed.RequestParams>({
+    return this.sendToRelayer<Infinite.RequestParams>({
       address,
       signature,
-      action: Timed.Action.VOTE,
+      action: Infinite.Action.VOTE,
       data: message,
     });
   }
@@ -421,11 +361,11 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    */
   public async relaySignedProposePayload(
     account: Account,
-    params: Omit<Timed.RequestParams<Timed.Action.PROPOSE>, 'action'>,
+    params: Omit<Infinite.RequestParams<Infinite.Action.PROPOSE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: Timed.Action.PROPOSE,
+      action: Infinite.Action.PROPOSE,
     };
     const call = this.createEVMSigAuthCall(payload, 'authenticate_propose', this.getProposeCalldata(params.data));
     const fee = await account.estimateFee(call);
@@ -441,11 +381,11 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    */
   public async relaySignedVotePayload(
     account: Account,
-    params: Omit<Timed.RequestParams<Timed.Action.VOTE>, 'action'>,
+    params: Omit<Infinite.RequestParams<Infinite.Action.VOTE>, 'action'>,
   ) {
     const payload = {
       ...params,
-      action: Timed.Action.VOTE,
+      action: Infinite.Action.VOTE,
     };
 
     // TODO: Avoid calling these twice...
@@ -472,43 +412,21 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
-   * Finalize the round by tallying votes and submitting a result via the execution strategy
-   * @param account The Starknet account used to submit the transaction
-   * @param config The round finalization config
-   */
-  public async finalizeRound(account: Account, config: Timed.FinalizationConfig) {
-    const calldata = [config.awards.length.toString()].concat(
-      config.awards.map(a => {
-        const id = splitUint256.SplitUint256.fromUint(
-          BigNumber.from(a.assetId).toBigInt(),
-        );
-        const amount = splitUint256.SplitUint256.fromUint(
-          BigNumber.from(a.amount).toBigInt(),
-        );
-        return [id.low, id.high, amount.low, amount.high];
-      }).flat(),
-    );
-    const call = {
-      contractAddress: config.round,
-      entrypoint: 'finalize_round',
-      calldata: calldata,
-    };
-    const fee = await account.estimateFee(call);
-    return account.execute(call, undefined, {
-      maxFee: fee.suggestedMaxFee,
-    });
-  }
-
-  /**
    * Generates a calldata array used to submit a proposal through an authenticator
    * @param config The information required to generate the propose calldata
    */
-  public getProposeCalldata(config: Timed.ProposeCalldataConfig): string[] {
+  public getProposeCalldata(config: Infinite.ProposeCalldataConfig): string[] {
     const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     return [
       config.proposer,
       `0x${metadataUri.values.length.toString(16)}`,
       ...metadataUri.values,
+      `0x${config.requestedAssets.length.toString(16)}`,
+      ...config.requestedAssets.map(a => {
+        const id = splitUint256.SplitUint256.fromUint(BigNumber.from(a.assetId).toBigInt());
+        const amount = splitUint256.SplitUint256.fromUint(BigNumber.from(a.amount).toBigInt());
+        return [id.low, id.high, amount.low, amount.high];
+      }).flat(),
       `0x${config.usedProposingStrategies.length.toString(16)}`,
       ...config.usedProposingStrategies.flatMap(({ id, userParams }) => 
         [id, userParams.length, ...userParams],
@@ -520,13 +438,13 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Generates a calldata array used to cast a vote through an authenticator
    * @param config The information required to generate the vote calldata
    */
-  public getVoteCalldata(config: Timed.VoteCalldataConfig): string[] {
+  public getVoteCalldata(config: Infinite.VoteCalldataConfig): string[] {
     return [
       config.voter,
       `0x${config.proposalVotes.length.toString(16)}`,
-      ...config.proposalVotes.flatMap(({ proposalId, votingPower }) => {
+      ...config.proposalVotes.flatMap(({ proposalId, proposalVersion, votingPower, direction }) => {
         const p = splitUint256.SplitUint256.fromUint(BigInt(votingPower.toString()));
-        return [proposalId, p.low, p.high];
+        return [proposalId, proposalVersion, p.low, p.high, direction];
       }),
       `0x${config.usedVotingStrategies.length.toString(16)}`,
       ...config.usedVotingStrategies.flatMap(({ id, userParams }) => 
@@ -541,7 +459,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param entrypoint The function selector
    * @param calldata Calldata specific to the entrypoint
    */
-  public createEVMSigAuthCall(params: Timed.RequestParams, entrypoint: string, calldata: (string | number)[]) {
+  public createEVMSigAuthCall(params: Infinite.RequestParams, entrypoint: string, calldata: (string | number)[]) {
     const { round, authStrategy, salt } = params.data;
     const { r, s, v } = encoding.getRSVFromSig(params.signature);
     const rawSalt = splitUint256.SplitUint256.fromHex(`0x${salt.toString(16)}`);

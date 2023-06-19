@@ -191,6 +191,8 @@ mod InfiniteRound {
         }
 
         fn finalize_round() {
+            // Round finalizations can only come from an origin chain round
+            Round::assert_caller_is_deployer();
             _assert_round_active();
 
             let winner_count = _winner_count::read();

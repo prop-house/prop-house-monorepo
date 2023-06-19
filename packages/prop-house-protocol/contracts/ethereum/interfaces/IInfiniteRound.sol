@@ -1,29 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity >=0.8.17;
 
-import { Asset } from '../lib/types/Common.sol';
-
 /// @notice Interface implemented by the infinite round
 interface IInfiniteRound {
     /// @notice All possible round states
     enum RoundState {
         Active,
         Cancelled,
+        FinalizationPending,
         Finalized
     }
 
     /// @notice The infinite round configuration
     struct RoundConfig {
-        Asset[] awards;
         uint248 proposalThreshold;
         uint256[] proposingStrategies;
         uint256[] proposingStrategyParamsFlat;
         uint256[] votingStrategies;
         uint256[] votingStrategyParamsFlat;
-        uint40 votePeriodDuration;
         uint40 startTimestamp;
-        uint248 quorumAgainst;
+        uint40 votePeriodDuration;
         uint248 quorumFor;
+        uint248 quorumAgainst;
     }
 
     /// @notice Thrown when the provided winners have already been processed.
@@ -38,7 +36,7 @@ interface IInfiniteRound {
     /// @notice Thrown when attempting to finalize with unprocessed winners
     error MUST_PROCESS_REMAINING_WINNERS();
 
-    /// @notice Thrown when award reclamation is not available
+    /// @notice Thrown when asset reclamation is not available
     error RECLAMATION_NOT_AVAILABLE();
 
     /// @notice Thrown when the vote period duration is too short
@@ -57,18 +55,16 @@ interface IInfiniteRound {
     error NO_VOTING_STRATEGIES_PROVIDED();
 
     /// @notice Emitted when the round is registered on L2
-    /// @param awards The awards offered to round winners
     /// @param proposalThreshold The proposal threshold
     /// @param proposingStrategies The proposing strategy addresses
     /// @param proposingStrategyParamsFlat The flattened proposing strategy params
     /// @param votingStrategies The voting strategy addresses
     /// @param votingStrategyParamsFlat The flattened voting strategy params
-    /// @param startTimestamp The timestamp at which the round starts
     /// @param votePeriodDuration The vote period duration in seconds
+    /// @param startTimestamp The timestamp at which the round starts
     /// @param quorumFor The number of votes required to approve a proposal
     /// @param quorumAgainst The number of votes required to reject a proposal
     event RoundRegistered(
-        Asset[] awards,
         uint248 proposalThreshold,
         uint256[] proposingStrategies,
         uint256[] proposingStrategyParamsFlat,
@@ -76,12 +72,15 @@ interface IInfiniteRound {
         uint256[] votingStrategyParamsFlat,
         uint40 startTimestamp,
         uint40 votePeriodDuration,
-        uint256 quorumFor,
-        uint256 quorumAgainst
+        uint248 quorumFor,
+        uint248 quorumAgainst
     );
 
     /// @notice Emitted when the addional winners are reported
     event WinnersUpdated(uint64 winnerCount);
+
+    /// @notice Emitted when round finalization is started
+    event RoundFinalizationStarted();
 
     /// @notice Emitted when the round is finalized
     event RoundFinalized();

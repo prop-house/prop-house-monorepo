@@ -5,17 +5,26 @@ import {
   RoundChainConfig,
   RoundConfigStruct,
   GetRoundStateParams,
+  Newable,
 } from '../types';
-import { RoundBase, TimedRound } from './implementations';
+import { RoundBase, InfiniteRound, TimedRound } from './implementations';
 
 export class RoundManager<CS extends void | Custom = void> {
-  private static readonly _all = new Map([[RoundType.TIMED, TimedRound]]);
+  private static readonly _all = new Map([
+    [RoundType.INFINITE, InfiniteRound],
+    [RoundType.TIMED, TimedRound],
+  ]);
+  private readonly _infinite: InfiniteRound<CS>;
   private readonly _timed: TimedRound<CS>;
   private readonly _all: Map<RoundType, RoundBase<RoundType, CS>>;
 
   constructor(config: RoundChainConfig<CS>) {
+    this._infinite = InfiniteRound.for<CS>(config);
     this._timed = TimedRound.for<CS>(config);
-    this._all = new Map([[this._timed.type, this._timed]]);
+    this._all = new Map([
+      [this._infinite.type, this._infinite],
+      [this._timed.type, this._timed],
+    ] as [RoundType, RoundBase<RoundType, CS>][]);
   }
 
   /**
@@ -32,7 +41,14 @@ export class RoundManager<CS extends void | Custom = void> {
    * @param params The params required to get the round state
    */
   public static getState<RT extends RoundType>(type: RT | string, params: GetRoundStateParams<RT>) {
-    return this.get(type as RT).getState(params);
+    return this.get(type as RT).getState(params as any); // TODO
+  }
+
+  /**
+   * Infinite round utilities
+   */
+  public get infinite() {
+    return this._infinite;
   }
 
   /**

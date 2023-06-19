@@ -1,25 +1,24 @@
 use prop_house::common::utils::array::ArrayTraitExt;
-use prop_house::rounds::timed::round::TimedRound;
+use prop_house::rounds::infinite::round::InfiniteRound;
+use prop_house::rounds::infinite::config::Proposal;
 use array::{ArrayTrait, SpanTrait};
+use traits::{TryInto, Into};
 use option::OptionTrait;
-use traits::TryInto;
 
 #[test]
 #[available_gas(100000000)]
-fn test_timed_round_decode_params() {
-    let award_hash = 0x311d393f323bcfd84ef7611293f67f824ce50108ed05c2e9b112064a7910420;
-    let proposal_period_start_timestamp = 1686714463;
-    let proposal_period_duration = 14400;
+fn test_infinite_round_decode_params() {
+    let start_timestamp = 1686714463;
     let vote_period_duration = 7200;
-    let winner_count = 5;
+    let quorum_for = 10;
+    let quorum_against = 5;
     let proposal_threshold = 1;
 
     let mut round_params = Default::default();
-    round_params.append(award_hash);
-    round_params.append(proposal_period_start_timestamp);
-    round_params.append(proposal_period_duration);
+    round_params.append(start_timestamp);
     round_params.append(vote_period_duration);
-    round_params.append(winner_count);
+    round_params.append(quorum_for);
+    round_params.append(quorum_against);
     round_params.append(proposal_threshold);
 
     // No proposing strategies
@@ -42,25 +41,12 @@ fn test_timed_round_decode_params() {
     round_params.append_all(proposing_strategies.span());
     round_params.append_all(voting_strategies.span());
 
-    let decoded_params = TimedRound::_decode_param_array(round_params.span());
-    assert(decoded_params.award_hash == *round_params.at(0), 'wrong award hash');
-    assert(
-        decoded_params.proposal_period_start_timestamp == (*round_params.at(1)).try_into().unwrap(),
-        'wrong start timestamp'
-    );
-    assert(
-        decoded_params.proposal_period_duration == (*round_params.at(2)).try_into().unwrap(),
-        'wrong end timestamp'
-    );
-    assert(
-        decoded_params.vote_period_duration == (*round_params.at(3)).try_into().unwrap(),
-        'wrong vote period end timestamp'
-    );
-    assert(
-        decoded_params.winner_count == (*round_params.at(4)).try_into().unwrap(),
-        'wrong winner count'
-    );
-    assert(decoded_params.proposal_threshold == *round_params.at(5), 'wrong proposal threshold');
+    let decoded_params = InfiniteRound::_decode_param_array(round_params.span());
+    assert(decoded_params.start_timestamp.into() == *round_params.at(0), 'wrong start timestamp');
+    assert(decoded_params.vote_period.into() == *round_params.at(1), 'wrong vote period');
+    assert(decoded_params.quorum_for.into() == *round_params.at(2), 'wrong quorum for');
+    assert(decoded_params.quorum_against.into() == *round_params.at(3), 'wrong quorum against');
+    assert(decoded_params.proposal_threshold.into() == *round_params.at(4), 'wrong proposal threshold');
     assert(decoded_params.proposing_strategies.len() == 0, 'wrong proposing strategy length');
     assert(decoded_params.voting_strategies.len() == 1, 'wrong voting strategy length');
 }
