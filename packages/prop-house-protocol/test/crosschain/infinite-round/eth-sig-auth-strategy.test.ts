@@ -2,8 +2,6 @@ import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/s
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import {
   infiniteRoundSetup,
-  generateClaimLeaf,
-  generateClaimMerkleTree,
   CONTRACT_URI,
   METADATA_URI,
   ONE_DAY_SEC,
@@ -34,9 +32,10 @@ import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/
 import { BigNumber, BigNumberish, constants } from 'ethers';
 import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
+import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
-import { Account, hash } from 'starknet';
+import { Account } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -108,7 +107,7 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
         Promise.resolve({
           govPowerStrategies: [
             {
-              id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+              id: `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`,
               type: GQLGovPowerStrategyType.Vanilla,
               address: vanillaGovPowerStrategy.address,
               params: [],

@@ -10,7 +10,7 @@ import {
 import { RoundBase, InfiniteRound, TimedRound } from './implementations';
 
 export class RoundManager<CS extends void | Custom = void> {
-  private static readonly _all = new Map([
+  private static readonly _all = new Map<RoundType, Newable<RoundBase<RoundType>>>([
     [RoundType.INFINITE, InfiniteRound],
     [RoundType.TIMED, TimedRound],
   ]);
@@ -41,7 +41,7 @@ export class RoundManager<CS extends void | Custom = void> {
    * @param params The params required to get the round state
    */
   public static getState<RT extends RoundType>(type: RT | string, params: GetRoundStateParams<RT>) {
-    return this.get(type as RT).getState(params as any); // TODO
+    return (this.get(type as RT) as any).getState(params); // TODO
   }
 
   /**

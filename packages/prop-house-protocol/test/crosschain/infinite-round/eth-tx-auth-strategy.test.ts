@@ -34,11 +34,12 @@ import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
+import { BigNumber, BigNumberish, constants } from 'ethers';
 import hre, { starknet, ethers, network } from 'hardhat';
 import { StarknetContract } from 'hardhat/types';
+import { poseidonHashMany } from 'micro-starknet';
+import { Account, stark } from 'starknet';
 import { solidity } from 'ethereum-waffle';
-import { BigNumber, BigNumberish, constants } from 'ethers';
-import { Account, hash, stark } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -113,14 +114,14 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const vanillaGovPowerStrategy = await config.starknetSigner.deploy(
       vanillaGovPowerStrategyFactory,
     );
-    vanillaGovPowerStrategyId = hash.computeHashOnElements([vanillaGovPowerStrategy.address]);
-
+    vanillaGovPowerStrategyId = `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`;
+  
     // Stub `getRoundVotingStrategies`
     gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
       Promise.resolve({
         govPowerStrategies: [
           {
-            id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+            id: vanillaGovPowerStrategyId,
             type: GQLGovPowerStrategyType.Vanilla,
             address: vanillaGovPowerStrategy.address,
             params: [],

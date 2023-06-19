@@ -113,8 +113,10 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
 
     /// @notice Cancel the infinite round
     /// @dev This function is only callable by the round manager
+    /// and is only available when the round is active and no
+    /// winners have been received.
     function cancel() external onlyRoundManager {
-        if (state != RoundState.Active) {
+        if (state != RoundState.Active || currentWinnerCount != 0) {
             revert CANCELLATION_NOT_AVAILABLE();
         }
         state = RoundState.Cancelled;

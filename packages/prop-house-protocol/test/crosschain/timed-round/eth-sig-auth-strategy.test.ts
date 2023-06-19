@@ -28,10 +28,11 @@ import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging } from '../../../typechain';
 import hre, { starknet, ethers, network } from 'hardhat';
+import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
 import { BigNumber, constants } from 'ethers';
-import { Account, hash } from 'starknet';
+import { Account } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -92,7 +93,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
         Promise.resolve({
           govPowerStrategies: [
             {
-              id: hash.computeHashOnElements([vanillaGovPowerStrategy.address]),
+              id: `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`,
               type: GQLGovPowerStrategyType.Vanilla,
               address: vanillaGovPowerStrategy.address,
               params: [],
