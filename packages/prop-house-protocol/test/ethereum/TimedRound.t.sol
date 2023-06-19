@@ -300,10 +300,6 @@ contract TimedRoundTest is TestUtil {
     function test_claim() public {
         uint256 amount = 1e18;
         Asset[] memory assets = erc20Asset(amount);
-
-        uint256 proposalId = 1;
-        uint256 position = 1;
-
         TimedRound round = TimedRound(
             alice.propHouse.createAndFundRoundOnExistingHouse(
                 house,
@@ -333,6 +329,9 @@ contract TimedRoundTest is TestUtil {
         proof[0] = 0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761;
         proof[1] = 0x68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf;
 
+        uint256 proposalId = 1;
+        uint256 position = 1;
+
         vm.prank(alice.addr);
         round.claim(proposalId, position, assets[0], proof);
 
@@ -342,10 +341,6 @@ contract TimedRoundTest is TestUtil {
     function test_duplicateClaimReverts() public {
         uint256 amount = 1e18;
         Asset[] memory assets = erc20Asset(amount);
-
-        uint256 proposalId = 1;
-        uint256 position = 1;
-
         TimedRound round = TimedRound(
             alice.propHouse.createAndFundRoundOnExistingHouse(
                 house,
@@ -366,6 +361,9 @@ contract TimedRoundTest is TestUtil {
         uint256[] memory payload = new uint256[](2);
         payload[0] = merkleRootLow;
         payload[1] = merkleRootHigh;
+
+        uint256 proposalId = 1;
+        uint256 position = 1;
 
         MockStarknetMessaging(starknetCore).mockSendMessageFromL2(0, uint160(address(round)), payload);
         round.finalize(merkleRootLow, merkleRootHigh);
@@ -384,10 +382,6 @@ contract TimedRoundTest is TestUtil {
     function test_claimFromWrongCallerReverts() public {
         uint256 amount = 1e18;
         Asset[] memory assets = erc20Asset(amount);
-
-        uint256 proposalId = 1;
-        uint256 position = 1;
-
         TimedRound round = TimedRound(
             alice.propHouse.createAndFundRoundOnExistingHouse(
                 house,
@@ -415,6 +409,9 @@ contract TimedRoundTest is TestUtil {
         bytes32[] memory proof = new bytes32[](2);
         proof[0] = 0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761;
         proof[1] = 0x68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf;
+
+        uint256 proposalId = 1;
+        uint256 position = 1;
 
         vm.expectRevert(abi.encodeWithSelector(IAssetRound.INVALID_MERKLE_PROOF.selector));
 
@@ -424,10 +421,6 @@ contract TimedRoundTest is TestUtil {
     function test_claimWithWrongAmountReverts() public {
         uint256 amount = 1e18;
         Asset[] memory assets = erc20Asset(amount);
-
-        uint256 proposalId = 1;
-        uint256 position = 1;
-
         TimedRound round = TimedRound(
             alice.propHouse.createAndFundRoundOnExistingHouse(
                 house,
@@ -455,6 +448,9 @@ contract TimedRoundTest is TestUtil {
         bytes32[] memory proof = new bytes32[](2);
         proof[0] = 0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761;
         proof[1] = 0x68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf;
+
+        uint256 proposalId = 1;
+        uint256 position = 1;
 
         vm.expectRevert(abi.encodeWithSelector(IAssetRound.INVALID_MERKLE_PROOF.selector));
 
@@ -467,10 +463,6 @@ contract TimedRoundTest is TestUtil {
     function test_claimWithWrongTokenReverts() public {
         uint256 amount = 1e18;
         Asset[] memory assets = erc20Asset(amount);
-
-        uint256 proposalId = 1;
-        uint256 position = 1;
-
         TimedRound round = TimedRound(
             alice.propHouse.createAndFundRoundOnExistingHouse(
                 house,
@@ -498,6 +490,9 @@ contract TimedRoundTest is TestUtil {
         bytes32[] memory proof = new bytes32[](2);
         proof[0] = 0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761;
         proof[1] = 0x68203f90e9d07dc5859259d7536e87a6ba9d345f2552b5b9de2999ddce9ce1bf;
+
+        uint256 proposalId = 1;
+        uint256 position = 1;
 
         vm.expectRevert(abi.encodeWithSelector(IAssetRound.INVALID_MERKLE_PROOF.selector));
 
