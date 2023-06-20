@@ -128,8 +128,11 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     }
 
     /// @notice Start the round finalization process
+    /// @dev This function is only callable by the round manager
+    /// and is only available when the round is active and at least
+    /// one winner has been received.
     function startFinalization() external payable onlyRoundManager {
-        if (state != RoundState.Active) {
+        if (state != RoundState.Active || currentWinnerCount == 0) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
         state = RoundState.FinalizationPending;
