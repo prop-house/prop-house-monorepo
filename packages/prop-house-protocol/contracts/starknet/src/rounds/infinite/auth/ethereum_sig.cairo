@@ -115,7 +115,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             );
             IInfiniteRoundDispatcher {
                 contract_address: round
-            }.propose(proposer, metadata_uri, requested_assets, used_proposing_strategies, );
+            }.propose(proposer, metadata_uri, requested_assets, used_proposing_strategies);
         }
 
         fn authenticate_edit_proposal(
@@ -142,7 +142,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             );
             IInfiniteRoundDispatcher {
                 contract_address: round
-            }.edit_proposal(proposer, proposal_id, metadata_uri, requested_assets, );
+            }.edit_proposal(proposer, proposal_id, metadata_uri, requested_assets);
         }
 
         fn authenticate_cancel_proposal(
@@ -157,7 +157,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             _verify_cancel_proposal_sig(r, s, v, salt, round, proposer, proposal_id);
             IInfiniteRoundDispatcher {
                 contract_address: round
-            }.cancel_proposal(proposer, proposal_id, );
+            }.cancel_proposal(proposer, proposal_id);
         }
 
         fn authenticate_vote(
@@ -175,7 +175,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             );
             IInfiniteRoundDispatcher {
                 contract_address: round
-            }.vote(voter, proposal_votes, used_voting_strategies, );
+            }.vote(voter, proposal_votes, used_voting_strategies);
         }
     }
 

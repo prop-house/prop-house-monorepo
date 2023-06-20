@@ -111,7 +111,7 @@ mod TimedRoundEthereumSigAuthStrategy {
             );
             ITimedRoundDispatcher {
                 contract_address: round
-            }.propose(proposer, metadata_uri, used_proposing_strategies, );
+            }.propose(proposer, metadata_uri, used_proposing_strategies);
         }
 
         fn authenticate_edit_proposal(
@@ -129,7 +129,7 @@ mod TimedRoundEthereumSigAuthStrategy {
             );
             ITimedRoundDispatcher {
                 contract_address: round
-            }.edit_proposal(proposer, proposal_id, metadata_uri, );
+            }.edit_proposal(proposer, proposal_id, metadata_uri);
         }
 
         fn authenticate_cancel_proposal(
@@ -144,7 +144,7 @@ mod TimedRoundEthereumSigAuthStrategy {
             _verify_cancel_proposal_sig(r, s, v, salt, round, proposer, proposal_id);
             ITimedRoundDispatcher {
                 contract_address: round
-            }.cancel_proposal(proposer, proposal_id, );
+            }.cancel_proposal(proposer, proposal_id);
         }
 
         fn authenticate_vote(
@@ -162,7 +162,7 @@ mod TimedRoundEthereumSigAuthStrategy {
             );
             ITimedRoundDispatcher {
                 contract_address: round
-            }.vote(voter, proposal_votes, used_voting_strategies, );
+            }.vote(voter, proposal_votes, used_voting_strategies);
         }
     }
 
