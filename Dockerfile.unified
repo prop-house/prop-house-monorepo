@@ -8,7 +8,7 @@ WORKDIR /app
 
 RUN apt-get update && \
     apt-get install -y curl git python3.9 python3-pip \
-        python3.9-venv python3.9-dev libgmp3-dev && \
+        python3.9-venv python3.9-dev libgmp3-dev chromium-browser && \
     pip3 install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*
 
@@ -23,11 +23,11 @@ ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.fou
 
 RUN foundryup
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+RUN curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | bash
 
-ADD . .
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-RUN yarn
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.foundry/bin:/root/.cargo/bin
 
 RUN rustup override set stable && \
     rustup update
@@ -36,24 +36,27 @@ RUN mkdir -p ~/Bin
 
 RUN cd ~/Bin && \
     git clone https://github.com/starkware-libs/cairo.git && \
-    cd cairo
-
-RUN git fetch --all --tags && \
-    git describe --tags `git rev-list --tags` && \
-    git checkout tags/v1.0.0-alpha.6 && \
+    cd cairo && \
+    git fetch --all --tags && \
+    git checkout b4c156ff && \ 
     cargo build --all --release
 
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.foundry/bin:/root/Bin/cairo/target/release
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.foundry/bin:/root/Bin/cairo/target/release:/root/.local/bin
+
+ADD . .
+
+RUN yarn
 
 WORKDIR /app/packages/prop-house-protocol
 
-RUN pip3 install wheel && \
-    pip3 install cairo-lang && \
-    pip3 install -r requirements.txt
+# RUN pip3 install wheel && \
+#     pip3 install cairo-lang && \
+#     pip3 install -r requirements.txt
 
 RUN git submodule update --init --recursive
 
-RUN yarn build
+RUN yarn build:l1
+RUN yarn build:l2
 
 WORKDIR /app/packages/prop-house-sdk
 
