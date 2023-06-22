@@ -146,6 +146,7 @@ const CreateRound = () => {
            */}
             {[...Array(round.numWinners)].map((_, idx) => (
               <AwardCard
+                key={idx}
                 award={round.awards[round.awards.length === 1 ? 0 : idx]}
                 place={idx + 1}
               />
