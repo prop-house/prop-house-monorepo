@@ -153,5 +153,11 @@ export const communities = new CaseInsensitiveMap(
       '0x6066F888BF55366d13f83dF6a1fD355453D313EA',
       '0xd9A9A52bc1529D3FF8Be57Af1AF7Ac09457F03cf',
     ]),
+    // purpler
+    '0x8edceb20795ac2b93ab8635af77e96cae123d045': balanceOfErc721(10),
+    // depepe
+    '0xE310306A41b28D81b0Eac3A5452fD7fDFb67A37B': fixedVotes(100, [
+      '0xE310306A41b28D81b0Eac3A5452fD7fDFb67A37B',
+    ]),
   }),
 );
