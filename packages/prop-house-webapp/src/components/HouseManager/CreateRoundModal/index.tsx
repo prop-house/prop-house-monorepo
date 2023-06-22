@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-type TransactionStatus = {
+export type TransactionStatus = {
   isLoading: boolean;
   isSuccess: boolean;
   isError: boolean;

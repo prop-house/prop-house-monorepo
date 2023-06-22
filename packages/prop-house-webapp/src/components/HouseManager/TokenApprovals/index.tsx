@@ -33,15 +33,22 @@ const TokenApprovals = () => {
     const tokens: Token[] = [];
 
     for (const [address, total] of Object.entries(totalTokenAmounts)) {
-      // Find the first award with the same address
+      let award;
 
-      const award =
-        address === 'ETH'
-          ? round.awards.find(a => a.type === AssetType.ETH)
-          : round.awards.find(a => a.address === address);
+      if (address === 'ETH') {
+        award = round.awards.find(a => a.type === AssetType.ETH);
+      } else {
+        award = round.awards.find(a => a.address === address);
+      }
+
+      // Handle the case when award is undefined
+      if (!award) {
+        console.warn(`No award found for address: ${address}`);
+        continue; // Skip this iteration
+      }
 
       tokens.push({
-        type: address === 'ETH' ? AssetType.ETH : AssetType.ERC20,
+        type: address === 'ETH' ? AssetType.ETH : award?.type,
         address,
         total,
         allocated: 0,
@@ -53,16 +60,11 @@ const TokenApprovals = () => {
     }
 
     // Update the round with the new tokens array
-    let updated = {
-      ...round,
-      funding: {
-        ...round.funding,
-        tokens,
-      },
-    };
+    let updated = { ...round, funding: { ...round.funding, tokens } };
 
     // Dispatch an action to save the new round
     dispatch(saveRound(updated));
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round.awards]); // Only run when awards change
 
@@ -95,30 +97,13 @@ const TokenApprovals = () => {
     dispatch(saveRound(updatedRound));
   };
 
-  const handleCheckboxChange = () => {
-    if (!round.funding.depositingFunds)
-      dispatch(
-        saveRound({
-          ...round,
-          funding: {
-            ...round.funding,
-            depositingFunds: true,
-          },
-        }),
-      );
-    // if we're toggling off 'deposit funds now' then we want to reset the fullyFunded flag as well
-    else
-      dispatch(
-        saveRound({
-          ...round,
-          funding: {
-            ...round.funding,
-            depositingFunds: false,
-          },
-          //  fullyFunded: false
-        }),
-      );
-  };
+  const handleCheckboxChange = () =>
+    dispatch(
+      saveRound({
+        ...round,
+        funding: { ...round.funding, depositingFunds: !round.funding.depositingFunds },
+      }),
+    );
 
   return (
     <>
@@ -140,7 +125,6 @@ const TokenApprovals = () => {
           text="You can add either contract addresses allowing anyone that holds the relevant ERC20/ERC721 to participate, or add any specific wallet addresses for individual access to the round."
         />
 
-        {/* {round.depositingFunds ? ( */}
         {round.funding.depositingFunds ? (
           <>
             {round.funding.tokens.length ? (

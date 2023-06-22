@@ -1,78 +1,38 @@
 import classes from './ApprovalWidget.module.css';
-import { useState } from 'react';
-// import { useEffect, useState } from 'react';
-// import { useAccount, useSigner, useBalance } from 'wagmi';
-// import { Contract } from 'ethers';
-import { AssetType } from '@prophouse/sdk-react';
+import { useEffect, useState } from 'react';
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWaitForTransaction,
+  useContractRead,
+  useAccount,
+} from 'wagmi';
+import { AssetType, ChainId, usePropHouse } from '@prophouse/sdk-react';
 import Group from '../Group';
 import Text from '../Text';
 import Button, { ButtonColor } from '../../Button';
 import { ProgressBar } from 'react-bootstrap';
 import { Token } from '../../../state/slices/round';
-// import { useDispatch } from 'react-redux';
-// import { useAppSelector } from '../../../hooks';
-// import { saveRound } from '../../../state/thunks';
+import TokenApprovalModal from '../TokenApprovalModal';
+import {
+  erc20AllowanceInterface,
+  erc20ApproveInterface,
+  erc20BalanceOfInterface,
+} from '../utils/contractABIs';
+import { BigNumber, BigNumberish, ethers } from 'ethers';
 
 const ApprovalWidget: React.FC<{
   award: Token;
-  handleAllocation: (allocated: number, award: Token) => void;
   total: number;
+  handleAllocation: (allocated: number, award: Token) => void;
 }> = props => {
-  const { award, handleAllocation, total } = props;
+  const { award, total, handleAllocation } = props;
 
-  // const dispatch = useDispatch();
-  // const round = useAppSelector(state => state.round.round);
-
-  // const { address: account } = useAccount();
-  // const { data: signer } = useSigner();
-  // const { data: balance } = useBalance({ address: account });
-  // const { data: balance } = useBalance({
-  //   address: account,
-  //   // address: '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
-  //   // token: '0xc18360217d8f7ab5e7c516566761ea12ce7f9d72',
-  //   // chainId: 1,
-  // });
-
-  // useEffect(() => {
-  //   // if (balance) console.log(`User's balance of ${award.symbol}: ${balance.toString()}`);
-  //   if (balance) console.log(`b: ${balance}`);
-  // }, [balance, award.symbol]);
-  // const total = round.tokensDict[award.address].total;
-
-  async function handleApproval() {
-    setIsApproved(true);
-
-    // if (!signer || !account) {
-    //   console.log('Please connect to a wallet.');
-    //   return;
-    // }
-
-    // const contract = new Contract(
-    //   award.address,
-    //   ['function approve(address spender, uint amount) returns (bool)'],
-    //   signer,
-    // );
-
-    // console.log('contract', contract);
-
-    // try {
-    //   const tx = await contract.approve(account, amount);
-    //   console.log('tx', tx);
-    //   await tx.wait(); // Wait for the transaction to be mined
-
-    //   console.log(`Approved ${account} to spend ${amount} of ${award.symbol}`);
-    // } catch (error) {
-    //   console.error('Failed to approve tokens', error);
-    // }
-  }
-
-  const [hasBeenClicked, setHasBeenClicked] = useState(true);
-  const [approvedAmount, setApprovedAmount] = useState(0.0);
-
-  const handleSwitch = () => setHasBeenClicked(!hasBeenClicked);
+  const [showTokenApprovalModal, setShowTokenApprovalModal] = useState(false);
+  const isNFT = award.type === AssetType.ERC721 || award.type === AssetType.ERC1155;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) return;
+    if (isNFT) return;
 
     let value = e.target.value;
 
@@ -90,7 +50,7 @@ const ApprovalWidget: React.FC<{
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) return;
+    if (isNFT) return;
 
     handleSwitch();
 
@@ -119,98 +79,200 @@ const ApprovalWidget: React.FC<{
     setApprovedAmount(value);
   };
 
-  const [isApproved, setIsApproved] = useState(false);
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- BALANCE OF ------- ------- -----
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  const { address: ownerAddress } = useAccount();
+  const { data: tokenBalanceData, isLoading: balanceLoading } = useContractRead({
+    address: award.address ?? '', // The address of the ERC20 token
+    abi: erc20BalanceOfInterface,
+    functionName: 'balanceOf',
+    chainId: ChainId.EthereumGoerli,
+    args: [ownerAddress],
+  });
+  const tokenBalance: BigNumber | undefined =
+    !balanceLoading && tokenBalanceData
+      ? BigNumber.from(tokenBalanceData as any as BigNumberish)
+      : undefined;
+
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- APPROVAL ------- ------- -------
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  const propHouse = usePropHouse();
+  const spenderAddress = propHouse.contract.address;
+  const [isApproved, setIsApproved] = useState<boolean>(false);
+  const [approvedAmount, setApprovedAmount] = useState(0.0);
+  const { config } = usePrepareContractWrite({
+    address: award.address ?? '', // The address of the ERC20 token
+    abi: erc20ApproveInterface,
+    functionName: 'approve',
+    chainId: ChainId.EthereumGoerli,
+    args: [spenderAddress, ethers.constants.MaxUint256], // unlimited approval
+  });
+
+  const { data, isLoading, write } = useContractWrite(config);
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const waitForTransaction = useWaitForTransaction({ hash: transactionHash as `0x${string}` });
+
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  ------- ------- ------- ALLOWANCE ------- ------- -------
+  //  -------- ------- ------- ------- ------- ------- --------
+  //  -------- ------- ------- ------- ------- ------- --------
+  const { data: allowance } = useContractRead({
+    address: award.address ?? '', // The address of the ERC20 token
+    abi: erc20AllowanceInterface,
+    functionName: 'allowance',
+    chainId: ChainId.EthereumGoerli,
+    args: [ownerAddress, spenderAddress],
+  });
+
+  useEffect(() => {
+    if (award.type === AssetType.ERC20 && tokenBalance?.gt(BigNumber.from('0'))) {
+      let allowanceString = allowance && BigNumber.from(allowance).toString();
+      let allowanceBN = BigNumber.from(allowanceString);
+      // checks if allowance is greater than 0 and therefore approved
+      setIsApproved(allowanceBN.gt(BigNumber.from('0')));
+    }
+  }, [allowance, award.type, tokenBalance]);
+
+  useEffect(() => {
+    if (data) setTransactionHash(data.hash as `0x${string}`);
+  }, [data]);
+
+  const handleClose = () => {
+    setIsApproved(isApproved);
+    setShowTokenApprovalModal(false);
+  };
+
+  // toggle between the input and the "button" input
+  const [hasBeenClicked, setHasBeenClicked] = useState(false);
+  const handleSwitch = () => setHasBeenClicked(!hasBeenClicked);
 
   return (
-    <div
-      className={classes.container}
-      //  onClick={handleApproval}
-    >
-      <Group classNames={classes.row}>
-        <Group row classNames={classes.row}>
-          <Group row gap={4} classNames={classes.awardNameImg}>
-            <div className={classes.imageContainer}>
-              <img
-                className={classes.image}
-                src={award.image || '/manager/fallback.png'}
-                alt="avatar"
-              />
-            </div>
+    <>
+      {showTokenApprovalModal && (
+        <TokenApprovalModal
+          isNFT={isNFT}
+          award={award}
+          setShowTokenApprovalModal={setShowTokenApprovalModal}
+          status={{
+            isLoading: waitForTransaction.isLoading,
+            isSuccess: waitForTransaction.isSuccess,
+            isError: waitForTransaction.isError,
+            error: waitForTransaction.error,
+          }}
+          handleClose={handleClose}
+          setIsApproved={setIsApproved}
+        />
+      )}
 
-            <Text type="subtitle">{award.name}</Text>
-          </Group>
+      {tokenBalance ? (
+        <div className={classes.container}>
+          <Group classNames={classes.row}>
+            <Group row classNames={classes.row}>
+              <Group row gap={4} classNames={classes.awardNameImg}>
+                <div className={classes.imageContainer}>
+                  <img
+                    className={classes.image}
+                    src={award.image || '/manager/fallback.png'}
+                    alt="avatar"
+                  />
+                </div>
 
-          <Group row gap={4} classNames={classes.awardNameImg}>
-            <Text type="body" classNames={classes.amount}>
-              {award.type === AssetType.ERC1155 || award.type === AssetType.ERC721
-                ? `#${award.tokenId}`
-                : `${approvedAmount} of ${total} ${award.symbol || award.name}`}
-            </Text>
-          </Group>
-        </Group>
+                <Text type="subtitle">{award.name}</Text>
+              </Group>
 
-        {total && (award.type === AssetType.ETH || isApproved) ? (
-          <Group classNames={classes.progressBar}>
-            <ProgressBar>
-              <ProgressBar now={(approvedAmount / total) * 100} />
-              <ProgressBar now={100 - (approvedAmount / total) * 100} variant="warning" />
-            </ProgressBar>
-          </Group>
-        ) : (
-          <></>
-        )}
-      </Group>
-
-      <Group classNames={classes.row}>
-        {total && (award.type === AssetType.ETH || isApproved) ? (
-          <>
-            <Group row classNames={classes.addFunds}>
-              <Text type="body" classNames={classes.addFundsText}>
-                Add funds:{' '}
-              </Text>
-              <Text
-                type="link"
-                onClick={() => {
-                  setApprovedAmount(total);
-                  handleAllocation!(total, award);
-                }}
-                disabled={approvedAmount === total}
-                classNames={classes.maxText}
-              >
-                Max{' '}
-              </Text>
+              <Group row gap={4} classNames={classes.awardNameImg}>
+                <Text type="body" classNames={classes.amount}>
+                  {isNFT
+                    ? `#${award.tokenId}`
+                    : `${approvedAmount} of ${total} ${award.symbol || award.name}`}
+                </Text>
+              </Group>
             </Group>
 
-            {hasBeenClicked ? (
-              <button className={classes.addressSuccess} onClick={handleSwitch}>
-                <p className={classes.amountText}>Amount</p>
-
-                <p className={classes.approvedAmount}>{approvedAmount}</p>
-              </button>
+            {total && (award.type === AssetType.ETH || isApproved) ? (
+              <Group classNames={classes.progressBar}>
+                <ProgressBar>
+                  <ProgressBar now={(approvedAmount / total) * 100} />
+                  <ProgressBar now={100 - (approvedAmount / total) * 100} variant="warning" />
+                </ProgressBar>
+              </Group>
             ) : (
-              <input
-                className={classes.input}
-                type="text"
-                placeholder="0.0"
-                value={approvedAmount.toString()}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                onPaste={handleInputPaste}
+              <></>
+            )}
+          </Group>
+
+          <Group classNames={classes.row}>
+            {total && (award.type === AssetType.ETH || isApproved) ? (
+              <>
+                <Group row classNames={classes.addFunds}>
+                  <Text type="body" classNames={classes.addFundsText}>
+                    Add funds:{' '}
+                  </Text>
+                  <Text
+                    type="link"
+                    onClick={() => {
+                      setApprovedAmount(total);
+                      handleAllocation!(total, award);
+                    }}
+                    disabled={approvedAmount === total}
+                    classNames={classes.maxText}
+                  >
+                    Max
+                  </Text>
+                </Group>
+
+                {hasBeenClicked ? (
+                  <button className={classes.addressSuccess} onClick={handleSwitch}>
+                    <p className={classes.amountText}>Amount</p>
+
+                    <p className={classes.approvedAmount}>{approvedAmount}</p>
+                  </button>
+                ) : (
+                  <input
+                    className={classes.input}
+                    type="text"
+                    placeholder="0.0"
+                    value={approvedAmount.toString()}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    onPaste={handleInputPaste}
+                  />
+                )}
+              </>
+            ) : award.type === AssetType.ERC20 ? (
+              <Button
+                classNames={classes.button}
+                text={`Approve ${award.symbol}`}
+                bgColor={ButtonColor.Pink}
+                disabled={!write || isLoading}
+                onClick={() => {
+                  write!();
+                  setShowTokenApprovalModal(true);
+                }}
+              />
+            ) : (
+              <Button
+                classNames={classes.button}
+                text={'Select NFT'}
+                bgColor={ButtonColor.Pink}
+                onClick={() => setShowTokenApprovalModal(true)}
               />
             )}
-          </>
-        ) : (
-          <Button
-            classNames={classes.button}
-            text={award.type === AssetType.ERC20 ? `Approve ${award.symbol}` : 'Select NFT'}
-            bgColor={ButtonColor.Pink}
-            onClick={
-              award.type === AssetType.ERC20 ? handleApproval : () => console.log('Select NFT')
-            }
-          />
-        )}
-      </Group>
-    </div>
+          </Group>
+        </div>
+      ) : (
+        <div className={classes.container} style={{ justifyContent: 'center' }}>
+          <Text type="subtitle">{`No ${award.symbol} ${isNFT ? award.tokenId : ''} found`}</Text>
+        </div>
+      )}
+    </>
   );
 };
 

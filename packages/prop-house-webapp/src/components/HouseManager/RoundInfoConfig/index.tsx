@@ -42,7 +42,7 @@ const RoundInfoConfig = () => {
       description: round.house.description,
       image: round.house.image,
       external_link: `https://prop.house/${round.house.address}`,
-      // these two belowe are constants
+      // these two below are constants
       seller_fee_basis_points: 0,
       fee_recipient: '0x0000000000000000000000000000000000000000',
     };
