@@ -5,22 +5,23 @@ trait IL1HeadersStore {
 
 #[abi]
 trait IEthereumBlockRegistry {
-    fn get_eth_block_number(timestamp: felt252) -> felt252;
+    fn get_eth_block_number(timestamp: u64) -> felt252;
 }
 
 #[contract]
 mod EthereumBlockRegistry {
-    use starknet::ContractAddress;
+    use starknet::{ContractAddress, get_block_timestamp};
     use super::{IEthereumBlockRegistry, IL1HeadersStoreDispatcherTrait, IL1HeadersStoreDispatcher};
     use zeroable::Zeroable;
+    use traits::TryInto;
 
     struct Storage {
         _l1_headers_store: ContractAddress,
-        _timestamp_to_eth_block_number: LegacyMap<felt252, felt252>,
+        _timestamp_to_eth_block_number: LegacyMap<u64, felt252>,
     }
 
     impl EthereumBlockRegistry of IEthereumBlockRegistry {
-        fn get_eth_block_number(timestamp: felt252) -> felt252 {
+        fn get_eth_block_number(timestamp: u64) -> felt252 {
             let number = _timestamp_to_eth_block_number::read(timestamp);
             if number.is_non_zero() {
                 // The timestamp has already be queried in herodotus and stored. Therefore we can just return the stored value
@@ -31,6 +32,8 @@ mod EthereumBlockRegistry {
                 // number stored there and store it here in the mapping indexed by the timestamp provided.
                 // This branch will be taken whenever a proposal is created, except for the (rare) case of multiple proposals
                 // being created in the same block.
+                assert(timestamp <= get_block_timestamp(), 'EBR: Cannot query the future');
+
                 let number = IL1HeadersStoreDispatcher {
                     contract_address: _l1_headers_store::read()
                 }.get_latest_l1_block();
@@ -48,7 +51,7 @@ mod EthereumBlockRegistry {
     /// Returns the closest ethereum block number for the given timestamp.
     /// * `timestamp` - The timestamp to query.
     #[external]
-    fn get_eth_block_number(timestamp: felt252) -> felt252 {
+    fn get_eth_block_number(timestamp: u64) -> felt252 {
         EthereumBlockRegistry::get_eth_block_number(timestamp)
     }
 

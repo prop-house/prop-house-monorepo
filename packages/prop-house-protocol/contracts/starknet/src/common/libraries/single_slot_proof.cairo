@@ -70,7 +70,7 @@ mod SingleSlotProof {
         let ethereum_block_registry = IEthereumBlockRegistryDispatcher {
             contract_address: _ethereum_block_registry::read()
         };
-        let eth_block_number = ethereum_block_registry.get_eth_block_number(timestamp.into());
+        let eth_block_number = ethereum_block_registry.get_eth_block_number(timestamp);
 
         let (slot, proof_sizes_bytes, proof_sizes_words, proofs_concat) = _decode_param_array(
             user_params
