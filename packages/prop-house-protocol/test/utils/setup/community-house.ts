@@ -6,8 +6,7 @@ import {
   TimedRound__factory,
   InfiniteRound__factory,
 } from '../../../typechain';
-import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
-import { asciiToHex, getStarknetArtifactPaths } from '../utils';
+import { asciiToHex, getStarknetFactory } from '../utils';
 import { EIP_712_DOMAIN_SEPARATOR_GOERLI, STARKNET_MAX_FEE } from '../constants';
 import { RoundType } from '@prophouse/sdk';
 import { constants } from 'ethers';
@@ -31,37 +30,10 @@ export const communityHouseSetup = async () => {
   });
   const starknetAccount = new Account(starknetProvider, address, starknetSigner.keyPair);
 
-  const roundFactoryMetadata = getStarknetArtifactPaths('EthereumRoundFactory');
-  const roundDeployerFactory = new StarknetContractFactory({
-    hre,
-    abiPath: roundFactoryMetadata.sierra,
-    metadataPath: roundFactoryMetadata.sierra,
-    casmPath: roundFactoryMetadata.casm,
-  });
-
-  const ethExecutionStrategyMetadata = getStarknetArtifactPaths('EthereumExecutionStrategy');
-  const ethExecutionStrategyFactory = new StarknetContractFactory({
-    hre,
-    abiPath: ethExecutionStrategyMetadata.sierra,
-    metadataPath: ethExecutionStrategyMetadata.sierra,
-    casmPath: ethExecutionStrategyMetadata.casm,
-  });
-
-  const strategyRegistryMetadata = getStarknetArtifactPaths('StrategyRegistry');
-  const strategyRegistryFactory = new StarknetContractFactory({
-    hre,
-    abiPath: strategyRegistryMetadata.sierra,
-    metadataPath: strategyRegistryMetadata.sierra,
-    casmPath: strategyRegistryMetadata.casm,
-  });
-
-  const roundDependencyRegistryMetadata = getStarknetArtifactPaths('RoundDependencyRegistry');
-  const roundDependencyRegistryFactory = new StarknetContractFactory({
-    hre,
-    abiPath: roundDependencyRegistryMetadata.sierra,
-    metadataPath: roundDependencyRegistryMetadata.sierra,
-    casmPath: roundDependencyRegistryMetadata.casm,
-  });
+  const roundDeployerFactory = getStarknetFactory(hre, 'EthereumRoundFactory');
+  const ethExecutionStrategyFactory = getStarknetFactory(hre, 'EthereumExecutionStrategy');
+  const strategyRegistryFactory = getStarknetFactory(hre, 'StrategyRegistry');
+  const roundDependencyRegistryFactory = getStarknetFactory(hre, 'RoundDependencyRegistry');
 
   await starknetSigner.declare(roundDeployerFactory, {
     maxFee: STARKNET_MAX_FEE,
@@ -116,33 +88,15 @@ export const infiniteRoundSetup = async () => {
 
   const infiniteRoundFactory = new InfiniteRound__factory(config.deployer);
 
-  const infiniteRoundL2Metadata = getStarknetArtifactPaths('InfiniteRound');
-  const infiniteRoundL2Factory = new StarknetContractFactory({
+  const infiniteRoundL2Factory = getStarknetFactory(hre, 'InfiniteRound');
+  const infiniteRoundEthTxAuthStrategyFactory = getStarknetFactory(
     hre,
-    abiPath: infiniteRoundL2Metadata.sierra,
-    metadataPath: infiniteRoundL2Metadata.sierra,
-    casmPath: infiniteRoundL2Metadata.casm,
-  });
-
-  const infiniteRoundEthTxAuthStrategyMetadata = getStarknetArtifactPaths(
     'InfiniteRoundEthereumTxAuthStrategy',
   );
-  const infiniteRoundEthTxAuthStrategyFactory = new StarknetContractFactory({
+  const infiniteRoundEthSigAuthStrategyFactory = getStarknetFactory(
     hre,
-    abiPath: infiniteRoundEthTxAuthStrategyMetadata.sierra,
-    metadataPath: infiniteRoundEthTxAuthStrategyMetadata.sierra,
-    casmPath: infiniteRoundEthTxAuthStrategyMetadata.casm,
-  });
-
-  const infiniteRoundEthSigAuthStrategyMetadata = getStarknetArtifactPaths(
     'InfiniteRoundEthereumSigAuthStrategy',
   );
-  const infiniteRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
-    hre,
-    abiPath: infiniteRoundEthSigAuthStrategyMetadata.sierra,
-    metadataPath: infiniteRoundEthSigAuthStrategyMetadata.sierra,
-    casmPath: infiniteRoundEthSigAuthStrategyMetadata.casm,
-  });
 
   await config.starknetSigner.declare(infiniteRoundEthTxAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,
@@ -238,33 +192,15 @@ export const timedRoundSetup = async () => {
 
   const timedRoundFactory = new TimedRound__factory(config.deployer);
 
-  const timedRoundL2Metadata = getStarknetArtifactPaths('TimedRound');
-  const timedRoundL2Factory = new StarknetContractFactory({
+  const timedRoundL2Factory = getStarknetFactory(hre, 'TimedRound');
+  const timedRoundEthTxAuthStrategyFactory = getStarknetFactory(
     hre,
-    abiPath: timedRoundL2Metadata.sierra,
-    metadataPath: timedRoundL2Metadata.sierra,
-    casmPath: timedRoundL2Metadata.casm,
-  });
-
-  const timedRoundEthTxAuthStrategyMetadata = getStarknetArtifactPaths(
     'TimedRoundEthereumTxAuthStrategy',
   );
-  const timedRoundEthTxAuthStrategyFactory = new StarknetContractFactory({
+  const timedRoundEthSigAuthStrategyFactory = getStarknetFactory(
     hre,
-    abiPath: timedRoundEthTxAuthStrategyMetadata.sierra,
-    metadataPath: timedRoundEthTxAuthStrategyMetadata.sierra,
-    casmPath: timedRoundEthTxAuthStrategyMetadata.casm,
-  });
-
-  const timedRoundEthSigAuthStrategyMetadata = getStarknetArtifactPaths(
     'TimedRoundEthereumSigAuthStrategy',
   );
-  const timedRoundEthSigAuthStrategyFactory = new StarknetContractFactory({
-    hre,
-    abiPath: timedRoundEthSigAuthStrategyMetadata.sierra,
-    metadataPath: timedRoundEthSigAuthStrategyMetadata.sierra,
-    casmPath: timedRoundEthSigAuthStrategyMetadata.casm,
-  });
 
   await config.starknetSigner.declare(timedRoundEthTxAuthStrategyFactory, {
     maxFee: STARKNET_MAX_FEE,

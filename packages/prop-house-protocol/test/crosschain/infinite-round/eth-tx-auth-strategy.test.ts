@@ -9,7 +9,7 @@ import {
   PROPOSE_SELECTOR,
   VOTE_SELECTOR,
   CANCEL_PROPOSAL_SELECTOR,
-  getStarknetArtifactPaths,
+  getStarknetFactory,
   STARKNET_MAX_FEE,
   asciiToHex,
   generateIncrementalClaimLeaf,
@@ -96,15 +96,10 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknetCommit,
     } = config);
 
-    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
+    const vanillaGovPowerStrategyFactory = getStarknetFactory(
+      hre,
       'VanillaGovernancePowerStrategy',
     );
-    const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
-      hre,
-      abiPath: vanillaGovPowerStrategyMetadata.sierra,
-      metadataPath: vanillaGovPowerStrategyMetadata.sierra,
-      casmPath: vanillaGovPowerStrategyMetadata.casm,
-    });
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });

@@ -8,7 +8,7 @@ import {
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
-  getStarknetArtifactPaths,
+  getStarknetFactory,
   STARKNET_MAX_FEE,
 } from '../../utils';
 import {
@@ -69,15 +69,10 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       starknetAccount,
     } = config);
 
-    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
+    const vanillaGovPowerStrategyFactory = getStarknetFactory(
+      hre,
       'VanillaGovernancePowerStrategy',
     );
-    const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
-      hre,
-      abiPath: vanillaGovPowerStrategyMetadata.sierra,
-      metadataPath: vanillaGovPowerStrategyMetadata.sierra,
-      casmPath: vanillaGovPowerStrategyMetadata.casm,
-    });
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });

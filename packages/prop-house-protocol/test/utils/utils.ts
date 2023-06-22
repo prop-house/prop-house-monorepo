@@ -1,3 +1,5 @@
+import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { utils } from 'ethers';
 
 const getStarknetArtifactPath = (contract: string, ext: 'sierra' | 'casm') =>
@@ -5,9 +7,17 @@ const getStarknetArtifactPath = (contract: string, ext: 'sierra' | 'casm') =>
 const getSierraPath = (contract: string) => getStarknetArtifactPath(contract, 'sierra');
 const getCasmPath = (contract: string) => getStarknetArtifactPath(contract, 'casm');
 
-export const getStarknetArtifactPaths = (contract: string) => ({
-  sierra: getSierraPath(contract),
-  casm: getCasmPath(contract),
-});
+export const getStarknetFactory = (hre: HardhatRuntimeEnvironment, contractName: string) => {
+  const metadata = {
+    sierra: getSierraPath(contractName),
+    casm: getCasmPath(contractName),
+  };
+  return new StarknetContractFactory({
+    hre,
+    abiPath: metadata.sierra,
+    metadataPath: metadata.sierra,
+    casmPath: metadata.casm,
+  });
+};
 
 export const asciiToHex = (s: string) => utils.hexlify(utils.toUtf8Bytes(s));
