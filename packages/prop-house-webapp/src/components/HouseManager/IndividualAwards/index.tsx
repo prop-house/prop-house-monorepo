@@ -21,6 +21,7 @@ import AwardRow from '../AwardRow';
 import { useProvider } from 'wagmi';
 import { getTokenIdImage } from '../utils/getTokenIdImage';
 import { saveRound } from '../../../state/thunks';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -113,7 +114,7 @@ const IndividualAwards: React.FC<{
       if (a.id === award.id) {
         return { ...a, ...updated };
       } else {
-        return a;
+        return { ...a };
       }
     });
 
@@ -183,7 +184,7 @@ const IndividualAwards: React.FC<{
   };
 
   const addNewAward = () => {
-    const updatedAwards = [...awards, NewAward];
+    const updatedAwards = [...awards, { ...NewAward, id: uuidv4() }];
 
     if (editMode) {
       setEditedRound!({
