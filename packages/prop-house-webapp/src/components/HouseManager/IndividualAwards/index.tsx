@@ -73,6 +73,7 @@ const IndividualAwards: React.FC<{
           address: erc20TokenAddresses[token],
           type,
         });
+
     setAward({ ...award, ...updated });
   };
 
