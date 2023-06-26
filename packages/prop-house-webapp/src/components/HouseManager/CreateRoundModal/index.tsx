@@ -72,7 +72,7 @@ const CreateRoundModal: React.FC<{
       ? undefined
       : status.isSuccess
       ? handleClick
-      : () => setShowCreateRoundModal(false);
+      : setShowCreateRoundModal(false);
   };
 
   return (
