@@ -12,6 +12,7 @@ import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { changeTagToParagraph, changeTagToSpan } from '../../RoundCard';
 import { useAccount } from 'wagmi';
+import LoadingIndicator from '../../LoadingIndicator';
 
 interface HouseSelectionProps {
   propHouse: PropHouse;
@@ -26,9 +27,12 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
 }) => {
   const { address: account } = useAccount();
   const [houses, setHouses] = useState<House[]>([]);
+  const [loading, setLoading] = useState<boolean>(false); // Add loading state
 
   useEffect(() => {
     async function fetchHouses() {
+      setLoading(true);
+
       try {
         propHouse.query
           // passing `as string` because Wagmi returns address as an 0x-prefixed string (`0x${string}`)
@@ -36,6 +40,8 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
           .then(data => setHouses(data));
       } catch (error) {
         console.log('Error fetching houses:', error);
+      } finally {
+        setLoading(false);
       }
     }
     fetchHouses();
@@ -44,7 +50,9 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
   return (
     <>
       <Group>
-        {houses.length ? (
+        {loading ? (
+          <LoadingIndicator />
+        ) : houses.length ? (
           <Group gap={8} mt={6}>
             <Group gap={8} classNames={classes.houseContainer}>
               {houses.map(house => (
