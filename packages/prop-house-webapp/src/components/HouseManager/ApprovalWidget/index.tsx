@@ -80,9 +80,7 @@ const ApprovalWidget: React.FC<{
   };
 
   //  -------- ------- ------- ------- ------- ------- --------
-  //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- BALANCE OF ------- ------- -----
-  //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- ------- ------- ------- --------
   const { address: ownerAddress } = useAccount();
   const { data: tokenBalanceData, isLoading: balanceLoading } = useContractRead({
@@ -98,9 +96,7 @@ const ApprovalWidget: React.FC<{
       : undefined;
 
   //  -------- ------- ------- ------- ------- ------- --------
-  //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- APPROVAL ------- ------- -------
-  //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- ------- ------- ------- --------
   const propHouse = usePropHouse();
   const spenderAddress = propHouse.contract.address;
@@ -119,9 +115,7 @@ const ApprovalWidget: React.FC<{
   const waitForTransaction = useWaitForTransaction({ hash: transactionHash as `0x${string}` });
 
   //  -------- ------- ------- ------- ------- ------- --------
-  //  -------- ------- ------- ------- ------- ------- --------
   //  ------- ------- ------- ALLOWANCE ------- ------- -------
-  //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- ------- ------- ------- --------
   const { data: allowance } = useContractRead({
     address: award.address ?? '', // The address of the ERC20 token
