@@ -1,4 +1,5 @@
 import classes from './TokenApprovals.module.css';
+import { useEffect } from 'react';
 import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import CardWrapper from '../CardWrapper';
@@ -10,8 +11,7 @@ import ApprovalWidget from '../ApprovalWidget';
 import { saveRound } from '../../../state/thunks';
 import { AssetType } from '@prophouse/sdk-react';
 import { NewRound, Token } from '../../../state/slices/round';
-
-import { useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const TokenApprovals = () => {
   const round = useAppSelector(state => state.round.round);
@@ -134,7 +134,7 @@ const TokenApprovals = () => {
                 <CardWrapper>
                   {erc20AndEthTokens.map(token => (
                     <ApprovalWidget
-                      key={token.address}
+                      key={uuidv4()}
                       award={token}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
                       total={token.total}
@@ -158,7 +158,7 @@ const TokenApprovals = () => {
                 <CardWrapper>
                   {erc721And1155Tokens.map(nft => (
                     <ApprovalWidget
-                      key={nft.address}
+                      key={uuidv4()}
                       award={nft}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
                       total={nft.total}
