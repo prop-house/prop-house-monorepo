@@ -6,7 +6,7 @@
 
 [context.nethermind.environment]
     REACT_APP_NODE_ENV = "production"
-    REACT_APP_PROD_BACKEND_URI = "http://nethermind.backend.prop.house"
+    REACT_APP_PROD_BACKEND_URI = "https://nethermind.backend.prop.house"
 
 [context.production.environment]
     REACT_APP_NODE_ENV = "production"
