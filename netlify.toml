@@ -4,5 +4,8 @@
 [context.branch-deploy.environment]
     REACT_APP_NODE_ENV = "development"
 
+[context.nethermind.environment]
+    REACT_APP_PROD_BACKEND_URI = "http://nethermind.backend.prop.house"
+
 [context.production.environment]
     REACT_APP_NODE_ENV = "production"
