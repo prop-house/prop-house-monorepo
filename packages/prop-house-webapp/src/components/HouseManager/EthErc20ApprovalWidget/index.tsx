@@ -1,4 +1,4 @@
-import classes from './ApprovalWidget.module.css';
+import classes from './EthErc20ApprovalWidget.module.css';
 import { useEffect, useState } from 'react';
 import {
   usePrepareContractWrite,
@@ -21,7 +21,7 @@ import {
 } from '../utils/contractABIs';
 import { BigNumber, BigNumberish, ethers } from 'ethers';
 
-const ApprovalWidget: React.FC<{
+const EthErc20ApprovalWidget: React.FC<{
   award: Token;
   total: number;
   handleAllocation: (allocated: number, award: Token) => void;
@@ -270,4 +270,4 @@ const ApprovalWidget: React.FC<{
   );
 };
 
-export default ApprovalWidget;
+export default EthErc20ApprovalWidget;

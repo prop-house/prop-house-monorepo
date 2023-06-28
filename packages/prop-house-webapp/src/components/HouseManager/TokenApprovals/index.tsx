@@ -7,11 +7,12 @@ import Group from '../Group';
 import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import InstructionBox from '../InstructionBox';
-import ApprovalWidget from '../ApprovalWidget';
 import { saveRound } from '../../../state/thunks';
 import { AssetType } from '@prophouse/sdk-react';
 import { NewRound, Token } from '../../../state/slices/round';
 import { v4 as uuidv4 } from 'uuid';
+import EthErc20ApprovalWidget from '../EthErc20ApprovalWidget';
+import NFTApprovalWidget from '../NFTApprovalWidget';
 
 const TokenApprovals = () => {
   const round = useAppSelector(state => state.round.round);
@@ -133,7 +134,7 @@ const TokenApprovals = () => {
 
                 <CardWrapper>
                   {erc20AndEthTokens.map(token => (
-                    <ApprovalWidget
+                    <EthErc20ApprovalWidget
                       key={uuidv4()}
                       award={token}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
@@ -157,11 +158,10 @@ const TokenApprovals = () => {
                 <Text type="title">NFTs</Text>
                 <CardWrapper>
                   {erc721And1155Tokens.map(nft => (
-                    <ApprovalWidget
+                    <NFTApprovalWidget
                       key={uuidv4()}
                       award={nft}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
-                      total={nft.total}
                     />
                   ))}
                 </CardWrapper>

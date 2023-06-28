@@ -83,6 +83,7 @@ const IndividualAwards: React.FC<{
     if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
       try {
         const { image } = await getTokenIdImage(award.address, award.tokenId!, provider);
+
         image_url = image;
       } catch (error) {
         console.error('Error fetching image', error);
