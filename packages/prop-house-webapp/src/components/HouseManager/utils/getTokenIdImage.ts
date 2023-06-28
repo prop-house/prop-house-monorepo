@@ -12,11 +12,10 @@ export const getTokenIdImage = async (address: string, tokenId: string, provider
     }
     // Goerli
     else if (network.chainId === 5) {
-      baseURL = 'https://testnets-api.opensea.io/api/v1/asset_contract';
+      baseURL = 'https://testnets-api.opensea.io/api/v1/asset';
     } else {
       throw new Error(`Unsupported chain ID: ${network.chainId}`);
     }
-
     const response = await fetch(`${baseURL}/${address}/${tokenId}`);
 
     if (!response.ok) {
