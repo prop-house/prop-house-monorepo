@@ -238,8 +238,11 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     function _register(RoundConfig memory config) internal {
         _validate(config);
 
+        // Set the round start timestamp to the current block timestamp if it is in the past.
+        config.startTimestamp = _max(config.startTimestamp, uint40(block.timestamp));
+
         // Write round metadata to storage. This will be consumed by the token URI later.
-        startTimestamp = _max(config.startTimestamp, uint40(block.timestamp));
+        startTimestamp = config.startTimestamp;
         votePeriodDuration = config.votePeriodDuration;
 
         state = RoundState.Active;
