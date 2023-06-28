@@ -103,10 +103,13 @@ const AddAward: React.FC<{
 
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
+
     let value = parseInt(clipboardData, 10);
     if (isNaN(value) || value < 0) {
       e.preventDefault();
       return;
+    } else {
+      return clipboardData;
     }
   };
 
@@ -131,8 +134,11 @@ const AddAward: React.FC<{
     let value = parseInt(e.target.value, 10);
 
     // If value is NaN or negative, set to 0
-    if (isNaN(value) || value < 0) value = 0;
-    setAward({ ...award, tokenId: value.toString() });
+    if (isNaN(value) || value < 0) {
+      setAward({ ...award, tokenId: '0' });
+    } else {
+      setAward({ ...award, tokenId: e.target.value });
+    }
   };
 
   const awardContent = {
