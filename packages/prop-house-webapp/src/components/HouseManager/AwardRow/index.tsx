@@ -24,7 +24,10 @@ const AwardRow: React.FC<{ award: Award }> = props => {
             {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&
               `${formatCommaNum(award.amount)} ${award.symbol || award.name}`}
             {(award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) &&
-              `${award.name} #${award.tokenId}`}
+              `${award.name} #${
+                award.tokenId &&
+                (award.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
+              }`}
           </span>
         </div>
 
