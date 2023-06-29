@@ -483,8 +483,9 @@ mod InfiniteRound {
         let leaf = _compute_leaf(proposal_id, proposal);
 
         // The maximum winner count for this round is 2^10 (1024). If the max
-        // count is reached, then no `append_leaf` will revert.
+        // count is reached, then `append_leaf` will revert.
         _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
+        _write_sub_trees_to_storage(ref incremental_merkle_tree.sub_trees);
         _winner_count::write(winner_count + 1);
 
         ProposalApproved(proposal_id);
@@ -550,7 +551,7 @@ mod InfiniteRound {
         sub_trees
     }
 
-    /// Write the incrmeental merkle tree sub trees to storage.
+    /// Write the incremental merkle tree sub trees to storage.
     /// The user will not be charged storage costs for sub trees that are already in storage.
     /// * `sub_trees` - The sub trees to write to storage.
     fn _write_sub_trees_to_storage(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
