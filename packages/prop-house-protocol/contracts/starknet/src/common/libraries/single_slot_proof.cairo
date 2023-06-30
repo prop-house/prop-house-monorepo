@@ -1,4 +1,4 @@
-use prop_house::common::utils::constants::UINT64_MAX_FELT;
+use prop_house::common::utils::constants::MULTIPLIER_FOR_64_BIT_SHIFT;
 use prop_house::common::utils::serde::SpanSerde;
 use option::OptionTrait;
 use traits::TryInto;
@@ -13,8 +13,8 @@ struct StorageSlot {
 
 impl StorageSlotIntoU256 of Into<StorageSlot, u256> {
     fn into(self: StorageSlot) -> u256 {
-        let word_1_shifted = self.word_1 * UINT64_MAX_FELT;
-        let word_3_shifted = self.word_3 * UINT64_MAX_FELT;
+        let word_1_shifted = self.word_1 * MULTIPLIER_FOR_64_BIT_SHIFT;
+        let word_3_shifted = self.word_3 * MULTIPLIER_FOR_64_BIT_SHIFT;
         let low = (word_3_shifted + self.word_4).try_into().unwrap();
         let high = (word_1_shifted + self.word_2).try_into().unwrap();
 
