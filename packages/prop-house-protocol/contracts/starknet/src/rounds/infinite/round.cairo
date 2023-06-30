@@ -482,8 +482,8 @@ mod InfiniteRound {
         );
         let leaf = _compute_leaf(proposal_id, proposal);
 
-        // The maximum winner count for this round is 2^10 (1024). If the max
-        // count is reached, then `append_leaf` will revert.
+        // The maximum winner count for this round is 2^10 (1024). `append_leaf` will revert
+        // if the max count is reached.
         _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
         _write_sub_trees_to_storage(ref incremental_merkle_tree.sub_trees);
         _winner_count::write(winner_count + 1);
@@ -539,7 +539,7 @@ mod InfiniteRound {
 
         let mut curr_depth = 0;
         loop {
-            if curr_depth > MAX_WINNER_TREE_DEPTH {
+            if curr_depth == MAX_WINNER_TREE_DEPTH {
                 break;
             }
             let sub_tree = _winner_merkle_sub_trees::read(curr_depth);
@@ -547,6 +547,7 @@ mod InfiniteRound {
                 break;
             }
             sub_trees.insert(curr_depth.into(), nullable_from_box(BoxTrait::new(sub_tree)));
+            curr_depth += 1;
         };
         sub_trees
     }

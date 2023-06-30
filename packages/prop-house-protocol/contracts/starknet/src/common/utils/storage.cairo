@@ -26,15 +26,17 @@ fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcces
     let length = StorageAccess::<u32>::read_at_offset_internal(address_domain, base, offset)?;
     offset += 1; // Increment offset by 1 for the length.
 
-    let exit_at = downcast(length).unwrap() + offset;
+    let mut elements_read = 0;
     let mut arr = Default::<Array<T>>::default();
     loop {
-        if offset == exit_at {
+        if elements_read == length {
             break Result::Ok(arr.span());
         }
         let value = StorageAccess::read_at_offset_internal(address_domain, base, offset)?;
         offset += StorageAccess::<T>::size_internal(value);
         arr.append(value);
+
+        elements_read += 1;
     }
 }
 
@@ -47,13 +49,14 @@ fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcce
     address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Span<T>
 ) -> SyscallResult<()> {
     StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, value.len())?;
+    offset += 1; // Increment offset by 1 for the length.
 
     loop {
         match value.pop_front() {
             Option::Some(v) => {
                 let v = *v;
-                offset += StorageAccess::<T>::size_internal(v);
                 StorageAccess::write_at_offset_internal(address_domain, base, offset, v)?;
+                offset += StorageAccess::<T>::size_internal(v);
             },
             Option::None(_) => {
                 break Result::Ok(());

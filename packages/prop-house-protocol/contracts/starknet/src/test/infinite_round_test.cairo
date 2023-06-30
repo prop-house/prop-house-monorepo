@@ -1,8 +1,10 @@
+use prop_house::common::utils::merkle::IncrementalMerkleTreeTrait;
 use prop_house::common::utils::array::ArrayTraitExt;
 use prop_house::rounds::infinite::round::InfiniteRound;
-use prop_house::rounds::infinite::config::Proposal;
 use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
+use nullable::NullableTrait;
+use dict::Felt252DictTrait;
 use option::OptionTrait;
 
 #[test]
@@ -49,4 +51,34 @@ fn test_infinite_round_decode_params() {
     assert(decoded_params.proposal_threshold.into() == *round_params.at(4), 'wrong proposal threshold');
     assert(decoded_params.proposing_strategies.len() == 0, 'wrong proposing strategy length');
     assert(decoded_params.voting_strategies.len() == 1, 'wrong voting strategy length');
+}
+
+#[test]
+#[available_gas(100000000)]
+fn test_infinite_round_sub_tree_storage() {
+    let mut imt_1 = IncrementalMerkleTreeTrait::<u256>::new(
+        10, 0, Default::default(),
+    );
+    imt_1.append_leaf(
+        0x73e3c177fdb67a69d76ec8dab4f62d709926319f0510997524b68b7b9e18b70_u256
+    );
+    InfiniteRound::_write_sub_trees_to_storage(ref imt_1.sub_trees);
+
+    let mut imt_2 = IncrementalMerkleTreeTrait::<u256>::new(
+        10, 1, InfiniteRound::_read_sub_trees_from_storage(),
+    );
+
+    let mut curr_depth = 0;
+    loop {
+        if curr_depth == 10 {
+            break;
+        }
+        let imt_1_sub_tree = imt_1.sub_trees.get(curr_depth).deref();
+        let imt_2_sub_tree = imt_2.sub_trees.get(curr_depth).deref();
+
+        assert(*imt_1_sub_tree.at(0) == *imt_2_sub_tree.at(0), 'wrong sub tree value at index 0');
+        assert(*imt_1_sub_tree.at(1) == *imt_2_sub_tree.at(1), 'wrong sub tree value at index 1');
+
+        curr_depth += 1;
+    };
 }
