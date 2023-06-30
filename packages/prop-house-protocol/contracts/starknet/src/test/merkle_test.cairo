@@ -124,7 +124,7 @@ fn test_pedersen_merkle_tree() {
 #[test]
 #[available_gas(100000000)]
 fn test_keccak_incremental_merkle_tree() {
-    let mut even_leaves = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut even_leaves = IncrementalMerkleTreeTrait::new(
         10, // height
         0, // leaf count
         Default::default(), // sub-trees
@@ -141,7 +141,7 @@ fn test_keccak_incremental_merkle_tree() {
     let root: u256 = even_leaves.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
 
-    let mut odd_leaves = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut odd_leaves = IncrementalMerkleTreeTrait::new(
         10, // height
         0, // leaf count
         Default::default(), // sub-trees
@@ -159,7 +159,7 @@ fn test_keccak_incremental_merkle_tree() {
     let root: u256 = odd_leaves.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
 
-    let mut full_tree = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut full_tree = IncrementalMerkleTreeTrait::new(
         2, // height
         0, // leaf count
         Default::default(), // sub-trees
@@ -174,7 +174,7 @@ fn test_keccak_incremental_merkle_tree() {
     let root: u256 = full_tree.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
 
-    let mut pre_populated_tree = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut pre_populated_tree = IncrementalMerkleTreeTrait::new(
         4, // height
         2, // leaf count
         generate_sub_trees(), // sub-trees
@@ -190,7 +190,7 @@ fn test_keccak_incremental_merkle_tree() {
 #[available_gas(100000000)]
 #[should_panic(expected: ('Tree is full', ))]
 fn test_keccak_incremental_merkle_tree_full_failure() {
-    let mut full_tree = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut full_tree = IncrementalMerkleTreeTrait::new(
         2, // height
         0, // leaf count
         Default::default(), // sub-trees
@@ -241,7 +241,7 @@ fn generate_proof_2_elements<T, impl TDrop: Drop<T>>(element_1: T, element_2: T)
 }
 
 fn generate_sub_trees() -> Felt252Dict<Nullable<Span<u256>>> {
-    let mut sub_tree_generation_tree = IncrementalMerkleTreeTrait::<u256>::new(
+    let mut sub_tree_generation_tree = IncrementalMerkleTreeTrait::new(
         4, // height
         0, // leaf count
         Default::default(), // sub-trees

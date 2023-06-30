@@ -381,7 +381,7 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
     await expect(claimTx).to.emit(infiniteRound, 'AssetsClaimed');
   });
 
-  it('should finalize a round and allow the winner to claim their award', async () => {
+  it('should finalize a round', async () => {
     const startFinalizationTx = infiniteRound.startFinalization({
       value: STARKNET_MAX_FEE,
     });
