@@ -477,15 +477,15 @@ mod InfiniteRound {
         proposal.state = ProposalState::Approved(());
 
         let winner_count = _winner_count::read();
-        let mut incremental_merkle_tree = IncrementalMerkleTreeTrait::<u256>::new(
+        let mut imt = IncrementalMerkleTreeTrait::new(
             MAX_WINNER_TREE_DEPTH, winner_count, _read_sub_trees_from_storage(), 
         );
         let leaf = _compute_leaf(proposal_id, proposal);
 
         // The maximum winner count for this round is 2^10 (1024). `append_leaf` will revert
         // if the max count is reached.
-        _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
-        _write_sub_trees_to_storage(ref incremental_merkle_tree.sub_trees);
+        _winner_merkle_root::write(imt.append_leaf(leaf));
+        _write_sub_trees_to_storage(imt.get_current_depth(), ref imt.sub_trees);
         _winner_count::write(winner_count + 1);
 
         ProposalApproved(proposal_id);
@@ -554,10 +554,14 @@ mod InfiniteRound {
 
     /// Write the incremental merkle tree sub trees to storage.
     /// The user will not be charged storage costs for sub trees that are already in storage.
+    /// * `max_depth` - The maximum depth of the sub trees to write to storage.
     /// * `sub_trees` - The sub trees to write to storage.
-    fn _write_sub_trees_to_storage(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
+    fn _write_sub_trees_to_storage(max_depth: u32, ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
         let mut curr_depth = 0;
         loop {
+            if curr_depth > max_depth {
+                break;
+            }
             match match_nullable(sub_trees.get(curr_depth.into())) {
                 FromNullableResult::Null(()) => {
                     break;

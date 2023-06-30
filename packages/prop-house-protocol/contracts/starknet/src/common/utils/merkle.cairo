@@ -198,13 +198,15 @@ struct IncrementalMerkleTree {
 }
 
 /// IncrementalMerkleTree trait.
-trait IncrementalMerkleTreeTrait<T> {
+trait IncrementalMerkleTreeTrait {
     /// Create a new IncrementalMerkleTree instance.
-    fn new(depth: u32, current_leaf_count: u32, sub_trees: Felt252Dict<Nullable<Span<T>>>) -> IncrementalMerkleTree;
+    fn new(depth: u32, current_leaf_count: u32, sub_trees: Felt252Dict<Nullable<Span<u256>>>) -> IncrementalMerkleTree;
     /// Add a leaf to the merkle tree.
-    fn append_leaf(ref self: IncrementalMerkleTree, leaf: T) -> T;
+    fn append_leaf(ref self: IncrementalMerkleTree, leaf: u256) -> u256;
+    /// Get the current depth of the tree.
+    fn get_current_depth(ref self: IncrementalMerkleTree) -> u32;
     /// Get the merkle root of the tree.
-    fn get_merkle_root(ref self: IncrementalMerkleTree) -> Option<T>;
+    fn get_merkle_root(ref self: IncrementalMerkleTree) -> Option<u256>;
 }
 
 /// Pre-computed keccak zero hashes.
@@ -257,7 +259,7 @@ fn _compute_root(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>, mut hash: u25
 }
 
 /// KeccakIncrementalMerkleTree implementation.
-impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait<u256> {
+impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait {
     /// Create a new incremental merkle tree instance.
     fn new(depth: u32, current_leaf_count: u32, sub_trees: Felt252Dict<Nullable<Span<u256>>>) -> IncrementalMerkleTree {
         let max_leaves = pow(2, depth);
@@ -284,6 +286,19 @@ impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait<u256> {
         self.current_leaf_count += 1;
 
         self.merkle_root.unwrap()
+    }
+
+    /// Get the current depth of the tree.
+    fn get_current_depth(ref self: IncrementalMerkleTree) -> u32 {
+        let mut size = self.current_leaf_count;
+        let mut current_depth = 0;
+        loop {
+            if size == 0 {
+                break current_depth;
+            }
+            size /= 2;
+            current_depth += 1;
+        }
     }
 
     /// Get the merkle root of the tree.
