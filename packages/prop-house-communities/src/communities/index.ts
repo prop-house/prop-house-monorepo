@@ -159,5 +159,7 @@ export const communities = new CaseInsensitiveMap(
     '0xE310306A41b28D81b0Eac3A5452fD7fDFb67A37B': fixedVotes(100, [
       '0xE310306A41b28D81b0Eac3A5452fD7fDFb67A37B',
     ]),
+    // gnars
+    '0x558BFFF0D583416f7C4e380625c7865821b8E95C': balanceOfErc721(),
   }),
 );
