@@ -423,7 +423,7 @@ mod TimedRound {
                     spent_voting_power += _cast_votes_on_proposal(
                         voter, *proposal_vote, remaining_voting_power, 
                     );
-                    remaining_voting_power -= spent_voting_power;
+                    remaining_voting_power = cumulative_voting_power - spent_voting_power;
                 },
                 Option::None(_) => {
                     // Update the spent voting power for the user
