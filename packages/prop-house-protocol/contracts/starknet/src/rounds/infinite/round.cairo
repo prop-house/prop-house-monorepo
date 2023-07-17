@@ -464,7 +464,7 @@ mod InfiniteRound {
             _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);
-        _spent_voting_power::write((voter, proposal_id), spent_voting_power);
+        _spent_voting_power::write((voter, proposal_id), spent_voting_power + voting_power);
 
         VoteCast(proposal_id, voter, voting_power, direction);
     }
