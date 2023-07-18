@@ -96,6 +96,12 @@ export class Auction implements AuctionBase {
   @Field(() => String)
   balanceBlockTag: number;
 
+  @Column({ type: 'jsonb', nullable: true, default: null })
+  @Field(() => JSON, {
+    description: 'The strategy that defines who can propose',
+  })
+  propStrategy: string;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
