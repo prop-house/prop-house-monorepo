@@ -102,6 +102,12 @@ export class Auction implements AuctionBase {
   })
   propStrategy: string;
 
+  @Column({ type: 'jsonb', nullable: true, default: null })
+  @Field(() => String, {
+    description: 'The strategy that defines who can vote',
+  })
+  voteStrategy: string;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
