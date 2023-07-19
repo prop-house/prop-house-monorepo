@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
-import { getVotingPower } from '@prophouse/communities';
+import { execStrategy } from '@prophouse/communities';
 import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import ProposalModalVotingModule from '../ProposalModalVotingModule';
@@ -60,16 +60,19 @@ const ProposalModalFooter: React.FC<{
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
-    if (!account || !provider || !community) return;
+    if (!account || !provider || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
-        const votes = await getVotingPower(
+        const strategyPayload = {
+          strategyName: round.voteStrategy.strategyName,
           account,
-          community.contractAddress,
+          blockTag: round.balanceBlockTag,
           provider,
-          round!.balanceBlockTag,
-        );
+          ...round.voteStrategy,
+        };
+        const votes = await execStrategy(strategyPayload);
+
         dispatch(setVotingPower(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);

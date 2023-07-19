@@ -24,7 +24,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAccount } from 'wagmi';
 import { InfuraProvider } from '@ethersproject/providers';
-import { getVotingPower } from '@prophouse/communities';
+import { execStrategy } from '@prophouse/communities';
 import Countdown from '../Countdown';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 
@@ -67,12 +67,16 @@ const StatusRoundCard: React.FC<{
     const fetchVotesData = async () => {
       try {
         const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
-        const votingPower = await getVotingPower(
+
+        const strategyPayload = {
+          strategyName: round.voteStrategy.strategyName,
           account,
-          community.contractAddress,
-          new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
-          round.balanceBlockTag,
-        );
+          blockTag: round.balanceBlockTag,
+          provider: new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
+          ...round.voteStrategy,
+        };
+        const votingPower = await execStrategy(strategyPayload);
+
         setVotingPower(votingPower);
         setNumVotesCasted(numVotesCasted);
       } catch (e) {

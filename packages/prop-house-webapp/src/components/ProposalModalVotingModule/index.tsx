@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
-import { getVotingPower } from '@prophouse/communities';
+import { execStrategy } from '@prophouse/communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
@@ -63,16 +63,19 @@ const ProposalModalVotingModule: React.FC<{
       : countVotesAllottedToProp(voteAllotments, proposal.id);
 
   useEffect(() => {
-    if (!account || !provider || !community) return;
+    if (!account || !provider || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
-        const votes = await getVotingPower(
+        const strategyPayload = {
+          strategyName: round.voteStrategy.strategyName,
           account,
-          community.contractAddress,
+          blockTag: round.balanceBlockTag,
           provider,
-          round!.balanceBlockTag,
-        );
+          ...round.voteStrategy,
+        };
+        const votes = await execStrategy(strategyPayload);
+
         dispatch(setVotingPower(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);

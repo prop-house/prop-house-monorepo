@@ -10,11 +10,10 @@ import RoundModuleCard from '../RoundModuleCard';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useBlockNumber, useProvider } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { execStrategy } from '@prophouse/communities';
-import { BaseArgs } from '@prophouse/communities/dist/actions/execStrategy';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -39,7 +38,7 @@ const AcceptingPropsModule: React.FC<{
 
   useEffect(() => {
     const canPropose = async () => {
-      const params: BaseArgs = {
+      const params = {
         strategyName: auction.propStrategy.strategyName,
         account,
         blockTag: auction.balanceBlockTag,

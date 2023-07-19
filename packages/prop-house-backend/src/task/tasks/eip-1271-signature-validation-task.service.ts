@@ -156,11 +156,8 @@ export class EIP1271SignatureValidationTaskService {
     );
 
     const votingPower = await this._votesService.getVotingPower(
-      {
-        address: vote.address,
-        communityAddress: voteFromPayload.communityAddress,
-      },
-      proposal.auction.balanceBlockTag,
+      voteFromPayload.address,
+      proposal.auction,
     );
     if (!votingPower) {
       return false;

@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { getVotingPower } from '@prophouse/communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
@@ -33,6 +32,7 @@ import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -81,19 +81,23 @@ const RoundContent: React.FC<{
     const fetchVotes = async () => {
       try {
         const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-        const votes = await getVotingPower(
+
+        const strategyPayload = {
+          strategyName: auction.voteStrategy.strategyName,
           account,
-          community.contractAddress,
+          blockTag: auction.balanceBlockTag,
           provider,
-          auction.balanceBlockTag,
-        );
+          ...auction.voteStrategy,
+        };
+        const votes = await execStrategy(strategyPayload);
+
         dispatch(setVotingPower(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, signer, dispatch, community, auction.balanceBlockTag]);
+  }, [account, signer, dispatch, community, auction.balanceBlockTag, auction.voteStrategy]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
