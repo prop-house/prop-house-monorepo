@@ -27,7 +27,6 @@ const AcceptingPropsModule: React.FC<{
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const provider = useProvider();
-  const { data: blockTag } = useBlockNumber();
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
@@ -39,13 +38,11 @@ const AcceptingPropsModule: React.FC<{
       : 'Anyone that meets the round proposal requirements can submit a proposal.';
 
   useEffect(() => {
-    if (!blockTag) return;
-
     const canPropose = async () => {
       const params: BaseArgs = {
         strategyName: auction.propStrategy.strategyName,
         account,
-        blockTag,
+        blockTag: auction.balanceBlockTag,
         provider,
         ...auction.propStrategy,
       };
