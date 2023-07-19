@@ -3,17 +3,14 @@ import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { Contract } from 'ethers';
 import { BigNumber } from 'bignumber.js';
 import { parseBlockTag } from '../utils/parseBlockTag';
-import { Provider } from '@ethersproject/providers';
 import { formatUnits } from 'ethers/lib/utils';
+import { BaseArgs } from '../actions/execStrategy';
 
-export type balanceOfErc20StratArgs = {
-  account: string;
+export interface balanceOfErc20StratArgs extends BaseArgs {
   contract: string;
-  blockTag: number;
-  provider: Provider;
   decimals: number;
   multiplier: number;
-};
+}
 
 /**
  * Calculates `balanceOf` for ERC20 contract

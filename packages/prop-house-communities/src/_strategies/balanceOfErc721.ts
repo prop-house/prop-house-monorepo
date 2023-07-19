@@ -1,18 +1,14 @@
-import { Strategy } from '../types/Strategy';
 import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { Contract } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { parseBlockTag } from '../utils/parseBlockTag';
-import { Provider } from '@ethersproject/providers';
 import { _Strategy } from '../types/_Strategy';
+import { BaseArgs } from '../actions/execStrategy';
 
-export type balanceOfErc712StratArgs = {
-  account: string;
+export interface balanceOfErc712StratArgs extends BaseArgs {
   contract: string;
-  blockTag: number;
-  provider: Provider;
   multiplier: number;
-};
+}
 
 /**
  * Calculates `balanceOf` for ERC-721 contract

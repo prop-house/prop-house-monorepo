@@ -4,7 +4,7 @@ import { balanceOfErc20 } from './balanceOfErc20';
 
 export const _strategies = new CaseInsensitiveMap(
   Object.entries({
-    balanceOfErc20: balanceOfErc20,
     balanceOfErc721: balanceOfErc721,
+    balanceOfErc20: balanceOfErc20,
   }),
 );
