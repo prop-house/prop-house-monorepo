@@ -100,13 +100,13 @@ export class Auction implements AuctionBase {
   @Field(() => String, {
     description: 'The strategy that defines who can propose',
   })
-  propStrategy: string;
+  propStrategy: any;
 
   @Column({ type: 'jsonb', nullable: true, default: null })
   @Field(() => String, {
     description: 'The strategy that defines who can vote',
   })
-  voteStrategy: string;
+  voteStrategy: any;
 
   @BeforeInsert()
   setCreatedDate() {
