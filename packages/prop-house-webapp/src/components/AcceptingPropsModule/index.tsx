@@ -10,8 +10,11 @@ import RoundModuleCard from '../RoundModuleCard';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
-import { useAccount } from 'wagmi';
+import { useAccount, useBlockNumber, useProvider } from 'wagmi';
 import { useAppSelector } from '../../hooks';
+import { useEffect, useState } from 'react';
+import { execStrategy } from '@prophouse/communities';
+import { BaseArgs } from '@prophouse/communities/dist/actions/execStrategy';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -23,8 +26,38 @@ const AcceptingPropsModule: React.FC<{
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const provider = useProvider();
+  const { data: blockTag } = useBlockNumber();
   const { address: account } = useAccount();
   const { t } = useTranslation();
+
+  const [canPropose, setCanPropose] = useState(auction.propStrategy === null ? true : false);
+
+  const proposingCopy =
+    auction.propStrategy === null
+      ? t('anyoneCanSubmit')
+      : 'Anyone that meets the round proposal requirements can submit a proposal.';
+
+  useEffect(() => {
+    if (!blockTag) return;
+
+    const canPropose = async () => {
+      const params: BaseArgs = {
+        strategyName: auction.propStrategy.strategyName,
+        account,
+        blockTag,
+        provider,
+        ...auction.propStrategy,
+      };
+
+      try {
+        setCanPropose((await execStrategy(params)) > 0);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    canPropose();
+  });
 
   const content = (
     <>
@@ -32,7 +65,7 @@ const AcceptingPropsModule: React.FC<{
       <div className={classes.bulletList}>
         <div className={classes.bulletItem}>
           <hr className={classes.bullet} />
-          <p>{t('anyoneCanSubmit')}.</p>
+          <p>{proposingCopy}</p>
         </div>
 
         <div className={classes.bulletItem}>
@@ -65,12 +98,17 @@ const AcceptingPropsModule: React.FC<{
       {isProposingWindow &&
         (account ? (
           <Button
-            text={t('createYourProposal')}
-            bgColor={ButtonColor.Green}
+            text={
+              canPropose
+                ? 'Create your proposal'
+                : 'Your account is not eligible to submit a proposal'
+            }
+            bgColor={canPropose ? ButtonColor.Green : ButtonColor.Gray}
             onClick={() => {
               dispatch(clearProposal());
               navigate('/create', { state: { auction, community, proposals } });
             }}
+            disabled={!canPropose}
           />
         ) : (
           <ConnectButton color={ButtonColor.Pink} />
