@@ -5,7 +5,7 @@ import { parseBlockTag } from '../utils/parseBlockTag';
 import { _Strategy } from '../types/_Strategy';
 import { BaseArgs } from '../actions/execStrategy';
 
-export interface balanceOfErc712StratArgs extends BaseArgs {
+export interface balanceOfErc721StratArgs extends BaseArgs {
   contract: string;
   multiplier: number;
 }
@@ -13,7 +13,7 @@ export interface balanceOfErc712StratArgs extends BaseArgs {
 /**
  * Calculates `balanceOf` for ERC-721 contract
  */
-export const balanceOfErc721 = (params: balanceOfErc712StratArgs): _Strategy => {
+export const balanceOfErc721 = (params: balanceOfErc721StratArgs): _Strategy => {
   return async () => {
     const { account, contract, blockTag, provider, multiplier } = params;
     const _contract = new Contract(contract, BalanceOfABI, provider);
