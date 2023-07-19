@@ -67,7 +67,7 @@ export class InfiniteAuction implements AuctionBase {
   quorumAgainst: number;
 
   @Column({ type: 'jsonb', nullable: true, default: null })
-  @Field(() => JSON, {
+  @Field(() => String, {
     description: 'The strategy that defines who can propose',
   })
   propStrategy: string;
