@@ -73,7 +73,6 @@ const ProposalModalVotingModule: React.FC<{
         const strategyPayload = {
           strategyName: round.voteStrategy.strategyName,
           account,
-          blockTag: round.balanceBlockTag,
           provider,
           ...round.voteStrategy,
         };

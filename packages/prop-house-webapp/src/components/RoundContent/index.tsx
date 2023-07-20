@@ -85,7 +85,6 @@ const RoundContent: React.FC<{
         const strategyPayload = {
           strategyName: auction.voteStrategy.strategyName,
           account,
-          blockTag: auction.balanceBlockTag,
           provider,
           ...auction.voteStrategy,
         };

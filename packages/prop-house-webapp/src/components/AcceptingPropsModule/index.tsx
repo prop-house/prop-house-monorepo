@@ -43,7 +43,6 @@ const AcceptingPropsModule: React.FC<{
       const params = {
         strategyName: auction.propStrategy.strategyName,
         account,
-        blockTag: auction.balanceBlockTag,
         provider,
         ...auction.propStrategy,
       };
