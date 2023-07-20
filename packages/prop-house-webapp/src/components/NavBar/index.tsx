@@ -57,7 +57,7 @@ const NavBar = () => {
               </Nav.Link>
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <ConnectButton showBalance={false} label={t('connect')} />
+                <ConnectButton showBalance={false} label={t('connect')} chainStatus={'none'} />
               </Nav.Link>
 
               <AdminTool>
