@@ -13,6 +13,7 @@ import {
   RelationId,
 } from 'typeorm';
 import { AuctionBase } from './auction-base.type';
+import { defaultStrat } from 'src/utils/defaultStrat';
 
 @Entity()
 @ObjectType()
@@ -96,13 +97,17 @@ export class Auction implements AuctionBase {
   @Field(() => String)
   balanceBlockTag: number;
 
-  @Column({ type: 'jsonb', nullable: true, default: null })
+  @Column({
+    type: 'jsonb',
+    nullable: false,
+    default: defaultStrat,
+  })
   @Field(() => String, {
     description: 'The strategy that defines who can propose',
   })
   propStrategy: any;
 
-  @Column({ type: 'jsonb', nullable: true, default: null })
+  @Column({ type: 'jsonb', nullable: false, default: defaultStrat })
   @Field(() => String, {
     description: 'The strategy that defines who can vote',
   })
