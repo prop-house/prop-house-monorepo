@@ -82,7 +82,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           <b>{t('proposers')}:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>{t('connectToViewPropStatus')}.</p>
+              <p>{t('connectToViewPropStatus')}</p>
             </div>
           </div>
 
