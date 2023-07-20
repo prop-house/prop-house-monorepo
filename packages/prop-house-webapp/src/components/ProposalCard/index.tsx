@@ -205,7 +205,7 @@ const ProposalCard: React.FC<{
           </div>
         </Card>
       </div>
-      <ReplyBar proposal={proposal} />
+      {round && round.displayComments && <ReplyBar proposal={proposal} />}
     </>
   );
 };

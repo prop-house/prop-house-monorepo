@@ -113,6 +113,12 @@ export class Auction implements AuctionBase {
   })
   voteStrategy: any;
 
+  @Column({ default: true })
+  @Field(() => String, {
+    description: 'Display or hide comments section',
+  })
+  displayComments: boolean;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();

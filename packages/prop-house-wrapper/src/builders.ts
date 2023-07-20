@@ -97,6 +97,7 @@ export class TimedAuction extends Signable {
     public readonly description: string,
     public readonly propStrategy: any,
     public readonly voteStrategy: any,
+    public readonly displayComments: boolean,
   ) {
     super();
   }
@@ -116,7 +117,8 @@ export class TimedAuction extends Signable {
       balanceBlockTag: this.balanceBlockTag,
       description: this.description,
       propStrategy: this.propStrategy,
-      thisvoteStrategy: this.voteStrategy,
+      voteStrategy: this.voteStrategy,
+      displayComments: this.displayComments,
     };
   }
 }
@@ -155,6 +157,7 @@ export class InfiniteAuction extends Signable {
     public readonly votingPeriod: number,
     public readonly propStrategy: any,
     public readonly voteStrategy: any,
+    public readonly displayComments: boolean,
   ) {
     super();
   }
@@ -174,6 +177,7 @@ export class InfiniteAuction extends Signable {
       votingPeriod: this.votingPeriod,
       propStrategy: this.propStrategy,
       voteStrategy: this.voteStrategy,
+      displayComments: this.displayComments,
     };
   }
 }

@@ -79,6 +79,12 @@ export class InfiniteAuction implements AuctionBase {
   })
   voteStrategy: any;
 
+  @Column({ default: true })
+  @Field(() => String, {
+    description: 'Display or hide comments section',
+  })
+  displayComments: boolean;
+
   @OneToMany(() => InfiniteAuctionProposal, (proposal) => proposal.auction)
   @JoinColumn()
   @Field(() => [InfiniteAuctionProposal])
