@@ -17,7 +17,9 @@ export const balanceOfErc721 = (params: balanceOfErc721StratArgs): _Strategy => 
   return async () => {
     const { account, contract, blockTag, provider, multiplier } = params;
     const _contract = new Contract(contract, BalanceOfABI, provider);
-    const balance = await _contract.balanceOf(account, { blockTag: parseBlockTag(blockTag) });
+    const balance = await _contract.balanceOf(account, {
+      blockTag: parseBlockTag(blockTag),
+    });
     return new BigNumber(balance.toString()).times(multiplier).toNumber();
   };
 };

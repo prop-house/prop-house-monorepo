@@ -23,7 +23,6 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
 import ProposalCard from '../ProposalCard';
@@ -58,7 +57,10 @@ const RoundContent: React.FC<{
 
   const client = useRef(new PropHouseWrapper(host));
   const { data: signer } = useSigner();
-  const provider = useProvider();
+  const provider = useProvider({
+    chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
+  });
+
   const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
   const warningMessage = isTimedAuction(auction)
     ? t('submittedProposals')
@@ -80,8 +82,6 @@ const RoundContent: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-
         const strategyPayload = {
           strategyName: auction.voteStrategy.strategyName,
           account,

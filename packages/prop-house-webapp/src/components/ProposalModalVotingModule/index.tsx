@@ -29,18 +29,21 @@ const ProposalModalVotingModule: React.FC<{
 }> = props => {
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
 
-  const provider = useProvider();
-  const { address: account } = useAccount();
-
   const dispatch = useDispatch();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const chainId = round && round.voteStrategy.chainId;
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+
+  const provider = useProvider({
+    chainId: chainId ? chainId : 1,
+  });
+  const { address: account } = useAccount();
 
   const numVotesCasted =
     round && isTimedAuction(round)

@@ -25,7 +25,9 @@ const AcceptingPropsModule: React.FC<{
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const provider = useProvider();
+  const provider = useProvider({
+    chainId: auction.propStrategy.chainId,
+  });
   const { address: account } = useAccount();
   const { t } = useTranslation();
 

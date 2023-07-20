@@ -22,8 +22,7 @@ import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAccount } from 'wagmi';
-import { InfuraProvider } from '@ethersproject/providers';
+import { useAccount, useProvider } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
 import Countdown from '../Countdown';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
@@ -44,6 +43,9 @@ const StatusRoundCard: React.FC<{
 
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const provider = useProvider({
+    chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
+  });
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const wrapper = useMemo(() => new PropHouseWrapper(host), [host]);
@@ -72,7 +74,7 @@ const StatusRoundCard: React.FC<{
           strategyName: round.voteStrategy.strategyName,
           account,
           blockTag: round.balanceBlockTag,
-          provider: new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID),
+          provider,
           ...round.voteStrategy,
         };
         const votingPower = await execStrategy(strategyPayload);

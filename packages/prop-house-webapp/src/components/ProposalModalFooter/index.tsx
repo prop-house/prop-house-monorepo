@@ -44,16 +44,19 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { address: account } = useAccount();
-  const provider = useProvider();
-
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const chainId = round && round.voteStrategy.chainId;
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
+
+  const provider = useProvider({
+    chainId: chainId ? chainId : 1,
+  });
+  const { address: account } = useAccount();
 
   const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
