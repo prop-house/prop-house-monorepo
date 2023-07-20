@@ -117,7 +117,7 @@ const RoundContent: React.FC<{
 
   const handleSubmitVote = async () => {
     try {
-      const blockHeight = await fetchBlockNumber();
+      const blockHeight = await fetchBlockNumber({ chainId: auction.voteStrategy.chainId });
 
       const votes = voteAllotments
         .map(
