@@ -105,7 +105,13 @@ export class VotesService {
     account: string,
     round: Auction | InfiniteAuction,
   ): Promise<number> {
-    const provider = new ethers.providers.JsonRpcProvider(config().JSONRPC);
+    /** Hard coded values should be updated to be dynamic */
+    const chainId = round.voteStrategy.chainId;
+    const baseRPC = 'https://developer-access-mainnet.base.org';
+    const mainnetRPC = config().JSONRPC;
+    const provider = new ethers.providers.JsonRpcProvider(
+      chainId === 8453 ? baseRPC : mainnetRPC,
+    );
 
     const strategyPayload = {
       strategyName: round.voteStrategy.strategyName,
