@@ -101,28 +101,6 @@ export class VotesService {
     return votes.reduce((sum, vote) => sum + Number(vote.weight), 0);
   }
 
-  async getVotingPower(
-    account: string,
-    round: Auction | InfiniteAuction,
-  ): Promise<number> {
-    /** Hard coded values should be updated to be dynamic */
-    const chainId = round.voteStrategy.chainId;
-    const baseRPC = 'https://developer-access-mainnet.base.org';
-    const mainnetRPC = config().JSONRPC;
-    const provider = new ethers.providers.JsonRpcProvider(
-      chainId === 8453 ? baseRPC : mainnetRPC,
-    );
-
-    const strategyPayload = {
-      strategyName: round.voteStrategy.strategyName,
-      account,
-      provider,
-      ...round.voteStrategy,
-    };
-    const votingPower = await execStrategy(strategyPayload);
-    return votingPower;
-  }
-
   async createNewVote(
     createVoteDto: CreateVoteDto,
     proposal: Proposal | InfiniteAuctionProposal,

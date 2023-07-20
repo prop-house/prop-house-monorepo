@@ -17,6 +17,7 @@ import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
 import { AuctionsService } from 'src/auction/auctions.service';
 import { SignatureState } from 'src/types/signature';
 import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
+import { _execStrategy } from 'src/utils/execStrategy';
 
 @Controller('votes')
 export class VotesController {
@@ -135,7 +136,7 @@ export class VotesController {
     }
 
     // Verify that signer has voting power
-    const votingPower = await this.votesService.getVotingPower(
+    const votingPower = await _execStrategy(
       createVoteDto.address,
       foundProposalAuction,
     );
