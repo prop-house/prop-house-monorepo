@@ -34,9 +34,14 @@ const AcceptingPropsModule: React.FC<{
   const [canPropose, setCanPropose] = useState(auction.propStrategy === null ? true : false);
 
   const proposingCopy =
-    auction.propStrategy === null
-      ? t('anyoneCanSubmit')
-      : 'Anyone that meets the round proposal requirements can submit a proposal.';
+    auction.propStrategyDescription === null
+      ? "Anyone that meets the round's proposing requirements can submit a proposal."
+      : auction.propStrategyDescription;
+
+  const votingCopy =
+    auction.voteStrategyDescription === null
+      ? "Anyone that meets the round's voting requirements can submit a proposal."
+      : auction.voteStrategyDescription;
 
   useEffect(() => {
     const canPropose = async () => {
@@ -67,9 +72,7 @@ const AcceptingPropsModule: React.FC<{
 
         <div className={classes.bulletItem}>
           <hr className={classes.bullet} />
-          <p>
-            {t('ownersOfThe')} <b>{community.name}</b> {t('tokenWillVote')}.
-          </p>
+          <p>{votingCopy}</p>
         </div>
 
         <div className={classes.bulletItem}>
