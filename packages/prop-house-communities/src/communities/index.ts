@@ -152,6 +152,7 @@ export const communities = new CaseInsensitiveMap(
     '0x6066F888BF55366d13f83dF6a1fD355453D313EA': fixedVotes(1, [
       '0x6066F888BF55366d13f83dF6a1fD355453D313EA',
       '0xd9A9A52bc1529D3FF8Be57Af1AF7Ac09457F03cf',
+      '0xb49cd1B6D47De8170a3E097591196387EA2d773a',
     ]),
     // purpler
     '0x8edceb20795ac2b93ab8635af77e96cae123d045': balanceOfErc721(3),
