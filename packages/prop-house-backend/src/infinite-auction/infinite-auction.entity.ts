@@ -85,6 +85,18 @@ export class InfiniteAuction implements AuctionBase {
   })
   displayComments: boolean;
 
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can propose',
+  })
+  propStrategyDescription: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can vote',
+  })
+  voteStrategyDescription: string;
+
   @OneToMany(() => InfiniteAuctionProposal, (proposal) => proposal.auction)
   @JoinColumn()
   @Field(() => [InfiniteAuctionProposal])

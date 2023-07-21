@@ -119,6 +119,18 @@ export class Auction implements AuctionBase {
   })
   displayComments: boolean;
 
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can propose',
+  })
+  propStrategyDescription: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can vote',
+  })
+  voteStrategyDescription: string;
+
   @BeforeInsert()
   setCreatedDate() {
     this.createdDate = new Date();
