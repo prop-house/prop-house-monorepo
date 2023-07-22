@@ -88,7 +88,7 @@ const StatusRoundCard: React.FC<{
     };
 
     fetchVotesData();
-  }, [setVotingPower, account, community, round, wrapper]);
+  }, [setVotingPower, account, community, round, wrapper, provider]);
 
   // num votes
   useEffect(() => {

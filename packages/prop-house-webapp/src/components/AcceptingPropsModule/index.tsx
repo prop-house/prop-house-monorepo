@@ -32,7 +32,7 @@ const AcceptingPropsModule: React.FC<{
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
-  const [canPropose, setCanPropose] = useState(auction.propStrategy === null ? true : false);
+  const [canPropose, setCanPropose] = useState<null | boolean>(null);
   const [loadingCanPropose, setLoadingCanPropose] = useState(false);
 
   const proposingCopy =
@@ -46,9 +46,9 @@ const AcceptingPropsModule: React.FC<{
       : auction.voteStrategyDescription;
 
   useEffect(() => {
-    if (loadingCanPropose) return;
+    if (loadingCanPropose || canPropose !== null) return;
 
-    const canPropose = async () => {
+    const _canPropose = async () => {
       setLoadingCanPropose(true);
       const params = {
         strategyName: auction.propStrategy.strategyName,
@@ -64,8 +64,8 @@ const AcceptingPropsModule: React.FC<{
       }
       setLoadingCanPropose(false);
     };
-    canPropose();
-  }, []);
+    _canPropose();
+  }, [account, loadingCanPropose, auction.propStrategy, provider]);
 
   const content = (
     <>
@@ -116,7 +116,7 @@ const AcceptingPropsModule: React.FC<{
                 'Your account is not eligible to submit a proposal'
               )
             }
-            bgColor={canPropose ? ButtonColor.Green : ButtonColor.Gray}
+            bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
               navigate('/create', { state: { auction, community, proposals } });

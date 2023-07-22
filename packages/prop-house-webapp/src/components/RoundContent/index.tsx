@@ -96,7 +96,15 @@ const RoundContent: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, signer, dispatch, community, auction.balanceBlockTag, auction.voteStrategy]);
+  }, [
+    account,
+    signer,
+    dispatch,
+    community,
+    auction.balanceBlockTag,
+    auction.voteStrategy,
+    provider,
+  ]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
