@@ -14,6 +14,7 @@ import { useAccount, useProvider } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { execStrategy } from '@prophouse/communities';
+import LoadingIndicator from '../LoadingIndicator';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -32,6 +33,7 @@ const AcceptingPropsModule: React.FC<{
   const { t } = useTranslation();
 
   const [canPropose, setCanPropose] = useState(auction.propStrategy === null ? true : false);
+  const [loadingCanPropose, setLoadingCanPropose] = useState(false);
 
   const proposingCopy =
     auction.propStrategyDescription === null
@@ -44,7 +46,10 @@ const AcceptingPropsModule: React.FC<{
       : auction.voteStrategyDescription;
 
   useEffect(() => {
+    if (loadingCanPropose) return;
+
     const canPropose = async () => {
+      setLoadingCanPropose(true);
       const params = {
         strategyName: auction.propStrategy.strategyName,
         account,
@@ -57,9 +62,10 @@ const AcceptingPropsModule: React.FC<{
       } catch (e) {
         console.log(e);
       }
+      setLoadingCanPropose(false);
     };
     canPropose();
-  });
+  }, []);
 
   const content = (
     <>
@@ -99,9 +105,16 @@ const AcceptingPropsModule: React.FC<{
         (account ? (
           <Button
             text={
-              canPropose
-                ? 'Create your proposal'
-                : 'Your account is not eligible to submit a proposal'
+              loadingCanPropose ? (
+                <div className={classes.loadingCopy}>
+                  Verifying account requirements
+                  <LoadingIndicator height={30} width={30} />
+                </div>
+              ) : canPropose && !loadingCanPropose ? (
+                'Create your proposal'
+              ) : (
+                'Your account is not eligible to submit a proposal'
+              )
             }
             bgColor={canPropose ? ButtonColor.Green : ButtonColor.Gray}
             onClick={() => {
