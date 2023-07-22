@@ -7,7 +7,9 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
+import { useEffect, useState } from 'react';
+import { execStrategy } from '@prophouse/communities';
 
 /**
  * New, Edit and Delete buttons
@@ -32,8 +34,38 @@ const ProposalWindowButtons: React.FC<{
   const navigate = useNavigate();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
+
+  const provider = useProvider({
+    chainId: round!.propStrategy.chainId,
+  });
+
+  const [canPropose, setCanPropose] = useState<null | boolean>(null);
+  const [loadingCanPropose, setLoadingCanPropose] = useState(false);
+
+  useEffect(() => {
+    if (!round || loadingCanPropose || canPropose !== null) return;
+
+    const _canPropose = async () => {
+      setLoadingCanPropose(true);
+      const params = {
+        strategyName: round.propStrategy.strategyName,
+        account,
+        provider,
+        ...round.propStrategy,
+      };
+
+      try {
+        setCanPropose((await execStrategy(params)) > 0);
+      } catch (e) {
+        console.log(e);
+      }
+      setLoadingCanPropose(false);
+    };
+    _canPropose();
+  }, [account, loadingCanPropose, round!.propStrategy, provider]);
 
   return (
     <>
@@ -64,12 +96,22 @@ const ProposalWindowButtons: React.FC<{
             ) : (
               <>
                 <Button
-                  text={'+ New Prop'}
-                  bgColor={ButtonColor.PurpleLight}
+                  classNames={classes.fullWidthButton}
+                  text={
+                    loadingCanPropose ? (
+                      <div>Checking for account requirements...</div>
+                    ) : canPropose && !loadingCanPropose ? (
+                      'Create your proposal'
+                    ) : (
+                      'Your account is not eligible to submit a proposal'
+                    )
+                  }
+                  bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
                   onClick={() => {
                     dispatch(clearProposal());
-                    navigate('/create', { state: { auction: round, community } });
+                    navigate('/create', { state: { auction: round, community, proposals } });
                   }}
+                  disabled={!canPropose}
                 />
 
                 <div className={classes.editModeButtons}>
@@ -94,12 +136,21 @@ const ProposalWindowButtons: React.FC<{
           // NOT MY PROP
           <Button
             classNames={classes.fullWidthButton}
-            text={'+ New Prop'}
-            bgColor={ButtonColor.PurpleLight}
+            text={
+              loadingCanPropose ? (
+                <div>Checking for account requirements...</div>
+              ) : canPropose && !loadingCanPropose ? (
+                'Create your proposal'
+              ) : (
+                'Your account is not eligible to submit a proposal'
+              )
+            }
+            bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create', { state: { auction: round, community } });
+              navigate('/create', { state: { auction: round, community, proposals } });
             }}
+            disabled={!canPropose}
           />
         ))}
     </>
