@@ -72,9 +72,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           </>
         ) : (
           <p className={classes.subtitle}>
-            <b>
-              {t('youDontHaveAny')} {communityName} {t('requiredToVote')}.
-            </b>
+            <b>Your account does not have any votes in this round.</b>
           </p>
         )
       ) : (

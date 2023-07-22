@@ -86,9 +86,7 @@ const ProposalModalFooter: React.FC<{
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
       <p className={classes.noVotesMessage}>
-        <b>
-          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
-        </b>
+        <b>Your account does not have any votes in this round.</b>
       </p>
 
       <div className={classes.voteCount}>
