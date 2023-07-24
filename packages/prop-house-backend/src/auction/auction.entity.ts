@@ -13,7 +13,10 @@ import {
   RelationId,
 } from 'typeorm';
 import { AuctionBase } from './auction-base.type';
-import { defaultStrat } from 'src/utils/defaultStrat';
+import {
+  defaultProposingStrategy,
+  defaultVotingStrategy,
+} from 'src/utils/defaultStrategies';
 
 @Entity()
 @ObjectType()
@@ -100,14 +103,14 @@ export class Auction implements AuctionBase {
   @Column({
     type: 'jsonb',
     nullable: false,
-    default: defaultStrat,
+    default: defaultProposingStrategy,
   })
   @Field(() => String, {
     description: 'The strategy that defines who can propose',
   })
   propStrategy: any;
 
-  @Column({ type: 'jsonb', nullable: false, default: defaultStrat })
+  @Column({ type: 'jsonb', nullable: false, default: defaultVotingStrategy })
   @Field(() => String, {
     description: 'The strategy that defines who can vote',
   })
