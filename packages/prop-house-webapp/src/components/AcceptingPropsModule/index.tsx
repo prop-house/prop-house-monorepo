@@ -36,13 +36,13 @@ const AcceptingPropsModule: React.FC<{
   const [loadingCanPropose, setLoadingCanPropose] = useState(false);
 
   const proposingCopy =
-    auction.propStrategyDescription === null
-      ? "Anyone that meets the round's proposing requirements can submit a proposal."
+    auction.propStrategyDescription === undefined
+      ? "Accounts that meet the round's proposing requirements can submit a proposal."
       : auction.propStrategyDescription;
 
   const votingCopy =
-    auction.voteStrategyDescription === null
-      ? "Anyone that meets the round's voting requirements can submit a proposal."
+    auction.voteStrategyDescription === undefined
+      ? "Accounts that meet the round's voting requirements can vote for their favorite props."
       : auction.voteStrategyDescription;
 
   useEffect(() => {
