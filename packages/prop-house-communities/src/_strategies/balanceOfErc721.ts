@@ -28,7 +28,7 @@ export const balanceOfErc721 = (params: balanceOfErc721StratArgs): _Strategy => 
 
     const parsedBal = new BigNumber(balance.toString()).toNumber();
 
-    if (minBalanceReq && parsedBal > minBalanceReq.minBalance)
+    if (minBalanceReq && parsedBal >= minBalanceReq.minBalance)
       return minBalanceReq.fixedVotes ? minBalanceReq.fixedVotes : parsedBal * multiplier;
 
     return parsedBal * multiplier;
