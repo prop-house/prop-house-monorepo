@@ -8,7 +8,6 @@ import { Provider } from '@ethersproject/providers';
 export interface BaseArgs {
   strategyName: string;
   account: string;
-  blockTag: number;
   provider: Provider;
 }
 

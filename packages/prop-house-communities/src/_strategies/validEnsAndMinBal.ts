@@ -11,7 +11,7 @@ export interface validEnsAndMinBalStratArgs extends BaseArgs {
  */
 export const validEnsAndMinBal = (params: validEnsAndMinBalStratArgs): _Strategy => {
   return async () => {
-    const { account, blockTag, provider, minEthBal } = params;
+    const { account, provider, minEthBal } = params;
 
     const ens = await provider.lookupAddress(account);
     if (!ens) return 0;

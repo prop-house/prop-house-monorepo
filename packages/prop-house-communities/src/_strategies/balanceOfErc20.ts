@@ -8,6 +8,7 @@ import { BaseArgs } from '../actions/execStrategy';
 
 export interface balanceOfErc20StratArgs extends BaseArgs {
   contract: string;
+  blockTag: number;
   decimals: number;
   multiplier: number;
 }
