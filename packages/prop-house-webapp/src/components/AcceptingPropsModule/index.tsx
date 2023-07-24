@@ -65,7 +65,7 @@ const AcceptingPropsModule: React.FC<{
       setLoadingCanPropose(false);
     };
     _canPropose();
-  }, [account, loadingCanPropose, auction.propStrategy, provider]);
+  }, [account, loadingCanPropose, auction.propStrategy, provider, canPropose]);
 
   const content = (
     <>

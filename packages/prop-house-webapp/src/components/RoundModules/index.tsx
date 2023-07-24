@@ -77,11 +77,7 @@ const RoundModules: React.FC<{
   );
 
   const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
-    <TimedRoundVotingModule
-      communityName={community.name}
-      setShowVotingModal={setShowVotingModal}
-      totalVotes={getVoteTotal()}
-    />
+    <TimedRoundVotingModule setShowVotingModal={setShowVotingModal} totalVotes={getVoteTotal()} />
   );
 
   const infRoundVotingModule = isInfAuction(auction) &&

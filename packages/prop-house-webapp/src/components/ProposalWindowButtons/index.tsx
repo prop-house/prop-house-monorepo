@@ -65,7 +65,7 @@ const ProposalWindowButtons: React.FC<{
       setLoadingCanPropose(false);
     };
     _canPropose();
-  }, [account, loadingCanPropose, round!.propStrategy, provider]);
+  }, [account, loadingCanPropose, provider, canPropose, round]);
 
   return (
     <>

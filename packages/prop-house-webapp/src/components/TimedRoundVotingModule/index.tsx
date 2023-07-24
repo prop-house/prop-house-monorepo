@@ -13,14 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
 export interface TimedRoundVotingModuleProps {
-  communityName: string;
   totalVotes: number | undefined;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }
 const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   props: TimedRoundVotingModuleProps,
 ) => {
-  const { communityName, totalVotes, setShowVotingModal } = props;
+  const { totalVotes, setShowVotingModal } = props;
   const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
