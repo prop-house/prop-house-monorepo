@@ -19,7 +19,7 @@ export abstract class Signable {
 
     // parse reqAmount to support decimal values when signing an uint256 type
     let payload = this.toPayload();
-    if (payload.hasOwnProperty('reqAmount')) payload.reqAmount = payload.reqAmount.toString();
+    if (payload.reqAmount) payload.reqAmount = payload.reqAmount.toString();
 
     return await typedSigner._signTypedData(domainSeparator, eip712MessageType, payload);
   }
