@@ -175,7 +175,7 @@ export class ProposalsController {
     );
     if (!meetsReqToSubmit)
       throw new HttpException(
-        'You meet the requierements to submit a proposal',
+        'You do not meet the requirements to submit a proposal',
         HttpStatus.BAD_REQUEST,
       );
 
