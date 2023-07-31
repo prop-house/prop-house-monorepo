@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { _Strategy } from '../types/_Strategy';
+import { StrategyFactory, _Strategy } from '../types/_Strategy';
 import { BaseArgs } from '../actions/execStrategy';
 
 export interface validEnsAndMinBalStratArgs extends BaseArgs {
@@ -9,7 +9,9 @@ export interface validEnsAndMinBalStratArgs extends BaseArgs {
 /**
  * Checks for valid ENS reverse resolution + minimum balance
  */
-export const validEnsAndMinBal = (params: validEnsAndMinBalStratArgs): _Strategy => {
+export const validEnsAndMinBal: StrategyFactory<validEnsAndMinBalStratArgs> = (
+  params: validEnsAndMinBalStratArgs,
+): _Strategy => {
   return async () => {
     const { account, provider, minEthBal } = params;
 

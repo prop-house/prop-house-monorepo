@@ -2,7 +2,7 @@ import BalanceOfABI from '../abi/BalanceOfABI.json';
 import { Contract } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { parseBlockTag } from '../utils/parseBlockTag';
-import { _Strategy } from '../types/_Strategy';
+import { StrategyFactory, _Strategy } from '../types/_Strategy';
 import { BaseArgs } from '../actions/execStrategy';
 
 export interface balanceOfErc721StratArgs extends BaseArgs {
@@ -18,7 +18,9 @@ export interface balanceOfErc721StratArgs extends BaseArgs {
 /**
  * Calculates `balanceOf` for ERC-721 contract
  */
-export const balanceOfErc721 = (params: balanceOfErc721StratArgs): _Strategy => {
+export const balanceOfErc721: StrategyFactory<balanceOfErc721StratArgs> = (
+  params: balanceOfErc721StratArgs,
+): _Strategy => {
   return async () => {
     const { account, contract, blockTag, provider, multiplier, minBalanceReq } = params;
     const _contract = new Contract(contract, BalanceOfABI, provider);
