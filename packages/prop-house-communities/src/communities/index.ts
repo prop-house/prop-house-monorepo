@@ -161,6 +161,10 @@ export const communities = new CaseInsensitiveMap(
       '0xE310306A41b28D81b0Eac3A5452fD7fDFb67A37B',
     ]),
     // gnars
-    '0x558BFFF0D583416f7C4e380625c7865821b8E95C': balanceOfErc721(),
+    '0x558BFFF0D58341`6f7C4e380625c7865821b8E95C': balanceOfErc721(),
+    // contract reader
+    '0x3a6372B2013f9876a84761187d933DEe0653E377': fixedVotes(100, [
+      '0x3a6372B2013f9876a84761187d933DEe0653E377',
+    ]),
   }),
 );
