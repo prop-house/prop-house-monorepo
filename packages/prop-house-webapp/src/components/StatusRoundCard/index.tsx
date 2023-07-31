@@ -22,7 +22,7 @@ import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import Countdown from '../Countdown';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import useVotingPower from '../../hooks/useVotingPower';
@@ -41,9 +41,6 @@ const StatusRoundCard: React.FC<{
 
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const provider = useProvider({
-    chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
-  });
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const wrapper = useMemo(() => new PropHouseWrapper(host), [host]);
@@ -54,11 +51,12 @@ const StatusRoundCard: React.FC<{
   const dayAgo = dayjs().subtract(1, 'day').unix() * 1000;
   const tenYearsAgo = dayjs().subtract(10, 'year').unix() * 1000;
 
-  const [loadingCanVote, votingPower, numVotesCasted, votingCopy, fetchVotesData] = useVotingPower(
-    round,
-    account,
-    community,
-  );
+  const [
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    loadingCanVote,
+    votingPower,
+    numVotesCasted,
+  ] = useVotingPower(round, account, community);
 
   // num votes
   useEffect(() => {

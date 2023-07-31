@@ -7,9 +7,7 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
-import { useAccount, useProvider } from 'wagmi';
-import { useEffect, useState } from 'react';
-import { execStrategy } from '@prophouse/communities';
+import { useAccount } from 'wagmi';
 import useProposalGrants from '../../hooks/useProposalGrants';
 
 /**

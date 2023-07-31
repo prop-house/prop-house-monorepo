@@ -10,7 +10,7 @@ import RoundModuleCard from '../RoundModuleCard';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import LoadingIndicator from '../LoadingIndicator';
 import useProposalGrants from '../../hooks/useProposalGrants';
@@ -25,14 +25,13 @@ const AcceptingPropsModule: React.FC<{
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const provider = useProvider({
-    chainId: auction.propStrategy.chainId,
-  });
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
-  const [loadingCanPropose, canPropose, proposingCopy, votingCopy, refreshUserGrants] =
-    useProposalGrants(auction, account);
+  const [loadingCanPropose, canPropose, proposingCopy, votingCopy] = useProposalGrants(
+    auction,
+    account,
+  );
 
   const content = (
     <>

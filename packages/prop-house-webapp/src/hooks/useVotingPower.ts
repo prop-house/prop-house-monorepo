@@ -1,9 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { useProvider } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAppSelector } from '.';
 import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';
 
 export type UseVotingPowerResults = [
@@ -33,8 +31,6 @@ export type UseVotingPowerResults = [
   Refresh,
 ];
 
-const defaultProposingCopy =
-  "Accounts that meet the round's proposing requirements can submit a proposal.";
 const defaultVotingCopy =
   "Accounts that meet the round's voting requirements can vote for their favorite props.";
 
@@ -48,9 +44,7 @@ const useVotingPower = (
   const [votingPower, setVotingPower] = useState<null | number>(null);
 
   const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingCopy, setVotingCopy] = useState(defaultVotingCopy);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const wrapper = useMemo(() => new PropHouseWrapper(host), [host]);
+  const [votingCopy] = useState(defaultVotingCopy);
 
   const provider = useProvider({
     chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
@@ -65,7 +59,6 @@ const useVotingPower = (
       return;
     }
     setLoadingCanVote(true);
-    const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
     const params = {
       strategyName: round.voteStrategy.strategyName,
       account,
@@ -87,6 +80,7 @@ const useVotingPower = (
 
   useEffect(() => {
     fetchUserGrants();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, account, community]);
 
   return [

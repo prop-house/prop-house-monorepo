@@ -39,12 +39,8 @@ const useProposalGrants = (
   const [loadingCanPropose, setLoadingCanPropose] = useState(false);
   const [canPropose, setCanPropose] = useState<null | boolean>(null);
 
-  const [proposingCopy, setProposingCopy] = useState(
-    auction.propStrategyDescription ?? defaultProposingCopy,
-  );
-  const [votingCopy, setVotingCopy] = useState(
-    auction.voteStrategyDescription ?? defaultVotingCopy,
-  );
+  const [proposingCopy] = useState(auction.propStrategyDescription ?? defaultProposingCopy);
+  const [votingCopy] = useState(auction.voteStrategyDescription ?? defaultVotingCopy);
 
   const provider = useProvider({
     chainId: auction.propStrategy.chainId,
@@ -73,6 +69,7 @@ const useProposalGrants = (
 
   useEffect(() => {
     fetchUserGrants();
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auction, account]);
 
   return [loadingCanPropose, canPropose, proposingCopy, votingCopy, fetchUserGrants];
