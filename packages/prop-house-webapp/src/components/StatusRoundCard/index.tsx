@@ -22,10 +22,10 @@ import { setActiveRound } from '../../state/slices/propHouse';
 import TruncateThousands from '../TruncateThousands';
 import { useEffect, useMemo, useState } from 'react';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { useAccount, useProvider } from 'wagmi';
-import { execStrategy } from '@prophouse/communities';
+import { useAccount } from 'wagmi';
 import Countdown from '../Countdown';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import useVotingPower from '../../hooks/useVotingPower';
 
 const StatusRoundCard: React.FC<{
   round: StoredAuctionBase;
@@ -35,17 +35,12 @@ const StatusRoundCard: React.FC<{
   const { t } = useTranslation();
 
   const [community, setCommunity] = useState<Community | undefined>();
-  const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingPower, setVotingPower] = useState<number | undefined | null>(undefined);
   const [statusCopy, setStatusCopy] = useState('...');
   const [numProps, setNumProps] = useState<number | undefined>(undefined);
   const [numVotes, setNumVotes] = useState<number | undefined>(undefined);
 
   let navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const provider = useProvider({
-    chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
-  });
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const wrapper = useMemo(() => new PropHouseWrapper(host), [host]);
@@ -56,39 +51,12 @@ const StatusRoundCard: React.FC<{
   const dayAgo = dayjs().subtract(1, 'day').unix() * 1000;
   const tenYearsAgo = dayjs().subtract(10, 'year').unix() * 1000;
 
-  // fetch num votes casted & voting power
-  useEffect(() => {
-    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || !community) return;
-
-    if (!account) {
-      setVotingPower(null);
-      setNumVotesCasted(null);
-      return;
-    }
-
-    const fetchVotesData = async () => {
-      try {
-        const numVotesCasted = await wrapper.getNumVotesCastedForRound(account, round.id);
-
-        const strategyPayload = {
-          strategyName: round.voteStrategy.strategyName,
-          account,
-          provider,
-          ...round.voteStrategy,
-        };
-        const votingPower = await execStrategy(strategyPayload);
-
-        setVotingPower(votingPower);
-        setNumVotesCasted(numVotesCasted);
-      } catch (e) {
-        console.log('error fetching votes data: ', e);
-        setVotingPower(null);
-        setNumVotesCasted(null);
-      }
-    };
-
-    fetchVotesData();
-  }, [setVotingPower, account, community, round, wrapper, provider]);
+  const [
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    loadingCanVote,
+    votingPower,
+    numVotesCasted,
+  ] = useVotingPower(round, account, community);
 
   // num votes
   useEffect(() => {

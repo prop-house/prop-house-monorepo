@@ -1,22 +1,23 @@
-import { _Strategy } from '../types/_Strategy';
-import { getStrategy } from '../utils/getStrategy';
+import { StrategyName, StrategyNames, StrategyPayload, _strategies } from '../_strategies';
 import { Provider } from '@ethersproject/providers';
+import { getStrategy } from '../utils/getStrategy';
 
 /**
  * Interface to extend by strategy interfaces
  */
 export interface BaseArgs {
-  strategyName: string;
+  strategyName: StrategyName;
   account: string;
   provider: Provider;
 }
 
-export const execStrategy = async (args: any) => {
-  const strategy = getStrategy(args.strategyName);
-  if (!strategy) throw new Error(`No strategy found for strategy name ${args.strategyName}`);
+export const execStrategy = async (args: StrategyPayload) => {
+  if (!StrategyNames.includes(args.strategyName))
+    throw new Error(`No strategy found for strategy name ${args.strategyName}`);
+  const strategy = getStrategy(args.strategyName)(args);
 
   try {
-    return await strategy(args)();
+    return await strategy();
   } catch (e) {
     throw new Error(`Error executing strategy ${args.strategyName}: ${e}`);
   }

@@ -7,9 +7,8 @@ import { isSameAddress } from '../../utils/isSameAddress';
 import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
-import { useAccount, useProvider } from 'wagmi';
-import { useEffect, useState } from 'react';
-import { execStrategy } from '@prophouse/communities';
+import { useAccount } from 'wagmi';
+import useProposalGrants from '../../hooks/useProposalGrants';
 
 /**
  * New, Edit and Delete buttons
@@ -38,34 +37,7 @@ const ProposalWindowButtons: React.FC<{
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 
-  const provider = useProvider({
-    chainId: round!.propStrategy.chainId,
-  });
-
-  const [canPropose, setCanPropose] = useState<null | boolean>(null);
-  const [loadingCanPropose, setLoadingCanPropose] = useState(false);
-
-  useEffect(() => {
-    if (!round || loadingCanPropose || canPropose !== null) return;
-
-    const _canPropose = async () => {
-      setLoadingCanPropose(true);
-      const params = {
-        strategyName: round.propStrategy.strategyName,
-        account,
-        provider,
-        ...round.propStrategy,
-      };
-
-      try {
-        setCanPropose((await execStrategy(params)) > 0);
-      } catch (e) {
-        console.log(e);
-      }
-      setLoadingCanPropose(false);
-    };
-    _canPropose();
-  }, [account, loadingCanPropose, provider, canPropose, round]);
+  const [loadingCanPropose, canPropose] = useProposalGrants(round!, account);
 
   return (
     <>

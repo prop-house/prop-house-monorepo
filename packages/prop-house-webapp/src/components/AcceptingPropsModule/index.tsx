@@ -10,11 +10,10 @@ import RoundModuleCard from '../RoundModuleCard';
 import { isInfAuction } from '../../utils/auctionType';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
-import { useEffect, useState } from 'react';
-import { execStrategy } from '@prophouse/communities';
 import LoadingIndicator from '../LoadingIndicator';
+import useProposalGrants from '../../hooks/useProposalGrants';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -26,46 +25,13 @@ const AcceptingPropsModule: React.FC<{
   const isProposingWindow = auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const provider = useProvider({
-    chainId: auction.propStrategy.chainId,
-  });
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
-  const [canPropose, setCanPropose] = useState<null | boolean>(null);
-  const [loadingCanPropose, setLoadingCanPropose] = useState(false);
-
-  const proposingCopy =
-    auction.propStrategyDescription === null
-      ? "Accounts that meet the round's proposing requirements can submit a proposal."
-      : auction.propStrategyDescription;
-
-  const votingCopy =
-    auction.voteStrategyDescription === null
-      ? "Accounts that meet the round's voting requirements can vote for their favorite props."
-      : auction.voteStrategyDescription;
-
-  useEffect(() => {
-    if (loadingCanPropose || canPropose !== null) return;
-
-    const _canPropose = async () => {
-      setLoadingCanPropose(true);
-      const params = {
-        strategyName: auction.propStrategy.strategyName,
-        account,
-        provider,
-        ...auction.propStrategy,
-      };
-
-      try {
-        setCanPropose((await execStrategy(params)) > 0);
-      } catch (e) {
-        console.log(e);
-      }
-      setLoadingCanPropose(false);
-    };
-    _canPropose();
-  }, [account, loadingCanPropose, auction.propStrategy, provider, canPropose]);
+  const [loadingCanPropose, canPropose, proposingCopy, votingCopy] = useProposalGrants(
+    auction,
+    account,
+  );
 
   const content = (
     <>
