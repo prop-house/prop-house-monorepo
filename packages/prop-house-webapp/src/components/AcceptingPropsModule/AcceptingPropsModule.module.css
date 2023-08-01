@@ -29,7 +29,7 @@
 
 .listItem {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   gap: 12px;
   margin: 4px 0;
 }
