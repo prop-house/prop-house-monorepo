@@ -14,6 +14,8 @@ import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import LoadingIndicator from '../LoadingIndicator';
 import useProposalGrants from '../../hooks/useProposalGrants';
+import { BsPersonFill, BsFillAwardFill } from 'react-icons/bs';
+import { MdHowToVote } from 'react-icons/md';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -35,20 +37,25 @@ const AcceptingPropsModule: React.FC<{
 
   const content = (
     <>
-      <b>{t('howProposingWorks')}:</b>
-      <div className={classes.bulletList}>
-        <div className={classes.bulletItem}>
-          <hr className={classes.bullet} />
+      <div className={classes.list}>
+        <div className={classes.listItem}>
+          <div className={classes.icon}>
+            <BsPersonFill color="" />
+          </div>
           <p>{proposingCopy}</p>
         </div>
 
-        <div className={classes.bulletItem}>
-          <hr className={classes.bullet} />
+        <div className={classes.listItem}>
+          <div className={classes.icon}>
+            <MdHowToVote />
+          </div>
           <p>{votingCopy}</p>
         </div>
 
-        <div className={classes.bulletItem}>
-          <hr className={classes.bullet} />
+        <div className={classes.listItem}>
+          <div className={classes.icon}>
+            <BsFillAwardFill />
+          </div>
           <p>
             {isInfAuction(auction) ? (
               'Proposals that meet quorum will get funded.'
@@ -79,7 +86,7 @@ const AcceptingPropsModule: React.FC<{
               ) : canPropose && !loadingCanPropose ? (
                 'Create your proposal'
               ) : (
-                'Your account is not eligible to submit a proposal'
+                'Wallet is ineligible to propose'
               )
             }
             bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}

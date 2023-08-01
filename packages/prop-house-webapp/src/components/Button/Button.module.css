@@ -169,20 +169,20 @@
 /* GRAY BG */
 
 .btnGrayBg {
-  background: var(--border-light) !important;
+  background: var(--brand-gray) !important;
   border: none;
-  color: var(--brand-gray);
+  color: var(--bg-light);
 }
 
 .btnGrayBg:hover {
-  color: var(--brand-gray-semi-transparent);
+  color: var(--bg-light);
 }
 
 .btnGrayBg:active,
 .btnGrayBg:focus {
-  color: var(--brand-gray);
+  color: var(--bg-light);
 }
 
 .btnGrayBg:disabled {
-  color: var(--brand-gray-semi-transparent);
+  color: var(--bg-light);
 }
