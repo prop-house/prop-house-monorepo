@@ -1,10 +1,7 @@
 import classes from './HouseHeader.module.css';
-import trimEthAddress from '../../utils/trimEthAddress';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import { useState } from 'react';
 import CommunityProfImg from '../CommunityProfImg';
 import clsx from 'clsx';
-import Tooltip from '../Tooltip';
 import { useTranslation } from 'react-i18next';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
@@ -17,8 +14,6 @@ const HouseHeader: React.FC<{
   community: Community;
 }> = props => {
   const { community } = props;
-
-  const [addressTooltipCopy, setAddressTooltipCopy] = useState('Click to copy');
 
   const communityDescription = (
     <div className={classes.communityDescriptionRow}>
