@@ -86,7 +86,7 @@ const AcceptingPropsModule: React.FC<{
               ) : canPropose && !loadingCanPropose ? (
                 'Create your proposal'
               ) : (
-                'Your account is not eligible to submit a proposal'
+                'Wallet is ineligible to propose'
               )
             }
             bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
