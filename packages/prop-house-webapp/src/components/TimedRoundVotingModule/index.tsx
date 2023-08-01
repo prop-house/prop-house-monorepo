@@ -13,14 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 
 export interface TimedRoundVotingModuleProps {
-  communityName: string;
   totalVotes: number | undefined;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }
 const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   props: TimedRoundVotingModuleProps,
 ) => {
-  const { communityName, totalVotes, setShowVotingModal } = props;
+  const { totalVotes, setShowVotingModal } = props;
   const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
@@ -72,9 +71,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           </>
         ) : (
           <p className={classes.subtitle}>
-            <b>
-              {t('youDontHaveAny')} {communityName} {t('requiredToVote')}.
-            </b>
+            <b>Your account does not have any votes in this round.</b>
           </p>
         )
       ) : (
@@ -82,7 +79,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           <b>{t('proposers')}:</b>
           <div className={classes.bulletList}>
             <div className={classes.bulletItem}>
-              <p>{t('connectToViewPropStatus')}.</p>
+              <p>{t('connectToViewPropStatus')}</p>
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import classes from './Button.module.css';
 import clsx from 'clsx';
+import { ReactNode } from 'react';
 import { Button as BSButton } from 'react-bootstrap';
 
 export enum ButtonColor {
@@ -15,7 +16,7 @@ export enum ButtonColor {
 }
 
 export interface ButtonProps {
-  text: string;
+  text: string | ReactNode;
   bgColor: ButtonColor;
   disabled?: boolean;
   onClick?: (e: any) => void;

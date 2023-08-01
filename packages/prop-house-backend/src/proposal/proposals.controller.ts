@@ -24,6 +24,7 @@ import {
   UpdateProposalDto,
 } from './proposal.types';
 import { ProposalsService } from './proposals.service';
+import { _execStrategy } from 'src/utils/execStrategy';
 
 @Controller('proposals')
 export class ProposalsController {
@@ -165,6 +166,16 @@ export class ProposalsController {
     if (!canSubmitProposals(foundAuction))
       throw new HttpException(
         'You cannot edit proposals for this round at this time',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const meetsReqToSubmit = await _execStrategy(
+      createProposalDto.address,
+      foundAuction,
+    );
+    if (!meetsReqToSubmit)
+      throw new HttpException(
+        'You do not meet the requirements to submit a proposal',
         HttpStatus.BAD_REQUEST,
       );
 

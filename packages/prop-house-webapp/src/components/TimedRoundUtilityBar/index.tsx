@@ -40,12 +40,6 @@ const TimedRoundUtilityBar: React.FC<{
         }
       />
 
-      <RoundUtilBarItemTooltip
-        title={t('Snapshot')}
-        content={timedRound.balanceBlockTag.toString()}
-        tooltipContent={`Voters with ${community?.name} NFTs in their wallets before the snapshot block are eligible to vote.`}
-      />
-
       <RoundUtilBarItem
         title={proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
         content={proposals.length.toString()}

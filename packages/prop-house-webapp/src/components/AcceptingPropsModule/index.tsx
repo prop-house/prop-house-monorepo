@@ -12,6 +12,8 @@ import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
+import LoadingIndicator from '../LoadingIndicator';
+import useProposalGrants from '../../hooks/useProposalGrants';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -26,20 +28,23 @@ const AcceptingPropsModule: React.FC<{
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
+  const [loadingCanPropose, canPropose, proposingCopy, votingCopy] = useProposalGrants(
+    auction,
+    account,
+  );
+
   const content = (
     <>
       <b>{t('howProposingWorks')}:</b>
       <div className={classes.bulletList}>
         <div className={classes.bulletItem}>
           <hr className={classes.bullet} />
-          <p>{t('anyoneCanSubmit')}.</p>
+          <p>{proposingCopy}</p>
         </div>
 
         <div className={classes.bulletItem}>
           <hr className={classes.bullet} />
-          <p>
-            {t('ownersOfThe')} <b>{community.name}</b> {t('tokenWillVote')}.
-          </p>
+          <p>{votingCopy}</p>
         </div>
 
         <div className={classes.bulletItem}>
@@ -65,12 +70,24 @@ const AcceptingPropsModule: React.FC<{
       {isProposingWindow &&
         (account ? (
           <Button
-            text={t('createYourProposal')}
-            bgColor={ButtonColor.Green}
+            text={
+              loadingCanPropose ? (
+                <div className={classes.loadingCopy}>
+                  Verifying account requirements
+                  <LoadingIndicator height={30} width={30} />
+                </div>
+              ) : canPropose && !loadingCanPropose ? (
+                'Create your proposal'
+              ) : (
+                'Your account is not eligible to submit a proposal'
+              )
+            }
+            bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
               navigate('/create', { state: { auction, community, proposals } });
             }}
+            disabled={!canPropose}
           />
         ) : (
           <ConnectButton color={ButtonColor.Pink} />
