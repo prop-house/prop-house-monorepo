@@ -31,8 +31,8 @@ const HouseHeader: React.FC<{
               props: {
                 target: '_blank',
                 rel: 'noreferrer',
-              }
-            }
+              },
+            },
           },
         }}
       >
@@ -40,7 +40,6 @@ const HouseHeader: React.FC<{
           allowedAttributes: {
             a: ['href', 'target'],
           },
-
         })}
       </Markdown>
     </div>
@@ -58,29 +57,6 @@ const HouseHeader: React.FC<{
         <div className={classes.houseTitleInfo}>
           <div className={clsx(classes.titleRow, isLongName(community.name) && classes.longName)}>
             <div className={classes.title}>{community.name} House</div>
-            <Tooltip
-              content={
-                <div
-                  className={classes.contractAddressPill}
-                  onMouseEnter={() => setAddressTooltipCopy(t('clickToCopy'))}
-                  onClick={() => {
-                    setAddressTooltipCopy(t('copied'));
-                    navigator.clipboard.writeText(
-                      community
-                        ? community.contractAddress
-                        : '0x0000000000000000000000000000000000000000',
-                    );
-                  }}
-                >
-                  {trimEthAddress(
-                    community
-                      ? community.contractAddress
-                      : '0x0000000000000000000000000000000000000000',
-                  )}{' '}
-                </div>
-              }
-              tooltipContent={addressTooltipCopy}
-            />
           </div>
 
           <div className={classes.propHouseDataRow}>
