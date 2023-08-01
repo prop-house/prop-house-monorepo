@@ -14,8 +14,7 @@ export const verifyAccountSignature = (
 
   // parse reqAmount to support decimal values when signing an uint256 type
   let payload = JSON.parse(message);
-  if (payload.hasOwnProperty('reqAmount'))
-    payload.reqAmount = payload.reqAmount.toString();
+  if (payload.reqAmount) payload.reqAmount = payload.reqAmount.toString();
 
   try {
     actualSigner = verifyTypedData(

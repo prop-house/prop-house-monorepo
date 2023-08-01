@@ -26,9 +26,10 @@ import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/r
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
+import { base } from './types/base';
 
 const { chains, provider } = configureChains(
-  [mainnet],
+  [mainnet, base],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 

@@ -5,7 +5,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
-import { getVotingPower } from '@prophouse/communities';
+import { execStrategy } from '@prophouse/communities';
 import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import ProposalModalVotingModule from '../ProposalModalVotingModule';
@@ -44,32 +44,37 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const { address: account } = useAccount();
-  const provider = useProvider();
-
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const chainId = round && round.voteStrategy.chainId;
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
+
+  const provider = useProvider({
+    chainId: chainId ? chainId : 1,
+  });
+  const { address: account } = useAccount();
 
   const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
   const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
-    if (!account || !provider || !community) return;
+    if (!account || !provider || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
-        const votes = await getVotingPower(
+        const strategyPayload = {
+          strategyName: round.voteStrategy.strategyName,
           account,
-          community.contractAddress,
           provider,
-          round!.balanceBlockTag,
-        );
+          ...round.voteStrategy,
+        };
+        const votes = await execStrategy(strategyPayload);
+
         dispatch(setVotingPower(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);
@@ -81,9 +86,7 @@ const ProposalModalFooter: React.FC<{
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
       <p className={classes.noVotesMessage}>
-        <b>
-          {t('youDontHaveAny')} {community?.name ?? 'tokens'} {t('requiredToVote')}.
-        </b>
+        <b>Your account does not have any votes in this round.</b>
       </p>
 
       <div className={classes.voteCount}>

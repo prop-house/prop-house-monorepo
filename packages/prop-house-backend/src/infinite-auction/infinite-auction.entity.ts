@@ -14,6 +14,10 @@ import {
   RelationId,
 } from 'typeorm';
 import { isProposalFunded, sumAmountRequested } from './utils';
+import {
+  defaultProposingStrategy,
+  defaultVotingStrategy,
+} from 'src/utils/defaultStrategies';
 
 @Entity()
 @ObjectType()
@@ -65,6 +69,36 @@ export class InfiniteAuction implements AuctionBase {
       'The minimum vote count that a proposal must have to be rejected',
   })
   quorumAgainst: number;
+
+  @Column({ type: 'jsonb', nullable: false, default: defaultProposingStrategy })
+  @Field(() => String, {
+    description: 'The strategy that defines who can propose',
+  })
+  propStrategy: any;
+
+  @Column({ type: 'jsonb', nullable: false, default: defaultVotingStrategy })
+  @Field(() => String, {
+    description: 'The strategy that defines who can vote',
+  })
+  voteStrategy: any;
+
+  @Column({ default: true })
+  @Field(() => String, {
+    description: 'Display or hide comments section',
+  })
+  displayComments: boolean;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can propose',
+  })
+  propStrategyDescription: string;
+
+  @Column({ nullable: true, default: null })
+  @Field(() => String, {
+    description: 'Describes who can vote',
+  })
+  voteStrategyDescription: string;
 
   @OneToMany(() => InfiniteAuctionProposal, (proposal) => proposal.auction)
   @JoinColumn()

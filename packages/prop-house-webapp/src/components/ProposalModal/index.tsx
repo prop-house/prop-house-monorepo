@@ -155,10 +155,10 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
-    if (!activeProposal) return;
+    if (!activeProposal || !round) return;
 
     try {
-      const blockHeight = await fetchBlockNumber();
+      const blockHeight = await fetchBlockNumber({ chainId: round.voteStrategy.chainId });
 
       const votes = voteAllotments
         .map(

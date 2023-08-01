@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { getVotingPower } from '@prophouse/communities';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
@@ -24,7 +23,6 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { InfuraProvider } from '@ethersproject/providers';
 import { useAccount, useSigner, useProvider } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
 import ProposalCard from '../ProposalCard';
@@ -33,6 +31,7 @@ import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -58,7 +57,10 @@ const RoundContent: React.FC<{
 
   const client = useRef(new PropHouseWrapper(host));
   const { data: signer } = useSigner();
-  const provider = useProvider();
+  const provider = useProvider({
+    chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
+  });
+
   const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
   const warningMessage = isTimedAuction(auction)
     ? t('submittedProposals')
@@ -80,20 +82,29 @@ const RoundContent: React.FC<{
 
     const fetchVotes = async () => {
       try {
-        const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-        const votes = await getVotingPower(
+        const strategyPayload = {
+          strategyName: auction.voteStrategy.strategyName,
           account,
-          community.contractAddress,
           provider,
-          auction.balanceBlockTag,
-        );
+          ...auction.voteStrategy,
+        };
+        const votes = await execStrategy(strategyPayload);
+
         dispatch(setVotingPower(votes));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, signer, dispatch, community, auction.balanceBlockTag]);
+  }, [
+    account,
+    signer,
+    dispatch,
+    community,
+    auction.balanceBlockTag,
+    auction.voteStrategy,
+    provider,
+  ]);
 
   // update submitted votes on proposal changes
   useEffect(() => {
@@ -114,7 +125,7 @@ const RoundContent: React.FC<{
 
   const handleSubmitVote = async () => {
     try {
-      const blockHeight = await fetchBlockNumber();
+      const blockHeight = await fetchBlockNumber({ chainId: auction.voteStrategy.chainId });
 
       const votes = voteAllotments
         .map(

@@ -11,22 +11,36 @@ import { countNumVotes } from '../../utils/countNumVotes';
 import ConnectButton from '../ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
+import { BsPersonFill } from 'react-icons/bs';
+import { MdHowToVote } from 'react-icons/md';
+import useVotingPower from '../../hooks/useVotingPower';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 
 export interface TimedRoundVotingModuleProps {
-  communityName: string;
+  round: StoredAuctionBase;
   totalVotes: number | undefined;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }
 const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   props: TimedRoundVotingModuleProps,
 ) => {
-  const { communityName, totalVotes, setShowVotingModal } = props;
+  const { round, totalVotes, setShowVotingModal } = props;
   const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
   const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
+
+  const [
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _loadingCanVote,
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _votingPower,
+    //eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _numVotesCasted,
+    votingCopy,
+  ] = useVotingPower(round, account, undefined);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
@@ -72,27 +86,25 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           </>
         ) : (
           <p className={classes.subtitle}>
-            <b>
-              {t('youDontHaveAny')} {communityName} {t('requiredToVote')}.
-            </b>
+            <b>Your account does not have any votes in this round.</b>
           </p>
         )
       ) : (
-        <p className={classes.sideCardBody}>
-          <b>{t('proposers')}:</b>
-          <div className={classes.bulletList}>
-            <div className={classes.bulletItem}>
-              <p>{t('connectToViewPropStatus')}.</p>
+        <div className={classes.list}>
+          <div className={classes.listItem}>
+            <div className={classes.icon}>
+              <BsPersonFill color="" />
             </div>
+            <p>Proposers can connect their wallet to view the status of their proposal.</p>
           </div>
 
-          <b>{t('voters')}:</b>
-          <div className={classes.bulletList}>
-            <div className={classes.bulletItem}>
-              <p>{t('connectToVoteOnProps')}</p>
+          <div className={classes.listItem}>
+            <div className={classes.icon}>
+              <MdHowToVote />
             </div>
+            <p>{votingCopy}</p>
           </div>
-        </p>
+        </div>
       )}
       {!account ? (
         <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
