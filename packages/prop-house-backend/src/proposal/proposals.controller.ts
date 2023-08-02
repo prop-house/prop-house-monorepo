@@ -172,6 +172,7 @@ export class ProposalsController {
     const meetsReqToSubmit = await _execStrategy(
       createProposalDto.address,
       foundAuction,
+      'propStrategy',
     );
     if (!meetsReqToSubmit)
       throw new HttpException(
