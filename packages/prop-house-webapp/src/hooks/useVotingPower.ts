@@ -44,7 +44,7 @@ const useVotingPower = (
   const [votingPower, setVotingPower] = useState<null | number>(null);
 
   const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingCopy] = useState(defaultVotingCopy);
+  const [votingCopy] = useState(round.voteStrategyDescription ?? defaultVotingCopy);
 
   const provider = useProvider({
     chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
