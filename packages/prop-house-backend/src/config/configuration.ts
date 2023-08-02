@@ -10,11 +10,23 @@ export interface FileConfig {
   basePath: string;
 }
 
+export interface ThrottleConfig {
+  /**
+   * Throttling interval
+   */
+  ttl: number;
+  /**
+   * Number of queries allowed per-ttl
+   */
+  limit: number;
+}
+
 export interface Config {
   database: DbConfig;
   env: string;
   JSONRPC: string;
   file: FileConfig;
+  throttle: ThrottleConfig;
 }
 
 const config = (): Config => ({
@@ -28,8 +40,12 @@ const config = (): Config => ({
   env: process.env.NODE_ENV ?? 'development',
   JSONRPC: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   file: {
-    basePath: process.env.FILE_BASE_PATH ?? '/data'
-  }
+    basePath: process.env.FILE_BASE_PATH ?? '/data',
+  },
+  throttle: {
+    ttl: parseInt(process.env.THROTTLE_TTL) || 5,
+    limit: parseInt(process.env.THROTTLE_LIMIT) || 50,
+  },
 });
 
 export const subgraphApiUri =

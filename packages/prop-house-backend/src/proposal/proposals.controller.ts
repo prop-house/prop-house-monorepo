@@ -25,6 +25,7 @@ import {
 } from './proposal.types';
 import { ProposalsService } from './proposals.service';
 import { _execStrategy } from 'src/utils/execStrategy';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('proposals')
 export class ProposalsController {
@@ -148,6 +149,7 @@ export class ProposalsController {
     return this.proposalsService.store(foundProposal);
   }
 
+  @Throttle(10, 1)
   @Post()
   async create(
     @Body(ECDSASignedPayloadValidationPipe)
