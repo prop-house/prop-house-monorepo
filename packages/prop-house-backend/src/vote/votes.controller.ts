@@ -139,6 +139,7 @@ export class VotesController {
     const votingPower = await _execStrategy(
       createVoteDto.address,
       foundProposalAuction,
+      'voteStrategy',
     );
 
     if (votingPower === 0) {

@@ -158,6 +158,7 @@ export class EIP1271SignatureValidationTaskService {
     const votingPower = await _execStrategy(
       voteFromPayload.address,
       proposal.auction,
+      'voteStrategy',
     );
     if (!votingPower) {
       return false;
