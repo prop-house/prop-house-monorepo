@@ -44,7 +44,16 @@ const Home = () => {
       setIsLoading(true);
       const communities = await client.current.getCommunities();
 
-      setCommunities(communities.sort((a, b) => (a.numProposals < b.numProposals ? 1 : -1)));
+      const sortedCommunities = communities.sort((a, b) =>
+        a.numProposals < b.numProposals ? 1 : -1,
+      );
+      // start // temp sorting to move BASE up to top row
+      const originalIndex = sortedCommunities.findIndex(c => c.id === 68);
+      const newIndex = 1;
+      const [item] = sortedCommunities.splice(originalIndex, 1);
+      sortedCommunities.splice(newIndex, 0, item);
+      // end // temp sorting
+      setCommunities(sortedCommunities);
 
       const accEthFunded = communities.reduce((prev, current) => prev + current.ethFunded, 0);
       const accRounds = communities.reduce((prev, current) => prev + current.numAuctions, 0);
