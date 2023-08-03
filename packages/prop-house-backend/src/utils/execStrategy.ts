@@ -7,10 +7,11 @@ import { Address } from 'src/types/address';
 
 export const _execStrategy = async (
   account: Address,
-  round: Pick<Auction | InfiniteAuction, 'voteStrategy'>,
+  round: Pick<Auction | InfiniteAuction, 'voteStrategy' | 'propStrategy'>,
+  strategyType: 'voteStrategy' | 'propStrategy', // Additional parameter for strategy type
 ): Promise<number> => {
   /** Hard coded values should be updated to be dynamic */
-  const chainId = round.voteStrategy.chainId;
+  const chainId = round[strategyType].chainId;
   const baseRPC = 'https://developer-access-mainnet.base.org';
   const mainnetRPC = config().JSONRPC;
 
@@ -19,10 +20,10 @@ export const _execStrategy = async (
   );
 
   const strategyPayload = {
-    strategyName: round.voteStrategy.strategyName,
+    strategyName: round[strategyType].strategyName,
     account,
     provider,
-    ...round.voteStrategy,
+    ...round[strategyType],
   };
   const votingPower = await execStrategy(strategyPayload);
   return votingPower;

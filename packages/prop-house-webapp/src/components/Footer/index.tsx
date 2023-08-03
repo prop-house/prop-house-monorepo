@@ -2,8 +2,8 @@ import classes from './Footer.module.css';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import bgColorForFooter from '../../utils/bgColorForFooter';
-import { FaDiscord, FaTwitter, FaGithub } from 'react-icons/fa';
 import { externalURL, ExternalURL } from '../../utils/externalURLs';
+import tos from '../../assets/files/prophouse-tos.pdf';
 
 const Footer = () => {
   const location = useLocation();
@@ -16,15 +16,19 @@ const Footer = () => {
     <div className={clsx(classes.footerContainer, bgColorForFooter(location.pathname))}>
       <div className={classes.footer}>
         <a href={twitterURL} target="_blank" rel="noreferrer">
-          <FaTwitter />
+          twitter
         </a>
-
+        ·
         <a href={discordURL} target="_blank" rel="noreferrer">
-          <FaDiscord />
+          discord
         </a>
-
+        ·
         <a href={githubURL} target="_blank" rel="noreferrer">
-          <FaGithub />
+          github
+        </a>
+        ·
+        <a href={tos} download>
+          terms of service
         </a>
       </div>
     </div>

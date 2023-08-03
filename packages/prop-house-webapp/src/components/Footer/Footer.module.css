@@ -9,13 +9,14 @@
 
 .footer {
   display: flex;
-  gap: 15px;
-  font-size: 18px;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--brand-pink) !important;
 }
 
-.footer a {
-  color: var(--brand-pink) !important;
-  text-decoration: underline;
+.footer a:hover {
+  text-decoration: underline !important;
 }
 
 @media (max-width: 575px) {
