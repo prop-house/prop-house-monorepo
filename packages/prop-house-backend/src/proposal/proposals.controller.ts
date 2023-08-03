@@ -25,7 +25,6 @@ import {
 } from './proposal.types';
 import { ProposalsService } from './proposals.service';
 import { _execStrategy } from 'src/utils/execStrategy';
-import { Throttle } from '@nestjs/throttler';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('proposals')
@@ -156,7 +155,6 @@ export class ProposalsController {
     return storeResult;
   }
 
-  @Throttle(10, 1)
   @Post()
   async create(
     @Body(ECDSASignedPayloadValidationPipe)

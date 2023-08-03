@@ -10,17 +10,6 @@ export interface FileConfig {
   basePath: string;
 }
 
-export interface ThrottleConfig {
-  /**
-   * Throttling interval
-   */
-  ttl: number;
-  /**
-   * Number of queries allowed per-ttl
-   */
-  limit: number;
-}
-
 export interface DiscordBotConfig {
   appId: string | undefined,
   publicKey: string | undefined,
@@ -32,7 +21,6 @@ export interface Config {
   env: string;
   JSONRPC: string;
   file: FileConfig;
-  throttle: ThrottleConfig;
   discordBot: DiscordBotConfig
 }
 
@@ -48,10 +36,6 @@ const config = (): Config => ({
   JSONRPC: `https://mainnet.infura.io/v3/${process.env.REACT_APP_INFURA_PROJECT_ID}`,
   file: {
     basePath: process.env.FILE_BASE_PATH ?? '/data',
-  },
-  throttle: {
-    ttl: parseInt(process.env.THROTTLE_TTL) || 5,
-    limit: parseInt(process.env.THROTTLE_LIMIT) || 50,
   },
   discordBot: {
     appId: process.env.DISCORD_APP_ID,
