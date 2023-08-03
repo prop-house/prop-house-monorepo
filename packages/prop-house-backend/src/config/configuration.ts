@@ -21,12 +21,19 @@ export interface ThrottleConfig {
   limit: number;
 }
 
+export interface DiscordBotConfig {
+  appId: string | undefined,
+  publicKey: string | undefined,
+  token: string | undefined,
+}
+
 export interface Config {
   database: DbConfig;
   env: string;
   JSONRPC: string;
   file: FileConfig;
   throttle: ThrottleConfig;
+  discordBot: DiscordBotConfig
 }
 
 const config = (): Config => ({
@@ -46,6 +53,11 @@ const config = (): Config => ({
     ttl: parseInt(process.env.THROTTLE_TTL) || 5,
     limit: parseInt(process.env.THROTTLE_LIMIT) || 50,
   },
+  discordBot: {
+    appId: process.env.DISCORD_APP_ID,
+    publicKey: process.env.DISCORD_PUBLIC_KEY,
+    token: process.env.DISCORD_TOKEN
+  }
 });
 
 export const subgraphApiUri =

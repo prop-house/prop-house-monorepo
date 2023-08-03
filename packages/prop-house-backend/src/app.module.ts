@@ -10,6 +10,8 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { DiscordModule } from './discord/discord.module';
+import {  EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -27,8 +29,10 @@ import { APP_GUARD } from '@nestjs/core';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    EventEmitterModule.forRoot(),
     IpfsModule,
     FileModule,
+    DiscordModule,
   ],
   controllers: [AppController],
   providers: [
