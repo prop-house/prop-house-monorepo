@@ -10,3 +10,4 @@ mod serde;
 mod signature;
 mod storage;
 mod traits;
+mod vec;
