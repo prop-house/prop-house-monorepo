@@ -102,7 +102,9 @@ const ProposalModalVotingModule: React.FC<{
         <div className={classes.votingBarAndTooltip}>
           <div className={classes.votingProgressBar}>
             <div className={classes.votingInfo}>
-              <span>Cast your votes</span>
+              <span>
+                <b>Cast your votes</b>
+              </span>
 
               <span className={classes.totalVotes}>
                 <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
