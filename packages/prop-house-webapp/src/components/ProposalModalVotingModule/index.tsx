@@ -13,7 +13,7 @@ import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
@@ -40,7 +40,7 @@ const ProposalModalVotingModule: React.FC<{
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
 
-  const provider = useProvider({
+  const publicClient = usePublicClient({
     chainId: chainId ? chainId : 1,
   });
   const { address: account } = useAccount();
@@ -66,14 +66,14 @@ const ProposalModalVotingModule: React.FC<{
       : countVotesAllottedToProp(voteAllotments, proposal.id);
 
   useEffect(() => {
-    if (!account || !provider || !community || !round) return;
+    if (!account || !publicClient || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
         const strategyPayload = {
           strategyName: round.voteStrategy.strategyName,
           account,
-          provider,
+          publicClient,
           ...round.voteStrategy,
         };
         const votes = await execStrategy(strategyPayload);
@@ -84,7 +84,7 @@ const ProposalModalVotingModule: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  }, [account, publicClient, dispatch, community, round]);
 
   // update submitted votes on proposal changes
   useEffect(() => {

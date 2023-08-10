@@ -73,19 +73,19 @@ const RoundContent: React.FC<{
     : 'Proposals that did not meet quorum before voting period ended will show up here.';
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   // fetch voting power for user
   useEffect(() => {
-    if (!account || !signer || !community) return;
+    if (!account || !walletClient || !community) return;
 
     const fetchVotes = async () => {
       try {
         const strategyPayload = {
           strategyName: auction.voteStrategy.strategyName,
           account,
-          provider,
+          publicClient,
           ...auction.voteStrategy,
         };
         const votes = await execStrategy(strategyPayload);
@@ -98,12 +98,12 @@ const RoundContent: React.FC<{
     fetchVotes();
   }, [
     account,
-    signer,
+    walletClient,
     dispatch,
     community,
     auction.balanceBlockTag,
     auction.voteStrategy,
-    provider,
+    publicClient,
   ]);
 
   // update submitted votes on proposal changes
@@ -114,10 +114,10 @@ const RoundContent: React.FC<{
   }, [proposals, account, dispatch]);
 
   const _signerIsContract = async () => {
-    if (!provider || !account) {
+    if (!publicClient || !account) {
       return false;
     }
-    const code = await provider?.getCode(account);
+    const code = await publicClient.getBytecode({ address: account });
     const isContract = code !== '0x';
     setSignerIsContract(isContract);
     return isContract;
@@ -136,7 +136,7 @@ const RoundContent: React.FC<{
               a.votes,
               community!.contractAddress,
               SignatureState.PENDING_VALIDATION,
-              blockHeight,
+              Number(blockHeight),
             ),
         )
         .filter(v => v.weight > 0);

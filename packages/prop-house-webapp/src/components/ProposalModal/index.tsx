@@ -69,7 +69,6 @@ const ProposalModal = () => {
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
   const winningIds = round && proposals && getWinningIds(proposals, round);
-  const provider = useProvider();
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -147,10 +146,10 @@ const ProposalModal = () => {
   };
 
   const _signerIsContract = async () => {
-    if (!signer || !provider || !account) {
+    if (!walletClient || !publicClient || !account) {
       return false;
     }
-    const code = await provider.getCode(account);
+    const code = await publicClient.getBytecode({ address: account });
     const isContract = code !== '0x';
     setSignerIsContract(isContract);
     return isContract;
@@ -171,7 +170,7 @@ const ProposalModal = () => {
               a.votes,
               community!.contractAddress,
               SignatureState.PENDING_VALIDATION,
-              blockHeight,
+              Number(blockHeight),
             ),
         )
         .filter(v => v.weight > 0);

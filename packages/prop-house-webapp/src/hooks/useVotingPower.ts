@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { useProvider } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
 import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';
 
@@ -46,7 +46,7 @@ const useVotingPower = (
   const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
   const [votingCopy] = useState(round.voteStrategyDescription ?? defaultVotingCopy);
 
-  const provider = useProvider({
+  const publicClient = usePublicClient({
     chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
   });
 
@@ -62,7 +62,7 @@ const useVotingPower = (
     const params = {
       strategyName: round.voteStrategy.strategyName,
       account,
-      provider,
+      publicClient,
       ...round.voteStrategy,
     };
 

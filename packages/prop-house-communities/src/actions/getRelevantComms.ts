@@ -1,18 +1,18 @@
 import { communities } from '../communities';
-import { Provider } from '@ethersproject/providers';
+import { PublicClient } from 'wagmi';
 
 /**
  * Looks up community where user has voting power
  */
 export const getRelevantComms = async (
   userAddress: string,
-  provider: Provider,
+  provider: PublicClient,
   blockTag: number,
 ): Promise<{ [key: string]: number }> => {
   const allVotes = await Promise.all(
     Array.from(communities).map(async comm => {
       try {
-        return await comm[1](userAddress, comm[0], blockTag, provider);
+        return await comm[1](userAddress, comm[0], blockTag, provider as any);
       } catch (e) {
         console.log(`Error resolving voting power for community ${comm[0]}: ${e}`);
         return 0;

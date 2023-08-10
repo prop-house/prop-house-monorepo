@@ -14,7 +14,7 @@ import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { isActiveProp } from '../../utils/isActiveProp';
 
@@ -63,14 +63,14 @@ const ProposalModalFooter: React.FC<{
   const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
 
   useEffect(() => {
-    if (!account || !provider || !community || !round) return;
+    if (!account || !publicClient || !community || !round) return;
 
     const fetchVotes = async () => {
       try {
         const strategyPayload = {
           strategyName: round.voteStrategy.strategyName,
           account,
-          provider,
+          publicClient,
           ...round.voteStrategy,
         };
         const votes = await execStrategy(strategyPayload);
@@ -81,7 +81,7 @@ const ProposalModalFooter: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  }, [account, publicClient, dispatch, community, round]);
 
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>

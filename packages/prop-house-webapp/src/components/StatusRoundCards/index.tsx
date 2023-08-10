@@ -4,7 +4,7 @@ import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { getRelevantComms } from '@prophouse/communities';
 import { useEffect, useState } from 'react';
 import { Col, Container, Navbar, Row } from 'react-bootstrap';
-import { useAccount, useBlockNumber, useProvider } from 'wagmi';
+import { useAccount, useBlockNumber, usePublicClient } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import SimpleRoundCard from '../StatusRoundCard';
 import { BiBadgeCheck } from 'react-icons/bi';
@@ -14,7 +14,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 const StatusRoundCards = () => {
   const { address: account } = useAccount();
   const { data: block } = useBlockNumber();
-  const provider = useProvider();
+  const publicClient = usePublicClient();
 
   const QUERY_LIMIT = 8;
   const [fetchingRelComms, setFetchingRelComms] = useState(false);
@@ -34,7 +34,9 @@ const StatusRoundCards = () => {
       setFetchingRelComms(true);
       try {
         setRelevantCommunites(
-          account ? Object.keys(await getRelevantComms(account, provider, block)) : [],
+          account
+            ? Object.keys(await getRelevantComms(account, publicClient as any, Number(block)))
+            : [],
         );
       } catch (e) {
         console.log('Error fetching relevant comms: ', e);
@@ -43,7 +45,7 @@ const StatusRoundCards = () => {
       setFetchingRelComms(false);
     };
     getRelComms();
-  }, [block, relevantCommunities, account, provider]);
+  }, [block, relevantCommunities, account, publicClient]);
 
   useEffect(() => {
     if (rounds || fetchingRelComms || relevantCommunities === undefined) return;

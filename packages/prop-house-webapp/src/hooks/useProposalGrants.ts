@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { useProvider } from 'wagmi';
+import { usePublicClient } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
 
 export type UseUserGrantsResults = [
@@ -42,7 +42,7 @@ const useProposalGrants = (
   const [proposingCopy] = useState(auction.propStrategyDescription ?? defaultProposingCopy);
   const [votingCopy] = useState(auction.voteStrategyDescription ?? defaultVotingCopy);
 
-  const provider = useProvider({
+  const publicClient = usePublicClient({
     chainId: auction.propStrategy.chainId,
   });
 
@@ -51,7 +51,7 @@ const useProposalGrants = (
     const params = {
       strategyName: auction.propStrategy.strategyName,
       account,
-      provider,
+      publicClient,
       ...auction.propStrategy,
     };
 
