@@ -9,7 +9,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@nouns/prop-house-wrapper": "1.0.0",
-    "@rainbow-me/rainbowkit": "^0.8.1",
+    "@rainbow-me/rainbowkit": "^1.0.2",
     "@reduxjs/toolkit": "^1.7.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -62,14 +62,15 @@
     "sanitize-html": "^2.7.0",
     "slugify": "^1.6.5",
     "swiper": "^9.1.0",
-    "typescript": "^4.8.4",
-    "wagmi": "^0.9.2",
+    "typescript": "5.1",
+    "viem": "^1.5.3",
+    "wagmi": "^1.2",
     "web-vitals": "^1.0.1",
     "web3modal": "^1.9.5",
     "yarn": "^1.22.18"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -80,13 +81,15 @@
       "react-app/jest"
     ]
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all"
-  ],
   "devDependencies": {
     "@types/quill": "^2.0.9",
     "@types/react-helmet": "^6.1.5"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not ie <= 99",
+    "not android <= 4.4.4",
+    "not dead",
+    "not op_mini all"
+  ]
 }
