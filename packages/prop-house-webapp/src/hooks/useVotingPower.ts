@@ -38,7 +38,6 @@ type Refresh = () => Promise<void>;
 const useVotingPower = (
   round: StoredAuctionBase,
   account: `0x${string}` | undefined,
-  community: Community | undefined,
 ): UseVotingPowerResults => {
   const [loadingCanVote, setLoadingCanVote] = useState(false);
   const [votingPower, setVotingPower] = useState<null | number>(null);
@@ -51,7 +50,7 @@ const useVotingPower = (
   });
 
   const fetchVotingPower = async () => {
-    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || !community) return;
+    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting)) return;
 
     if (!account) {
       setVotingPower(null);
@@ -81,7 +80,7 @@ const useVotingPower = (
   useEffect(() => {
     fetchUserGrants();
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, account, community]);
+  }, [round, account]);
 
   return [
     loadingCanVote,
