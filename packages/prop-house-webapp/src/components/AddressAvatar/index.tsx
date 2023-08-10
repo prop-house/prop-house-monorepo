@@ -9,7 +9,7 @@ import clsx from 'clsx';
 const AddressAvatar: React.FC<{ address: string; size?: number }> = props => {
   const { address, size: s = 24 } = props;
 
-  const { data: avatar } = useEnsAvatar({ address: address as `0x${string}` });
+  const { data: avatar } = useEnsAvatar({ name: address as `0x${string}` });
 
   const factory = new Factory<GlassesParts, GlassesBgColors>(NogglesData);
   const generateGlasses = () => factory.createItem();
