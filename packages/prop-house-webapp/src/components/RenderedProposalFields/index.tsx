@@ -21,8 +21,6 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
   const { t } = useTranslation();
   const fields = proposalFields(proposal);
 
-  console.log('round from rednered fields:  ', round);
-
   return (
     <>
       <Row>
