@@ -7,7 +7,7 @@ import { NounImage } from '../../utils/getNounImage';
 import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
 import buildIpfsPath from '../../utils/buildIpfsPath';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -43,13 +43,13 @@ const ImageUploadModal: React.FC<{
   const [uploadError, setUploadError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   const handleImageUpload = async () => {
     if (!quill) return;

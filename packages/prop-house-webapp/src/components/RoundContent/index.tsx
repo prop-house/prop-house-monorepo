@@ -23,7 +23,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount, useSigner, useProvider } from 'wagmi';
+import { useAccount, useWalletClient, usePublicClient } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
@@ -56,8 +56,8 @@ const RoundContent: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
 
   const client = useRef(new PropHouseWrapper(host));
-  const { data: signer } = useSigner();
-  const provider = useProvider({
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient({
     chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
   });
 

@@ -25,7 +25,7 @@ import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
 import ProposalModal from '../../components/ProposalModal';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
@@ -38,7 +38,7 @@ const Round = () => {
   const roundName = location.pathname.substring(1).split('/')[1];
 
   const dispatch = useAppDispatch();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
@@ -61,8 +61,8 @@ const Round = () => {
   const [propsFailedFetch, setPropsFailedFetch] = useState(false);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   // if no data is found in store (ie round page is entry point), fetch data
   useEffect(() => {

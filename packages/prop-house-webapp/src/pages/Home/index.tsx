@@ -7,7 +7,7 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAppSelector } from '../../hooks';
 import NavBar from '../../components/NavBar';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -29,14 +29,14 @@ const Home = () => {
     setInput(e.target.value);
   };
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   // fetch communities
   useEffect(() => {

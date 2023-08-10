@@ -7,7 +7,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import { useLocation } from 'react-router-dom';
 import { isInfAuction } from '../../utils/auctionType';
 
@@ -68,7 +68,7 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const { t } = useTranslation();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -85,8 +85,8 @@ const ProposalEditor: React.FC<{
     : '';
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   const formData: FormDataType[] = [
     {

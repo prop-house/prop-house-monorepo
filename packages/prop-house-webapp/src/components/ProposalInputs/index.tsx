@@ -10,7 +10,7 @@ import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType, FundReqDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import InputFormGroup from '../InputFormGroup';
 import buildIpfsPath from '../../utils/buildIpfsPath';
 import LoadingIndicator from '../LoadingIndicator';
@@ -40,7 +40,7 @@ const ProposalInputs: React.FC<{
     onFileDrop,
   } = props;
 
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -49,8 +49,8 @@ const ProposalInputs: React.FC<{
   const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient);
+  }, [walletClient, host]);
 
   const titleAndTldrInputs = (data: any, isTitleSection: boolean = false) => (
     <InputFormGroup
