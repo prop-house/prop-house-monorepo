@@ -53,7 +53,7 @@ const ProposalModalFooter: React.FC<{
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const provider = useProvider({
+  const publicClient = usePublicClient({
     chainId: chainId ? chainId : 1,
   });
   const { address: account } = useAccount();
