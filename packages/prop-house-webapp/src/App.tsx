@@ -19,7 +19,7 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
-import { createClient, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
@@ -29,20 +29,21 @@ import CreateRound from './pages/CreateRound';
 import { base } from './types/base';
 import Banner from './components/Banner';
 
-const { chains, provider } = configureChains(
+const { chains, publicClient } = configureChains(
   [mainnet, base],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 
 const { connectors } = getDefaultWallets({
   appName: 'Prop House',
+  projectId: process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID!,
   chains,
 });
 
-const wagmiClient = createClient({
+const wagmiClient = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
 });
 
 function App() {
@@ -72,7 +73,7 @@ function App() {
 
   return (
     <>
-      <WagmiConfig client={wagmiClient}>
+      <WagmiConfig config={wagmiClient}>
         {openGraphCardPath ? (
           <Routes>
             <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
