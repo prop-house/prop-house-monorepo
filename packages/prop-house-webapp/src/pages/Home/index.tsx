@@ -52,6 +52,13 @@ const Home = () => {
       const newIndex = 1;
       const [item] = sortedCommunities.splice(originalIndex, 1);
       sortedCommunities.splice(newIndex, 0, item);
+
+      // start // temp sorting to move Thank APE up to top row
+      const originalIndexTA = sortedCommunities.findIndex(c => c.id === 64);
+      const newIndexTA = 2;
+      const [itemTA] = sortedCommunities.splice(originalIndexTA, 1);
+      sortedCommunities.splice(newIndexTA, 0, itemTA);
+
       // end // temp sorting
       setCommunities(sortedCommunities);
 
