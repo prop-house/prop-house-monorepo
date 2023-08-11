@@ -8,7 +8,8 @@ import { IpfsModule } from './ipfs/ipfs.module';
 import { FileModule } from './file/file.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { DiscordModule } from './discord/discord.module';
+import {  EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -20,8 +21,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    EventEmitterModule.forRoot(),
     IpfsModule,
     FileModule,
+    DiscordModule,
   ],
   controllers: [AppController],
   providers: [AppService],
