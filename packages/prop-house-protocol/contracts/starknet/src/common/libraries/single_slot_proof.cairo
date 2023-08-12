@@ -94,8 +94,6 @@ mod SingleSlotProof {
             proof_sizes_words,
             proofs_concat,
         );
-        assert(slot_value.is_non_zero(), 'SSP: Slot value is zero');
-
         slot_value
     }
 

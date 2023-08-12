@@ -21,6 +21,8 @@ mod EthereumBalanceOfGovernancePowerStrategy {
             let governance_power = SingleSlotProof::get_slot_value(
                 timestamp, user, params, user_params
             );
+            assert(governance_power.is_non_zero(), 'EthBO: No governance power');
+
             if params_len == 2 {
                 return governance_power;
             }
