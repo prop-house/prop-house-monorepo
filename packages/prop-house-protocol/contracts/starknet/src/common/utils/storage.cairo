@@ -89,6 +89,10 @@ impl SpanStorageAccess<
         write_span(address_domain, base, offset, value)
     }
     fn size_internal(value: Span<T>) -> u8 {
-        1 + (SpanStorageAccess::<T>::size_internal(value) * downcast(value.len()).unwrap())
+        if value.len() == 0 {
+            1
+        } else {
+            1 + (StorageAccess::<T>::size_internal(*value.at(0)) * downcast(value.len()).unwrap())
+        }
     }
 }
