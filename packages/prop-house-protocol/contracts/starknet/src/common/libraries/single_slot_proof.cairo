@@ -44,9 +44,8 @@ mod SingleSlotProof {
     use super::{IFactsRegistryDispatcherTrait, IFactsRegistryDispatcher};
     use super::{StorageSlotIntoU256, StorageSlot};
     use array::{ArrayTrait, SpanTrait};
-    use option::OptionTrait;
-    use zeroable::Zeroable;
     use traits::{TryInto, Into};
+    use option::OptionTrait;
 
     struct Storage {
         _fact_registry: ContractAddress,
