@@ -13,7 +13,7 @@ abstract contract ERC1155 is IERC1155 {
 
     mapping(address => mapping(address => bool)) public isApprovedForAll;
 
-    function uri(uint256 id) public view virtual returns (string memory);
+    function uri(uint256 id) external view virtual returns (string memory);
 
     function setApprovalForAll(address operator, bool approved) public virtual {
         isApprovedForAll[msg.sender][operator] = approved;

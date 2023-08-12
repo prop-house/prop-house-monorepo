@@ -119,7 +119,7 @@ contract CommunityHouse is IHouse, ERC721 {
 
     /// @notice Returns `true` if the provided address is a valid round on the house
     /// @param round The round to validate
-    function isRound(address round) public view returns (bool) {
+    function isRound(address round) external view returns (bool) {
         return exists(round.toUint256());
     }
 
