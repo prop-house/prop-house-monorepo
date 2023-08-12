@@ -117,7 +117,6 @@ mod Round {
         let mut is_used = Default::<Felt252Dict<felt252>>::default();
         let strategy_registry = get_strategy_registry();
 
-        let mut i = 0;
         let mut cumulative_power = 0;
         loop {
             match used_strategies.pop_front() {
@@ -135,7 +134,6 @@ mod Round {
                         timestamp, user.into(), strategy.params, s.user_params,
                     );
 
-                    i += 1;
                     cumulative_power += power;
                     is_used.insert(s.id, 1);
                 },
