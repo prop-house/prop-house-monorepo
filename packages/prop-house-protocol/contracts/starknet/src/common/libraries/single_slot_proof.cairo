@@ -44,9 +44,8 @@ mod SingleSlotProof {
     use super::{IFactsRegistryDispatcherTrait, IFactsRegistryDispatcher};
     use super::{StorageSlotIntoU256, StorageSlot};
     use array::{ArrayTrait, SpanTrait};
-    use option::OptionTrait;
-    use zeroable::Zeroable;
     use traits::{TryInto, Into};
+    use option::OptionTrait;
 
     struct Storage {
         _fact_registry: ContractAddress,
@@ -94,8 +93,6 @@ mod SingleSlotProof {
             proof_sizes_words,
             proofs_concat,
         );
-        assert(slot_value.is_non_zero(), 'SSP: Slot value is zero');
-
         slot_value
     }
 
