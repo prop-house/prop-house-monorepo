@@ -134,7 +134,7 @@ mod InfiniteRoundEthereumTxAuthStrategy {
     }
 
     #[constructor]
-    fn constructor(commit_address: ContractAddress) {
+    fn constructor(commit_address: EthAddress) {
         CommitReceiver::initializer(commit_address);
     }
 
