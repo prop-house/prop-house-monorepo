@@ -22,7 +22,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
 
-    /// @notice The current state of the infinite round
+    /// @notice The current state of the infinite round. `Active` upon deployment.
     RoundState public state;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
@@ -244,8 +244,6 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         // Write round metadata to storage. This will be consumed by the token URI later.
         startTimestamp = config.startTimestamp;
         votePeriodDuration = config.votePeriodDuration;
-
-        state = RoundState.Active;
 
         // Register the round on L2
         messenger.sendMessageToL2{ value: msg.value }(roundFactory, Selector.REGISTER_ROUND, getRegistrationPayload(config));
