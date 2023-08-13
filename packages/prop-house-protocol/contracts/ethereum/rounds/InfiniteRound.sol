@@ -16,14 +16,17 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     /// The maximum depth of the winner merkle tree
     uint256 public constant MAX_WINNER_TREE_DEPTH = 10;
 
-    /// @notice The amount of time before an asset provider can reclaim unclaimed assets
-    uint256 public constant RECLAIM_UNCLAIMED_ASSETS_AFTER = 1 weeks;
+    /// @notice The asset reclamation delay, applicable in 'FinalizationPending' or 'Finalized' states.
+    uint256 public constant ASSET_RECLAIM_DELAY = 1 weeks;
 
     /// @notice The minimum vote period duration
     uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
 
     /// @notice The current state of the infinite round. `Active` upon deployment.
     RoundState public state;
+
+    /// @notice The timestamp at which round finalization was started. `0` if not started.
+    uint40 public finalizationStartedAt;
 
     /// @notice The timestamp at which the round was finalized. `0` if not finalized.
     uint40 public finalizedAt;
@@ -135,6 +138,7 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         if (state != RoundState.Active || currentWinnerCount == 0) {
             revert FINALIZATION_NOT_AVAILABLE();
         }
+        finalizationStartedAt = uint40(block.timestamp);
         state = RoundState.FinalizationPending;
 
         // Finalize the round on Starknet
@@ -323,10 +327,15 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
         if (state == RoundState.Cancelled) {
             return true;
         }
-        // Reclamation is available when the round has been finalized and the reclamation period has passed
+        // Reclamation is available when round finalization was started, but did not complete within
+        // the expected time frame
+        if (state == RoundState.FinalizationPending) {
+            return block.timestamp - finalizationStartedAt >= ASSET_RECLAIM_DELAY;
+        }
+        // Reclamation is available when the round has been finalized and the claim period has passed
         // or when all winners have claimed
         if (state == RoundState.Finalized) {
-            return block.timestamp - finalizedAt >= RECLAIM_UNCLAIMED_ASSETS_AFTER || claimedWinnerCount == currentWinnerCount;
+            return block.timestamp - finalizedAt >= ASSET_RECLAIM_DELAY || claimedWinnerCount == currentWinnerCount;
         }
         return false;
     }
