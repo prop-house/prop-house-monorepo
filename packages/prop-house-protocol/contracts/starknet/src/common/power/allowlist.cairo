@@ -21,7 +21,7 @@ mod AllowlistGovernancePowerStrategy {
     /// * `user` - The address of the user.
     /// * `params` - The params, containing the merkle root.
     /// * `user_params` - The user params, containing the user address, power, and proof.
-    #[external]
+    #[view]
     fn get_power(
         timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {

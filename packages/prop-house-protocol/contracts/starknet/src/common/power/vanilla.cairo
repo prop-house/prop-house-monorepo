@@ -16,7 +16,7 @@ mod VanillaGovernancePowerStrategy {
     /// * `user` - The address of the user.
     /// * `params` - Empty params.
     /// * `user_params` - Empty user params.
-    #[external]
+    #[view]
     fn get_power(
         timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
