@@ -62,9 +62,7 @@ mod Round {
     /// Parse strategies from a flattened array of parameters.
     /// * `params` - The flattened array of parameters.
     /// * `starting_index` - The index of the first parameter to parse.
-    fn parse_strategies(
-        params: Span<felt252>, mut starting_index: usize
-    ) -> (Span<Strategy>, usize) {
+    fn parse_strategies(params: Span<felt252>, starting_index: usize) -> (Span<Strategy>, usize) {
         let strategy_addresses_len = (*params.at(starting_index)).try_into().unwrap();
         let strategy_addresses = params.slice(starting_index + 1, strategy_addresses_len);
 

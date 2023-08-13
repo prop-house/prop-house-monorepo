@@ -659,13 +659,13 @@ mod TimedRound {
 
         // Create left and right arrays
         let middle = len / 2;
-        let (mut left_arr, mut right_arr) = _split_array(ref arr, middle);
+        let (left_arr, right_arr) = _split_array(ref arr, middle);
 
         // Recursively sort the left and right arrays
-        let mut sorted_left = _mergesort_proposals_by_voting_power_desc_and_slice(
+        let sorted_left = _mergesort_proposals_by_voting_power_desc_and_slice(
             left_arr, max_return_count
         );
-        let mut sorted_right = _mergesort_proposals_by_voting_power_desc_and_slice(
+        let sorted_right = _mergesort_proposals_by_voting_power_desc_and_slice(
             right_arr, max_return_count
         );
 

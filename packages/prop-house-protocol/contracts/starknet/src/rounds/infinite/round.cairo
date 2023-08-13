@@ -442,8 +442,8 @@ mod InfiniteRound {
             return;
         }
 
-        let mut spent_voting_power = _spent_voting_power::read((voter, proposal_id));
-        let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
+        let spent_voting_power = _spent_voting_power::read((voter, proposal_id));
+        let remaining_voting_power = cumulative_voting_power - spent_voting_power;
 
         assert(voting_power.is_non_zero(), 'IR: No voting power provided');
         assert(remaining_voting_power >= voting_power, 'IR: Insufficient voting power');

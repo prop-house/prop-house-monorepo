@@ -247,7 +247,7 @@ fn _compute_root(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>, mut hash: u25
             sub_tree.append(*sub_trees.get(curr_depth.into()).deref().at(0));
             sub_tree.append(hash);
         }
-        let mut sub_tree = sub_tree.span();
+        let sub_tree = sub_tree.span();
         
         sub_trees.insert(curr_depth.into(), nullable_from_box(BoxTrait::new(sub_tree)));
         hash = keccak_u256s_be(sub_tree);
