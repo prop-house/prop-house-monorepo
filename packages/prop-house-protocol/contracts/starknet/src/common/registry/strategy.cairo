@@ -5,7 +5,6 @@ use prop_house::common::utils::storage::SpanStorageAccess;
 use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
 use option::OptionTrait;
-use integer::downcast;
 
 #[derive(Copy, Drop, Serde)]
 struct Strategy {

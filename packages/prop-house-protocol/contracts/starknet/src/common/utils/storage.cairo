@@ -1,9 +1,8 @@
 use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
 use prop_house::common::utils::hash::keccak_u256s_be;
 use array::{ArrayTrait, SpanTrait};
+use traits::{Into, TryInto};
 use option::OptionTrait;
-use integer::downcast;
-use traits::Into;
 
 /// Returns the key for `mapping_key` at slot `slot_index`.
 /// * `slot_index` - The slot index.
@@ -96,7 +95,7 @@ impl SpanStorageAccess<
         if value.len() == 0 {
             1
         } else {
-            1 + (StorageAccess::<T>::size_internal(*value.at(0)) * downcast(value.len()).unwrap())
+            1 + (StorageAccess::<T>::size_internal(*value.at(0)) * value.len().try_into().unwrap())
         }
     }
 }
