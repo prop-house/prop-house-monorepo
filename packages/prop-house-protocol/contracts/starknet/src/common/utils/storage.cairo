@@ -48,6 +48,10 @@ fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcces
 fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>>(
     address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Span<T>
 ) -> SyscallResult<()> {
+    if !value.is_empty() {
+        assert(StorageAccess::<T>::size_internal(*value.at(0)).into() * value.len() < 255, 'Span too large');
+    }
+
     StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, value.len())?;
     offset += 1; // Increment offset by 1 for the length.
 
