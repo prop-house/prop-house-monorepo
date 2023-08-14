@@ -3,9 +3,9 @@ use prop_house::common::utils::constants::{MASK_16, MASK_32};
 use prop_house::common::utils::integer::U256TryIntoU32;
 use prop_house::common::utils::hash::keccak_u256s_be;
 use prop_house::common::utils::vec::{Vec, VecTrait};
-use integer::{downcast, u256_from_felt252};
 use array::{ArrayTrait, SpanTrait};
 use starknet::SyscallResultTrait;
+use integer::u256_from_felt252;
 use traits::{Into, TryInto};
 use option::OptionTrait;
 
