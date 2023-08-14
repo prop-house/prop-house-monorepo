@@ -81,7 +81,7 @@ mod SingleSlotProof {
         let slot_index = *params.at(1);
 
         // Ensure the slot proof is for the correct slot
-        let valid_slot = get_slot_key(slot_index, user);
+        let valid_slot = get_slot_key(slot_index.into(), user.into());
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };
