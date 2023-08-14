@@ -764,9 +764,10 @@ mod TimedRound {
     /// Bubble the proposal at the given index up the heap. Despite this being a min-heap,
     /// we need to bubble up instead of down when a node's value increases, because voting
     /// power can only increase, never decrease. So, if the proposal's voting power is larger
-    /// than its parent, it will swap the proposal with its parent. The loop continues until
-    /// it reaches a point where the proposal's voting power is less than or equal to its
-    /// parent's voting power.
+    /// than its parent OR the proposal's voting power is equal to its parent and was received
+    /// first, it will swap the proposal with its parent. The loop continues until it reaches
+    /// a point where the proposal's voting power is less than its parent's or the voting power
+    /// is equal and the proposal was received at the same time or after its parent.
     /// * `leading_proposals` - The leading proposals.
     /// * `index` - The index of the proposal to bubble up.
     fn _bubble_up_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32) {
@@ -778,10 +779,14 @@ mod TimedRound {
             let parent_proposal_id = leading_proposals.index_to_pid.at(parent_index);
             let proposal_id = leading_proposals.index_to_pid.at(index);
 
-            let proposal_vp = _proposals::read(proposal_id).voting_power;
-            let parent_proposal_vp = _proposals::read(parent_proposal_id).voting_power;
+            let proposal = _proposals::read(proposal_id);
+            let parent_proposal = _proposals::read(parent_proposal_id);
 
-            if proposal_vp <= parent_proposal_vp {
+            if proposal.voting_power < parent_proposal.voting_power {
+                break;
+            }
+            // This bitand will be replaced with && once short-circuiting is supported.
+            if proposal.voting_power == parent_proposal.voting_power & proposal.last_updated_at >= parent_proposal.last_updated_at {
                 break;
             }
 
@@ -797,9 +802,11 @@ mod TimedRound {
     /// when the root proposal is replaced in a full heap. The function ensures that
     /// the heap property is maintained after such updates. Specifically, it checks if
     /// the updated proposal (at the given index) has a lower voting power than one of
-    /// its children. If so, it swaps the proposal with its highest voting power child. 
+    /// its children or if the voting power is equal and the proposal was received after
+    /// its child. If so, it swaps the proposal with its highest voting power child.
     /// This process continues (i.e., it "bubbles down" the proposal) until the proposal
-    /// has higher voting power than both its children, or until it becomes a leaf node.
+    /// has higher voting power than both its children or equal voting power and was
+    /// received before its child, or until it becomes a leaf node.
     /// * `leading_proposals` - The leading proposals.
     /// * `index` - The index of the proposal to bubble down.
     fn _bubble_down_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32) {
@@ -817,10 +824,13 @@ mod TimedRound {
             let max_child_index = if right_child_index < leading_proposals_count {
                 let left_child_proposal_id = leading_proposals.index_to_pid.at(left_child_index);
                 let right_child_proposal_id = leading_proposals.index_to_pid.at(right_child_index);
-                let left_child_proposal_vp = _proposals::read(left_child_proposal_id).voting_power;
-                let right_child_proposal_vp = _proposals::read(right_child_proposal_id)
-                    .voting_power;
-                if left_child_proposal_vp > right_child_proposal_vp {
+                let left_child_proposal = _proposals::read(left_child_proposal_id);
+                let right_child_proposal = _proposals::read(right_child_proposal_id);
+
+                if left_child_proposal.voting_power > right_child_proposal.voting_power {
+                    left_child_index
+                // This bitand will be replaced with && once short-circuiting is supported.
+                } else if left_child_proposal.voting_power == right_child_proposal.voting_power & left_child_proposal.last_updated_at < right_child_proposal.last_updated_at  {
                     left_child_index
                 } else {
                     right_child_index
@@ -831,11 +841,14 @@ mod TimedRound {
 
             let proposal_id = leading_proposals.index_to_pid.at(index);
             let max_child_proposal_id = leading_proposals.index_to_pid.at(max_child_index);
-            let proposal_vp = _proposals::read(proposal_id).voting_power;
-            let max_child_proposal_vp = _proposals::read(max_child_proposal_id).voting_power;
+            let proposal = _proposals::read(proposal_id);
+            let max_child_proposal = _proposals::read(max_child_proposal_id);
 
-            // If the current proposal's voting power is greater than or equal to its max child's voting power, stop.
-            if proposal_vp >= max_child_proposal_vp {
+            if proposal.voting_power > max_child_proposal.voting_power {
+                break;
+            }
+            // This bitand will be replaced with && once short-circuiting is supported.
+            if proposal.voting_power == max_child_proposal.voting_power & proposal.last_updated_at <= max_child_proposal.last_updated_at {
                 break;
             }
 
