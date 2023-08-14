@@ -113,6 +113,7 @@ mod TimedRound {
 
         fn cancel_proposal(proposer: EthAddress, proposal_id: u32) {
             _assert_caller_valid_and_round_active();
+            _assert_in_proposal_period(_config::read(), get_block_timestamp());
 
             let mut proposal = _proposals::read(proposal_id);
 
