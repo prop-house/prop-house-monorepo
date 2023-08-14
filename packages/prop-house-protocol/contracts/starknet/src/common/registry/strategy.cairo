@@ -5,7 +5,6 @@ use prop_house::common::utils::storage::SpanStorageAccess;
 use array::{ArrayTrait, SpanTrait};
 use traits::{TryInto, Into};
 use option::OptionTrait;
-use integer::downcast;
 
 #[derive(Copy, Drop, Serde)]
 struct Strategy {
@@ -86,7 +85,7 @@ mod StrategyRegistry {
             // The maximum parameter length is bound by the maximum storage offset.
             assert(strategy.params.len() <= 254, 'VSR: Too many parameters');
 
-            let strategy_id = _compute_strategy_id(@strategy);
+            let strategy_id = _compute_strategy_id(strategy);
 
             let stored_strategy = _strategies::read(strategy_id);
             if stored_strategy.address.is_zero() {
@@ -117,9 +116,7 @@ mod StrategyRegistry {
 
     /// Computes the strategy id for the given strategy.
     /// * `strategy` - The strategy.
-    fn _compute_strategy_id(strategy: @Strategy) -> felt252 {
-        let mut strategy = *strategy;
-
+    fn _compute_strategy_id(mut strategy: Strategy) -> felt252 {
         let mut strategy_array = Default::default();
         strategy_array.append(strategy.address.into());
 

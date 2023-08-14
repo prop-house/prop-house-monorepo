@@ -35,7 +35,7 @@ mod InfiniteRound {
         _winner_merkle_root: u256,
         _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
-        _spent_voting_power: LegacyMap<(EthAddress, u32), u256>,
+        _spent_voting_power: LegacyMap<(EthAddress, u32, u16), u256>,
     }
 
     #[event]
@@ -123,10 +123,12 @@ mod InfiniteRound {
             _assert_can_modify_proposal(proposer, proposal);
             _assert_asset_request_valid(requested_assets.span());
 
-            // Increment the proposal version, update the requested assets, clear 'for' votes,
-            // and emit the metadata URI.
+            // Increment the proposal version, update the requested assets, clear all votes,
+            // and emit the metadata URI. If a proposer attempts to evade the against vote threshold
+            // by editing the proposal, voters can simply let the proposal go stale.
             proposal.version += 1;
             proposal.voting_power_for = 0;
+            proposal.voting_power_against = 0;
             proposal.requested_assets_hash = Round::compute_asset_hash(requested_assets.span());
             _proposals::write(proposal_id, proposal);
 
@@ -427,6 +429,7 @@ mod InfiniteRound {
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
     fn _cast_votes_on_proposal(voter: EthAddress, proposal_vote: ProposalVote, cumulative_voting_power: u256) {
         let proposal_id = proposal_vote.proposal_id;
+        let proposal_version = proposal_vote.proposal_version;
         let voting_power = proposal_vote.voting_power;
         let direction = proposal_vote.direction;
 
@@ -438,12 +441,12 @@ mod InfiniteRound {
             return;
         }
         // Exit early if the proposal version has changed
-        if proposal_vote.proposal_version != proposal.version {
+        if proposal_version != proposal.version {
             return;
         }
 
-        let mut spent_voting_power = _spent_voting_power::read((voter, proposal_id));
-        let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
+        let spent_voting_power = _spent_voting_power::read((voter, proposal_id, proposal_version));
+        let remaining_voting_power = cumulative_voting_power - spent_voting_power;
 
         assert(voting_power.is_non_zero(), 'IR: No voting power provided');
         assert(remaining_voting_power >= voting_power, 'IR: Insufficient voting power');
@@ -464,7 +467,7 @@ mod InfiniteRound {
             _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);
-        _spent_voting_power::write((voter, proposal_id), spent_voting_power + voting_power);
+        _spent_voting_power::write((voter, proposal_id, proposal_version), spent_voting_power + voting_power);
 
         VoteCast(proposal_id, voter, voting_power, direction);
     }

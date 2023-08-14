@@ -12,10 +12,10 @@ use option::OptionTrait;
 /// Returns the key for `mapping_key` at slot `slot_index`.
 /// * `slot_index` - The slot index.
 /// * `mapping_key` - The mapping key.
-fn get_slot_key(slot_index: felt252, mapping_key: felt252) -> u256 {
+fn get_slot_key(slot_index: u256, mapping_key: u256) -> u256 {
     let mut encoded_array = Default::default();
-    encoded_array.append(mapping_key.into());
-    encoded_array.append(slot_index.into());
+    encoded_array.append(mapping_key);
+    encoded_array.append(slot_index);
 
     keccak_u256s_be(encoded_array.span())
 }
@@ -52,6 +52,10 @@ fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcces
 fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>>(
     address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Span<T>
 ) -> SyscallResult<()> {
+    if !value.is_empty() {
+        assert(StorageAccess::<T>::size_internal(*value.at(0)).into() * value.len() < 255, 'Span too large');
+    }
+
     StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, value.len())?;
     offset += 1; // Increment offset by 1 for the length.
 
@@ -93,7 +97,11 @@ impl SpanStorageAccess<
         write_span(address_domain, base, offset, value)
     }
     fn size_internal(value: Span<T>) -> u8 {
-        1 + (SpanStorageAccess::<T>::size_internal(value) * downcast(value.len()).unwrap())
+        if value.len() == 0 {
+            1
+        } else {
+            1 + (StorageAccess::<T>::size_internal(*value.at(0)) * value.len().try_into().unwrap())
+        }
     }
 }
 

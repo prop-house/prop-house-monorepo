@@ -44,9 +44,8 @@ mod SingleSlotProof {
     use super::{IFactsRegistryDispatcherTrait, IFactsRegistryDispatcher};
     use super::{StorageSlotIntoU256, StorageSlot};
     use array::{ArrayTrait, SpanTrait};
-    use option::OptionTrait;
-    use zeroable::Zeroable;
     use traits::{TryInto, Into};
+    use option::OptionTrait;
 
     struct Storage {
         _fact_registry: ContractAddress,
@@ -82,7 +81,7 @@ mod SingleSlotProof {
         let slot_index = *params.at(1);
 
         // Ensure the slot proof is for the correct slot
-        let valid_slot = get_slot_key(slot_index, user);
+        let valid_slot = get_slot_key(slot_index.into(), user.into());
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };
@@ -94,8 +93,6 @@ mod SingleSlotProof {
             proof_sizes_words,
             proofs_concat,
         );
-        assert(slot_value.is_non_zero(), 'SSP: Slot value is zero');
-
         slot_value
     }
 
