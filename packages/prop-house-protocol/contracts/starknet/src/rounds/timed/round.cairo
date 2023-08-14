@@ -694,7 +694,7 @@ mod TimedRound {
                 let winner_count = _config::read().winner_count;
                 let leading_proposals_count = leading_proposals.index_to_pid.len();
 
-                _evaluate_insert_or_replace_proposal(ref leading_proposals, leading_proposals_count, winner_count, proposal_id, proposal);
+                _handle_proposal_insertion_or_replacement(ref leading_proposals, leading_proposals_count, winner_count, proposal_id, proposal);
             },
             // Update
             FromNullableResult::NotNull(proposal_index) => _bubble_up_proposal_in_heap(
@@ -710,7 +710,7 @@ mod TimedRound {
     /// * `winner_count` - The number of winners.
     /// * `proposal_id` - The ID of the proposal.
     /// * `proposal` - The proposal information.
-    fn _evaluate_insert_or_replace_proposal(
+    fn _handle_proposal_insertion_or_replacement(
         ref leading_proposals: LeadingProposals,
         leading_proposals_count: u32,
         winner_count: u16,
