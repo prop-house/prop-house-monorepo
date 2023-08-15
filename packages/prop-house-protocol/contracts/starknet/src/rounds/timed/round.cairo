@@ -750,13 +750,14 @@ mod TimedRound {
         return true;
     }
 
-    /// Bubble the proposal at the given index up the heap. Despite this being a min-heap,
-    /// we need to bubble up instead of down when a node's value increases, because voting
-    /// power can only increase, never decrease. So, if the proposal's voting power is larger
-    /// than its parent OR the proposal's voting power is equal to its parent and was received
-    /// first, it will swap the proposal with its parent. The loop continues until it reaches
-    /// a point where the proposal's voting power is less than its parent's or the voting power
-    /// is equal and the proposal was received at the same time or after its parent.
+    /// Bubble the proposal at the given index up the heap. In this min-heap, we bubble up 
+    /// when a node's value decreases, reflecting that a proposal with lower voting power 
+    /// (or newer timestamp in case of a tie) should move upwards. Specifically, if the 
+    /// proposal's voting power is less than its parent's OR if the proposal's voting power 
+    /// is equal to its parent's but was received later, it will swap the proposal with its 
+    /// parent. The loop continues until the proposal either reaches the top of the heap or 
+    /// its voting power is greater than its parent's (or equal but received earlier or at the 
+    /// same time).
     /// * `leading_proposals` - The leading proposals.
     /// * `index` - The index of the proposal to bubble up.
     fn _bubble_up_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32) {
@@ -790,12 +791,13 @@ mod TimedRound {
     /// Bubble the proposal at the given index down the heap. This function is used
     /// when the root proposal is replaced in a full heap. The function ensures that
     /// the heap property is maintained after such updates. Specifically, it checks if
-    /// the updated proposal (at the given index) has a lower voting power than one of
-    /// its children or if the voting power is equal and the proposal was received after
-    /// its child. If so, it swaps the proposal with its highest voting power child.
-    /// This process continues (i.e., it "bubbles down" the proposal) until the proposal
-    /// has higher voting power than both its children or equal voting power and was
-    /// received before its child, or until it becomes a leaf node.
+    /// the updated proposal (at the given index) has a higher voting power than one of
+    /// its children or if the voting power is equal and the proposal was received later
+    /// than its child. If so, it swaps the proposal with its child that has the lowest 
+    /// voting power. This process continues (i.e., it "bubbles down" the proposal) until 
+    /// the proposal has lower voting power than both its children or equal voting power 
+    /// and was received earlier than or at the same time as its child, or until it becomes 
+    /// a leaf node.
     /// * `leading_proposals` - The leading proposals.
     /// * `index` - The index of the proposal to bubble down.
     /// * `heap_last_index` - The index of the last element in the heap.
