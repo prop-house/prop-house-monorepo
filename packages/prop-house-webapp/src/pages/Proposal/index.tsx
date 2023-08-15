@@ -144,7 +144,6 @@ const Proposal = () => {
             votingPower && votingPower > 0 ? (
               <ProposalModalVotingModule
                 proposal={proposal!}
-                setShowVoteAllotmentModal={setShowVoteConfirmationModal}
                 setShowVotingModal={setShowVoteConfirmationModal}
               />
             ) : (
