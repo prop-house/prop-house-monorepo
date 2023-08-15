@@ -19,7 +19,15 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
-import { useSigner } from 'wagmi';
+import { useAccount, useSigner } from 'wagmi';
+import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import Button, { ButtonColor } from '../../components/Button';
+import ConnectButton from '../../components/ConnectButton';
+import { useTranslation } from 'react-i18next';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import useVotingPower from '../../hooks/useVotingPower';
+import { setVotingPower } from '../../state/slices/voting';
 
 const Proposal = () => {
   const params = useParams();
@@ -27,6 +35,8 @@ const Proposal = () => {
 
   const { data: signer } = useSigner();
   const navigate = useNavigate();
+  const { address: account, isConnected } = useAccount();
+  const { t } = useTranslation();
 
   const [failedFetch, setFailedFetch] = useState(false);
 
@@ -36,6 +46,13 @@ const Proposal = () => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+
+  const { openConnectModal } = useConnectModal();
+
+  // TODO: DEFINE MODAL TO SHOW VOTING CONFIRMATION
+  const [a, setA] = useState(false);
+
+  const [loadingCanVote, votingPower] = useVotingPower(round, account);
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -85,6 +102,41 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal]);
 
+  const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
+    <>
+      <>
+        <div className={classes.votingBar}>
+          {isConnected ? (
+            votingPower && votingPower > 0 ? (
+              <ProposalModalVotingModule
+                proposal={proposal!}
+                setShowVoteAllotmentModal={setA}
+                setShowVotingModal={setA}
+              />
+            ) : (
+              <div className={classes.votingBarContent}>
+                <b>Wallet is ineligible to vote.</b>
+                <div>
+                  Trying with the wrong wallet? You can connect another wallet{' '}
+                  <span className={classes.inlineClick} onClick={openConnectModal}>
+                    here →
+                  </span>
+                </div>
+              </div>
+            )
+          ) : (
+            <div className={classes.votingBarContent}>
+              <div>
+                <b>Voting has started.</b> Connect a wallet to determine your voting eligibility.
+              </div>
+              <ConnectButton text={t('connectToVote')} color={ButtonColor.Purple} />{' '}
+            </div>
+          )}
+        </div>
+      </>
+    </>
+  );
+
   return (
     <>
       <Container>
@@ -113,7 +165,9 @@ const Proposal = () => {
         ) : (
           <LoadingIndicator />
         )}
+        {votingBar}
       </Container>
+      <div className={classes.gradient} />
     </>
   );
 };

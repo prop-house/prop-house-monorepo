@@ -16,6 +16,47 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
+.gradient {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10rem;
+  background-image: linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+}
+.votingBar {
+  position: fixed;
+  z-index: 10;
+  width: inherit;
+  bottom: 2rem !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 13px 20px 13px 20px;
+  border-radius: 12px;
+  background-color: white;
+}
+.votingBar.connectBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.votingBarContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  color: var(--brand-black-transparent);
+}
+.votingBarContent b {
+  color: var(--brand-black);
+}
+.inlineClick {
+  color: var(--brand-pink);
+  font-weight: bold;
+}
+.inlineClick:hover {
+  cursor: pointer;
+}
 
 @media (min-width: 577px) {
   .backToAuction svg {
