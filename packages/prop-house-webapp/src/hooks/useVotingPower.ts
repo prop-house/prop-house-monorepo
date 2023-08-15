@@ -12,7 +12,7 @@ export type UseVotingPowerResults = [
   /**
    * votingPower
    */
-  number | null,
+  number | undefined | null,
   /**
    * number of votes cast
    */
@@ -36,21 +36,27 @@ const defaultVotingCopy =
 
 type Refresh = () => Promise<void>;
 const useVotingPower = (
-  round: StoredAuctionBase,
+  round: StoredAuctionBase | undefined,
   account: `0x${string}` | undefined,
 ): UseVotingPowerResults => {
   const [loadingCanVote, setLoadingCanVote] = useState(false);
   const [votingPower, setVotingPower] = useState<null | number>(null);
 
   const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingCopy] = useState(round.voteStrategyDescription ?? defaultVotingCopy);
+  const [votingCopy] = useState(
+    round
+      ? round.voteStrategyDescription
+        ? round.voteStrategyDescription
+        : defaultVotingCopy
+      : defaultVotingCopy,
+  );
 
   const provider = useProvider({
-    chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
+    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
   });
 
   const fetchVotingPower = async () => {
-    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting)) return;
+    if (!round || !(auctionStatus(round) === AuctionStatus.AuctionVoting)) return;
 
     if (!account) {
       setVotingPower(null);
@@ -81,6 +87,9 @@ const useVotingPower = (
     fetchUserGrants();
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round, account]);
+
+  if (!round)
+    return [false, undefined, undefined, defaultVotingCopy, async () => {}, async () => {}];
 
   return [
     loadingCanVote,
