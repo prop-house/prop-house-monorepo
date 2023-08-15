@@ -9,6 +9,7 @@ use prop_house::common::utils::integer::{
 };
 use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::registry::strategy::Strategy;
+use prop_house::common::utils::vec::Vec;
 use integer::{
     U128IntoFelt252, Felt252IntoU256, Felt252TryIntoU64, U256TryIntoFelt252, u256_from_felt252
 };
@@ -53,6 +54,12 @@ struct ProposalVote {
     voting_power: u256,
 }
 
+#[derive(Destruct)]
+struct LeadingProposals {
+    index_to_pid: Vec<u32>,
+    pid_to_index: Felt252Dict<Nullable<u32>>,
+}
+
 #[derive(Copy, Drop, Serde, PartialEq)]
 enum RoundState {
     /// The round is active. It has not been cancelled or finalized.
@@ -95,12 +102,6 @@ struct Proposal {
     last_updated_at: u64,
     is_cancelled: bool,
     voting_power: u256,
-}
-
-#[derive(Copy, Drop, Serde)]
-struct ProposalWithId {
-    proposal_id: u32,
-    proposal: Proposal,
 }
 
 /// Pack the proposal fields into a single felt252.

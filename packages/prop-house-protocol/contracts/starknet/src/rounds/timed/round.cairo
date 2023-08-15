@@ -2,7 +2,7 @@
 mod TimedRound {
     use starknet::{EthAddress, get_block_timestamp, get_caller_address};
     use prop_house::rounds::timed::config::{
-        ITimedRound, RoundState, RoundConfig, RoundParams, Proposal, ProposalWithId, ProposalVote
+        ITimedRound, RoundState, RoundConfig, RoundParams, Proposal, ProposalVote, LeadingProposals,
     };
     use prop_house::rounds::timed::constants::MAX_WINNERS;
     use prop_house::common::libraries::round::{Asset, Round, UserStrategy, StrategyGroup};
@@ -13,25 +13,29 @@ mod TimedRound {
     };
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
     use prop_house::common::utils::constants::{DependencyKey, RoundType, StrategyType};
+    use prop_house::common::utils::storage::PackedU32VecStorageAccess;
     use prop_house::common::utils::merkle::MerkleTreeTrait;
+    use prop_house::common::utils::vec::{Vec, VecTrait};
     use prop_house::common::utils::serde::SpanSerde;
+    use nullable::{NullableTrait, FromNullableResult, match_nullable};
     use array::{ArrayTrait, SpanTrait};
     use integer::u256_from_felt252;
     use traits::{TryInto, Into};
+    use dict::Felt252DictTrait;
     use option::OptionTrait;
     use zeroable::Zeroable;
+    use box::BoxTrait;
 
     struct Storage {
         _config: RoundConfig,
         _proposal_count: u32,
         _proposals: LegacyMap<u32, Proposal>,
+        _leading_proposal_ids: Vec<u32>,
         _spent_voting_power: LegacyMap<EthAddress, u256>,
     }
 
     #[event]
-    fn ProposalCreated(
-        proposal_id: u32, proposer: EthAddress, metadata_uri: Array<felt252>
-    ) {}
+    fn ProposalCreated(proposal_id: u32, proposer: EthAddress, metadata_uri: Array<felt252>) {}
 
     #[event]
     fn ProposalEdited(proposal_id: u32, updated_metadata_uri: Array<felt252>) {}
@@ -91,9 +95,7 @@ mod TimedRound {
             ProposalCreated(proposal_id, proposer, metadata_uri);
         }
 
-        fn edit_proposal(
-            proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>
-        ) {
+        fn edit_proposal(proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>) {
             _assert_caller_valid_and_round_active();
             _assert_in_proposal_period(_config::read(), get_block_timestamp());
 
@@ -143,17 +145,16 @@ mod TimedRound {
             // Determine the cumulative voting power of the user at the snapshot timestamp
             let snapshot_timestamp = config.proposal_period_end_timestamp;
             let cumulative_voting_power = Round::get_cumulative_governance_power(
-                snapshot_timestamp,
-                voter,
-                StrategyType::VOTING,
-                used_voting_strategies.span(),
+                snapshot_timestamp, voter, StrategyType::VOTING, used_voting_strategies.span()
             );
             assert(cumulative_voting_power.is_non_zero(), 'TR: User has no voting power');
 
             // Cast votes, throwing if the remaining voting power is insufficient
+            let mut leading_proposals = _get_leading_proposals();
             _cast_votes_on_one_or_more_proposals(
-                voter, cumulative_voting_power, proposal_votes.span()
+                voter, cumulative_voting_power, proposal_votes.span(), ref leading_proposals
             );
+            _leading_proposal_ids::write(leading_proposals.index_to_pid);
         }
 
         fn cancel_round() {
@@ -183,12 +184,8 @@ mod TimedRound {
             let proposal_count = _proposal_count::read();
             assert(proposal_count.is_non_zero(), 'TR: No proposals submitted');
 
-            // Determine the winners and compute the a merkle root with the claim information.
-            let active_proposals = _get_active_proposals();
-            let winning_proposals = _get_n_proposals_by_voting_power_desc(
-                active_proposals, config.winner_count.into()
-            );
-            let leaves = _compute_leaves(winning_proposals, awards);
+            let (winning_proposal_ids, winning_proposals) = _get_winning_proposal_ids_and_data();
+            let leaves = _compute_leaves(winning_proposal_ids, winning_proposals, awards);
 
             let mut merkle_tree = MerkleTreeTrait::<u256>::new();
             let merkle_root = merkle_tree.compute_merkle_root(leaves);
@@ -206,7 +203,7 @@ mod TimedRound {
             config.round_state = RoundState::Finalized(());
             _config::write(config);
 
-            RoundFinalized(_extract_proposal_ids(winning_proposals), merkle_root);
+            RoundFinalized(winning_proposal_ids, merkle_root);
         }
     }
 
@@ -410,10 +407,12 @@ mod TimedRound {
     /// * `voter` - The address of the voter.
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
     /// * `proposal_votes` - The votes to cast.
+    /// * `leading_proposals` - The leading proposals.
     fn _cast_votes_on_one_or_more_proposals(
         voter: EthAddress,
         cumulative_voting_power: u256,
-        mut proposal_votes: Span<ProposalVote>
+        mut proposal_votes: Span<ProposalVote>,
+        ref leading_proposals: LeadingProposals,
     ) {
         let mut spent_voting_power = _spent_voting_power::read(voter);
         let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
@@ -422,7 +421,7 @@ mod TimedRound {
                 Option::Some(proposal_vote) => {
                     // Cast the votes for the proposal
                     spent_voting_power += _cast_votes_on_proposal(
-                        voter, *proposal_vote, remaining_voting_power, 
+                        voter, *proposal_vote, remaining_voting_power, ref leading_proposals,
                     );
                     remaining_voting_power = cumulative_voting_power - spent_voting_power;
                 },
@@ -439,8 +438,12 @@ mod TimedRound {
     /// * `voter` - The address of the voter.
     /// * `proposal_vote` - The proposal vote information.
     /// * `remaining_voting_power` - The remaining voting power of the voter.
+    /// * `leading_proposals` - The leading proposals.
     fn _cast_votes_on_proposal(
-        voter: EthAddress, proposal_vote: ProposalVote, remaining_voting_power: u256, 
+        voter: EthAddress,
+        proposal_vote: ProposalVote,
+        remaining_voting_power: u256,
+        ref leading_proposals: LeadingProposals,
     ) -> u256 {
         let proposal_id = proposal_vote.proposal_id;
         let voting_power = proposal_vote.voting_power;
@@ -459,46 +462,12 @@ mod TimedRound {
         proposal.voting_power += voting_power;
         _proposals::write(proposal_id, proposal);
 
+        let index_or_null = leading_proposals.pid_to_index.get(proposal_id.into());
+        _insert_or_update_leading_proposal(ref leading_proposals, index_or_null, proposal_id, proposal);
+
         VoteCast(proposal_id, voter, voting_power);
 
         voting_power
-    }
-
-    /// Get all active proposals (not cancelled), including proposal IDs.
-    fn _get_active_proposals() -> Array<ProposalWithId> {
-        let mut active_proposals = Default::default();
-
-        let mut id = 1;
-        let proposal_count = _proposal_count::read();
-        loop {
-            if id > proposal_count {
-                break;
-            }
-
-            let proposal = _proposals::read(id);
-            if !proposal.is_cancelled {
-                active_proposals.append(ProposalWithId { proposal_id: id, proposal });
-            }
-            id += 1;
-        };
-        active_proposals
-    }
-
-    /// Return an array of all the proposal IDs in the given array of proposals.
-    /// * `proposals` - Array of proposals
-    fn _extract_proposal_ids(mut proposals: Span<ProposalWithId>) -> Span<u32> {
-        let mut proposal_ids = Default::<Array<u32>>::default();
-        loop {
-            match proposals.pop_front() {
-                Option::Some(p) => {
-                    proposal_ids.append(*p.proposal_id);
-                },
-                Option::None(_) => {
-                    break;
-                },
-            };
-        };
-        proposal_ids.span()
     }
 
     /// Build the execution parameters that will be passed to the execution strategy.
@@ -512,32 +481,34 @@ mod TimedRound {
     }
 
     /// Compute the leaves for the given proposals and awards, if present.
+    /// * `proposal_ids` - The proposal IDs to compute the leaves for.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to compute the leaves for.
-    fn _compute_leaves(proposals: Span<ProposalWithId>, awards: Array<Asset>) -> Span<u256> {
+    fn _compute_leaves(proposal_ids: Span<u32>, proposals: Span<Proposal>, awards: Array<Asset>) -> Span<u256> {
         if awards.is_empty() {
-            return _compute_leaves_for_no_awards(proposals);
+            return _compute_leaves_for_no_awards(proposal_ids, proposals);
         }
         if awards.len() == 1 {
-            return _compute_leaves_for_split_award(proposals, *awards.at(0));
+            return _compute_leaves_for_split_award(proposal_ids, proposals, *awards.at(0));
         }
-        _compute_leaves_for_assigned_awards(proposals, awards)
+        _compute_leaves_for_assigned_awards(proposal_ids, proposals, awards)
     }
 
     /// Compute the leaves for the given proposals using the proposer address
     /// and rank of the proposal.
+    /// * `proposal_ids` - The proposal IDs to compute the leaves for.
     /// * `proposals` - The proposals to compute the leaves for.
-    fn _compute_leaves_for_no_awards(mut proposals: Span<ProposalWithId>) -> Span<u256> {
+    fn _compute_leaves_for_no_awards(proposal_ids: Span<u32>, mut proposals: Span<Proposal>) -> Span<u256> {
         let mut leaves = Default::<Array<u256>>::default();
 
-        let mut position = 1;
+        let mut position = 0;
         loop {
             match proposals.pop_front() {
                 Option::Some(p) => {
-                    let proposal_id = *p.proposal_id;
-                    let proposer = *p.proposal.proposer;
-                    leaves.append(_compute_winner_leaf(proposal_id, position, proposer));
+                    let proposal_id = *proposal_ids.at(position);
+
                     position += 1;
+                    leaves.append(_compute_winner_leaf(proposal_id, position, *p.proposer));
                 },
                 Option::None(_) => {
                     break leaves.span();
@@ -548,10 +519,11 @@ mod TimedRound {
 
     /// Compute the leaves for the given proposals using an award that is to be split
     /// evenly among the them.
+    /// * `proposal_ids` - The proposal IDs to compute the leaves for.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `award_to_split` - The award to split evenly among the proposals.
     fn _compute_leaves_for_split_award(
-        proposals: Span<ProposalWithId>, award_to_split: Asset
+        proposal_ids: Span<u32>, proposals: Span<Proposal>, award_to_split: Asset
     ) -> Span<u256> {
         let proposal_len: felt252 = proposals.len().into();
         let amount_per_proposal = award_to_split.amount / proposal_len.into();
@@ -564,12 +536,13 @@ mod TimedRound {
             if position == proposal_count {
                 break leaves.span();
             }
+            let proposal_id = *proposal_ids.at(position);
             let p = *proposals.at(position);
 
             position += 1;
             leaves.append(
                 _compute_winner_leaf_with_award(
-                    p.proposal_id, position, p.proposal.proposer, award_to_split.asset_id, amount_per_proposal
+                    proposal_id, position, p.proposer, award_to_split.asset_id, amount_per_proposal
                 )
             );
         }
@@ -577,10 +550,11 @@ mod TimedRound {
 
     /// Compute the leaves for the given proposals using awards that are to be assigned
     /// to each proposal individually.
+    /// * `proposal_ids` - The proposal IDs to compute the leaves for.
     /// * `proposals` - The proposals to compute the leaves for.
     /// * `awards` - The awards to assign to each proposal.
     fn _compute_leaves_for_assigned_awards(
-        proposals: Span<ProposalWithId>, awards: Array<Asset>
+        proposal_ids: Span<u32>, proposals: Span<Proposal>, awards: Array<Asset>
     ) -> Span<u256> {
         let proposal_count = proposals.len();
         let mut leaves = Default::<Array<u256>>::default();
@@ -591,12 +565,13 @@ mod TimedRound {
                 break leaves.span();
             }
             let award = *awards.at(position);
+            let proposal_id = *proposal_ids.at(position);
             let p = *proposals.at(position);
 
             position += 1;
             leaves.append(
                 _compute_winner_leaf_with_award(
-                    p.proposal_id, position, p.proposal.proposer, award.asset_id, award.amount
+                    proposal_id, position, p.proposer, award.asset_id, award.amount
                 )
             );
         }
@@ -636,123 +611,243 @@ mod TimedRound {
         keccak_u256s_be(leaf_input.span())
     }
 
-    /// Get the top N proposals by descending voting power.
-    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
-    /// * `proposals` - Array of proposals to sort
-    /// * `max_return_count` - Max number of proposals to return
-    fn _get_n_proposals_by_voting_power_desc(
-        mut proposals: Array<ProposalWithId>, max_return_count: u32
-    ) -> Span<ProposalWithId> {
-        _mergesort_proposals_by_voting_power_desc_and_slice(proposals, max_return_count).span()
+    /// Get the ID <-> index mappings for proposals currently in the lead.
+    /// Proposals must receive at least one vote to be considered.
+    fn _get_leading_proposals() -> LeadingProposals {
+        let mut index_to_pid = _leading_proposal_ids::read();
+        let mut pid_to_index = Default::default();
+        let count = index_to_pid.len();
+
+        let mut i = 0;
+        loop {
+            if i == count {
+                break;
+            }
+            pid_to_index.insert(index_to_pid.at(i).into(), nullable_from_box(BoxTrait::new(i)));
+
+            i += 1;
+        };
+        LeadingProposals { index_to_pid, pid_to_index }
     }
 
-    /// Merge sort and slice an array of proposals by descending voting power.
-    /// Ties go to the proposal with the earliest `last_updated_at` timestamp.
-    /// * `arr` - Array of proposals to sort
-    /// * `max_return_count` - Max return count
-    fn _mergesort_proposals_by_voting_power_desc_and_slice(
-        mut arr: Array<ProposalWithId>, max_return_count: u32
-    ) -> Array<ProposalWithId> {
-        let len = arr.len();
-        if len <= 1 {
-            return arr;
-        }
+    /// Get the winning proposal IDs and full proposal information.
+    fn _get_winning_proposal_ids_and_data() -> (Span<u32>, Span<Proposal>) {
+        let mut winning_proposals = _get_leading_proposals();
+        let mut effective_heap_size = winning_proposals.index_to_pid.len();
 
-        // Create left and right arrays
-        let middle = len / 2;
-        let (left_arr, right_arr) = _split_array(ref arr, middle);
-
-        // Recursively sort the left and right arrays
-        let sorted_left = _mergesort_proposals_by_voting_power_desc_and_slice(
-            left_arr, max_return_count
-        );
-        let sorted_right = _mergesort_proposals_by_voting_power_desc_and_slice(
-            right_arr, max_return_count
-        );
-
-        let mut result_arr = Default::default();
-        _merge_and_slice_recursive(
-            sorted_left, sorted_right, ref result_arr, 0, 0, max_return_count
-        );
-        result_arr
-    }
-
-    /// Merge two sorted proposal arrays.
-    /// * `left_arr` - Left array
-    /// * `right_arr` - Right array
-    /// * `result_arr` - Result array
-    /// * `left_arr_ix` - Left array index
-    /// * `right_arr_ix` - Right array index
-    /// * `max_return_count` - Max return count
-    fn _merge_and_slice_recursive(
-        mut left_arr: Array<ProposalWithId>,
-        mut right_arr: Array<ProposalWithId>,
-        ref result_arr: Array<ProposalWithId>,
-        left_arr_ix: usize,
-        right_arr_ix: usize,
-        max_return_count: u32,
-    ) {
-        if result_arr.len() == left_arr.len() + right_arr.len() {
-            return;
-        }
-
-        // Exit early if the max return count has been reached
-        if result_arr.len() == max_return_count {
-            return;
-        }
-
-        let (append, next_left_ix, next_right_ix) = if left_arr_ix == left_arr.len() {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
-        } else if right_arr_ix == right_arr.len() {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else if *left_arr[left_arr_ix].proposal.voting_power > *right_arr[right_arr_ix].proposal.voting_power {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else if *left_arr[left_arr_ix].proposal.voting_power < *right_arr[right_arr_ix].proposal.voting_power {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
-        } else if *left_arr[left_arr_ix].proposal.last_updated_at <= *right_arr[right_arr_ix].proposal.last_updated_at {
-            (*left_arr[left_arr_ix], left_arr_ix + 1, right_arr_ix)
-        } else {
-            (*right_arr[right_arr_ix], left_arr_ix, right_arr_ix + 1)
+        // Get the winning proposal IDs in ascending order, which is cheaper
+        // due to the min heap.
+        let mut winning_proposal_ids_asc = Default::<Array<u32>>::default();
+        loop {
+            if effective_heap_size == 0 {
+                break;
+            }
+            effective_heap_size -= 1;
+            winning_proposal_ids_asc.append(_pop_least_voted_proposal(ref winning_proposals, effective_heap_size));
         };
 
-        result_arr.append(append);
-        _merge_and_slice_recursive(left_arr, right_arr, ref result_arr, next_left_ix, next_right_ix, max_return_count);
+        let mut winning_proposal_ids = Default::<Array<u32>>::default();
+        let mut winning_proposal_data = Default::<Array<Proposal>>::default();
+
+        // Reverse the order of the proposals.
+        let mut i = winning_proposal_ids_asc.len();
+        loop {
+            if i == 0 {
+                break (winning_proposal_ids.span(), winning_proposal_data.span());
+            }
+            i -= 1;
+
+            let proposal_id = *winning_proposal_ids_asc.at(i);
+            winning_proposal_ids.append(proposal_id);
+            winning_proposal_data.append(_proposals::read(proposal_id));
+        }
     }
 
-    // Split an array into two arrays.
-    /// * `arr` - The array to split.
-    /// * `index` - The index to split the array at.
-    /// # Returns
-    /// * `(Array<T>, Array<T>)` - The two arrays.
-    fn _split_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-        ref arr: Array<T>, index: usize
-    ) -> (Array::<T>, Array::<T>) {
-        let mut arr1 = Default::default();
-        let mut arr2 = Default::default();
-        let len = arr.len();
+    /// Get the proposal ID with the smallest amount of voting power
+    /// and "removing" it by moving it to the end of the heap.
+    /// * `winning_proposals` - The winning proposals.
+    /// * `heap_last_index` - The index of the last element in the heap.
+    fn _pop_least_voted_proposal(ref winning_proposals: LeadingProposals, heap_last_index: u32) -> u32 {
+        let root = winning_proposals.index_to_pid.at(0);
+        let last = winning_proposals.index_to_pid.at(heap_last_index);
 
-        _fill_array(ref arr1, ref arr, 0, index);
-        _fill_array(ref arr2, ref arr, index, len - index);
+        // Swap the root with the last element
+        _set_proposal_id_index(ref winning_proposals, 0, last);
+        _set_proposal_id_index(ref winning_proposals, heap_last_index, root);
 
-        (arr1, arr2)
-    }
-
-    // Fill an array with a value.
-    /// * `arr` - The array to fill.
-    /// * `fill_arr` - The array to fill with.
-    /// * `index` - The index to start filling at.
-    /// * `count` - The number of elements to fill.
-    /// # Returns
-    /// * `Array<T>` - The filled array.
-    fn _fill_array<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
-        ref arr: Array<T>, ref fill_arr: Array<T>, index: usize, count: usize
-    ) {
-        if count == 0 {
-            return;
+        // Only bubble down if there are elements left in the heap
+        if heap_last_index > 0 {
+            _bubble_down_proposal_in_heap(ref winning_proposals, 0, heap_last_index - 1);
         }
 
-        arr.append(*fill_arr[index]);
+        // Return the minimum value
+        root
+    }
 
-        _fill_array(ref arr, ref fill_arr, index + 1, count - 1)
+    /// Insert or update a proposal in the leading proposals vec.
+    /// * `leading_proposals` - The leading proposals.
+    /// * `index_or_null` - The index of the proposal, if it exists.
+    /// * `proposal_id` - The ID of the proposal.
+    /// * `proposal` - The proposal information.
+    fn _insert_or_update_leading_proposal(ref leading_proposals: LeadingProposals, index_or_null: Nullable<u32>, proposal_id: u32, proposal: Proposal) {
+        match match_nullable(index_or_null) {
+            // Insert
+            FromNullableResult::Null(()) => {
+                let winner_count = _config::read().winner_count;
+                let leading_proposals_count = leading_proposals.index_to_pid.len();
+
+                _handle_proposal_insertion_or_replacement(ref leading_proposals, leading_proposals_count, winner_count, proposal_id, proposal);
+            },
+            // Update
+            FromNullableResult::NotNull(proposal_index) => _bubble_up_proposal_in_heap(
+                ref leading_proposals, proposal_index.unbox()
+            ),
+        }
+    }
+
+    /// Insert a proposal into the leading proposals vec if it is not full,
+    /// or replace the root proposal if it has a lower voting power.
+    /// * `leading_proposals` - The leading proposals.
+    /// * `leading_proposals_count` - The number of leading proposals.
+    /// * `winner_count` - The number of winners.
+    /// * `proposal_id` - The ID of the proposal.
+    /// * `proposal` - The proposal information.
+    fn _handle_proposal_insertion_or_replacement(
+        ref leading_proposals: LeadingProposals,
+        leading_proposals_count: u32,
+        winner_count: u16,
+        proposal_id: u32,
+        proposal: Proposal,
+    ) {
+        // If winner count has not been reached, insert the proposal without removing another
+        if leading_proposals_count < winner_count.into() {
+            // Insert the proposal and update the heap
+            let index = nullable_from_box(BoxTrait::new(leading_proposals_count));
+
+            leading_proposals.pid_to_index.insert(proposal_id.into(), index);
+            leading_proposals.index_to_pid.push(proposal_id);
+            _bubble_up_proposal_in_heap(ref leading_proposals, leading_proposals_count);
+        } else if _should_replace_least_voted_proposal(ref leading_proposals, proposal) {
+            // Replace the proposal at the given index and update the heap
+            _set_proposal_id_index(ref leading_proposals, 0, proposal_id);
+            _bubble_down_proposal_in_heap(ref leading_proposals, 0, leading_proposals_count - 1);
+        }
+    }
+
+    /// Return true if the given voting power is greater than the least voted (root) proposal's voting power,
+    /// OR if the voting power is equal to the least voted proposal's voting power, but the last updated
+    /// timestamp is less than the least voted proposal's last updated timestamp.
+    /// * `leading_proposals` - The leading proposals.
+    /// * `proposal` - The proposal information.
+    fn _should_replace_least_voted_proposal(ref leading_proposals: LeadingProposals, proposal: Proposal) -> bool {
+        let least_voted_proposal = _proposals::read(leading_proposals.index_to_pid.at(0));
+
+        if proposal.voting_power < least_voted_proposal.voting_power {
+            return false;
+        } else if proposal.voting_power == least_voted_proposal.voting_power {
+            return proposal.last_updated_at < least_voted_proposal.last_updated_at;
+        }
+        return true;
+    }
+
+    /// Bubble the proposal at the given index up the heap. In this min-heap, we bubble up 
+    /// when a node's value decreases, reflecting that a proposal with lower voting power 
+    /// (or newer timestamp in case of a tie) should move upwards. Specifically, if the 
+    /// proposal's voting power is less than its parent's OR if the proposal's voting power 
+    /// is equal to its parent's but was received later, it will swap the proposal with its 
+    /// parent. The loop continues until the proposal either reaches the top of the heap or 
+    /// its voting power is greater than its parent's (or equal but received earlier or at the 
+    /// same time).
+    /// * `leading_proposals` - The leading proposals.
+    /// * `index` - The index of the proposal to bubble up.
+    fn _bubble_up_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32) {
+        loop {
+            if index == 0 {
+                break;
+            }
+            let parent_index = (index - 1) / 2;
+            let parent_proposal_id = leading_proposals.index_to_pid.at(parent_index);
+            let proposal_id = leading_proposals.index_to_pid.at(index);
+
+            let proposal = _proposals::read(proposal_id);
+            let parent_proposal = _proposals::read(parent_proposal_id);
+
+            if proposal.voting_power > parent_proposal.voting_power {
+                break;
+            }
+            // This bitand will be replaced with && once short-circuiting is supported.
+            if proposal.voting_power == parent_proposal.voting_power & proposal.last_updated_at <= parent_proposal.last_updated_at {
+                break;
+            }
+
+            // Swap the current proposal with its parent.
+            _set_proposal_id_index(ref leading_proposals, index, parent_proposal_id);
+            _set_proposal_id_index(ref leading_proposals, parent_index, proposal_id);
+
+            index = parent_index;
+        };
+    }
+
+    /// Bubble the proposal at the given index down the heap. This function is used
+    /// when the root proposal is replaced in a full heap. The function ensures that
+    /// the heap property is maintained after such updates. Specifically, it checks if
+    /// the updated proposal (at the given index) has a higher voting power than one of
+    /// its children or if the voting power is equal and the proposal was received later
+    /// than its child. If so, it swaps the proposal with its child that has the lowest 
+    /// voting power. This process continues (i.e., it "bubbles down" the proposal) until 
+    /// the proposal has lower voting power than both its children or equal voting power 
+    /// and was received earlier than or at the same time as its child, or until it becomes 
+    /// a leaf node.
+    /// * `leading_proposals` - The leading proposals.
+    /// * `index` - The index of the proposal to bubble down.
+    /// * `heap_last_index` - The index of the last element in the heap.
+    fn _bubble_down_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32, heap_last_index: u32) {
+        loop {
+            let left_child_index = 2 * index + 1;
+            let right_child_index = 2 * index + 2;
+
+            // If the left child index is beyond the effective heap size, break the loop.
+            if left_child_index > heap_last_index {
+                break;
+            }
+
+            // Determine the index of the child with the lowest voting power.
+            let min_child_index = if right_child_index <= heap_last_index {
+                let left_child_proposal = _proposals::read(leading_proposals.index_to_pid.at(left_child_index));
+                let right_child_proposal = _proposals::read(leading_proposals.index_to_pid.at(right_child_index));
+
+                if left_child_proposal.voting_power < right_child_proposal.voting_power | (left_child_proposal.voting_power == right_child_proposal.voting_power & left_child_proposal.last_updated_at >= right_child_proposal.last_updated_at) {
+                    left_child_index
+                } else {
+                    right_child_index
+                }
+            } else {
+                left_child_index
+            };
+
+            let proposal_id = leading_proposals.index_to_pid.at(index);
+            let min_child_proposal_id = leading_proposals.index_to_pid.at(min_child_index);
+            let proposal = _proposals::read(proposal_id);
+            let min_child_proposal = _proposals::read(min_child_proposal_id);
+
+            if proposal.voting_power < min_child_proposal.voting_power | (proposal.voting_power == min_child_proposal.voting_power & proposal.last_updated_at >= min_child_proposal.last_updated_at) {
+                break;
+            }
+
+            // Swap the current proposal with its min child.
+            _set_proposal_id_index(ref leading_proposals, index, min_child_proposal_id);
+            _set_proposal_id_index(ref leading_proposals, min_child_index, proposal_id);
+
+            index = min_child_index;
+        }
+    }
+
+    /// Set the proposal ID at the given index in the map of leading proposals.
+    /// * `leading_proposals` - The leading proposals.
+    /// * `index` - The index to set.
+    /// * `proposal_id` - The proposal ID to set.
+    fn _set_proposal_id_index(ref leading_proposals: LeadingProposals, index: u32, proposal_id: u32) {
+        leading_proposals.index_to_pid.set(index, proposal_id);
+        leading_proposals.pid_to_index.insert(proposal_id.into(), nullable_from_box(BoxTrait::new(index)));
     }
 }
