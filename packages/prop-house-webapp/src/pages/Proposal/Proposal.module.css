@@ -33,6 +33,9 @@
   padding: 13px 20px 13px 20px;
   border-radius: 12px;
   background-color: white;
+  min-height: 4.5rem;
+  max-height: 4.5rem;
+  display: flex;
 }
 .votingBar.connectBtn {
   display: flex;
@@ -46,6 +49,7 @@
   justify-content: space-between;
   font-size: 16px;
   color: var(--brand-black-transparent);
+  width: 100%;
 }
 .votingBarContent b {
   color: var(--brand-black);
