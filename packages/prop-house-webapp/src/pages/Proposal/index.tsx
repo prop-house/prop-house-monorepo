@@ -13,7 +13,11 @@ import {
 } from '../../state/slices/propHouse';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import {
+  SignatureState,
+  StoredProposalWithVotes,
+  Vote,
+} from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
@@ -28,6 +32,7 @@ import { useTranslation } from 'react-i18next';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import { setVotingPower } from '../../state/slices/voting';
+import VoteConfirmationModal from '../../components/VoteConfirmationModal';
 
 const Proposal = () => {
   const params = useParams();
@@ -49,10 +54,8 @@ const Proposal = () => {
 
   const { openConnectModal } = useConnectModal();
 
-  // TODO: DEFINE MODAL TO SHOW VOTING CONFIRMATION
-  const [a, setA] = useState(false);
-
-  const [loadingCanVote, votingPower] = useVotingPower(round, account);
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [_, votingPower] = useVotingPower(round, account);
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -102,6 +105,8 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal]);
 
+  const handleSubmitVote = async () => {};
+
   const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
     <>
       <>
@@ -110,8 +115,8 @@ const Proposal = () => {
             votingPower && votingPower > 0 ? (
               <ProposalModalVotingModule
                 proposal={proposal!}
-                setShowVoteAllotmentModal={setA}
-                setShowVotingModal={setA}
+                setShowVoteAllotmentModal={setShowVoteConfirmationModal}
+                setShowVotingModal={setShowVoteConfirmationModal}
               />
             ) : (
               <div className={classes.votingBarContent}>
@@ -139,6 +144,12 @@ const Proposal = () => {
 
   return (
     <>
+      {showVoteConfirmationModal && round && (
+        <VoteConfirmationModal
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
+          submitVote={handleSubmitVote}
+        />
+      )}
       <Container>
         {proposal && (
           <OpenGraphElements
