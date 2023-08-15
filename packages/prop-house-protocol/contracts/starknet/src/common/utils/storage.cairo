@@ -107,7 +107,7 @@ impl SpanStorageAccess<
 
 /// Get the scale factor for packing and unpacking the vec length.
 fn get_vec_len_scale_factor() -> u256 {
-    0x10000000000000000000000000000000000000000000000000000
+    0x100000000000000000000000000000000000000000000000000000000
 }
 
 /// Get the scale factors for packing and unpacking u32s.
@@ -134,20 +134,20 @@ fn read_packed_u32_vec(address_domain: u32, base: StorageBaseAddress, mut offset
     let mut slot = u256_from_felt252(StorageAccess::read_at_offset_internal(address_domain, base, offset)?);
     let mut remaining_length = ((slot / get_vec_len_scale_factor()) & MASK_16).try_into().unwrap();
 
-    let mut mask_index = 0;
+    let mut packed_index = 0;
     loop {
         if remaining_length == 0 {
             break;
         }
-        if mask_index == 7 {
+        if packed_index == 7 {
             offset += 1;
             slot = u256_from_felt252(StorageAccess::read_at_offset_internal(address_domain, base, offset).unwrap_syscall());
-            mask_index = 0;
+            packed_index = 0;
         }
 
-        vec.push(((slot / *scale_factors.at(mask_index)) & MASK_32).try_into().unwrap());
+        vec.push(((slot / *scale_factors.at(packed_index)) & MASK_32).try_into().unwrap());
         remaining_length -= 1;
-        mask_index += 1;
+        packed_index += 1;
     };
     Result::Ok(vec)
 }
