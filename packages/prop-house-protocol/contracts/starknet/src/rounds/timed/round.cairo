@@ -462,8 +462,8 @@ mod TimedRound {
         proposal.voting_power += voting_power;
         _proposals::write(proposal_id, proposal);
 
-        let pid_or_null = leading_proposals.pid_to_index.get(proposal_id.into());
-        _insert_or_update_leading_proposal(ref leading_proposals, pid_or_null, proposal_id, proposal);
+        let index_or_null = leading_proposals.pid_to_index.get(proposal_id.into());
+        _insert_or_update_leading_proposal(ref leading_proposals, index_or_null, proposal_id, proposal);
 
         VoteCast(proposal_id, voter, voting_power);
 
@@ -675,20 +675,22 @@ mod TimedRound {
         _set_proposal_id_index(ref winning_proposals, 0, last);
         _set_proposal_id_index(ref winning_proposals, heap_last_index, root);
 
-        // Bubble down the new root
-        _bubble_down_proposal_in_heap(ref winning_proposals, 0);
+        // Only bubble down if there are elements left in the heap
+        if heap_last_index > 0 {
+            _bubble_down_proposal_in_heap(ref winning_proposals, 0, heap_last_index - 1);
+        }
 
         // Return the minimum value
-        winning_proposals.index_to_pid.at(heap_last_index)
+        root
     }
 
     /// Insert or update a proposal in the leading proposals vec.
     /// * `leading_proposals` - The leading proposals.
-    /// * `pid_or_null` - The index of the proposal, if it exists.
+    /// * `index_or_null` - The index of the proposal, if it exists.
     /// * `proposal_id` - The ID of the proposal.
     /// * `proposal` - The proposal information.
-    fn _insert_or_update_leading_proposal(ref leading_proposals: LeadingProposals, pid_or_null: Nullable<u32>, proposal_id: u32, proposal: Proposal) {
-        match match_nullable(pid_or_null) {
+    fn _insert_or_update_leading_proposal(ref leading_proposals: LeadingProposals, index_or_null: Nullable<u32>, proposal_id: u32, proposal: Proposal) {
+        match match_nullable(index_or_null) {
             // Insert
             FromNullableResult::Null(()) => {
                 let winner_count = _config::read().winner_count;
@@ -719,29 +721,17 @@ mod TimedRound {
     ) {
         // If winner count has not been reached, insert the proposal without removing another
         if leading_proposals_count < winner_count.into() {
-            _insert_proposal(ref leading_proposals, leading_proposals_count, proposal_id);
+            // Insert the proposal and update the heap
+            let index = nullable_from_box(BoxTrait::new(leading_proposals_count));
+
+            leading_proposals.pid_to_index.insert(proposal_id.into(), index);
+            leading_proposals.index_to_pid.push(proposal_id);
             _bubble_up_proposal_in_heap(ref leading_proposals, leading_proposals_count);
         } else if _should_replace_least_voted_proposal(ref leading_proposals, proposal) {
-            _replace_proposal(ref leading_proposals, 0, proposal_id);
+            // Replace the proposal at the given index and update the heap
+            _set_proposal_id_index(ref leading_proposals, 0, proposal_id);
+            _bubble_down_proposal_in_heap(ref leading_proposals, 0, leading_proposals_count - 1);
         }
-    }
-
-    /// Insert a new proposal into the leading proposals vec.
-    /// * `leading_proposals` - The leading proposals.
-    /// * `index` - The starting index of the proposal.
-    /// * `proposal_id` - The ID of the proposal.
-    fn _insert_proposal(ref leading_proposals: LeadingProposals, index: u32, proposal_id: u32) {
-        leading_proposals.pid_to_index.insert(proposal_id.into(), nullable_from_box(BoxTrait::new(index)));
-        leading_proposals.index_to_pid.push(proposal_id);
-    }
-
-    /// Replace the proposal at the given index with the given proposal ID.
-    /// * `leading_proposals` - The leading proposals.
-    /// * `index` - The index of the proposal.
-    /// * `proposal_id` - The ID of the proposal.
-    fn _replace_proposal(ref leading_proposals: LeadingProposals, index: u32, proposal_id: u32) {
-        _set_proposal_id_index(ref leading_proposals, index, proposal_id);
-        _bubble_down_proposal_in_heap(ref leading_proposals, index);
     }
 
     /// Return true if the given voting power is greater than the least voted (root) proposal's voting power,
@@ -752,13 +742,12 @@ mod TimedRound {
     fn _should_replace_least_voted_proposal(ref leading_proposals: LeadingProposals, proposal: Proposal) -> bool {
         let least_voted_proposal = _proposals::read(leading_proposals.index_to_pid.at(0));
 
-        if proposal.voting_power > least_voted_proposal.voting_power {
-            true
-        } else if proposal.voting_power < least_voted_proposal.voting_power {
-            false
-        } else {
-            proposal.last_updated_at < least_voted_proposal.last_updated_at
+        if proposal.voting_power < least_voted_proposal.voting_power {
+            return false;
+        } else if proposal.voting_power == least_voted_proposal.voting_power {
+            return proposal.last_updated_at < least_voted_proposal.last_updated_at;
         }
+        return true;
     }
 
     /// Bubble the proposal at the given index up the heap. Despite this being a min-heap,
@@ -782,11 +771,11 @@ mod TimedRound {
             let proposal = _proposals::read(proposal_id);
             let parent_proposal = _proposals::read(parent_proposal_id);
 
-            if proposal.voting_power < parent_proposal.voting_power {
+            if proposal.voting_power > parent_proposal.voting_power {
                 break;
             }
             // This bitand will be replaced with && once short-circuiting is supported.
-            if proposal.voting_power == parent_proposal.voting_power & proposal.last_updated_at >= parent_proposal.last_updated_at {
+            if proposal.voting_power == parent_proposal.voting_power & proposal.last_updated_at <= parent_proposal.last_updated_at {
                 break;
             }
 
@@ -809,28 +798,23 @@ mod TimedRound {
     /// received before its child, or until it becomes a leaf node.
     /// * `leading_proposals` - The leading proposals.
     /// * `index` - The index of the proposal to bubble down.
-    fn _bubble_down_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32) {
-        let leading_proposals_count = leading_proposals.index_to_pid.len();
+    /// * `heap_last_index` - The index of the last element in the heap.
+    fn _bubble_down_proposal_in_heap(ref leading_proposals: LeadingProposals, mut index: u32, heap_last_index: u32) {
         loop {
             let left_child_index = 2 * index + 1;
             let right_child_index = 2 * index + 2;
 
-            // If there are no children, break the loop.
-            if left_child_index >= leading_proposals_count {
+            // If the left child index is beyond the effective heap size, break the loop.
+            if left_child_index > heap_last_index {
                 break;
             }
 
-            // Find the index of the child with the highest voting power.
-            let max_child_index = if right_child_index < leading_proposals_count {
-                let left_child_proposal_id = leading_proposals.index_to_pid.at(left_child_index);
-                let right_child_proposal_id = leading_proposals.index_to_pid.at(right_child_index);
-                let left_child_proposal = _proposals::read(left_child_proposal_id);
-                let right_child_proposal = _proposals::read(right_child_proposal_id);
+            // Determine the index of the child with the lowest voting power.
+            let min_child_index = if right_child_index <= heap_last_index {
+                let left_child_proposal = _proposals::read(leading_proposals.index_to_pid.at(left_child_index));
+                let right_child_proposal = _proposals::read(leading_proposals.index_to_pid.at(right_child_index));
 
-                if left_child_proposal.voting_power > right_child_proposal.voting_power {
-                    left_child_index
-                // This bitand will be replaced with && once short-circuiting is supported.
-                } else if left_child_proposal.voting_power == right_child_proposal.voting_power & left_child_proposal.last_updated_at < right_child_proposal.last_updated_at  {
+                if left_child_proposal.voting_power < right_child_proposal.voting_power | (left_child_proposal.voting_power == right_child_proposal.voting_power & left_child_proposal.last_updated_at >= right_child_proposal.last_updated_at) {
                     left_child_index
                 } else {
                     right_child_index
@@ -840,24 +824,20 @@ mod TimedRound {
             };
 
             let proposal_id = leading_proposals.index_to_pid.at(index);
-            let max_child_proposal_id = leading_proposals.index_to_pid.at(max_child_index);
+            let min_child_proposal_id = leading_proposals.index_to_pid.at(min_child_index);
             let proposal = _proposals::read(proposal_id);
-            let max_child_proposal = _proposals::read(max_child_proposal_id);
+            let min_child_proposal = _proposals::read(min_child_proposal_id);
 
-            if proposal.voting_power > max_child_proposal.voting_power {
-                break;
-            }
-            // This bitand will be replaced with && once short-circuiting is supported.
-            if proposal.voting_power == max_child_proposal.voting_power & proposal.last_updated_at <= max_child_proposal.last_updated_at {
+            if proposal.voting_power < min_child_proposal.voting_power | (proposal.voting_power == min_child_proposal.voting_power & proposal.last_updated_at >= min_child_proposal.last_updated_at) {
                 break;
             }
 
-            // Swap the current proposal with its max child.
-            _set_proposal_id_index(ref leading_proposals, index, max_child_proposal_id);
-            _set_proposal_id_index(ref leading_proposals, max_child_index, proposal_id);
+            // Swap the current proposal with its min child.
+            _set_proposal_id_index(ref leading_proposals, index, min_child_proposal_id);
+            _set_proposal_id_index(ref leading_proposals, min_child_index, proposal_id);
 
-            index = max_child_index;
-        };
+            index = min_child_index;
+        }
     }
 
     /// Set the proposal ID at the given index in the map of leading proposals.
