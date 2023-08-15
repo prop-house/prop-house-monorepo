@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { useProvider } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
 import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';

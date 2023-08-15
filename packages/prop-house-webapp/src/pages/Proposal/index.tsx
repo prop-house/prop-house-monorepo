@@ -13,26 +13,27 @@ import {
 } from '../../state/slices/propHouse';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import {
-  SignatureState,
-  StoredProposalWithVotes,
-  Vote,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import Button, { ButtonColor } from '../../components/Button';
+import { ButtonColor } from '../../components/Button';
 import ConnectButton from '../../components/ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
-import { setVotingPower } from '../../state/slices/voting';
+import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
+import { submitVotes } from '../../utils/submitVotes';
+import ErrorVotingModal from '../../components/ErrorVotingModal';
+import SuccessVotingModal from '../../components/SuccessVotingModal';
+import { signerIsContract } from '../../utils/signerIsContract';
+import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 
 const Proposal = () => {
   const params = useParams();
@@ -42,19 +43,24 @@ const Proposal = () => {
   const navigate = useNavigate();
   const { address: account, isConnected } = useAccount();
   const { t } = useTranslation();
-
-  const [failedFetch, setFailedFetch] = useState(false);
+  const { openConnectModal } = useConnectModal();
+  const provider = useProvider();
 
   const dispatch = useDispatch();
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
-  const { openConnectModal } = useConnectModal();
-
+  const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
+  const [isContract, setIsContract] = useState(false);
+  // eslint-disable-next-line
   const [_, votingPower] = useVotingPower(round, account);
 
   const handleBackClick = () => {
@@ -105,7 +111,30 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal]);
 
-  const handleSubmitVote = async () => {};
+  const handleSubmitVote = async () => {
+    if (!proposal || !round || !community) return;
+    try {
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, round, community, backendClient.current);
+
+      setShowErrorVotingModal(false);
+      setNumPropsVotedFor(voteAllotments.length);
+      setShowSuccessVotingModal(true);
+      refreshActiveProposals(backendClient.current, round, dispatch);
+      refreshActiveProposal(backendClient.current, proposal, dispatch);
+      dispatch(clearVoteAllotments());
+      setShowVoteConfirmationModal(false);
+    } catch (e) {
+      setShowVoteConfirmationModal(false);
+      setShowErrorVotingModal(true);
+    }
+  };
 
   const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
     <>
@@ -149,6 +178,18 @@ const Proposal = () => {
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
         />
+      )}
+
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
+          numPropsVotedFor={numPropsVotedFor}
+          signerIsContract={isContract}
+        />
+      )}
+
+      {showErrorVotingModal && (
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
       <Container>
         {proposal && (
