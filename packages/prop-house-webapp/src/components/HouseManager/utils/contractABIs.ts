@@ -10,7 +10,6 @@ export const erc20BalanceOfInterface = [
     type: 'function',
   },
 ];
-
 export const erc20AllowanceInterface = [
   {
     constant: true,
@@ -36,7 +35,6 @@ export const erc20AllowanceInterface = [
     type: 'function',
   },
 ];
-
 export const erc20ApproveInterface = [
   {
     constant: false,
@@ -188,6 +186,7 @@ export const erc1155IsApprovedForAllInterface = [
   },
 ];
 
+// Miscellaneous
 export const addressTypeABI = [
   {
     inputs: [{ internalType: 'address', name: 'addr', type: 'address' }],
@@ -197,7 +196,6 @@ export const addressTypeABI = [
     type: 'function',
   },
 ];
-
 export const decimalsABI = [
   {
     constant: true,

@@ -27,12 +27,9 @@ import { useEffect, useState } from 'react';
 import { isTimedAuction } from '../../utils/auctionType';
 import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
-<<<<<<< HEAD
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
-=======
 import InfoSymbol from '../InfoSymbol';
->>>>>>> 0b749e7f (prehaul Voting Strategies)
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;

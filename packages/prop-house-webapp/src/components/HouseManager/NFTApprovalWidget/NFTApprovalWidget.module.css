@@ -42,7 +42,7 @@
 .image {
   height: 14px;
   width: 14px;
-  border-radius: 0.761905px !important;
+  border-radius: 2px !important;
 }
 .text {
   text-align: center;

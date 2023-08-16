@@ -48,6 +48,7 @@ const TokenApprovals = () => {
         continue; // Skip this iteration
       }
 
+      // Construct the token object
       tokens.push({
         type: address === 'ETH' ? AssetType.ETH : award?.type,
         address,

@@ -40,7 +40,7 @@ const TokenApprovalModal: React.FC<{
   ) : status.isError ? (
     `There was a problem approving ${token}. Please try again.`
   ) : (
-    `Please sign the transaction to approving ${token}.`
+    `Please sign the transaction to approve ${token}.`
   );
 
   const image = status.isLoading

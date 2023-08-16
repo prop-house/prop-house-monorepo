@@ -23,6 +23,7 @@ const Voter: React.FC<{
   useEffect(() => {
     const fetchTokenInfo = async () => {
       const { name, image } = await getTokenInfo(address, provider);
+
       setTokenInfo({ name, image });
     };
     if (type !== VotingStrategyType.WHITELIST) fetchTokenInfo();

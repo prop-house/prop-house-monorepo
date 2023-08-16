@@ -29,7 +29,6 @@ import TokenApprovals from '../TokenApprovals';
 /**
  * @overview
  * Step 6 where the user can review the round information and edit it if needed. House info is not editable here.
- * TODO - add House name & image up top (see Figma)
  *
  * @component
  * @name DeadlineDates - the start and end dates of the round

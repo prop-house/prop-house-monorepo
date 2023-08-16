@@ -80,10 +80,10 @@ const IndividualAwards: React.FC<{
   const handleSaveAward = async () => {
     let image_url = null;
 
-    if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
+    // We need to fetch the image for ERC721 and ERC1155 tokens if the user does not blur the input, which also fetches the image
+    if (award.type === AssetType.ERC721 || (award.type === AssetType.ERC1155 && !award.image)) {
       try {
         const { image } = await getTokenIdImage(award.address, award.tokenId!, provider);
-
         image_url = image;
       } catch (error) {
         console.error('Error fetching image', error);

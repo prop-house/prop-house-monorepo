@@ -88,6 +88,7 @@ const AddAward: React.FC<{
     } else {
       // address is valid, and matches the expected type, so get token info
       const { name, image, symbol } = await getTokenInfo(award.address, provider);
+
       setAward({ ...award, state: 'success', name, image, symbol });
     }
   };
