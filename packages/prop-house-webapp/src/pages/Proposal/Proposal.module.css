@@ -70,6 +70,20 @@
   }
 }
 
+@media (max-width: 760px) {
+  .votingBar {
+    max-height: max-content;
+  }
+  .votingBarContent {
+    text-align: center;
+    flex-direction: column;
+    row-gap: 1rem;
+  }
+  .votingBarContent button {
+    width: 100%;
+  }
+}
+
 @media (min-width: 577px) {
   .backToAuction svg {
     height: 1.5rem;
