@@ -75,9 +75,9 @@
     "yarn": "^1.22.18"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -95,7 +95,7 @@
   ],
   "devDependencies": {
     "@craco/craco": "^6.4.5",
-    "@types/quill": "^2.0.9",
+    "@types/quill": "^2.0.10",
     "@types/react-helmet": "^6.1.5",
     "react-scripts": "4.0.3"
   }
