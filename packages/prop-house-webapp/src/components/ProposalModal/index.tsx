@@ -6,11 +6,7 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
-import {
-  SignatureState,
-  StoredProposalWithVotes,
-  Vote,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
@@ -27,8 +23,9 @@ import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
 import { useAccount, useSigner, useProvider } from 'wagmi';
-import { fetchBlockNumber } from '@wagmi/core';
 import { isTimedAuction } from '../../utils/auctionType';
+import { signerIsContract } from '../../utils/signerIsContract';
+import { submitVotes } from '../../utils/submitVotes';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -54,7 +51,7 @@ const ProposalModal = () => {
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
-  const [signerIsContract, setSignerIsContract] = useState(false);
+  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
   // modals
@@ -144,43 +141,22 @@ const ProposalModal = () => {
     dispatch(setActiveProposal(proposals[newPropIndex]));
   };
 
-  const _signerIsContract = async () => {
-    if (!signer || !provider || !account) {
-      return false;
-    }
-    const code = await provider.getCode(account);
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
-
   const handleSubmitVote = async () => {
-    if (!activeProposal || !round) return;
-
+    if (!activeProposal || !round || !community) return;
     try {
-      const blockHeight = await fetchBlockNumber({ chainId: round.voteStrategy.chainId });
-
-      const votes = voteAllotments
-        .map(
-          a =>
-            new Vote(
-              a.direction,
-              a.proposalId,
-              a.votes,
-              community!.contractAddress,
-              SignatureState.PENDING_VALIDATION,
-              blockHeight,
-            ),
-        )
-        .filter(v => v.weight > 0);
-      const isContract = await _signerIsContract();
-
-      await backendClient.current.logVotes(votes, isContract);
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, round, community, backendClient.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round!, dispatch);
+      refreshActiveProposals(backendClient.current, round, dispatch);
       refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
@@ -202,7 +178,7 @@ const ProposalModal = () => {
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={signerIsContract}
+          signerIsContract={isContract}
         />
       )}
 

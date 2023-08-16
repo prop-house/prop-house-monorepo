@@ -40,7 +40,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     _numVotesCasted,
     votingCopy,
-  ] = useVotingPower(round, account, undefined);
+  ] = useVotingPower(round, account);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
