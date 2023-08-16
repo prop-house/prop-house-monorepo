@@ -1,5 +1,5 @@
 import classes from './RenderedProposalFields.module.css';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import proposalFields from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
@@ -22,7 +22,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
   const fields = proposalFields(proposal);
 
   return (
-    <>
+    <Container>
       <Row>
         <Col xl={12} className="proposalCopy">
           <div className={classes.headerContainer}>
@@ -87,7 +87,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
           </span>
         </Col>
       </Row>
-    </>
+    </Container>
   );
 };
 

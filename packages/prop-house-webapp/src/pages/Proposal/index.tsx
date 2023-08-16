@@ -137,41 +137,37 @@ const Proposal = () => {
   };
 
   const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
-    <>
-      <>
-        <div className={classes.votingBar}>
-          {isConnected ? (
-            votingPower && votingPower > 0 ? (
-              <ProposalModalVotingModule
-                proposal={proposal!}
-                setShowVotingModal={setShowVoteConfirmationModal}
-              />
-            ) : (
-              <div className={classes.votingBarContent}>
-                <b>Wallet is ineligible to vote.</b>
-                <div>
-                  Trying with the wrong wallet? You can connect another wallet{' '}
-                  <span className={classes.inlineClick} onClick={openConnectModal}>
-                    here →
-                  </span>
-                </div>
-              </div>
-            )
-          ) : (
-            <div className={classes.votingBarContent}>
-              <div>
-                <b>Voting has started.</b> Connect a wallet to determine your voting eligibility.
-              </div>
-              <ConnectButton text={t('connectToVote')} color={ButtonColor.Purple} />{' '}
+    <div className={classes.votingBar}>
+      {isConnected ? (
+        votingPower && votingPower > 0 ? (
+          <ProposalModalVotingModule
+            proposal={proposal!}
+            setShowVotingModal={setShowVoteConfirmationModal}
+          />
+        ) : (
+          <div className={classes.votingBarContent}>
+            <b>Wallet is ineligible to vote.</b>
+            <div>
+              Trying with the wrong wallet? You can connect another wallet{' '}
+              <span className={classes.inlineClick} onClick={openConnectModal}>
+                here →
+              </span>
             </div>
-          )}
+          </div>
+        )
+      ) : (
+        <div className={classes.votingBarContent}>
+          <div>
+            <b>Voting has started.</b> Connect a wallet to determine your voting eligibility.
+          </div>
+          <ConnectButton text={t('connectToVote')} color={ButtonColor.Purple} />{' '}
         </div>
-      </>
-    </>
+      )}
+    </div>
   );
 
   return (
-    <>
+    <Container>
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
@@ -190,36 +186,34 @@ const Proposal = () => {
       {showErrorVotingModal && (
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
-      <Container>
-        {proposal && (
-          <OpenGraphElements
-            title={proposal.title}
-            description={proposal.tldr}
-            imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
-          />
-        )}
-        {proposal ? (
-          <Container>
-            <RenderedProposalFields
-              proposal={proposal}
-              community={community}
-              round={round && round}
-              backButton={
-                <div className={classes.backToAuction} onClick={() => handleBackClick()}>
-                  <IoArrowBackCircleOutline size={'1.5rem'} /> View round
-                </div>
-              }
-            />
-          </Container>
-        ) : failedFetch ? (
-          <NotFound />
-        ) : (
-          <LoadingIndicator />
-        )}
-        {votingBar}
-      </Container>
+
+      {proposal && (
+        <OpenGraphElements
+          title={proposal.title}
+          description={proposal.tldr}
+          imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
+        />
+      )}
+
+      {proposal ? (
+        <RenderedProposalFields
+          proposal={proposal}
+          community={community}
+          round={round && round}
+          backButton={
+            <div className={classes.backToAuction} onClick={() => handleBackClick()}>
+              <IoArrowBackCircleOutline size={'1.5rem'} /> View round
+            </div>
+          }
+        />
+      ) : failedFetch ? (
+        <NotFound />
+      ) : (
+        <LoadingIndicator />
+      )}
+      {votingBar}
       <div className={classes.gradient} />
-    </>
+    </Container>
   );
 };
 
