@@ -5,6 +5,7 @@ import AwardWithPlace from '../AwardWithPlace';
 import TruncateThousands from '../../TruncateThousands';
 import { Award } from '../AssetSelector';
 import { AssetType } from '@prophouse/sdk-react';
+import trimEthAddress from '../../../utils/trimEthAddress';
 
 const AwardCard: React.FC<{ award: Award; place: number }> = props => {
   const { award, place } = props;
@@ -30,7 +31,8 @@ const AwardCard: React.FC<{ award: Award; place: number }> = props => {
 
         <Text type="body">
           {award.type === AssetType.ERC721 || award.type === AssetType.ERC1155 ? (
-            `#${award.tokenId}`
+            award.tokenId &&
+            `#${award.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId}`
           ) : (
             <>
               <TruncateThousands amount={award.amount} decimals={1} />{' '}
