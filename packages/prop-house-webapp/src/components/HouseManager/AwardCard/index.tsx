@@ -18,7 +18,11 @@ const AwardCard: React.FC<{ award: Award; place: number }> = props => {
       <Group gap={3} classNames={classes.text}>
         <Group row gap={4} classNames={classes.awardNameImg}>
           <div className={classes.imageContainer}>
-            <img className={classes.image} src={award.image} alt="avatar" />
+            <img
+              className={classes.image}
+              src={award.image ? award.image : '/manager/fallback.png'}
+              alt="avatar"
+            />
           </div>
 
           <Text type="subtitle">{award.name}</Text>

@@ -20,15 +20,16 @@ export const getTokenInfo = async (contractAddress: string, provider: Provider) 
     const response = await fetch(`${baseURL}/asset_contract/${contractAddress}`);
 
     if (!response.ok) {
-      throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
+      throw new Error(`${response.status} ${response.statusText}`);
     }
+
     const data = await response.json();
     const { name, image_url, symbol, collection } = data;
 
     return {
-      name: name || collection.name,
-      image: image_url || '/manager/fallback.png',
-      symbol: symbol || '',
+      name: name ? name || collection.name : 'Unknown',
+      image: image_url ? image_url : '/manager/fallback.png',
+      symbol: symbol ? symbol : 'N/A',
     };
   } catch (error) {
     console.error(error);

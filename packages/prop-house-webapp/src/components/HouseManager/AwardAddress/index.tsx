@@ -30,7 +30,10 @@ const AwardAddress: React.FC<{
               <button className={classes.addressSuccess} onClick={handleSwitch}>
                 {
                   <div className={classes.addressImgAndTitle}>
-                    <img src={award.image} alt={award.name} />
+                    <img
+                      src={award.image ? award.image : '/manager/fallback.png'}
+                      alt={award.name}
+                    />
 
                     <span>{award.name}</span>
                   </div>

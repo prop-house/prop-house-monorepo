@@ -26,7 +26,7 @@ export const getTokenIdImage = async (address: string, tokenId: string, provider
 
     const { image_url } = data;
 
-    return { image: image_url || '/manager/fallback.png' };
+    return { image: image_url ? image_url : '/manager/fallback.png' };
   } catch (error) {
     console.error(error);
     throw new Error(`Error fetching contract info: ${error}`);

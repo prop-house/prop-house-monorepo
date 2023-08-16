@@ -173,7 +173,7 @@ const EthErc20ApprovalWidget: React.FC<{
                 <div className={classes.imageContainer}>
                   <img
                     className={classes.image}
-                    src={award.image || '/manager/fallback.png'}
+                    src={award.image ? award.image : '/manager/fallback.png'}
                     alt="avatar"
                   />
                 </div>
