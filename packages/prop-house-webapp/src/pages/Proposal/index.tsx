@@ -25,7 +25,7 @@ import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { ButtonColor } from '../../components/Button';
 import ConnectButton from '../../components/ConnectButton';
 import { useTranslation } from 'react-i18next';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
@@ -43,7 +43,7 @@ const Proposal = () => {
   const navigate = useNavigate();
   const { address: account, isConnected } = useAccount();
   const { t } = useTranslation();
-  const { openConnectModal } = useConnectModal();
+  const { openAccountModal } = useAccountModal();
   const provider = useProvider();
 
   const dispatch = useDispatch();
@@ -149,7 +149,7 @@ const Proposal = () => {
             <b>Wallet is ineligible to vote.</b>
             <div>
               Trying with the wrong wallet? You can connect another wallet{' '}
-              <span className={classes.inlineClick} onClick={openConnectModal}>
+              <span className={classes.inlineClick} onClick={openAccountModal}>
                 here →
               </span>
             </div>
