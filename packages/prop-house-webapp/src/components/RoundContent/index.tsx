@@ -1,7 +1,5 @@
 import {
-  SignatureState,
   StoredProposalWithVotes,
-  Vote,
   StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
@@ -24,7 +22,6 @@ import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { useAccount, useSigner, useProvider } from 'wagmi';
-import { fetchBlockNumber } from '@wagmi/core';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
@@ -32,6 +29,8 @@ import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
+import { submitVotes } from '../../utils/submitVotes';
+import { signerIsContract } from '../../utils/signerIsContract';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -42,7 +41,7 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [signerIsContract, setSignerIsContract] = useState(false);
+  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
@@ -113,36 +112,18 @@ const RoundContent: React.FC<{
       dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   }, [proposals, account, dispatch]);
 
-  const _signerIsContract = async () => {
-    if (!provider || !account) {
-      return false;
-    }
-    const code = await provider?.getCode(account);
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
-
   const handleSubmitVote = async () => {
+    if (!community) return;
+
     try {
-      const blockHeight = await fetchBlockNumber({ chainId: auction.voteStrategy.chainId });
-
-      const votes = voteAllotments
-        .map(
-          a =>
-            new Vote(
-              a.direction,
-              a.proposalId,
-              a.votes,
-              community!.contractAddress,
-              SignatureState.PENDING_VALIDATION,
-              blockHeight,
-            ),
-        )
-        .filter(v => v.weight > 0);
-      const isContract = await _signerIsContract();
-
-      await client.current.logVotes(votes, isContract);
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, auction, community, client.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -168,7 +149,7 @@ const RoundContent: React.FC<{
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={signerIsContract}
+          signerIsContract={isContract}
         />
       )}
 
