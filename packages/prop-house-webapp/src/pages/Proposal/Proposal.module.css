@@ -26,11 +26,11 @@
 }
 .votingBar {
   position: fixed;
-  z-index: 10;
   width: inherit;
+  z-index: 10;
   bottom: 2rem !important;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 13px 20px 13px 20px;
+  padding: 13px 20px;
   border-radius: 12px;
   background-color: white;
   min-height: 4.5rem;
@@ -60,6 +60,14 @@
 }
 .inlineClick:hover {
   cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+  .votingBar {
+    left: 0;
+    width: calc(100% - 24px);
+    margin: 0 12px;
+  }
 }
 
 @media (min-width: 577px) {
