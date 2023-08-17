@@ -1,7 +1,5 @@
 import {
-  SignatureState,
   StoredProposalWithVotes,
-  Vote,
   StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
@@ -23,8 +21,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount, usePublicClient } from 'wagmi';
-import { fetchBlockNumber } from '@wagmi/core';
+import { useAccount } from 'wagmi';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
@@ -33,6 +30,9 @@ import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { submitVotes } from '../../utils/submitVotes';
+import { signerIsContract } from '../../utils/signerIsContract';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -43,7 +43,7 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [signerIsContract, setSignerIsContract] = useState(false);
+  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
@@ -58,7 +58,7 @@ const RoundContent: React.FC<{
 
   const client = useRef(new PropHouseWrapper(host));
   const signer = useEthersSigner();
-  const publicClient = usePublicClient({
+  const provider = useEthersProvider({
     chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
   });
 
@@ -86,7 +86,7 @@ const RoundContent: React.FC<{
         const strategyPayload = {
           strategyName: auction.voteStrategy.strategyName,
           account,
-          publicClient,
+          provider,
           ...auction.voteStrategy,
         };
         const votes = await execStrategy(strategyPayload);
@@ -104,7 +104,7 @@ const RoundContent: React.FC<{
     community,
     auction.balanceBlockTag,
     auction.voteStrategy,
-    publicClient,
+    provider,
   ]);
 
   // update submitted votes on proposal changes
@@ -114,36 +114,18 @@ const RoundContent: React.FC<{
       dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   }, [proposals, account, dispatch]);
 
-  const _signerIsContract = async () => {
-    if (!publicClient || !account) {
-      return false;
-    }
-    const code = await publicClient.getBytecode({ address: account });
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
-
   const handleSubmitVote = async () => {
+    if (!community) return;
+
     try {
-      const blockHeight = await fetchBlockNumber({ chainId: auction.voteStrategy.chainId });
-
-      const votes = voteAllotments
-        .map(
-          a =>
-            new Vote(
-              a.direction,
-              a.proposalId,
-              a.votes,
-              community!.contractAddress,
-              SignatureState.PENDING_VALIDATION,
-              Number(blockHeight),
-            ),
-        )
-        .filter(v => v.weight > 0);
-      const isContract = await _signerIsContract();
-
-      await client.current.logVotes(votes, isContract);
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, auction, community, client.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -169,7 +151,7 @@ const RoundContent: React.FC<{
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={signerIsContract}
+          signerIsContract={isContract}
         />
       )}
 

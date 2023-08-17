@@ -56,7 +56,7 @@ const StatusRoundCard: React.FC<{
     loadingCanVote,
     votingPower,
     numVotesCasted,
-  ] = useVotingPower(round, account, community);
+  ] = useVotingPower(round, account);
 
   // num votes
   useEffect(() => {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { usePublicClient } from 'wagmi';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { execStrategy } from '@prophouse/communities';
 import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';
+import { useEthersProvider } from './useEthersProvider';
 
 export type UseVotingPowerResults = [
   /**
@@ -12,7 +12,7 @@ export type UseVotingPowerResults = [
   /**
    * votingPower
    */
-  number | null,
+  number | undefined | null,
   /**
    * number of votes cast
    */
@@ -36,22 +36,27 @@ const defaultVotingCopy =
 
 type Refresh = () => Promise<void>;
 const useVotingPower = (
-  round: StoredAuctionBase,
+  round: StoredAuctionBase | undefined,
   account: `0x${string}` | undefined,
-  community: Community | undefined,
 ): UseVotingPowerResults => {
   const [loadingCanVote, setLoadingCanVote] = useState(false);
   const [votingPower, setVotingPower] = useState<null | number>(null);
 
   const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingCopy] = useState(round.voteStrategyDescription ?? defaultVotingCopy);
+  const [votingCopy] = useState(
+    round
+      ? round.voteStrategyDescription
+        ? round.voteStrategyDescription
+        : defaultVotingCopy
+      : defaultVotingCopy,
+  );
 
-  const publicClient = usePublicClient({
-    chainId: round.voteStrategy.chainId ? round.voteStrategy.chainId : 1,
+  const provider = useEthersProvider({
+    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
   });
 
   const fetchVotingPower = async () => {
-    if (!(auctionStatus(round) === AuctionStatus.AuctionVoting) || !community) return;
+    if (!round || !(auctionStatus(round) === AuctionStatus.AuctionVoting)) return;
 
     if (!account) {
       setVotingPower(null);
@@ -62,7 +67,7 @@ const useVotingPower = (
     const params = {
       strategyName: round.voteStrategy.strategyName,
       account,
-      publicClient,
+      provider,
       ...round.voteStrategy,
     };
 
@@ -81,7 +86,10 @@ const useVotingPower = (
   useEffect(() => {
     fetchUserGrants();
     //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, account, community]);
+  }, [round, account]);
+
+  if (!round)
+    return [false, undefined, undefined, defaultVotingCopy, async () => {}, async () => {}];
 
   return [
     loadingCanVote,

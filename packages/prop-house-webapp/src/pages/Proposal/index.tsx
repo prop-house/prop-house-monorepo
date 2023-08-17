@@ -20,6 +20,22 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { useAccount } from 'wagmi';
+import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { ButtonColor } from '../../components/Button';
+import ConnectButton from '../../components/ConnectButton';
+import { useTranslation } from 'react-i18next';
+import { useAccountModal } from '@rainbow-me/rainbowkit';
+import useVotingPower from '../../hooks/useVotingPower';
+import { clearVoteAllotments } from '../../state/slices/voting';
+import VoteConfirmationModal from '../../components/VoteConfirmationModal';
+import { submitVotes } from '../../utils/submitVotes';
+import ErrorVotingModal from '../../components/ErrorVotingModal';
+import SuccessVotingModal from '../../components/SuccessVotingModal';
+import { signerIsContract } from '../../utils/signerIsContract';
+import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const Proposal = () => {
   const params = useParams();
@@ -27,15 +43,27 @@ const Proposal = () => {
 
   const signer = useEthersSigner();
   const navigate = useNavigate();
-
-  const [failedFetch, setFailedFetch] = useState(false);
+  const { address: account, isConnected } = useAccount();
+  const { t } = useTranslation();
+  const { openAccountModal } = useAccountModal();
+  const provider = useEthersProvider();
 
   const dispatch = useDispatch();
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
+  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+
+  const [failedFetch, setFailedFetch] = useState(false);
+  const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
+  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
+  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
+  const [isContract, setIsContract] = useState(false);
+  // eslint-disable-next-line
+  const [_, votingPower] = useVotingPower(round, account);
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -85,36 +113,109 @@ const Proposal = () => {
     fetchCommunity();
   }, [id, dispatch, proposal]);
 
-  return (
-    <>
-      <Container>
-        {proposal && (
-          <OpenGraphElements
-            title={proposal.title}
-            description={proposal.tldr}
-            imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
+  const handleSubmitVote = async () => {
+    if (!proposal || !round || !community) return;
+    try {
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, round, community, backendClient.current);
+
+      setShowErrorVotingModal(false);
+      setNumPropsVotedFor(voteAllotments.length);
+      setShowSuccessVotingModal(true);
+      refreshActiveProposals(backendClient.current, round, dispatch);
+      refreshActiveProposal(backendClient.current, proposal, dispatch);
+      dispatch(clearVoteAllotments());
+      setShowVoteConfirmationModal(false);
+    } catch (e) {
+      setShowVoteConfirmationModal(false);
+      setShowErrorVotingModal(true);
+    }
+  };
+
+  const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
+    <div className={classes.votingBar}>
+      {isConnected ? (
+        votingPower && votingPower > 0 ? (
+          <ProposalModalVotingModule
+            proposal={proposal!}
+            setShowVotingModal={setShowVoteConfirmationModal}
           />
-        )}
-        {proposal ? (
-          <Container>
-            <RenderedProposalFields
-              proposal={proposal}
-              community={community}
-              round={round && round}
-              backButton={
-                <div className={classes.backToAuction} onClick={() => handleBackClick()}>
-                  <IoArrowBackCircleOutline size={'1.5rem'} /> View round
-                </div>
-              }
-            />
-          </Container>
-        ) : failedFetch ? (
-          <NotFound />
         ) : (
-          <LoadingIndicator />
-        )}
-      </Container>
-    </>
+          <div className={classes.votingBarContent}>
+            <b>Wallet is ineligible to vote.</b>
+            <div>
+              Trying with the wrong wallet? You can connect another wallet{' '}
+              <span className={classes.inlineClick} onClick={openAccountModal}>
+                here →
+              </span>
+            </div>
+          </div>
+        )
+      ) : (
+        <div className={classes.votingBarContent}>
+          <div>
+            <b>Voting has started.</b> Connect a wallet to determine your voting eligibility.
+          </div>
+          <ConnectButton text={t('connectToVote')} color={ButtonColor.Purple} />{' '}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <Container>
+      {showVoteConfirmationModal && round && (
+        <VoteConfirmationModal
+          setShowVoteConfirmationModal={setShowVoteConfirmationModal}
+          submitVote={handleSubmitVote}
+        />
+      )}
+
+      {showSuccessVotingModal && (
+        <SuccessVotingModal
+          setShowSuccessVotingModal={setShowSuccessVotingModal}
+          numPropsVotedFor={numPropsVotedFor}
+          signerIsContract={isContract}
+        />
+      )}
+
+      {showErrorVotingModal && (
+        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
+      )}
+
+      {proposal && (
+        <OpenGraphElements
+          title={proposal.title}
+          description={proposal.tldr}
+          imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
+        />
+      )}
+
+      {proposal ? (
+        <RenderedProposalFields
+          proposal={proposal}
+          community={community}
+          round={round && round}
+          backButton={
+            <div className={classes.backToAuction} onClick={() => handleBackClick()}>
+              <IoArrowBackCircleOutline size={'1.5rem'} /> View round
+            </div>
+          }
+        />
+      ) : failedFetch ? (
+        <NotFound />
+      ) : (
+        <LoadingIndicator />
+      )}
+      {votingBar}
+      <div className={classes.gradient} />
+    </Container>
   );
 };
 

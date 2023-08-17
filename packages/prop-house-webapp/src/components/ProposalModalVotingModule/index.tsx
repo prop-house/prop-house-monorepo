@@ -24,7 +24,7 @@ import TimedRoundVotingControls from '../TimedRoundVotingControls';
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
-  setShowVoteAllotmentModal: Dispatch<SetStateAction<boolean>>;
+  setShowVoteAllotmentModal?: Dispatch<SetStateAction<boolean>>;
   isWinner?: boolean;
 }> = props => {
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
@@ -102,10 +102,14 @@ const ProposalModalVotingModule: React.FC<{
         <div className={classes.votingBarAndTooltip}>
           <div className={classes.votingProgressBar}>
             <div className={classes.votingInfo}>
-              <span>Cast your votes</span>
+              <span>
+                <b>Cast your votes</b>
+              </span>
 
               <span className={classes.totalVotes}>
-                <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+                {setShowVoteAllotmentModal && (
+                  <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+                )}
 
                 {`${votesRemaining > 0 ? `${votesRemaining} left` : 'no votes left'}`}
               </span>
@@ -145,7 +149,9 @@ const ProposalModalVotingModule: React.FC<{
             ) : (
               <TimedRoundVotingControls proposal={proposal} />
             )}
-            <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+            {setShowVoteAllotmentModal && (
+              <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+            )}
           </div>
 
           <Button
