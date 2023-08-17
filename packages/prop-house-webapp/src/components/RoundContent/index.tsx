@@ -134,6 +134,7 @@ const RoundContent: React.FC<{
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
+      console.log(e);
       setShowErrorVotingModal(true);
     }
   };

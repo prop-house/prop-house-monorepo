@@ -163,6 +163,7 @@ const ProposalModal = () => {
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
+      console.log(e);
       setShowErrorVotingModal(true);
     }
   };
