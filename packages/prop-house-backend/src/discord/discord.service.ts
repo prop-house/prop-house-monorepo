@@ -14,6 +14,7 @@ import {
 } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { GatewayIntentBits, Routes } from 'discord-api-types/v10';
+import { AuctionsService } from 'src/auction/auctions.service';
 
 interface ServerConfig {
   id: string;
@@ -60,6 +61,7 @@ export class DiscordService {
   constructor(
     private readonly eventEmitter: EventEmitter2,
     private readonly proposalsService: ProposalsService,
+    private readonly auctionsService: AuctionsService,
     private readonly configService: ConfigService,
   ) {
     this.guildEventMap = this.decodeConfig(
@@ -109,16 +111,27 @@ export class DiscordService {
         }
 
         if (interaction.commandName === 'deleteprop') {
+          // Check if admin of _any type_ to prevent DB strain
           const isAdmin =
             (interaction.member.roles as GuildMemberRoleManager).cache
-              .filter((r) => r.name === 'prop-admin')
+              .filter((r) => r.name.includes('prop-admin'))
               .map((i) => i).length > 0;
           if (!isAdmin) {
             return interaction.reply("Sorry, you can't do that");
           }
           const propId = interaction.options.getInteger('propid');
+          const proposal = await proposalsService.findOne(propId);
+          const auction = await auctionsService.findOne(proposal.auctionId)
+          const communityId = await auction.community
+          const isHouseAdmin =
+            (interaction.member.roles as GuildMemberRoleManager).cache
+              .filter((r) => r.name === `prop-admin-${communityId}`)
+              .map((i) => i).length > 0;
+          if (!isHouseAdmin) {
+            return interaction.reply(`Sorry, you're not an admin for ${communityId}`);
+          }
           try {
-            const proposal = await proposalsService.remove(propId);
+            await proposalsService.remove(propId);
             const strRepresentation = [
               `Prop ${propId} deleted :noun_salute:`,
             ].join('\n');
