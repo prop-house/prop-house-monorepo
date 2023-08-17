@@ -20,7 +20,7 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { useAccount } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import { ButtonColor } from '../../components/Button';
@@ -55,6 +55,9 @@ const Proposal = () => {
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+  const { data: blocknumber } = useBlockNumber({
+    chainId: round?.voteStrategy?.chainId ?? 1,
+  });
 
   const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
@@ -114,7 +117,7 @@ const Proposal = () => {
   }, [id, dispatch, proposal]);
 
   const handleSubmitVote = async () => {
-    if (!proposal || !round || !community) return;
+    if (!proposal || !round || !community || !blocknumber) return;
     try {
       setIsContract(
         await signerIsContract(
@@ -123,7 +126,7 @@ const Proposal = () => {
           account ? account : undefined,
         ),
       );
-      await submitVotes(voteAllotments, round, community, backendClient.current);
+      await submitVotes(voteAllotments, Number(blocknumber), community, backendClient.current);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);

@@ -21,7 +21,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
@@ -40,6 +40,7 @@ const RoundContent: React.FC<{
 }> = props => {
   const { auction, proposals } = props;
   const { address: account } = useAccount();
+  const { data: blocknumber } = useBlockNumber({ chainId: auction.voteStrategy.chainId ?? 1 });
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
@@ -115,7 +116,7 @@ const RoundContent: React.FC<{
   }, [proposals, account, dispatch]);
 
   const handleSubmitVote = async () => {
-    if (!community) return;
+    if (!community || !blocknumber) return;
 
     try {
       setIsContract(
@@ -125,7 +126,7 @@ const RoundContent: React.FC<{
           account ? account : undefined,
         ),
       );
-      await submitVotes(voteAllotments, auction, community, client.current, isContract);
+      await submitVotes(voteAllotments, Number(blocknumber), community, client.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);

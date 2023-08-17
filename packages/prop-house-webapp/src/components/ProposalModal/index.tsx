@@ -22,7 +22,7 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useAccount } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isTimedAuction } from '../../utils/auctionType';
 import { signerIsContract } from '../../utils/signerIsContract';
@@ -38,7 +38,6 @@ const ProposalModal = () => {
 
   const provider = useEthersProvider();
   const signer = useEthersSigner();
-
   const { address: account } = useAccount();
 
   const dispatch = useDispatch();
@@ -52,6 +51,9 @@ const ProposalModal = () => {
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+  const { data: blocknumber } = useBlockNumber({
+    chainId: round?.voteStrategy?.chainId ?? 1,
+  });
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -144,7 +146,7 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
-    if (!activeProposal || !round || !community) return;
+    if (!activeProposal || !round || !community || !blocknumber) return;
     try {
       setIsContract(
         await signerIsContract(
@@ -153,7 +155,13 @@ const ProposalModal = () => {
           account ? account : undefined,
         ),
       );
-      await submitVotes(voteAllotments, round, community, backendClient.current, isContract);
+      await submitVotes(
+        voteAllotments,
+        Number(blocknumber),
+        community,
+        backendClient.current,
+        isContract,
+      );
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
