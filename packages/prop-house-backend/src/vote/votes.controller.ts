@@ -8,16 +8,16 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ProposalsService } from 'src/proposal/proposals.service';
-import { verifySignedPayload } from 'src/utils/verifySignedPayload';
+import { ProposalsService } from '../proposal/proposals.service';
+import { verifySignedPayload } from '../utils/verifySignedPayload';
 import { Vote } from './vote.entity';
 import { CreateVoteDto, GetVoteDto } from './vote.types';
 import { VotesService } from './votes.service';
-import { SignedPayloadValidationPipe } from 'src/entities/signed.pipe';
-import { AuctionsService } from 'src/auction/auctions.service';
-import { SignatureState } from 'src/types/signature';
-import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
-import { _execStrategy } from 'src/utils/execStrategy';
+import { SignedPayloadValidationPipe } from '../entities/signed.pipe';
+import { AuctionsService } from '../auction/auctions.service';
+import { SignatureState } from '../types/signature';
+import { InfiniteAuctionService } from '../infinite-auction/infinite-auction.service';
+import { _execStrategy } from '../utils/execStrategy';
 
 @Controller('votes')
 export class VotesController {

@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { Auction } from 'src/auction/auction.entity';
+import { Auction } from '../auction/auction.entity';
 import {
   Column,
   Entity,

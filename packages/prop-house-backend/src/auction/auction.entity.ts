@@ -1,6 +1,6 @@
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { Community } from 'src/community/community.entity';
-import { Proposal } from 'src/proposal/proposal.entity';
+import { Community } from '../community/community.entity';
+import { Proposal } from '../proposal/proposal.entity';
 import {
   Entity,
   Column,
@@ -16,7 +16,7 @@ import { AuctionBase } from './auction-base.type';
 import {
   defaultProposingStrategy,
   defaultVotingStrategy,
-} from 'src/utils/defaultStrategies';
+} from '../utils/defaultStrategies';
 
 @Entity()
 @ObjectType()

@@ -1,7 +1,7 @@
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { SignedEntity } from 'src/entities/signed';
-import { SignatureState } from 'src/types/signature';
-import { Vote } from 'src/vote/vote.entity';
+import { SignedEntity } from '../entities/signed';
+import { SignatureState } from '../types/signature';
+import { Vote } from '../vote/vote.entity';
 import {
   Entity,
   Column,

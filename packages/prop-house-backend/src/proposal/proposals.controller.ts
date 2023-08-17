@@ -10,10 +10,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { AuctionsService } from 'src/auction/auctions.service';
-import { ECDSASignedPayloadValidationPipe } from 'src/entities/ecdsa-signed.pipe';
-import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
-import { canSubmitProposals } from 'src/utils';
+import { AuctionsService } from '../auction/auctions.service';
+import { ECDSASignedPayloadValidationPipe } from '../entities/ecdsa-signed.pipe';
+import { InfiniteAuctionService } from '../infinite-auction/infinite-auction.service';
+import { canSubmitProposals } from '../utils';
 import { InfiniteAuctionProposal } from './infauction-proposal.entity';
 import { Proposal } from './proposal.entity';
 import {
@@ -24,7 +24,7 @@ import {
   UpdateProposalDto,
 } from './proposal.types';
 import { ProposalsService } from './proposals.service';
-import { _execStrategy } from 'src/utils/execStrategy';
+import { _execStrategy } from '../utils/execStrategy';
 
 @Controller('proposals')
 export class ProposalsController {

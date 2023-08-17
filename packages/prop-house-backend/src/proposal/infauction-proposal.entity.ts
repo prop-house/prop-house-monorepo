@@ -1,5 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
+import { InfiniteAuction } from '../infinite-auction/infinite-auction.entity';
 import { Column, Entity, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { BaseProposal } from './base-proposal.entity';
 

@@ -1,6 +1,6 @@
 import { Transform } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
-import { Order } from 'src/utils/dto-types';
+import { Order } from '../utils/dto-types';
 
 export class GetInfiniteAuctionsDto {
   @IsOptional()

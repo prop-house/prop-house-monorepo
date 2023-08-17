@@ -1,7 +1,7 @@
 import { Field, Float, InputType, Int, ObjectType } from '@nestjs/graphql';
-import { AuctionBase } from 'src/auction/auction-base.type';
-import { Community } from 'src/community/community.entity';
-import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
+import { AuctionBase } from '../auction/auction-base.type';
+import { Community } from '../community/community.entity';
+import { InfiniteAuctionProposal } from '../proposal/infauction-proposal.entity';
 import {
   Entity,
   Column,
@@ -17,7 +17,7 @@ import { isProposalFunded, sumAmountRequested } from './utils';
 import {
   defaultProposingStrategy,
   defaultVotingStrategy,
-} from 'src/utils/defaultStrategies';
+} from '../utils/defaultStrategies';
 
 @Entity()
 @ObjectType()

@@ -12,10 +12,10 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { CommunitiesService } from 'src/community/community.service';
-import { Proposal } from 'src/proposal/proposal.entity';
-import { ProposalsService } from 'src/proposal/proposals.service';
-import { PaginationArgs } from 'src/utils/graphql';
+import { CommunitiesService } from '../community/community.service';
+import { Proposal } from '../proposal/proposal.entity';
+import { ProposalsService } from '../proposal/proposals.service';
+import { PaginationArgs } from '../utils/graphql';
 import { Between, LessThan, MoreThan } from 'typeorm';
 import { Auction, AuctionInput } from './auction.entity';
 import { AuctionsService } from './auctions.service';

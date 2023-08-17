@@ -1,9 +1,9 @@
 import { PipeTransform, Injectable } from '@nestjs/common';
 import { SignedEntity } from './signed';
 import { providers } from 'ethers';
-import config from 'src/config/configuration';
-import { SignatureState } from 'src/types/signature';
-import { verifyAccountSignature, verifyContractSignature } from 'src/utils';
+import config from '../config/configuration';
+import { SignatureState } from '../types/signature';
+import { verifyAccountSignature, verifyContractSignature } from '../utils';
 
 @Injectable()
 export class SignedPayloadValidationPipe implements PipeTransform {

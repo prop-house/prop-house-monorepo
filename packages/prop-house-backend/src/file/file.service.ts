@@ -1,8 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { existsSync, mkdirSync, readFileSync, stat, statSync, writeFileSync } from 'fs';
-import config from 'src/config/configuration';
-import { IpfsService } from 'src/ipfs/ipfs.service';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import config from '../config/configuration';
+import { IpfsService } from '../ipfs/ipfs.service';
 import { Repository } from 'typeorm';
 import { File } from './file.entity';
 

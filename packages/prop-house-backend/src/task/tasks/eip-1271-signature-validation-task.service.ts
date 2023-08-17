@@ -1,18 +1,18 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { VotesService } from 'src/vote/votes.service';
-import { AuctionsService } from 'src/auction/auctions.service';
-import { ProposalsService } from 'src/proposal/proposals.service';
-import { SignatureState } from 'src/types/signature';
-import config from 'src/config/configuration';
+import { VotesService } from '../../vote/votes.service';
+import { AuctionsService } from '../../auction/auctions.service';
+import { ProposalsService } from '../../proposal/proposals.service';
+import { SignatureState } from '../../types/signature';
+import config from '../../config/configuration';
 import { Interval } from '@nestjs/schedule';
-import { verifyContractSignature } from 'src/utils';
-import { Vote } from 'src/vote/vote.entity';
+import { verifyContractSignature } from '../../utils';
+import { Vote } from '../../vote/vote.entity';
 import { providers } from 'ethers';
-import { CreateVoteDto } from 'src/vote/vote.types';
-import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
-import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
-import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
-import { _execStrategy } from 'src/utils/execStrategy';
+import { CreateVoteDto } from '../../vote/vote.types';
+import { InfiniteAuctionService } from '../../infinite-auction/infinite-auction.service';
+import { InfiniteAuction } from '../../infinite-auction/infinite-auction.entity';
+import { InfiniteAuctionProposal } from '../../proposal/infauction-proposal.entity';
+import { _execStrategy } from '../../utils/execStrategy';
 
 @Injectable()
 export class EIP1271SignatureValidationTaskService {

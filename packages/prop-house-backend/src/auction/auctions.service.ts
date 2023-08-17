@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { proposalCountSubquery } from 'src/utils/proposal-count-subquery';
+import { proposalCountSubquery } from '../utils/proposal-count-subquery';
 import { Repository } from 'typeorm';
 import { Auction } from './auction.entity';
 import { GetAuctionsDto, LatestDto } from './auction.types';

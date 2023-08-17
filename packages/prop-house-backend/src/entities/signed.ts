@@ -1,9 +1,9 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { IsEthereumAddress } from 'class-validator';
-import { Address } from 'src/types/address';
-import { SignatureState } from 'src/types/signature';
+import { Address } from '../types/address';
+import { SignatureState } from '../types/signature';
 import { BaseEntity, Column } from 'typeorm';
-import { EIP712MessageType } from 'src/types/eip712MessageType';
+import { EIP712MessageType } from '../types/eip712MessageType';
 import { TypedDataDomain } from '@ethersproject/abstract-signer';
 import { BytesLike } from '@ethersproject/bytes';
 

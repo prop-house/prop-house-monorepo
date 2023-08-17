@@ -8,8 +8,7 @@ import {
 import { CommunitiesService } from './community.service';
 import { CommunityOverview, ExtendedCommunity } from './community.types';
 import { buildExtendedCommunity } from './community.utils';
-import { BigNumberish } from '@ethersproject/bignumber';
-import { AuctionsService } from 'src/auction/auctions.service';
+import { AuctionsService } from '../auction/auctions.service';
 import { Community } from './community.entity';
 
 @Controller()

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { proposalCountSubquery } from 'src/utils';
+import { proposalCountSubquery } from '../utils';
 import { Repository } from 'typeorm';
 import { InfiniteAuction } from './infinite-auction.entity';
 import { GetInfiniteAuctionsDto } from './infinite-auction.types';

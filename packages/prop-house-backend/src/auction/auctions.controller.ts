@@ -8,13 +8,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ParseDate } from 'src/utils/date';
+import { ParseDate } from '../utils/date';
 import { Auction } from './auction.entity';
 import { CreateAuctionDto, GetAuctionsDto, LatestDto } from './auction.types';
 import { AuctionsService, AuctionWithProposalCount } from './auctions.service';
-import { ProposalsService } from 'src/proposal/proposals.service';
-import { Proposal } from 'src/proposal/proposal.entity';
-import { InfiniteAuctionProposal } from 'src/proposal/infauction-proposal.entity';
+import { ProposalsService } from '../proposal/proposals.service';
+import { Proposal } from '../proposal/proposal.entity';
+import { InfiniteAuctionProposal } from '../proposal/infauction-proposal.entity';
 
 @Controller('auctions')
 export class AuctionsController {

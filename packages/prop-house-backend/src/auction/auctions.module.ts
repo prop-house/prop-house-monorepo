@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Community } from 'src/community/community.entity';
-import { CommunitiesService } from 'src/community/community.service';
-import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
-import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
-import { Proposal } from 'src/proposal/proposal.entity';
-import { ProposalsService } from 'src/proposal/proposals.service';
+import { Community } from '../community/community.entity';
+import { CommunitiesService } from '../community/community.service';
+import { InfiniteAuction } from '../infinite-auction/infinite-auction.entity';
+import { InfiniteAuctionService } from '../infinite-auction/infinite-auction.service';
+import { Proposal } from '../proposal/proposal.entity';
+import { ProposalsService } from '../proposal/proposals.service';
 import { Auction } from './auction.entity';
 import { AuctionsResolver } from './auction.resolver';
 import { AuctionsController } from './auctions.controller';

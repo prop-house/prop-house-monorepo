@@ -8,8 +8,8 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { SignedEntity } from 'src/entities/signed';
-import { Order } from 'src/utils/dto-types';
+import { SignedEntity } from '../entities/signed';
+import { Order } from '../utils/dto-types';
 
 export type ProposalParent = 'auction' | 'infinite-auction';
 

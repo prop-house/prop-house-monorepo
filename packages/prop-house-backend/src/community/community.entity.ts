@@ -5,7 +5,7 @@ import {
   ObjectType,
   PartialType,
 } from '@nestjs/graphql';
-import { Auction } from 'src/auction/auction.entity';
+import { Auction } from '../auction/auction.entity';
 import {
   Entity,
   Column,

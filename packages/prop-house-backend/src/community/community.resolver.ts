@@ -6,7 +6,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { AuctionsService } from 'src/auction/auctions.service';
+import { AuctionsService } from '../auction/auctions.service';
 import { Community } from './community.entity';
 import { CommunitiesService } from './community.service';
 

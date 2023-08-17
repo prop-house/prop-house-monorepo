@@ -1,9 +1,9 @@
-import config from 'src/config/configuration';
-import { Auction } from 'src/auction/auction.entity';
-import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
+import config from '../config/configuration';
+import { Auction } from '../auction/auction.entity';
+import { InfiniteAuction } from '../infinite-auction/infinite-auction.entity';
 import { ethers } from 'ethers';
 import { execStrategy } from '@prophouse/communities';
-import { Address } from 'src/types/address';
+import { Address } from '../types/address';
 
 export const _execStrategy = async (
   account: Address,

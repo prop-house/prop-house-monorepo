@@ -8,7 +8,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { SignedEntity } from 'src/entities/signed';
+import { SignedEntity } from '../entities/signed';
 
 export class CreateVoteDto extends SignedEntity {
   @IsNumber()

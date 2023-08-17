@@ -1,7 +1,7 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
-import { SignedEntity } from 'src/entities/signed';
-import { BaseProposal } from 'src/proposal/base-proposal.entity';
-import { Proposal } from 'src/proposal/proposal.entity';
+import { SignedEntity } from '../entities/signed';
+import { BaseProposal } from '../proposal/base-proposal.entity';
+import { Proposal } from '../proposal/proposal.entity';
 import {
   Entity,
   Column,

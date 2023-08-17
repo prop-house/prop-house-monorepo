@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InfiniteAuction } from 'src/infinite-auction/infinite-auction.entity';
-import { InfiniteAuctionService } from 'src/infinite-auction/infinite-auction.service';
+import { InfiniteAuctionService } from '../infinite-auction/infinite-auction.service';
 import { Repository } from 'typeorm';
 import { InfiniteAuctionProposal } from './infauction-proposal.entity';
 import { Proposal } from './proposal.entity';
