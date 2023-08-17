@@ -47,7 +47,7 @@ const { wallets } = getDefaultWallets({
 
 const connectors = connectorsForWallets([...wallets]);
 
-const wagmiClient = createConfig({
+const config = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
@@ -80,7 +80,7 @@ function App() {
 
   return (
     <>
-      <WagmiConfig config={wagmiClient}>
+      <WagmiConfig config={config}>
         {openGraphCardPath ? (
           <Routes>
             <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
