@@ -22,7 +22,12 @@ import Proposal from './pages/Proposal';
 import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
-import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import {
+  connectorsForWallets,
+  getDefaultWallets,
+  lightTheme,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
@@ -34,11 +39,13 @@ const { chains, publicClient } = configureChains(
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 
-const { connectors } = getDefaultWallets({
+const { wallets } = getDefaultWallets({
   appName: 'Prop House',
   projectId: process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID!,
   chains,
 });
+
+const connectors = connectorsForWallets([...wallets]);
 
 const wagmiClient = createConfig({
   autoConnect: true,
