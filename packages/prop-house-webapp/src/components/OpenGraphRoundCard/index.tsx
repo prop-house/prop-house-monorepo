@@ -7,7 +7,7 @@ import formatTime from '../../utils/formatTime';
 import CommunityProfImg from '../CommunityProfImg';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import { useWalletClient } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isTimedAuction } from '../../utils/auctionType';
 
 const OpenGraphRoundCard: React.FC = () => {
@@ -17,13 +17,13 @@ const OpenGraphRoundCard: React.FC = () => {
   const [round, setRound] = useState<StoredTimedAuction>();
   const [community, setCommunity] = useState<Community>();
 
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, walletClient);
-  }, [walletClient, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   useEffect(() => {
     if (!id) return;

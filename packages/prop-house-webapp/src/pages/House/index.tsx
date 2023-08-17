@@ -22,14 +22,14 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
-import { useWalletClient } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isMobile } from 'web3modal';
 
 const House = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1, location.pathname.length);
 
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
 
   const dispatch = useAppDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -49,8 +49,8 @@ const House = () => {
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, walletClient);
-  }, [walletClient, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch community
   useEffect(() => {

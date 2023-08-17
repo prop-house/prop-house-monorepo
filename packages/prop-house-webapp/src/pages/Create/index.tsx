@@ -25,12 +25,13 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
-import { useAccount, useWalletClient } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
 
   const { t } = useTranslation();
 
@@ -49,11 +50,11 @@ const Create: React.FC<{}> = () => {
   const dispatch = useAppDispatch();
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, walletClient));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, walletClient);
-  }, [walletClient, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));

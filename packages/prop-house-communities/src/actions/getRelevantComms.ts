@@ -1,12 +1,12 @@
 import { communities } from '../communities';
-import { PublicClient } from 'wagmi';
+import { Provider } from '@ethersproject/providers';
 
 /**
  * Looks up community where user has voting power
  */
 export const getRelevantComms = async (
   userAddress: string,
-  provider: PublicClient,
+  provider: Provider,
   blockTag: number,
 ): Promise<{ [key: string]: number }> => {
   const allVotes = await Promise.all(
