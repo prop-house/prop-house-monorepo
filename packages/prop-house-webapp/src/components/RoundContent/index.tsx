@@ -23,7 +23,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount, useWalletClient, usePublicClient } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
 import { fetchBlockNumber } from '@wagmi/core';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
@@ -32,6 +32,7 @@ import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -56,7 +57,7 @@ const RoundContent: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
 
   const client = useRef(new PropHouseWrapper(host));
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
   const publicClient = usePublicClient({
     chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
   });
@@ -73,12 +74,12 @@ const RoundContent: React.FC<{
     : 'Proposals that did not meet quorum before voting period ended will show up here.';
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, walletClient);
-  }, [walletClient, host]);
+    client.current = new PropHouseWrapper(host, signer);
+  }, [signer, host]);
 
   // fetch voting power for user
   useEffect(() => {
-    if (!account || !walletClient || !community) return;
+    if (!account || !signer || !community) return;
 
     const fetchVotes = async () => {
       try {
@@ -98,7 +99,7 @@ const RoundContent: React.FC<{
     fetchVotes();
   }, [
     account,
-    walletClient,
+    signer,
     dispatch,
     community,
     auction.balanceBlockTag,

@@ -19,13 +19,13 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
-import { useWalletClient } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const Proposal = () => {
   const params = useParams();
   const { id } = params;
 
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
   const navigate = useNavigate();
 
   const [failedFetch, setFailedFetch] = useState(false);
@@ -35,7 +35,7 @@ const Proposal = () => {
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, walletClient));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -43,8 +43,8 @@ const Proposal = () => {
   };
 
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, walletClient);
-  }, [walletClient, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   // fetch proposal
   useEffect(() => {

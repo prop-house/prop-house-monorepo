@@ -26,7 +26,8 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useAccount, useWalletClient, usePublicClient } from 'wagmi';
+import { useAccount, usePublicClient } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { fetchBlockNumber } from '@wagmi/core';
 import { isTimedAuction } from '../../utils/auctionType';
 
@@ -38,7 +39,7 @@ const ProposalModal = () => {
   const navigate = useNavigate();
 
   const publicClient = usePublicClient();
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
 
   const { address: account } = useAccount();
 
@@ -52,7 +53,7 @@ const ProposalModal = () => {
   const proposals = round && isTimedAuction(round) ? activeProposals : infRoundProposals;
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, walletClient));
+  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -84,8 +85,8 @@ const ProposalModal = () => {
 
   // provider
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, walletClient);
-  }, [walletClient, backendHost]);
+    backendClient.current = new PropHouseWrapper(backendHost, signer);
+  }, [signer, backendHost]);
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -146,7 +147,7 @@ const ProposalModal = () => {
   };
 
   const _signerIsContract = async () => {
-    if (!walletClient || !publicClient || !account) {
+    if (!signer || !publicClient || !account) {
       return false;
     }
     const code = await publicClient.getBytecode({ address: account });

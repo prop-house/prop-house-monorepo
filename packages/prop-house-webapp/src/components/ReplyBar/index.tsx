@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import ReactLoading from 'react-loading';
-import { useWalletClient } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { useAppSelector } from '../../hooks';
 import {
   Reply as ReplyType,
@@ -21,7 +21,7 @@ import { isActiveProp } from '../../utils/isActiveProp';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
-  const { data: walletClient } = useWalletClient();
+  const signer = useEthersSigner();
 
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
@@ -49,29 +49,29 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   };
 
   useEffect(() => {
-    wrapper.current = new PropHouseWrapper('', walletClient);
-  }, [walletClient]);
+    wrapper.current = new PropHouseWrapper('', signer);
+  }, [signer]);
 
   useEffect(() => {
-    if (!walletClient) return;
+    if (!signer) return;
 
     const checkCanComment = async () => {
-      const address = await walletClient.account.address;
+      const address = await signer.getAddress();
       setCanComment(votingPower > 0 || proposal.address === address);
     };
     checkCanComment();
-  }, [walletClient, votingPower, proposal]);
+  }, [signer, votingPower, proposal]);
 
   const handleReplyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(event.target.value);
-    if (event.target.value.length > 0 && walletClient) setSubmissionBtnDisabled(false);
+    if (event.target.value.length > 0 && signer) setSubmissionBtnDisabled(false);
   };
 
   const handleReplySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!walletClient || !activeCommmunity || !activeRound) return;
+    if (!signer || !activeCommmunity || !activeRound) return;
 
-    const address = await walletClient.account.address;
+    const address = await signer.getAddress();
     if (!address) return;
 
     const reply = new ReplyType(
@@ -82,7 +82,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     );
     try {
       setLoadingSubmission(true);
-      await wrapper.current.submitReply(walletClient, reply);
+      await wrapper.current.submitReply(signer, reply);
       setLoadingSubmission(false);
       setComment('');
       setShouldFetchReplies(true);
@@ -120,8 +120,8 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
 
   // disable submit button if no signer (walletClient) or no comment
   useEffect(() => {
-    setCommentInputDisabled(walletClient ? false : true);
-  }, [walletClient, comment, shouldFetchReplies]);
+    setCommentInputDisabled(signer ? false : true);
+  }, [signer, comment, shouldFetchReplies]);
 
   const replyContainer = (
     <div className={classes.replyContainer}>
@@ -131,7 +131,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
           value={comment}
           onChange={handleReplyChange}
           rows={3}
-          placeholder={walletClient ? `Write a comment` : `Connect your wallet to comment!`}
+          placeholder={signer ? `Write a comment` : `Connect your wallet to comment!`}
           disabled={commentInputDisabled}
         />
         <button
@@ -180,7 +180,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       }}
       bottomContainer={
         isInCommentPeriod() ? (
-          !walletClient ? (
+          !signer ? (
             <div className={classes.replyModalBottomRow}>
               Please connect your wallet to comment.
             </div>
