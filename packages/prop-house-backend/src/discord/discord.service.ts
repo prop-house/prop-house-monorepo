@@ -112,23 +112,29 @@ export class DiscordService {
 
         if (interaction.commandName === 'deleteprop') {
           // Check if admin of _any type_ to prevent DB strain
-          const isAdmin =
-            (interaction.member.roles as GuildMemberRoleManager).cache
-              .filter((r) => r.name.includes('prop-admin'))
-              .map((i) => i).length > 0;
-          if (!isAdmin) {
-            return interaction.reply("Sorry, you can't do that");
-          }
           const propId = interaction.options.getInteger('propid');
-          const proposal = await proposalsService.findOne(propId);
-          const auction = await auctionsService.findOne(proposal.auctionId)
-          const communityId = await auction.community
-          const isHouseAdmin =
+          const isSuperAdmin =
             (interaction.member.roles as GuildMemberRoleManager).cache
-              .filter((r) => r.name === `prop-admin-${communityId}`)
+              .filter((r) => r.name === `prop-superadmin`)
               .map((i) => i).length > 0;
-          if (!isHouseAdmin) {
-            return interaction.reply(`Sorry, you're not an admin for ${communityId}`);
+          if (!isSuperAdmin) {
+            const isAdmin =
+              (interaction.member.roles as GuildMemberRoleManager).cache
+                .filter((r) => r.name.includes('prop-admin'))
+                .map((i) => i).length > 0;
+            if (!isAdmin) {
+              return interaction.reply("Sorry, you can't do that");
+            }
+            const proposal = await proposalsService.findOne(propId);
+            const auction = await auctionsService.findOne(proposal.auctionId)
+            const communityId = await auction.community
+            const isHouseAdmin =
+              (interaction.member.roles as GuildMemberRoleManager).cache
+                .filter((r) => r.name === `prop-admin-${communityId}`)
+                .map((i) => i).length > 0;
+            if (!isHouseAdmin) {
+              return interaction.reply(`Sorry, you're not an admin for ${communityId}`);
+            }
           }
           try {
             await proposalsService.remove(propId);
