@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import {
   setActiveCommunity,
   setActiveProposal,
+  setActiveProposals,
   setActiveRound,
 } from '../../state/slices/propHouse';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
@@ -101,14 +102,15 @@ const Proposal = () => {
   }, [id, dispatch, failedFetch]);
 
   /**
-   * when page is entry point, community and round are not yet
-   * avail for back button so it has to be fetched.
+   * when page is entry point, community, round and proposals are not yet avail in store
    */
   useEffect(() => {
     if (!proposal) return;
     const fetchCommunity = async () => {
       const round = await backendClient.current.getAuction(proposal.auctionId);
       const community = await backendClient.current.getCommunityWithId(round.community);
+      const proposals = await backendClient.current.getAuctionProposals(round.id);
+      dispatch(setActiveProposals(proposals));
       dispatch(setActiveCommunity(community));
       dispatch(setActiveRound(round));
     };
