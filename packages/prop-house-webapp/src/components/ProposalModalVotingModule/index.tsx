@@ -21,7 +21,6 @@ import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
-import { isMobile } from 'web3modal';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
