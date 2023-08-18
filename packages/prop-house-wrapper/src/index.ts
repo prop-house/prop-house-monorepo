@@ -445,14 +445,14 @@ export class PropHouseWrapper {
     }
   }
 
-  submitReply = async (signer: Signer, reply: Reply) => {
+  submitReply = async (walletClient: Signer | Wallet, reply: Reply) => {
     const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
     const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    const signedPayload = await reply.signedPayload(signer, false, ReplyMessageTypes);
+    const signedPayload = await reply.signedPayload(walletClient, false, ReplyMessageTypes);
 
     const { data, error } = await supabase.functions.invoke('reply', {
       body: {

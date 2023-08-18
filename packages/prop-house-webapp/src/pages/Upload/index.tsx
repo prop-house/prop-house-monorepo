@@ -6,7 +6,8 @@ import { StoredFile } from '@nouns/prop-house-wrapper/dist/builders';
 import buildIpfsPath from '../../utils/buildIpfsPath';
 import classes from './Upload.module.css';
 import { useTranslation } from 'react-i18next';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 /** commented out to silence warning (unused)
 function readFileDataAsBase64(e: any, i: number): Promise<string> {
@@ -34,7 +35,7 @@ const Upload = () => {
   const [myFiles, setMyFiles] = useState<StoredFile[]>([]);
   const [file, setFile] = useState<File | undefined>(undefined);
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   let backendClient = new PropHouseWrapper(backendHost, signer);
   const { t } = useTranslation();

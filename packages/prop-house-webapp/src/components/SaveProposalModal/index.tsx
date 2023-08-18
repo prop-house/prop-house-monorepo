@@ -6,7 +6,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
 
 const SaveProposalModal: React.FC<{
@@ -30,7 +30,7 @@ const SaveProposalModal: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const client = useRef(new PropHouseWrapper(host));
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);

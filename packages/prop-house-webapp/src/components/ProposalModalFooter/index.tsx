@@ -14,9 +14,10 @@ import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { isActiveProp } from '../../utils/isActiveProp';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -49,12 +50,11 @@ const ProposalModalFooter: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const chainId = round && round.voteStrategy.chainId;
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const provider = useProvider({
-    chainId: chainId ? chainId : 1,
+  const provider = useEthersProvider({
+    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
   });
   const { address: account } = useAccount();
 

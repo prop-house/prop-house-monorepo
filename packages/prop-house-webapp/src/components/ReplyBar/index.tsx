@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import ReactLoading from 'react-loading';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { useAppSelector } from '../../hooks';
 import {
   Reply as ReplyType,
@@ -21,7 +21,7 @@ import { isActiveProp } from '../../utils/isActiveProp';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
@@ -118,7 +118,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     fetchReplies();
   }, [loadingSubmission, wrapper, proposal, replies, shouldFetchReplies]);
 
-  // disable submit button if no signer or no comment
+  // disable submit button if no signer (walletClient) or no comment
   useEffect(() => {
     setCommentInputDisabled(signer ? false : true);
   }, [signer, comment, shouldFetchReplies]);

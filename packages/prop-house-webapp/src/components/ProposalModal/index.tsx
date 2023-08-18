@@ -22,10 +22,12 @@ import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useAccount, useSigner, useProvider } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isTimedAuction } from '../../utils/auctionType';
 import { signerIsContract } from '../../utils/signerIsContract';
 import { submitVotes } from '../../utils/submitVotes';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const ProposalModal = () => {
   const [editProposalMode, setEditProposalMode] = useState(false);
@@ -34,7 +36,8 @@ const ProposalModal = () => {
   const { id } = params;
   const navigate = useNavigate();
 
-  const { data: signer } = useSigner();
+  const provider = useEthersProvider();
+  const signer = useEthersSigner();
   const { address: account } = useAccount();
 
   const dispatch = useDispatch();
@@ -48,6 +51,9 @@ const ProposalModal = () => {
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+  const { data: blocknumber } = useBlockNumber({
+    chainId: round?.voteStrategy?.chainId ?? 1,
+  });
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -64,7 +70,6 @@ const ProposalModal = () => {
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
   const winningIds = round && proposals && getWinningIds(proposals, round);
-  const provider = useProvider();
 
   const handleClosePropModal = () => {
     if (!community || !round) return;
@@ -78,7 +83,6 @@ const ProposalModal = () => {
     handleClosePropModal();
   };
 
-  // provider
   useEffect(() => {
     backendClient.current = new PropHouseWrapper(backendHost, signer);
   }, [signer, backendHost]);
@@ -142,7 +146,7 @@ const ProposalModal = () => {
   };
 
   const handleSubmitVote = async () => {
-    if (!activeProposal || !round || !community) return;
+    if (!activeProposal || !round || !community || !blocknumber) return;
     try {
       setIsContract(
         await signerIsContract(
@@ -151,7 +155,13 @@ const ProposalModal = () => {
           account ? account : undefined,
         ),
       );
-      await submitVotes(voteAllotments, round, community, backendClient.current, isContract);
+      await submitVotes(
+        voteAllotments,
+        Number(blocknumber),
+        community,
+        backendClient.current,
+        isContract,
+      );
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -161,6 +171,7 @@ const ProposalModal = () => {
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
+      console.log(e);
       setShowErrorVotingModal(true);
     }
   };

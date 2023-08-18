@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { useProvider } from 'wagmi';
 import { execStrategy } from '@prophouse/communities';
 import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';
+import { useEthersProvider } from './useEthersProvider';
 
 export type UseVotingPowerResults = [
   /**
@@ -51,7 +51,7 @@ const useVotingPower = (
       : defaultVotingCopy,
   );
 
-  const provider = useProvider({
+  const provider = useEthersProvider({
     chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
   });
 
