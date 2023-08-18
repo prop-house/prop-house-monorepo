@@ -65,7 +65,6 @@ const ProposalModalVotingModule: React.FC<{
       ? countTotalVotesAlloted(voteAllotments)
       : countVotesAllottedToProp(voteAllotments, proposal.id);
 
-  console.log(votesRemaining / votingPower);
   useEffect(() => {
     if (!account || !provider || !community || !round) return;
 
@@ -150,9 +149,7 @@ const ProposalModalVotingModule: React.FC<{
             ) : (
               <TimedRoundVotingControls proposal={proposal} />
             )}
-            {setShowVoteAllotmentModal && !isMobile() && (
-              <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
-            )}
+
             <div className={classes.votesLeftMobile}>
               {votesRemaining} vote{votesRemaining !== 1 ? 's' : ''} left
             </div>
