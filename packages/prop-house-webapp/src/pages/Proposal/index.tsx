@@ -208,7 +208,8 @@ const Proposal = () => {
           round={round && round}
           backButton={
             <div className={classes.backToAuction} onClick={() => handleBackClick()}>
-              <IoArrowBackCircleOutline size={'1.5rem'} /> View round
+              <IoArrowBackCircleOutline size={'1.5rem'} /> View round{' '}
+              {round ? `(${round.title})` : ''}
             </div>
           }
         />
