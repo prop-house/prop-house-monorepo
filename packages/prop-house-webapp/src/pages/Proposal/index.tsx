@@ -66,8 +66,7 @@ const Proposal = () => {
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [isContract, setIsContract] = useState(false);
-  // eslint-disable-next-line
-  const [_, votingPower] = useVotingPower(round, account);
+  const [loading, votingPower] = useVotingPower(round, account);
 
   const handleBackClick = () => {
     if (!community || !round) return;
@@ -147,7 +146,11 @@ const Proposal = () => {
   const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
     <div className={classes.votingBar}>
       {isConnected ? (
-        votingPower && votingPower > 0 ? (
+        loading ? (
+          <div className={classes.loadingVoting}>
+            <LoadingIndicator height={50} width={50} />
+          </div>
+        ) : votingPower && votingPower > 0 ? (
           <ProposalModalVotingModule
             proposal={proposal!}
             setShowVotingModal={setShowVoteConfirmationModal}
