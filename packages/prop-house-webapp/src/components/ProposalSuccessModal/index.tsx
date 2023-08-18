@@ -22,7 +22,7 @@ const ProposalSuccessModal: React.FC<{
   const { t } = useTranslation();
 
   const { address: account } = useAccount();
-  const twitterContent = `Check out my @NounsPropHouse prop: https://prop.house/proposal/${proposalId}`;
+  const twitterContent = `Check out my @nounsprophouse prop: https://prop.house/proposal/${proposalId}`;
 
   const backToRound = () => {
     navigate(buildRoundPath(house, round), { replace: false });
