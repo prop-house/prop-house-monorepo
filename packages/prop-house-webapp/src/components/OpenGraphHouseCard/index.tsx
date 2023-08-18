@@ -7,7 +7,7 @@ import CommunityProfImg from '../CommunityProfImg';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import getHouseCurrency from '../../utils/getHouseCurrency';
 import TruncateThousands from '../TruncateThousands';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
@@ -15,7 +15,7 @@ const OpenGraphHouseCard: React.FC = () => {
 
   const [community, setCommunity] = useState<Community>();
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));

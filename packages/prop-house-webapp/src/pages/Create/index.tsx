@@ -25,12 +25,13 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
-import { useAccount, useSigner } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { infRoundBalance } from '../../utils/infRoundBalance';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const { t } = useTranslation();
 

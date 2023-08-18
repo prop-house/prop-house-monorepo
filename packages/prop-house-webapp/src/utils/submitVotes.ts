@@ -1,22 +1,15 @@
-import {
-  SignatureState,
-  Community,
-  StoredAuctionBase,
-  Vote,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import { fetchBlockNumber } from '@wagmi/core';
+import { SignatureState, Community, Vote } from '@nouns/prop-house-wrapper/dist/builders';
 import { VoteAllotment } from '../types/VoteAllotment';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 
 export const submitVotes = async (
   voteAllotments: VoteAllotment[],
-  round: StoredAuctionBase,
+  roundChainBlockNumber: number,
   community: Community,
   propHouseWrapper: PropHouseWrapper,
   isContract?: boolean,
 ) => {
   try {
-    const blockHeight = await fetchBlockNumber({ chainId: round.voteStrategy.chainId });
     const votes = voteAllotments
       .map(
         a =>
@@ -26,7 +19,7 @@ export const submitVotes = async (
             a.votes,
             community.contractAddress,
             SignatureState.PENDING_VALIDATION,
-            blockHeight,
+            roundChainBlockNumber,
           ),
       )
       .filter(v => v.weight > 0);

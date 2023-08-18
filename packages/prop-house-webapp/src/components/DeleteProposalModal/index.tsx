@@ -8,7 +8,7 @@ import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refre
 import { useDispatch } from 'react-redux';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { useSigner } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 
 const DeleteProposalModal: React.FC<{
   id: number;
@@ -18,7 +18,7 @@ const DeleteProposalModal: React.FC<{
 }> = props => {
   const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
   const { t } = useTranslation();
-  const { data: signer } = useSigner();
+  const { data: walletClient } = useWalletClient();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
@@ -31,8 +31,8 @@ const DeleteProposalModal: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+    client.current = new PropHouseWrapper(host, walletClient as any);
+  }, [walletClient, host]);
 
   const handleDeleteProposal = async () => {
     if (!id) return;

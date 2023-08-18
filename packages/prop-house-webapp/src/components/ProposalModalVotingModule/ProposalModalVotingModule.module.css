@@ -52,6 +52,27 @@
 .crownNoun {
   display: flex;
 }
+
+.votesLeftMobile {
+  font-weight: bold;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+
+@media (min-width: 576px) {
+  .mobileTooltipContainer .voteAllotmentModal,
+  .mobileTooltipContainer .votesLeftMobile {
+    display: none;
+  }
+}
+@media (max-width: 575px) {
+  .mobileTooltipContainer {
+    display: flex !important;
+    align-items: center;
+    gap: 15px;
+  }
+}
+
 .crownNoun img {
   height: 14px;
 }

@@ -21,7 +21,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount, useSigner, useProvider } from 'wagmi';
+import { useAccount, useBlockNumber } from 'wagmi';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
@@ -29,8 +29,10 @@ import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { submitVotes } from '../../utils/submitVotes';
 import { signerIsContract } from '../../utils/signerIsContract';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -38,6 +40,7 @@ const RoundContent: React.FC<{
 }> = props => {
   const { auction, proposals } = props;
   const { address: account } = useAccount();
+  const { data: blocknumber } = useBlockNumber({ chainId: auction.voteStrategy.chainId ?? 1 });
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
@@ -55,8 +58,8 @@ const RoundContent: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
 
   const client = useRef(new PropHouseWrapper(host));
-  const { data: signer } = useSigner();
-  const provider = useProvider({
+  const signer = useEthersSigner();
+  const provider = useEthersProvider({
     chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
   });
 
@@ -113,7 +116,7 @@ const RoundContent: React.FC<{
   }, [proposals, account, dispatch]);
 
   const handleSubmitVote = async () => {
-    if (!community) return;
+    if (!community || !blocknumber) return;
 
     try {
       setIsContract(
@@ -123,7 +126,7 @@ const RoundContent: React.FC<{
           account ? account : undefined,
         ),
       );
-      await submitVotes(voteAllotments, auction, community, client.current, isContract);
+      await submitVotes(voteAllotments, Number(blocknumber), community, client.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -132,6 +135,7 @@ const RoundContent: React.FC<{
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
+      console.log(e);
       setShowErrorVotingModal(true);
     }
   };

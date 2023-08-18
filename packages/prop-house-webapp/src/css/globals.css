@@ -243,18 +243,6 @@ p {
   }
 }
 
-@media (min-width: 576px) {
-  .mobileTooltipContainer .voteAllotmentModal {
-    display: none;
-  }
-}
-@media (max-width: 575px) {
-  .mobileTooltipContainer {
-    display: flex !important;
-    align-items: center;
-    gap: 20px;
-  }
-}
 /* blot formatter rich text editor */
 .blot-formatter__toolbar {
   display: none;

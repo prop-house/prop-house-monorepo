@@ -9,7 +9,7 @@ import { Strategy } from '../types/Strategy';
 
 export interface balanceOfErc20StratArgs extends BaseArgs {
   contract: string;
-  blockTag: number;
+  blockTag?: number;
   decimals: number;
   multiplier: number;
 }
