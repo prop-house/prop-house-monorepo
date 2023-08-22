@@ -31,11 +31,13 @@ import {
 import '@rainbow-me/rainbowkit/styles.css';
 import StatusRoundCards from './components/StatusRoundCards';
 import CreateRound from './pages/CreateRound';
-import { base } from './types/base';
+import { baseChain } from './types/baseChain';
+import { polygon } from './types/polygon';
+import { polygonMumbai } from './types/polygonMumbai';
 import Banner from './components/Banner';
 
 const { chains, publicClient } = configureChains(
-  [mainnet, base],
+  [mainnet, baseChain, polygon, polygonMumbai],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 
