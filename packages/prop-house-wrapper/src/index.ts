@@ -36,7 +36,7 @@ import { createClient } from '@supabase/supabase-js';
 export class PropHouseWrapper {
   constructor(
     private readonly host: string,
-    private readonly signer: Signer | Wallet | null | undefined = undefined,
+    private readonly signer: Signer | null | undefined = undefined,
   ) {}
 
   async createAuction(auction: TimedAuction): Promise<StoredTimedAuction[]> {
