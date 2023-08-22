@@ -18,6 +18,7 @@ import Avatar from '../Avatar';
 import { isTimedAuction } from '../../utils/auctionType';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { isActiveProp } from '../../utils/isActiveProp';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
@@ -27,6 +28,13 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const wrapper = useRef(new PropHouseWrapper(''));
+  const provider = useEthersProvider({
+    chainId: activeRound
+      ? activeRound.voteStrategy.chainId
+        ? activeRound.voteStrategy.chainId
+        : 1
+      : 1,
+  });
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [repliesAddresses, setRepliesAddresses] = useState<string[]>([]);
@@ -80,9 +88,17 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       proposal.id,
       comment,
     );
+
+    const strategyParams = {
+      strategyName: activeRound.voteStrategy.strategyName,
+      account: signer._address,
+      provider,
+      ...activeRound.voteStrategy,
+    };
+
     try {
       setLoadingSubmission(true);
-      await wrapper.current.submitReply(signer, reply);
+      await wrapper.current.submitReply(signer, reply, strategyParams);
       setLoadingSubmission(false);
       setComment('');
       setShouldFetchReplies(true);

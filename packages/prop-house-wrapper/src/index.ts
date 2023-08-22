@@ -1,4 +1,3 @@
-import { Wallet } from '@ethersproject/wallet';
 import axios from 'axios';
 import {
   TimedAuction,
@@ -445,18 +444,19 @@ export class PropHouseWrapper {
     }
   }
 
-  submitReply = async (walletClient: Signer | Wallet, reply: Reply) => {
+  submitReply = async (signer: Signer, reply: Reply, strategy: {}) => {
     const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
     const SUPABASE_KEY = process.env.REACT_APP_SUPABASE_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Missing Supabase URL or Key');
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    const signedPayload = await reply.signedPayload(walletClient, false, ReplyMessageTypes);
+    const signedPayload = await reply.signedPayload(signer, false, ReplyMessageTypes);
 
     const { data, error } = await supabase.functions.invoke('reply', {
       body: {
         ...signedPayload,
+        strategy,
       },
     });
     if (error) throw new Error(error);
