@@ -21,7 +21,6 @@ import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
-import { isMobile } from 'web3modal';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -65,7 +64,6 @@ const ProposalModalVotingModule: React.FC<{
       ? countTotalVotesAlloted(voteAllotments)
       : countVotesAllottedToProp(voteAllotments, proposal.id);
 
-  console.log(votesRemaining / votingPower);
   useEffect(() => {
     if (!account || !provider || !community || !round) return;
 
@@ -150,9 +148,7 @@ const ProposalModalVotingModule: React.FC<{
             ) : (
               <TimedRoundVotingControls proposal={proposal} />
             )}
-            {setShowVoteAllotmentModal && !isMobile() && (
-              <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
-            )}
+
             <div className={classes.votesLeftMobile}>
               {votesRemaining} vote{votesRemaining !== 1 ? 's' : ''} left
             </div>
