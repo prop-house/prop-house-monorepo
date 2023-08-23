@@ -13,10 +13,11 @@ export const _execStrategy = async (
   /** Hard coded values should be updated to be dynamic */
   const chainId = round[strategyType].chainId;
   const baseRPC = 'https://developer-access-mainnet.base.org';
+  const polygonRPC = 'https://polygon-rpc.com';
   const mainnetRPC = config().JSONRPC;
 
   const provider = new ethers.providers.JsonRpcProvider(
-    chainId === 8453 ? baseRPC : mainnetRPC,
+    chainId === 8453 ? baseRPC : chainId === 137 ? polygonRPC : mainnetRPC,
   );
 
   const strategyPayload = {

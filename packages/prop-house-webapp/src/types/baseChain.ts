@@ -1,4 +1,4 @@
-export const base = {
+export const baseChain = {
   id: 8453,
   network: 'base',
   name: 'Base',

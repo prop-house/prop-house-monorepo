@@ -2,6 +2,7 @@ import { balanceOfErc721, balanceOfErc721StratArgs } from './balanceOfErc721';
 import { balanceOfErc20, balanceOfErc20StratArgs } from './balanceOfErc20';
 import { fixedNum, fixedNumStratArgs } from './fixedNum';
 import { validEnsAndMinBal, validEnsAndMinBalStratArgs } from './validEnsAndMinBal';
+import { thankApe, thankApeStratArgs } from './thankApe';
 import { minimumBalance, minimumBalanceStratArgs } from './minimumBalance';
 
 export const StrategyNames = [
@@ -9,6 +10,7 @@ export const StrategyNames = [
   'balanceOfErc20',
   'fixedNum',
   'validEnsAndMinBal',
+  'thankApe',
   'minimumBalance',
 ] as const;
 
@@ -19,6 +21,7 @@ export type StrategyPayload =
   | balanceOfErc721StratArgs
   | fixedNumStratArgs
   | validEnsAndMinBalStratArgs
+  | thankApeStratArgs
   | minimumBalanceStratArgs;
 
 export const _strategies = {
@@ -26,5 +29,6 @@ export const _strategies = {
   balanceOfErc20: balanceOfErc20,
   fixedNum: fixedNum,
   validEnsAndMinBal: validEnsAndMinBal,
+  thankApe: thankApe,
   minimumBalance: minimumBalance,
 };
