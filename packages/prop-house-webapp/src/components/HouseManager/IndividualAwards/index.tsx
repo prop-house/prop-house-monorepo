@@ -48,6 +48,8 @@ const IndividualAwards: React.FC<{
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
+  const isDuplicate = awards.some(a => a.address === award.address && a.tokenId === award.tokenId);
+
   const handleSelectAward = async (token: ERC20) => {
     let updated: Partial<Award>;
     let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
@@ -79,6 +81,15 @@ const IndividualAwards: React.FC<{
 
   const handleSaveAward = async () => {
     let image_url = null;
+
+    if (isDuplicate) {
+      setAward({
+        ...award,
+        state: 'error',
+        error: `An award with ${award.name} #${award.tokenId} already exists`,
+      });
+      return;
+    }
 
     // We need to fetch the image for ERC721 and ERC1155 tokens if the user does not blur the input, which also fetches the image
     if (award.type === AssetType.ERC721 || (award.type === AssetType.ERC1155 && !award.image)) {
@@ -236,10 +247,6 @@ const IndividualAwards: React.FC<{
     if (award.tokenId === '') return;
 
     const { image } = await getTokenIdImage(award.address, id, provider);
-
-    const isDuplicate = awards.some(
-      a => a.address === award.address && a.tokenId === award.tokenId,
-    );
 
     if (isDuplicate) {
       setAward({
