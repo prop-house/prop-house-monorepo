@@ -1,4 +1,3 @@
-use prop_house::common::utils::serde::SpanSerde;
 use prop_house::common::registry::strategy::Strategy;
 
 #[derive(Copy, Drop, Serde)]
@@ -19,7 +18,7 @@ struct UserStrategy {
     user_params: Span<felt252>,
 }
 
-#[contract]
+#[starknet::contract]
 mod Round {
     use starknet::{
         get_caller_address, EthAddress, EthAddressIntoFelt252, Felt252TryIntoContractAddress,
@@ -42,6 +41,7 @@ mod Round {
     use option::OptionTrait;
     use zeroable::Zeroable;
 
+    #[storage]
     struct Storage {
         _deployer: IRoundFactoryDispatcher,
         _is_strategy_registered: LegacyMap<(u8, felt252), bool>,
@@ -49,14 +49,14 @@ mod Round {
 
     /// Initializes the contract by setting the origin chain ID
     /// and registering the provided strategy groups.
-    fn initializer(mut strategy_groups_: Span<StrategyGroup>) {
-        _deployer::write(IRoundFactoryDispatcher { contract_address: get_caller_address() });
-        _register_strategy_groups(strategy_groups_);
+    fn initializer(ref self: ContractState, mut strategy_groups_: Span<StrategyGroup>) {
+        self._deployer.write(IRoundFactoryDispatcher { contract_address: get_caller_address() });
+        _register_strategy_groups(ref self, strategy_groups_);
     }
 
     /// Returns the origin chain ID.
-    fn origin_chain_id() -> u64 {
-        _deployer::read().origin_chain_id()
+    fn origin_chain_id(self: @ContractState) -> u64 {
+        self._deployer.read().origin_chain_id()
     }
 
     /// Parse strategies from a flattened array of parameters.
@@ -71,7 +71,7 @@ mod Round {
         let array_2d = construct_2d_array(strategy_params_flat);
 
         let mut i = 0;
-        let mut strategies = Default::<Array<Strategy>>::default();
+        let mut strategies = ArrayTrait::new();
         loop {
             if i == strategy_addresses_len {
                 break (
@@ -89,16 +89,16 @@ mod Round {
 
     /// Asserts that the caller is a valid auth strategy.
     /// * `round_type` - The type of round to check the auth strategy for.
-    fn assert_caller_is_valid_auth_strategy(round_type: felt252) {
+    fn assert_caller_is_valid_auth_strategy(self: @ContractState, round_type: felt252) {
         let auth_strategies = get_round_dependency_registry().get_dependencies_at_key(
-            origin_chain_id(), round_type, DependencyKey::AUTH_STRATEGIES,
+            origin_chain_id(self), round_type, DependencyKey::AUTH_STRATEGIES,
         );
         assert(auth_strategies.contains(get_caller_address()), 'Invalid auth strategy');
     }
 
     /// Asserts that the caller is the deployer.
-    fn assert_caller_is_deployer() {
-        assert(get_caller_address() == _deployer::read().contract_address, 'Caller is not deployer');
+    fn assert_caller_is_deployer(self: @ContractState) {
+        assert(get_caller_address() == self._deployer.read().contract_address, 'Caller is not deployer');
     }
 
     /// Returns the cumulative governance power of the given user for the provided strategies.
@@ -107,6 +107,7 @@ mod Round {
     /// * `strategy_type` - The type of strategy to calculate the cumulative governance power for.
     /// * `used_strategies` - The strategies used to calculate the cumulative governance power of the user.
     fn get_cumulative_governance_power(
+        self: @ContractState,
         timestamp: u64,
         user: EthAddress,
         strategy_type: u8,
@@ -121,7 +122,7 @@ mod Round {
                 Option::Some(s) => {
                     let s = *s;
 
-                    assert(_is_strategy_registered::read((strategy_type, s.id)), 'Strategy not registered');
+                    assert(self._is_strategy_registered.read((strategy_type, s.id)), 'Strategy not registered');
                     assert(is_used.get(s.id).is_zero(), 'Duplicate strategy ID');
 
                     let strategy = strategy_registry.get_strategy(s.id);
@@ -148,10 +149,10 @@ mod Round {
     /// * `assets` - The array of assets to flatten and encode.
     fn flatten_and_abi_encode_assets(mut assets: Span<Asset>) -> Span<u256> {
         let asset_count: felt252 = assets.len().into();
-
-        let mut flattened_assets = Default::default();
-        flattened_assets.append(0x20.into()); // Data offset
-        flattened_assets.append(asset_count.into()); // Array length
+        let mut flattened_assets = array![
+            0x20.into(), // Data offset
+            asset_count.into(), // Array length
+        ];
 
         loop {
             match assets.pop_front() {
@@ -175,7 +176,7 @@ mod Round {
 
     /// Register the provided strategy groups if they are not already registered.
     /// * `strategy_groups` - The strategy groups to register.
-    fn _register_strategy_groups(mut strategy_groups: Span<StrategyGroup>) {
+    fn _register_strategy_groups(ref self: ContractState, mut strategy_groups: Span<StrategyGroup>) {
         let strategy_registry = get_strategy_registry();
         loop {
             match strategy_groups.pop_front() {
@@ -188,7 +189,7 @@ mod Round {
                                 let strategy_id = strategy_registry.register_strategy_if_not_exists(
                                     *strategy,
                                 );
-                                _is_strategy_registered::write((group.strategy_type, strategy_id), true);
+                                self._is_strategy_registered.write((group.strategy_type, strategy_id), true);
                             },
                             Option::None(_) => {
                                 break;

@@ -1,3 +1,7 @@
+use prop_house::rounds::timed::round::TimedRound::_leading_proposal_ids::InternalContractStateTrait as LPContractStateTrait;
+use prop_house::rounds::timed::round::TimedRound::_proposals::InternalContractStateTrait as PContractStateTrait;
+use prop_house::rounds::timed::round::TimedRound::_proposal_count::InternalContractStateTrait as PCContractStateTrait;
+use prop_house::rounds::timed::round::TimedRound::_config::InternalContractStateTrait as CContractStateTrait;
 use starknet::Felt252TryIntoEthAddress;
 use prop_house::rounds::timed::config::{Proposal, RoundConfig, RoundState};
 use prop_house::common::utils::array::ArrayTraitExt;
@@ -19,30 +23,33 @@ fn test_timed_round_decode_params() {
     let winner_count = 5;
     let proposal_threshold = 1;
 
-    let mut round_params = Default::default();
-    round_params.append(award_hash);
-    round_params.append(proposal_period_start_timestamp);
-    round_params.append(proposal_period_duration);
-    round_params.append(vote_period_duration);
-    round_params.append(winner_count);
-    round_params.append(proposal_threshold);
+    let mut round_params = array![
+        award_hash,
+        proposal_period_start_timestamp,
+        proposal_period_duration,
+        vote_period_duration,
+        winner_count,
+        proposal_threshold,
+    ];
 
     // No proposing strategies
-    let mut proposing_strategies = Default::default();
-    proposing_strategies.append(0); // Strategy addresses length
-    proposing_strategies.append(2); // Strategy params flat length
-    proposing_strategies.append(0);
-    proposing_strategies.append(0);
+    let mut proposing_strategies = array![
+        0, // Strategy addresses length
+        2, // Strategy params flat length
+        0,
+        0,
+    ];
 
     // 'Balance of' voting strategy
-    let mut voting_strategies = Default::default();
-    voting_strategies.append(1); // Strategy addresses length
-    voting_strategies.append(0xe37035a044375ea92895594053f4918c01f56fe5cb2c98c1399bb4c36ec17a);
-    voting_strategies.append(4); // Strategy params flat length
-    voting_strategies.append(1);
-    voting_strategies.append(0);
-    voting_strategies.append(0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03);
-    voting_strategies.append(4);
+    let mut voting_strategies = array![
+        1, // Strategy addresses length
+        0xe37035a044375ea92895594053f4918c01f56fe5cb2c98c1399bb4c36ec17a,
+        4, // Strategy params flat length
+        1,
+        0,
+        0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03,
+        4,
+    ];
 
     round_params.append_all(proposing_strategies.span());
     round_params.append_all(voting_strategies.span());
@@ -73,22 +80,25 @@ fn test_timed_round_decode_params() {
 #[test]
 #[available_gas(100000000)]
 fn test_min_heap_accurately_determines_winners() {
-    let mut leading_proposals = TimedRound::_get_leading_proposals();
+    let mut state = TimedRound::unsafe_new_contract_state();
+
+    let mut leading_proposals = TimedRound::_get_leading_proposals(@state);
     assert(leading_proposals.index_to_pid.len() == 0, 'wrong length');
 
-    let mut voting_powers = Default::default();
-    voting_powers.append(413158451);
-    voting_powers.append(776531419); // 3 (tie-breaker)
-    voting_powers.append(657398127); // 4
-    voting_powers.append(539216489); // 5
-    voting_powers.append(982451653); // 1
-    voting_powers.append(298274213);
-    voting_powers.append(776531419); // 2 (tie-breaker)
-    voting_powers.append(79423867);
-    voting_powers.append(474241213);
+    let mut voting_powers = array![
+        413158451,
+        776531419, // 3 (tie-breaker)
+        657398127, // 4
+        539216489, // 5
+        982451653, // 1
+        298274213,
+        776531419, // 2 (tie-breaker)
+        79423867,
+        474241213,
+    ];
 
-    TimedRound::_proposal_count::write(10);
-    TimedRound::_config::write(
+    state._proposal_count.write(10);
+    state._config.write(
         RoundConfig {
             round_state: RoundState::Active(()),
             winner_count: 5,
@@ -114,20 +124,20 @@ fn test_min_heap_accurately_determines_winners() {
             last_updated_at: (count - proposal_id).into(), // Earlier proposals have higher timestamps
             is_cancelled: false,
         };
-        TimedRound::_proposals::write(proposal_id, proposal);
-        TimedRound::_insert_or_update_leading_proposal(ref leading_proposals, null(), proposal_id, proposal);
+        state._proposals.write(proposal_id, proposal);
+        TimedRound::_insert_or_update_leading_proposal(@TimedRound::unsafe_new_contract_state(), ref leading_proposals, null(), proposal_id, proposal);
 
         proposal_id += 1;
     };
-    TimedRound::_leading_proposal_ids::write(leading_proposals.index_to_pid);
+    state._leading_proposal_ids.write(leading_proposals.index_to_pid);
 
-    let (mut winning_ids, _) = TimedRound::_get_winning_proposal_ids_and_data();
+    let (mut winning_ids, _) = TimedRound::_get_winning_proposal_ids_and_data(@state);
     assert(winning_ids.len() == 5, 'incorrect length');
 
     // This should not be necessary, but this version of Cairo throws
     // `Failed calculating gas usage, it is likely a call for `gas::withdraw_gas` is missing.`
     // if `winning_ids` is accessed directly.
-    let mut winning_proposal_ids = Default::default();
+    let mut winning_proposal_ids = ArrayTrait::new();
     loop {
         match winning_ids.pop_front() {
             Option::Some(proposal_id) => winning_proposal_ids.append(*proposal_id),
@@ -145,22 +155,25 @@ fn test_min_heap_accurately_determines_winners() {
 #[test]
 #[available_gas(100000000)]
 fn test_min_heap_accurately_determines_winners_when_packing_multiple_slots() {
-    let mut leading_proposals = TimedRound::_get_leading_proposals();
+    let mut state = TimedRound::unsafe_new_contract_state();
+
+    let mut leading_proposals = TimedRound::_get_leading_proposals(@state);
     assert(leading_proposals.index_to_pid.len() == 0, 'wrong length');
 
-    let mut voting_powers = Default::default();
-    voting_powers.append(413158451);
-    voting_powers.append(776531419); // 3 (tie-breaker)
-    voting_powers.append(657398127); // 4
-    voting_powers.append(539216489); // 5
-    voting_powers.append(982451653); // 1
-    voting_powers.append(298274213);
-    voting_powers.append(776531419); // 2 (tie-breaker)
-    voting_powers.append(79423867);
-    voting_powers.append(474241213);
+    let mut voting_powers = array![
+        413158451,
+        776531419, // 3 (tie-breaker)
+        657398127, // 4
+        539216489, // 5
+        982451653, // 1
+        298274213,
+        776531419, // 2 (tie-breaker)
+        79423867,
+        474241213,
+    ];
 
-    TimedRound::_proposal_count::write(10);
-    TimedRound::_config::write(
+    state._proposal_count.write(10);
+    state._config.write(
         RoundConfig {
             round_state: RoundState::Active(()),
             winner_count: 8,
@@ -186,20 +199,20 @@ fn test_min_heap_accurately_determines_winners_when_packing_multiple_slots() {
             last_updated_at: (count - proposal_id).into(), // Earlier proposals have higher timestamps
             is_cancelled: false,
         };
-        TimedRound::_proposals::write(proposal_id, proposal);
-        TimedRound::_insert_or_update_leading_proposal(ref leading_proposals, null(), proposal_id, proposal);
+        state._proposals.write(proposal_id, proposal);
+        TimedRound::_insert_or_update_leading_proposal(@TimedRound::unsafe_new_contract_state(), ref leading_proposals, null(), proposal_id, proposal);
 
         proposal_id += 1;
     };
-    TimedRound::_leading_proposal_ids::write(leading_proposals.index_to_pid);
+    state._leading_proposal_ids.write(leading_proposals.index_to_pid);
 
-    let (mut winning_ids, _) = TimedRound::_get_winning_proposal_ids_and_data();
+    let (mut winning_ids, _) = TimedRound::_get_winning_proposal_ids_and_data(@state);
     assert(winning_ids.len() == 8, 'incorrect length');
 
     // This should not be necessary, but this version of Cairo throws
     // `Failed calculating gas usage, it is likely a call for `gas::withdraw_gas` is missing.`
     // if `winning_ids` is accessed directly.
-    let mut winning_proposal_ids = Default::default();
+    let mut winning_proposal_ids = ArrayTrait::new();
     loop {
         match winning_ids.pop_front() {
             Option::Some(proposal_id) => winning_proposal_ids.append(*proposal_id),

@@ -9,7 +9,7 @@ use box::BoxTrait;
 
 impl Felt252SpanIntoU256Span of Into<Span<felt252>, Span<u256>> {
     fn into(mut self: Span<felt252>) -> Span<u256> {
-        let mut arr = Default::<Array<u256>>::default();
+        let mut arr = ArrayTrait::new();
         loop {
             match self.pop_front() {
                 Option::Some(item) => {
@@ -136,9 +136,10 @@ fn assert_no_duplicates_u256(mut span: Span<u256>) {
         match span.pop_front() {
             Option::Some(v) => {
                 let v = *v;
-                let mut parts = Default::default();
-                parts.append(v.low.into());
-                parts.append(v.high.into());
+                let mut parts = array![
+                    v.low.into(),
+                    v.high.into(),
+                ];
 
                 let key = poseidon_hash_span(parts.span());
                 assert(dict.get(key).is_zero(), 'Duplicate element found');

@@ -13,26 +13,28 @@ use traits::Into;
 fn test_keccak_merkle_tree() {
     let mut merkle_tree = MerkleTreeTrait::<u256>::new();
 
-    let mut even_leaves = Default::<Array<u256>>::default();
-    even_leaves.append(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb);
-    even_leaves.append(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510);
-    even_leaves.append(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2);
-    even_leaves.append(0xf1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3);
-    even_leaves.append(0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761);
-    even_leaves.append(0xd1e8aeb79500496ef3dc2e57ba746a8315d048b7a664a2bf948db4fa91960483);
+    let mut even_leaves = array![
+        0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb,
+        0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510,
+        0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2,
+        0xf1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3,
+        0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761,
+        0xd1e8aeb79500496ef3dc2e57ba746a8315d048b7a664a2bf948db4fa91960483,
+    ];
 
     let expected_merkle_root: u256 =
         0x9012f1e18a87790d2e01faace75aaaca38e53df437cdce2c0552464dda4af49c;
     test_case_compute_merkle_root(ref merkle_tree, even_leaves, expected_merkle_root);
 
-    let mut odd_leaves = Default::<Array<u256>>::default();
-    odd_leaves.append(0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb);
-    odd_leaves.append(0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510);
-    odd_leaves.append(0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2);
-    odd_leaves.append(0xf1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3);
-    odd_leaves.append(0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761);
-    odd_leaves.append(0xd1e8aeb79500496ef3dc2e57ba746a8315d048b7a664a2bf948db4fa91960483);
-    odd_leaves.append(0x14bcc435f49d130d189737f9762feb25c44ef5b886bef833e31a702af6be4748);
+    let mut odd_leaves = array![
+        0x3ac225168df54212a25c1c01fd35bebfea408fdac2e31ddd6f80a4bbf9a5f1cb,
+        0xb5553de315e0edf504d9150af82dafa5c4667fa618ed0a6f19c69b41166c5510,
+        0x0b42b6393c1f53060fe3ddbfcd7aadcca894465a5a438f69c87d790b2299b9b2,
+        0xf1918e8562236eb17adc8502332f4c9c82bc14e19bfc0aa10ab674ff75b3d2f3,
+        0xa8982c89d80987fb9a510e25981ee9170206be21af3c8e0eb312ef1d3382e761,
+        0xd1e8aeb79500496ef3dc2e57ba746a8315d048b7a664a2bf948db4fa91960483,
+        0x14bcc435f49d130d189737f9762feb25c44ef5b886bef833e31a702af6be4748,
+    ];
 
     let expected_merkle_root: u256 =
         0x329bcb82b465308e4d3445408c794db388e401855b1fe6f2981c93ca34ce516b;
@@ -234,9 +236,10 @@ fn test_case_verify<
 }
 
 fn generate_proof_2_elements<T, impl TDrop: Drop<T>>(element_1: T, element_2: T) -> Array<T> {
-    let mut proof = Default::default();
-    proof.append(element_1);
-    proof.append(element_2);
+    let mut proof = array![
+        element_1,
+        element_2,
+    ];
     proof
 }
 

@@ -8,9 +8,12 @@ sierra = "cairo-compile . -r"
 test = "cairo-test . --starknet"
 
 [dependencies]
-starknet = ">=1.1.0-rc0"
+starknet = ">=2.1.1"
 
 [[target.starknet-contract]]
+
+# Enable Sierra codegen.
+sierra = true
 
 # Enable CASM codegen.
 casm = true

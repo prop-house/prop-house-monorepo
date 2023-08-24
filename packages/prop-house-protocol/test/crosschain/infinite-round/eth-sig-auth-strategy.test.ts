@@ -6,7 +6,6 @@ import {
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
-  getStarknetArtifactPaths,
   STARKNET_MAX_FEE,
   generateIncrementalClaimLeaf,
   generateIncrementalClaimMerkleTree,
@@ -81,15 +80,10 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
       starknetAccount,
     } = config);
 
-    const vanillaGovPowerStrategyMetadata = getStarknetArtifactPaths(
-      'VanillaGovernancePowerStrategy',
+    const vanillaGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_VanillaGovernancePowerStrategy',
     );
-    const vanillaGovPowerStrategyFactory = new StarknetContractFactory({
-      hre,
-      abiPath: vanillaGovPowerStrategyMetadata.sierra,
-      metadataPath: vanillaGovPowerStrategyMetadata.sierra,
-      casmPath: vanillaGovPowerStrategyMetadata.casm,
-    });
+
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });

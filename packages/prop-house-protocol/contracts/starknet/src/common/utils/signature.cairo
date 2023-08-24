@@ -20,7 +20,7 @@ impl KeccakTypeHashStructSpan<
     T, impl TCopy: Copy<T>, impl TKeccakTypeHash: KeccakTypeHash<T>
 > of KeccakTypeHash<Span<T>> {
     fn hash(mut self: Span<T>) -> u256 {
-        let mut encoded_data = Default::default();
+        let mut encoded_data = ArrayTrait::new();
         loop {
             match self.pop_front() {
                 Option::Some(item) => {
@@ -36,20 +36,22 @@ impl KeccakTypeHashStructSpan<
 
 impl KeccakTypeHashUserStrategy of KeccakTypeHash<UserStrategy> {
     fn hash(self: UserStrategy) -> u256 {
-        let mut encoded_data = Default::default();
-        encoded_data.append(TypeHash::USER_STRATEGY);
-        encoded_data.append(self.id.into());
-        encoded_data.append(self.user_params.hash());
+        let mut encoded_data = array![
+            TypeHash::USER_STRATEGY,
+            self.id.into(),
+            self.user_params.hash(),
+        ];
         keccak_u256s_be(encoded_data.span())
     }
 }
 
 impl KeccakTypeHashAsset of KeccakTypeHash<Asset> {
     fn hash(self: Asset) -> u256 {
-        let mut encoded_data = Default::default();
-        encoded_data.append(TypeHash::ASSET);
-        encoded_data.append(self.asset_id);
-        encoded_data.append(self.amount);
+        let mut encoded_data = array![
+            TypeHash::ASSET,
+            self.asset_id,
+            self.amount,
+        ];
         keccak_u256s_be(encoded_data.span())
     }
 }
@@ -61,10 +63,10 @@ impl KeccakTypeHashAsset of KeccakTypeHash<Asset> {
 fn hash_structured_data(domain_separator: u256, message: Span<u256>) -> u256 {
     let hash_struct = keccak_u256s_be(message);
 
-    let mut data = Default::default();
-    data.append(ETHEREUM_PREFIX.into());
-    data.append(domain_separator);
-    data.append(hash_struct);
-
+    let mut data = array![
+        ETHEREUM_PREFIX.into(),
+        domain_separator,
+        hash_struct,
+    ];
     keccak_u256s_be(data.span())
 }

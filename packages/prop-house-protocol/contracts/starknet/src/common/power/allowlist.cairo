@@ -1,36 +1,28 @@
-#[contract]
+#[starknet::contract]
 mod AllowlistGovernancePowerStrategy {
     use prop_house::common::utils::merkle::MerkleTreeTrait;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
-    use prop_house::common::utils::serde::SpanSerde;
     use array::{ArrayTrait, SpanTrait};
     use traits::{TryInto, Into};
     use option::OptionTrait;
     use hash::LegacyHash;
 
-    impl AllowlistGovernancePowerStrategy of IGovernancePowerStrategy {
+    #[storage]
+    struct Storage {}
+
+    #[external(v0)]
+    impl AllowlistGovernancePowerStrategy of IGovernancePowerStrategy<ContractState> {
+        /// Returns the governance power of a user.
+        /// * `timestamp` - The timestamp at which to get the governance power.
+        /// * `user` - The address of the user.
+        /// * `params` - The params, containing the merkle root.
+        /// * `user_params` - The user params, containing the user address, power, and proof.
         fn get_power(
-            timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+            self: @ContractState, timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
         ) -> u256 {
             _get_power(timestamp, user, params, user_params)
         }
     }
-
-    /// Returns the governance power of a user.
-    /// * `timestamp` - The timestamp at which to get the governance power.
-    /// * `user` - The address of the user.
-    /// * `params` - The params, containing the merkle root.
-    /// * `user_params` - The user params, containing the user address, power, and proof.
-    #[view]
-    fn get_power(
-        timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
-    ) -> u256 {
-        AllowlistGovernancePowerStrategy::get_power(timestamp, user, params, user_params)
-    }
-
-    ///
-    /// Internals
-    ///
 
     /// Returns the governance power of a user.
     /// * `timestamp` - The timestamp at which to get the governance power.

@@ -1,6 +1,5 @@
-use starknet::{StorageAccess, SyscallResult, StorageBaseAddress};
+use starknet::{Store, SyscallResult, StorageBaseAddress};
 use prop_house::common::utils::constants::{MASK_16, MASK_32};
-use prop_house::common::utils::integer::U256TryIntoU32;
 use prop_house::common::utils::hash::keccak_u256s_be;
 use prop_house::common::utils::vec::{Vec, VecTrait};
 use array::{ArrayTrait, SpanTrait};
@@ -13,10 +12,9 @@ use option::OptionTrait;
 /// * `slot_index` - The slot index.
 /// * `mapping_key` - The mapping key.
 fn get_slot_key(slot_index: u256, mapping_key: u256) -> u256 {
-    let mut encoded_array = Default::default();
-    encoded_array.append(mapping_key);
-    encoded_array.append(slot_index);
-
+    let mut encoded_array = array![
+        mapping_key, slot_index
+    ];
     keccak_u256s_be(encoded_array.span())
 }
 
@@ -24,20 +22,20 @@ fn get_slot_key(slot_index: u256, mapping_key: u256) -> u256 {
 /// * `address_domain` - The address domain.
 /// * `base` - The base address.
 /// * `offset` - The storage offset.
-fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>>(
+fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: Store<T>>(
     address_domain: u32, base: StorageBaseAddress, mut offset: u8
 ) -> SyscallResult<Span<T>> {
-    let length = StorageAccess::<u32>::read_at_offset_internal(address_domain, base, offset)?;
+    let length = Store::<u32>::read_at_offset(address_domain, base, offset)?;
     offset += 1; // Increment offset by 1 for the length.
 
     let mut elements_read = 0;
-    let mut arr = Default::<Array<T>>::default();
+    let mut arr = ArrayTrait::new();
     loop {
         if elements_read == length {
             break Result::Ok(arr.span());
         }
-        let value = StorageAccess::read_at_offset_internal(address_domain, base, offset)?;
-        offset += StorageAccess::<T>::size_internal(value);
+        let value = Store::read_at_offset(address_domain, base, offset)?;
+        offset += Store::<T>::size();
         arr.append(value);
 
         elements_read += 1;
@@ -49,22 +47,22 @@ fn read_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcces
 /// * `base` - The base address.
 /// * `offset` - The storage offset.
 /// * `value` - The value to write.
-fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>>(
+fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: Store<T>>(
     address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Span<T>
 ) -> SyscallResult<()> {
     if !value.is_empty() {
-        assert(StorageAccess::<T>::size_internal(*value.at(0)).into() * value.len() < 255, 'Span too large');
+        assert(Store::<T>::size().into() * value.len() < 255, 'Span too large');
     }
 
-    StorageAccess::<u32>::write_at_offset_internal(address_domain, base, offset, value.len())?;
+    Store::<u32>::write_at_offset(address_domain, base, offset, value.len())?;
     offset += 1; // Increment offset by 1 for the length.
 
     loop {
         match value.pop_front() {
             Option::Some(v) => {
                 let v = *v;
-                StorageAccess::write_at_offset_internal(address_domain, base, offset, v)?;
-                offset += StorageAccess::<T>::size_internal(v);
+                Store::write_at_offset(address_domain, base, offset, v)?;
+                offset += Store::<T>::size();
             },
             Option::None(_) => {
                 break Result::Ok(());
@@ -73,35 +71,31 @@ fn write_span<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAcce
     }
 }
 
-impl SpanStorageAccess<
-    T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: StorageAccess<T>
-> of StorageAccess<Span<T>> {
+impl SpanStore<
+    T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TSA: Store<T>
+> of Store<Span<T>> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Span<T>> {
-        SpanStorageAccess::read_at_offset_internal(address_domain, base, 0)
+        SpanStore::read_at_offset(address_domain, base, 0)
     }
     fn write(
         address_domain: u32, base: StorageBaseAddress, mut value: Span<T>
     ) -> SyscallResult<()> {
-        SpanStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+        SpanStore::write_at_offset(address_domain, base, 0, value)
     }
     #[inline(always)]
-    fn read_at_offset_internal(
+    fn read_at_offset(
         address_domain: u32, base: StorageBaseAddress, mut offset: u8
     ) -> SyscallResult<Span<T>> {
         read_span(address_domain, base, offset)
     }
     #[inline(always)]
-    fn write_at_offset_internal(
+    fn write_at_offset(
         address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Span<T>
     ) -> SyscallResult<()> {
         write_span(address_domain, base, offset, value)
     }
-    fn size_internal(value: Span<T>) -> u8 {
-        if value.len() == 0 {
-            1
-        } else {
-            1 + (StorageAccess::<T>::size_internal(*value.at(0)) * value.len().try_into().unwrap())
-        }
+    fn size() -> u8 {
+        255 // Reserve the entire offset slot.
     }
 }
 
@@ -112,14 +106,15 @@ fn get_vec_len_scale_factor() -> u256 {
 
 /// Get the scale factors for packing and unpacking u32s.
 fn get_u32_scale_factors() -> Span<u256> {
-    let mut scale_factors = Default::default();
-    scale_factors.append(0x1);
-    scale_factors.append(0x100000000);
-    scale_factors.append(0x10000000000000000);
-    scale_factors.append(0x1000000000000000000000000);
-    scale_factors.append(0x100000000000000000000000000000000);
-    scale_factors.append(0x10000000000000000000000000000000000000000);
-    scale_factors.append(0x1000000000000000000000000000000000000000000000000);
+    let mut scale_factors = array![
+        0x1,
+        0x100000000,
+        0x10000000000000000,
+        0x1000000000000000000000000,
+        0x100000000000000000000000000000000,
+        0x10000000000000000000000000000000000000000,
+        0x1000000000000000000000000000000000000000000000000,
+    ];
     scale_factors.span()
 }
 
@@ -131,7 +126,7 @@ fn read_packed_u32_vec(address_domain: u32, base: StorageBaseAddress, mut offset
     let mut scale_factors = get_u32_scale_factors();
     let mut vec = VecTrait::new();
 
-    let mut slot = u256_from_felt252(StorageAccess::read_at_offset_internal(address_domain, base, offset)?);
+    let mut slot = u256_from_felt252(Store::read_at_offset(address_domain, base, offset)?);
     let mut remaining_length = ((slot / get_vec_len_scale_factor()) & MASK_16).try_into().unwrap();
 
     let mut packed_index = 0;
@@ -141,7 +136,7 @@ fn read_packed_u32_vec(address_domain: u32, base: StorageBaseAddress, mut offset
         }
         if packed_index == 7 {
             offset += 1;
-            slot = u256_from_felt252(StorageAccess::read_at_offset_internal(address_domain, base, offset).unwrap_syscall());
+            slot = u256_from_felt252(Store::read_at_offset(address_domain, base, offset).unwrap_syscall());
             packed_index = 0;
         }
 
@@ -175,7 +170,7 @@ fn write_packed_u32_vec(address_domain: u32, base: StorageBaseAddress, mut offse
             break;
         }
         if packed_index == 7 {
-            StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed.try_into().unwrap()).unwrap_syscall();
+            Store::<felt252>::write_at_offset(address_domain, base, offset, packed.try_into().unwrap()).unwrap_syscall();
             packed = 0;
             packed_index = 0;
             offset += 1;
@@ -186,35 +181,34 @@ fn write_packed_u32_vec(address_domain: u32, base: StorageBaseAddress, mut offse
         packed_index += 1;
     };
     if packed_index > 0 {
-        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed.try_into().unwrap())?;
+        Store::<felt252>::write_at_offset(address_domain, base, offset, packed.try_into().unwrap())?;
     }
 
     Result::Ok(())
 }
 
-impl PackedU32VecStorageAccess of StorageAccess<Vec<u32>> {
+impl PackedU32VecStore of Store<Vec<u32>> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Vec<u32>> {
-        PackedU32VecStorageAccess::read_at_offset_internal(address_domain, base, 0)
+        PackedU32VecStore::read_at_offset(address_domain, base, 0)
     }
     fn write(
         address_domain: u32, base: StorageBaseAddress, mut value: Vec<u32>
     ) -> SyscallResult<()> {
-        PackedU32VecStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+        PackedU32VecStore::write_at_offset(address_domain, base, 0, value)
     }
     #[inline(always)]
-    fn read_at_offset_internal(
+    fn read_at_offset(
         address_domain: u32, base: StorageBaseAddress, mut offset: u8
     ) -> SyscallResult<Vec<u32>> {
         read_packed_u32_vec(address_domain, base, offset)
     }
     #[inline(always)]
-    fn write_at_offset_internal(
+    fn write_at_offset(
         address_domain: u32, base: StorageBaseAddress, mut offset: u8, mut value: Vec<u32>
     ) -> SyscallResult<()> {
         write_packed_u32_vec(address_domain, base, offset, ref value)
     }
-    fn size_internal(value: Vec<u32>) -> u8 {
-        // Add `6` to ensure the size is rounded up
-        ((value.len() + 6) / 7).try_into().unwrap()
+    fn size() -> u8 {
+        255 // Reserve the entire offset slot.
     }
 }

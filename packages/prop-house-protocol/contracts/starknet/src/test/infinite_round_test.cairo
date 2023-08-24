@@ -16,29 +16,32 @@ fn test_infinite_round_decode_params() {
     let quorum_against = 5;
     let proposal_threshold = 1;
 
-    let mut round_params = Default::default();
-    round_params.append(start_timestamp);
-    round_params.append(vote_period_duration);
-    round_params.append(quorum_for);
-    round_params.append(quorum_against);
-    round_params.append(proposal_threshold);
+    let mut round_params = array![
+        start_timestamp,
+        vote_period_duration,
+        quorum_for,
+        quorum_against,
+        proposal_threshold
+    ];
 
     // No proposing strategies
-    let mut proposing_strategies = Default::default();
-    proposing_strategies.append(0); // Strategy addresses length
-    proposing_strategies.append(2); // Strategy params flat length
-    proposing_strategies.append(0);
-    proposing_strategies.append(0);
+    let mut proposing_strategies = array![
+        0, // Strategy addresses length
+        2, // Strategy params flat length
+        0,
+        0,
+    ];
 
     // 'Balance of' voting strategy
-    let mut voting_strategies = Default::default();
-    voting_strategies.append(1); // Strategy addresses length
-    voting_strategies.append(0xe37035a044375ea92895594053f4918c01f56fe5cb2c98c1399bb4c36ec17a);
-    voting_strategies.append(4); // Strategy params flat length
-    voting_strategies.append(1);
-    voting_strategies.append(0);
-    voting_strategies.append(0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03);
-    voting_strategies.append(4);
+    let mut voting_strategies = array![
+        1, // Strategy addresses length
+        0xe37035a044375ea92895594053f4918c01f56fe5cb2c98c1399bb4c36ec17a,
+        4, // Strategy params flat length
+        1,
+        0,
+        0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03,
+        4,
+    ];
 
     round_params.append_all(proposing_strategies.span());
     round_params.append_all(voting_strategies.span());
@@ -68,9 +71,10 @@ fn test_infinite_round_sub_tree_storage() {
     let max_used_depth = imt_1.get_current_depth();
     assert(max_used_depth == 3, 'wrong max used depth');
 
-    InfiniteRound::_write_sub_trees_to_storage(max_used_depth, ref imt_1.sub_trees);
+    let mut state = InfiniteRound::unsafe_new_contract_state();
+    InfiniteRound::_write_sub_trees_to_storage(ref state, max_used_depth, ref imt_1.sub_trees);
 
-    let mut imt_2 = IncrementalMerkleTreeTrait::new(10, 1, InfiniteRound::_read_sub_trees_from_storage());
+    let mut imt_2 = IncrementalMerkleTreeTrait::new(10, 1, InfiniteRound::_read_sub_trees_from_storage(@state));
 
     let mut curr_depth = 0;
     loop {

@@ -27,7 +27,7 @@
     "solady": "^0.0.62",
     "solmate": "^6.6.1",
     "starknet": "4.22.0",
-    "starknet-hardhat-plugin-extended": "0.8.0-alpha.10",
+    "starknet-hardhat-plugin-extended": "0.8.0-alpha.11",
     "ts-node": "^10.9.1",
     "typechain": "8.1.0"
   },
@@ -44,7 +44,7 @@
     "chain:l2": "starknet-devnet --lite-mode",
     "chain": "concurrently 'yarn chain:l1' 'yarn chain:l2'",
     "build:l1": "FOUNDRY_PROFILE=ignore_test forge build",
-    "build:l2": "cd contracts/starknet && scarb build",
+    "build:l2": "yarn hardhat starknet-build contracts/starknet",
     "build:ts": "tsc -p tsconfig.build.json",
     "build": "yarn build:l1 && yarn typechain && yarn build:l2 && yarn build:ts",
     "test:setup": "ts-node blacksmith.ts create",
