@@ -375,7 +375,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
         { rawOutput: true },
       )
     ).response.split(' ');
-    expect(Boolean(isCancelled)).to.equal(false);
+    expect(Boolean(Number(isCancelled))).to.equal(false);
 
     const cancelCalldata = stark.compileCalldata({
       proposer: signer.address,
@@ -404,7 +404,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
         { rawOutput: true },
       )
     ).response.split(' ');
-    expect(Boolean(isCancelled)).to.equal(true);
+    expect(Boolean(Number(isCancelled))).to.equal(true);
   });
 
   it('should create a vote using an Ethereum transaction', async () => {
@@ -490,11 +490,11 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       position: 1,
       proposalId: winningProposalIds[0],
       proposer: BigNumber.from(proposer).toHexString(),
-      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }),
+      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }).toNumber(),
     };
     expect(winner.proposalId).to.equal(1);
     expect(winner.proposer).to.equal(signer.address.toLowerCase());
-    expect(winner.votingPower).to.equal(BigInt(1));
+    expect(winner.votingPower).to.equal(1);
 
     const { consumed_messages } = await starknet.devnet.flush();
 

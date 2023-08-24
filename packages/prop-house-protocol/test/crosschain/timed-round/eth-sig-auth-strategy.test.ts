@@ -316,7 +316,7 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
     expect(winnersLen).to.equal(1);
     expect(winningProposalIds).to.have.a.lengthOf(1);
 
-    const [proposer, , , vpLow, vpHigh] = (
+    const [proposer] = (
       await timedRoundContract.call(
         'get_proposal',
         { proposal_id: winningProposalIds[0] },
@@ -328,7 +328,6 @@ describe('TimedRoundStrategy - ETH Signature Auth Strategy', () => {
       position: 1,
       proposalId: winningProposalIds[0],
       proposer: BigNumber.from(proposer).toHexString(),
-      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }),
     };
 
     const { consumed_messages } = await starknet.devnet.flush();
