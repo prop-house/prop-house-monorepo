@@ -73,42 +73,44 @@ export const erc721BalanceOfInterface = [
     type: 'function',
   },
 ];
-
-export const erc721ApproveInterface = [
+export const erc721SetApprovalForAllInterface = [
   {
     constant: false,
     inputs: [
       {
-        name: 'approved',
+        name: 'operator',
         type: 'address',
       },
       {
-        name: 'tokenId',
-        type: 'uint256',
+        name: 'approved',
+        type: 'bool',
       },
     ],
-    name: 'approve',
+    name: 'setApprovalForAll',
     outputs: [],
     payable: false,
     stateMutability: 'nonpayable',
     type: 'function',
   },
 ];
-
-export const erc721GetApprovedInterface = [
+export const erc721IsApprovedForAllInterface = [
   {
     constant: true,
     inputs: [
       {
-        name: 'tokenId',
-        type: 'uint256',
+        name: 'account',
+        type: 'address',
+      },
+      {
+        name: 'operator',
+        type: 'address',
       },
     ],
-    name: 'getApproved',
+    name: 'isApprovedForAll',
     outputs: [
       {
         name: '',
-        type: 'address',
+        type: 'bool',
       },
     ],
     payable: false,
@@ -138,7 +140,6 @@ export const erc1155BalanceOfInterface = [
     type: 'function',
   },
 ];
-
 export const erc1155SetApprovalForAllInterface = [
   {
     constant: false,
@@ -159,7 +160,6 @@ export const erc1155SetApprovalForAllInterface = [
     type: 'function',
   },
 ];
-
 export const erc1155IsApprovedForAllInterface = [
   {
     constant: true,

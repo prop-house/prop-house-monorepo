@@ -12,86 +12,66 @@ import Group from '../Group';
 import Text from '../Text';
 import Button, { ButtonColor } from '../../Button';
 import { Token } from '../../../state/slices/round';
-import TokenApprovalModal from '../TokenApprovalModal';
+import NFTApprovalModal from '../NFTApprovalModal';
 import {
-  erc20AllowanceInterface,
-  erc20ApproveInterface,
-  erc20BalanceOfInterface,
+  erc721BalanceOfInterface,
+  erc721SetApprovalForAllInterface,
+  erc721IsApprovedForAllInterface,
+  erc1155BalanceOfInterface,
+  erc1155SetApprovalForAllInterface,
+  erc1155IsApprovedForAllInterface,
 } from '../utils/contractABIs';
-import { BigNumber, BigNumberish, ethers } from 'ethers';
+import { BigNumber, BigNumberish } from 'ethers';
+import trimEthAddress from '../../../utils/trimEthAddress';
+import { Award } from '../AssetSelector';
 
 const NFTApprovalWidget: React.FC<{
-  award: Token;
-  // total: number;
+  award: Award;
   handleAllocation: (allocated: number, award: Token) => void;
 }> = props => {
   const {
     award,
-    //  total,
-    handleAllocation,
+    // TODO - handle post-approval allocation update
+    // handleAllocation,
   } = props;
 
-  const [showTokenApprovalModal, setShowTokenApprovalModal] = useState(false);
-  const isNFT = award.type === AssetType.ERC721 || award.type === AssetType.ERC1155;
+  const [showNFTApprovalModal, setShowNFTApprovalModal] = useState(false);
 
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (isNFT) return;
+  const { address: ownerAddress } = useAccount();
 
-  //   let value = e.target.value;
+  // Select appropriate ABIs based on token type
+  let balanceOfInterface, approveInterface, getApprovedInterface;
 
-  //   // if it's not a number or a decimal, don't change the input
-  //   if (isNaN(Number(value)) && !value.match(/^\d*\.?\d*$/)) return;
+  let balanceArgs: (string | number)[] = [];
 
-  //   let allocated = parseFloat(value) || 0.0;
+  if (award.type === AssetType.ERC721) {
+    balanceOfInterface = erc721BalanceOfInterface;
+    approveInterface = erc721SetApprovalForAllInterface;
+    getApprovedInterface = erc721IsApprovedForAllInterface;
+  }
+  if (ownerAddress) {
+    if (award.type === AssetType.ERC721) {
+      balanceArgs = [ownerAddress];
+    } else if (award.type === AssetType.ERC1155 && award.tokenId) {
+      balanceArgs = [ownerAddress, award.tokenId];
+    }
+  }
 
-  //   // if the allocated amount is greater than the total, set it to the total
-  //   if (allocated > total) allocated = total;
-
-  //   setApprovedAmount(allocated);
-
-  //   handleAllocation!(allocated, award);
-  // };
-
-  // const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-  //   if (!isNFT) return;
-
-  //   handleSwitch();
-
-  //   let value = parseFloat(e.target.value);
-
-  //   if (isNaN(value)) value = 0.0;
-
-  //   if (total && value > total) value = total;
-  //   else if (value < 0) value = 0;
-
-  //   setApprovedAmount(value);
-  //   handleAllocation!(value, award);
-  // };
-
-  // const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-  //   const clipboardData = e.clipboardData.getData('text');
-  //   let value = parseFloat(clipboardData);
-
-  //   if (isNaN(value)) value = 0;
-
-  //   if (value < 0) {
-  //     // If value is negative, set to 0
-  //     setApprovedAmount(0);
-  //     return;
-  //   }
-  //   setApprovedAmount(value);
-  // };
+  if (award.type === AssetType.ERC1155) {
+    balanceOfInterface = erc1155BalanceOfInterface;
+    approveInterface = erc1155SetApprovalForAllInterface;
+    getApprovedInterface = erc1155IsApprovedForAllInterface;
+  }
 
   //  -------- ------- ------- ------- ------- ------- --------
   //  -------- ------- ------- BALANCE OF ------- ------- -----
   //  -------- ------- ------- ------- ------- ------- --------
-  const { address: ownerAddress } = useAccount();
   const { data: tokenBalanceData, isLoading: balanceLoading } = useContractRead({
     address: award.address ?? '', // The address of the ERC20 token
-    abi: erc20BalanceOfInterface,
+    abi: balanceOfInterface,
     functionName: 'balanceOf',
     chainId: ChainId.EthereumGoerli,
-    args: [ownerAddress],
+    args: balanceArgs,
   });
   const tokenBalance: BigNumber | undefined =
     !balanceLoading && tokenBalanceData
@@ -103,14 +83,15 @@ const NFTApprovalWidget: React.FC<{
   //  -------- ------- ------- ------- ------- ------- --------
   const propHouse = usePropHouse();
   const spenderAddress = propHouse.contract.address;
+
   const [isApproved, setIsApproved] = useState<boolean>(false);
-  const [approvedAmount, setApprovedAmount] = useState(0.0);
+
   const { config } = usePrepareContractWrite({
-    address: award.address ?? '', // The address of the ERC20 token
-    abi: erc20ApproveInterface,
-    functionName: 'approve',
+    address: award.address,
+    abi: approveInterface,
+    functionName: 'setApprovalForAll',
     chainId: ChainId.EthereumGoerli,
-    args: [spenderAddress, ethers.constants.MaxUint256], // unlimited approval
+    args: [spenderAddress, true],
   });
 
   const { data, isLoading, write } = useContractWrite(config);
@@ -121,21 +102,16 @@ const NFTApprovalWidget: React.FC<{
   //  ------- ------- ------- ALLOWANCE ------- ------- -------
   //  -------- ------- ------- ------- ------- ------- --------
   const { data: allowance } = useContractRead({
-    address: award.address ?? '', // The address of the ERC20 token
-    abi: erc20AllowanceInterface,
-    functionName: 'allowance',
+    address: award.address ?? '', // The addrss of the ERC721 or ERC1155 token
+    abi: getApprovedInterface,
+    functionName: 'isApprovedForAll',
     chainId: ChainId.EthereumGoerli,
     args: [ownerAddress, spenderAddress],
   });
 
   useEffect(() => {
-    if (award.type === AssetType.ERC20 && tokenBalance?.gt(BigNumber.from('0'))) {
-      let allowanceString = allowance && BigNumber.from(allowance).toString();
-      let allowanceBN = BigNumber.from(allowanceString);
-      // checks if allowance is greater than 0 and therefore approved
-      setIsApproved(allowanceBN.gt(BigNumber.from('0')));
-    }
-  }, [allowance, award.type, tokenBalance]);
+    if (tokenBalance?.gt(BigNumber.from('0'))) setIsApproved(Boolean(allowance));
+  }, [allowance, tokenBalance]);
 
   useEffect(() => {
     if (data) setTransactionHash(data.hash as `0x${string}`);
