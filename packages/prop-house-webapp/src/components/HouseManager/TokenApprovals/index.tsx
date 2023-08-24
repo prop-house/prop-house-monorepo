@@ -10,29 +10,47 @@ import InstructionBox from '../InstructionBox';
 import { saveRound } from '../../../state/thunks';
 import { AssetType } from '@prophouse/sdk-react';
 import { NewRound, Token } from '../../../state/slices/round';
-import { v4 as uuidv4 } from 'uuid';
 import EthErc20ApprovalWidget from '../EthErc20ApprovalWidget';
 import NFTApprovalWidget from '../NFTApprovalWidget';
+import { Award } from '../AssetSelector';
 
 const TokenApprovals = () => {
   const round = useAppSelector(state => state.round.round);
   const dispatch = useDispatch();
 
+  // Initialize variables to store total token amounts and token details
+  const totalTokenAmounts: { [address: string]: number } = {};
+
+  const [erc721And1155Tokens, setErc721And1155Tokens] = useState<Award[]>([]);
+
+  const erc721And1155Collections: { [address: string]: Award[] } = {};
+
+  // Effect hook to process the awards of the current round
   useEffect(() => {
-    // Calculate the total amount required for each unique token
-    const totalTokenAmounts: { [address: string]: number } = {};
+    const tempArray: Award[] = [];
 
     round.awards.forEach(award => {
       const key = award.type === AssetType.ETH ? 'ETH' : award.address;
 
+      // Initialize total token amounts
       if (!totalTokenAmounts[key]) totalTokenAmounts[key] = 0;
 
       totalTokenAmounts[key] += award.amount;
+
+      // If the award is an ERC721 or ERC1155 token, add it to the array
+      if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
+        tempArray.push(award);
+
+        // Group tokens by their address (i.e., collections)
+        if (!erc721And1155Collections[key]) erc721And1155Collections[key] = [];
+
+        erc721And1155Collections[key].push(award);
+      }
     });
+    setErc721And1155Tokens(tempArray);
 
-    // Create tokens array
+    // Create tokens array for the round based on the processed awards
     const tokens: Token[] = [];
-
     for (const [address, total] of Object.entries(totalTokenAmounts)) {
       let award;
 
@@ -44,7 +62,7 @@ const TokenApprovals = () => {
 
       // Handle the case when award is undefined
       if (!award) {
-        console.warn(`No award found for address: ${address}`);
+        console.log(`No award found for address: ${address}`);
         continue; // Skip this iteration
       }
 
@@ -70,17 +88,16 @@ const TokenApprovals = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round.awards]); // Only run when awards change
 
+  // Aggregate ETH & Erc20 tokens
   const erc20AndEthTokens = round.funding.tokens.filter(
     token => token.type === AssetType.ETH || token.type === AssetType.ERC20,
   );
-  const erc721And1155Tokens = round.funding.tokens.filter(
-    token => token.type === AssetType.ERC721 || token.type === AssetType.ERC1155,
-  );
 
+  // Allocate funds and update the funding status
   const allocateFundsAndCheckFundingStatus = (allocated: number, award: Token) => {
     let updatedRound: NewRound;
 
-    // Update the allocated amount in the funding.tokens array
+    // Update the allocated amount for the token in the current round
     updatedRound = {
       ...round,
       funding: {
@@ -99,6 +116,7 @@ const TokenApprovals = () => {
     dispatch(saveRound(updatedRound));
   };
 
+  // Handle checkbox change (for depositing funds)
   const handleCheckboxChange = () =>
     dispatch(
       saveRound({
