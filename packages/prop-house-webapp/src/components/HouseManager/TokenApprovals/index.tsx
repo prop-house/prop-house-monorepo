@@ -147,14 +147,14 @@ const TokenApprovals = () => {
 
         {round.funding.depositingFunds ? (
           <>
-            {round.funding.tokens.length ? (
+            {erc20AndEthTokens.length ? (
               <Group gap={8}>
                 <Text type="title">Tokens</Text>
 
                 <CardWrapper>
                   {erc20AndEthTokens.map(token => (
                     <EthErc20ApprovalWidget
-                      key={uuidv4()}
+                      key={token.address}
                       award={token}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
                       total={token.total}
@@ -178,7 +178,7 @@ const TokenApprovals = () => {
                 <CardWrapper>
                   {erc721And1155Tokens.map(nft => (
                     <NFTApprovalWidget
-                      key={uuidv4()}
+                      key={nft.address + nft.tokenId}
                       award={nft}
                       handleAllocation={allocateFundsAndCheckFundingStatus}
                     />
