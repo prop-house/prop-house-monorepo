@@ -1,5 +1,5 @@
 import classes from './TokenApprovals.module.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
 import Divider from '../../Divider';
 import CardWrapper from '../CardWrapper';

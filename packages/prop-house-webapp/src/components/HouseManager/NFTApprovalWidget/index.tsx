@@ -119,20 +119,18 @@ const NFTApprovalWidget: React.FC<{
 
   const handleClose = () => {
     setIsApproved(isApproved);
-    setShowTokenApprovalModal(false);
+    setShowNFTApprovalModal(false);
   };
 
-  // toggle between the input and the "button" input
-  const [hasBeenClicked, setHasBeenClicked] = useState(false);
-  const handleSwitch = () => setHasBeenClicked(!hasBeenClicked);
+  const formatTokenId = (tokenId: string) =>
+    tokenId.length > 10 ? trimEthAddress(tokenId) : tokenId;
 
   return (
     <>
-      {showTokenApprovalModal && (
-        <TokenApprovalModal
-          isNFT={isNFT}
+      {showNFTApprovalModal && (
+        <NFTApprovalModal
           award={award}
-          setShowTokenApprovalModal={setShowTokenApprovalModal}
+          setShowNFTApprovalModal={setShowNFTApprovalModal}
           status={{
             isLoading: waitForTransaction.isLoading,
             isSuccess: waitForTransaction.isSuccess,
@@ -159,27 +157,31 @@ const NFTApprovalWidget: React.FC<{
 
                 <Text type="subtitle">{award.name}</Text>
               </Group>
-
-              <Group row gap={4} classNames={classes.awardNameImg}>
-                <Text type="body" classNames={classes.amount}>
-                  {`#${award.tokenId}`}
-                </Text>
-              </Group>
             </Group>
           </Group>
 
           <Group classNames={classes.row}>
-            <Button
-              classNames={classes.button}
-              text={'Select NFT'}
-              bgColor={ButtonColor.Pink}
-              onClick={() => setShowTokenApprovalModal(true)}
-            />
+            {!isApproved ? (
+              <Button
+                classNames={classes.button}
+                text={`Approve ${award.name || award.symbol}`}
+                bgColor={ButtonColor.Pink}
+                disabled={!write || isLoading}
+                onClick={() => {
+                  write!();
+                  setShowNFTApprovalModal(true);
+                }}
+              />
+            ) : (
+              award.tokenId && <div>Token #{formatTokenId(award.tokenId)}</div>
+            )}
           </Group>
         </div>
       ) : (
         <div className={classes.container} style={{ justifyContent: 'center' }}>
-          <Text type="subtitle">{`No ${award.symbol} ${award.tokenId} found`}</Text>
+          <Text type="subtitle">{`No ${award.name || award.symbol} ${
+            award.tokenId && `#${formatTokenId(award.tokenId)}`
+          } found`}</Text>
         </div>
       )}
     </>

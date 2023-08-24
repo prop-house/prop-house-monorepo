@@ -16,7 +16,7 @@ const TokenApprovalModal: React.FC<{
 }> = props => {
   const { award, isNFT, status, handleClose, setShowTokenApprovalModal, setIsApproved } = props;
 
-  const token = `${award.symbol} ${isNFT ? award.tokenId : ''}`;
+  const token = `${isNFT ? award.name || award.symbol : award.symbol}`;
 
   // check for status.isSuccess to toggle approval
   useEffect(() => {
