@@ -18,10 +18,6 @@ export const getTokenIdImage = async (address: string, tokenId: string, provider
     }
     const response = await fetch(`${baseURL}/${address}/${tokenId}`);
 
-    if (!response.ok) {
-      throw new Error(`Error fetching contract info: ${response.status} ${response.statusText}`);
-    }
-
     const data = await response.json();
 
     const { image_url } = data;

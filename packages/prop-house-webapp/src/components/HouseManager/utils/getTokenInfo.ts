@@ -19,11 +19,8 @@ export const getTokenInfo = async (contractAddress: string, provider: Provider) 
 
     const response = await fetch(`${baseURL}/asset_contract/${contractAddress}`);
 
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}`);
-    }
-
     const data = await response.json();
+
     const { name, image_url, symbol, collection } = data;
 
     return {
