@@ -293,10 +293,10 @@ impl KeccakIncrementalMerkleTreeImpl of IncrementalMerkleTreeTrait {
         let mut size = self.current_leaf_count;
         let mut current_depth = 0;
         loop {
-            if size == 0 {
+            if size <= 1 {
                 break current_depth;
             }
-            size /= 2;
+            size = (size + 1) / 2;
             current_depth += 1;
         }
     }

@@ -1,6 +1,7 @@
 use prop_house::common::utils::merkle::{
     MerkleTree, MerkleTreeTrait, IncrementalMerkleTree, IncrementalMerkleTreeTrait
 };
+use prop_house::common::utils::math::pow;
 use array::{ArrayTrait, SpanTrait};
 use integer::U128IntoFelt252;
 use dict::Felt252DictTrait;
@@ -186,6 +187,26 @@ fn test_keccak_incremental_merkle_tree() {
     let expected_merkle_root: u256 = 0x5f977373dabeb815a2b219434449d9b71fbc68780486f5d5d0b2451f84f95df7;
     let root: u256 = pre_populated_tree.get_merkle_root().unwrap();
     assert(root == expected_merkle_root, 'wrong result');
+}
+
+#[test]
+#[available_gas(100000000)]
+fn test_keccak_incremental_merkle_tree_current_depth() {
+    let mut imt_1 = IncrementalMerkleTreeTrait::new(10, 0, Default::default());
+
+    let mut depth = 0;
+    loop {
+        if depth > 10 {
+            break;
+        }
+        imt_1.current_leaf_count = pow(2, depth);
+        assert(imt_1.get_current_depth() == depth, 'wrong depth');
+
+        imt_1.current_leaf_count += 1;
+        assert(imt_1.get_current_depth() == depth + 1, 'wrong depth');
+
+        depth += 1;
+    };
 }
 
 #[test]
