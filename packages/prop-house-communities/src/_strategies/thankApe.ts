@@ -49,7 +49,7 @@ export const thankApe: StrategyFactory<thankApeStratArgs> = (
       account: account,
       provider: mainnetProvider,
       contract: apeCoinContractAddress,
-      mainnetBlockNumber,
+      blockTag: mainnetBlockNumber,
       decimals: 18,
       multiplier: 1,
     } as balanceOfErc20StratArgs;
