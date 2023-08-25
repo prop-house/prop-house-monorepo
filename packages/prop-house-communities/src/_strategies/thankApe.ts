@@ -36,7 +36,7 @@ export const thankApe: StrategyFactory<thankApeStratArgs> = (
       mainnetProvider,
     );
     const stakedApeCoinBalance = await stakedApeCoin.stakedTotal(account, {
-      blockTag: parseBlockTag(polygonBlockNumber),
+      blockTag: parseBlockTag(mainnetBlockNumber),
     });
     const parsedStakedApeCoinBalance = new BigNumber(
       formatUnits(stakedApeCoinBalance, 15).toString(),
