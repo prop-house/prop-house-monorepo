@@ -124,7 +124,7 @@ fn test_pedersen_merkle_tree() {
 }
 
 #[test]
-#[available_gas(100000000)]
+#[available_gas(1000000000)]
 fn test_keccak_incremental_merkle_tree() {
     let mut even_leaves = IncrementalMerkleTreeTrait::new(
         10, // height

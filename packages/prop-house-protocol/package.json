@@ -49,7 +49,7 @@
     "build": "yarn build:l1 && yarn typechain && yarn build:l2 && yarn build:ts",
     "test:setup": "ts-node blacksmith.ts create",
     "test:l1": "forge test --match-path 'test/ethereum/*.t.sol' --optimize --optimizer-runs 1000000",
-    "test:l2": "cd contracts/starknet && scarb run test",
+    "test:l2": "cd contracts/starknet && scarb cairo-test",
     "test:crosschain": "hardhat test test/crosschain/**/*.test.ts --network 'ethereumLocal' --starknet-network 'starknetLocal'",
     "test": "yarn test:l1 && yarn test:l2",
     "task:deploy": "STARKNET_NETWORK=alpha-goerli hardhat deploy --network goerli"
