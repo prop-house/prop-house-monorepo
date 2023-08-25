@@ -39,7 +39,7 @@ export const thankApe: StrategyFactory<thankApeStratArgs> = (
       blockTag: parseBlockTag(mainnetBlockNumber),
     });
     const parsedStakedApeCoinBalance = new BigNumber(
-      formatUnits(stakedApeCoinBalance, 15).toString(),
+      formatUnits(stakedApeCoinBalance, 18).toString(),
     ).toNumber();
 
     // ApeCoin
