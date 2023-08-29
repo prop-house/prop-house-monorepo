@@ -12,7 +12,7 @@ const RoundModuleCard: React.FC<{
   title: string | ReactElement;
   subtitle?: string | ReactElement;
   content: ReactElement;
-  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'rejected' | 'stale';
+  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'rejected' | 'stale' | 'not started';
 }> = props => {
   const { title, subtitle, content, type } = props;
   return (
@@ -26,7 +26,7 @@ const RoundModuleCard: React.FC<{
           <div
             className={clsx(
               classes.icon,
-              type === 'proposing' || type === 'winner'
+              type === 'proposing' || type === 'winner' || type === 'not started'
                 ? classes.greenIcon
                 : type === 'voting'
                 ? classes.purpleIcon
@@ -41,7 +41,7 @@ const RoundModuleCard: React.FC<{
               <FiAward />
             ) : type === 'rejected' ? (
               <GiDeadHead />
-            ) : type === 'stale' ? (
+            ) : type === 'stale' || type === 'not started' ? (
               <AiOutlineClockCircle />
             ) : (
               <VoteIcon />
