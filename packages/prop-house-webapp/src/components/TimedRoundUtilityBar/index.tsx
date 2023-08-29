@@ -27,7 +27,7 @@ const TimedRoundUtilityBar: React.FC<{
       />
 
       <RoundUtilBarItem
-        title={t('funding')}
+        title={'Awards'}
         content={
           <>
             <TruncateThousands

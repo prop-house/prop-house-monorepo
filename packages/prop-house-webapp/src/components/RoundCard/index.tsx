@@ -88,7 +88,7 @@ const RoundCard: React.FC<{
 
           <div className={classes.roundInfo}>
             <div className={clsx(classes.section, classes.funding)}>
-              <p className={classes.title}>{t('funding')}</p>
+              <p className={classes.title}>{'Awards'}</p>
               <p className={classes.info}>
                 <span className="">
                   <TruncateThousands
