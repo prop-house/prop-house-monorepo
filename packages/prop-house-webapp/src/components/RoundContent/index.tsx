@@ -165,7 +165,7 @@ const RoundContent: React.FC<{
         <Row className={classes.propCardsRow}>
           <Col xl={8} className={classes.propCardsCol}>
             {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-              <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
+              <ErrorMessageCard message={'Round starting soon'} date={auction.startTime} />
             ) : proposals.length === 0 ? (
               <ErrorMessageCard message={warningMessage} />
             ) : (
