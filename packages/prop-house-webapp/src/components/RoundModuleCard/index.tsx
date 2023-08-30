@@ -6,6 +6,7 @@ import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { FiAward } from 'react-icons/fi';
 import { GiDeadHead } from 'react-icons/gi';
 import { AiOutlineClockCircle } from 'react-icons/ai';
+import { IoGameControllerOutline } from 'react-icons/io5';
 import clsx from 'clsx';
 
 const RoundModuleCard: React.FC<{
@@ -41,8 +42,10 @@ const RoundModuleCard: React.FC<{
               <FiAward />
             ) : type === 'rejected' ? (
               <GiDeadHead />
-            ) : type === 'stale' || type === 'not started' ? (
+            ) : type === 'stale' ? (
               <AiOutlineClockCircle />
+            ) : type === 'not started' ? (
+              <IoGameControllerOutline />
             ) : (
               <VoteIcon />
             )}
