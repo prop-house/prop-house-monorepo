@@ -122,7 +122,9 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
             <div className={classes.icon}>
               <MdHowToVote />
             </div>
-            <p>{votingCopy}</p>
+            <p>
+              <ReactMarkdown className="markdown" children={votingCopy} />
+            </p>
           </div>
         </div>
       )}
