@@ -6,13 +6,14 @@ import { MdHowToVote as VoteIcon } from 'react-icons/md';
 import { FiAward } from 'react-icons/fi';
 import { GiDeadHead } from 'react-icons/gi';
 import { AiOutlineClockCircle } from 'react-icons/ai';
+import { IoGameControllerOutline } from 'react-icons/io5';
 import clsx from 'clsx';
 
 const RoundModuleCard: React.FC<{
   title: string | ReactElement;
   subtitle?: string | ReactElement;
   content: ReactElement;
-  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'rejected' | 'stale';
+  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'rejected' | 'stale' | 'not started';
 }> = props => {
   const { title, subtitle, content, type } = props;
   return (
@@ -26,7 +27,7 @@ const RoundModuleCard: React.FC<{
           <div
             className={clsx(
               classes.icon,
-              type === 'proposing' || type === 'winner'
+              type === 'proposing' || type === 'winner' || type === 'not started'
                 ? classes.greenIcon
                 : type === 'voting'
                 ? classes.purpleIcon
@@ -43,6 +44,8 @@ const RoundModuleCard: React.FC<{
               <GiDeadHead />
             ) : type === 'stale' ? (
               <AiOutlineClockCircle />
+            ) : type === 'not started' ? (
+              <IoGameControllerOutline />
             ) : (
               <VoteIcon />
             )}

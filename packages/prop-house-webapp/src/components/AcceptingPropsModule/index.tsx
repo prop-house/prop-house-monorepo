@@ -16,6 +16,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import useProposalGrants from '../../hooks/useProposalGrants';
 import { BsPersonFill, BsFillAwardFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 const AcceptingPropsModule: React.FC<{
   auction: StoredAuctionBase;
@@ -42,14 +43,18 @@ const AcceptingPropsModule: React.FC<{
           <div className={classes.icon}>
             <BsPersonFill color="" />
           </div>
-          <p>{proposingCopy}</p>
+          <p>
+            <ReactMarkdown className="markdown" children={proposingCopy} />
+          </p>
         </div>
 
         <div className={classes.listItem}>
           <div className={classes.icon}>
             <MdHowToVote />
           </div>
-          <p>{votingCopy}</p>
+          <p>
+            <ReactMarkdown className="markdown" children={votingCopy} />
+          </p>
         </div>
 
         <div className={classes.listItem}>
