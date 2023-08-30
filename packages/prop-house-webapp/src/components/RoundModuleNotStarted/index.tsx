@@ -42,7 +42,7 @@ const RoundModuleNotStarted: React.FC<{
   return (
     <RoundModuleCard
       title={'Round participation'}
-      subtitle={<>Who can play?</>}
+      subtitle={<>Who can play</>}
       content={content}
       type="not started"
     />
