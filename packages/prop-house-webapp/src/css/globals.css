@@ -41,6 +41,11 @@ p {
   border-right-color: var(--brand-gray);
 }
 
+.markdown a {
+  color: var(--brand-pink) !important;
+  font-weight: bold;
+}
+
 :root {
   /* Pink */
   --brand-pink: #e02ecf;

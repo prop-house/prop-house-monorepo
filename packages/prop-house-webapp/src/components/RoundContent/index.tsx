@@ -161,41 +161,36 @@ const RoundContent: React.FC<{
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
-      {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
-      ) : (
-        <>
-          {community && (
-            <Row className={classes.propCardsRow}>
-              <Col xl={8} className={classes.propCardsCol}>
-                {proposals &&
-                  (proposals.length === 0 ? (
-                    <ErrorMessageCard message={warningMessage} />
-                  ) : (
-                    <>
-                      {proposals.map((prop, index) => (
-                        <Col key={index}>
-                          <ProposalCard
-                            proposal={prop}
-                            auctionStatus={auctionStatus(auction)}
-                            cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
-                            stale={staleProp}
-                          />
-                        </Col>
-                      ))}
-                    </>
-                  ))}
-              </Col>
-              <RoundModules
-                auction={auction}
-                proposals={proposals}
-                community={community}
-                setShowVotingModal={setShowVoteConfirmationModal}
-              />
-            </Row>
-          )}
-        </>
+      {community && (
+        <Row className={classes.propCardsRow}>
+          <Col xl={8} className={classes.propCardsCol}>
+            {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+              <ErrorMessageCard message={'Round starting soon'} date={auction.startTime} />
+            ) : proposals.length === 0 ? (
+              <ErrorMessageCard message={warningMessage} />
+            ) : (
+              <>
+                {proposals.map((prop, index) => (
+                  <Col key={index}>
+                    <ProposalCard
+                      proposal={prop}
+                      auctionStatus={auctionStatus(auction)}
+                      cardStatus={cardStatus(votingPower > 0, auction)}
+                      isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
+                      stale={staleProp}
+                    />
+                  </Col>
+                ))}
+              </>
+            )}
+          </Col>
+          <RoundModules
+            auction={auction}
+            proposals={proposals}
+            community={community}
+            setShowVotingModal={setShowVoteConfirmationModal}
+          />
+        </Row>
       )}
     </>
   );
