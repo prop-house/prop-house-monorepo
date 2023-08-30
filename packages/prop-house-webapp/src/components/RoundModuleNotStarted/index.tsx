@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi';
 import useProposalGrants from '../../hooks/useProposalGrants';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 
 const RoundModuleNotStarted: React.FC<{
   auction: StoredAuctionBase;
@@ -26,14 +27,18 @@ const RoundModuleNotStarted: React.FC<{
           <div className={classes.icon}>
             <BsPersonFill color="" />
           </div>
-          <p>{proposingCopy}</p>
+          <p>
+            <ReactMarkdown className="markdown" children={proposingCopy} />
+          </p>
         </div>
 
         <div className={classes.listItem}>
           <div className={classes.icon}>
             <MdHowToVote />
           </div>
-          <p>{votingCopy}</p>
+          <p>
+            <ReactMarkdown className="markdown" children={votingCopy} />
+          </p>
         </div>
       </div>
     </>
