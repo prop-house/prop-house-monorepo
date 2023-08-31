@@ -35,7 +35,7 @@ mod InfiniteRound {
         _winner_merkle_root: u256,
         _winner_merkle_sub_trees: LegacyMap<u32, Span<u256>>,
         _proposals: LegacyMap<u32, Proposal>,
-        _spent_voting_power: LegacyMap<(EthAddress, u32), u256>,
+        _spent_voting_power: LegacyMap<(EthAddress, u32, u16), u256>,
     }
 
     #[event]
@@ -123,10 +123,12 @@ mod InfiniteRound {
             _assert_can_modify_proposal(proposer, proposal);
             _assert_asset_request_valid(requested_assets.span());
 
-            // Increment the proposal version, update the requested assets, clear 'for' votes,
-            // and emit the metadata URI.
+            // Increment the proposal version, update the requested assets, clear all votes,
+            // and emit the metadata URI. If a proposer attempts to evade the against vote threshold
+            // by editing the proposal, voters can simply let the proposal go stale.
             proposal.version += 1;
             proposal.voting_power_for = 0;
+            proposal.voting_power_against = 0;
             proposal.requested_assets_hash = Round::compute_asset_hash(requested_assets.span());
             _proposals::write(proposal_id, proposal);
 
@@ -427,6 +429,7 @@ mod InfiniteRound {
     /// * `cumulative_voting_power` - The cumulative voting power of the voter.
     fn _cast_votes_on_proposal(voter: EthAddress, proposal_vote: ProposalVote, cumulative_voting_power: u256) {
         let proposal_id = proposal_vote.proposal_id;
+        let proposal_version = proposal_vote.proposal_version;
         let voting_power = proposal_vote.voting_power;
         let direction = proposal_vote.direction;
 
@@ -438,12 +441,12 @@ mod InfiniteRound {
             return;
         }
         // Exit early if the proposal version has changed
-        if proposal_vote.proposal_version != proposal.version {
+        if proposal_version != proposal.version {
             return;
         }
 
-        let mut spent_voting_power = _spent_voting_power::read((voter, proposal_id));
-        let mut remaining_voting_power = cumulative_voting_power - spent_voting_power;
+        let spent_voting_power = _spent_voting_power::read((voter, proposal_id, proposal_version));
+        let remaining_voting_power = cumulative_voting_power - spent_voting_power;
 
         assert(voting_power.is_non_zero(), 'IR: No voting power provided');
         assert(remaining_voting_power >= voting_power, 'IR: Insufficient voting power');
@@ -464,7 +467,7 @@ mod InfiniteRound {
             _reject_proposal(proposal_id, ref proposal);
         }
         _proposals::write(proposal_id, proposal);
-        _spent_voting_power::write((voter, proposal_id), spent_voting_power);
+        _spent_voting_power::write((voter, proposal_id, proposal_version), spent_voting_power + voting_power);
 
         VoteCast(proposal_id, voter, voting_power, direction);
     }
@@ -477,14 +480,15 @@ mod InfiniteRound {
         proposal.state = ProposalState::Approved(());
 
         let winner_count = _winner_count::read();
-        let mut incremental_merkle_tree = IncrementalMerkleTreeTrait::<u256>::new(
+        let mut imt = IncrementalMerkleTreeTrait::new(
             MAX_WINNER_TREE_DEPTH, winner_count, _read_sub_trees_from_storage(), 
         );
         let leaf = _compute_leaf(proposal_id, proposal);
 
-        // The maximum winner count for this round is 2^10 (1024). If the max
-        // count is reached, then no `append_leaf` will revert.
-        _winner_merkle_root::write(incremental_merkle_tree.append_leaf(leaf));
+        // The maximum winner count for this round is 2^10 (1024). `append_leaf` will revert
+        // if the max count is reached.
+        _winner_merkle_root::write(imt.append_leaf(leaf));
+        _write_sub_trees_to_storage(imt.get_current_depth(), ref imt.sub_trees);
         _winner_count::write(winner_count + 1);
 
         ProposalApproved(proposal_id);
@@ -538,7 +542,7 @@ mod InfiniteRound {
 
         let mut curr_depth = 0;
         loop {
-            if curr_depth > MAX_WINNER_TREE_DEPTH {
+            if curr_depth == MAX_WINNER_TREE_DEPTH {
                 break;
             }
             let sub_tree = _winner_merkle_sub_trees::read(curr_depth);
@@ -546,16 +550,21 @@ mod InfiniteRound {
                 break;
             }
             sub_trees.insert(curr_depth.into(), nullable_from_box(BoxTrait::new(sub_tree)));
+            curr_depth += 1;
         };
         sub_trees
     }
 
-    /// Write the incrmeental merkle tree sub trees to storage.
+    /// Write the incremental merkle tree sub trees to storage.
     /// The user will not be charged storage costs for sub trees that are already in storage.
+    /// * `max_depth` - The maximum depth of the sub trees to write to storage.
     /// * `sub_trees` - The sub trees to write to storage.
-    fn _write_sub_trees_to_storage(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
+    fn _write_sub_trees_to_storage(max_depth: u32, ref sub_trees: Felt252Dict<Nullable<Span<u256>>>) {
         let mut curr_depth = 0;
         loop {
+            if curr_depth > max_depth {
+                break;
+            }
             match match_nullable(sub_trees.get(curr_depth.into())) {
                 FromNullableResult::Null(()) => {
                     break;

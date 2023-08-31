@@ -37,7 +37,7 @@ abstract contract AssetRound is IAssetRound, Round, AssetController, TokenHolder
 
     /// @notice Returns the deposit token URI for the provided token ID
     /// @param tokenId The deposit token ID
-    function uri(uint256 tokenId) public view override returns (string memory) {
+    function uri(uint256 tokenId) external view override returns (string memory) {
         return renderer.tokenURI(tokenId);
     }
 

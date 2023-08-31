@@ -198,7 +198,13 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
           quorumAgainst: 1,
         },
       },
-      [asset],
+      [
+        {
+          ...asset,
+          // Ensure plenty of funds for testing
+          amount: ONE_ETHER.mul(10),
+        },
+      ],
     );
 
     const creationReceipt = await creationResponse.wait();
@@ -444,12 +450,18 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(Number(response.state)).to.equal(ProposalState.CANCELLED);
   });
 
-  it('should create a vote using an Ethereum transaction', async () => {
+  it('should create votes using an Ethereum transaction', async () => {
     const voteCalldata = propHouse.round.infinite.getVoteCalldata({
       voter: signer.address,
       proposalVotes: [
         {
           proposalId: 1,
+          proposalVersion: 1,
+          votingPower: 1,
+          direction: Infinite.Direction.FOR,
+        },
+        {
+          proposalId: 2,
           proposalVersion: 1,
           votingPower: 1,
           direction: Infinite.Direction.FOR,
@@ -485,19 +497,26 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     });
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
 
-    // Approved event, which includes the approved proposal ID
+    // Approved events, which includes the approved proposal IDs
     expect(parseInt(events[0].data[0], 16)).to.equal(1);
+    expect(parseInt(events[2].data[0], 16)).to.equal(2);
 
-    const [proposalId, voterAddress, votingPowerLow, votingPowerHigh, direction] = events[1].data;
+    const [pid1, voter1, vpLow1, vpHigh1, direction1] = events[1].data;
+    const [pid2, voter2, vpLow2, vpHigh2, direction2] = events[3].data;
 
-    expect(parseInt(proposalId, 16)).to.equal(1);
-    expect(voterAddress).to.equal(signer.address.toLowerCase());
-    expect(parseInt(votingPowerLow, 16)).to.equal(1);
-    expect(parseInt(votingPowerHigh, 16)).to.equal(0);
-    expect(parseInt(direction, 16)).to.equal(Infinite.Direction.FOR);
+    expect(parseInt(pid1, 16)).to.equal(1);
+    expect(voter1).to.equal(signer.address.toLowerCase());
+    expect(parseInt(vpLow1, 16)).to.equal(1);
+    expect(parseInt(vpHigh1, 16)).to.equal(0);
+    expect(parseInt(direction1, 16)).to.equal(Infinite.Direction.FOR);
+    expect(parseInt(pid2, 16)).to.equal(2);
+    expect(voter2).to.equal(signer.address.toLowerCase());
+    expect(parseInt(vpLow2, 16)).to.equal(1);
+    expect(parseInt(vpHigh2, 16)).to.equal(0);
+    expect(parseInt(direction2, 16)).to.equal(Infinite.Direction.FOR);
   });
 
-  it('should allow a winner to claim their award', async () => {
+  it('should allow winners to claim their awards', async () => {
     const { transaction_hash } = await starknetAccount.execute({
       contractAddress: infiniteRoundContract.address,
       entrypoint: 'process_winners',
@@ -511,7 +530,7 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
       high: merkleRootHigh,
     });
 
-    expect(parseInt(winnerCount, 16)).to.equal(1);
+    expect(parseInt(winnerCount, 16)).to.equal(2);
     expect(merkleRoot.toUint()).to.not.equal(0n);
 
     expect((await starknet.devnet.flush()).consumed_messages.from_l2).to.have.a.lengthOf(1);
@@ -519,7 +538,7 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const updateWinnersTx = infiniteRound.updateWinners(winnerCount, merkleRootLow, merkleRootHigh);
     await expect(updateWinnersTx).to.emit(infiniteRound, 'WinnersUpdated').withArgs(winnerCount);
 
-    const proposalId = 1;
+    const proposalIds = [1, 2];
     const requestedAssetsHash = maskTo250Bits(
       ethers.utils.keccak256(
         ethers.utils.defaultAbiCoder.encode(
@@ -528,35 +547,38 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
         ),
       ),
     );
-    const leaf = generateIncrementalClaimLeaf({
-      proposalId,
-      proposer: signer.address,
-      requestedAssetsHash: requestedAssetsHash.toHexString(),
-    });
-
-    const tree = generateIncrementalClaimMerkleTree([leaf]);
-    const proof = tree.getProof(0);
-    const claimTx = await infiniteRound.claim(
-      proposalId,
-      [
-        {
-          assetType: AssetType.ETH,
-          amount: ONE_ETHER,
-          token: constants.AddressZero,
-          identifier: 0,
-        },
-      ],
-      {
-        pathIndices: proof.pathIndices,
-        siblings: proof.siblings.flat().map((s: BigNumberish) => encoding.hexPadLeft(
-          BigNumber.from(s).toHexString(),
-        )),
-      },
+    const tree = generateIncrementalClaimMerkleTree(
+      proposalIds.map(proposalId => ({
+        proposalId,
+        proposer: signer.address,
+        requestedAssetsHash: requestedAssetsHash.toHexString(),
+      })),
     );
-    await expect(claimTx).to.emit(infiniteRound, 'AssetsClaimed');
+
+    for (let i = 0; i < proposalIds.length; i++) {
+      const proof = tree.getProof(i);
+      const claimTx = await infiniteRound.claim(
+        proposalIds[i],
+        [
+          {
+            assetType: AssetType.ETH,
+            amount: ONE_ETHER,
+            token: constants.AddressZero,
+            identifier: 0,
+          },
+        ],
+        {
+          pathIndices: proof.pathIndices,
+          siblings: proof.siblings.flat().map((s: BigNumberish) => encoding.hexPadLeft(
+            BigNumber.from(s).toHexString(),
+          )),
+        },
+      );
+      await expect(claimTx).to.emit(infiniteRound, 'AssetsClaimed');
+    }
   });
 
-  it('should finalize a round and allow the winner to claim their award', async () => {
+  it('should finalize a round', async () => {
     const startFinalizationTx = infiniteRound.startFinalization({
       value: STARKNET_MAX_FEE,
     });
@@ -568,7 +590,7 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Process L2 -> L1 message (completeFinalization)
     await starknet.devnet.flush();
 
-    const completeFinalizationTx = infiniteRound.completeFinalization(1);
+    const completeFinalizationTx = infiniteRound.completeFinalization(2);
     await expect(completeFinalizationTx).to.emit(infiniteRound, 'RoundFinalized');
   });
 });

@@ -34,7 +34,7 @@ contract CreatorPassIssuer is ICreatorPassIssuer, ERC1155 {
 
     /// @notice Returns the deposit token URI for the provided token ID
     /// @param tokenId The creator pass token ID
-    function uri(uint256 tokenId) public view override returns (string memory) {
+    function uri(uint256 tokenId) external view override returns (string memory) {
         return renderer.tokenURI(tokenId);
     }
 

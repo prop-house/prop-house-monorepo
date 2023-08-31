@@ -62,9 +62,7 @@ mod Round {
     /// Parse strategies from a flattened array of parameters.
     /// * `params` - The flattened array of parameters.
     /// * `starting_index` - The index of the first parameter to parse.
-    fn parse_strategies(
-        params: Span<felt252>, mut starting_index: usize
-    ) -> (Span<Strategy>, usize) {
+    fn parse_strategies(params: Span<felt252>, starting_index: usize) -> (Span<Strategy>, usize) {
         let strategy_addresses_len = (*params.at(starting_index)).try_into().unwrap();
         let strategy_addresses = params.slice(starting_index + 1, strategy_addresses_len);
 
@@ -117,7 +115,6 @@ mod Round {
         let mut is_used = Default::<Felt252Dict<felt252>>::default();
         let strategy_registry = get_strategy_registry();
 
-        let mut i = 0;
         let mut cumulative_power = 0;
         loop {
             match used_strategies.pop_front() {
@@ -135,7 +132,6 @@ mod Round {
                         timestamp, user.into(), strategy.params, s.user_params,
                     );
 
-                    i += 1;
                     cumulative_power += power;
                     is_used.insert(s.id, 1);
                 },
