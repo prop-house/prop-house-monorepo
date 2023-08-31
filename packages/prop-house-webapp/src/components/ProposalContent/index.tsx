@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
+import { pipe } from 'ramda';
+import { replaceIpfsGateway } from '../../utils/ipfs';
 
 export interface ProposalContentProps {
   fields: ProposalFields;
@@ -40,21 +42,25 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
            * <Markdown/> component used to render HTML, while supporting Markdown.
            */}
           <Markdown>
-            {sanitizeHtml(fields.what, {
-              allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-              allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-              allowedAttributes: {
-                img: ['src', 'alt', 'height', 'width'],
-                a: ['href', 'target'],
-              },
-              allowedClasses: {
-                code: ['language-*', 'lang-*'],
-                pre: ['language-*', 'lang-*'],
-              },
-              // edge case: handle ampersands in img links encoded from sanitization
-            })
-              .replaceAll('&amp;', '&')
-              .replaceAll(/<img/g, '<img crossorigin="anonymous"')}
+            {pipe(
+              (whatText: string) =>
+                sanitizeHtml(whatText, {
+                  allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                  allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                  allowedAttributes: {
+                    img: ['src', 'alt', 'height', 'width'],
+                    a: ['href', 'target'],
+                  },
+                  allowedClasses: {
+                    code: ['language-*', 'lang-*'],
+                    pre: ['language-*', 'lang-*'],
+                  },
+                  // edge case: handle ampersands in img links encoded from sanitization
+                }),
+              (whatText: string) => whatText.replaceAll('&amp;', '&'),
+              (whatText: string) => whatText.replaceAll(/<img/g, '<img crossorigin="anonymous"'),
+              (whatText: string) => replaceIpfsGateway(whatText)
+            )(fields.what)}
           </Markdown>
         </span>
       </div>

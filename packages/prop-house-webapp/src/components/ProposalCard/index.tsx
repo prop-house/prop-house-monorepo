@@ -30,6 +30,7 @@ import { isMobile } from 'web3modal';
 import ReplyBar from '../ReplyBar';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
+import { replaceIpfsGateway } from '../../utils/ipfs';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -128,7 +129,7 @@ const ProposalCard: React.FC<{
 
             {imgUrlFromProp && (
               <div className={classes.propImgContainer}>
-                <img src={imgUrlFromProp} crossOrigin="anonymous" alt="propCardImage" />
+                <img src={replaceIpfsGateway(imgUrlFromProp)} crossOrigin="anonymous" alt="propCardImage" />
               </div>
             )}
           </div>
