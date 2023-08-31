@@ -53,10 +53,12 @@ const useEthersProvider = ({ chainId }: { chainId?: number } = {}) => {
 
 const useEthersSigner = ({ chainId }: { chainId?: number } = {}) => {
   const { data: walletClient } = useWalletClient({ chainId });
-  return React.useMemo(
-    () => (walletClient ? walletClientToSigner(walletClient) : undefined),
-    [walletClient],
-  );
+  return {
+    data: React.useMemo(
+      () => (walletClient ? walletClientToSigner(walletClient) : undefined),
+      [walletClient],
+    ),
+  };
 };
 
 export type PropHouseProps<CS extends Custom | void = void> = {
