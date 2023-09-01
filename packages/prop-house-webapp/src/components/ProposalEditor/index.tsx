@@ -7,7 +7,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { useLocation } from 'react-router-dom';
 import { isInfAuction } from '../../utils/auctionType';
 
@@ -68,7 +68,7 @@ const ProposalEditor: React.FC<{
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
   const { t } = useTranslation();
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));

@@ -1,5 +1,5 @@
 import classes from './RenderedProposalFields.module.css';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import proposalFields from '../../utils/proposalFields';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
@@ -8,6 +8,8 @@ import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
 import { StoredAuctionBase, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { BiAward } from 'react-icons/bi';
+import { pipe } from 'ramda';
+import { replaceIpfsGateway } from '../../utils/ipfs';
 
 export interface RenderedProposalProps {
   proposal: StoredProposal;
@@ -22,7 +24,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
   const fields = proposalFields(proposal);
 
   return (
-    <>
+    <Container>
       <Row>
         <Col xl={12} className="proposalCopy">
           <div className={classes.headerContainer}>
@@ -67,27 +69,31 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
              * <Markdown/> component used to render HTML, while supporting Markdown.
              */}
             <Markdown>
-              {sanitizeHtml(fields.what, {
-                allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
-                allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
-                allowedAttributes: {
-                  img: ['src', 'alt', 'height', 'width'],
-                  a: ['href', 'target'],
-                },
-                allowedClasses: {
-                  code: ['language-*', 'lang-*'],
-                  pre: ['language-*', 'lang-*'],
-                },
-              })
+              {pipe(
+                (whatText: string) =>
+                  sanitizeHtml(whatText, {
+                    allowedTags: sanitizeHtml.defaults.allowedTags.concat(['img']),
+                    allowedSchemes: sanitizeHtml.defaults.allowedSchemes.concat(['data']),
+                    allowedAttributes: {
+                      img: ['src', 'alt', 'height', 'width'],
+                      a: ['href', 'target'],
+                    },
+                    allowedClasses: {
+                      code: ['language-*', 'lang-*'],
+                      pre: ['language-*', 'lang-*'],
+                    },
+                  }),
                 // edge case: handle ampersands in img links encoded from sanitization
-                .replaceAll('&amp;', '&')
+                (whatText: string) => whatText.replaceAll('&amp;', '&'),
                 // Pinata requires crossorigin attribute on images
-                .replaceAll(/<img/g, '<img crossorigin="anonymous"')}
+                (whatText: string) => whatText.replaceAll(/<img/g, '<img crossorigin="anonymous"'),
+                (whatText: string) => replaceIpfsGateway(whatText),
+              )(fields.what)}
             </Markdown>
           </span>
         </Col>
       </Row>
-    </>
+    </Container>
   );
 };
 

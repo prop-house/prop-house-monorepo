@@ -7,7 +7,7 @@ import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useAppSelector } from '../../hooks';
 import NavBar from '../../components/NavBar';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 export interface StatsProps {
   accEthFunded: number;
@@ -29,7 +29,7 @@ const Home = () => {
     setInput(e.target.value);
   };
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
@@ -52,6 +52,13 @@ const Home = () => {
       const newIndex = 1;
       const [item] = sortedCommunities.splice(originalIndex, 1);
       sortedCommunities.splice(newIndex, 0, item);
+
+      // start // temp sorting to move Thank APE up to top row
+      const originalIndexTA = sortedCommunities.findIndex(c => c.id === 64);
+      const newIndexTA = 2;
+      const [itemTA] = sortedCommunities.splice(originalIndexTA, 1);
+      sortedCommunities.splice(newIndexTA, 0, itemTA);
+
       // end // temp sorting
       setCommunities(sortedCommunities);
 

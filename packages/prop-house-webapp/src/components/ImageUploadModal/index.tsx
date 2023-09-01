@@ -7,7 +7,7 @@ import { NounImage } from '../../utils/getNounImage';
 import { useTranslation } from 'react-i18next';
 import DragDropFileInput from '../DragDropFileInput';
 import buildIpfsPath from '../../utils/buildIpfsPath';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const ImageUploadModal: React.FC<{
   files: File[];
@@ -43,7 +43,8 @@ const ImageUploadModal: React.FC<{
   const [uploadError, setUploadError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
+
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import classes from './ReplyBar.module.css';
 import Modal from '../Modal';
 import ReactLoading from 'react-loading';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { useAppSelector } from '../../hooks';
 import {
   Reply as ReplyType,
@@ -18,15 +18,23 @@ import Avatar from '../Avatar';
 import { isTimedAuction } from '../../utils/auctionType';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { isActiveProp } from '../../utils/isActiveProp';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
   const { proposal } = props;
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const activeCommmunity = useAppSelector(state => state.propHouse.activeCommunity);
   const activeRound = useAppSelector(state => state.propHouse.activeRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const wrapper = useRef(new PropHouseWrapper(''));
+  const provider = useEthersProvider({
+    chainId: activeRound
+      ? activeRound.voteStrategy.chainId
+        ? activeRound.voteStrategy.chainId
+        : 1
+      : 1,
+  });
 
   const [showRepliesModal, setShowRepliesModal] = useState(false);
   const [repliesAddresses, setRepliesAddresses] = useState<string[]>([]);
@@ -80,9 +88,17 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
       proposal.id,
       comment,
     );
+
+    const strategyParams = {
+      strategyName: activeRound.voteStrategy.strategyName,
+      account: signer._address,
+      provider,
+      ...activeRound.voteStrategy,
+    };
+
     try {
       setLoadingSubmission(true);
-      await wrapper.current.submitReply(signer, reply);
+      await wrapper.current.submitReply(signer, reply, strategyParams);
       setLoadingSubmission(false);
       setComment('');
       setShouldFetchReplies(true);
@@ -118,7 +134,7 @@ const ReplyBar: React.FC<{ proposal: StoredProposal }> = props => {
     fetchReplies();
   }, [loadingSubmission, wrapper, proposal, replies, shouldFetchReplies]);
 
-  // disable submit button if no signer or no comment
+  // disable submit button if no signer (walletClient) or no comment
   useEffect(() => {
     setCommentInputDisabled(signer ? false : true);
   }, [signer, comment, shouldFetchReplies]);

@@ -13,18 +13,19 @@ import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
 import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const ProposalModalVotingModule: React.FC<{
   proposal: StoredProposalWithVotes;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
-  setShowVoteAllotmentModal: Dispatch<SetStateAction<boolean>>;
+  setShowVoteAllotmentModal?: Dispatch<SetStateAction<boolean>>;
   isWinner?: boolean;
 }> = props => {
   const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
@@ -33,15 +34,13 @@ const ProposalModalVotingModule: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const chainId = round && round.voteStrategy.chainId;
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
 
-  const provider = useProvider({
-    chainId: chainId ? chainId : 1,
+  const provider = useEthersProvider({
+    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
   });
   const { address: account } = useAccount();
 
@@ -102,10 +101,14 @@ const ProposalModalVotingModule: React.FC<{
         <div className={classes.votingBarAndTooltip}>
           <div className={classes.votingProgressBar}>
             <div className={classes.votingInfo}>
-              <span>Cast your votes</span>
+              <span>
+                <b>Cast your votes</b>
+              </span>
 
               <span className={classes.totalVotes}>
-                <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+                {setShowVoteAllotmentModal && (
+                  <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+                )}
 
                 {`${votesRemaining > 0 ? `${votesRemaining} left` : 'no votes left'}`}
               </span>
@@ -139,13 +142,16 @@ const ProposalModalVotingModule: React.FC<{
             )}
           </div>
 
-          <div className="mobileTooltipContainer">
+          <div className={classes.mobileTooltipContainer}>
             {round && isInfAuction(round) ? (
               <InfRoundVotingControls proposal={proposal} />
             ) : (
               <TimedRoundVotingControls proposal={proposal} />
             )}
-            <VoteAllotmentTooltip setShowVoteAllotmentModal={setShowVoteAllotmentModal} />
+
+            <div className={classes.votesLeftMobile}>
+              {votesRemaining} vote{votesRemaining !== 1 ? 's' : ''} left
+            </div>
           </div>
 
           <Button

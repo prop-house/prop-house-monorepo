@@ -67,7 +67,7 @@ const NFTApprovalWidget: React.FC<{
   //  -------- ------- ------- BALANCE OF ------- ------- -----
   //  -------- ------- ------- ------- ------- ------- --------
   const { data: tokenBalanceData, isLoading: balanceLoading } = useContractRead({
-    address: award.address ?? '', // The address of the ERC20 token
+    address: (award.address as `0x${string}`) ?? '', // The address of the ERC20 token
     abi: balanceOfInterface,
     functionName: 'balanceOf',
     chainId: ChainId.EthereumGoerli,
@@ -87,7 +87,7 @@ const NFTApprovalWidget: React.FC<{
   const [isApproved, setIsApproved] = useState<boolean>(false);
 
   const { config } = usePrepareContractWrite({
-    address: award.address,
+    address: award.address as `0x${string}`,
     abi: approveInterface,
     functionName: 'setApprovalForAll',
     chainId: ChainId.EthereumGoerli,
@@ -102,7 +102,7 @@ const NFTApprovalWidget: React.FC<{
   //  ------- ------- ------- ALLOWANCE ------- ------- -------
   //  -------- ------- ------- ------- ------- ------- --------
   const { data: allowance } = useContractRead({
-    address: award.address ?? '', // The addrss of the ERC721 or ERC1155 token
+    address: (award.address as `0x${string}`) ?? '', // The addrss of the ERC721 or ERC1155 token
     abi: getApprovedInterface,
     functionName: 'isApprovedForAll',
     chainId: ChainId.EthereumGoerli,

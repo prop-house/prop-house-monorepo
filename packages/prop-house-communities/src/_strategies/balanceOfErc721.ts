@@ -8,7 +8,7 @@ import { BaseArgs } from '../actions/execStrategy';
 export interface balanceOfErc721StratArgs extends BaseArgs {
   contract: string;
   multiplier: number;
-  blockTag: number;
+  blockTag?: number;
   minBalanceReq?: {
     minBalance: number;
     fixedVotes: number;

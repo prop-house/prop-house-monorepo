@@ -1,7 +1,5 @@
 import {
-  SignatureState,
   StoredProposalWithVotes,
-  Vote,
   StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
@@ -23,8 +21,7 @@ import {
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
-import { useAccount, useSigner, useProvider } from 'wagmi';
-import { fetchBlockNumber } from '@wagmi/core';
+import { useAccount, useBlockNumber } from 'wagmi';
 import ProposalCard from '../ProposalCard';
 import { cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
@@ -32,6 +29,10 @@ import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
 import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { execStrategy } from '@prophouse/communities/dist/actions/execStrategy';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { submitVotes } from '../../utils/submitVotes';
+import { signerIsContract } from '../../utils/signerIsContract';
+import { useEthersProvider } from '../../hooks/useEthersProvider';
 
 const RoundContent: React.FC<{
   auction: StoredAuctionBase;
@@ -39,10 +40,11 @@ const RoundContent: React.FC<{
 }> = props => {
   const { auction, proposals } = props;
   const { address: account } = useAccount();
+  const { data: blocknumber } = useBlockNumber({ chainId: auction.voteStrategy.chainId ?? 1 });
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [signerIsContract, setSignerIsContract] = useState(false);
+  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
@@ -56,8 +58,8 @@ const RoundContent: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
 
   const client = useRef(new PropHouseWrapper(host));
-  const { data: signer } = useSigner();
-  const provider = useProvider({
+  const signer = useEthersSigner();
+  const provider = useEthersProvider({
     chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
   });
 
@@ -113,36 +115,18 @@ const RoundContent: React.FC<{
       dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
   }, [proposals, account, dispatch]);
 
-  const _signerIsContract = async () => {
-    if (!provider || !account) {
-      return false;
-    }
-    const code = await provider?.getCode(account);
-    const isContract = code !== '0x';
-    setSignerIsContract(isContract);
-    return isContract;
-  };
-
   const handleSubmitVote = async () => {
+    if (!community || !blocknumber) return;
+
     try {
-      const blockHeight = await fetchBlockNumber({ chainId: auction.voteStrategy.chainId });
-
-      const votes = voteAllotments
-        .map(
-          a =>
-            new Vote(
-              a.direction,
-              a.proposalId,
-              a.votes,
-              community!.contractAddress,
-              SignatureState.PENDING_VALIDATION,
-              blockHeight,
-            ),
-        )
-        .filter(v => v.weight > 0);
-      const isContract = await _signerIsContract();
-
-      await client.current.logVotes(votes, isContract);
+      setIsContract(
+        await signerIsContract(
+          signer ? signer : undefined,
+          provider,
+          account ? account : undefined,
+        ),
+      );
+      await submitVotes(voteAllotments, Number(blocknumber), community, client.current, isContract);
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -151,6 +135,7 @@ const RoundContent: React.FC<{
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
+      console.log(e);
       setShowErrorVotingModal(true);
     }
   };
@@ -168,7 +153,7 @@ const RoundContent: React.FC<{
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={signerIsContract}
+          signerIsContract={isContract}
         />
       )}
 
@@ -176,41 +161,36 @@ const RoundContent: React.FC<{
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
-      {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-        <ErrorMessageCard message={t('fundingRoundStartingSoon')} date={auction.startTime} />
-      ) : (
-        <>
-          {community && (
-            <Row className={classes.propCardsRow}>
-              <Col xl={8} className={classes.propCardsCol}>
-                {proposals &&
-                  (proposals.length === 0 ? (
-                    <ErrorMessageCard message={warningMessage} />
-                  ) : (
-                    <>
-                      {proposals.map((prop, index) => (
-                        <Col key={index}>
-                          <ProposalCard
-                            proposal={prop}
-                            auctionStatus={auctionStatus(auction)}
-                            cardStatus={cardStatus(votingPower > 0, auction)}
-                            isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
-                            stale={staleProp}
-                          />
-                        </Col>
-                      ))}
-                    </>
-                  ))}
-              </Col>
-              <RoundModules
-                auction={auction}
-                proposals={proposals}
-                community={community}
-                setShowVotingModal={setShowVoteConfirmationModal}
-              />
-            </Row>
-          )}
-        </>
+      {community && (
+        <Row className={classes.propCardsRow}>
+          <Col xl={8} className={classes.propCardsCol}>
+            {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
+              <ErrorMessageCard message={'Round starting soon'} date={auction.startTime} />
+            ) : proposals.length === 0 ? (
+              <ErrorMessageCard message={warningMessage} />
+            ) : (
+              <>
+                {proposals.map((prop, index) => (
+                  <Col key={index}>
+                    <ProposalCard
+                      proposal={prop}
+                      auctionStatus={auctionStatus(auction)}
+                      cardStatus={cardStatus(votingPower > 0, auction)}
+                      isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
+                      stale={staleProp}
+                    />
+                  </Col>
+                ))}
+              </>
+            )}
+          </Col>
+          <RoundModules
+            auction={auction}
+            proposals={proposals}
+            community={community}
+            setShowVotingModal={setShowVoteConfirmationModal}
+          />
+        </Row>
       )}
     </>
   );

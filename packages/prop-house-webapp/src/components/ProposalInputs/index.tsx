@@ -10,7 +10,7 @@ import validateInput from '../../utils/validateInput';
 import { ProposalFields } from '../../utils/proposalFields';
 import { FormDataType, FundReqDataType } from '../ProposalEditor';
 import inputHasImage from '../../utils/inputHasImage';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import InputFormGroup from '../InputFormGroup';
 import buildIpfsPath from '../../utils/buildIpfsPath';
 import LoadingIndicator from '../LoadingIndicator';
@@ -40,7 +40,7 @@ const ProposalInputs: React.FC<{
     onFileDrop,
   } = props;
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));

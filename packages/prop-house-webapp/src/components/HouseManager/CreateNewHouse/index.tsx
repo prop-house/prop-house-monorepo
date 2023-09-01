@@ -9,12 +9,12 @@ import Divider from '../../Divider';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import validFileType from '../../../utils/validFileType';
-import { useSigner } from 'wagmi';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import buildIpfsPath from '../../../utils/buildIpfsPath';
 import changeFileExtension from '../../../utils/changeFileExtension';
 import removeTags from '../../../utils/removeTags';
 import { saveRound } from '../../../state/thunks';
+import { useEthersSigner } from '../../../hooks/useEthersSigner';
 
 const CreateNewHouse = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ const CreateNewHouse = () => {
   const [imageError, setImageError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 

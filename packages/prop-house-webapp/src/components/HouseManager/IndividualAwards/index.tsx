@@ -18,10 +18,10 @@ import AwardWithPlace from '../AwardWithPlace';
 import AddAward from '../AddAward';
 import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
 import AwardRow from '../AwardRow';
-import { useProvider } from 'wagmi';
 import { getTokenIdImage } from '../utils/getTokenIdImage';
 import { saveRound } from '../../../state/thunks';
 import { v4 as uuidv4 } from 'uuid';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -44,7 +44,7 @@ const IndividualAwards: React.FC<{
   const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
   const [selectedAward, setSelectedAward] = useState<string>(AwardType.ERC20);
 
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 

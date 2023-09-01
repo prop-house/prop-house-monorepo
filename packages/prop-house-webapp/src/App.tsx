@@ -19,39 +19,51 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
-import { createClient, configureChains, WagmiConfig, goerli, useAccount } from 'wagmi';
+import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { goerli } from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
-import { getDefaultWallets, lightTheme, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import {
+  connectorsForWallets,
+  getDefaultWallets,
+  lightTheme,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import CreateRound from './pages/CreateRound';
+import { baseChain } from './types/baseChain';
+import { polygon } from './types/polygon';
+import { polygonMumbai } from './types/polygonMumbai';
 import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
 import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
 
-const { chains, provider } = configureChains(
-  // [mainnet, base],
+const { chains, publicClient } = configureChains(
+  // [mainnet, baseChain, polygon, polygonMumbai],
   [goerli],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 
-const { connectors } = getDefaultWallets({
+const { wallets } = getDefaultWallets({
   appName: 'Prop House',
+  projectId: process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID!,
   chains,
 });
 
-const wagmiClient = createClient({
+const connectors = connectorsForWallets([...wallets]);
+
+const config = createConfig({
   autoConnect: true,
   connectors,
-  provider,
+  publicClient,
 });
 
 function App() {
   const location = useLocation();
-  const { address: account } = useAccount();
+
   const [noActiveCommunity, setNoActiveCommunity] = useState(false);
 
   useEffect(() => {
@@ -77,7 +89,7 @@ function App() {
 
   return (
     <>
-      <WagmiConfig client={wagmiClient}>
+      <WagmiConfig config={config}>
         {openGraphCardPath ? (
           <Routes>
             <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
@@ -110,25 +122,8 @@ function App() {
                     />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
-
-                    <Route
-                      path="/admin"
-                      element={
-                        <RoundCreatorProtectedRoute account={account}>
-                          <HouseManager />
-                        </RoundCreatorProtectedRoute>
-                      }
-                    />
-
-                    <Route
-                      path="/admin/rounds"
-                      element={
-                        <RoundCreatorProtectedRoute account={account}>
-                          <Rounds />
-                        </RoundCreatorProtectedRoute>
-                      }
-                    />
-
+                    <Route path="/admin" element={<HouseManager />} />
+                    <Route path="/admin/rounds" element={<Rounds />} />
                     <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="/:house" element={<House />} />
                     <Route path="/:house/:title" element={<Round />} />

@@ -1,7 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import Buffer from 'https://deno.land/std@0.110.0/node/buffer.ts';
-import prophouse from 'https://esm.sh/@prophouse/communities@0.1.17';
-import { ethers } from 'https://esm.sh/ethers@5.7.2';
+import prophouse from 'https://esm.sh/@prophouse/communities@0.1.23';
 import { isProposer as _isProposer } from '../_shared/isProposer.ts';
 import { insertReply } from '../_shared/insertReply.ts';
 import { corsHeaders } from '../_shared/cors.ts';
@@ -11,12 +10,8 @@ serve(async req => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
-
-  const INFURA_PROJECT_ID = Deno.env.get('INFURA_PROJECT_ID');
-
-  const provider = new ethers.providers.InfuraProvider(1, INFURA_PROJECT_ID);
   const value = await req.json();
-  const { address, communityAddress, blockTag, proposalId, content } = value;
+  const { address, proposalId, content, strategy } = value;
 
   const message = Buffer.Buffer.from(value.signedData.message, 'base64').toString('utf8');
   const { isValidAccountSig, accountSigError } = verifyAccountSignature(message, value);
@@ -49,7 +44,7 @@ serve(async req => {
 
   let votingPower;
   try {
-    votingPower = await prophouse.getVotingPower(address, communityAddress, provider, blockTag);
+    votingPower = await prophouse.execStrategy(strategy);
   } catch (error) {
     const errorMsg = `Error fetching voting power.  Error message: ${error}`;
     console.log(errorMsg);

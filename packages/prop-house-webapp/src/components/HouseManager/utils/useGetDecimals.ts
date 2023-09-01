@@ -9,7 +9,7 @@ const functionName = 'decimals';
 // TODO: Need to test on mainnet
 export default function useGetDecimals(erc20Address: string) {
   const { data, isLoading, isError } = useContractRead({
-    address: erc20Address,
+    address: erc20Address as `0x${string}`,
     abi: decimalsABI,
     functionName,
   });
