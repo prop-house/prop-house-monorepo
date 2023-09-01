@@ -26,6 +26,7 @@ import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
 import RoundModuleRejected from '../RoundModuleRejected';
+import RoundModuleNotStarted from '../RoundModuleNotStarted';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -70,6 +71,10 @@ const RoundModules: React.FC<{
       setFetchedUserProps(true);
     }
   }, [account, proposals]);
+
+  const notStartedModule = auctionStatus(auction) === AuctionStatus.AuctionNotStarted && (
+    <RoundModuleNotStarted auction={auction} />
+  );
 
   const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
     (isInfAuction(auction) && !isRoundOver && infRoundFilter === InfRoundFilterType.Active)) && (
@@ -137,6 +142,7 @@ const RoundModules: React.FC<{
     roundStaleModule,
     roundOverModule,
     userPropCardModule,
+    notStartedModule,
   ];
 
   return (

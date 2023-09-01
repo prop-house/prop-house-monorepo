@@ -186,9 +186,9 @@
 /* GRAY BG */
 
 .btnGrayBg {
-  background: var(--brand-gray) !important;
+  background: var(--brand-gray-hint) !important;
   border: none;
-  color: var(--bg-light);
+  color: var(--brand-gray);
 }
 
 .btnGrayBg:hover {
@@ -201,5 +201,6 @@
 }
 
 .btnGrayBg:disabled {
-  color: var(--bg-light);
+  color: var(--brand-gray-transparent);
+  background: var(--brand-gray-hint) !important;
 }

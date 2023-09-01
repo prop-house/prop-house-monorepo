@@ -15,9 +15,9 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { AssetType, VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
-import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
 import createVoterStrategy from '../utils/createVoterStrategy';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 /**
  * @see StrategyType - button options within modal
@@ -59,7 +59,7 @@ const AddVoter: React.FC<{
     setSelectedStrategy,
   } = props;
   const { t } = useTranslation();
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.round.round);
 

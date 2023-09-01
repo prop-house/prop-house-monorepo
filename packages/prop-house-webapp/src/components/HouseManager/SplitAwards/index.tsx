@@ -12,16 +12,15 @@ import Modal from '../../Modal';
 import ERC20Buttons from '../ERC20Buttons';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../utils/getERC20Image';
-
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import TruncateThousands from '../../TruncateThousands';
 import { getUSDPrice } from '../utils/getUSDPrice';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import useGetDecimals from '../utils/useGetDecimals';
-import { useProvider } from 'wagmi';
 import { saveRound } from '../../../state/thunks';
 import { ERC20 } from '../AwardsConfig';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -43,7 +42,7 @@ const SplitAwards: React.FC<{
   const [award, setAward] = useState({ ...NewAward, price: 0 });
   const [showSplitAwardModal, setShowSplitAwardModal] = useState(false);
 
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 

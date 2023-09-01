@@ -56,7 +56,7 @@ const StatusRoundCard: React.FC<{
     loadingCanVote,
     votingPower,
     numVotesCasted,
-  ] = useVotingPower(round, account, community);
+  ] = useVotingPower(round, account);
 
   // num votes
   useEffect(() => {
@@ -179,7 +179,7 @@ const StatusRoundCard: React.FC<{
 
           <div className={classes.roundInfo}>
             <div className={clsx(classes.section, classes.funding)}>
-              <p className={classes.title}>{t('funding')}</p>
+              <p className={classes.title}>{'Awards'}</p>
               <p className={classes.info}>
                 <span className="">
                   <TruncateThousands amount={round.fundingAmount} decimals={2} />

@@ -6,12 +6,12 @@ import trimEthAddress from '../../../utils/trimEthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { getTokenInfo } from '../utils/getTokenInfo';
-import { useProvider } from 'wagmi';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }> = props => {
   const { type, address, multiplier } = props;
 
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const { data: ens, isLoading } = useEnsName({ address: address as `0x${string}` });
 
   const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });

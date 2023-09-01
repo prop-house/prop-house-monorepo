@@ -25,6 +25,7 @@ import {
 } from './proposal.types';
 import { ProposalsService } from './proposals.service';
 import { _execStrategy } from 'src/utils/execStrategy';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('proposals')
 export class ProposalsController {
@@ -32,6 +33,7 @@ export class ProposalsController {
     private readonly proposalsService: ProposalsService,
     private readonly auctionsService: AuctionsService,
     private readonly infiniteAuctionsService: InfiniteAuctionService,
+    private readonly eventEmitter: EventEmitter2
   ) {}
 
   @Get()
@@ -88,7 +90,9 @@ export class ProposalsController {
         HttpStatus.BAD_REQUEST,
       );
 
-    return await this.proposalsService.remove(deleteProposalDto.id);
+    const removeResult = await this.proposalsService.remove(deleteProposalDto.id);
+    this.eventEmitter.emit('proposal.delete', deleteProposalDto)
+    return removeResult;
   }
 
   @Patch()
@@ -145,7 +149,10 @@ export class ProposalsController {
     foundProposal.reqAmount = updateProposalDto.reqAmount
       ? updateProposalDto.reqAmount
       : null;
-    return this.proposalsService.store(foundProposal);
+    const storeResult = await this.proposalsService.store(foundProposal);
+
+    this.eventEmitter.emit('proposal.update', storeResult)
+    return storeResult;
   }
 
   @Post()
@@ -223,6 +230,8 @@ export class ProposalsController {
       ).reqAmount;
     }
 
-    return this.proposalsService.store(proposal);
+    const storeResult = await this.proposalsService.store(proposal);
+    this.eventEmitter.emit('proposal.create', storeResult);
+    return storeResult;
   }
 }

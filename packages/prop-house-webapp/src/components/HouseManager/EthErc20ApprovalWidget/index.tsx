@@ -84,7 +84,7 @@ const EthErc20ApprovalWidget: React.FC<{
   //  -------- ------- ------- ------- ------- ------- --------
   const { address: ownerAddress } = useAccount();
   const { data: tokenBalanceData, isLoading: balanceLoading } = useContractRead({
-    address: award.address ?? '', // The address of the ERC20 token
+    address: (award.address as `0x${string}`) ?? '', // The address of the ERC20 token
     abi: erc20BalanceOfInterface,
     functionName: 'balanceOf',
     chainId: ChainId.EthereumGoerli,
@@ -103,7 +103,7 @@ const EthErc20ApprovalWidget: React.FC<{
   const [isApproved, setIsApproved] = useState<boolean>(false);
   const [approvedAmount, setApprovedAmount] = useState(0.0);
   const { config } = usePrepareContractWrite({
-    address: award.address ?? '', // The address of the ERC20 token
+    address: (award.address as `0x${string}`) ?? '', // The address of the ERC20 token
     abi: erc20ApproveInterface,
     functionName: 'approve',
     chainId: ChainId.EthereumGoerli,
@@ -118,7 +118,7 @@ const EthErc20ApprovalWidget: React.FC<{
   //  ------- ------- ------- ALLOWANCE ------- ------- -------
   //  -------- ------- ------- ------- ------- ------- --------
   const { data: allowance } = useContractRead({
-    address: award.address ?? '', // The address of the ERC20 token
+    address: (award.address as `0x${string}`) ?? '', // The address of the ERC20 token
     abi: erc20AllowanceInterface,
     functionName: 'allowance',
     chainId: ChainId.EthereumGoerli,

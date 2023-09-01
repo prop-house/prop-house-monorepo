@@ -16,7 +16,7 @@ import AwardAddress from '../AwardAddress';
 import { formatCommaNum } from '../utils/formatCommaNum';
 import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
 import ERC20Buttons from '../ERC20Buttons';
-import { useProvider } from 'wagmi';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 const AddAward: React.FC<{
   award: Award;
@@ -46,7 +46,7 @@ const AddAward: React.FC<{
   } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const provider = useProvider();
+  const provider = useEthersProvider();
 
   const handleSelectAwardType = (selectedType: AwardType) => {
     setSelectedAward(selectedType);

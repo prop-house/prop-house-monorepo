@@ -5,7 +5,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 
 const DeleteProposalModal: React.FC<{
   id: number;
@@ -14,7 +14,7 @@ const DeleteProposalModal: React.FC<{
 }> = props => {
   const { id, setShowDeletePropModal, dismissModalAndRefreshProps } = props;
 
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);

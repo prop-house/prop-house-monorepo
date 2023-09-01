@@ -25,7 +25,7 @@ import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import ReactMarkdown from 'react-markdown';
 import ProposalModal from '../../components/ProposalModal';
-import { useSigner } from 'wagmi';
+import { useEthersSigner } from '../../hooks/useEthersSigner';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
@@ -38,7 +38,7 @@ const Round = () => {
   const roundName = location.pathname.substring(1).split('/')[1];
 
   const dispatch = useAppDispatch();
-  const { data: signer } = useSigner();
+  const signer = useEthersSigner();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);

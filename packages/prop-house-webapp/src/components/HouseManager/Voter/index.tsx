@@ -6,7 +6,7 @@ import { getTokenInfo } from '../utils/getTokenInfo';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';
-import { useProvider } from 'wagmi';
+import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 const Voter: React.FC<{
   type: string;
@@ -17,7 +17,7 @@ const Voter: React.FC<{
 }> = props => {
   const { type, address, multiplier, isDisabled, removeVoter } = props;
 
-  const provider = useProvider();
+  const provider = useEthersProvider();
   const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });
 
   useEffect(() => {

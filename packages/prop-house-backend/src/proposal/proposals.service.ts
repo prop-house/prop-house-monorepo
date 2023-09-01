@@ -25,21 +25,21 @@ export class ProposalsService {
       loadRelationIds: {
         relations: ['votes'],
       },
-      where: { visible: true },
+      where: { visible: true, deletedAt: null },
     });
   }
 
   findAllWithAuctionId(auctionId: number) {
     return this.proposalsRepository.find({
       relations: ['votes'],
-      where: { visible: true, auctionId: auctionId },
+      where: { visible: true, auctionId: auctionId, deletedAt: null },
     });
   }
 
   async findOne(id: number) {
     const proposal = await this.proposalsRepository.findOne(id, {
       relations: ['votes', 'auction'],
-      where: { visible: true },
+      where: { visible: true, deletedAt: null },
     });
 
     if (proposal.parentType === 'infinite-auction') {
@@ -62,7 +62,7 @@ export class ProposalsService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.proposalsRepository.delete(id);
+    await this.proposalsRepository.softDelete(id);
   }
 
   async rollupVoteCount(id: number) {

@@ -15,6 +15,9 @@ import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import useVotingPower from '../../hooks/useVotingPower';
 import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
+import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { GiDeadHead } from 'react-icons/gi';
+import LoadingIndicator from '../LoadingIndicator';
 
 export interface TimedRoundVotingModuleProps {
   round: StoredAuctionBase;
@@ -33,14 +36,13 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const [
-    //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _loadingCanVote,
+    loadingCanVote,
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     _votingPower,
     //eslint-disable-next-line @typescript-eslint/no-unused-vars
     _numVotesCasted,
     votingCopy,
-  ] = useVotingPower(round, account, undefined);
+  ] = useVotingPower(round, account);
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
@@ -57,7 +59,9 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const content = (
     <>
       {account ? (
-        votingPower > 0 ? (
+        loadingCanVote ? (
+          <LoadingIndicator height={50} width={50} />
+        ) : votingPower > 0 ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
               <span>{t('castYourVotes')}</span>
@@ -85,9 +89,25 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
             </ProgressBar>
           </>
         ) : (
-          <p className={classes.subtitle}>
-            <b>Your account does not have any votes in this round.</b>
-          </p>
+          <div className={classes.list}>
+            <div className={classes.listItem}>
+              <div className={classes.icon}>
+                <MdHowToVote />
+              </div>
+              <p>
+                <ReactMarkdown className="markdown" children={votingCopy} />
+              </p>
+            </div>
+
+            <div className={classes.listItem}>
+              <div className={classes.icon}>
+                <GiDeadHead />
+              </div>
+              <p>
+                Your account is <b>not eligible</b> to vote in this round.
+              </p>
+            </div>
+          </div>
         )
       ) : (
         <div className={classes.list}>
@@ -102,7 +122,9 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
             <div className={classes.icon}>
               <MdHowToVote />
             </div>
-            <p>{votingCopy}</p>
+            <p>
+              <ReactMarkdown className="markdown" children={votingCopy} />
+            </p>
           </div>
         </div>
       )}
