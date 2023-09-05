@@ -25,12 +25,12 @@ const InfRoundVotingControls: React.FC<{
   const dispatch = useAppDispatch();
 
   const submittedUpVotesForProp = countNumVotesForPropWithDirection(
-    votesByUserInActiveRound,
+    proposal.votes,
     proposal.id,
     Direction.Up,
   );
   const submittedDownVotesForProp = countNumVotesForPropWithDirection(
-    votesByUserInActiveRound,
+    proposal.votes,
     proposal.id,
     Direction.Down,
   );
@@ -53,7 +53,7 @@ const InfRoundVotingControls: React.FC<{
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
-    if (!proposal || perPropVotesRemaining === 0) return;
+    if (!proposal || perPropVotesRemaining <= 0) return;
 
     e.stopPropagation();
 
