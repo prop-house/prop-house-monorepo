@@ -31,6 +31,7 @@ import ReplyBar from '../ReplyBar';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
+import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
 
 const ProposalCard: React.FC<{
   proposal: StoredProposalWithVotes;
@@ -44,23 +45,29 @@ const ProposalCard: React.FC<{
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
+  const votingPower = useAppSelector(state => state.voting.votingPower);
+  const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+
   const dispatch = useDispatch();
 
   const roundIsActive = () =>
     auctionStatus === AuctionStatus.AuctionAcceptingProps ||
     auctionStatus === AuctionStatus.AuctionVoting;
+  const perPropVotesRemaining =
+    votingPower - countNumVotesForProp(votesByUserInActiveRound, proposal.id);
+  const canVoteInInfRound =
+    infRoundFilter === InfRoundFilterType.Active && perPropVotesRemaining > 0;
 
   const showVoteDisplay =
     round && isTimedAuction(round)
       ? auctionStatus === AuctionStatus.AuctionVoting ||
         auctionStatus === AuctionStatus.AuctionEnded
-      : infRoundFilter !== InfRoundFilterType.Active;
+      : !canVoteInInfRound;
 
   const showVoteControls =
     round && isTimedAuction(round)
-      ? auctionStatus === AuctionStatus.AuctionVoting ||
-        auctionStatus === AuctionStatus.AuctionEnded
-      : infRoundFilter === InfRoundFilterType.Active;
+      ? auctionStatus === AuctionStatus.AuctionVoting
+      : canVoteInInfRound;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
@@ -129,7 +136,11 @@ const ProposalCard: React.FC<{
 
             {imgUrlFromProp && (
               <div className={classes.propImgContainer}>
-                <img src={replaceIpfsGateway(imgUrlFromProp)} crossOrigin="anonymous" alt="propCardImage" />
+                <img
+                  src={replaceIpfsGateway(imgUrlFromProp)}
+                  crossOrigin="anonymous"
+                  alt="propCardImage"
+                />
               </div>
             )}
           </div>
@@ -189,14 +200,10 @@ const ProposalCard: React.FC<{
                   {showVoteDisplay && <VotesDisplay proposal={proposal} />}
                   {showVoteControls &&
                     (round && isTimedAuction(round) ? (
-                      <>
-                        {cardStatus === ProposalCardStatus.Voting && (
-                          <div className={classes.votingArrows}>
-                            <span className={classes.plusArrow}>+</span>
-                            <TimedRoundVotingControls proposal={proposal} />
-                          </div>
-                        )}
-                      </>
+                      <div className={classes.votingArrows}>
+                        <span className={classes.plusArrow}>+</span>
+                        <TimedRoundVotingControls proposal={proposal} />
+                      </div>
                     ) : (
                       <InfRoundVotingControls proposal={proposal} />
                     ))}
