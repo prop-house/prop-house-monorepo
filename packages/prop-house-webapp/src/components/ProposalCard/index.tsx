@@ -40,7 +40,7 @@ const ProposalCard: React.FC<{
   isWinner: boolean;
   stale?: boolean;
 }> = props => {
-  const { proposal, auctionStatus, cardStatus, isWinner, stale } = props;
+  const { proposal, auctionStatus, isWinner, stale } = props;
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
