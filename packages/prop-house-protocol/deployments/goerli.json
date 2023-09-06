@@ -1,36 +1,38 @@
 {
   "ethereum": {
     "address": {
-      "manager": "0xAa2e7b86176B854260E967Ce04896a65b8a419D6",
-      "propHouse": "0x04c161DE5370620b275FC3d4734d65213d5273bf",
-      "messenger": "0xe7063908A269d3F58D90593B9EAfB86B4CF9690b",
-      "creatorPassIssuer": "0x76D4c1B098D2e729e1cD2cFcaF6c1fB8828C5588",
-      "starknetCommit": "0x0FE38B1f9be81c36B5588F77248886fd5b9B7a6c",
-      "communityHouseImpl": "0x7FD871f9203Cb8Ec1F30938A88c1EbF7CF0282b2",
-      "infiniteRoundImpl": "0x0000000000000000000000000000000000000000",
-      "timedRoundImpl": "0xd7BC117555Afe9E124c99d03E36FAD58C8bD1340"
+      "manager": "0x38e21f827E41E1B4AEEa7DFcF33438521d52eaA9",
+      "propHouse": "0xF53324d3fC1bcdb2f61c79bB09B210d9762b144a",
+      "messenger": "0x4b6BCF36883E1595e3EDC55bbA806ff8526Cc340",
+      "creatorPassIssuer": "0x67f6a11367a7151C63B136C08cBB9E5f2b23FA08",
+      "starknetCommit": "0xE1084D85469638d59d66693e2106A451aD6Bf0A8",
+      "communityHouseImpl": "0xf4426d1b78E00b002d2426384D1FFcFE167080ea",
+      "infiniteRoundImpl": "0x93ECDa6B04530c7713035B98Da6888c127e84a2E",
+      "timedRoundImpl": "0x54fd5F0329369718939DB9717e98022745EBa172"
     }
   },
   "starknet": {
     "address": {
-      "roundFactory": "0x75b622d8d42a1c6b3fde044b868abd3e23e1ee27e00716f672890985a4be4ac",
-      "ethExecutionStrategy": "0x2a3b90a2745d67ea17eba97a9352c3fe5c0d1cb384087db3aad64cad42d91a7",
-      "strategyRegistry": "0x5caee82756bd3679092015549a2e274c62cee637f812eb2fe548aa505395eff",
-      "infiniteRoundEthTxAuthStrategy": "0x0000000000000000000000000000000000000000000000000000000000000",
-      "infiniteRoundEthSigAuthStrategy": "0x0000000000000000000000000000000000000000000000000000000000000",
-      "timedRoundEthTxAuthStrategy": "0x7deb0c233822a1b389ef04ce777f516e4e120de8a4d981be5bf66daa5140a",
-      "timedRoundEthSigAuthStrategy": "0xe7670a1aa4cb06a70552b2eb1167aa7c07d21276401b83860bba7ae5148c42",
-      "vanillaGovPowerStrategy": "0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9",
-      "merkleAllowlistGovPowerStrategy": "0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38",
-      "ethereumBalanceOfGovPowerStrategy": "0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f",
+      "roundFactory": "0x5b0b4ac85df4b47cba473a6ffaea0ae596f4b53200bc1eb81c60333772bc07d",
+      "ethExecutionStrategy": "0x114f6484129e30224486fb3ba8d07112378c6f1c78b4d1deaafd19cbdea46e6",
+      "strategyRegistry": "0x428c3456c99d887ca1fc8e84a48d777e1985cd0ac0d9c2d62fa838cd2045370",
+      "roundDependencyRegistry": "0x68be1153be2388a18db57d5d765bc66e4dd517b41c3fa1454bc242dc5123306",
+      "ethBlockRegistry": "0xd47af0634be59f8fb4df46843e92a076356dddd50ecdf1c60d6496d1ef7a7b",
+      "infiniteRoundEthTxAuthStrategy": "0x4301e1268474fc794d3f9ee8fc329fce1364e1af405ac477f5e8933eb30bedd",
+      "infiniteRoundEthSigAuthStrategy": "0x5c12e2d262ea55aec1be90f6752bf1048748a2d5da5a176ae9ecc1c2c142b89",
+      "timedRoundEthTxAuthStrategy": "0x61a9c6bd1f8c00c15e83dfd88572a2576ab1d0563aa46bd6990f92dae3be4d7",
+      "timedRoundEthSigAuthStrategy": "0x63c79878bf77b4fbd3f3e14e4b5c89cc1fdeb42048e1c434abde34ad6569239",
+      "vanillaGovPowerStrategy": "0x23a5d2474eb348d62d9da78c9383abfe557e7b95999edc6b261bae81bf3a769",
+      "allowlistGovPowerStrategy": "0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a",
+      "ethBalanceOfGovPowerStrategy": "0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd",
       "herodotus": {
         "factRegistry": "0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f",
         "l1HeadersStore": "0x1d9b36a00d7d5300e5da456c56d09c46dfefbc91b3a6b1552b6f2a34d6e34c4"
       }
     },
     "classHash": {
-      "infiniteRound": "0x000000000000000000000000000000000000000000000000000000000000000",
-      "timedRound": "0x28ca9869cca275b2720cbcf509c92f0050787e373732954e53f58633c865576"
+      "infiniteRound": "0x37067a670a76bcc511d2693dca05c7a8d91a086737cf20daa1c2ef92a4a8507",
+      "timedRound": "0x63b591ce31c701c801f7292e44f8de0a6bcad6c765597cb9efce389bdc8fb54"
     }
   }
 }

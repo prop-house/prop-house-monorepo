@@ -30,7 +30,7 @@ import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { BigNumber, BigNumberish, constants } from 'ethers';
 import { MockStarknetMessaging } from '../../../typechain';
-import hre, { starknet, ethers, network } from 'hardhat';
+import { starknet, ethers, network } from 'hardhat';
 import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
