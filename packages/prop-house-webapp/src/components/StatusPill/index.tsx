@@ -7,8 +7,8 @@ export enum StatusPillColor {
   Purple,
 }
 
-const StatusPill: React.FC<{ copy: string; color: StatusPillColor }> = props => {
-  const { copy, color } = props;
+const StatusPill: React.FC<{ copy: string; color: StatusPillColor; size?: number }> = props => {
+  const { copy, color, size } = props;
 
   let bgClass = '';
 
@@ -24,7 +24,14 @@ const StatusPill: React.FC<{ copy: string; color: StatusPillColor }> = props => 
       break;
   }
 
-  return <span className={clsx(classes.pillContainer, bgClass)}>{copy}</span>;
+  return (
+    <span
+      className={clsx(classes.pillContainer, bgClass)}
+      style={{ fontSize: `${size ? size : 14}px` }}
+    >
+      {copy}
+    </span>
+  );
 };
 
 export default StatusPill;
