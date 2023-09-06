@@ -9,7 +9,7 @@ import {
   deadlineTime,
 } from '../../utils/auctionStatus';
 import { useNavigate } from 'react-router-dom';
-import StatusPill from '../StatusPill';
+import AuctionStatusPill from '../AuctionStatusPill';
 import { nameToSlug } from '../../utils/communitySlugs';
 import diffTime from '../../utils/diffTime';
 import { useTranslation } from 'react-i18next';
@@ -172,7 +172,7 @@ const StatusRoundCard: React.FC<{
                   </>
                 )}
               </div>
-              <StatusPill status={auctionStatus(round)} />
+              <AuctionStatusPill status={auctionStatus(round)} />
             </div>
             <div className={classes.authorContainer}>{round.title}</div>
           </div>
