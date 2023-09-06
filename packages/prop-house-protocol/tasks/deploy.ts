@@ -379,8 +379,9 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
 
     // Configure contracts
-    await manager.registerHouse(communityHouseImpl.address);
+    await (await manager.registerHouse(communityHouseImpl.address)).wait();
     await manager.registerRound(communityHouseImpl.address, timedRoundImpl.address);
+    await manager.registerRound(communityHouseImpl.address, infiniteRoundImpl.address);
 
     const deployment = {
       ethereum: {
