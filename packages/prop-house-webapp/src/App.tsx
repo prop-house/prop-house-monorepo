@@ -40,6 +40,7 @@ import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
 import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
+import MainApp from './pages/MainApp';
 
 const { chains, publicClient } = configureChains(
   // [mainnet, baseChain, polygon, polygonMumbai],
@@ -110,6 +111,7 @@ function App() {
                   {!noNavPath && <NavBar />}
 
                   <Routes>
+                    <Route path="/app" element={<MainApp />} />
                     <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/" element={<Home />} />
                     <Route

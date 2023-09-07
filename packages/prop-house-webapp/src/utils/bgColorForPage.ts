@@ -6,7 +6,8 @@ const bgColorForPage = (path: string) => {
     path === '/rounds' ||
     path === '/create-round' ||
     path === '/admin' ||
-    path === '/admin/rounds'
+    path === '/admin/rounds' ||
+    path === '/app'
   )
     return 'bgGray';
 
