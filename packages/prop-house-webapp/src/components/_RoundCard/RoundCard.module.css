@@ -1,6 +1,13 @@
+.roundCard {
+  min-height: 10rem;
+  height: 10rem;
+  max-height: 10rem;
+}
 .container {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
   row-gap: 20px;
 }
 .title {
