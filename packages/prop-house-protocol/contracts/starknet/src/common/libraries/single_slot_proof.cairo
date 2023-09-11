@@ -54,6 +54,8 @@ mod SingleSlotProof {
     }
 
     /// Initializes the contract.
+    /// * `fact_registry_` - The address of the Herodotus fact registry contract.
+    /// * `ethereum_block_registry_` - The address of the ethereum block registry contract.
     fn initializer(ref self: ContractState, fact_registry_: ContractAddress, ethereum_block_registry_: ContractAddress) {
         self._fact_registry.write(fact_registry_);
         self._ethereum_block_registry.write(ethereum_block_registry_);

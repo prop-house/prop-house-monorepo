@@ -53,6 +53,7 @@ mod EthereumBlockRegistry {
     }
 
     /// Initializes the contract.
+    /// * `l1_headers_store_` - The address of the Herodotus L1 header store contract.
     fn initializer(ref self: ContractState, l1_headers_store_: ContractAddress) {
         self._l1_headers_store.write(l1_headers_store_);
     }

@@ -15,6 +15,9 @@ mod Ownable {
         OwnershipTransferred: OwnershipTransferred,
     }
 
+    /// Event emitted when ownership of the contract is transferred.
+    /// * `previous_owner` - The address of the previous owner.
+    /// * `new_owner` - The address of the new owner.
     #[derive(Drop, starknet::Event)]
     struct OwnershipTransferred {
         previous_owner: ContractAddress, new_owner: ContractAddress

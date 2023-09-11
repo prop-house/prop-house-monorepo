@@ -39,6 +39,7 @@ export {
   ProposingStrategy,
   VotingStrategy,
   RoundAsset,
+  RoundAward,
   TimedRoundConfig,
   RoundConfig,
   Round,

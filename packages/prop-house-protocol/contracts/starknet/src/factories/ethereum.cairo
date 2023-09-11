@@ -20,6 +20,10 @@ mod EthereumRoundFactory {
         RoundRegistered: RoundRegistered,
     }
 
+    /// Emitted when a new round is registered.
+    /// * `origin_round` - The origin round address.
+    /// * `starknet_round` - The starknet round address.
+    /// * `round_class_hash` - The class hash of the round.
     #[derive(Drop, starknet::Event)]
     struct RoundRegistered {
         origin_round: felt252, starknet_round: ContractAddress, round_class_hash: ClassHash,

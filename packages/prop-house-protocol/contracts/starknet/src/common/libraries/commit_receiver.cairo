@@ -9,6 +9,7 @@ mod CommitReceiver {
     }
 
     /// Initializes the contract by setting the commit address.
+    /// * `commit_address` - The address of the commit contract.
     fn initializer(ref self: ContractState, commit_address: EthAddress) {
         self._commit_address.write(commit_address.address);
     }

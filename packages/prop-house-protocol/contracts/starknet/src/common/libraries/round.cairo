@@ -49,6 +49,7 @@ mod Round {
 
     /// Initializes the contract by setting the origin chain ID
     /// and registering the provided strategy groups.
+    /// * `strategy_groups` - The strategy groups to register.
     fn initializer(ref self: ContractState, mut strategy_groups_: Span<StrategyGroup>) {
         self._deployer.write(IRoundFactoryDispatcher { contract_address: get_caller_address() });
         _register_strategy_groups(ref self, strategy_groups_);

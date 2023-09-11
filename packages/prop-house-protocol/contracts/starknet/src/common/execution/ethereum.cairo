@@ -22,12 +22,14 @@ mod EthereumExecutionStrategy {
     #[external(v0)]
     impl EthereumExecutionStrategy of IExecutionStrategy<ContractState> {
         /// Sends a message call to the origin round.
+        /// * `params` - The execution parameters.
         fn execute(self: @ContractState, params: Span<felt252>) {
             send_message_to_l1_syscall(to_address: _origin_round_for_caller(self), payload: params);
         }
     }
 
     /// Initializes the contract by setting the round factory address.
+    /// * `round_factory_` - The round factory address.
     fn initializer(ref self: ContractState, round_factory_: ContractAddress) {
         self._round_factory.write(round_factory_);
     }
