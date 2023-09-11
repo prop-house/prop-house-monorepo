@@ -9,10 +9,8 @@ import {
   PROPOSE_SELECTOR,
   VOTE_SELECTOR,
   CANCEL_PROPOSAL_SELECTOR,
-  getStarknetFactory,
   STARKNET_MAX_FEE,
   asciiToHex,
-  generateIncrementalClaimLeaf,
   generateIncrementalClaimMerkleTree,
 } from '../../utils';
 import {
@@ -96,10 +94,10 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknetCommit,
     } = config);
 
-    const vanillaGovPowerStrategyFactory = getStarknetFactory(
-      hre,
-      'VanillaGovernancePowerStrategy',
+    const vanillaGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_VanillaGovernancePowerStrategy',
     );
+
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });
@@ -419,10 +417,14 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
     const [proposalId] = events[0].data;
 
-    let { response } = await infiniteRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    });
-    expect(Number(response.state)).to.equal(ProposalState.ACTIVE);
+    let [state] = (
+      await infiniteRoundContract.call(
+        'get_proposal',
+        { proposal_id: proposalId },
+        { rawOutput: true },
+      )
+    ).response.split(' ');
+    expect(Number(state)).to.equal(ProposalState.ACTIVE);
 
     const cancelCalldata = stark.compileCalldata({
       proposer: signer.address,
@@ -444,10 +446,14 @@ describe('InfiniteRoundStrategy - ETH Transaction Auth Strategy', () => {
       calldata: [l2RoundAddress, ...cancelCalldata],
     });
 
-    ({ response } = await infiniteRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    }));
-    expect(Number(response.state)).to.equal(ProposalState.CANCELLED);
+    [state] = (
+      await infiniteRoundContract.call(
+        'get_proposal',
+        { proposal_id: proposalId },
+        { rawOutput: true },
+      )
+    ).response.split(' ');
+    expect(Number(state)).to.equal(ProposalState.CANCELLED);
   });
 
   it('should create votes using an Ethereum transaction', async () => {

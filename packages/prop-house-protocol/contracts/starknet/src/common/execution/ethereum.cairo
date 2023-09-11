@@ -1,4 +1,4 @@
-#[contract]
+#[starknet::contract]
 mod EthereumExecutionStrategy {
     use starknet::{ContractAddress, get_caller_address};
     use starknet::contract_address::ContractAddressZeroable;
@@ -6,44 +6,38 @@ mod EthereumExecutionStrategy {
     use prop_house::common::utils::traits::{
         IRoundFactoryDispatcherTrait, IRoundFactoryDispatcher, IExecutionStrategy,
     };
-    use prop_house::common::utils::serde::SpanSerde;
     use zeroable::Zeroable;
     use array::ArrayTrait;
 
+    #[storage]
     struct Storage {
         _round_factory: ContractAddress, 
     }
 
-    impl EthereumExecutionStrategy of IExecutionStrategy {
-        fn execute(params: Span<felt252>) {
-            send_message_to_l1_syscall(to_address: _origin_round_for_caller(), payload: params);
+    #[constructor]
+    fn constructor(ref self: ContractState, round_factory: ContractAddress) {
+        initializer(ref self, round_factory);
+    }
+
+    #[external(v0)]
+    impl EthereumExecutionStrategy of IExecutionStrategy<ContractState> {
+        /// Sends a message call to the origin round.
+        /// * `params` - The execution parameters.
+        fn execute(self: @ContractState, params: Span<felt252>) {
+            send_message_to_l1_syscall(to_address: _origin_round_for_caller(self), payload: params);
         }
     }
 
-    #[constructor]
-    fn constructor(round_factory: ContractAddress) {
-        initializer(round_factory);
-    }
-
-    /// Sends a message call to the origin round.
-    #[external]
-    fn execute(params: Span<felt252>) {
-        EthereumExecutionStrategy::execute(params);
-    }
-
-    ///
-    /// Internals
-    ///
-
     /// Initializes the contract by setting the round factory address.
-    fn initializer(round_factory_: ContractAddress) {
-        _round_factory::write(round_factory_);
+    /// * `round_factory_` - The round factory address.
+    fn initializer(ref self: ContractState, round_factory_: ContractAddress) {
+        self._round_factory.write(round_factory_);
     }
 
     /// Returns the origin round address for the calling round.
     /// Throws if the caller is not a valid round.
-    fn _origin_round_for_caller() -> felt252 {
-        let round_factory = _round_factory::read();
+    fn _origin_round_for_caller(self: @ContractState) -> felt252 {
+        let round_factory = self._round_factory.read();
         let caller = get_caller_address();
 
         let round_factory = IRoundFactoryDispatcher { contract_address: round_factory };

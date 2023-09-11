@@ -6,7 +6,6 @@ import {
   METADATA_URI,
   ONE_DAY_SEC,
   ONE_ETHER,
-  getStarknetFactory,
   STARKNET_MAX_FEE,
   generateIncrementalClaimLeaf,
   generateIncrementalClaimMerkleTree,
@@ -31,7 +30,7 @@ import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { BigNumber, BigNumberish, constants } from 'ethers';
 import { MockStarknetMessaging } from '../../../typechain';
-import hre, { starknet, ethers, network } from 'hardhat';
+import { starknet, ethers, network } from 'hardhat';
 import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
@@ -81,10 +80,10 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
       starknetAccount,
     } = config);
 
-    const vanillaGovPowerStrategyFactory = getStarknetFactory(
-      hre,
-      'VanillaGovernancePowerStrategy',
+    const vanillaGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_VanillaGovernancePowerStrategy',
     );
+
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
     });

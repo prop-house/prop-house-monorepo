@@ -9,10 +9,8 @@ import {
   TimedRound__factory,
 } from '../typechain';
 import { task, types } from 'hardhat/config';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { NonceManager } from '@ethersproject/experimental';
 import { Starknet } from 'starknet-hardhat-plugin-extended/dist/src/types/starknet';
-import { StarknetContractFactory } from 'starknet-hardhat-plugin-extended/dist/src/types';
 import { existsSync, writeFileSync, mkdirSync } from 'fs';
 import { utils } from '@prophouse/sdk';
 import { constants } from 'ethers';
@@ -32,25 +30,9 @@ interface NetworkConfig {
   };
 }
 
-const getStarknetArtifactPath = (contract: string, ext: 'sierra' | 'casm') => `./contracts/starknet/target/dev/prop_house_${contract}.${ext}.json`;
-const getSierraPath = (contract: string) => getStarknetArtifactPath(contract, 'sierra');
-const getCasmPath = (contract: string) => getStarknetArtifactPath(contract, 'casm');
-const getStarknetFactory = (hre: HardhatRuntimeEnvironment, contractName: string) => {
-  const metadata = {
-    sierra: getSierraPath(contractName),
-    casm: getCasmPath(contractName),
-  };
-  return new StarknetContractFactory({
-    hre,
-    abiPath: metadata.sierra,
-    metadataPath: metadata.sierra,
-    casmPath: metadata.casm,
-  });
-};
-
-const DOMAIN_SEPARATORS: Record<number, string | undefined> = {
+const DOMAIN_SEPARATORS: Record<number, BigInt | undefined> = {
   [ChainId.Mainnet]: undefined,
-  [ChainId.Goerli]: '0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81',
+  [ChainId.Goerli]: BigInt('0x367959fbff4da0a038f30383de089bcd293b7960f35bd1db59a620d4c2cbfd81'),
 };
 
 const STRATEGY_REGISTRY_ADDRESS_KEY = utils.encoding.asciiToHex('STRATEGY_REGISTRY_ADDRESS');
@@ -165,31 +147,60 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const timedRoundImplFactory = new TimedRound__factory(ethDeployer);
 
     // Common L2 factories
-    const roundDeployerFactory = getStarknetFactory(hre, 'EthereumRoundFactory');
-    const ethExecutionStrategyFactory = getStarknetFactory(hre, 'EthereumExecutionStrategy');
-    const strategyRegistryFactory = getStarknetFactory(hre, 'StrategyRegistry');
-    const roundDependencyRegistryFactory = getStarknetFactory(hre, 'RoundDependencyRegistry');
+    const roundDeployerFactory = await starknet.getContractFactory(
+      'prop_house_EthereumRoundFactory',
+    );
+    const ethExecutionStrategyFactory = await starknet.getContractFactory(
+      'prop_house_EthereumExecutionStrategy',
+    );
+    const strategyRegistryFactory = await starknet.getContractFactory(
+      'prop_house_StrategyRegistry',
+    );
+    const roundDependencyRegistryFactory = await starknet.getContractFactory(
+      'prop_house_RoundDependencyRegistry',
+    );
+    const ethBlockRegistryFactory = await starknet.getContractFactory(
+      'prop_house_EthereumBlockRegistry',
+    );
 
     // Gov power strategies
-    const vanillaGovPowerStrategyFactory = getStarknetFactory(hre, 'VanillaGovernancePowerStrategy');
-    const allowlistGovPowerStrategyFactory = getStarknetFactory(hre, 'AllowlistGovernancePowerStrategy');
-    const ethBalanceOfGovPowerStrategyFactory = getStarknetFactory(hre, 'EthereumBalanceOfGovernancePowerStrategy');
+    const vanillaGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_VanillaGovernancePowerStrategy',
+    );
+    const allowlistGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_AllowlistGovernancePowerStrategy',
+    );
+    const ethBalanceOfGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_EthereumBalanceOfGovernancePowerStrategy',
+    );
 
     // Infinite round factories
-    const infiniteRoundL2Factory = getStarknetFactory(hre, 'InfiniteRound');
-    const infiniteRoundEthTxAuthStrategyFactory = getStarknetFactory(hre, 'InfiniteRoundEthereumTxAuthStrategy');
-    const infiniteRoundEthSigAuthStrategyFactory = getStarknetFactory(hre, 'InfiniteRoundEthereumSigAuthStrategy');
+    const infiniteRoundL2Factory = await starknet.getContractFactory(
+      'prop_house_InfiniteRound',
+    );
+    const infiniteRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
+      'prop_house_InfiniteRoundEthereumTxAuthStrategy',
+    );
+    const infiniteRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
+      'prop_house_InfiniteRoundEthereumSigAuthStrategy',
+    );
 
     // Timed round factories
-    const timedRoundL2Factory = getStarknetFactory(hre, 'TimedRound');
-    const timedRoundEthTxAuthStrategyFactory = getStarknetFactory(hre, 'TimedRoundEthereumTxAuthStrategy');
-    const timedRoundEthSigAuthStrategyFactory = getStarknetFactory(hre, 'TimedRoundEthereumSigAuthStrategy');
-
+    const timedRoundL2Factory = await starknet.getContractFactory(
+      'prop_house_TimedRound',
+    );
+    const timedRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
+      'prop_house_TimedRoundEthereumTxAuthStrategy',
+    );
+    const timedRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
+      'prop_house_TimedRoundEthereumSigAuthStrategy',
+    );
     const factories = [
       roundDeployerFactory,
       ethExecutionStrategyFactory,
       strategyRegistryFactory,
       roundDependencyRegistryFactory,
+      ethBlockRegistryFactory,
       vanillaGovPowerStrategyFactory,
       allowlistGovPowerStrategyFactory,
       ethBalanceOfGovPowerStrategyFactory,
@@ -209,7 +220,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           nonce: nonce++,
         }),
       );
-      await sleep(5_000); // Naive approach to avoid gateway 429s
+      await sleep(5_000); // Naive approach to avoid gateway 429s and nonce issues
     }
     await Promise.all(promises);
 
@@ -255,6 +266,16 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
         maxFee: MAX_FEE,
       },
     );
+    const ethBlockRegistry = await starknetDeployer.deploy(
+      ethBlockRegistryFactory,
+      {
+        l1_headers_store: args.herodotusL1HeadersStore,
+      },
+      {
+        maxFee: MAX_FEE,
+      },
+    );
+
 
     // Deploy governance power strategy contracts
     const vanillaGovPowerStrategy = await starknetDeployer.deploy(
@@ -274,8 +295,8 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const ethBalanceOfGovPowerStrategy = await starknetDeployer.deploy(
       ethBalanceOfGovPowerStrategyFactory,
       {
-        fact_registry_address: args.herodotusFactRegistry,
-        l1_headers_store_address: args.herodotusL1HeadersStore,
+        fact_registry: args.herodotusFactRegistry,
+        ethereum_block_registry: ethBlockRegistry.address,
       },
       { maxFee: MAX_FEE },
     );
@@ -358,8 +379,9 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
 
     // Configure contracts
-    await manager.registerHouse(communityHouseImpl.address);
+    await (await manager.registerHouse(communityHouseImpl.address)).wait();
     await manager.registerRound(communityHouseImpl.address, timedRoundImpl.address);
+    await manager.registerRound(communityHouseImpl.address, infiniteRoundImpl.address);
 
     const deployment = {
       ethereum: {
@@ -380,6 +402,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           ethExecutionStrategy: ethExecutionStrategy.address,
           strategyRegistry: strategyRegistry.address,
           roundDependencyRegistry: roundDependencyRegistry.address,
+          ethBlockRegistry: ethBlockRegistry.address,
           infiniteRoundEthTxAuthStrategy: infiniteRoundEthTxAuthStrategy.address,
           infiniteRoundEthSigAuthStrategy: infiniteRoundEthSigAuthStrategy.address,
           timedRoundEthTxAuthStrategy: timedRoundEthTxAuthStrategy.address,

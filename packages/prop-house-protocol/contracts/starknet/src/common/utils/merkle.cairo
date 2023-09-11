@@ -1,8 +1,8 @@
 use prop_house::common::utils::hash::keccak_u256s_be;
 use prop_house::common::utils::math::pow;
 use nullable::{NullableTrait, nullable_from_box};
-use integer::{u256_from_felt252, U32IntoU128};
 use array::{ArrayTrait, SpanTrait};
+use integer::u256_from_felt252;
 use dict::Felt252DictTrait;
 use option::OptionTrait;
 use hash::LegacyHash;
@@ -55,7 +55,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                 break *leaves.at(0);
             }
 
-            let mut next_level_nodes = Default::<Array<u256>>::default();
+            let mut next_level_nodes = ArrayTrait::new();
             leaves = loop {
                 match leaves.pop_front() {
                     Option::Some(left) => {
@@ -65,7 +65,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
                             Option::Some(right) => {
                                 let right = *right;
 
-                                let mut hash_input = Default::<Array<u256>>::default();
+                                let mut hash_input = ArrayTrait::new();
                                 if left < right {
                                     hash_input.append(left);
                                     hash_input.append(right);
@@ -100,7 +100,7 @@ impl KeccakMerkleTreeImpl of MerkleTreeTrait<u256> {
             match proof.pop_front() {
                 Option::Some(proof_element) => {
                     let proof_element = *proof_element;
-                    let mut node_input = Default::default();
+                    let mut node_input = ArrayTrait::new();
 
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.
@@ -156,7 +156,7 @@ impl PedersenMerkleTreeImpl of MerkleTreeTrait<felt252> {
             match proof.pop_front() {
                 Option::Some(proof_element) => {
                     let proof_element = *proof_element;
-                    let mut node_input = Default::<Array<felt252>>::default();
+                    let mut node_input = ArrayTrait::<felt252>::new();
 
                     // Compute the hash of the current node and the current element of the proof.
                     // We need to check if the current node is smaller than the current element of the proof.
@@ -211,18 +211,18 @@ trait IncrementalMerkleTreeTrait {
 
 /// Pre-computed keccak zero hashes.
 fn _get_keccak_zero_hashes() -> Span<u256> {
-    let mut zeroes = Default::default();
-    zeroes.append(KeccakZeroHashes::Z_0);
-    zeroes.append(KeccakZeroHashes::Z_1);
-    zeroes.append(KeccakZeroHashes::Z_2);
-    zeroes.append(KeccakZeroHashes::Z_3);
-    zeroes.append(KeccakZeroHashes::Z_4);
-    zeroes.append(KeccakZeroHashes::Z_5);
-    zeroes.append(KeccakZeroHashes::Z_6);
-    zeroes.append(KeccakZeroHashes::Z_7);
-    zeroes.append(KeccakZeroHashes::Z_8);
-    zeroes.append(KeccakZeroHashes::Z_9);
-
+    let mut zeroes = array![
+        KeccakZeroHashes::Z_0,
+        KeccakZeroHashes::Z_1,
+        KeccakZeroHashes::Z_2,
+        KeccakZeroHashes::Z_3,
+        KeccakZeroHashes::Z_4,
+        KeccakZeroHashes::Z_5,
+        KeccakZeroHashes::Z_6,
+        KeccakZeroHashes::Z_7,
+        KeccakZeroHashes::Z_8,
+        KeccakZeroHashes::Z_9,
+    ];
     zeroes.span()
 }
 
@@ -239,7 +239,7 @@ fn _compute_root(ref sub_trees: Felt252Dict<Nullable<Span<u256>>>, mut hash: u25
         if curr_depth.into() == max_depth {
             break;
         }
-        let mut sub_tree = Default::default();
+        let mut sub_tree = ArrayTrait::new();
         if (size.into() & 1_u128) == 0 {
             sub_tree.append(hash);
             sub_tree.append(*zeroes.at(curr_depth));

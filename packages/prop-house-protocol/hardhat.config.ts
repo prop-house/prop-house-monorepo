@@ -54,6 +54,7 @@ const config: HardhatUserConfig = {
   starknet: {
     venv: 'active',
     network: STARKNET_NETWORK ?? 'starknetLocal',
+    scarbCommand: 'scarb',
     cairo1BinDir: CAIRO_1_BIN_DIR,
   },
   networks: {

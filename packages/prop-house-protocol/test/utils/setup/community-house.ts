@@ -1,4 +1,4 @@
-import hre, { starknet } from 'hardhat';
+import { starknet } from 'hardhat';
 import { Account, SequencerProvider } from 'starknet';
 import { commonL1Setup } from './common';
 import {
@@ -6,8 +6,9 @@ import {
   TimedRound__factory,
   InfiniteRound__factory,
 } from '../../../typechain';
-import { asciiToHex, getStarknetFactory } from '../utils';
+import { asciiToHex } from '../utils';
 import { EIP_712_DOMAIN_SEPARATOR_GOERLI, STARKNET_MAX_FEE } from '../constants';
+import { ec } from 'starknet';
 import { RoundType } from '@prophouse/sdk';
 import { constants } from 'ethers';
 import { ChainId } from '../../../src';
@@ -28,12 +29,16 @@ export const communityHouseSetup = async () => {
   const starknetProvider = new SequencerProvider({
     baseUrl: 'http://127.0.0.1:5050',
   });
-  const starknetAccount = new Account(starknetProvider, address, starknetSigner.keyPair);
+  const starknetAccount = new Account(starknetProvider, address, ec.getKeyPair(private_key));
 
-  const roundDeployerFactory = getStarknetFactory(hre, 'EthereumRoundFactory');
-  const ethExecutionStrategyFactory = getStarknetFactory(hre, 'EthereumExecutionStrategy');
-  const strategyRegistryFactory = getStarknetFactory(hre, 'StrategyRegistry');
-  const roundDependencyRegistryFactory = getStarknetFactory(hre, 'RoundDependencyRegistry');
+  const roundDeployerFactory = await starknet.getContractFactory('prop_house_EthereumRoundFactory');
+  const ethExecutionStrategyFactory = await starknet.getContractFactory(
+    'prop_house_EthereumExecutionStrategy',
+  );
+  const strategyRegistryFactory = await starknet.getContractFactory('prop_house_StrategyRegistry');
+  const roundDependencyRegistryFactory = await starknet.getContractFactory(
+    'prop_house_RoundDependencyRegistry',
+  );
 
   await starknetSigner.declare(roundDeployerFactory, {
     maxFee: STARKNET_MAX_FEE,
@@ -59,7 +64,7 @@ export const communityHouseSetup = async () => {
   });
   const strategyRegistry = await starknetSigner.deploy(strategyRegistryFactory);
   const roundDependencyRegistry = await starknetSigner.deploy(roundDependencyRegistryFactory, {
-    initial_owner: address,
+    initial_owner: starknetSigner.address,
   });
 
   const communityHouseImpl = await communityHouseFactory.deploy(
@@ -88,14 +93,12 @@ export const infiniteRoundSetup = async () => {
 
   const infiniteRoundFactory = new InfiniteRound__factory(config.deployer);
 
-  const infiniteRoundL2Factory = getStarknetFactory(hre, 'InfiniteRound');
-  const infiniteRoundEthTxAuthStrategyFactory = getStarknetFactory(
-    hre,
-    'InfiniteRoundEthereumTxAuthStrategy',
+  const infiniteRoundL2Factory = await starknet.getContractFactory('prop_house_InfiniteRound');
+  const infiniteRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
+    'prop_house_InfiniteRoundEthereumTxAuthStrategy',
   );
-  const infiniteRoundEthSigAuthStrategyFactory = getStarknetFactory(
-    hre,
-    'InfiniteRoundEthereumSigAuthStrategy',
+  const infiniteRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
+    'prop_house_InfiniteRoundEthereumSigAuthStrategy',
   );
 
   await config.starknetSigner.declare(infiniteRoundEthTxAuthStrategyFactory, {
@@ -123,14 +126,16 @@ export const infiniteRoundSetup = async () => {
   await config.starknetSigner.invoke(
     config.roundDependencyRegistry,
     'update_dependencies_if_not_locked',
+    [
+      ChainId.EthereumHardhat,
+      asciiToHex(RoundType.INFINITE),
+      DependencyKey.AUTH_STRATEGIES,
+      2,
+      infiniteRoundEthTxAuthStrategy.address,
+      infiniteRoundEthSigAuthStrategy.address,
+    ],
     {
-      origin_chain_id: ChainId.EthereumHardhat,
-      round_type: asciiToHex(RoundType.INFINITE),
-      key: DependencyKey.AUTH_STRATEGIES,
-      dependencies: [
-        infiniteRoundEthTxAuthStrategy.address,
-        infiniteRoundEthSigAuthStrategy.address,
-      ],
+      rawInput: true,
     },
   );
 
@@ -192,14 +197,12 @@ export const timedRoundSetup = async () => {
 
   const timedRoundFactory = new TimedRound__factory(config.deployer);
 
-  const timedRoundL2Factory = getStarknetFactory(hre, 'TimedRound');
-  const timedRoundEthTxAuthStrategyFactory = getStarknetFactory(
-    hre,
-    'TimedRoundEthereumTxAuthStrategy',
+  const timedRoundL2Factory = await starknet.getContractFactory('prop_house_TimedRound');
+  const timedRoundEthTxAuthStrategyFactory = await starknet.getContractFactory(
+    'prop_house_TimedRoundEthereumTxAuthStrategy',
   );
-  const timedRoundEthSigAuthStrategyFactory = getStarknetFactory(
-    hre,
-    'TimedRoundEthereumSigAuthStrategy',
+  const timedRoundEthSigAuthStrategyFactory = await starknet.getContractFactory(
+    'prop_house_TimedRoundEthereumSigAuthStrategy',
   );
 
   await config.starknetSigner.declare(timedRoundEthTxAuthStrategyFactory, {
@@ -227,11 +230,16 @@ export const timedRoundSetup = async () => {
   await config.starknetSigner.invoke(
     config.roundDependencyRegistry,
     'update_dependencies_if_not_locked',
+    [
+      ChainId.EthereumHardhat,
+      asciiToHex(RoundType.TIMED),
+      DependencyKey.AUTH_STRATEGIES,
+      2,
+      timedRoundEthTxAuthStrategy.address,
+      timedRoundEthSigAuthStrategy.address,
+    ],
     {
-      origin_chain_id: ChainId.EthereumHardhat,
-      round_type: asciiToHex(RoundType.TIMED),
-      key: DependencyKey.AUTH_STRATEGIES,
-      dependencies: [timedRoundEthTxAuthStrategy.address, timedRoundEthSigAuthStrategy.address],
+      rawInput: true,
     },
   );
 

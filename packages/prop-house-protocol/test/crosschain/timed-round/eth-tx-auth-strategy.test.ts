@@ -11,7 +11,6 @@ import {
   PROPOSE_SELECTOR,
   VOTE_SELECTOR,
   CANCEL_PROPOSAL_SELECTOR,
-  getStarknetFactory,
   STARKNET_MAX_FEE,
   asciiToHex,
 } from '../../utils';
@@ -31,12 +30,12 @@ import * as gql from '@prophouse/sdk/dist/gql';
 import * as addresses from '@prophouse/protocol/dist/src/addresses';
 import { GovPowerStrategyType as GQLGovPowerStrategyType } from '@prophouse/sdk/dist/gql/evm/graphql';
 import { MockStarknetMessaging, StarkNetCommit } from '../../../typechain';
-import hre, { starknet, ethers, network } from 'hardhat';
+import { starknet, ethers, network } from 'hardhat';
 import { poseidonHashMany } from 'micro-starknet';
 import { StarknetContract } from 'hardhat/types';
 import { solidity } from 'ethereum-waffle';
 import { BigNumber, constants } from 'ethers';
-import { Account, stark } from 'starknet';
+import { Account, stark, uint256 } from 'starknet';
 import chai, { expect } from 'chai';
 
 chai.use(solidity);
@@ -76,9 +75,8 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       starknetCommit,
     } = config);
 
-    const vanillaGovPowerStrategyFactory = getStarknetFactory(
-      hre,
-      'VanillaGovernancePowerStrategy',
+    const vanillaGovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_VanillaGovernancePowerStrategy',
     );
     await config.starknetSigner.declare(vanillaGovPowerStrategyFactory, {
       maxFee: STARKNET_MAX_FEE,
@@ -370,10 +368,14 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     const { events } = await starknet.getTransactionReceipt(transaction_hash);
     const [proposalId] = events[0].data;
 
-    let { response } = await timedRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    });
-    expect(response.is_cancelled).to.equal(false);
+    let [, , isCancelled] = (
+      await timedRoundContract.call(
+        'get_proposal',
+        { proposal_id: proposalId },
+        { rawOutput: true },
+      )
+    ).response.split(' ');
+    expect(Boolean(Number(isCancelled))).to.equal(false);
 
     const cancelCalldata = stark.compileCalldata({
       proposer: signer.address,
@@ -395,10 +397,14 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
       calldata: [l2RoundAddress, ...cancelCalldata],
     });
 
-    ({ response } = await timedRoundContract.call('get_proposal', {
-      proposal_id: proposalId,
-    }));
-    expect(response.is_cancelled).to.equal(true);
+    [, , isCancelled] = (
+      await timedRoundContract.call(
+        'get_proposal',
+        { proposal_id: proposalId },
+        { rawOutput: true },
+      )
+    ).response.split(' ');
+    expect(Boolean(Number(isCancelled))).to.equal(true);
   });
 
   it('should create a vote using an Ethereum transaction', async () => {
@@ -472,19 +478,23 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     expect(winnersLen).to.equal(1);
     expect(winningProposalIds).to.have.a.lengthOf(1);
 
-    const { response } = await timedRoundContract.call('get_proposal', {
-      proposal_id: winningProposalIds[0],
-    });
+    const [proposer, , , vpLow, vpHigh] = (
+      await timedRoundContract.call(
+        'get_proposal',
+        { proposal_id: winningProposalIds[0] },
+        { rawOutput: true },
+      )
+    ).response.split(' ');
 
     const winner = {
       position: 1,
       proposalId: winningProposalIds[0],
-      proposer: BigNumber.from(response.proposer).toHexString(),
-      votingPower: response.voting_power,
+      proposer: BigNumber.from(proposer).toHexString(),
+      votingPower: uint256.uint256ToBN({ low: vpLow, high: vpHigh }).toNumber(),
     };
     expect(winner.proposalId).to.equal(1);
     expect(winner.proposer).to.equal(signer.address.toLowerCase());
-    expect(winner.votingPower).to.equal(BigInt(1));
+    expect(winner.votingPower).to.equal(1);
 
     const { consumed_messages } = await starknet.devnet.flush();
 

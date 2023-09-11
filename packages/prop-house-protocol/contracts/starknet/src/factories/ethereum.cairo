@@ -1,4 +1,4 @@
-#[contract]
+#[starknet::contract]
 mod EthereumRoundFactory {
     use starknet::syscalls::deploy_syscall;
     use starknet::{ContractAddress, ClassHash};
@@ -6,6 +6,7 @@ mod EthereumRoundFactory {
     use zeroable::Zeroable;
     use array::ArrayTrait;
 
+    #[storage]
     struct Storage {
         _origin_chain_id: u64,
         _origin_messenger: felt252,
@@ -14,57 +15,48 @@ mod EthereumRoundFactory {
     }
 
     #[event]
-    fn RoundRegistered(
-        origin_round: felt252, starknet_round: ContractAddress, round_class_hash: ClassHash
-    ) {}
+    #[derive(Drop, starknet::Event)]
+    enum Event {
+        RoundRegistered: RoundRegistered,
+    }
 
-    impl EthereumRoundFactory of IRoundFactory {
-        fn starknet_round(origin_round: felt252) -> ContractAddress {
-            _starknet_round::read(origin_round)
-        }
-
-        fn origin_round(starknet_round: ContractAddress) -> felt252 {
-            _origin_round::read(starknet_round)
-        }
-
-        fn origin_messenger() -> felt252 {
-            _origin_messenger::read()
-        }
-
-        fn origin_chain_id() -> u64 {
-            _origin_chain_id::read()
-        }
+    /// Emitted when a new round is registered.
+    /// * `origin_round` - The origin round address.
+    /// * `starknet_round` - The starknet round address.
+    /// * `round_class_hash` - The class hash of the round.
+    #[derive(Drop, starknet::Event)]
+    struct RoundRegistered {
+        origin_round: felt252, starknet_round: ContractAddress, round_class_hash: ClassHash,
     }
 
     #[constructor]
-    fn constructor(origin_chain_id: u64, origin_messenger: felt252) {
-        initializer(origin_chain_id, origin_messenger);
+    fn constructor(ref self: ContractState, origin_chain_id: u64, origin_messenger: felt252) {
+        initializer(ref self, origin_chain_id, origin_messenger);
     }
 
-    /// Returns the starknet round address for a given origin round address.
-    /// * `origin_round` - The origin round address.
-    #[view]
-    fn starknet_round(origin_round: felt252) -> ContractAddress {
-        EthereumRoundFactory::starknet_round(origin_round)
-    }
+    #[external(v0)]
+    impl EthereumRoundFactory of IRoundFactory<ContractState> {
+        /// Returns the starknet round address for a given origin round address.
+        /// * `origin_round` - The origin round address.
+        fn starknet_round(self: @ContractState, origin_round: felt252) -> ContractAddress {
+            self._starknet_round.read(origin_round)
+        }
 
-    /// Returns the origin round address for a given starknet round address.
-    /// * `starknet_round` - The starknet round address.
-    #[view]
-    fn origin_round(starknet_round: ContractAddress) -> felt252 {
-        EthereumRoundFactory::origin_round(starknet_round)
-    }
+        /// Returns the origin round address for a given starknet round address.
+        /// * `starknet_round` - The starknet round address.
+        fn origin_round(self: @ContractState, starknet_round: ContractAddress) -> felt252 {
+            self._origin_round.read(starknet_round)
+        }
 
-    /// Returns the origin messenger address.
-    #[view]
-    fn origin_messenger() -> felt252 {
-        EthereumRoundFactory::origin_messenger()
-    }
+        /// Returns the origin messenger address.
+        fn origin_messenger(self: @ContractState) -> felt252 {
+            self._origin_messenger.read()
+        }
 
-    /// Returns the origin chain ID for all rounds deployed by this factory.
-    #[view]
-    fn origin_chain_id() -> u64 {
-        EthereumRoundFactory::origin_chain_id()
+        /// Returns the origin chain ID for all rounds deployed by this factory.
+        fn origin_chain_id(self: @ContractState) -> u64 {
+            self._origin_chain_id.read()
+        }
     }
 
     /// Registers a new round.
@@ -74,20 +66,23 @@ mod EthereumRoundFactory {
     /// * `round_params` - The round parameters.
     #[l1_handler]
     fn register_round(
+        ref self: ContractState,
         from_address: felt252,
         origin_round: felt252,
         round_class_hash: ClassHash,
         round_params: Array<felt252>,
     ) {
-        _only_origin_messenger(from_address);
+        _only_origin_messenger(@self, from_address);
 
         let result = deploy_syscall(round_class_hash, origin_round, round_params.span(), false);
         let (starknet_round, _) = result.unwrap_syscall();
 
-        _origin_round::write(starknet_round, origin_round);
-        _starknet_round::write(origin_round, starknet_round);
+        self._origin_round.write(starknet_round, origin_round);
+        self._starknet_round.write(origin_round, starknet_round);
 
-        RoundRegistered(origin_round, starknet_round, round_class_hash);
+        self.emit(Event::RoundRegistered(
+            RoundRegistered { origin_round, starknet_round, round_class_hash }
+        ));
     }
 
     /// Routes a call from an origin chain round to a starknet round contract.
@@ -97,11 +92,11 @@ mod EthereumRoundFactory {
     /// * `cdata` - The calldata to pass to the entry point.
     #[l1_handler]
     fn route_call_to_round(
-        from_address: felt252, origin_round: felt252, selector: felt252, cdata: Array<felt252>, 
+        self: @ContractState, from_address: felt252, origin_round: felt252, selector: felt252, cdata: Array<felt252>, 
     ) {
-        _only_origin_messenger(from_address);
+        _only_origin_messenger(self, from_address);
 
-        let target = _starknet_round::read(origin_round);
+        let target = self._starknet_round.read(origin_round);
         assert(target.is_non_zero(), 'EthereumRF: Invalid round');
 
         starknet::call_contract_syscall(
@@ -110,19 +105,16 @@ mod EthereumRoundFactory {
         .unwrap_syscall();
     }
 
-    ///
-    /// Internals
-    ///
-
-    fn initializer(origin_chain_id_: u64, origin_messenger_: felt252) {
-        _origin_chain_id::write(origin_chain_id_);
-        _origin_messenger::write(origin_messenger_);
+    /// Initializes the contract.
+    fn initializer(ref self: ContractState, origin_chain_id_: u64, origin_messenger_: felt252) {
+        self._origin_chain_id.write(origin_chain_id_);
+        self._origin_messenger.write(origin_messenger_);
     }
 
     /// Asserts that the from address is the origin messenger.
     /// * `from_address_` - The address of the sender.
-    fn _only_origin_messenger(from_address_: felt252) {
-        let messenger = _origin_messenger::read();
+    fn _only_origin_messenger(self: @ContractState, from_address_: felt252) {
+        let messenger = self._origin_messenger.read();
         assert(from_address_ == messenger, 'EthereumRF: Not messenger');
     }
 }

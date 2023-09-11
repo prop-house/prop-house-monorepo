@@ -1,12 +1,9 @@
-use starknet::{EthAddress, StorageAccess, SyscallResult, StorageBaseAddress};
-use prop_house::common::utils::bool::{BoolIntoFelt252, Felt252TryIntoBool};
+use starknet::{EthAddress, Store, SyscallResult, StorageBaseAddress};
 use prop_house::common::utils::constants::{
     TWO_POW_8, TWO_POW_24, TWO_POW_88, TWO_POW_152, TWO_POW_160, TWO_POW_224, MASK_8, MASK_16,
     MASK_64, MASK_160,
 };
-use prop_house::common::utils::integer::{
-    U256TryIntoU64, U256TryIntoEthAddress, U256TryIntoU16, U256TryIntoU8,
-};
+use prop_house::common::utils::integer::{U256TryIntoEthAddress, U256TryIntoU8};
 use prop_house::common::libraries::round::{Asset, UserStrategy};
 use prop_house::common::registry::strategy::Strategy;
 use prop_house::common::utils::vec::Vec;
@@ -17,23 +14,25 @@ use traits::{TryInto, Into};
 use option::OptionTrait;
 use array::ArrayTrait;
 
-#[abi]
-trait ITimedRound {
-    fn get_proposal(proposal_id: u32) -> Proposal;
+#[starknet::interface]
+trait ITimedRound<TContractState> {
+    fn get_proposal(self: @TContractState, proposal_id: u32) -> Proposal;
     fn propose(
+        ref self: TContractState,
         proposer: EthAddress,
         metadata_uri: Array<felt252>,
         used_proposing_strategies: Array<UserStrategy>,
     );
-    fn edit_proposal(proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
-    fn cancel_proposal(proposer: EthAddress, proposal_id: u32);
+    fn edit_proposal(ref self: TContractState, proposer: EthAddress, proposal_id: u32, metadata_uri: Array<felt252>);
+    fn cancel_proposal(ref self: TContractState, proposer: EthAddress, proposal_id: u32);
     fn vote(
+        ref self: TContractState,
         voter: EthAddress,
         proposal_votes: Array<ProposalVote>,
         used_voting_strategies: Array<UserStrategy>,
     );
-    fn cancel_round();
-    fn finalize_round(awards: Array<Asset>);
+    fn cancel_round(ref self: TContractState);
+    fn finalize_round(ref self: TContractState, awards: Array<Asset>);
 }
 
 #[derive(Drop)]
@@ -128,39 +127,39 @@ fn unpack_proposal_fields(packed: felt252) -> (EthAddress, u64, bool) {
     (proposer, last_updated_at, is_cancelled)
 }
 
-impl ProposalStorageAccess of StorageAccess<Proposal> {
+impl ProposalStore of Store<Proposal> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Proposal> {
-        ProposalStorageAccess::read_at_offset_internal(address_domain, base, 0)
+        ProposalStore::read_at_offset(address_domain, base, 0)
     }
     fn write(address_domain: u32, base: StorageBaseAddress, value: Proposal) -> SyscallResult<()> {
-        ProposalStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+        ProposalStore::write_at_offset(address_domain, base, 0, value)
     }
     #[inline(always)]
-    fn read_at_offset_internal(
+    fn read_at_offset(
         address_domain: u32, base: StorageBaseAddress, offset: u8
     ) -> SyscallResult<Proposal> {
         let (proposer, last_updated_at, is_cancelled) = unpack_proposal_fields(
-            StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
+            Store::<felt252>::read_at_offset(address_domain, base, offset)?
         );
-        let voting_power = StorageAccess::<u256>::read_at_offset_internal(
+        let voting_power = Store::<u256>::read_at_offset(
             address_domain, base, offset + 1
         )?;
         Result::Ok(Proposal { proposer, is_cancelled, last_updated_at, voting_power })
     }
     #[inline(always)]
-    fn write_at_offset_internal(
+    fn write_at_offset(
         address_domain: u32, base: StorageBaseAddress, offset: u8, value: Proposal
     ) -> SyscallResult<()> {
         let packed = pack_proposal_fields(
             value.proposer, value.last_updated_at, value.is_cancelled
         );
-        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<u256>::write_at_offset_internal(
+        Store::<felt252>::write_at_offset(address_domain, base, offset, packed)?;
+        Store::<u256>::write_at_offset(
             address_domain, base, offset + 1, value.voting_power
         )
     }
     #[inline(always)]
-    fn size_internal(value: Proposal) -> u8 {
+    fn size() -> u8 {
         3
     }
 }
@@ -220,17 +219,17 @@ fn unpack_round_config_fields(packed: felt252) -> (RoundState, u16, u64, u64, u6
     )
 }
 
-impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
+impl RoundConfigStore of Store<RoundConfig> {
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<RoundConfig> {
-        RoundConfigStorageAccess::read_at_offset_internal(address_domain, base, 0)
+        RoundConfigStore::read_at_offset(address_domain, base, 0)
     }
     fn write(
         address_domain: u32, base: StorageBaseAddress, value: RoundConfig
     ) -> SyscallResult<()> {
-        RoundConfigStorageAccess::write_at_offset_internal(address_domain, base, 0, value)
+        RoundConfigStore::write_at_offset(address_domain, base, 0, value)
     }
     #[inline(always)]
-    fn read_at_offset_internal(
+    fn read_at_offset(
         address_domain: u32, base: StorageBaseAddress, offset: u8
     ) -> SyscallResult<RoundConfig> {
         let (
@@ -240,12 +239,12 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             proposal_period_end_timestamp,
             vote_period_end_timestamp
         ) = unpack_round_config_fields(
-            StorageAccess::<felt252>::read_at_offset_internal(address_domain, base, offset)?
+            Store::<felt252>::read_at_offset(address_domain, base, offset)?
         );
-        let proposal_threshold = StorageAccess::<felt252>::read_at_offset_internal(
+        let proposal_threshold = Store::<felt252>::read_at_offset(
             address_domain, base, offset + 1
         )?;
-        let award_hash = StorageAccess::<felt252>::read_at_offset_internal(
+        let award_hash = Store::<felt252>::read_at_offset(
             address_domain, base, offset + 2
         )?;
         Result::Ok(
@@ -261,7 +260,7 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
         )
     }
     #[inline(always)]
-    fn write_at_offset_internal(
+    fn write_at_offset(
         address_domain: u32, base: StorageBaseAddress, offset: u8, value: RoundConfig
     ) -> SyscallResult<()> {
         let packed = pack_round_config_fields(
@@ -271,16 +270,16 @@ impl RoundConfigStorageAccess of StorageAccess<RoundConfig> {
             value.proposal_period_end_timestamp,
             value.vote_period_end_timestamp
         );
-        StorageAccess::<felt252>::write_at_offset_internal(address_domain, base, offset, packed)?;
-        StorageAccess::<felt252>::write_at_offset_internal(
+        Store::<felt252>::write_at_offset(address_domain, base, offset, packed)?;
+        Store::<felt252>::write_at_offset(
             address_domain, base, offset + 1, value.proposal_threshold
         )?;
-        StorageAccess::<felt252>::write_at_offset_internal(
+        Store::<felt252>::write_at_offset(
             address_domain, base, offset + 2, value.award_hash
         )
     }
     #[inline(always)]
-    fn size_internal(value: RoundConfig) -> u8 {
+    fn size() -> u8 {
         3
     }
 }

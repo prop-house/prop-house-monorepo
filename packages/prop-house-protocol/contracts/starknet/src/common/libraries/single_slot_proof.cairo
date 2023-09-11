@@ -1,5 +1,4 @@
 use prop_house::common::utils::constants::MULTIPLIER_FOR_64_BIT_SHIFT;
-use prop_house::common::utils::serde::SpanSerde;
 use option::OptionTrait;
 use traits::TryInto;
 
@@ -22,9 +21,10 @@ impl StorageSlotIntoU256 of Into<StorageSlot, u256> {
     }
 }
 
-#[abi]
-trait IFactsRegistry {
+#[starknet::interface]
+trait IFactsRegistry<TContractState> {
     fn get_storage_uint(
+        self: @TContractState,
         block: felt252,
         account_160: felt252,
         slot: StorageSlot,
@@ -34,7 +34,7 @@ trait IFactsRegistry {
     ) -> u256;
 }
 
-#[contract]
+#[starknet::contract]
 mod SingleSlotProof {
     use starknet::ContractAddress;
     use prop_house::common::utils::storage::get_slot_key;
@@ -47,15 +47,18 @@ mod SingleSlotProof {
     use traits::{TryInto, Into};
     use option::OptionTrait;
 
+    #[storage]
     struct Storage {
         _fact_registry: ContractAddress,
         _ethereum_block_registry: ContractAddress,
     }
 
     /// Initializes the contract.
-    fn initializer(fact_registry_: ContractAddress, ethereum_block_registry_: ContractAddress) {
-        _fact_registry::write(fact_registry_);
-        _ethereum_block_registry::write(ethereum_block_registry_);
+    /// * `fact_registry_` - The address of the Herodotus fact registry contract.
+    /// * `ethereum_block_registry_` - The address of the ethereum block registry contract.
+    fn initializer(ref self: ContractState, fact_registry_: ContractAddress, ethereum_block_registry_: ContractAddress) {
+        self._fact_registry.write(fact_registry_);
+        self._ethereum_block_registry.write(ethereum_block_registry_);
     }
 
     /// Returns the value of the mapping storage slot at the given timestamp.
@@ -64,10 +67,10 @@ mod SingleSlotProof {
     /// * `params` - The params, containing the contract address and slot index.
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     fn get_slot_value(
-        timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+        self: @ContractState, timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
     ) -> u256 {
         let ethereum_block_registry = IEthereumBlockRegistryDispatcher {
-            contract_address: _ethereum_block_registry::read()
+            contract_address: self._ethereum_block_registry.read()
         };
         let eth_block_number = ethereum_block_registry.get_eth_block_number(timestamp);
 
@@ -84,7 +87,7 @@ mod SingleSlotProof {
         let valid_slot = get_slot_key(slot_index.into(), user.into());
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
-        let facts_registry = IFactsRegistryDispatcher { contract_address: _fact_registry::read() };
+        let facts_registry = IFactsRegistryDispatcher { contract_address: self._fact_registry.read() };
         let slot_value = facts_registry.get_storage_uint(
             eth_block_number,
             contract_address,

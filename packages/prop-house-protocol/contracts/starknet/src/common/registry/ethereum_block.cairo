@@ -1,28 +1,37 @@
-#[abi]
-trait IL1HeadersStore {
-    fn get_latest_l1_block() -> felt252;
+#[starknet::interface]
+trait IL1HeadersStore<TContractState> {
+    fn get_latest_l1_block(self: @TContractState) -> felt252;
 }
 
-#[abi]
-trait IEthereumBlockRegistry {
-    fn get_eth_block_number(timestamp: u64) -> felt252;
+#[starknet::interface]
+trait IEthereumBlockRegistry<TContractState> {
+    fn get_eth_block_number(ref self: TContractState, timestamp: u64) -> felt252;
 }
 
-#[contract]
+#[starknet::contract]
 mod EthereumBlockRegistry {
     use starknet::{ContractAddress, get_block_timestamp};
     use super::{IEthereumBlockRegistry, IL1HeadersStoreDispatcherTrait, IL1HeadersStoreDispatcher};
     use zeroable::Zeroable;
     use traits::TryInto;
 
+    #[storage]
     struct Storage {
         _l1_headers_store: ContractAddress,
         _timestamp_to_eth_block_number: LegacyMap<u64, felt252>,
     }
 
-    impl EthereumBlockRegistry of IEthereumBlockRegistry {
-        fn get_eth_block_number(timestamp: u64) -> felt252 {
-            let number = _timestamp_to_eth_block_number::read(timestamp);
+    #[constructor]
+    fn constructor(ref self: ContractState, l1_headers_store: ContractAddress) {
+        initializer(ref self, l1_headers_store);
+    }
+
+    #[external(v0)]
+    impl EthereumBlockRegistry of IEthereumBlockRegistry<ContractState> {
+        /// Returns the closest ethereum block number for the given timestamp.
+        /// * `timestamp` - The timestamp to query.
+        fn get_eth_block_number(ref self: ContractState, timestamp: u64) -> felt252 {
+            let number = self._timestamp_to_eth_block_number.read(timestamp);
             if number.is_non_zero() {
                 // The timestamp has already be queried in herodotus and stored. Therefore we can just return the stored value
                 // This branch will be taken whenever a vote is cast as the mapping value would be set at proposal creation.
@@ -35,32 +44,17 @@ mod EthereumBlockRegistry {
                 assert(timestamp <= get_block_timestamp(), 'EBR: Cannot query the future');
 
                 let number = IL1HeadersStoreDispatcher {
-                    contract_address: _l1_headers_store::read()
+                    contract_address: self._l1_headers_store.read()
                 }.get_latest_l1_block();
-                _timestamp_to_eth_block_number::write(timestamp, number);
+                self._timestamp_to_eth_block_number.write(timestamp, number);
                 number
             }
         }
     }
 
-    #[constructor]
-    fn constructor(l1_headers_store: ContractAddress) {
-        initializer(l1_headers_store);
-    }
-
-    /// Returns the closest ethereum block number for the given timestamp.
-    /// * `timestamp` - The timestamp to query.
-    #[external]
-    fn get_eth_block_number(timestamp: u64) -> felt252 {
-        EthereumBlockRegistry::get_eth_block_number(timestamp)
-    }
-
-    ///
-    /// Internals
-    ///
-
     /// Initializes the contract.
-    fn initializer(l1_headers_store_: ContractAddress) {
-        _l1_headers_store::write(l1_headers_store_);
+    /// * `l1_headers_store_` - The address of the Herodotus L1 header store contract.
+    fn initializer(ref self: ContractState, l1_headers_store_: ContractAddress) {
+        self._l1_headers_store.write(l1_headers_store_);
     }
 }

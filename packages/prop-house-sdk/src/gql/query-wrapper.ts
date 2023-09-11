@@ -47,8 +47,6 @@ import {
   House,
   Proposal,
   Round,
-  RoundAward,
-  RoundConfig,
   RoundWithHouse,
   Vote,
 } from './types';
