@@ -79,8 +79,8 @@ export const contracts: Record<number, ContractAddresses> = {
       roundFactory: goerli.starknet.address.roundFactory,
       strategyRegistry: goerli.starknet.address.strategyRegistry,
       govPower: {
-        allowlist: goerli.starknet.address.merkleAllowlistGovPowerStrategy,
-        balanceOf: goerli.starknet.address.ethereumBalanceOfGovPowerStrategy,
+        allowlist: goerli.starknet.address.allowlistGovPowerStrategy,
+        balanceOf: goerli.starknet.address.ethBalanceOfGovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {

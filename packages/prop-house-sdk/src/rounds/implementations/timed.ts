@@ -20,8 +20,8 @@ import { isAddress } from '@ethersproject/address';
 
 export class TimedRound<CS extends void | Custom = void> extends RoundBase<RoundType.TIMED, CS> {
   // Storage variable name helpers
-  protected readonly _SPENT_VOTING_POWER_STORE = 'spent_voting_power_store';
-  protected readonly _ROUND_TIMESTAMPS_STORE = 'round_timestamps_store';
+  protected readonly _SPENT_VOTING_POWER_STORE = '_spent_voting_power';
+  protected readonly _CONFIG_STORE = '_config';
 
   /**
    * The `RoundConfig` struct type
@@ -567,11 +567,11 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param round The Starknet round address
    */
   public async getSnapshotTimestamp(round: string): Promise<string> {
-    const roundTimestamps = await this._starknet.getStorageAt(
+    const config = await this._starknet.getStorageAt(
       round,
-      encoding.getStorageVarAddress(this._ROUND_TIMESTAMPS_STORE),
+      encoding.getStorageVarAddress(this._CONFIG_STORE),
     );
-    return BigNumber.from(roundTimestamps).shr(40).mask(40).toString();
+    return BigNumber.from(config).shr(88).mask(64).toString();
   }
 
   /**

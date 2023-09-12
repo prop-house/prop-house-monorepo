@@ -5570,6 +5570,40 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
+"@prophouse/protocol@^0.1.0-alpha":
+  version "0.1.0-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.1.0-alpha.tgz#9048d1730b9209d02aafb914585209c439159df1"
+  integrity sha512-QoC3abbj8uND0rf61ZiPZbrBYQaJHfVfEFqmRDRfZbx6kkqb6Rz2e6cvrbphgWwHBMpbRKt0h3w1BKvswOJo9Q==
+  dependencies:
+    ethers "~5.7.2"
+
+"@prophouse/sdk@^0.1.0-alpha.25", "@prophouse/sdk@~0.1.0-alpha.25":
+  version "0.1.0-alpha.25"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.1.0-alpha.25.tgz#c47d39fe9045b8b00ed6d1871ffd22366db649c9"
+  integrity sha512-Ogf6rYPZznUg2JaVfyjztgmPGbVxYqqQmdcd+zrTZTDE+nwuShqVTeeNFa5hO/mS2VBQf7oqJPOuMl//HsuS1w==
+  dependencies:
+    "@ethersproject/abi" "~5.7.0"
+    "@ethersproject/abstract-provider" "~5.7.0"
+    "@ethersproject/abstract-signer" "~5.7.0"
+    "@ethersproject/address" "~5.7.0"
+    "@ethersproject/bignumber" "~5.7.0"
+    "@ethersproject/bytes" "~5.7.0"
+    "@ethersproject/constants" "~5.7.0"
+    "@ethersproject/contracts" "~5.7.0"
+    "@ethersproject/keccak256" "~5.7.0"
+    "@ethersproject/providers" "~5.7.0"
+    "@ethersproject/solidity" "~5.7.0"
+    "@ethersproject/wallet" "^5.7.0"
+    "@prophouse/protocol" "^0.1.0-alpha"
+    bn.js "^5.2.1"
+    ethereumjs-fork-block "^4.2.4"
+    ethereumjs-fork-common "^3.1.3"
+    graphql "^16.5.0"
+    graphql-request "5.0.0"
+    randombytes "^2.1.0"
+    starknet "4.22.0"
+    time-ts "^0.1.0"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
