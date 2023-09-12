@@ -18,8 +18,8 @@ import { RoundBase } from './base';
 
 export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<RoundType.INFINITE, CS> {
   // Storage variable name helpers
-  protected readonly _SPENT_VOTING_POWER_STORE = 'spent_voting_power_store';
-  protected readonly _ROUND_TIMESTAMPS_STORE = 'round_timestamps_store';
+  protected readonly _SPENT_VOTING_POWER_STORE = '_spent_voting_power';
+  protected readonly _CONFIG_STORE = '_config';
 
   /**
    * The `RoundConfig` struct type
@@ -306,11 +306,18 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       (acc, { govPower }) => acc.add(govPower),
       BigNumber.from(0),
     );
-    const spentVotingPower = await this.getSpentVotingPower(config.round, address);
-    const remainingVotingPower = totalVotingPower.sub(spentVotingPower);
-    if (suppliedVotingPower.gt(remainingVotingPower)) {
-      throw new Error('Not enough voting power remaining');
-    }
+
+    await Promise.all(
+      config.votes.map(async ({ proposalId, proposalVersion, votingPower }) => {
+        const spentVotingPower = await this.getSpentVotingPower(
+          config.round, address, proposalId.toString(), proposalVersion.toString(),
+        );
+        const remainingVotingPower = totalVotingPower.sub(spentVotingPower);
+        if (BigNumber.from(votingPower).gt(remainingVotingPower)) {
+          throw new Error(`Not enough voting power remaining for proposal ${proposalId}`);
+        }
+      }),
+    );
 
     const userParams = await this._govPower.getUserParamsForStrategies(
       address,
@@ -485,20 +492,24 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
    * @param round The Starknet round address
    */
   public async getSnapshotTimestamp(round: string): Promise<string> {
-    const roundTimestamps = await this._starknet.getStorageAt(
+    const config = await this._starknet.getStorageAt(
       round,
-      encoding.getStorageVarAddress(this._ROUND_TIMESTAMPS_STORE),
+      encoding.getStorageVarAddress(this._CONFIG_STORE),
     );
-    return BigNumber.from(roundTimestamps).shr(40).mask(40).toString();
+    return BigNumber.from(config).shr(8).mask(64).toString();
   }
 
   /**
    * Get the amount of voting power that has already been used by the `voter`
    * @param round The Starknet round address
    * @param voter The voter address
+   * @param proposalId The proposal ID
+   * @param proposalVersion The proposal version
    */
-  public async getSpentVotingPower(round: string, voter: string) {
-    const key = encoding.getStorageVarAddress(this._SPENT_VOTING_POWER_STORE, voter);
+  public async getSpentVotingPower(round: string, voter: string, proposalId: string, proposalVersion: string) {
+    const key = encoding.getStorageVarAddress(
+      this._SPENT_VOTING_POWER_STORE, voter, proposalId, proposalVersion,
+    );
     return BigNumber.from(await this._starknet.getStorageAt(round, key));
   }
 }
