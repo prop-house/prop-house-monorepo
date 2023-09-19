@@ -1,3 +1,4 @@
+import classes from './AwardsDispaly.module.css';
 import { RoundAward } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/types';
 import StatusPill, { StatusPillColor } from '../StatusPill';
 import { useContractReads } from 'wagmi';
@@ -5,6 +6,9 @@ import { erc20ABI, erc721ABI } from '@wagmi/core';
 import { formatEther } from 'viem';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
+import LoadingIndicator from '../LoadingIndicator';
+import Modal from '../Modal';
+import AwardWithPlace from '../HouseManager/AwardWithPlace';
 
 interface FullRoundAward extends RoundAward {
   symbol: string;
@@ -17,6 +21,7 @@ const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
 
   const [fullRoundAwards, setFullRoundAwards] = useState<FullRoundAward[]>();
   const [oneCurrencyTotalAmount, setOneCurrencyTotalAmount] = useState<number>();
+  const [showModal, setShowModal] = useState(false);
 
   const oneCurrencyForAllAwards =
     awards.length === 1 || awards.every(award => award.asset.token === awards[0].asset.token);
@@ -80,18 +85,45 @@ const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
     if (oneCurrencyForAllAwards) setOneCurrencyTotalAmount(parsedAmounts.reduce((a, b) => a + b));
   });
 
-  if (!oneCurrencyForAllAwards)
-    return <StatusPill copy={`Multiple`} color={StatusPillColor.Green} size={18} />;
+  const modal = (
+    <Modal
+      title="Awards"
+      subtitle="This round has multiple awards."
+      body={
+        <div className={classes.awardsContainer}>
+          {fullRoundAwards?.map((fullAward, index) => (
+            <div className={classes.awardRow}>
+              <AwardWithPlace place={index + 1} />
+              <StatusPill
+                copy={`${fullAward.symbol} ${fullAward.parsedAmount}`}
+                color={StatusPillColor.Green}
+              />
+            </div>
+          ))}
+        </div>
+      }
+      setShowModal={setShowModal}
+    />
+  );
 
-  if (fullRoundAwards)
-    return (
+  return showModal ? (
+    modal
+  ) : loadingSymbols || loadingDecimals ? (
+    <LoadingIndicator height={18} width={26} />
+  ) : !oneCurrencyForAllAwards ? (
+    <div onClick={() => setShowModal(prev => !prev)}>
+      <StatusPill copy={`Multiple`} color={StatusPillColor.Green} size={18} />
+    </div>
+  ) : fullRoundAwards ? (
+    <div onClick={() => setShowModal(prev => !prev)}>
       <StatusPill
         copy={`${oneCurrencyTotalAmount} ${fullRoundAwards[0].symbol}`}
         color={StatusPillColor.Green}
         size={18}
       />
-    );
-
-  return <>fucled</>;
+    </div>
+  ) : (
+    <>error</>
+  );
 };
 export default AwardsDisplay;
