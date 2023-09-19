@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import classes from './StatusPill.module.css';
+import { ReactNode } from 'react';
 
 export enum StatusPillColor {
   Gray,
@@ -7,7 +8,11 @@ export enum StatusPillColor {
   Purple,
 }
 
-const StatusPill: React.FC<{ copy: string; color: StatusPillColor; size?: number }> = props => {
+const StatusPill: React.FC<{
+  copy: string | ReactNode;
+  color: StatusPillColor;
+  size?: number;
+}> = props => {
   const { copy, color, size } = props;
 
   let bgClass = '';

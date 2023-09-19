@@ -3,66 +3,95 @@ import StatusPill, { StatusPillColor } from '../StatusPill';
 import { useContractReads } from 'wagmi';
 import { erc20ABI, erc721ABI } from '@wagmi/core';
 import { formatEther } from 'viem';
-import LoadingIndicator from '../LoadingIndicator';
 import { useEffect, useState } from 'react';
+import { formatUnits } from 'ethers/lib/utils';
+
+interface FullRoundAward extends RoundAward {
+  symbol: string;
+  decimals: number | undefined;
+  parsedAmount: number;
+}
 
 const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
   const { awards } = props;
 
-  // if native, amount + "ETH"
-  // if erc20, fetch name, fetch decimals, => formattedUnits + NAME
-  // if erc721, fetch name, amount + NAME
-  // if erc1155, fetch name, amount + name
+  const [fullRoundAwards, setFullRoundAwards] = useState<FullRoundAward[]>();
+  const [oneCurrencyTotalAmount, setOneCurrencyTotalAmount] = useState<number>();
 
-  const contracts = awards.map(award => {
+  const oneCurrencyForAllAwards =
+    awards.length === 1 || awards.every(award => award.asset.token === awards[0].asset.token);
+
+  const awardContracts = awards.map(award => {
     return {
-      address: '0x5e932688E81a182e3dE211dB6544F98b8e4f89C7' as `0x${string}`,
+      address: award.asset.token as `0x${string}`,
       abi: award.asset.assetType === 'ERC20' ? erc20ABI : erc721ABI,
     };
   });
 
+  // fetch symbols
   const {
     data: symbols,
-    isError,
-    isLoading,
+    isError: errorLoadingSymbols,
+    isLoading: loadingSymbols,
   } = useContractReads({
-    contracts: contracts.map(contract => {
-      return { ...contract, functionName: 'symbol' };
+    contracts: awardContracts.map(awardContract => {
+      return { ...awardContract, functionName: 'symbol' };
     }),
   });
 
-  interface data {
-    amount: number;
-    symbol: string;
-  }
-
-  useEffect(() => {
-    if (!symbols) return;
-
-    const final = awards.map((award, index) => {
-      if (award.asset.assetType === 'NATIVE')
-        return { amount: formatEther(BigInt(award.amount)), name: 'ETH' };
-      if (award.asset.assetType === 'ERC20')
-        return {
-          amount: 1,
-          name: symbols[index].result,
-        };
-      return {
-        amount: 1,
-        name: symbols[index].result,
-      };
-    });
-    console.log(final);
+  // fetch decimals
+  const {
+    data: decimals,
+    isError: errorLoadingDecimals,
+    isLoading: loadingDecimals,
+  } = useContractReads({
+    contracts: awardContracts.map(awardContract => {
+      return { ...awardContract, functionName: 'decimals' };
+    }),
   });
 
-  console.log();
+  // parse symbols, decimals and amounts into awards as FullRoundAwards[]
+  useEffect(() => {
+    if (!symbols || fullRoundAwards || !decimals) return;
 
-  return !symbols ? (
-    <LoadingIndicator height={18} width={26} />
-  ) : awards.length === 1 ? (
-    <></>
-  ) : (
-    <StatusPill copy={`Multiple`} color={StatusPillColor.Green} size={18} />
-  );
+    const parsedAmounts = awards.map((award, index) => {
+      switch (award.asset.assetType) {
+        case 'NATIVE':
+          return Number(formatEther(BigInt(award.amount)));
+        case 'ERC20':
+          return Number(formatUnits(BigInt(award.amount), decimals[index].result as number));
+        case 'ERC721':
+        case 'ERC1155':
+          return 1;
+      }
+    });
+
+    setFullRoundAwards(
+      awards.map((award, index) => {
+        return {
+          ...award,
+          symbol: award.asset.assetType === 'NATIVE' ? 'ETH' : (symbols[index].result as string),
+          decimals: decimals[index].result as number | undefined,
+          parsedAmount: parsedAmounts[index],
+        };
+      }),
+    );
+
+    if (oneCurrencyForAllAwards) setOneCurrencyTotalAmount(parsedAmounts.reduce((a, b) => a + b));
+  });
+
+  if (!oneCurrencyForAllAwards)
+    return <StatusPill copy={`Multiple`} color={StatusPillColor.Green} size={18} />;
+
+  if (fullRoundAwards)
+    return (
+      <StatusPill
+        copy={`${oneCurrencyTotalAmount} ${fullRoundAwards[0].symbol}`}
+        color={StatusPillColor.Green}
+        size={18}
+      />
+    );
+
+  return <>fucled</>;
 };
 export default AwardsDisplay;

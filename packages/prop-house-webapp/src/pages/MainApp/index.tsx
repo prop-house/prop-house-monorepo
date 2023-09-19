@@ -19,7 +19,7 @@ const MainApp = () => {
         {rounds &&
           rounds.map(r => {
             return (
-              <Col xl={4}>
+              <Col xl={6}>
                 <RoundCard_ round={r} />
               </Col>
             );

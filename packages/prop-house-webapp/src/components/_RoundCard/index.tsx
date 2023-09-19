@@ -1,8 +1,8 @@
 import classes from './RoundCard.module.css';
-import { RoundAsset, RoundWithHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse } from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import StatusPill, { StatusPillColor } from '../StatusPill';
 import EthAddress from '../EthAddress';
+import AwardsDisplay from '../AwardsDisplay';
 
 const RoundCard_: React.FC<{ round: RoundWithHouse }> = props => {
   const { round } = props;
@@ -25,7 +25,7 @@ const RoundCard_: React.FC<{ round: RoundWithHouse }> = props => {
             addAvatar={true}
             className={classes.roundCreator}
           />
-          <StatusPill copy={'award'} color={StatusPillColor.Green} size={18} />
+          <AwardsDisplay awards={round.config.awards} />
         </div>
       </div>
     </Card>
