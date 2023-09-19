@@ -22,8 +22,8 @@ import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import RoundModules from '../RoundModules';
 import { useAccount, useBlockNumber } from 'wagmi';
-import ProposalCard from '../ProposalCard';
-import { cardStatus } from '../../utils/cardStatus';
+import ProposalCard from '../TimedRoundProposalCard';
+import { ProposalCardStatus, cardStatus } from '../../utils/cardStatus';
 import isWinner from '../../utils/isWinner';
 import getWinningIds from '../../utils/getWinningIds';
 import { InfRoundFilterType } from '../../state/slices/propHouse';
@@ -33,14 +33,15 @@ import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { submitVotes } from '../../utils/submitVotes';
 import { signerIsContract } from '../../utils/signerIsContract';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
+import dayjs from 'dayjs';
+import TimedRoundProposalCard from '../TimedRoundProposalCard';
 
-const RoundContent: React.FC<{
-  auction: StoredAuctionBase;
-  proposals: StoredProposalWithVotes[];
+const TimedRoundContent: React.FC<{
+  round: Round;
+  proposals: Proposal[];
 }> = props => {
-  const { auction, proposals } = props;
-  const { address: account } = useAccount();
-  const { data: blocknumber } = useBlockNumber({ chainId: auction.voteStrategy.chainId ?? 1 });
+  const { round, proposals } = props;
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
@@ -59,95 +60,20 @@ const RoundContent: React.FC<{
 
   const client = useRef(new PropHouseWrapper(host));
   const signer = useEthersSigner();
-  const provider = useEthersProvider({
-    chainId: auction.voteStrategy.chainId ? auction.voteStrategy.chainId : 1,
-  });
-
-  const staleProp = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale;
-  const warningMessage = isTimedAuction(auction)
-    ? t('submittedProposals')
-    : infRoundFilter === InfRoundFilterType.Active
-    ? 'Active proposals will show up here.'
-    : infRoundFilter === InfRoundFilterType.Rejected
-    ? 'Proposals that meet the rejection quorum will show up here.'
-    : infRoundFilter === InfRoundFilterType.Winners
-    ? 'Proposals that meet the winner quorum will show up here.'
-    : 'Proposals that did not meet quorum before voting period ended will show up here.';
+  const provider = useEthersProvider();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
 
-  // fetch voting power for user
-  useEffect(() => {
-    if (!account || !signer || !community) return;
-
-    const fetchVotes = async () => {
-      try {
-        const strategyPayload = {
-          strategyName: auction.voteStrategy.strategyName,
-          account,
-          provider,
-          ...auction.voteStrategy,
-        };
-        const votes = await execStrategy(strategyPayload);
-
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [
-    account,
-    signer,
-    dispatch,
-    community,
-    auction.balanceBlockTag,
-    auction.voteStrategy,
-    provider,
-  ]);
-
-  // update submitted votes on proposal changes
-  useEffect(() => {
-    const votes = proposals.flatMap(p => (p.votes ? p.votes : []));
-    if (proposals && account && votes.length > 0)
-      dispatch(setVotesByUserInActiveRound(votes.filter(v => v.address === account)));
-  }, [proposals, account, dispatch]);
-
-  const handleSubmitVote = async () => {
-    if (!community || !blocknumber) return;
-
-    try {
-      setIsContract(
-        await signerIsContract(
-          signer ? signer : undefined,
-          provider,
-          account ? account : undefined,
-        ),
-      );
-      await submitVotes(voteAllotments, Number(blocknumber), community, client.current, isContract);
-
-      setShowErrorVotingModal(false);
-      setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessVotingModal(true);
-      refreshActiveProposals(client.current, auction, dispatch);
-      dispatch(clearVoteAllotments());
-      setShowVoteConfirmationModal(false);
-    } catch (e) {
-      console.log(e);
-      setShowErrorVotingModal(true);
-    }
-  };
-
   return (
     <>
-      {showVoteConfirmationModal && (
+      {/* {showVoteConfirmationModal && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
         />
-      )}
+      )} */}
 
       {showSuccessVotingModal && (
         <SuccessVotingModal
@@ -161,39 +87,38 @@ const RoundContent: React.FC<{
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
-      {community && (
-        <Row className={classes.propCardsRow}>
-          <Col xl={8} className={classes.propCardsCol}>
-            {auctionStatus(auction) === AuctionStatus.AuctionNotStarted ? (
-              <ErrorMessageCard message={'Round starting soon'} date={auction.startTime} />
-            ) : proposals.length === 0 ? (
-              <ErrorMessageCard message={warningMessage} />
-            ) : (
-              <>
-                {proposals.map((prop, index) => (
-                  <Col key={index}>
-                    <ProposalCard
-                      proposal={prop}
-                      auctionStatus={auctionStatus(auction)}
-                      cardStatus={cardStatus(votingPower > 0, auction)}
-                      isWinner={isWinner(getWinningIds(proposals, auction), prop.id)}
-                      stale={staleProp}
-                    />
-                  </Col>
-                ))}
-              </>
-            )}
-          </Col>
-          <RoundModules
+      <Row className={classes.propCardsRow}>
+        <Col xl={8} className={classes.propCardsCol}>
+          {round.state < RoundState.IN_PROPOSING_PERIOD ? (
+            <ErrorMessageCard
+              message={'Round starting soon'}
+              date={new Date(round.config.proposalPeriodStartTimestamp)}
+            />
+          ) : proposals.length === 0 ? (
+            <ErrorMessageCard message={'Submitted proposals will show up here'} />
+          ) : (
+            <>
+              {proposals.map((prop, index) => (
+                <Col key={index}>
+                  <TimedRoundProposalCard
+                    proposal={prop}
+                    roundState={round.state}
+                    isWinner={prop.isWinner}
+                  />
+                </Col>
+              ))}
+            </>
+          )}
+        </Col>
+        {/* <RoundModules
             auction={auction}
             proposals={proposals}
             community={community}
             setShowVotingModal={setShowVoteConfirmationModal}
-          />
-        </Row>
-      )}
+          /> */}
+      </Row>
     </>
   );
 };
 
-export default RoundContent;
+export default TimedRoundContent;

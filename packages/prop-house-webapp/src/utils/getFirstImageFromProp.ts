@@ -1,9 +1,9 @@
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { Proposal } from '@prophouse/sdk-react';
 import isImage from 'is-image-url';
 
-const getFirstImageFromProp = async (proposal: StoredProposalWithVotes) => {
+const getFirstImageFromProp = async (proposal: Proposal) => {
   // proposal description field
-  const proposalDescription = proposal.what;
+  const proposalDescription = proposal.body;
 
   // regex to find the first image in the description
   const imgRegex = /<img[^>]+src="([^">]+)"/;
