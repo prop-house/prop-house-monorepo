@@ -12,6 +12,7 @@ import { Proposal } from '@prophouse/sdk-react';
 export interface PropHouseSlice {
   activeRound?: StoredAuctionBase;
   activeProposal?: Proposal;
+  onchainActiveProposals?: Proposal[];
   activeProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
   modalActive: boolean;
@@ -59,6 +60,11 @@ export const propHouseSlice = createSlice({
       });
       state.infRoundFilteredProposals = action.payload;
     },
+    setOnChainActiveProposals: (state, action: PayloadAction<Proposal[]>) => {
+      state.onchainActiveProposals = action.payload.sort(
+        (a, b) => Number(b.votingPower) - Number(a.votingPower),
+      );
+    },
     appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
@@ -95,6 +101,7 @@ export const {
   setActiveRound,
   setActiveProposal,
   setActiveProposals,
+  setOnChainActiveProposals,
   appendProposal,
   sortTimedRoundProposals,
   filterInfRoundProposals,

@@ -11,7 +11,7 @@ import {
 } from '../../state/slices/propHouse';
 import { infRoundBalance } from '../../utils/infRoundBalance';
 
-const SortToggles: React.FC<{
+const InfRoundSortToggles: React.FC<{
   auction: StoredAuctionBase;
 }> = props => {
   const { auction } = props;
@@ -86,4 +86,4 @@ const SortToggles: React.FC<{
   );
 };
 
-export default SortToggles;
+export default InfRoundSortToggles;

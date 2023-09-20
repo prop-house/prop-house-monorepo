@@ -7,14 +7,15 @@ import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
-import { Proposal, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundContent from '../../components/RoundContent';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const Round = () => {
   const location = useLocation();
@@ -22,8 +23,11 @@ const Round = () => {
   const isModalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const propHouse = usePropHouse();
+
+  const dispatch = useAppDispatch();
+  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
   const [round, setRound] = useState<RoundWithHouse>();
-  const [proposals, setProposals] = useState<Proposal[]>();
+
   const [loadingRound, setLoadingRound] = useState(false);
   const [loadingRoundFailed, setLoadingRoundFailed] = useState(false);
   const [loadingProposals, setLoadingProposals] = useState(false);
@@ -80,11 +84,11 @@ const Round = () => {
             <Container>
               <RoundHeader round={round} />
             </Container>
-            {/* <div className={classes.stickyContainer}>
+            <div className={classes.stickyContainer}>
               <Container>
-                <RoundUtilityBar auction={round} />
+                <RoundUtilityBar round={round} />
               </Container>
-            </div> */}
+            </div>
           </>
         )
       )}

@@ -1,7 +1,7 @@
 import { StoredAuctionBase, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import dayjs from 'dayjs';
 import { isInfAuction } from './auctionType';
-import { Round } from '@prophouse/sdk-react';
+import { Round, RoundState } from '@prophouse/sdk-react';
 
 export enum AuctionStatus {
   AuctionNotStarted,
@@ -67,15 +67,15 @@ export const _auctionStatus = (round: Round): AuctionStatus => {
 /**
  * Returns copy for deadline corresponding to auction status
  */
-export const deadlineCopy = (auction: StoredAuctionBase) => {
-  const status = auctionStatus(auction);
-  return status === AuctionStatus.AuctionNotStarted
+export const deadlineCopy = (round: Round) => {
+  const status = round.state;
+  return status < RoundState.IN_PROPOSING_PERIOD
     ? 'Round starts'
-    : status === AuctionStatus.AuctionAcceptingProps
+    : status === RoundState.IN_PROPOSING_PERIOD
     ? 'Prop deadline'
-    : status === AuctionStatus.AuctionVoting
+    : status === RoundState.IN_VOTING_PERIOD
     ? 'Voting ends'
-    : status === AuctionStatus.AuctionEnded
+    : status > RoundState.IN_VOTING_PERIOD
     ? 'Round ended'
     : '';
 };
@@ -83,9 +83,9 @@ export const deadlineCopy = (auction: StoredAuctionBase) => {
 /**
  * Returns deadline date for corresponding to auction status
  */
-export const deadlineTime = (auction: StoredTimedAuction) =>
-  auctionStatus(auction) === AuctionStatus.AuctionNotStarted
-    ? auction.startTime
-    : auctionStatus(auction) === AuctionStatus.AuctionAcceptingProps
-    ? auction.proposalEndTime
-    : auction.votingEndTime;
+export const deadlineTime = (round: Round) =>
+  round.state < RoundState.IN_PROPOSING_PERIOD
+    ? new Date(round.config.proposalPeriodStartTimestamp * 1000)
+    : round.state === RoundState.IN_PROPOSING_PERIOD
+    ? new Date(round.config.proposalPeriodEndTimestamp * 1000)
+    : new Date(round.config.votePeriodEndTimestamp * 1000);
