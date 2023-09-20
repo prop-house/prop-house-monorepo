@@ -1,17 +1,13 @@
-import { StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { Proposal } from '@prophouse/sdk-react';
 
 export interface ProposalFields {
   title: string;
   what: string;
-  tldr: string;
-  reqAmount: number | null;
 }
 
-const proposalFields = (proposal: StoredProposal): ProposalFields => ({
+const proposalFields = (proposal: Proposal): ProposalFields => ({
   title: proposal.title,
-  what: proposal.what,
-  tldr: proposal.tldr,
-  reqAmount: proposal.reqAmount,
+  what: proposal.body,
 });
 
 export default proposalFields;

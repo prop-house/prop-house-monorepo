@@ -9,10 +9,13 @@ import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
 import { Proposal, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundContent from '../../components/RoundContent';
+import { useAppSelector } from '../../hooks';
+import ProposalModal from '../../components/ProposalModal';
 
 const Round = () => {
   const location = useLocation();
   const roundAddress = location.pathname.substring(1).split('/')[0];
+  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const propHouse = usePropHouse();
   const [round, setRound] = useState<RoundWithHouse>();
@@ -55,7 +58,7 @@ const Round = () => {
 
   return (
     <>
-      {/* {modalActive && <ProposalModal />} */}
+      {isModalActive && proposals && <ProposalModal proposals={proposals} />}
       {/* {round && (
         <OpenGraphElements
           title={round.title}

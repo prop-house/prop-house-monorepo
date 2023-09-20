@@ -1,7 +1,6 @@
 import classes from './ProposalModalHeader.module.css';
 import EthAddress from '../EthAddress';
 import { ImArrowLeft2, ImArrowRight2 } from 'react-icons/im';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useCallback, useEffect, useState } from 'react';
 import shareIcon from '../../assets/icons/share-icon.svg';
 import Tooltip from '../Tooltip';
@@ -9,7 +8,7 @@ import { useAppSelector } from '../../hooks';
 import { buildProposalPath } from '../../utils/buildPropsalPath';
 import { useTranslation } from 'react-i18next';
 import { isMobile } from 'web3modal';
-import { BiAward } from 'react-icons/bi';
+import { Proposal } from '@prophouse/sdk-react';
 
 export interface ProposalModalHeaderProps {
   backButton: React.ReactNode;
@@ -19,7 +18,7 @@ export interface ProposalModalHeaderProps {
   isFirstProp: boolean;
   isLastProp: boolean | undefined;
   showVoteAllotmentModal: boolean;
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   editProposalMode: boolean;
 }
 
@@ -107,15 +106,8 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
         <p className={classes.propTitle}>{proposal.title}</p>
 
         <div className={classes.authorAndFundReqContainer}>
-          {proposal.reqAmount && (
-            <div className={classes.fundReq}>
-              <BiAward size={'1rem'} />
-              {`${proposal.reqAmount} ${round?.currencyType}`}
-            </div>
-          )}
-
           <div className={classes.submittedBy}>
-            <EthAddress address={proposal.address} className={classes.submittedBy} />
+            <EthAddress address={proposal.proposer} className={classes.submittedBy} />
           </div>
         </div>
       </div>

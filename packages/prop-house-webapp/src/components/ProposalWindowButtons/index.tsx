@@ -1,6 +1,5 @@
 import classes from './ProposalWindowButtons.module.css';
 import Button, { ButtonColor } from '../Button';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { isSameAddress } from '../../utils/isSameAddress';
@@ -9,12 +8,13 @@ import { isValidPropData } from '../../utils/isValidPropData';
 import { isInfAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
 import useProposalGrants from '../../hooks/useProposalGrants';
+import { Proposal } from '@prophouse/sdk-react';
 
 /**
  * New, Edit and Delete buttons
  */
 const ProposalWindowButtons: React.FC<{
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
   setShowSavePropModal: (e: any) => void;
@@ -43,11 +43,10 @@ const ProposalWindowButtons: React.FC<{
     <>
       {/* MY PROP */}
       {account &&
-        (isSameAddress(proposal.address, account) ? (
+        (isSameAddress(proposal.proposer, account) ? (
           <div className={classes.proposalWindowButtons}>
             {editProposalMode && round ? (
               <>
-                <div></div>
                 <div className={classes.editModeButtons}>
                   <Button
                     classNames={classes.fullWidthButton}

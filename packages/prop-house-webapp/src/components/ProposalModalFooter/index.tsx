@@ -26,7 +26,6 @@ const ProposalModalFooter: React.FC<{
   propIndex: number | undefined;
   numberOfProps: number;
   handleDirectionalArrowClick: (e: any) => void;
-  isWinner?: boolean;
   editProposalMode: boolean;
   setEditProposalMode: (e: any) => void;
   setShowSavePropModal: (e: any) => void;
@@ -38,7 +37,6 @@ const ProposalModalFooter: React.FC<{
     propIndex,
     numberOfProps,
     handleDirectionalArrowClick,
-    isWinner,
     editProposalMode,
     setEditProposalMode,
     setShowSavePropModal,
@@ -90,7 +88,7 @@ const ProposalModalFooter: React.FC<{
       </p>
 
       <div className={classes.voteCount}>
-        {isWinner && (
+        {proposal.isWinner && (
           <div className={classes.crownNoun}>
             <img src="/heads/crown.png" alt="crown" />
           </div>
@@ -112,7 +110,7 @@ const ProposalModalFooter: React.FC<{
       />
 
       <div className={classes.voteCount}>
-        {isWinner && (
+        {proposal.isWinner && (
           <div className={classes.crownNoun}>
             <img src="/heads/crown.png" alt="crown" />
           </div>
@@ -135,8 +133,8 @@ const ProposalModalFooter: React.FC<{
             {/** TIMED ROUND */}
             {round &&
               isTimedAuction(round) &&
-              (isRoundOver && isWinner ? (
-                <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
+              (isRoundOver && proposal.isWinner ? (
+                <WinningProposalBanner numOfVotes={Number(proposal.votingPower)} />
               ) : !isRoundOver && !account ? (
                 connectDiv
               ) : isProposingWindow ? (
@@ -152,14 +150,13 @@ const ProposalModalFooter: React.FC<{
                   proposal={proposal}
                   setShowVotingModal={setShowVotingModal}
                   setShowVoteAllotmentModal={setShowVoteAllotmentModal}
-                  isWinner={isWinner && isWinner}
                 />
               ) : (
                 noVotesDiv
               ))}
 
             {/** INF ROUND */}
-            {round &&
+            {/* {round &&
               isInfAuction(round) &&
               (isWinner ? (
                 <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
@@ -183,7 +180,7 @@ const ProposalModalFooter: React.FC<{
                     isWinner={isWinner && isWinner}
                   />
                 ))
-              ))}
+              ))} */}
           </div>
 
           <ProposalModalNavButtons

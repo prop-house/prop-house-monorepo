@@ -7,10 +7,11 @@ import {
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
 import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
+import { Proposal } from '@prophouse/sdk-react';
 
 export interface PropHouseSlice {
   activeRound?: StoredAuctionBase;
-  activeProposal?: StoredProposalWithVotes;
+  activeProposal?: Proposal;
   activeProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
   modalActive: boolean;
@@ -48,7 +49,7 @@ export const propHouseSlice = createSlice({
     setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
       state.activeRound = action.payload;
     },
-    setActiveProposal: (state, action: PayloadAction<StoredProposalWithVotes>) => {
+    setActiveProposal: (state, action: PayloadAction<Proposal>) => {
       state.activeProposal = action.payload;
     },
     setActiveProposals: (state, action: PayloadAction<StoredProposalWithVotes[]>) => {

@@ -6,7 +6,6 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
@@ -17,8 +16,6 @@ import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
 import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
-import isWinner from '../../utils/isWinner';
-import getWinningIds from '../../utils/getWinningIds';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
@@ -28,8 +25,11 @@ import { isTimedAuction } from '../../utils/auctionType';
 import { signerIsContract } from '../../utils/signerIsContract';
 import { submitVotes } from '../../utils/submitVotes';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { Proposal } from '@prophouse/sdk-react';
 
-const ProposalModal = () => {
+const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
+  const { proposals } = props;
+
   const [editProposalMode, setEditProposalMode] = useState(false);
 
   const params = useParams();
@@ -47,7 +47,6 @@ const ProposalModal = () => {
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const activeProposals = useAppSelector(state => state.propHouse.activeProposals);
   const infRoundProposals = useAppSelector(state => state.propHouse.infRoundFilteredProposals);
-  const proposals = round && isTimedAuction(round) ? activeProposals : infRoundProposals;
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
   const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
@@ -69,23 +68,16 @@ const ProposalModal = () => {
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
-  const winningIds = round && proposals && getWinningIds(proposals, round);
 
   const handleClosePropModal = () => {
-    if (!community || !round) return;
     dispatch(setModalActive(false));
-    navigate(buildRoundPath(community, round), { replace: false });
   };
 
   const dismissModalAndRefreshProps = () => {
-    refreshActiveProposals(backendClient.current, round!, dispatch);
-    refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
-    handleClosePropModal();
+    // refreshActiveProposals(backendClient.current, round!, dispatch);
+    // refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
+    // handleClosePropModal();
   };
-
-  useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer);
-  }, [signer, backendHost]);
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -97,7 +89,7 @@ const ProposalModal = () => {
   useEffect(() => {
     if (!proposals || !activeProposal) return;
 
-    const index = proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id);
+    const index = proposals.findIndex((p: Proposal) => p.id === activeProposal.id);
     setCurrentPropIndex(index + 1);
     dispatch(setActiveProposal(proposals[index]));
   }, [proposals, id, dispatch, activeProposal]);
@@ -117,19 +109,6 @@ const ProposalModal = () => {
     setHideScrollButton(true);
   }, []);
 
-  useEffect(() => {
-    if (!propModalEl) return;
-    if (propModalEl.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
-    propModalEl.addEventListener('scroll', handleScroll, false);
-  }, [handleScroll, hideScrollButton, propModalEl]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress);
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
-
   const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
       !activeProposal ||
@@ -141,7 +120,7 @@ const ProposalModal = () => {
       return;
 
     const newPropIndex =
-      proposals.findIndex((p: StoredProposalWithVotes) => p.id === activeProposal.id) + direction;
+      proposals.findIndex((p: Proposal) => p.id === activeProposal.id) + direction;
     dispatch(setActiveProposal(proposals[newPropIndex]));
   };
 
@@ -167,7 +146,7 @@ const ProposalModal = () => {
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
       refreshActiveProposals(backendClient.current, round, dispatch);
-      refreshActiveProposal(backendClient.current, activeProposal, dispatch);
+      // refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
@@ -230,7 +209,7 @@ const ProposalModal = () => {
         className={clsx(classes.modal, 'proposalModalContainer')}
         id="propModal"
       >
-        {activeProposal && proposals && proposals.length > 0 && currentPropIndex && (
+        {currentPropIndex && activeProposal && (
           <>
             <ProposalHeaderAndBody
               currentProposal={activeProposal}
@@ -252,7 +231,6 @@ const ProposalModal = () => {
               propIndex={currentPropIndex}
               numberOfProps={proposals.length}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
-              isWinner={winningIds && isWinner(winningIds, activeProposal.id)}
               editProposalMode={editProposalMode}
               setEditProposalMode={setEditProposalMode}
               setShowSavePropModal={setShowSavePropModal}

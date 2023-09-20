@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown';
 import VotesDisplay from '../VotesDisplay';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
-import { setModalActive } from '../../state/slices/propHouse';
+import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import Divider from '../Divider';
 import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { useEffect, useState } from 'react';
@@ -49,7 +49,12 @@ const TimedRoundProposalCard: React.FC<{
 
   return (
     <>
-      <div onClick={e => dispatch(setModalActive(true))}>
+      <div
+        onClick={e => {
+          dispatch(setModalActive(true));
+          dispatch(setActiveProposal(proposal));
+        }}
+      >
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}

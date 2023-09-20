@@ -10,7 +10,6 @@ import { useDispatch } from 'react-redux';
 import { execStrategy } from '@prophouse/communities';
 import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount } from 'wagmi';
@@ -21,14 +20,14 @@ import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { Proposal } from '@prophouse/sdk-react';
 
 const ProposalModalVotingModule: React.FC<{
-  proposal: StoredProposalWithVotes;
+  proposal: Proposal;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
   setShowVoteAllotmentModal?: Dispatch<SetStateAction<boolean>>;
-  isWinner?: boolean;
 }> = props => {
-  const { proposal, setShowVotingModal, setShowVoteAllotmentModal, isWinner } = props;
+  const { proposal, setShowVotingModal, setShowVoteAllotmentModal } = props;
 
   const dispatch = useDispatch();
 
@@ -128,7 +127,7 @@ const ProposalModalVotingModule: React.FC<{
         </div>
 
         <div className={classes.voteAllotmentSection}>
-          {isWinner && (
+          {proposal.isWinner && (
             <div className={classes.crownNoun}>
               <img src="/heads/crown.png" alt="crown" />
             </div>
@@ -143,11 +142,12 @@ const ProposalModalVotingModule: React.FC<{
           </div>
 
           <div className={classes.mobileTooltipContainer}>
-            {round && isInfAuction(round) ? (
+            {/* {round && isInfAuction(round) ? (
               <InfRoundVotingControls proposal={proposal} />
             ) : (
               <TimedRoundVotingControls proposal={proposal} />
-            )}
+            )} */}
+            <TimedRoundVotingControls proposal={proposal} />
 
             <div className={classes.votesLeftMobile}>
               {votesRemaining} vote{votesRemaining !== 1 ? 's' : ''} left
