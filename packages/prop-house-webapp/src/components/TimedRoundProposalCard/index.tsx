@@ -75,7 +75,7 @@ const TimedRoundProposalCard: React.FC<{
                 {displayTldr && (
                   <ReactMarkdown
                     className={classes.truncatedTldr}
-                    children={'proposal.tldr'}
+                    children={proposal.body.substring(0, 120)}
                     disallowedElements={['img', '']}
                     components={{
                       h1: 'p',
