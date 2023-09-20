@@ -3,7 +3,7 @@ import {
   StoredProposalWithVotes,
   StoredAuctionBase,
 } from '@nouns/prop-house-wrapper/dist/builders';
-import classes from './RoundModules.module.css';
+import classes from './TimedRoundModules.module.css';
 import { Col } from 'react-bootstrap';
 import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import clsx from 'clsx';
