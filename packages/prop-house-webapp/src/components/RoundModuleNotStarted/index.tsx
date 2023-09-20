@@ -1,24 +1,15 @@
 import classes from '../AcceptingPropsModule/AcceptingPropsModule.module.css';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import RoundModuleCard from '../RoundModuleCard';
 import { useAccount } from 'wagmi';
-import useProposalGrants from '../../hooks/useProposalGrants';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
+import { Round } from '@prophouse/sdk-react';
 
 const RoundModuleNotStarted: React.FC<{
-  auction: StoredAuctionBase;
+  round: Round;
 }> = props => {
-  const { auction } = props;
-
-  const { address: account } = useAccount();
-
-  // eslint-disable-next-line
-  const [loadingCanPropose, canPropose, proposingCopy, votingCopy] = useProposalGrants(
-    auction,
-    account,
-  );
+  const { round } = props;
 
   const content = (
     <>
@@ -28,7 +19,7 @@ const RoundModuleNotStarted: React.FC<{
             <BsPersonFill color="" />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={proposingCopy} />
+            <ReactMarkdown className="markdown" children={'All accounts are welcome to propose.'} />
           </p>
         </div>
 
@@ -37,7 +28,7 @@ const RoundModuleNotStarted: React.FC<{
             <MdHowToVote />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={votingCopy} />
+            <ReactMarkdown className="markdown" children={'votingCopy'} />
           </p>
         </div>
       </div>

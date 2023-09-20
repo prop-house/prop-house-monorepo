@@ -110,12 +110,11 @@ const TimedRoundContent: React.FC<{
             </>
           )}
         </Col>
-        {/* <RoundModules
-            auction={auction}
-            proposals={proposals}
-            community={community}
-            setShowVotingModal={setShowVoteConfirmationModal}
-          /> */}
+        <RoundModules
+          round={round}
+          proposals={proposals}
+          setShowVotingModal={setShowVoteConfirmationModal}
+        />
       </Row>
     </>
   );

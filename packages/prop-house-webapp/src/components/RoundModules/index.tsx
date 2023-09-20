@@ -27,6 +27,7 @@ import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
 import RoundModuleRejected from '../RoundModuleRejected';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
+import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
 
 const RoundModules: React.FC<{
   auction: StoredAuctionBase;
@@ -72,9 +73,7 @@ const RoundModules: React.FC<{
     }
   }, [account, proposals]);
 
-  const notStartedModule = auctionStatus(auction) === AuctionStatus.AuctionNotStarted && (
-    <RoundModuleNotStarted auction={auction} />
-  );
+  const notStartedModule = roundNotStarted && <RoundModuleNotStarted round={round} />;
 
   const acceptingPropsModule = ((isTimedAuction(auction) && isProposingWindow) ||
     (isInfAuction(auction) && !isRoundOver && infRoundFilter === InfRoundFilterType.Active)) && (
