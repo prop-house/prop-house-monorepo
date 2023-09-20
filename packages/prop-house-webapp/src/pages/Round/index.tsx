@@ -11,6 +11,10 @@ import { Proposal, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundContent from '../../components/RoundContent';
 import { useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
+import ReactMarkdown from 'react-markdown';
 
 const Round = () => {
   const location = useLocation();
@@ -59,13 +63,13 @@ const Round = () => {
   return (
     <>
       {isModalActive && proposals && <ProposalModal proposals={proposals} />}
-      {/* {round && (
+      {round && (
         <OpenGraphElements
           title={round.title}
           description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
-          imageUrl={cardServiceUrl(CardType.round, round.id).href}
+          imageUrl={cardServiceUrl(CardType.round, round.address).href}
         />
-      )} */}
+      )}
       {loadingRound ? (
         <LoadingIndicator height={isMobile() ? 416 : 332} />
       ) : loadingRoundFailed ? (

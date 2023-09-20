@@ -6,7 +6,7 @@ export enum CardType {
 /**
  * General URL that consumes card-render service to generate opengraph metadata
  */
-export const cardServiceUrl = (cardtype: CardType, id: number): URL => {
+export const cardServiceUrl = (cardtype: CardType, id: string): URL => {
   const base =
     process.env.REACT_APP_NODE_ENV === 'production' && process.env.REACT_APP_PROD_CARD_SERVICE_URI
       ? process.env.REACT_APP_PROD_CARD_SERVICE_URI
