@@ -1,7 +1,3 @@
-import {
-  StoredProposalWithVotes,
-  StoredAuctionBase,
-} from '@nouns/prop-house-wrapper/dist/builders';
 import classes from './RoundContent.module.css';
 import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import { useEffect, useState, useRef } from 'react';
@@ -20,7 +16,6 @@ import {
 } from '../../state/slices/voting';
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import RoundModules from '../RoundModules';
 import { useAccount, useBlockNumber } from 'wagmi';
 import ProposalCard from '../TimedRoundProposalCard';
 import { ProposalCardStatus, cardStatus } from '../../utils/cardStatus';
@@ -36,8 +31,9 @@ import { useEthersProvider } from '../../hooks/useEthersProvider';
 import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
 import dayjs from 'dayjs';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
+import TimedRoundModules from '../TimedRoundModules';
 
-const TimedRoundContent: React.FC<{
+const RoundContent: React.FC<{
   round: Round;
   proposals: Proposal[];
 }> = props => {
@@ -110,7 +106,7 @@ const TimedRoundContent: React.FC<{
             </>
           )}
         </Col>
-        <RoundModules
+        <TimedRoundModules
           round={round}
           proposals={proposals}
           setShowVotingModal={setShowVoteConfirmationModal}
@@ -120,4 +116,4 @@ const TimedRoundContent: React.FC<{
   );
 };
 
-export default TimedRoundContent;
+export default RoundContent;

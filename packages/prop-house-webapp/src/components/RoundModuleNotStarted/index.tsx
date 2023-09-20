@@ -1,4 +1,4 @@
-import classes from '../AcceptingPropsModule/AcceptingPropsModule.module.css';
+import classes from '../TimedRoundAcceptingPropsModule/TimedRoundAcceptingPropsModule.module.css';
 import RoundModuleCard from '../RoundModuleCard';
 import { useAccount } from 'wagmi';
 import { BsPersonFill } from 'react-icons/bs';
