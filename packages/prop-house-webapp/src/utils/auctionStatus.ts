@@ -44,7 +44,7 @@ export const auctionStatus = (auction: StoredAuctionBase): AuctionStatus => {
  */
 export const _auctionStatus = (round: Round): AuctionStatus => {
   const _now = dayjs();
-  const _roundStartTime = dayjs(round.config.proposalPeriodStartTimestamp);
+  const _roundStartTime = dayjs(round.config.proposalPeriodStartTimestamp * 1000);
 
   if (_now.isBefore(_roundStartTime)) return AuctionStatus.AuctionNotStarted;
 

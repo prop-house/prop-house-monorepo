@@ -92,7 +92,7 @@ const TimedRoundContent: React.FC<{
           {round.state < RoundState.IN_PROPOSING_PERIOD ? (
             <ErrorMessageCard
               message={'Round starting soon'}
-              date={new Date(round.config.proposalPeriodStartTimestamp)}
+              date={new Date(round.config.proposalPeriodStartTimestamp * 1000)}
             />
           ) : proposals.length === 0 ? (
             <ErrorMessageCard message={'Submitted proposals will show up here'} />
