@@ -1,11 +1,8 @@
 import classes from './RoundUtilityBar.module.css';
 import clsx from 'clsx';
-import { auctionStatus, AuctionStatus } from '../../utils/auctionStatus';
 import SortToggles from '../SortToggles';
 import { Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import TimedRoundUtilityBar from '../TimedRoundUtilityBarItems';
 import InfRoundUtilityBar from '../InfRoundUtilityBar';
 import { Round, RoundState } from '@prophouse/sdk-react';
 import InfRoundSortToggles from '../SortToggles';
