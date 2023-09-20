@@ -112,7 +112,7 @@ const TimedRoundProposalCard: React.FC<{
                 className={clsx(classes.date, roundIsActive && classes.hideDate)}
                 title={detailedTime(new Date(proposal.receivedAt))}
               >
-                {diffTime(new Date(proposal.receivedAt))}
+                {diffTime(new Date(proposal.receivedAt * 1000))}
               </div>
             </div>
             <div className={classes.timestampAndlinkContainer}>
