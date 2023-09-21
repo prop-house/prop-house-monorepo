@@ -7,8 +7,7 @@ import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
-import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
-import TimedRoundContent from '../../components/RoundContent';
+import { RoundState, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
@@ -16,6 +15,7 @@ import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
+import RoundContent from '../../components/RoundContent';
 
 const Round = () => {
   const location = useLocation();
@@ -102,7 +102,7 @@ const Round = () => {
             ) : loadingProposalsFailed ? (
               <NotFound />
             ) : (
-              round && proposals && <TimedRoundContent round={round} proposals={proposals} />
+              round && proposals && <RoundContent round={round} proposals={proposals} />
             )}
           </div>
         </Container>
