@@ -68,7 +68,11 @@ const RoundContent: React.FC<{
 
       <Row className={classes.propCardsRow}>
         <Col xl={8} className={classes.propCardsCol}>
-          {round.state < RoundState.IN_PROPOSING_PERIOD ? (
+          {round.state === RoundState.UNKNOWN ? (
+            <ErrorMessageCard message={'Error determining the state of the round'} />
+          ) : round.state === RoundState.CANCELLED ? (
+            <ErrorMessageCard message={'Round was cancelled'} />
+          ) : round.state === RoundState.NOT_STARTED ? (
             <ErrorMessageCard
               message={'Round starting soon'}
               date={new Date(round.config.proposalPeriodStartTimestamp * 1000)}

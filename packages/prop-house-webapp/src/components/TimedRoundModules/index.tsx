@@ -11,6 +11,8 @@ import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
 import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
+import RoundModuleCancelled from '../RoundModuleCancelled';
+import RoundModuleUnknownState from '../RoundModuleUnknownState';
 
 const TimedRoundModules: React.FC<{
   round: Round;
@@ -45,7 +47,11 @@ const TimedRoundModules: React.FC<{
     // }
   }, [account, proposals]);
 
-  const notStartedModule = round.state < RoundState.IN_PROPOSING_PERIOD && (
+  const roundStateUnknown = round.state === RoundState.UNKNOWN && <RoundModuleUnknownState />;
+
+  const roundCancelled = round.state === RoundState.CANCELLED && <RoundModuleCancelled />;
+
+  const notStartedModule = round.state === RoundState.NOT_STARTED && (
     <RoundModuleNotStarted round={round} />
   );
 
@@ -83,6 +89,8 @@ const TimedRoundModules: React.FC<{
   //   );
 
   const modules = [
+    roundStateUnknown,
+    roundCancelled,
     notStartedModule,
     acceptingPropsModule,
     timedRoundVotingModule,
