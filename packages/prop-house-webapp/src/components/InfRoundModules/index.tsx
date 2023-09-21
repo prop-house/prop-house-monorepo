@@ -1,18 +1,36 @@
-import classes from './TimedRoundModules.module.css';
+import {
+  Community,
+  StoredProposalWithVotes,
+  StoredAuctionBase,
+} from '@nouns/prop-house-wrapper/dist/builders';
+import classes from '../TimedRoundModules/TimedRoundModules.module.css';
 import { Col } from 'react-bootstrap';
+import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
 import clsx from 'clsx';
+import getWinningIds from '../../utils/getWinningIds';
+import UserPropCard from '../UserPropCard';
 import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { isSameAddress } from '../../utils/isSameAddress';
+import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import { useAccount } from 'wagmi';
+import InfRoundVotingModule from '../InfRoundVotingModule';
+import { useAppSelector } from '../../hooks';
+import { InfRoundFilterType } from '../../state/slices/propHouse';
+import RoundModuleWinner from '../RoundModuleWinner';
+import RoundModuleStale from '../RoundModuleStale';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
+import { infRoundBalance } from '../../utils/infRoundBalance';
+import RoundModuleRejected from '../RoundModuleRejected';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
 import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
+import InfRoundAcceptingPropsModule from '../InfRoundAcceptingPropsModule';
 
-const TimedRoundModules: React.FC<{
+const InfRoundModules: React.FC<{
   round: Round;
   proposals: Proposal[];
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -49,19 +67,38 @@ const TimedRoundModules: React.FC<{
     // }
   }, [account, proposals]);
 
-  const notStartedModule = roundNotStarted && <RoundModuleNotStarted round={round} />;
+  const notStartedModule = <RoundModuleNotStarted round={round} />;
 
-  const acceptingPropsModule = round.state === RoundState.IN_PROPOSING_PERIOD && (
-    <TimedRoundAcceptingPropsModule round={round} />
-  );
+  //   const acceptingPropsModule = round.state === RoundState.IN_PROPOSING_PERIOD && (
+  //     <InfRoundAcceptingPropsModule round={round} />
+  //   );
 
-  const timedRoundVotingModule = round.state === RoundState.IN_VOTING_PERIOD && (
-    <TimedRoundVotingModule
-      round={round}
-      setShowVotingModal={setShowVotingModal}
-      totalVotes={getVoteTotal()}
-    />
-  );
+  //   const timedRoundVotingModule = round.state === RoundState.IN_VOTING_PERIOD && (
+  //     <InfRoundVotingModule
+  //       round={round}
+  //       setShowVotingModal={setShowVotingModal}
+  //       totalVotes={getVoteTotal()}
+  //     />
+  //   );
+
+  // const infRoundVotingModule = isInfAuction(auction) &&
+  //   (!account || votingPower > 0) &&
+  //   !isRoundOver &&
+  //   infRoundFilter === InfRoundFilterType.Active && (
+  //     <InfRoundVotingModule setShowVotingModal={setShowVotingModal} />
+  //   );
+
+  // const roundWinnerModule = isInfAuction(auction) &&
+  //   !isRoundOver &&
+  //   infRoundFilter === InfRoundFilterType.Winners && <RoundModuleWinner auction={auction} />;
+
+  // const roundRejectedModule = isInfAuction(auction) &&
+  //   !isRoundOver &&
+  // infRoundFilter === InfRoundFilterType.Rejected && <RoundModuleRejected auction={auction} />;
+
+  // const roundStaleModule = isInfAuction(auction) && infRoundFilter === InfRoundFilterType.Stale && (
+  //   <RoundModuleStale auction={auction} />
+  // );
 
   // const roundOverModule = isRoundOver && (
   //   <RoundOverModule
@@ -90,8 +127,8 @@ const TimedRoundModules: React.FC<{
 
   const modules = [
     notStartedModule,
-    acceptingPropsModule,
-    timedRoundVotingModule,
+    // acceptingPropsModule,
+    // timedRoundVotingModule,
     // infRoundVotingModule,
     // roundWinnerModule,
     // roundRejectedModule,
@@ -119,4 +156,4 @@ const TimedRoundModules: React.FC<{
     </Col>
   );
 };
-export default TimedRoundModules;
+export default InfRoundModules;
