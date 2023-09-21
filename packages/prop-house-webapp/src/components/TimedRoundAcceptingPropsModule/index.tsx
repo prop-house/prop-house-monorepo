@@ -13,8 +13,10 @@ import LoadingIndicator from '../LoadingIndicator';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { Round, RoundState, usePropHouse } from '@prophouse/sdk-react';
-import { useEffect, useState } from 'react';
+import { Round, usePropHouse } from '@prophouse/sdk-react';
+import useCanPropose from '../../hooks/useCanPropose';
+import useProposingCopy from '../../hooks/useProposingCopy';
+import useVotingCopy from '../../hooks/useVotingCopy';
 
 const TimedRoundAcceptingPropsModule: React.FC<{
   round: Round;
@@ -28,31 +30,9 @@ const TimedRoundAcceptingPropsModule: React.FC<{
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
-  const [loadingCanPropose, setLoadingCanPropose] = useState<boolean>(false);
-  const [canPropose, setCanPropose] = useState<boolean | null | undefined>(undefined);
-
-  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
-
-  useEffect(() => {
-    if (canPropose !== undefined) return;
-
-    const fetchVotingPower = async () => {
-      setLoadingCanPropose(true);
-      try {
-        const votingPower = await prophouse.voting.getTotalVotingPower(
-          account as string,
-          round.config.proposalPeriodStartTimestamp,
-          round.votingStrategies,
-        );
-        setCanPropose(votingPower.toNumber() > 0);
-      } catch (e) {
-        console.log('error fetching voting power: ', e);
-        setCanPropose(false);
-      }
-      setLoadingCanPropose(false);
-    };
-    fetchVotingPower();
-  });
+  const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
+  const proposingCopy = useProposingCopy(round.votingStrategies); // todo: change to round.proposingStrategies
+  const votingCopy = useVotingCopy(round.votingStrategies);
 
   const content = (
     <>
@@ -62,7 +42,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
             <BsPersonFill color="" />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={'proposingCopy'} />
+            <ReactMarkdown className="markdown" children={proposingCopy} />
           </p>
         </div>
 
@@ -71,7 +51,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
             <MdHowToVote />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={'votingCopy'} />
+            <ReactMarkdown className="markdown" children={votingCopy} />
           </p>
         </div>
       </div>
@@ -93,7 +73,6 @@ const TimedRoundAcceptingPropsModule: React.FC<{
           onClick={() => {
             dispatch(clearProposal());
             navigate('/create');
-            // navigate('/create', { state: { auction, community, proposals } });
           }}
           disabled={!canPropose}
         />
