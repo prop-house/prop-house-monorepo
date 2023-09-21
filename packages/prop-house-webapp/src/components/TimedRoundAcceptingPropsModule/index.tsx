@@ -8,12 +8,11 @@ import RoundModuleCard from '../RoundModuleCard';
 import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
-import { useAppSelector } from '../../hooks';
 import LoadingIndicator from '../LoadingIndicator';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { Round, usePropHouse } from '@prophouse/sdk-react';
+import { Round } from '@prophouse/sdk-react';
 import useCanPropose from '../../hooks/useCanPropose';
 import useProposingCopy from '../../hooks/useProposingCopy';
 import useVotingCopy from '../../hooks/useVotingCopy';
@@ -23,10 +22,8 @@ const TimedRoundAcceptingPropsModule: React.FC<{
 }> = props => {
   const { round } = props;
 
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const prophouse = usePropHouse();
   const { address: account } = useAccount();
   const { t } = useTranslation();
 
