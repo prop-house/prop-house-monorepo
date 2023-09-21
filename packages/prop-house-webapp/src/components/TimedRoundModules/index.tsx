@@ -38,11 +38,6 @@ const TimedRoundModules: React.FC<{
 
   const { address: account } = useAccount();
 
-  const votingPower = useAppSelector(state => state.voting.votingPower);
-  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
-
-  const [userProposals, setUserProposals] = useState<StoredProposalWithVotes[]>();
-
   // auction statuses
   const roundNotStarted = round.state < RoundState.IN_PROPOSING_PERIOD;
   const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
@@ -77,13 +72,13 @@ const TimedRoundModules: React.FC<{
     <TimedRoundAcceptingPropsModule round={round} />
   );
 
-  // const timedRoundVotingModule = isTimedAuction(auction) && isVotingWindow && (
-  //   <TimedRoundVotingModule
-  //     round={auction}
-  //     setShowVotingModal={setShowVotingModal}
-  //     totalVotes={getVoteTotal()}
-  //   />
-  // );
+  const timedRoundVotingModule = round.state === RoundState.IN_VOTING_PERIOD && (
+    <TimedRoundVotingModule
+      round={round}
+      setShowVotingModal={setShowVotingModal}
+      totalVotes={getVoteTotal()}
+    />
+  );
 
   // const infRoundVotingModule = isInfAuction(auction) &&
   //   (!account || votingPower > 0) &&
@@ -132,7 +127,7 @@ const TimedRoundModules: React.FC<{
   const modules = [
     notStartedModule,
     acceptingPropsModule,
-    // timedRoundVotingModule,
+    timedRoundVotingModule,
     // infRoundVotingModule,
     // roundWinnerModule,
     // roundRejectedModule,

@@ -126,7 +126,7 @@ const TimedRoundProposalCard: React.FC<{
                   {roundState === RoundState.IN_VOTING_PERIOD && (
                     <div className={classes.votingArrows}>
                       <span className={classes.plusArrow}>+</span>
-                      {/* <TimedRoundVotingControls proposal={proposal} /> */}
+                      <TimedRoundVotingControls proposal={proposal} />
                     </div>
                   )}
                 </div>

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import classes from './TimedRoundVotingModule.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
-import { useAppSelector } from '../../hooks';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { countTotalVotesAlloted } from '../../utils/countTotalVotesAlloted';
 import Button, { ButtonColor } from '../Button';
@@ -14,13 +14,15 @@ import { useAccount } from 'wagmi';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import useVotingPower from '../../hooks/useVotingPower';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { GiDeadHead } from 'react-icons/gi';
 import LoadingIndicator from '../LoadingIndicator';
+import { Round } from '@prophouse/sdk-react';
+import { setVotingPower } from '../../state/slices/voting';
+import useVotingCopy from '../../hooks/useVotingCopy';
 
 export interface TimedRoundVotingModuleProps {
-  round: StoredAuctionBase;
+  round: Round;
   totalVotes: number | undefined;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }
@@ -31,18 +33,12 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const { address: account } = useAccount();
 
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
   const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
-  const [
-    loadingCanVote,
-    //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _votingPower,
-    //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _numVotesCasted,
-    votingCopy,
-  ] = useVotingPower(round, account);
+  const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
+  const votingCopy = useVotingCopy(round.votingStrategies);
+  const dispatch = useAppDispatch();
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
   const [numAllotedVotes, setNumAllotedVotes] = useState(0);
@@ -50,18 +46,23 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const { t } = useTranslation();
 
   useEffect(() => {
+    if (!votingPower) return;
     setVotesLeftToAllot(
       countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments),
     );
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
+
+    dispatch(setVotingPower(votingPower));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
+
+  console.log(votingPower);
 
   const content = (
     <>
       {account ? (
-        loadingCanVote ? (
+        loadingVotingPower ? (
           <LoadingIndicator height={50} width={50} />
-        ) : votingPower > 0 ? (
+        ) : votingPower && votingPower > 0 ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
               <span>{t('castYourVotes')}</span>
