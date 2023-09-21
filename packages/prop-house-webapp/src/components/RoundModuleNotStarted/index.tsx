@@ -1,15 +1,18 @@
 import classes from '../TimedRoundAcceptingPropsModule/TimedRoundAcceptingPropsModule.module.css';
 import RoundModuleCard from '../RoundModuleCard';
-import { useAccount } from 'wagmi';
 import { BsPersonFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Round } from '@prophouse/sdk-react';
+import useVotingCopy from '../../hooks/useVotingCopy';
+import useProposingCopy from '../../hooks/useProposingCopy';
 
 const RoundModuleNotStarted: React.FC<{
   round: Round;
 }> = props => {
   const { round } = props;
+  const proposingCopy = useProposingCopy(round.votingStrategies); // todo: replace with round.proposingStrategies
+  const votingCopy = useVotingCopy(round.votingStrategies);
 
   const content = (
     <>
@@ -19,7 +22,7 @@ const RoundModuleNotStarted: React.FC<{
             <BsPersonFill color="" />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={'All accounts are welcome to propose.'} />
+            <ReactMarkdown className="markdown" children={proposingCopy} />
           </p>
         </div>
 
@@ -28,7 +31,7 @@ const RoundModuleNotStarted: React.FC<{
             <MdHowToVote />
           </div>
           <p>
-            <ReactMarkdown className="markdown" children={'votingCopy'} />
+            <ReactMarkdown className="markdown" children={votingCopy} />
           </p>
         </div>
       </div>
