@@ -21,14 +21,10 @@ const TimedRoundModules: React.FC<{
 
   const { address: account } = useAccount();
 
-  // auction statuses
-  const roundNotStarted = round.state < RoundState.IN_PROPOSING_PERIOD;
-  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
-  const isVotingWindow = round.state === RoundState.IN_VOTING_PERIOD;
-  const isRoundOver = round.state > RoundState.IN_PROPOSING_PERIOD;
-
-  const getVoteTotal = () =>
-    proposals.reduce((total, prop) => (total = total + Number(prop.votingPower)), 0);
+  const totalVotesAcrossAllProps = proposals.reduce(
+    (total, prop) => (total = total + Number(prop.votingPower)),
+    0,
+  );
   const [fetchedUserProps, setFetchedUserProps] = useState(false);
 
   useEffect(() => {
@@ -49,7 +45,9 @@ const TimedRoundModules: React.FC<{
     // }
   }, [account, proposals]);
 
-  const notStartedModule = roundNotStarted && <RoundModuleNotStarted round={round} />;
+  const notStartedModule = round.state < RoundState.IN_PROPOSING_PERIOD && (
+    <RoundModuleNotStarted round={round} />
+  );
 
   const acceptingPropsModule = round.state === RoundState.IN_PROPOSING_PERIOD && (
     <TimedRoundAcceptingPropsModule round={round} />
@@ -59,17 +57,13 @@ const TimedRoundModules: React.FC<{
     <TimedRoundVotingModule
       round={round}
       setShowVotingModal={setShowVotingModal}
-      totalVotes={getVoteTotal()}
+      totalVotes={totalVotesAcrossAllProps}
     />
   );
 
-  // const roundOverModule = isRoundOver && (
-  //   <RoundOverModule
-  //     numOfProposals={proposals.length}
-  //     totalVotes={getVoteTotal()}
-  //     round={auction}
-  //   />
-  // );
+  const roundOverModule = round.state > RoundState.IN_VOTING_PERIOD && (
+    <RoundOverModule numOfProposals={proposals.length} totalVotes={totalVotesAcrossAllProps} />
+  );
 
   // const userPropCardModule = (isInfAuction(auction)
   //   ? infRoundFilter === InfRoundFilterType.Active
@@ -92,11 +86,7 @@ const TimedRoundModules: React.FC<{
     notStartedModule,
     acceptingPropsModule,
     timedRoundVotingModule,
-    // infRoundVotingModule,
-    // roundWinnerModule,
-    // roundRejectedModule,
-    // roundStaleModule,
-    // roundOverModule,
+    roundOverModule,
     // userPropCardModule,
   ];
 
