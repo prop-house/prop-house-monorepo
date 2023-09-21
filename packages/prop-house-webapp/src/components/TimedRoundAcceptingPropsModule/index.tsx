@@ -39,18 +39,15 @@ const TimedRoundAcceptingPropsModule: React.FC<{
     const fetchVotingPower = async () => {
       setLoadingCanPropose(true);
       try {
-        console.log('here');
-        console.log(round.votingStrategies.toString());
         const votingPower = await prophouse.voting.getTotalVotingPower(
           account as string,
           round.config.proposalPeriodStartTimestamp,
           round.votingStrategies,
         );
-        // setCanPropose(votingPower.toNumber() > 0);
-        setCanPropose(true);
+        setCanPropose(votingPower.toNumber() > 0);
       } catch (e) {
         console.log('error fetching voting power: ', e);
-        setCanPropose(true);
+        setCanPropose(false);
       }
       setLoadingCanPropose(false);
     };
