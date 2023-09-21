@@ -1,11 +1,11 @@
 import { RoundVotingStrategy } from '@prophouse/sdk-react';
 
 /**
- * Determines the voting copy using `RoundVotingStrategy[]`
- * @param votingStrategies
+ * Determines the proposing copy using `RoundVotingStrategy[]`
+ * @param proposingStrategies
  * @returns copy describing the strategies
  */
-const useVotingCopy = (votingStrategies: RoundVotingStrategy[]) => {
+const useProposingCopy = (proposingStrategies: RoundVotingStrategy[]) => {
   // current supported strats = whitelist / balance of
 
   // if white list,
@@ -16,7 +16,7 @@ const useVotingCopy = (votingStrategies: RoundVotingStrategy[]) => {
   // if one, owners of the xx token are eligible to vote
   // if multiple "owners of one of the voting tokens are eligible to vote"
 
-  return 'voting copy here';
+  return 'proposing copy here';
 };
 
-export default useVotingCopy;
+export default useProposingCopy;
