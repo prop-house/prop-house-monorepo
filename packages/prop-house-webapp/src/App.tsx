@@ -5,7 +5,6 @@ import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import Create from './pages/Create';
-import House from './pages/House';
 import Footer from './components/Footer';
 import './App.css';
 import FAQ from './pages/FAQ';
@@ -112,6 +111,8 @@ function App() {
 
                   <Routes>
                     <Route path="/app" element={<MainApp />} />
+                    <Route path="/:round" element={<Round />} />
+
                     <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/" element={<Home />} />
                     <Route
@@ -127,9 +128,6 @@ function App() {
                     <Route path="/admin" element={<HouseManager />} />
                     <Route path="/admin/rounds" element={<Rounds />} />
                     <Route path="/proposal/:id" element={<Proposal />} />
-                    <Route path="/:house" element={<House />} />
-                    <Route path="/:house/:title" element={<Round />} />
-                    <Route path="/:house/:title/:id" element={<Proposal />} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
