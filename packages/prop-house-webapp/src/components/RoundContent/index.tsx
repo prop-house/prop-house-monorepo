@@ -9,11 +9,6 @@ import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
-import {
-  clearVoteAllotments,
-  setVotesByUserInActiveRound,
-  setVotingPower,
-} from '../../state/slices/voting';
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAccount, useBlockNumber } from 'wagmi';
