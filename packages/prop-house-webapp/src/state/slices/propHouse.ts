@@ -10,9 +10,10 @@ import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
 import { Proposal } from '@prophouse/sdk-react';
 
 export interface PropHouseSlice {
-  activeRound?: StoredAuctionBase;
-  activeProposal?: Proposal;
+  onchainActiveProposal?: Proposal;
   onchainActiveProposals?: Proposal[];
+
+  activeRound?: StoredAuctionBase;
   activeProposals?: StoredProposalWithVotes[];
   activeCommunity?: Community;
   modalActive: boolean;
@@ -50,8 +51,8 @@ export const propHouseSlice = createSlice({
     setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
       state.activeRound = action.payload;
     },
-    setActiveProposal: (state, action: PayloadAction<Proposal>) => {
-      state.activeProposal = action.payload;
+    setOnchainActiveProposal: (state, action: PayloadAction<Proposal>) => {
+      state.onchainActiveProposal = action.payload;
     },
     setActiveProposals: (state, action: PayloadAction<StoredProposalWithVotes[]>) => {
       state.activeProposals = sortTimedRoundProps(action.payload, {
@@ -98,10 +99,11 @@ export const propHouseSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  setActiveRound,
-  setActiveProposal,
-  setActiveProposals,
+  setOnchainActiveProposal,
   setOnChainActiveProposals,
+
+  setActiveRound,
+  setActiveProposals,
   appendProposal,
   sortTimedRoundProposals,
   filterInfRoundProposals,

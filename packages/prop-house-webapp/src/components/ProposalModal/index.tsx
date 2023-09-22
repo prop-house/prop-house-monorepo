@@ -8,7 +8,7 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
 import { buildRoundPath } from '../../utils/buildRoundPath';
-import { setActiveProposal, setModalActive } from '../../state/slices/propHouse';
+import { setOnchainActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorVotingModal from '../ErrorVotingModal';
@@ -43,7 +43,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const dispatch = useDispatch();
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
+  const activeProposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const activeProposals = useAppSelector(state => state.propHouse.activeProposals);
   const infRoundProposals = useAppSelector(state => state.propHouse.infRoundFilteredProposals);
@@ -91,7 +91,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
     const index = proposals.findIndex((p: Proposal) => p.id === activeProposal.id);
     setCurrentPropIndex(index + 1);
-    dispatch(setActiveProposal(proposals[index]));
+    dispatch(setOnchainActiveProposal(proposals[index]));
   }, [proposals, id, dispatch, activeProposal]);
 
   // eslint-disable-next-line
@@ -121,7 +121,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
     const newPropIndex =
       proposals.findIndex((p: Proposal) => p.id === activeProposal.id) + direction;
-    dispatch(setActiveProposal(proposals[newPropIndex]));
+    dispatch(setOnchainActiveProposal(proposals[newPropIndex]));
   };
 
   const handleSubmitVote = async () => {

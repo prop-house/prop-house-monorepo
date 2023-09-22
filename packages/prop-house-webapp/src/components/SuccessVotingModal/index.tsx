@@ -18,7 +18,7 @@ const SuccessVotingModal: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const activeProp = useAppSelector(state => state.propHouse.activeProposal);
+  const activeProp = useAppSelector(state => state.propHouse.onchainActiveProposal);
 
   console.log('activeProp:', activeProp);
 

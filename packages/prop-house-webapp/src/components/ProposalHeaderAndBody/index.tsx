@@ -48,7 +48,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   } = props;
 
   const dispatch = useAppDispatch();
-  const proposal = useAppSelector(state => state.propHouse.activeProposal);
+  const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
 
   const isFirstProp = currentPropIndex === 1;
   const isLastProp = proposals && currentPropIndex === proposals.length;

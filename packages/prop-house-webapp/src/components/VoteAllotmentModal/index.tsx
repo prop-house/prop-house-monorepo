@@ -6,7 +6,7 @@ import { buildRoundPath } from '../../utils/buildRoundPath';
 import { openInNewTab } from '../../utils/openInNewTab';
 import { FaLink } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
-import { setActiveProposal } from '../../state/slices/propHouse';
+import { setOnchainActiveProposal } from '../../state/slices/propHouse';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
@@ -44,7 +44,7 @@ const VoteAllotmentModal: React.FC<{
                 return;
               }
               const p = proposals && proposals.find(p => p.id === v.proposalId);
-              p && dispatch(setActiveProposal(p));
+              p && dispatch(setOnchainActiveProposal(p));
               setShowModal(false);
             }}
           >

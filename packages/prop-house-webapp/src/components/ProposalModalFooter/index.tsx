@@ -48,7 +48,7 @@ const ProposalModalFooter: React.FC<{
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const proposal = useAppSelector(state => state.propHouse.activeProposal);
+  const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
   const provider = useEthersProvider({
