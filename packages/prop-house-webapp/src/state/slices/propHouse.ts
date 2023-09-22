@@ -7,11 +7,13 @@ import {
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
 import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
-import { Proposal } from '@prophouse/sdk-react';
+import { House, Proposal, Round } from '@prophouse/sdk-react';
 
 export interface PropHouseSlice {
   onchainActiveProposal?: Proposal;
   onchainActiveProposals?: Proposal[];
+  onchainActiveRound?: Round;
+  onchainActiveHouse?: House;
 
   activeRound?: StoredAuctionBase;
   activeProposals?: StoredProposalWithVotes[];
@@ -50,6 +52,9 @@ export const propHouseSlice = createSlice({
   reducers: {
     setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
       state.activeRound = action.payload;
+    },
+    setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
+      state.onchainActiveRound = action.payload;
     },
     setOnchainActiveProposal: (state, action: PayloadAction<Proposal>) => {
       state.onchainActiveProposal = action.payload;
@@ -91,6 +96,9 @@ export const propHouseSlice = createSlice({
     setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
       state.activeCommunity = action.payload;
     },
+    setOnchainActiveHouse: (state, action: PayloadAction<House | undefined>) => {
+      state.onchainActiveHouse = action.payload;
+    },
     setModalActive: (state, action: PayloadAction<boolean>) => {
       state.modalActive = action.payload;
     },
@@ -101,6 +109,8 @@ export const propHouseSlice = createSlice({
 export const {
   setOnchainActiveProposal,
   setOnChainActiveProposals,
+  setOnchainActiveRound,
+  setOnchainActiveHouse,
 
   setActiveRound,
   setActiveProposals,
