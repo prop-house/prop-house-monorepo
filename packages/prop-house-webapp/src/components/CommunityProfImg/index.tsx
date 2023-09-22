@@ -26,6 +26,7 @@ const CommunityProfImg: React.FC<{
       src={loadingNoun}
       alt="community profile "
       className={clsx(classes.img, classes.loadingImg)}
+      crossOrigin="anonymous"
     />
   );
 };
