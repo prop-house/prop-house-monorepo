@@ -167,7 +167,11 @@ const StatusRoundCard: React.FC<{
               <div className={classes.leftContainer}>
                 {community && (
                   <>
-                    <img src={community.profileImageUrl} alt="community profile" />
+                    <img
+                      src={community.profileImageUrl}
+                      alt="community profile"
+                      crossOrigin="anonymous"
+                    />
                     <div>{community.name}</div>
                   </>
                 )}
