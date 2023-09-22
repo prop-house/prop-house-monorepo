@@ -112,6 +112,7 @@ function App() {
                   <Routes>
                     <Route path="/app" element={<MainApp />} />
                     <Route path="/:round" element={<Round />} />
+                    <Route path="/:round/:id" element={<Proposal />} />
 
                     <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/" element={<Home />} />
