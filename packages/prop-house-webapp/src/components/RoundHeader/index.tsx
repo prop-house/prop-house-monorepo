@@ -9,14 +9,15 @@ import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
 import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
-import { RoundType, RoundWithHouse } from '@prophouse/sdk-react';
+import { House, Round, RoundType } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../HouseManager/utils/getDateFromTimestamp';
 
 const RoundHeader: React.FC<{
-  round: RoundWithHouse;
+  round: Round;
+  house: House;
 }> = props => {
-  const { round } = props;
-  const house = round.house;
+  const { round, house } = props;
+
   const navigate = useNavigate();
 
   const roundDescription = (
