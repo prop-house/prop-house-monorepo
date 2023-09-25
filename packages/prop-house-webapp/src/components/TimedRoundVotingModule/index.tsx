@@ -55,8 +55,6 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
     dispatch(setVotingPower(votingPower));
   }, [votesByUserInActiveRound, voteAllotments, votingPower]);
 
-  console.log(votingPower);
-
   const content = (
     <>
       {account ? (

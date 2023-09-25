@@ -6,7 +6,6 @@ import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
 import ReactMarkdown from 'react-markdown';
 import VotesDisplay from '../VotesDisplay';
-import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import { setOnchainActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import Divider from '../Divider';

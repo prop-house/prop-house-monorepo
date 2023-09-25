@@ -1,11 +1,8 @@
 import classes from './RoundUtilityBar.module.css';
 import clsx from 'clsx';
-import SortToggles from '../SortToggles';
 import { Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
-import InfRoundUtilityBar from '../InfRoundUtilityBar';
 import { Round, RoundState } from '@prophouse/sdk-react';
-import InfRoundSortToggles from '../SortToggles';
 import TimedRoundUtilityBarItems from '../TimedRoundUtilityBarItems';
 
 const RoundUtilityBar: React.FC<{ round: Round }> = props => {

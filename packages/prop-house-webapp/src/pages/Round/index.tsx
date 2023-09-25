@@ -45,9 +45,6 @@ const Round = () => {
       try {
         setLoadingRound(true);
         const round = await propHouse.query.getRoundWithHouseInfo(roundAddress);
-        // r.config.proposalPeriodStartTimestamp = 1695233984;
-        round.state = RoundState.IN_PROPOSING_PERIOD;
-
         dispatch(setOnchainActiveRound(round));
         dispatch(setOnchainActiveHouse(round.house));
       } catch (e) {
@@ -65,9 +62,6 @@ const Round = () => {
       try {
         setLoadingProposals(true);
         const proposals = await propHouse.query.getProposalsForRound(roundAddress);
-        // const proposals = await propHouse.query.getProposalsForRound(
-        //   '0x1ce6b228a221f80cddbf2de526d38e2041934dd8',
-        // );
         dispatch(setOnChainActiveProposals(proposals));
       } catch (e) {
         setLoadingProposalsFailed(true);

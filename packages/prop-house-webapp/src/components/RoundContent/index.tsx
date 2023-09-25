@@ -1,20 +1,18 @@
 import classes from './RoundContent.module.css';
-import { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { useEthersProvider } from '../../hooks/useEthersProvider';
-import { Proposal, Round, RoundState, RoundType } from '@prophouse/sdk-react';
+import { Proposal, Round, RoundState, RoundType, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
+import { clearVoteAllotments } from '../../state/slices/voting';
 
 const RoundContent: React.FC<{
   round: Round;
@@ -30,29 +28,48 @@ const RoundContent: React.FC<{
 
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const votingPower = useAppSelector(state => state.voting.votingPower);
-  const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
-
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const host = useAppSelector(state => state.configuration.backendHost);
 
-  const client = useRef(new PropHouseWrapper(host));
-  const signer = useEthersSigner();
-  const provider = useEthersProvider();
+  const propHouse = usePropHouse();
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+  const handleSubmitVote = async () => {
+    try {
+      const votes = voteAllotments
+        .filter(a => a.votes > 0)
+        .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
+
+      console.log('votes: ', votes);
+      const result = await propHouse.round.timedFunding.voteViaSignature({
+        round: round.address,
+        votes,
+      });
+
+      if (!result?.transaction_hash) {
+        throw new Error(`Vote submission failed: ${result}`);
+      }
+
+      setShowErrorVotingModal(false);
+      setNumPropsVotedFor(voteAllotments.length);
+      setShowSuccessVotingModal(true);
+
+      // TODO: For now, handle locally. This may take 1-2 mins
+      // refreshActiveProposals(propHouse, round, dispatch);
+      dispatch(clearVoteAllotments());
+      setShowVoteConfirmationModal(false);
+    } catch (e) {
+      console.log(e);
+      setShowErrorVotingModal(true);
+    }
+  };
 
   return (
     <>
-      {/* {showVoteConfirmationModal && (
+      {showVoteConfirmationModal && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
           submitVote={handleSubmitVote}
         />
-      )} */}
+      )}
 
       {showSuccessVotingModal && (
         <SuccessVotingModal

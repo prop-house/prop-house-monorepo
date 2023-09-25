@@ -33,6 +33,7 @@ const TimedRoundModules: React.FC<{
     if (!account || !proposals) return;
     setFetchedUserProps(false);
 
+    // TODO: //
     // set user props
     // if (proposals.some(p => isSameAddress(p.address, account))) {
     //   setUserProposals(
