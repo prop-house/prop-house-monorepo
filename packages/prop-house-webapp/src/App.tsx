@@ -113,17 +113,11 @@ function App() {
                     <Route path="/app" element={<MainApp />} />
                     <Route path="/:round" element={<Round />} />
                     <Route path="/:round/:id" element={<Proposal />} />
+                    <Route path="/create" element={<Create />} />
 
                     <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/" element={<Home />} />
-                    <Route
-                      path="/create"
-                      element={
-                        <PropCreatorProtectedRoute noActiveCommunity={noActiveCommunity}>
-                          <Create />
-                        </PropCreatorProtectedRoute>
-                      }
-                    />
+
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/admin" element={<HouseManager />} />
