@@ -14,7 +14,11 @@ import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
-import { setOnChainActiveProposals } from '../../state/slices/propHouse';
+import {
+  setOnChainActiveProposals,
+  setOnchainActiveHouse,
+  setOnchainActiveRound,
+} from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 
 const Round = () => {
@@ -25,8 +29,9 @@ const Round = () => {
   const propHouse = usePropHouse();
 
   const dispatch = useAppDispatch();
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
   const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
-  const [round, setRound] = useState<RoundWithHouse>();
 
   const [loadingRound, setLoadingRound] = useState(false);
   const [loadingRoundFailed, setLoadingRoundFailed] = useState(false);
@@ -39,7 +44,12 @@ const Round = () => {
     const fetchRound = async () => {
       try {
         setLoadingRound(true);
-        setRound(await propHouse.query.getRoundWithHouseInfo(roundAddress));
+        const round = await propHouse.query.getRoundWithHouseInfo(roundAddress);
+        // r.config.proposalPeriodStartTimestamp = 1695233984;
+        round.state = RoundState.IN_PROPOSING_PERIOD;
+
+        dispatch(setOnchainActiveRound(round));
+        dispatch(setOnchainActiveHouse(round.house));
       } catch (e) {
         setLoadingRoundFailed(true);
       }
@@ -54,8 +64,11 @@ const Round = () => {
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
-        // setProposals(await propHouse.query.getProposalsForRound(roundAddress));
-        setProposals(await propHouse.query.getProposals());
+        const proposals = await propHouse.query.getProposalsForRound(roundAddress);
+        // const proposals = await propHouse.query.getProposalsForRound(
+        //   '0x1ce6b228a221f80cddbf2de526d38e2041934dd8',
+        // );
+        dispatch(setOnChainActiveProposals(proposals));
       } catch (e) {
         setLoadingProposalsFailed(true);
       }
@@ -82,7 +95,7 @@ const Round = () => {
         round && (
           <>
             <Container>
-              <RoundHeader round={round} />
+              <RoundHeader round={round} house={house} />
             </Container>
             <div className={classes.stickyContainer}>
               <Container>

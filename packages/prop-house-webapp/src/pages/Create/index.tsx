@@ -1,16 +1,13 @@
 import classes from './Create.module.css';
 import { Row, Col, Container } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../components/Button';
-import { useLocation } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import ProposalEditor from '../../components/ProposalEditor';
 import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { InfiniteAuctionProposal, Proposal } from '@nouns/prop-house-wrapper/dist/builders';
 import { appendProposal } from '../../state/slices/propHouse';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import isAuctionActive from '../../utils/isAuctionActive';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useTranslation } from 'react-i18next';
 import DragAndDrop from '../../components/DragAndDrop';
@@ -23,57 +20,54 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
-import { infRoundBalance } from '../../utils/infRoundBalance';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { RoundState, RoundType, usePropHouse } from '@prophouse/sdk-react';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
-  const signer = useEthersSigner();
 
   const { t } = useTranslation();
 
-  // auction to submit prop to is passed via react-router from propse btn
-  const location = useLocation();
-  const activeAuction = location.state.auction;
-  const activeCommunity = location.state.community;
-  const activeProps = location.state.proposals;
-  const remainingBal = infRoundBalance(activeProps, activeAuction);
+  // TODO: fix
+  // const remainingBal = infRoundBalance(activeProps, activeAuction);
+  const remainingBal = 10;
+
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
 
   const [showPreview, setShowPreview] = useState(false);
   const [propId, setPropId] = useState<null | number>(null);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
+  const [propSubmissionTxId, setPropSubmissionTxId] = useState<null | string>(null);
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
+  const host = useAppSelector(state => state.configuration.backendHost);
+  const client = useRef(new PropHouseWrapper(host));
 
-  useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer);
-  }, [signer, backendHost]);
+  const propHouse = usePropHouse();
 
   const onDataChange = (data: Partial<ProposalFields>) => {
     dispatch(patchProposal(data));
   };
 
   const submitProposal = async () => {
-    if (!activeAuction || !isAuctionActive(activeAuction)) return;
+    if (!round || round.state !== RoundState.IN_PROPOSING_PERIOD) return;
 
-    let newProp: Proposal | InfiniteAuctionProposal;
-    const { title, what, tldr, reqAmount } = proposalEditorData;
+    const { title, what, tldr } = proposalEditorData;
 
-    newProp =
-      isInfAuction(activeAuction) && reqAmount
-        ? new InfiniteAuctionProposal(title, what, tldr, activeAuction.id, reqAmount)
-        : new Proposal(title, what, tldr, activeAuction.id);
+    const json = JSON.stringify({ title, what, tldr }, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const file = new File([blob], 'proposal.json', { type: 'application/json' });
+    const result = await client.current.postFile(file, file.name);
+    const proposal = await propHouse.round.timedFunding.proposeViaSignature({
+      round: round.address,
+      metadataUri: `ipfs://${result.data.ipfsHash}`,
+    });
 
-    const proposal = await backendClient.current.createProposal(newProp);
-
-    setPropId(proposal.id);
+    setPropSubmissionTxId(proposal.transaction_hash);
     dispatch(appendProposal({ proposal }));
     dispatch(clearProposal());
     setShowProposalSuccessModal(true);
@@ -179,19 +173,19 @@ const Create: React.FC<{}> = () => {
 
   return (
     <>
-      {activeAuction ? (
+      {round && house ? (
         <>
           <DragAndDrop
             onFileDrop={onFileDrop}
             showImageUploadModal={showImageUploadModal}
             setShowImageUploadModal={setShowImageUploadModal}
           >
-            {showProposalSuccessModal && propId && (
+            {showProposalSuccessModal && propSubmissionTxId && (
               <ProposalSuccessModal
                 setShowProposalSuccessModal={setShowProposalSuccessModal}
-                proposalId={propId}
-                house={activeCommunity}
-                round={activeAuction}
+                propSubmissionTxId={propSubmissionTxId}
+                house={house}
+                round={round}
               />
             )}
 
@@ -201,20 +195,18 @@ const Create: React.FC<{}> = () => {
                 <h1 className={classes.title}>Creating your proposal for</h1>
 
                 <h1 className={classes.proposalTitle}>
-                  <span className={classes.boldLabel}>{activeAuction.title}</span> in the{' '}
-                  <span className={classes.boldLabel}>{activeCommunity.name}</span> house
+                  <span className={classes.boldLabel}>{round.title}</span> in the{' '}
+                  <span className={classes.boldLabel}>{house.name}</span> house
                 </h1>
 
-                {isTimedAuction(activeAuction) && (
+                {round.type === RoundType.TIMED_FUNDING && (
                   <span className={classes.fundingCopy}>
-                    <span className={classes.boldLabel}>{activeAuction.numWinners}</span> winners
+                    <span className={classes.boldLabel}>{round.config.awards.length}</span> winners
                     will be selected to receive{' '}
                     <span className={classes.boldLabel}>
                       {' '}
-                      <FundingAmount
-                        amount={activeAuction.fundingAmount}
-                        currencyType={activeAuction.currencyType}
-                      />
+                      {/** TODO: RESOLVE FOR AMOUNT AND CURRENCYTYPE */}
+                      <FundingAmount amount={100} currencyType={'ETH'} />
                     </span>
                   </span>
                 )}
@@ -224,8 +216,9 @@ const Create: React.FC<{}> = () => {
             <Container>
               <Row>
                 <Col xl={12}>
+                  {/** TODO: RESOLVE ROUND CURRENCY */}
                   {showPreview ? (
-                    <Preview roundCurrency={activeAuction.currencyType} />
+                    <Preview roundCurrency={'ETH'} />
                   ) : (
                     <ProposalEditor
                       onDataChange={onDataChange}
@@ -241,6 +234,7 @@ const Create: React.FC<{}> = () => {
                       duplicateFile={duplicateFile}
                       setDuplicateFile={setDuplicateFile}
                       remainingBal={remainingBal}
+                      isInfRound={round.type !== RoundType.TIMED_FUNDING}
                     />
                   )}
                 </Col>
@@ -256,7 +250,9 @@ const Create: React.FC<{}> = () => {
                         return !prev;
                       })
                     }
-                    disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
+                    disabled={
+                      !isValidPropData(round.type !== RoundType.TIMED_FUNDING, proposalEditorData)
+                    }
                   />
 
                   {showPreview &&
@@ -266,7 +262,12 @@ const Create: React.FC<{}> = () => {
                         text={t('signAndSubmit')}
                         bgColor={ButtonColor.Pink}
                         onClick={submitProposal}
-                        disabled={!isValidPropData(isInfAuction(activeAuction), proposalEditorData)}
+                        disabled={
+                          !isValidPropData(
+                            round.type !== RoundType.TIMED_FUNDING,
+                            proposalEditorData,
+                          )
+                        }
                       />
                     ) : (
                       <ConnectButton
