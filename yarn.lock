@@ -5582,10 +5582,17 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
 
-"@prophouse/sdk@^0.2.0-alpha", "@prophouse/sdk@~0.2.0-alpha", "@prophouse/sdk@~0.2.0-alpha.0":
-  version "0.2.0-alpha"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.2.0-alpha.tgz#194ed4534f7bf2d898a30d360206dcc6bb7afaa8"
-  integrity sha512-fn0qacHj1qLkErZYX/9NV5RGCvZ37a1kxjY0LfYVzbTnM/lDhvmUd67cg+wLZAbDbDvNpQsWNCsguoFYwtApJw==
+"@prophouse/protocol@^0.1.0-alpha":
+  version "0.1.0-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.1.0-alpha.tgz#9048d1730b9209d02aafb914585209c439159df1"
+  integrity sha512-QoC3abbj8uND0rf61ZiPZbrBYQaJHfVfEFqmRDRfZbx6kkqb6Rz2e6cvrbphgWwHBMpbRKt0h3w1BKvswOJo9Q==
+  dependencies:
+    ethers "~5.7.2"
+
+"@prophouse/sdk@~0.1.0-alpha.25":
+  version "0.1.0-alpha.25"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.1.0-alpha.25.tgz#c47d39fe9045b8b00ed6d1871ffd22366db649c9"
+  integrity sha512-Ogf6rYPZznUg2JaVfyjztgmPGbVxYqqQmdcd+zrTZTDE+nwuShqVTeeNFa5hO/mS2VBQf7oqJPOuMl//HsuS1w==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -5598,15 +5605,13 @@
     "@ethersproject/keccak256" "~5.7.0"
     "@ethersproject/providers" "~5.7.0"
     "@ethersproject/solidity" "~5.7.0"
-    "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
-    "@prophouse/protocol" "^0.2.0-alpha"
+    "@prophouse/protocol" "^0.1.0-alpha"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
     graphql "^16.5.0"
     graphql-request "5.0.0"
-    micro-starknet "^0.2.3"
     randombytes "^2.1.0"
     starknet "4.22.0"
     time-ts "^0.1.0"
@@ -6457,6 +6462,13 @@
   version "2.8.12"
   resolved "https://registry.yarnpkg.com/@types/cors/-/cors-2.8.12.tgz#6b2c510a7ad7039e98e7b8d3d6598f4359e5c080"
   integrity sha512-vt+kDhq/M2ayberEtJcIN/hxXy1Pk+59g2FV/ZQceeaTyCtCucjL2Q7FXlFjtWn4n15KCr1NE2lNNFhp0lEThw==
+
+"@types/cors@^2.8.14":
+  version "2.8.14"
+  resolved "https://registry.npmjs.org/@types/cors/-/cors-2.8.14.tgz#94eeb1c95eda6a8ab54870a3bf88854512f43a92"
+  integrity sha512-RXHUvNWYICtbP6s18PnOCaqToK8y14DnLd75c6HfyKf228dxy7pHNOQkxPtvXKp/hINFMDjbYzsj63nnpPMSRQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/debug@^4.0.0":
   version "4.1.7"
@@ -15871,10 +15883,20 @@ graphql-ws@5.5.5:
   resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.5.5.tgz#f375486d3f196e2a2527b503644693ae3a8670a9"
   integrity sha512-hvyIS71vs4Tu/yUYHPvGXsTgo0t3arU820+lT5VjZS2go0ewp2LqyCgxEN56CzOG7Iys52eRhHBiD1gGRdiQtw==
 
-graphql@15.5.0, graphql@16.5.0, graphql@^16.5.0, graphql@^16.6.0:
+graphql@15.5.0:
+  version "15.5.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-15.5.0.tgz#39d19494dbe69d1ea719915b578bf920344a69d5"
+  integrity sha512-OmaM7y0kaK31NKG31q4YbD2beNYa6jBBKtMFT6gLYJljHLJr42IqJ8KX08u3Li/0ifzTU5HjmoOOrwa5BRLeDA==
+
+graphql@^16.5.0:
   version "16.5.0"
   resolved "https://registry.npmjs.org/graphql/-/graphql-16.5.0.tgz#41b5c1182eaac7f3d47164fb247f61e4dfb69c85"
   integrity sha512-qbHgh8Ix+j/qY+a/ZcJnFQ+j8ezakqPiHwPiZhV/3PgGlgf96QMBB5/f2rkiC9sgLoy/xvT6TSiaf2nTHJh5iA==
+
+graphql@^16.6.0:
+  version "16.8.1"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-16.8.1.tgz#1930a965bef1170603702acdb68aedd3f3cf6f07"
+  integrity sha512-59LZHPdGZVh695Ud9lRzPBVTtlX9ZCV150Er2W43ro37wVof0ctenSaskPPjN7lVTIN8mSZt8PHUNKZuNQUuxw==
 
 growly@^1.3.0:
   version "1.3.0"
@@ -20962,6 +20984,14 @@ node-emoji@1.11.0:
   integrity sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==
   dependencies:
     lodash "^4.17.21"
+
+node-fetch-commonjs@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.npmjs.org/node-fetch-commonjs/-/node-fetch-commonjs-3.3.2.tgz#0dd0fd4c4a314c5234f496ff7b5d9ce5a6c8feaa"
+  integrity sha512-VBlAiynj3VMLrotgwOS3OyECFxas5y7ltLcK4t41lMUZeaK15Ym4QRkqN0EQKAFL42q9i21EPKjzLUPfltR72A==
+  dependencies:
+    node-domexception "^1.0.0"
+    web-streams-polyfill "^3.0.3"
 
 node-fetch@2:
   version "2.6.8"
@@ -27430,6 +27460,11 @@ typescript@^4.9.3, typescript@^4.9.5:
   version "4.9.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
   integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
+
+typescript@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.npmjs.org/typescript/-/typescript-5.2.2.tgz#5ebb5e5a5b75f085f22bc3f8460fba308310fa78"
+  integrity sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==
 
 typewise-core@^1.2, typewise-core@^1.2.0:
   version "1.2.0"

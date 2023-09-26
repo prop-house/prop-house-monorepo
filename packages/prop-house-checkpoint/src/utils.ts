@@ -3,6 +3,7 @@ import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionStatus, Uint256 } from './types';
 import { FullBlock } from 'checkpoint-beta';
+import fetch from 'node-fetch-commonjs';
 
 const {
   starknet: { classHashes },
@@ -76,7 +77,7 @@ export const getUrl = (uri: string, gateway = 'pineapple.fyi') => {
   return uri;
 };
 
-export const getJSON = async (uri: string) => {
+export const getJSON = async (uri: string): Promise<any> => {
   const url = getUrl(uri);
   if (url) {
     const res = await fetch(url);
