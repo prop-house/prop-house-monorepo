@@ -149,6 +149,11 @@ export namespace Timed {
     usedProposingStrategies: GovPowerUserStrategy[];
     metadataUri: string;
   }
+  export interface EditProposalMessage {
+    round: string;
+    authStrategy: string;
+    metadataUri: string;
+  }
   export interface VoteMessage {
     round: string;
     authStrategy: string;
@@ -156,6 +161,10 @@ export namespace Timed {
     proposalVotes: ProposalVote[];
   }
   export interface EVMSigProposeMessage extends ProposeMessage {
+    proposer: string;
+    salt: string | number;
+  }
+  export interface EVMSigEditProposalMessage extends EditProposalMessage {
     proposer: string;
     salt: string | number;
   }
@@ -171,12 +180,18 @@ export namespace Timed {
     round: string;
     metadataUri: string;
   }
+  export interface EditProposalConfig {
+    round: string;
+    metadataUri: string;
+  }
   export enum Action {
     PROPOSE = 'PROPOSE',
+    EDIT_PROPOSAL = 'EDIT_PROPOSAL',
     VOTE = 'VOTE',
   }
   export interface ActionData {
     [Action.PROPOSE]: EVMSigProposeMessage;
+    [Action.EDIT_PROPOSAL]: EVMSigEditProposalMessage;
     [Action.VOTE]: EVMSigVoteMessage;
   }
   export interface RequestParams<A extends Action = Action> {
@@ -384,14 +399,14 @@ export type VotingStrategyType = GovPowerStrategyType;
 export const ProposingStrategyType = GovPowerStrategyType;
 export const VotingStrategyType = GovPowerStrategyType;
 
-export interface BalanceOf {
+export interface BalanceOfConfig {
   strategyType: GovPowerStrategyType.BALANCE_OF;
   assetType: AssetType.ERC20 | AssetType.ERC721;
   address: string;
   multiplier?: number;
 }
 
-export interface ERC1155BalanceOf {
+export interface ERC1155BalanceOfConfig {
   strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
   assetType: AssetType.ERC1155;
   address: string;
@@ -404,12 +419,12 @@ export interface AllowlistMember {
   govPower: string;
 }
 
-export interface Allowlist {
+export interface AllowlistConfig {
   strategyType: GovPowerStrategyType.ALLOWLIST;
   members: AllowlistMember[];
 }
 
-export interface Vanilla {
+export interface VanillaConfig {
   strategyType: GovPowerStrategyType.VANILLA;
 }
 
@@ -417,7 +432,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOf | ERC1155BalanceOf | Allowlist | Vanilla;
+export type DefaultGovPowerConfigs = BalanceOfConfig | ERC1155BalanceOfConfig | AllowlistConfig | VanillaConfig;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;

@@ -41,14 +41,16 @@ import {
   Proposal_Filter,
   Vote_Filter,
 } from './starknet/graphql';
-import { Address, GraphQL, RoundType } from '../types';
+import { Address, GovPowerStrategyType, GraphQL, RoundType } from '../types';
 import {
   GlobalStats,
   House,
   Proposal,
   Round,
+  ParsedGovPowerStrategy,
   RoundWithHouse,
   Vote,
+  RoundAward,
 } from './types';
 import {
   GlobalStatsQuery,
@@ -652,10 +654,83 @@ export class QueryWrapper {
         votePeriodEndTimestamp: Number(config.votePeriodEndTimestamp),
         votePeriodDuration: Number(config.votePeriodDuration),
         claimPeriodEndTimestamp: Number(config.claimPeriodEndTimestamp),
+        awards: this.toParsedAwards(config.winnerCount, config.awards),
       },
-      proposingStrategies: round.proposingStrategies.map(({ strategy }) => strategy),
-      votingStrategies: round.votingStrategies.map(({ strategy }) => strategy),
+      proposingStrategies: round.proposingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
+      votingStrategies: round.votingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
     };
+  }
+
+  /**
+   * Parse a raw round award query result by splitting the award amount if needed
+   * @param winnerCount The round winner count
+   * @param awards The awards to parse
+   */
+  protected toParsedAwards(winnerCount: number, awards: RoundAward[]): RoundAward[] {
+    if (awards.length === 1 && winnerCount > 1) {
+      const [award] = awards;
+      const amount = (BigInt(award.amount) / BigInt(winnerCount)).toString();
+      return Array(winnerCount).fill({
+        asset: award.asset,
+        amount,
+      });
+    }
+    return awards;
+  }
+
+  /**
+   * Parse a raw governance power strategy query result
+   * @param strategy The strategy to parse
+   */
+  protected toParsedGovPowerStrategy(strategy: {
+    __typename?: 'GovPowerStrategy';
+    id: string;
+    type: string;
+    address: string;
+    params: Array<string | number>;
+  }): ParsedGovPowerStrategy {
+    switch (strategy.type) {
+      case GovPowerStrategyType.BALANCE_OF: {
+        const [address, _, multiplier] = strategy.params;
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.BALANCE_OF,
+          address: `0x${BigInt(address).toString(16)}`,
+          ...(multiplier ? { multiplier: Number(multiplier) } : {}),
+        };
+      };
+      case GovPowerStrategyType.ERC1155_BALANCE_OF: {
+        const [address, tokenId, _, multiplier] = strategy.params;
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF,
+          address: `0x${BigInt(address).toString(16)}`,
+          tokenId: tokenId.toString(),
+          ...(multiplier ? { multiplier: Number(multiplier) } : {}),
+        };
+      };
+      case GovPowerStrategyType.ALLOWLIST: {
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.ALLOWLIST,
+          members: [], // TODO
+        };
+      };
+      case GovPowerStrategyType.VANILLA: {
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.VANILLA,
+        };
+      };
+      default: {
+        return {
+          id: strategy.id,
+          strategyType: GovPowerStrategyType.UNKNOWN,
+          address: strategy.address,
+          params: strategy.params,
+        };
+      };
+    }
   }
 
   /**

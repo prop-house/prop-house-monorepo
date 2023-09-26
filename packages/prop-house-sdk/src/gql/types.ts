@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { RoundType, GovPowerStrategy, Timed } from '../types';
+import { RoundType, Timed, GovPowerStrategyType, AllowlistMember, GovPowerStrategyWithID } from '../types';
 
 export interface GlobalStats {
   roundCount: number;
@@ -24,13 +24,44 @@ export interface RoundCreator {
   passCount: number;
 }
 
-export interface RoundGovPowerStrategy extends GovPowerStrategy {
-  id: string;
-  type: string;
+export interface RawGovPowerStrategy extends GovPowerStrategyWithID {
+  type: GovPowerStrategyType;
 }
 
-export type ProposingStrategy = RoundGovPowerStrategy;
-export type VotingStrategy = RoundGovPowerStrategy;
+export interface BalanceOfStrategy {
+  id: string;
+  strategyType: GovPowerStrategyType.BALANCE_OF;
+  address: string;
+  multiplier?: number;
+}
+
+export interface ERC1155BalanceOfStrategy {
+  id: string;
+  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
+  address: string;
+  tokenId: string;
+  multiplier?: number;
+}
+
+export interface AllowlistStrategy {
+  id: string;
+  strategyType: GovPowerStrategyType.ALLOWLIST;
+  members: AllowlistMember[];
+}
+
+export interface VanillaStrategy {
+  id: string;
+  strategyType: GovPowerStrategyType.VANILLA;
+}
+
+export interface UnknownStrategy extends GovPowerStrategyWithID {
+  strategyType: GovPowerStrategyType.UNKNOWN;
+}
+
+export type ParsedGovPowerStrategy = BalanceOfStrategy | ERC1155BalanceOfStrategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
+
+export type ProposingStrategy = ParsedGovPowerStrategy;
+export type VotingStrategy = ParsedGovPowerStrategy;
 
 export interface RoundAsset {
   assetType: 'NATIVE' | 'ERC20' | 'ERC721' | 'ERC1155';

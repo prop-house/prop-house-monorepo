@@ -333,6 +333,50 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Sign an edit proposal message and return the proposer, signature, and signed message
+   * @param config The round address and updated proposal metadata URI
+   */
+  public async signEditProposalMessage(config: Timed.EditProposalConfig) {
+    const address = await this.signer.getAddress();
+    if (isAddress(config.round)) {
+      // If the origin chain round is provided, fetch the Starknet round address
+      config.round = await this._query.getStarknetRoundAddress(config.round);
+    }
+
+    const message = {
+      round: encoding.hexPadLeft(config.round),
+      metadataUri: config.metadataUri,
+      proposer: address,
+      authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
+      salt: this.generateSalt(),
+    };
+    const signature = await this.signer._signTypedData(
+      this.DOMAIN,
+      this.pick(TimedRound.EIP_712_TYPES, ['EditProposal']),
+      message,
+    );
+    return {
+      address,
+      signature,
+      message,
+    };
+  }
+
+  /**
+   * Edit a proposal message and submit it to the Starknet relayer
+   * @param config The round address and proposal metadata URI
+   */
+  public async editProposalViaSignature(config: Timed.ProposeConfig) {
+    const { address, signature, message } = await this.signEditProposalMessage(config);
+    return this.sendToRelayer<Timed.RequestParams>({
+      address,
+      signature,
+      action: Timed.Action.EDIT_PROPOSAL,
+      data: message,
+    });
+  }
+
+  /**
    * Sign proposal votes and return the voter, signature, and signed message
    * @param config The round address and proposal vote(s)
    */

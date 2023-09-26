@@ -1,8 +1,8 @@
-import { ChainConfig, Vanilla, GovPowerStrategyType } from '../../types';
+import { ChainConfig, VanillaConfig, GovPowerStrategyType } from '../../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { StrategyHandlerBase } from './base';
 
-export class VanillaHandler extends StrategyHandlerBase<Vanilla> {
+export class VanillaHandler extends StrategyHandlerBase<VanillaConfig> {
   /**
    * Returns a `VanillaHandler` instance for the provided chain configuration
    * @param config The chain config

@@ -1,10 +1,10 @@
 import { hash } from 'starknet';
-import { ChainConfig, GovPowerStrategyType, Allowlist, AllowlistMember } from '../../types';
+import { ChainConfig, GovPowerStrategyType, AllowlistConfig, AllowlistMember } from '../../types';
 import { BigNumber } from '@ethersproject/bignumber';
 import { merkle, splitUint256 } from '../../utils';
 import { StrategyHandlerBase } from './base';
 
-export class AllowlistHandler extends StrategyHandlerBase<Allowlist> {
+export class AllowlistHandler extends StrategyHandlerBase<AllowlistConfig> {
   /**
    * Returns a `AllowlistHandler` instance for the provided chain configuration
    * @param config The chain config
@@ -31,7 +31,7 @@ export class AllowlistHandler extends StrategyHandlerBase<Allowlist> {
    * @notice Get the governance power strategy params that will be shared amongst all users
    * @param strategy The  governance power strategy information
    */
-  public async getStrategyParams(strategy: Allowlist): Promise<string[]> {
+  public async getStrategyParams(strategy: AllowlistConfig): Promise<string[]> {
     if (!strategy.members?.length) {
       throw new Error('No allowlist members provided');
     }

@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { BalanceOf, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
+import { BalanceOfConfig, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
 import { ChainId } from '@prophouse/protocol';
 import { SingleSlotProofHandler } from './base';
 import { storageProofs } from '../../utils';
@@ -8,7 +8,7 @@ import { Contract } from '@ethersproject/contracts';
 import { BALANCE_OF_FUNC } from '../../constants';
 import { Call } from 'starknet';
 
-export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
+export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
   // prettier-ignore
   private readonly _traceRpcs: Record<number, string> = {
     [ChainId.EthereumGoerli]: 'https://goerli.blockpi.network/v1/rpc/756ed7f20b1fcbed679bc9384c021a69ffd59cfc',
@@ -55,7 +55,7 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOf> {
    * @notice Get the governance power strategy params that will be shared amongst all users
    * @param strategy The governance power strategy information
    */
-  public async getStrategyParams(strategy: BalanceOf): Promise<string[]> {
+  public async getStrategyParams(strategy: BalanceOfConfig): Promise<string[]> {
     const { slotIndex } = await storageProofs.getBalanceOfEVMStorageSlotIndex(
       this._traceProvider,
       strategy.address,

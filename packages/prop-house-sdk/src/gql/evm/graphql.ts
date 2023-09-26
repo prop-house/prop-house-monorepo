@@ -823,6 +823,7 @@ export type GovPowerStrategyVotingStrategyRoundsArgs = {
 export enum GovPowerStrategyType {
   Allowlist = 'ALLOWLIST',
   BalanceOf = 'BALANCE_OF',
+  Erc1155BalanceOf = 'ERC1155_BALANCE_OF',
   Unknown = 'UNKNOWN',
   Vanilla = 'VANILLA',
 }
