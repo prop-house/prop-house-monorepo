@@ -21,14 +21,8 @@ export const thankApe: StrategyFactory<thankApeStratArgs> = (
     const url = `https://core.api.thrivecoin.com/v1/eligibility/thank-ape/voting/${account}`;
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        AuthenticationToken: process.env.REACT_APP_THANKAPE_AUTH_TOKEN!,
-      },
     });
     const { data, errors } = await response.json();
-
-    console.log('response: ', data);
-    console.log('errors: ', errors);
 
     const isEligible = data.eligible;
 
