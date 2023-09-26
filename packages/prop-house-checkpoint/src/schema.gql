@@ -90,6 +90,12 @@ type Proposal {
   "The unix timestamp when the proposal was received"
   receivedAt: Int!
 
+  "The unix timestamp when the proposal was last updated"
+  lastUpdatedAt: Int
+
+  "The proposal version, which is incremented when the proposal is updated"
+  version: Int!
+
   "The status of the propose transaction"
   txStatus: String!
 

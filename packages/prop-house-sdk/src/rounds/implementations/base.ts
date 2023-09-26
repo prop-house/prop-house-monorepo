@@ -8,7 +8,6 @@ import {
   RoundConfigs,
   RoundConfigStruct,
   RoundContract,
-  RoundState,
   RoundType,
 } from '../../types';
 import { bytes, splitUint256 } from '../../utils';
@@ -127,7 +126,7 @@ export abstract class RoundBase<
    * Given the provided params, return the round state
    * @param _params The information required to get the round state
    */
-  public static getState(_params: GetRoundStateParams): RoundState {
+  public static getState(_params: GetRoundStateParams): unknown {
     throw new Error('Not implemented');
   }
 

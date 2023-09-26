@@ -17,7 +17,7 @@ export const ManyProposalsQuery = graphql(`
     $skip: Int!
     $orderBy: OrderByProposalFields
     $orderDirection: OrderDirection
-    $where: WhereProposal
+    $where: Proposal_filter
   ) {
     proposals(
       first: $first
@@ -67,37 +67,13 @@ export const ProposalQuery = graphql(`
   }
 `);
 
-// TODO: Add support for nested where clauses
-// or add `sourceChainRound` to the Proposal entity
-export const ManyRoundProposalsQuery = graphql(`
-  query manyRoundProposals($where: WhereRound) {
-    rounds(where: $where) {
-      proposals {
-        id
-        proposalId
-        proposer {
-          id
-        }
-        metadataUri
-        title
-        body
-        isCancelled
-        isWinner
-        receivedAt
-        txHash
-        votingPower
-      }
-    }
-  }
-`);
-
 export const ManyVotesQuery = graphql(`
   query manyVotes(
     $first: Int!
     $skip: Int!
     $orderBy: OrderByVoteFields
     $orderDirection: OrderDirection
-    $where: WhereVote
+    $where: Vote_filter
   ) {
     votes(
       first: $first

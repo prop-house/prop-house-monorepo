@@ -21,10 +21,10 @@ export {
   OrderByRoundFields as StarknetRound_OrderBy,
   OrderByProposalFields as Proposal_Order_By,
   OrderByVoteFields as Vote_Order_By,
-  WhereAccount as Account_Filter,
-  WhereRound as StarknetRound_Filter,
-  WhereProposal as Proposal_Filter,
-  WhereVote as Vote_Filter,
+  Account_Filter,
+  Round_Filter as StarknetRound_Filter,
+  Proposal_Filter,
+  Vote_Filter,
 } from './starknet/graphql';
 export {
   GRAPHQL_APIS,

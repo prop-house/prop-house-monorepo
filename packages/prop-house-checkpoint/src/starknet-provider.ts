@@ -1,8 +1,7 @@
 import { RpcProvider, hash, validateAndParseAddress } from 'starknet';
-import { parseEvent } from '@snapshot-labs/checkpoint/dist/src/providers/starknet/utils';
-import { isFullBlock, isDeployTransaction } from '@snapshot-labs/checkpoint/dist/src/types';
-import { BaseProvider, BlockNotFoundError } from '@snapshot-labs/checkpoint/dist/src/providers';
-import type { Abi } from 'starknet';
+import { parseEvent } from 'checkpoint-beta/dist/src/providers/starknet/utils';
+import { isFullBlock, isDeployTransaction } from 'checkpoint-beta/dist/src/types';
+import { BaseProvider, BlockNotFoundError } from 'checkpoint-beta/dist/src/providers';
 import type {
   Block,
   FullBlock,
@@ -11,7 +10,8 @@ import type {
   Event,
   EventsMap,
   ParsedEvent,
-} from '@snapshot-labs/checkpoint/dist/src/types';
+  ContractSourceConfig,
+} from 'checkpoint-beta/dist/src/types';
 
 export class StarknetProvider extends BaseProvider {
   private readonly provider: RpcProvider;
@@ -25,12 +25,17 @@ export class StarknetProvider extends BaseProvider {
     });
   }
 
+  async getNetworkIdentifier(): Promise<string> {
+    const result = await this.provider.getChainId();
+    return `starknet_${result}`;
+  }
+
   async processBlock(blockNum: number) {
     let block: Block;
     let blockEvents: EventsMap;
     try {
       [block, blockEvents] = await Promise.all([
-        this.provider.getBlockWithTxs(blockNum),
+        this.provider.getBlockWithTxs(blockNum) as Promise<Block>,
         this.getEvents(blockNum),
       ]);
 
@@ -51,6 +56,8 @@ export class StarknetProvider extends BaseProvider {
     await this.handleBlock(block, blockEvents);
 
     await this.instance.setLastIndexedBlock(block.block_number);
+
+    return blockNum + 1;
   }
 
   async processPool(blockNumber: number) {
@@ -71,7 +78,7 @@ export class StarknetProvider extends BaseProvider {
       }),
     );
 
-    const txsWithReceipts = txs.filter((_, index) => receipts[index] !== null);
+    const txsWithReceipts = txs.filter((_, index) => receipts[index] !== null) as PendingTransaction[];
     const eventsMap = receipts.reduce((acc: Record<string, any>, receipt) => {
       if (receipt === null) return acc;
 
@@ -144,7 +151,7 @@ export class StarknetProvider extends BaseProvider {
     if (this.instance.config.global_events) {
       const globalEventHandlers = this.instance.config.global_events.reduce(
         (handlers: Record<string, { name: string; fn: string }>, event) => {
-          handlers[`0x${hash.starknetKeccak(event.name).toString('hex')}`] = {
+          handlers[`0x${hash.starknetKeccak(event.name).toString(16)}`] = {
             name: event.name,
             fn: event.fn,
           };
@@ -168,12 +175,16 @@ export class StarknetProvider extends BaseProvider {
           tx,
           rawEvent: event,
           eventIndex,
-          ...writerParams,
+          ...writerParams
         });
       }
     }
 
-    for (const source of this.instance.config.sources || []) {
+    let lastSources = this.instance.getCurrentSources(blockNumber);
+    const sourcesQueue = [...lastSources];
+
+    let source: ContractSourceConfig | undefined;
+    while ((source = sourcesQueue.shift())) {
       let foundContractData = false;
       const contract = validateAndParseAddress(source.contract);
 
@@ -200,7 +211,7 @@ export class StarknetProvider extends BaseProvider {
       for (const [eventIndex, event] of events.entries()) {
         if (contract === validateAndParseAddress(event.from_address)) {
           for (const sourceEvent of source.events) {
-            if (`0x${hash.starknetKeccak(sourceEvent.name).toString('hex')}` === event.keys[0]) {
+            if (`0x${hash.starknetKeccak(sourceEvent.name).toString(16)}` === event.keys[0]) {
               foundContractData = true;
               this.log.info(
                 { contract: source.contract, event: sourceEvent.name, handlerFn: sourceEvent.fn },
@@ -210,11 +221,7 @@ export class StarknetProvider extends BaseProvider {
               let parsedEvent: ParsedEvent | undefined;
               if (source.abi && this.abis?.[source.abi]) {
                 try {
-                  parsedEvent = parseEvent(
-                    this.abis?.[source.abi] as Abi,
-                    sourceEvent.name,
-                    event.data,
-                  );
+                  parsedEvent = parseEvent(this.abis[source.abi], event);
                 } catch (err) {
                   this.log.warn(
                     { contract: source.contract, txType: tx.type, handlerFn: source.deploy_fn },
@@ -241,6 +248,14 @@ export class StarknetProvider extends BaseProvider {
       if (foundContractData) {
         await this.instance.insertCheckpoints([{ blockNumber, contractAddress: source.contract }]);
       }
+
+      const nextSources = this.instance.getCurrentSources(blockNumber);
+      const newSources = nextSources.filter(
+        nextSource => !lastSources.find(lastSource => lastSource.contract === nextSource.contract)
+      );
+
+      sourcesQueue.push(...newSources);
+      lastSources = nextSources;
     }
 
     this.log.debug({ txIndex }, 'handling transaction done');

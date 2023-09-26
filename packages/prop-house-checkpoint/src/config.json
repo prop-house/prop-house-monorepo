@@ -3,13 +3,13 @@
   "optimistic_indexing": true,
   "sources": [
     {
-      "contract": "0x75b622d8d42a1c6b3fde044b868abd3e23e1ee27e00716f672890985a4be4ac",
-      "abi": "RoundFactory",
-      "start": 785546,
+      "contract": "0x5b0b4ac85df4b47cba473a6ffaea0ae596f4b53200bc1eb81c60333772bc07d",
+      "abi": "EthereumRoundFactory",
+      "start": 869427,
       "events": [
         {
-          "name": "round_registered",
-          "fn": "handleRoundRegistered"
+          "name": "RoundRegistered",
+          "fn": "handleEthereumRoundRegistered"
         }
       ]
     }
@@ -19,19 +19,23 @@
       "abi": "TimedRound",
       "events": [
         {
-          "name": "proposal_created",
+          "name": "ProposalCreated",
           "fn": "handleProposalCreated"
         },
         {
-          "name": "proposal_cancelled",
+          "name": "ProposalEdited",
+          "fn": "handleProposalEdited"
+        },
+        {
+          "name": "ProposalCancelled",
           "fn": "handleProposalCancelled"
         },
         {
-          "name": "vote_created",
-          "fn": "handleVoteCreated"
+          "name": "VoteCast",
+          "fn": "handleVoteCast"
         },
         {
-          "name": "round_finalized",
+          "name": "RoundFinalized",
           "fn": "handleRoundFinalized"
         }
       ]

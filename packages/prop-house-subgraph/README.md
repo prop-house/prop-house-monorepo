@@ -12,4 +12,4 @@
 
 ## Supported Chains
 
-* [Goerli](https://thegraph.com/hosted-service/subgraph/prop-house/prop-house-goerli)
+* [Goerli](https://thegraph.com/hosted-service/subgraph/prop-house/prop-house-goerli-v2)

@@ -13,8 +13,7 @@ enum GovPowerStrategyType {
 }
 
 enum RoundEventState {
-  AWAITING_REGISTRATION
-  REGISTERED
+  CREATED
   FINALIZED
   CANCELLED
 }
@@ -159,9 +158,6 @@ type Round @entity {
   "All round asset reclamations"
   reclamations: [Reclaim!] @derivedFrom(field: "round")
 
-  "All round asset rescues"
-  rescues: [Rescue!]! @derivedFrom(field: "round")
-
   "All round asset receipt transfers"
   transfers: [Transfer!]! @derivedFrom(field: "round")
 
@@ -285,9 +281,6 @@ type Account @entity {
   "Reclamations made by the account"
   reclamations: [Reclaim!]! @derivedFrom(field: "reclaimer")
 
-  "Rescues made by the account"
-  rescues: [Rescue!]! @derivedFrom(field: "rescuer")
-
   "Outgoing asset receipt transfers involving the account"
   outgoingTransfers: [Transfer!]! @derivedFrom(field: "from")
 
@@ -335,29 +328,6 @@ type Reclaim @entity(immutable: true) {
   amount: BigInt!
 
   "The round that the asset was reclaimed from"
-  round: Round!
-}
-
-type Rescue @entity(immutable: true) {
-  "A concatenation of the rescue tx hash and the the event log index"
-  id: String!
-
-  "The account who rescued the asset"
-  rescuer: Account!
-
-  "The unix timestamp when this rescue was performed"
-  rescuedAt: BigInt!
-
-  "The recipient of the rescued asset"
-  recipient: Bytes!
-
-  "The asset that was rescued"
-  asset: Asset!
-
-  "The rescue amount"
-  amount: BigInt!
-
-  "The round that the asset was rescued from"
   round: Round!
 }
 

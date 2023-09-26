@@ -1,5 +1,5 @@
 import { Maybe } from 'graphql/jsutils/Maybe';
-import { RoundState, RoundType, GovPowerStrategy } from '../types';
+import { RoundType, GovPowerStrategy, Timed } from '../types';
 
 export interface GlobalStats {
   roundCount: number;
@@ -57,6 +57,8 @@ export interface TimedRoundConfig {
 }
 
 export type RoundConfig = TimedRoundConfig;
+
+export type RoundState = Timed.RoundState
 
 export interface Round {
   address: string;

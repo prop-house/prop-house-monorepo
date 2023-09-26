@@ -3,10 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
-import Checkpoint, { LogLevel } from '@snapshot-labs/checkpoint';
+import Checkpoint, { LogLevel } from 'checkpoint-beta';
 import config from './config.json';
 import * as writers from './writers';
-import RoundFactoryABI from './abis/RoundFactory.json';
+import EthereumRoundFactoryABI from './abis/EthereumRoundFactory.json';
 import TimedRoundABI from './abis/TimedRound.json';
 import { StarknetProvider } from './starknet-provider';
 
@@ -21,8 +21,9 @@ if (process.env.NETWORK_NODE_URL) {
 const checkpointOptions = {
   logLevel: LogLevel.Info,
   prettifyLogs: process.env.NODE_ENV !== 'production',
+  resetOnConfigChange: true,
   abis: {
-    RoundFactory: RoundFactoryABI,
+    EthereumRoundFactory: EthereumRoundFactoryABI,
     TimedRound: TimedRoundABI,
   },
   NetworkProvider: StarknetProvider,
@@ -30,7 +31,7 @@ const checkpointOptions = {
 
 const checkpoint = new Checkpoint(config, writers, schema, checkpointOptions);
 
-checkpoint.reset().then(() => checkpoint.start());
+checkpoint.start();
 
 const app = express();
 app.use(express.json({ limit: '4mb' }));

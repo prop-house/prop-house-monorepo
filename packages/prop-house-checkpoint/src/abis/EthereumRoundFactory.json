@@ -1,0 +1,163 @@
+[
+  {
+    "type": "impl",
+    "name": "EthereumRoundFactory",
+    "interface_name": "prop_house::common::utils::traits::IRoundFactory"
+  },
+  {
+    "type": "interface",
+    "name": "prop_house::common::utils::traits::IRoundFactory",
+    "items": [
+      {
+        "type": "function",
+        "name": "starknet_round",
+        "inputs": [
+          {
+            "name": "origin_round",
+            "type": "core::felt252"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "origin_round",
+        "inputs": [
+          {
+            "name": "starknet_round",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "origin_messenger",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::felt252"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "origin_chain_id",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u64"
+          }
+        ],
+        "state_mutability": "view"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "origin_chain_id",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "origin_messenger",
+        "type": "core::felt252"
+      }
+    ]
+  },
+  {
+    "type": "l1_handler",
+    "name": "register_round",
+    "inputs": [
+      {
+        "name": "from_address",
+        "type": "core::felt252"
+      },
+      {
+        "name": "origin_round",
+        "type": "core::felt252"
+      },
+      {
+        "name": "round_class_hash",
+        "type": "core::starknet::class_hash::ClassHash"
+      },
+      {
+        "name": "round_params",
+        "type": "core::array::Array::<core::felt252>"
+      }
+    ],
+    "outputs": [],
+    "state_mutability": "external"
+  },
+  {
+    "type": "l1_handler",
+    "name": "route_call_to_round",
+    "inputs": [
+      {
+        "name": "from_address",
+        "type": "core::felt252"
+      },
+      {
+        "name": "origin_round",
+        "type": "core::felt252"
+      },
+      {
+        "name": "selector",
+        "type": "core::felt252"
+      },
+      {
+        "name": "cdata",
+        "type": "core::array::Array::<core::felt252>"
+      }
+    ],
+    "outputs": [],
+    "state_mutability": "view"
+  },
+  {
+    "type": "event",
+    "name": "prop_house::factories::ethereum::EthereumRoundFactory::RoundRegistered",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "origin_round",
+        "type": "core::felt252",
+        "kind": "data"
+      },
+      {
+        "name": "starknet_round",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "data"
+      },
+      {
+        "name": "round_class_hash",
+        "type": "core::starknet::class_hash::ClassHash",
+        "kind": "data"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "prop_house::factories::ethereum::EthereumRoundFactory::Event",
+    "kind": "enum",
+    "variants": [
+      {
+        "name": "RoundRegistered",
+        "type": "prop_house::factories::ethereum::EthereumRoundFactory::RoundRegistered",
+        "kind": "nested"
+      }
+    ]
+  }
+]

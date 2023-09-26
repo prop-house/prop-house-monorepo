@@ -13,6 +13,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   BigInt: any;
+  Text: any;
 };
 
 export type Account = {
@@ -31,6 +32,41 @@ export type Account = {
   votes: Array<Maybe<Vote>>;
 };
 
+export type Account_Filter = {
+  firstSeenAt?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_gt?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_gte?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  firstSeenAt_lt?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_lte?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_not?: InputMaybe<Scalars['Int']>;
+  firstSeenAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  id?: InputMaybe<Scalars['String']>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  proposalCount?: InputMaybe<Scalars['Int']>;
+  proposalCount_gt?: InputMaybe<Scalars['Int']>;
+  proposalCount_gte?: InputMaybe<Scalars['Int']>;
+  proposalCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  proposalCount_lt?: InputMaybe<Scalars['Int']>;
+  proposalCount_lte?: InputMaybe<Scalars['Int']>;
+  proposalCount_not?: InputMaybe<Scalars['Int']>;
+  proposalCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  voteCount?: InputMaybe<Scalars['Int']>;
+  voteCount_gt?: InputMaybe<Scalars['Int']>;
+  voteCount_gte?: InputMaybe<Scalars['Int']>;
+  voteCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  voteCount_lt?: InputMaybe<Scalars['Int']>;
+  voteCount_lte?: InputMaybe<Scalars['Int']>;
+  voteCount_not?: InputMaybe<Scalars['Int']>;
+  voteCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+};
+
 export enum OrderByAccountFields {
   FirstSeenAt = 'firstSeenAt',
   Id = 'id',
@@ -43,6 +79,7 @@ export enum OrderByProposalFields {
   Id = 'id',
   IsCancelled = 'isCancelled',
   IsWinner = 'isWinner',
+  LastUpdatedAt = 'lastUpdatedAt',
   MetadataUri = 'metadataUri',
   ProposalId = 'proposalId',
   Proposer = 'proposer',
@@ -51,6 +88,8 @@ export enum OrderByProposalFields {
   Title = 'title',
   Tldr = 'tldr',
   TxHash = 'txHash',
+  TxStatus = 'txStatus',
+  Version = 'version',
   VotingPower = 'votingPower',
 }
 
@@ -61,6 +100,7 @@ export enum OrderByRoundFields {
   SourceChainRound = 'sourceChainRound',
   State = 'state',
   TxHash = 'txHash',
+  TxStatus = 'txStatus',
   Type = 'type',
   UniqueProposers = 'uniqueProposers',
   UniqueVoters = 'uniqueVoters',
@@ -80,6 +120,7 @@ export enum OrderByVoteFields {
   ReceivedAt = 'receivedAt',
   Round = 'round',
   TxHash = 'txHash',
+  TxStatus = 'txStatus',
   Voter = 'voter',
   VotingPower = 'votingPower',
 }
@@ -103,13 +144,15 @@ export enum OrderDirection {
 export type Proposal = {
   __typename?: 'Proposal';
   /** The proposal body */
-  body: Scalars['String'];
+  body: Scalars['Text'];
   /** A concatenation of the Starknet round address and proposal ID */
   id: Scalars['String'];
   /** Whether the proposal has been cancelled */
   isCancelled: Scalars['Boolean'];
   /** Whether the proposal has been selected as a winner */
   isWinner: Scalars['Boolean'];
+  /** The unix timestamp when the proposal was last updated */
+  lastUpdatedAt?: Maybe<Scalars['Int']>;
   /** The proposal metadata URI */
   metadataUri: Scalars['String'];
   /** The proposal ID */
@@ -121,22 +164,140 @@ export type Proposal = {
   /** The round that the proposal was submitted to */
   round: Round;
   /** The proposal title */
-  title: Scalars['String'];
+  title: Scalars['Text'];
   /** The proposal tl;dr */
-  tldr: Scalars['String'];
+  tldr: Scalars['Text'];
   /** The transaction in which the proposal was submitted */
   txHash: Scalars['String'];
+  /** The status of the propose transaction */
+  txStatus: Scalars['String'];
+  /** The proposal version, which is incremented when the proposal is updated */
+  version: Scalars['Int'];
   /** All votes that the proposal has received */
   votes: Array<Maybe<Vote>>;
   /** The amount of voting power that the proposal has received */
   votingPower: Scalars['BigInt'];
 };
 
+export type Proposal_Filter = {
+  body_contains?: InputMaybe<Scalars['String']>;
+  body_contains_nocase?: InputMaybe<Scalars['String']>;
+  body_not_contains?: InputMaybe<Scalars['String']>;
+  body_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['String']>;
+  id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  id_not?: InputMaybe<Scalars['String']>;
+  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  isCancelled?: InputMaybe<Scalars['Boolean']>;
+  isCancelled_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  isCancelled_not?: InputMaybe<Scalars['Boolean']>;
+  isCancelled_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  isWinner?: InputMaybe<Scalars['Boolean']>;
+  isWinner_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  isWinner_not?: InputMaybe<Scalars['Boolean']>;
+  isWinner_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
+  lastUpdatedAt?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_gt?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_gte?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  lastUpdatedAt_lt?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_lte?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_not?: InputMaybe<Scalars['Int']>;
+  lastUpdatedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  metadataUri?: InputMaybe<Scalars['String']>;
+  metadataUri_contains?: InputMaybe<Scalars['String']>;
+  metadataUri_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataUri_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  metadataUri_not?: InputMaybe<Scalars['String']>;
+  metadataUri_not_contains?: InputMaybe<Scalars['String']>;
+  metadataUri_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  metadataUri_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  proposalId?: InputMaybe<Scalars['Int']>;
+  proposalId_gt?: InputMaybe<Scalars['Int']>;
+  proposalId_gte?: InputMaybe<Scalars['Int']>;
+  proposalId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  proposalId_lt?: InputMaybe<Scalars['Int']>;
+  proposalId_lte?: InputMaybe<Scalars['Int']>;
+  proposalId_not?: InputMaybe<Scalars['Int']>;
+  proposalId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  proposer?: InputMaybe<Scalars['String']>;
+  proposer_?: InputMaybe<Account_Filter>;
+  proposer_contains?: InputMaybe<Scalars['String']>;
+  proposer_contains_nocase?: InputMaybe<Scalars['String']>;
+  proposer_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  proposer_not?: InputMaybe<Scalars['String']>;
+  proposer_not_contains?: InputMaybe<Scalars['String']>;
+  proposer_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  proposer_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  receivedAt?: InputMaybe<Scalars['Int']>;
+  receivedAt_gt?: InputMaybe<Scalars['Int']>;
+  receivedAt_gte?: InputMaybe<Scalars['Int']>;
+  receivedAt_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  receivedAt_lt?: InputMaybe<Scalars['Int']>;
+  receivedAt_lte?: InputMaybe<Scalars['Int']>;
+  receivedAt_not?: InputMaybe<Scalars['Int']>;
+  receivedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  round?: InputMaybe<Scalars['String']>;
+  round_?: InputMaybe<Round_Filter>;
+  round_contains?: InputMaybe<Scalars['String']>;
+  round_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  round_not?: InputMaybe<Scalars['String']>;
+  round_not_contains?: InputMaybe<Scalars['String']>;
+  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  title_contains?: InputMaybe<Scalars['String']>;
+  title_contains_nocase?: InputMaybe<Scalars['String']>;
+  title_not_contains?: InputMaybe<Scalars['String']>;
+  title_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  tldr_contains?: InputMaybe<Scalars['String']>;
+  tldr_contains_nocase?: InputMaybe<Scalars['String']>;
+  tldr_not_contains?: InputMaybe<Scalars['String']>;
+  tldr_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  txHash?: InputMaybe<Scalars['String']>;
+  txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_contains_nocase?: InputMaybe<Scalars['String']>;
+  txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txHash_not?: InputMaybe<Scalars['String']>;
+  txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus?: InputMaybe<Scalars['String']>;
+  txStatus_contains?: InputMaybe<Scalars['String']>;
+  txStatus_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus_not?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  version?: InputMaybe<Scalars['Int']>;
+  version_gt?: InputMaybe<Scalars['Int']>;
+  version_gte?: InputMaybe<Scalars['Int']>;
+  version_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  version_lt?: InputMaybe<Scalars['Int']>;
+  version_lte?: InputMaybe<Scalars['Int']>;
+  version_not?: InputMaybe<Scalars['Int']>;
+  version_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+  votingPower?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_gte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
+  votingPower_lt?: InputMaybe<Scalars['BigInt']>;
+  votingPower_lte?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not?: InputMaybe<Scalars['BigInt']>;
+  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _checkpoint?: Maybe<_Checkpoint>;
   _checkpoints?: Maybe<Array<Maybe<_Checkpoint>>>;
-  _metadata?: Maybe<Array<Maybe<_Metadata>>>;
+  _metadata?: Maybe<_Metadata>;
+  _metadatas?: Maybe<Array<Maybe<_Metadata>>>;
   account?: Maybe<Account>;
   accounts?: Maybe<Array<Maybe<Account>>>;
   proposal?: Maybe<Proposal>;
@@ -158,15 +319,19 @@ export type Query_CheckpointsArgs = {
   orderBy?: InputMaybe<OrderBy_CheckpointFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Where_Checkpoint>;
+  where?: InputMaybe<_Checkpoint_Filter>;
 };
 
 export type Query_MetadataArgs = {
+  id: Scalars['ID'];
+};
+
+export type Query_MetadatasArgs = {
   first?: InputMaybe<Scalars['Int']>;
   orderBy?: InputMaybe<OrderBy_MetadataFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Where_Metadata>;
+  where?: InputMaybe<_Metadata_Filter>;
 };
 
 export type QueryAccountArgs = {
@@ -178,7 +343,7 @@ export type QueryAccountsArgs = {
   orderBy?: InputMaybe<OrderByAccountFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<WhereAccount>;
+  where?: InputMaybe<Account_Filter>;
 };
 
 export type QueryProposalArgs = {
@@ -190,7 +355,7 @@ export type QueryProposalsArgs = {
   orderBy?: InputMaybe<OrderByProposalFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<WhereProposal>;
+  where?: InputMaybe<Proposal_Filter>;
 };
 
 export type QueryRoundArgs = {
@@ -202,7 +367,7 @@ export type QueryRoundsArgs = {
   orderBy?: InputMaybe<OrderByRoundFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<WhereRound>;
+  where?: InputMaybe<Round_Filter>;
 };
 
 export type QuerySummariesArgs = {
@@ -210,7 +375,7 @@ export type QuerySummariesArgs = {
   orderBy?: InputMaybe<OrderBySummaryFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<WhereSummary>;
+  where?: InputMaybe<Summary_Filter>;
 };
 
 export type QuerySummaryArgs = {
@@ -226,7 +391,7 @@ export type QueryVotesArgs = {
   orderBy?: InputMaybe<OrderByVoteFields>;
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<WhereVote>;
+  where?: InputMaybe<Vote_Filter>;
 };
 
 export type Round = {
@@ -245,6 +410,8 @@ export type Round = {
   state: Scalars['String'];
   /** The transaction in which the round was registered */
   txHash: Scalars['String'];
+  /** The status of the round registration transaction */
+  txStatus: Scalars['String'];
   /** The round type (TIMED) */
   type: Scalars['String'];
   /** The number of unique proposers in the round */
@@ -255,160 +422,14 @@ export type Round = {
   votes: Array<Maybe<Vote>>;
 };
 
-export type Summary = {
-  __typename?: 'Summary';
-  /** A constant (SUMMARY) */
-  id: Scalars['String'];
-  /** The total number of proposals across all rounds */
-  proposalCount: Scalars['Int'];
-  /** The total number of rounds across all houses */
-  roundCount: Scalars['Int'];
-  /** The total number of unique proposers across all rounds */
-  uniqueProposers: Scalars['Int'];
-  /** The total number of unique voters across all rounds */
-  uniqueVoters: Scalars['Int'];
-};
-
-export type Vote = {
-  __typename?: 'Vote';
-  /** A concatenation of the vote transaction hash and log index */
-  id: Scalars['String'];
-  /** The proposal that was voted for */
-  proposal: Proposal;
-  /** The unix timestamp when the vote was received */
-  receivedAt: Scalars['Int'];
-  /** The round that the vote is in */
-  round: Round;
-  /** The transaction in which the votes were submitted */
-  txHash: Scalars['String'];
-  /** The voter account */
-  voter: Account;
-  /** The amount of voting power */
-  votingPower: Scalars['BigInt'];
-};
-
-export type WhereAccount = {
-  firstSeenAt?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_gt?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_gte?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  firstSeenAt_lt?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_lte?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_not?: InputMaybe<Scalars['Int']>;
-  firstSeenAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
+export type Round_Filter = {
   id?: InputMaybe<Scalars['String']>;
   id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
   id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id_not?: InputMaybe<Scalars['String']>;
   id_not_contains?: InputMaybe<Scalars['String']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  proposalCount?: InputMaybe<Scalars['Int']>;
-  proposalCount_gt?: InputMaybe<Scalars['Int']>;
-  proposalCount_gte?: InputMaybe<Scalars['Int']>;
-  proposalCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  proposalCount_lt?: InputMaybe<Scalars['Int']>;
-  proposalCount_lte?: InputMaybe<Scalars['Int']>;
-  proposalCount_not?: InputMaybe<Scalars['Int']>;
-  proposalCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteCount?: InputMaybe<Scalars['Int']>;
-  voteCount_gt?: InputMaybe<Scalars['Int']>;
-  voteCount_gte?: InputMaybe<Scalars['Int']>;
-  voteCount_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  voteCount_lt?: InputMaybe<Scalars['Int']>;
-  voteCount_lte?: InputMaybe<Scalars['Int']>;
-  voteCount_not?: InputMaybe<Scalars['Int']>;
-  voteCount_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-};
-
-export type WhereProposal = {
-  body?: InputMaybe<Scalars['String']>;
-  body_contains?: InputMaybe<Scalars['String']>;
-  body_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  body_not?: InputMaybe<Scalars['String']>;
-  body_not_contains?: InputMaybe<Scalars['String']>;
-  body_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  id?: InputMaybe<Scalars['String']>;
-  id_contains?: InputMaybe<Scalars['String']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  id_not?: InputMaybe<Scalars['String']>;
-  id_not_contains?: InputMaybe<Scalars['String']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  isCancelled?: InputMaybe<Scalars['Boolean']>;
-  isCancelled_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
-  isCancelled_not?: InputMaybe<Scalars['Boolean']>;
-  isCancelled_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
-  isWinner?: InputMaybe<Scalars['Boolean']>;
-  isWinner_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
-  isWinner_not?: InputMaybe<Scalars['Boolean']>;
-  isWinner_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']>>>;
-  metadataUri?: InputMaybe<Scalars['String']>;
-  metadataUri_contains?: InputMaybe<Scalars['String']>;
-  metadataUri_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  metadataUri_not?: InputMaybe<Scalars['String']>;
-  metadataUri_not_contains?: InputMaybe<Scalars['String']>;
-  metadataUri_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  proposalId?: InputMaybe<Scalars['Int']>;
-  proposalId_gt?: InputMaybe<Scalars['Int']>;
-  proposalId_gte?: InputMaybe<Scalars['Int']>;
-  proposalId_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  proposalId_lt?: InputMaybe<Scalars['Int']>;
-  proposalId_lte?: InputMaybe<Scalars['Int']>;
-  proposalId_not?: InputMaybe<Scalars['Int']>;
-  proposalId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  proposer?: InputMaybe<Scalars['String']>;
-  proposer_contains?: InputMaybe<Scalars['String']>;
-  proposer_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  proposer_not?: InputMaybe<Scalars['String']>;
-  proposer_not_contains?: InputMaybe<Scalars['String']>;
-  proposer_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  receivedAt?: InputMaybe<Scalars['Int']>;
-  receivedAt_gt?: InputMaybe<Scalars['Int']>;
-  receivedAt_gte?: InputMaybe<Scalars['Int']>;
-  receivedAt_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  receivedAt_lt?: InputMaybe<Scalars['Int']>;
-  receivedAt_lte?: InputMaybe<Scalars['Int']>;
-  receivedAt_not?: InputMaybe<Scalars['Int']>;
-  receivedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
-  round?: InputMaybe<Scalars['String']>;
-  round_contains?: InputMaybe<Scalars['String']>;
-  round_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  round_not?: InputMaybe<Scalars['String']>;
-  round_not_contains?: InputMaybe<Scalars['String']>;
-  round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  title?: InputMaybe<Scalars['String']>;
-  title_contains?: InputMaybe<Scalars['String']>;
-  title_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  title_not?: InputMaybe<Scalars['String']>;
-  title_not_contains?: InputMaybe<Scalars['String']>;
-  title_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tldr?: InputMaybe<Scalars['String']>;
-  tldr_contains?: InputMaybe<Scalars['String']>;
-  tldr_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  tldr_not?: InputMaybe<Scalars['String']>;
-  tldr_not_contains?: InputMaybe<Scalars['String']>;
-  tldr_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  txHash?: InputMaybe<Scalars['String']>;
-  txHash_contains?: InputMaybe<Scalars['String']>;
-  txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  txHash_not?: InputMaybe<Scalars['String']>;
-  txHash_not_contains?: InputMaybe<Scalars['String']>;
-  txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  votingPower?: InputMaybe<Scalars['BigInt']>;
-  votingPower_gt?: InputMaybe<Scalars['BigInt']>;
-  votingPower_gte?: InputMaybe<Scalars['BigInt']>;
-  votingPower_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
-  votingPower_lt?: InputMaybe<Scalars['BigInt']>;
-  votingPower_lte?: InputMaybe<Scalars['BigInt']>;
-  votingPower_not?: InputMaybe<Scalars['BigInt']>;
-  votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
-};
-
-export type WhereRound = {
-  id?: InputMaybe<Scalars['String']>;
-  id_contains?: InputMaybe<Scalars['String']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  id_not?: InputMaybe<Scalars['String']>;
-  id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   proposalCount?: InputMaybe<Scalars['Int']>;
   proposalCount_gt?: InputMaybe<Scalars['Int']>;
@@ -428,27 +449,43 @@ export type WhereRound = {
   registeredAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   sourceChainRound?: InputMaybe<Scalars['String']>;
   sourceChainRound_contains?: InputMaybe<Scalars['String']>;
+  sourceChainRound_contains_nocase?: InputMaybe<Scalars['String']>;
   sourceChainRound_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   sourceChainRound_not?: InputMaybe<Scalars['String']>;
   sourceChainRound_not_contains?: InputMaybe<Scalars['String']>;
+  sourceChainRound_not_contains_nocase?: InputMaybe<Scalars['String']>;
   sourceChainRound_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   state?: InputMaybe<Scalars['String']>;
   state_contains?: InputMaybe<Scalars['String']>;
+  state_contains_nocase?: InputMaybe<Scalars['String']>;
   state_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   state_not?: InputMaybe<Scalars['String']>;
   state_not_contains?: InputMaybe<Scalars['String']>;
+  state_not_contains_nocase?: InputMaybe<Scalars['String']>;
   state_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   txHash?: InputMaybe<Scalars['String']>;
   txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_contains_nocase?: InputMaybe<Scalars['String']>;
   txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   txHash_not?: InputMaybe<Scalars['String']>;
   txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_contains_nocase?: InputMaybe<Scalars['String']>;
   txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus?: InputMaybe<Scalars['String']>;
+  txStatus_contains?: InputMaybe<Scalars['String']>;
+  txStatus_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus_not?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   type?: InputMaybe<Scalars['String']>;
   type_contains?: InputMaybe<Scalars['String']>;
+  type_contains_nocase?: InputMaybe<Scalars['String']>;
   type_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   type_not?: InputMaybe<Scalars['String']>;
   type_not_contains?: InputMaybe<Scalars['String']>;
+  type_not_contains_nocase?: InputMaybe<Scalars['String']>;
   type_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   uniqueProposers?: InputMaybe<Scalars['Int']>;
   uniqueProposers_gt?: InputMaybe<Scalars['Int']>;
@@ -468,12 +505,28 @@ export type WhereRound = {
   uniqueVoters_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type WhereSummary = {
+export type Summary = {
+  __typename?: 'Summary';
+  /** A constant (SUMMARY) */
+  id: Scalars['String'];
+  /** The total number of proposals across all rounds */
+  proposalCount: Scalars['Int'];
+  /** The total number of rounds across all houses */
+  roundCount: Scalars['Int'];
+  /** The total number of unique proposers across all rounds */
+  uniqueProposers: Scalars['Int'];
+  /** The total number of unique voters across all rounds */
+  uniqueVoters: Scalars['Int'];
+};
+
+export type Summary_Filter = {
   id?: InputMaybe<Scalars['String']>;
   id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
   id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id_not?: InputMaybe<Scalars['String']>;
   id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   proposalCount?: InputMaybe<Scalars['Int']>;
   proposalCount_gt?: InputMaybe<Scalars['Int']>;
@@ -509,18 +562,43 @@ export type WhereSummary = {
   uniqueVoters_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
-export type WhereVote = {
+export type Vote = {
+  __typename?: 'Vote';
+  /** A concatenation of the vote transaction hash and log index */
+  id: Scalars['String'];
+  /** The proposal that was voted for */
+  proposal: Proposal;
+  /** The unix timestamp when the vote was received */
+  receivedAt: Scalars['Int'];
+  /** The round that the vote is in */
+  round: Round;
+  /** The transaction in which the votes were submitted */
+  txHash: Scalars['String'];
+  /** The status of the vote transaction */
+  txStatus: Scalars['String'];
+  /** The voter account */
+  voter: Account;
+  /** The amount of voting power */
+  votingPower: Scalars['BigInt'];
+};
+
+export type Vote_Filter = {
   id?: InputMaybe<Scalars['String']>;
   id_contains?: InputMaybe<Scalars['String']>;
+  id_contains_nocase?: InputMaybe<Scalars['String']>;
   id_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id_not?: InputMaybe<Scalars['String']>;
   id_not_contains?: InputMaybe<Scalars['String']>;
+  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   proposal?: InputMaybe<Scalars['String']>;
+  proposal_?: InputMaybe<Proposal_Filter>;
   proposal_contains?: InputMaybe<Scalars['String']>;
+  proposal_contains_nocase?: InputMaybe<Scalars['String']>;
   proposal_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   proposal_not?: InputMaybe<Scalars['String']>;
   proposal_not_contains?: InputMaybe<Scalars['String']>;
+  proposal_not_contains_nocase?: InputMaybe<Scalars['String']>;
   proposal_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   receivedAt?: InputMaybe<Scalars['Int']>;
   receivedAt_gt?: InputMaybe<Scalars['Int']>;
@@ -531,22 +609,38 @@ export type WhereVote = {
   receivedAt_not?: InputMaybe<Scalars['Int']>;
   receivedAt_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   round?: InputMaybe<Scalars['String']>;
+  round_?: InputMaybe<Round_Filter>;
   round_contains?: InputMaybe<Scalars['String']>;
+  round_contains_nocase?: InputMaybe<Scalars['String']>;
   round_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   round_not?: InputMaybe<Scalars['String']>;
   round_not_contains?: InputMaybe<Scalars['String']>;
+  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
   round_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   txHash?: InputMaybe<Scalars['String']>;
   txHash_contains?: InputMaybe<Scalars['String']>;
+  txHash_contains_nocase?: InputMaybe<Scalars['String']>;
   txHash_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   txHash_not?: InputMaybe<Scalars['String']>;
   txHash_not_contains?: InputMaybe<Scalars['String']>;
+  txHash_not_contains_nocase?: InputMaybe<Scalars['String']>;
   txHash_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus?: InputMaybe<Scalars['String']>;
+  txStatus_contains?: InputMaybe<Scalars['String']>;
+  txStatus_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  txStatus_not?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains?: InputMaybe<Scalars['String']>;
+  txStatus_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  txStatus_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   voter?: InputMaybe<Scalars['String']>;
+  voter_?: InputMaybe<Account_Filter>;
   voter_contains?: InputMaybe<Scalars['String']>;
+  voter_contains_nocase?: InputMaybe<Scalars['String']>;
   voter_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   voter_not?: InputMaybe<Scalars['String']>;
   voter_not_contains?: InputMaybe<Scalars['String']>;
+  voter_not_contains_nocase?: InputMaybe<Scalars['String']>;
   voter_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   votingPower?: InputMaybe<Scalars['BigInt']>;
   votingPower_gt?: InputMaybe<Scalars['BigInt']>;
@@ -558,7 +652,16 @@ export type WhereVote = {
   votingPower_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']>>>;
 };
 
-export type Where_Checkpoint = {
+/** Contract and Block where its event is found. */
+export type _Checkpoint = {
+  __typename?: '_Checkpoint';
+  block_number: Scalars['Int'];
+  contract_address: Scalars['String'];
+  /** id computed as last 5 bytes of sha256(contract+block) */
+  id: Scalars['ID'];
+};
+
+export type _Checkpoint_Filter = {
   block_number?: InputMaybe<Scalars['Int']>;
   block_number_gt?: InputMaybe<Scalars['Int']>;
   block_number_gte?: InputMaybe<Scalars['Int']>;
@@ -569,36 +672,16 @@ export type Where_Checkpoint = {
   block_number_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
   contract_address?: InputMaybe<Scalars['String']>;
   contract_address_contains?: InputMaybe<Scalars['String']>;
+  contract_address_contains_nocase?: InputMaybe<Scalars['String']>;
   contract_address_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   contract_address_not?: InputMaybe<Scalars['String']>;
   contract_address_not_contains?: InputMaybe<Scalars['String']>;
+  contract_address_not_contains_nocase?: InputMaybe<Scalars['String']>;
   contract_address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
   id?: InputMaybe<Scalars['ID']>;
   id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
   id_not?: InputMaybe<Scalars['ID']>;
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-};
-
-export type Where_Metadata = {
-  id?: InputMaybe<Scalars['ID']>;
-  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  id_not?: InputMaybe<Scalars['ID']>;
-  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
-  value?: InputMaybe<Scalars['String']>;
-  value_contains?: InputMaybe<Scalars['String']>;
-  value_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-  value_not?: InputMaybe<Scalars['String']>;
-  value_not_contains?: InputMaybe<Scalars['String']>;
-  value_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
-};
-
-/** Contract and Block where its event is found. */
-export type _Checkpoint = {
-  __typename?: '_Checkpoint';
-  block_number: Scalars['Int'];
-  contract_address: Scalars['String'];
-  /** id computed as last 5 bytes of sha256(contract+block) */
-  id: Scalars['ID'];
 };
 
 /** Core metadata values used internally by Checkpoint */
@@ -607,6 +690,21 @@ export type _Metadata = {
   /** example: last_indexed_block */
   id: Scalars['ID'];
   value?: Maybe<Scalars['String']>;
+};
+
+export type _Metadata_Filter = {
+  id?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+  value?: InputMaybe<Scalars['String']>;
+  value_contains?: InputMaybe<Scalars['String']>;
+  value_contains_nocase?: InputMaybe<Scalars['String']>;
+  value_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
+  value_not?: InputMaybe<Scalars['String']>;
+  value_not_contains?: InputMaybe<Scalars['String']>;
+  value_not_contains_nocase?: InputMaybe<Scalars['String']>;
+  value_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']>>>;
 };
 
 export type GlobalStatsQueryVariables = Exact<{ [key: string]: never }>;
@@ -627,7 +725,7 @@ export type ManyProposalsQueryVariables = Exact<{
   skip: Scalars['Int'];
   orderBy?: InputMaybe<OrderByProposalFields>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WhereProposal>;
+  where?: InputMaybe<Proposal_Filter>;
 }>;
 
 export type ManyProposalsQuery = {
@@ -636,8 +734,8 @@ export type ManyProposalsQuery = {
     __typename?: 'Proposal';
     proposalId: number;
     metadataUri: string;
-    title: string;
-    body: string;
+    title: any;
+    body: any;
     isCancelled: boolean;
     isWinner: boolean;
     receivedAt: number;
@@ -658,8 +756,8 @@ export type ProposalQuery = {
     __typename?: 'Proposal';
     proposalId: number;
     metadataUri: string;
-    title: string;
-    body: string;
+    title: any;
+    body: any;
     isCancelled: boolean;
     isWinner: boolean;
     receivedAt: number;
@@ -670,37 +768,12 @@ export type ProposalQuery = {
   } | null;
 };
 
-export type ManyRoundProposalsQueryVariables = Exact<{
-  where?: InputMaybe<WhereRound>;
-}>;
-
-export type ManyRoundProposalsQuery = {
-  __typename?: 'Query';
-  rounds?: Array<{
-    __typename?: 'Round';
-    proposals: Array<{
-      __typename?: 'Proposal';
-      id: string;
-      proposalId: number;
-      metadataUri: string;
-      title: string;
-      body: string;
-      isCancelled: boolean;
-      isWinner: boolean;
-      receivedAt: number;
-      txHash: string;
-      votingPower: any;
-      proposer: { __typename?: 'Account'; id: string };
-    } | null>;
-  } | null> | null;
-};
-
 export type ManyVotesQueryVariables = Exact<{
   first: Scalars['Int'];
   skip: Scalars['Int'];
   orderBy?: InputMaybe<OrderByVoteFields>;
   orderDirection?: InputMaybe<OrderDirection>;
-  where?: InputMaybe<WhereVote>;
+  where?: InputMaybe<Vote_Filter>;
 }>;
 
 export type ManyVotesQuery = {
@@ -797,7 +870,7 @@ export const ManyProposalsDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereProposal' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Proposal_filter' } },
         },
       ],
       selectionSet: {
@@ -939,71 +1012,6 @@ export const ProposalDocument = {
     },
   ],
 } as unknown as DocumentNode<ProposalQuery, ProposalQueryVariables>;
-export const ManyRoundProposalsDocument = {
-  kind: 'Document',
-  definitions: [
-    {
-      kind: 'OperationDefinition',
-      operation: 'query',
-      name: { kind: 'Name', value: 'manyRoundProposals' },
-      variableDefinitions: [
-        {
-          kind: 'VariableDefinition',
-          variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereRound' } },
-        },
-      ],
-      selectionSet: {
-        kind: 'SelectionSet',
-        selections: [
-          {
-            kind: 'Field',
-            name: { kind: 'Name', value: 'rounds' },
-            arguments: [
-              {
-                kind: 'Argument',
-                name: { kind: 'Name', value: 'where' },
-                value: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
-              },
-            ],
-            selectionSet: {
-              kind: 'SelectionSet',
-              selections: [
-                {
-                  kind: 'Field',
-                  name: { kind: 'Name', value: 'proposals' },
-                  selectionSet: {
-                    kind: 'SelectionSet',
-                    selections: [
-                      { kind: 'Field', name: { kind: 'Name', value: 'id' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'proposalId' } },
-                      {
-                        kind: 'Field',
-                        name: { kind: 'Name', value: 'proposer' },
-                        selectionSet: {
-                          kind: 'SelectionSet',
-                          selections: [{ kind: 'Field', name: { kind: 'Name', value: 'id' } }],
-                        },
-                      },
-                      { kind: 'Field', name: { kind: 'Name', value: 'metadataUri' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'body' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'isCancelled' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'isWinner' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'receivedAt' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
-                      { kind: 'Field', name: { kind: 'Name', value: 'votingPower' } },
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    },
-  ],
-} as unknown as DocumentNode<ManyRoundProposalsQuery, ManyRoundProposalsQueryVariables>;
 export const ManyVotesDocument = {
   kind: 'Document',
   definitions: [
@@ -1041,7 +1049,7 @@ export const ManyVotesDocument = {
         {
           kind: 'VariableDefinition',
           variable: { kind: 'Variable', name: { kind: 'Name', value: 'where' } },
-          type: { kind: 'NamedType', name: { kind: 'Name', value: 'WhereVote' } },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Vote_filter' } },
         },
       ],
       selectionSet: {

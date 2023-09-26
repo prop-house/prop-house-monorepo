@@ -5,7 +5,6 @@ import {
   RoundType,
   Timed,
   RoundChainConfig,
-  RoundState,
   RoundEventState,
   GetRoundStateParams,
 } from '../../types';
@@ -119,14 +118,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   public static getState(params: GetRoundStateParams<RoundType.TIMED>) {
     const { eventState, config } = params;
     if (!eventState || !config) {
-      return RoundState.UNKNOWN;
+      return Timed.RoundState.UNKNOWN;
     }
-    const eventStateLookup: Record<string, RoundState> = {
-      [RoundEventState.AWAITING_REGISTRATION]: RoundState.AWAITING_REGISTRATION,
-      [RoundEventState.CANCELLED]: RoundState.CANCELLED,
-    };
-    if (eventStateLookup[eventState]) {
-      return eventStateLookup[eventState];
+    if (eventState === RoundEventState.CANCELLED) {
+      return Timed.RoundState.CANCELLED;
     }
 
     const timestamp = BigNumber.from(this._TIMESTAMP_SECS);
@@ -134,18 +129,18 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       config.proposalPeriodDuration,
     );
     if (timestamp.lt(config.proposalPeriodStartTimestamp)) {
-      return RoundState.NOT_STARTED;
+      return Timed.RoundState.NOT_STARTED;
     }
     if (timestamp.lt(proposalPeriodEndTimestamp)) {
-      return RoundState.IN_PROPOSING_PERIOD;
+      return Timed.RoundState.IN_PROPOSING_PERIOD;
     }
     if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration))) {
-      return RoundState.IN_VOTING_PERIOD;
+      return Timed.RoundState.IN_VOTING_PERIOD;
     }
     if (timestamp.lt(proposalPeriodEndTimestamp.add(config.votePeriodDuration).add(Time.toSeconds(56, TimeUnit.Days)))) {
-      return RoundState.IN_CLAIMING_PERIOD;
+      return Timed.RoundState.IN_CLAIMING_PERIOD;
     }
-    return RoundState.COMPLETE;
+    return Timed.RoundState.COMPLETE;
   }
 
   /**

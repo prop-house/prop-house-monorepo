@@ -10,8 +10,7 @@ export const BIGINT_8_WEEKS_IN_SECONDS = BigInt.fromI32(4838400);
 
 // String enums are not yet supported by AssemblyScript
 export namespace RoundEventState {
-  export const AWAITING_REGISTRATION = 'AWAITING_REGISTRATION';
-  export const REGISTERED = 'REGISTERED';
+  export const CREATED = 'CREATED';
   export const FINALIZED = 'FINALIZED';
   export const CANCELLED = 'CANCELLED';
 }

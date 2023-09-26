@@ -1,6 +1,6 @@
 import { log, BigInt } from '@graphprotocol/graph-ts';
-import { AssetRescued, AwardClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
-import { Account, Asset, Award, Balance, Claim, Reclaim, Rescue, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
+import { AssetClaimed, RoundCancelled, RoundFinalized, RoundRegistered, TransferBatch, TransferSingle } from '../generated/templates/TimedRound/TimedRound';
+import { Account, Asset, Award, Balance, Claim, Reclaim, Round, RoundVotingStrategy, TimedRoundConfig, Transfer, GovPowerStrategy, RoundProposingStrategy } from '../generated/schema';
 import { AssetStruct, computeAssetID, computeGovPowerStrategyID, get2DArray, getAssetTypeString, getGovPowerStrategyType } from './lib/utils';
 import { RoundEventState, BIGINT_ONE, ZERO_ADDRESS, BIGINT_8_WEEKS_IN_SECONDS } from './lib/constants';
 
@@ -32,8 +32,6 @@ export function handleRoundRegistered(event: RoundRegistered): void {
     ]);
     return;
   }
-  round.eventState = RoundEventState.REGISTERED;
-
   const config = new TimedRoundConfig(`${round.id}-timed-round-config`);
 
   config.round = round.id;
@@ -155,10 +153,10 @@ export function handleRoundFinalized(event: RoundFinalized): void {
   round.save();
 }
 
-export function handleAwardClaimed(event: AwardClaimed): void {
+export function handleAssetClaimed(event: AssetClaimed): void {
   const round = Round.load(event.address.toHex());
   if (!round) {
-    log.error('[handleAwardClaimed] Round not found: {}. Claim Hash: {}', [
+    log.error('[handleAssetClaimed] Round not found: {}. Claim Hash: {}', [
       event.address.toHex(),
       event.transaction.hash.toHex(),
     ]);
@@ -178,37 +176,10 @@ export function handleAwardClaimed(event: AwardClaimed): void {
   claim.claimedAt = event.block.timestamp;
   claim.recipient = event.params.recipient;
   claim.proposalId = event.params.proposalId;
-  claim.asset = event.params.assetId.toHex();
-  claim.amount = event.params.amount;
+  claim.asset = event.params.asset.assetId.toHex();
+  claim.amount = event.params.asset.amount;
   claim.round = round.id;
   claim.save();
-}
-
-export function handleAssetRescued(event: AssetRescued): void {
-  const round = Round.load(event.address.toHex());
-  if (!round) {
-    log.error('[handleAssetRescued] Round not found: {}. Rescue Hash: {}', [
-      event.address.toHex(),
-      event.transaction.hash.toHex(),
-    ]);
-    return;
-  }
-
-  let rescuer = Account.load(event.params.rescuer.toHex());
-  if (!rescuer) {
-    rescuer = new Account(event.params.rescuer.toHex());
-    rescuer.save();
-  }
-
-  const rescue = new Rescue(
-    `${event.transaction.hash.toHex()}-${event.logIndex.toString()}`,
-  );
-  rescue.rescuer = rescuer.id;
-  rescue.rescuedAt = event.block.timestamp;
-  rescue.asset = event.params.assetId.toHex();
-  rescue.amount = event.params.amount;
-  rescue.round = round.id;
-  rescue.save();
 }
 
 export function handleSingleTransfer(event: TransferSingle): void {

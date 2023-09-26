@@ -11,13 +11,13 @@
     "remove:local": "graph remove --node http://localhost:8020/ prop-house",
     "deploy:local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 prop-house",
     "build:goerli": "graph build --network goerli",
-    "deploy:goerli": "graph deploy --network goerli --product hosted-service prop-house/prop-house-goerli",
+    "deploy:goerli": "graph deploy --network goerli --product hosted-service prop-house/prop-house-goerli-v2",
     "test": "graph test"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.47.0",
     "@graphprotocol/graph-ts": "0.29.3",
-    "as-pedersen": "0.2.1-downgrade"
+    "as-poseidon": "0.1.2"
   },
   "devDependencies": {
     "matchstick-as": "0.5.0"

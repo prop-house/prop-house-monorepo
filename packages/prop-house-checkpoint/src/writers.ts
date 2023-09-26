@@ -1,4 +1,4 @@
-import type { CheckpointWriter } from '@snapshot-labs/checkpoint';
+import type { CheckpointWriter } from 'checkpoint-beta';
 import {
   getJSON,
   getRoundType,
@@ -12,7 +12,7 @@ import { validateAndParseAddress } from 'starknet';
 import { hexZeroPad } from '@ethersproject/bytes';
 import { Proposal, RoundState } from './types';
 
-export const handleRoundRegistered: CheckpointWriter = async ({
+export const handleEthereumRoundRegistered: CheckpointWriter = async ({
   block,
   blockNumber,
   tx,
@@ -23,8 +23,8 @@ export const handleRoundRegistered: CheckpointWriter = async ({
   if (!event) return;
 
   const round = {
-    id: validateAndParseAddress(event.l2_round_address),
-    sourceChainRound: hexZeroPad(event.l1_round_address, 20),
+    id: validateAndParseAddress(event.starknet_round),
+    sourceChainRound: hexZeroPad(event.origin_round, 20),
     type: getRoundType(event.round_class_hash),
     registeredAt: block?.timestamp ?? unixTimestamp(),
     txStatus: getTxStatus(block),
@@ -62,7 +62,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
   if (!rawEvent || !event) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
-  const proposer = toAddress(event.proposer_address);
+  const proposer = toAddress(event.proposer);
   const proposalId = parseInt(event.proposal_id, 16);
 
   const metadata = {
@@ -106,6 +106,7 @@ export const handleProposalCreated: CheckpointWriter = async ({
     txStatus: getTxStatus(block),
     txHash: tx.transaction_hash,
     votingPower: 0,
+    version: 1,
   };
   const account = {
     id: proposer,
@@ -146,6 +147,51 @@ export const handleProposalCreated: CheckpointWriter = async ({
   ]);
 };
 
+export const handleProposalEdited: CheckpointWriter = async ({ block, rawEvent, event, mysql }) => {
+  if (!rawEvent || !event) return;
+
+  const round = validateAndParseAddress(rawEvent.from_address);
+  const proposalId = parseInt(event.proposal_id, 16);
+  const id = `${round}-${proposalId}`;
+
+  const timestamp = block?.timestamp ?? unixTimestamp();
+  const metadata = {
+    uri: '',
+    title: '',
+    tldr: '',
+    body: '',
+  };
+
+  try {
+    metadata.uri = intSequenceToString(event.metadata_uri);
+  } catch (error) {
+    console.log(`Failed to parse metadata URI with error: ${error}`);
+  }
+
+  if (metadata.uri) {
+    try {
+      const json = await getJSON(metadata.uri);
+
+      if (json.title) metadata.title = json.title;
+      if (json.tldr) metadata.tldr = json.tldr;
+      if (json.body || json.what) metadata.body = json.body || json.what;
+    } catch (error) {
+      console.log(`Failed to fetch metadata with error: ${error}`);
+    }
+  }
+
+  const query = `
+    UPDATE proposals SET version = version + 1,
+                         lastUpdatedAt = ?,
+                         metadataUri = ?,
+                         title = ?,
+                         tldr = ?,
+                         body = ?
+                     WHERE id = ? LIMIT 1;
+  `;
+  await mysql.queryAsync(query, [timestamp, metadata.uri, metadata.title, metadata.tldr, metadata.body, id]);
+};
+
 export const handleProposalCancelled: CheckpointWriter = async ({ rawEvent, event, mysql }) => {
   if (!rawEvent || !event) return;
 
@@ -156,7 +202,7 @@ export const handleProposalCancelled: CheckpointWriter = async ({ rawEvent, even
   await mysql.queryAsync('UPDATE proposals SET isCancelled = true WHERE id = ? LIMIT 1;', [id]);
 };
 
-export const handleVoteCreated: CheckpointWriter = async ({
+export const handleVoteCast: CheckpointWriter = async ({
   block,
   tx,
   rawEvent,
@@ -167,7 +213,7 @@ export const handleVoteCreated: CheckpointWriter = async ({
   if (!rawEvent || !event || eventIndex === undefined) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
-  const voter = toAddress(event.voter_address);
+  const voter = toAddress(event.voter);
   const power = uint256toString(event.voting_power);
   const proposalId = parseInt(event.proposal_id, 16);
   const proposal = `${round}-${proposalId}`;

@@ -5,7 +5,6 @@ import {
   Infinite,
   RoundChainConfig,
   GetRoundStateParams,
-  RoundState,
 } from '../../types';
 import { InfiniteRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
@@ -101,7 +100,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
    * Given the provided params, return the round state
    * @param _params The information required to get the round state
    */
-  public static getState(_params: GetRoundStateParams<RoundType.INFINITE>): RoundState {
+  public static getState(_params: GetRoundStateParams<RoundType.INFINITE>): Infinite.RoundState {
     throw new Error('Method not implemented.');
   }
 

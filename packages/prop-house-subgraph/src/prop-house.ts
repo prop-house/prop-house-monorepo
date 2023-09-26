@@ -52,7 +52,7 @@ export function handleRoundCreated(event: RoundCreated): void {
   round.type = event.params.kind.toString();
   round.title = event.params.title;
   round.description = event.params.description;
-  round.eventState = RoundEventState.AWAITING_REGISTRATION;
+  round.eventState = RoundEventState.CREATED;
   round.house = house.id;
   round.creator = creator.id;
   round.manager = creator.id;

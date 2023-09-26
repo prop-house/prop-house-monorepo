@@ -5158,6 +5158,13 @@
   dependencies:
     "@noble/hashes" "1.3.0"
 
+"@noble/curves@~1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.2.0.tgz#92d7e12e4e49b23105a2555c6984d41733d65c35"
+  integrity sha512-oYclrNgRaM9SsBUBVbb8M6DTV7ZHRTKugureoYEncY5c65HOmRzvSiTE3y5CYaPYJA/GVkrhXEoF0M3Ya9PMnw==
+  dependencies:
+    "@noble/hashes" "1.3.2"
+
 "@noble/ed25519@^1.7.0":
   version "1.7.1"
   resolved "https://registry.yarnpkg.com/@noble/ed25519/-/ed25519-1.7.1.tgz#6899660f6fbb97798a6fbd227227c4589a454724"
@@ -5177,6 +5184,11 @@
   version "1.3.0"
   resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.3.0.tgz#085fd70f6d7d9d109671090ccae1d3bec62554a1"
   integrity sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==
+
+"@noble/hashes@1.3.2", "@noble/hashes@~1.3.2":
+  version "1.3.2"
+  resolved "https://registry.npmjs.org/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
+  integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
 
 "@noble/hashes@~1.3.0":
   version "1.3.1"
@@ -5577,7 +5589,7 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk@^0.1.0-alpha.25", "@prophouse/sdk@~0.1.0-alpha.25":
+"@prophouse/sdk@~0.1.0-alpha.25":
   version "0.1.0-alpha.25"
   resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.1.0-alpha.25.tgz#c47d39fe9045b8b00ed6d1871ffd22366db649c9"
   integrity sha512-Ogf6rYPZznUg2JaVfyjztgmPGbVxYqqQmdcd+zrTZTDE+nwuShqVTeeNFa5hO/mS2VBQf7oqJPOuMl//HsuS1w==
@@ -5848,6 +5860,14 @@
     "@noble/hashes" "~1.2.0"
     "@scure/base" "~1.1.0"
 
+"@scure/starknet@~0.3.0":
+  version "0.3.0"
+  resolved "https://registry.npmjs.org/@scure/starknet/-/starknet-0.3.0.tgz#b8273a42fc721025f8098b1f1d96368a7067e1c4"
+  integrity sha512-Ma66yZlwa5z00qI5alSxdWtIpky5LBhy22acVFdoC5kwwbd9uDyMWEYzWHdNyKmQg9t5Y2UOXzINMeb3yez+Gw==
+  dependencies:
+    "@noble/curves" "~1.2.0"
+    "@noble/hashes" "~1.3.2"
+
 "@sentry/core@5.30.0":
   version "5.30.0"
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-5.30.0.tgz#6b203664f69e75106ee8b5a2fe1d717379b331f3"
@@ -5946,28 +5966,6 @@
   integrity sha512-OAPJUAtgeINhh/TAlUID4QTs53Njm7xzddaVlEs/SXwgtiD1tW22zAB/W1wdqfrpmikgaWQ9Fw6Ws+hsiRm5Vg==
   dependencies:
     "@sinonjs/commons" "^1.7.0"
-
-"@snapshot-labs/checkpoint@^0.1.0-beta.17":
-  version "0.1.0-beta.17"
-  resolved "https://registry.npmjs.org/@snapshot-labs/checkpoint/-/checkpoint-0.1.0-beta.17.tgz#fdc0fdc1c7f5c602a5044d657eb4f96562d91211"
-  integrity sha512-ryObjuQ7jxqFD1CY8k5iPu8EHhlbt4dt5o+F4QRvUfzftNcs5Yc0teQJHev8SH29SBimptb4pnDUb2wM3iihOA==
-  dependencies:
-    "@graphql-tools/schema" "^8.5.1"
-    bluebird "^3.7.2"
-    connection-string "^4.3.5"
-    dataloader "^2.1.0"
-    express-graphql "^0.12.0"
-    graphql "^16.5.0"
-    graphql-fields "^2.0.3"
-    graphql-parse-resolve-info "^4.12.3"
-    json-to-graphql-query "^2.2.4"
-    knex "^2.4.2"
-    mysql "^2.18.1"
-    pg "^8.10.0"
-    pino "^8.3.1"
-    pino-pretty "^8.1.0"
-    pluralize "^8.0.0"
-    starknet "^4.13.1"
 
 "@snapshot-labs/sx@^0.1.0-beta.12":
   version "0.1.0-beta.20"
@@ -8855,10 +8853,10 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
-as-pedersen@0.2.1-downgrade:
-  version "0.2.1-downgrade"
-  resolved "https://registry.yarnpkg.com/as-pedersen/-/as-pedersen-0.2.1-downgrade.tgz#a53a037c7158ee7d9529b2264257215d37424cda"
-  integrity sha512-gdCfqJaL1PweLd/K5Ko22Qge0YlkMlCnf9pyY6JB+Q78cPavtzrwUkokrAgKSkdLvQ9oIVi05mBAphQnEn5nLQ==
+as-poseidon@0.1.2:
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/as-poseidon/-/as-poseidon-0.1.2.tgz#82fbca8b753b7d8cfd1a92a09fd421533fded9e2"
+  integrity sha512-0tRNOnnMtVi/SGg/eb4mcTKEM6Wu2vfyHN26jTJXrRKH+aBtlyVovam3RBeB3kbRKx661pXw0eLTHNHBdagYmw==
 
 asap@~2.0.3, asap@~2.0.6:
   version "2.0.6"
@@ -10980,6 +10978,31 @@ check-types@^11.1.1:
   version "11.1.2"
   resolved "https://registry.yarnpkg.com/check-types/-/check-types-11.1.2.tgz#86a7c12bf5539f6324eb0e70ca8896c0e38f3e2f"
   integrity sha512-tzWzvgePgLORb9/3a0YenggReLKAIb2owL03H2Xdoe5pKcUyWRSEQ8xfCar8t2SIAuEDwtmx2da1YB52YuHQMQ==
+
+checkpoint-beta@^0.1.0-beta.21:
+  version "0.1.0-beta.21"
+  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.21.tgz#02a4f873b18b7157aeb4dae1722745c4cc72274d"
+  integrity sha512-cD+8OUc0RYlYz3d9ScbT4onHtoM64EyBJKgrEeYalZvkLR42Nmruu/L5mUfoD/JwHDjsnZW5jHdNM36iIvnEpw==
+  dependencies:
+    "@graphql-tools/schema" "^8.5.1"
+    bluebird "^3.7.2"
+    connection-string "^4.3.5"
+    dataloader "^2.1.0"
+    express-graphql "^0.12.0"
+    graphql "^16.5.0"
+    graphql-fields "^2.0.3"
+    graphql-parse-resolve-info "^4.12.3"
+    json-to-graphql-query "^2.2.4"
+    knex "^2.4.2"
+    mysql "^2.18.1"
+    object-hash "^3.0.0"
+    pg "^8.10.0"
+    pino "^8.3.1"
+    pino-pretty "^8.1.0"
+    pluralize "^8.0.0"
+    starknet "^5.19.3"
+    yargs "^17.7.2"
+    zod "^3.21.4"
 
 checkpoint-store@^1.1.0:
   version "1.1.0"
@@ -21231,6 +21254,11 @@ object-hash@2.2.0:
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-2.2.0.tgz#5ad518581eefc443bd763472b8ff2e9c2c0d54a5"
   integrity sha512-gScRMn0bS5fH+IuwyIFgnh9zBdo4DV+6GhygmWM9HyNJSgS0hScp1f5vjtm7oIIOiT9trXrShAkLFSc2IqKNgw==
 
+object-hash@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmjs.org/object-hash/-/object-hash-3.0.0.tgz#73f97f753e7baffc0e2cc9d6e079079744ac82e9"
+  integrity sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==
+
 object-inspect@^1.11.0, object-inspect@^1.9.0:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.11.1.tgz#d4bd7d7de54b9a75599f59a00bd698c1f1c6549b"
@@ -25808,7 +25836,7 @@ starknet-hardhat-plugin-extended@0.8.0-alpha.11:
     shelljs "^0.8.5"
     starknet "~5.19.3"
 
-starknet@4.22.0, starknet@^4.13.1:
+starknet@4.22.0:
   version "4.22.0"
   resolved "https://registry.npmmirror.com/starknet/-/starknet-4.22.0.tgz#8d0c628e2a8e868ee9b4757afe89f07b05ec55ff"
   integrity sha512-jC9Taxb6a/ht9zmS1LU/DSLfwJKpgCJnE9AktVksc5SE/+jQMpqxsq6fm7PRiqupjiqRC1DOS8N47cj+KaGv4Q==
@@ -25838,6 +25866,19 @@ starknet@^5.0.0-beta.4:
     minimalistic-assert "^1.0.1"
     pako "^2.0.4"
     ts-custom-error "^3.3.1"
+    url-join "^4.0.1"
+
+starknet@^5.19.3:
+  version "5.19.5"
+  resolved "https://registry.npmjs.org/starknet/-/starknet-5.19.5.tgz#59a2e0f707dc1f64fbe9894195984ae97f623449"
+  integrity sha512-S7V4ifyYd+ApsIwYTd7YA5U2Px+NZkCsQPnmgY/wkc5LLFKhYMNpzHQ5nIA15p70AwtSXCcsEBnHNRBOuci13Q==
+  dependencies:
+    "@noble/curves" "~1.2.0"
+    "@scure/starknet" "~0.3.0"
+    abi-wan-kanabi "^1.0.3"
+    isomorphic-fetch "^3.0.0"
+    lossless-json "^2.0.8"
+    pako "^2.0.4"
     url-join "^4.0.1"
 
 starknet@~5.19.3:
@@ -29484,6 +29525,11 @@ zen-observable@0.8.15:
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
+
+zod@^3.21.4:
+  version "3.22.2"
+  resolved "https://registry.npmjs.org/zod/-/zod-3.22.2.tgz#3add8c682b7077c05ac6f979fea6998b573e157b"
+  integrity sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==
 
 zustand@^4.1.4:
   version "4.3.3"

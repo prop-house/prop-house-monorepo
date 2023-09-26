@@ -1,6 +1,6 @@
 import { Address, BigInt, ByteArray, crypto, ethereum } from '@graphprotocol/graph-ts';
 import { AssetType, AssetTypeString, BIGINT_ONE, GovPowerStrategyType } from './constants';
-import { computeHashOnElements } from 'as-pedersen';
+import { poseidonHashMany } from 'as-poseidon';
 
 // Common asset struct
 export class AssetStruct extends ethereum.Tuple {
@@ -59,7 +59,7 @@ export function padBytes32(s: string): string {
  * @param params The governance power strategy params
  */
 export function computeGovPowerStrategyID(strategy: BigInt, params: BigInt[]): string {
-  return computeHashOnElements([strategy.toString()].concat(params.map<string>((p: BigInt) => p.toString())));
+  return BigInt.fromString(poseidonHashMany([strategy.toString()].concat(params.map<string>((p: BigInt) => p.toString())))).toHexString();
 }
 
 /**
@@ -102,13 +102,13 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The governance power strategy address
  */
 export function getGovPowerStrategyType(addr: string): string {
-  if (addr == '0x61872a72c4fcc862fcc2a5ae37c8043269bb85400824df74cae5935dc60c67f') {
+  if (addr == '0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd') {
     return GovPowerStrategyType.BALANCE_OF;
   }
-  if (addr == '0x7bf373ee3ab7a50669297d1c1f9688f16ed095bcc8a52a116634c311e6cf38') {
+  if (addr == '0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a') {
     return GovPowerStrategyType.ALLOWLIST;
   }
-  if (addr == '0x247f60282af6772dd890cfef657788990c8548d7fee93a6bbca383d0b0bc9d9') {
+  if (addr == '0x23a5d2474eb348d62d9da78c9383abfe557e7b95999edc6b261bae81bf3a769') {
     return GovPowerStrategyType.VANILLA;
   }
   return GovPowerStrategyType.UNKNOWN;

@@ -15,6 +15,11 @@ export type Scalars = {
   BigDecimal: any;
   BigInt: any;
   Bytes: any;
+  /**
+   * 8 bytes signed integer
+   *
+   */
+  Int8: any;
 };
 
 export type Account = {
@@ -37,8 +42,6 @@ export type Account = {
   ownedHouses: Array<House>;
   /** Reclamations made by the account */
   reclamations: Array<Reclaim>;
-  /** Rescues made by the account */
-  rescues: Array<Rescue>;
 };
 
 export type AccountClaimsArgs = {
@@ -105,14 +108,6 @@ export type AccountReclamationsArgs = {
   where?: InputMaybe<Reclaim_Filter>;
 };
 
-export type AccountRescuesArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Rescue_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Rescue_Filter>;
-};
-
 export type Account_Filter = {
   /** Filter for the block changed event. */
   _change_block?: InputMaybe<BlockChangedFilter>;
@@ -134,7 +129,6 @@ export type Account_Filter = {
   outgoingTransfers_?: InputMaybe<Transfer_Filter>;
   ownedHouses_?: InputMaybe<House_Filter>;
   reclamations_?: InputMaybe<Reclaim_Filter>;
-  rescues_?: InputMaybe<Rescue_Filter>;
 };
 
 export enum Account_OrderBy {
@@ -147,7 +141,6 @@ export enum Account_OrderBy {
   OutgoingTransfers = 'outgoingTransfers',
   OwnedHouses = 'ownedHouses',
   Reclamations = 'reclamations',
-  Rescues = 'rescues',
 }
 
 export type Administrative = {
@@ -1306,8 +1299,6 @@ export type Query = {
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
-  rescue?: Maybe<Rescue>;
-  rescues: Array<Rescue>;
   round?: Maybe<Round>;
   roundCreator?: Maybe<RoundCreator>;
   roundCreators: Array<RoundCreator>;
@@ -1512,22 +1503,6 @@ export type QueryReclaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Reclaim_Filter>;
-};
-
-export type QueryRescueArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-export type QueryRescuesArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Rescue_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Rescue_Filter>;
 };
 
 export type QueryRoundArgs = {
@@ -1785,162 +1760,6 @@ export enum Reclaim_OrderBy {
   RoundType = 'round__type',
 }
 
-export type Rescue = {
-  __typename?: 'Rescue';
-  /** The rescue amount */
-  amount: Scalars['BigInt'];
-  /** The asset that was rescued */
-  asset: Asset;
-  /** A concatenation of the rescue tx hash and the the event log index */
-  id: Scalars['String'];
-  /** The recipient of the rescued asset */
-  recipient: Scalars['Bytes'];
-  /** The unix timestamp when this rescue was performed */
-  rescuedAt: Scalars['BigInt'];
-  /** The account who rescued the asset */
-  rescuer: Account;
-  /** The round that the asset was rescued from */
-  round: Round;
-};
-
-export type Rescue_Filter = {
-  /** Filter for the block changed event. */
-  _change_block?: InputMaybe<BlockChangedFilter>;
-  amount?: InputMaybe<Scalars['BigInt']>;
-  amount_gt?: InputMaybe<Scalars['BigInt']>;
-  amount_gte?: InputMaybe<Scalars['BigInt']>;
-  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  amount_lt?: InputMaybe<Scalars['BigInt']>;
-  amount_lte?: InputMaybe<Scalars['BigInt']>;
-  amount_not?: InputMaybe<Scalars['BigInt']>;
-  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  and?: InputMaybe<Array<InputMaybe<Rescue_Filter>>>;
-  asset?: InputMaybe<Scalars['String']>;
-  asset_?: InputMaybe<Asset_Filter>;
-  asset_contains?: InputMaybe<Scalars['String']>;
-  asset_contains_nocase?: InputMaybe<Scalars['String']>;
-  asset_ends_with?: InputMaybe<Scalars['String']>;
-  asset_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  asset_gt?: InputMaybe<Scalars['String']>;
-  asset_gte?: InputMaybe<Scalars['String']>;
-  asset_in?: InputMaybe<Array<Scalars['String']>>;
-  asset_lt?: InputMaybe<Scalars['String']>;
-  asset_lte?: InputMaybe<Scalars['String']>;
-  asset_not?: InputMaybe<Scalars['String']>;
-  asset_not_contains?: InputMaybe<Scalars['String']>;
-  asset_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  asset_not_ends_with?: InputMaybe<Scalars['String']>;
-  asset_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  asset_not_in?: InputMaybe<Array<Scalars['String']>>;
-  asset_not_starts_with?: InputMaybe<Scalars['String']>;
-  asset_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  asset_starts_with?: InputMaybe<Scalars['String']>;
-  asset_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  id?: InputMaybe<Scalars['String']>;
-  id_contains?: InputMaybe<Scalars['String']>;
-  id_contains_nocase?: InputMaybe<Scalars['String']>;
-  id_ends_with?: InputMaybe<Scalars['String']>;
-  id_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  id_gt?: InputMaybe<Scalars['String']>;
-  id_gte?: InputMaybe<Scalars['String']>;
-  id_in?: InputMaybe<Array<Scalars['String']>>;
-  id_lt?: InputMaybe<Scalars['String']>;
-  id_lte?: InputMaybe<Scalars['String']>;
-  id_not?: InputMaybe<Scalars['String']>;
-  id_not_contains?: InputMaybe<Scalars['String']>;
-  id_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  id_not_ends_with?: InputMaybe<Scalars['String']>;
-  id_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  id_not_in?: InputMaybe<Array<Scalars['String']>>;
-  id_not_starts_with?: InputMaybe<Scalars['String']>;
-  id_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  id_starts_with?: InputMaybe<Scalars['String']>;
-  id_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  or?: InputMaybe<Array<InputMaybe<Rescue_Filter>>>;
-  recipient?: InputMaybe<Scalars['Bytes']>;
-  recipient_contains?: InputMaybe<Scalars['Bytes']>;
-  recipient_gt?: InputMaybe<Scalars['Bytes']>;
-  recipient_gte?: InputMaybe<Scalars['Bytes']>;
-  recipient_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  recipient_lt?: InputMaybe<Scalars['Bytes']>;
-  recipient_lte?: InputMaybe<Scalars['Bytes']>;
-  recipient_not?: InputMaybe<Scalars['Bytes']>;
-  recipient_not_contains?: InputMaybe<Scalars['Bytes']>;
-  recipient_not_in?: InputMaybe<Array<Scalars['Bytes']>>;
-  rescuedAt?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_gt?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_gte?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  rescuedAt_lt?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_lte?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_not?: InputMaybe<Scalars['BigInt']>;
-  rescuedAt_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
-  rescuer?: InputMaybe<Scalars['String']>;
-  rescuer_?: InputMaybe<Account_Filter>;
-  rescuer_contains?: InputMaybe<Scalars['String']>;
-  rescuer_contains_nocase?: InputMaybe<Scalars['String']>;
-  rescuer_ends_with?: InputMaybe<Scalars['String']>;
-  rescuer_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  rescuer_gt?: InputMaybe<Scalars['String']>;
-  rescuer_gte?: InputMaybe<Scalars['String']>;
-  rescuer_in?: InputMaybe<Array<Scalars['String']>>;
-  rescuer_lt?: InputMaybe<Scalars['String']>;
-  rescuer_lte?: InputMaybe<Scalars['String']>;
-  rescuer_not?: InputMaybe<Scalars['String']>;
-  rescuer_not_contains?: InputMaybe<Scalars['String']>;
-  rescuer_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  rescuer_not_ends_with?: InputMaybe<Scalars['String']>;
-  rescuer_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  rescuer_not_in?: InputMaybe<Array<Scalars['String']>>;
-  rescuer_not_starts_with?: InputMaybe<Scalars['String']>;
-  rescuer_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  rescuer_starts_with?: InputMaybe<Scalars['String']>;
-  rescuer_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  round?: InputMaybe<Scalars['String']>;
-  round_?: InputMaybe<Round_Filter>;
-  round_contains?: InputMaybe<Scalars['String']>;
-  round_contains_nocase?: InputMaybe<Scalars['String']>;
-  round_ends_with?: InputMaybe<Scalars['String']>;
-  round_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  round_gt?: InputMaybe<Scalars['String']>;
-  round_gte?: InputMaybe<Scalars['String']>;
-  round_in?: InputMaybe<Array<Scalars['String']>>;
-  round_lt?: InputMaybe<Scalars['String']>;
-  round_lte?: InputMaybe<Scalars['String']>;
-  round_not?: InputMaybe<Scalars['String']>;
-  round_not_contains?: InputMaybe<Scalars['String']>;
-  round_not_contains_nocase?: InputMaybe<Scalars['String']>;
-  round_not_ends_with?: InputMaybe<Scalars['String']>;
-  round_not_ends_with_nocase?: InputMaybe<Scalars['String']>;
-  round_not_in?: InputMaybe<Array<Scalars['String']>>;
-  round_not_starts_with?: InputMaybe<Scalars['String']>;
-  round_not_starts_with_nocase?: InputMaybe<Scalars['String']>;
-  round_starts_with?: InputMaybe<Scalars['String']>;
-  round_starts_with_nocase?: InputMaybe<Scalars['String']>;
-};
-
-export enum Rescue_OrderBy {
-  Amount = 'amount',
-  Asset = 'asset',
-  AssetAssetType = 'asset__assetType',
-  AssetId = 'asset__id',
-  AssetIdentifier = 'asset__identifier',
-  AssetToken = 'asset__token',
-  Id = 'id',
-  Recipient = 'recipient',
-  RescuedAt = 'rescuedAt',
-  Rescuer = 'rescuer',
-  RescuerId = 'rescuer__id',
-  Round = 'round',
-  RoundCreatedAt = 'round__createdAt',
-  RoundCreationTx = 'round__creationTx',
-  RoundDescription = 'round__description',
-  RoundEventState = 'round__eventState',
-  RoundId = 'round__id',
-  RoundTitle = 'round__title',
-  RoundType = 'round__type',
-}
-
 export type Round = {
   __typename?: 'Round';
   /** Up-to-date round balances */
@@ -1969,8 +1788,6 @@ export type Round = {
   proposingStrategies: Array<RoundProposingStrategy>;
   /** All round asset reclamations */
   reclamations?: Maybe<Array<Reclaim>>;
-  /** All round asset rescues */
-  rescues: Array<Rescue>;
   /** The configuration for a timed round (Null if type != TIMED) */
   timedConfig?: Maybe<TimedRoundConfig>;
   /** The round title */
@@ -2021,14 +1838,6 @@ export type RoundReclamationsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<Reclaim_Filter>;
-};
-
-export type RoundRescuesArgs = {
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Rescue_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  where?: InputMaybe<Rescue_Filter>;
 };
 
 export type RoundTransfersArgs = {
@@ -2139,10 +1948,9 @@ export enum RoundCreator_OrderBy {
 }
 
 export enum RoundEventState {
-  AwaitingRegistration = 'AWAITING_REGISTRATION',
   Cancelled = 'CANCELLED',
+  Created = 'CREATED',
   Finalized = 'FINALIZED',
-  Registered = 'REGISTERED',
 }
 
 export type RoundImplementation = {
@@ -2516,7 +2324,6 @@ export type Round_Filter = {
   or?: InputMaybe<Array<InputMaybe<Round_Filter>>>;
   proposingStrategies_?: InputMaybe<RoundProposingStrategy_Filter>;
   reclamations_?: InputMaybe<Reclaim_Filter>;
-  rescues_?: InputMaybe<Rescue_Filter>;
   timedConfig?: InputMaybe<Scalars['String']>;
   timedConfig_?: InputMaybe<TimedRoundConfig_Filter>;
   timedConfig_contains?: InputMaybe<Scalars['String']>;
@@ -2604,7 +2411,6 @@ export enum Round_OrderBy {
   ManagerId = 'manager__id',
   ProposingStrategies = 'proposingStrategies',
   Reclamations = 'reclamations',
-  Rescues = 'rescues',
   TimedConfig = 'timedConfig',
   TimedConfigClaimPeriodEndTimestamp = 'timedConfig__claimPeriodEndTimestamp',
   TimedConfigId = 'timedConfig__id',
@@ -2651,8 +2457,6 @@ export type Subscription = {
   houses: Array<House>;
   reclaim?: Maybe<Reclaim>;
   reclaims: Array<Reclaim>;
-  rescue?: Maybe<Rescue>;
-  rescues: Array<Rescue>;
   round?: Maybe<Round>;
   roundCreator?: Maybe<RoundCreator>;
   roundCreators: Array<RoundCreator>;
@@ -2857,22 +2661,6 @@ export type SubscriptionReclaimsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<Reclaim_Filter>;
-};
-
-export type SubscriptionRescueArgs = {
-  block?: InputMaybe<Block_Height>;
-  id: Scalars['ID'];
-  subgraphError?: _SubgraphErrorPolicy_;
-};
-
-export type SubscriptionRescuesArgs = {
-  block?: InputMaybe<Block_Height>;
-  first?: InputMaybe<Scalars['Int']>;
-  orderBy?: InputMaybe<Rescue_OrderBy>;
-  orderDirection?: InputMaybe<OrderDirection>;
-  skip?: InputMaybe<Scalars['Int']>;
-  subgraphError?: _SubgraphErrorPolicy_;
-  where?: InputMaybe<Rescue_Filter>;
 };
 
 export type SubscriptionRoundArgs = {

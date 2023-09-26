@@ -38,8 +38,8 @@ import {
   ProposalQuery as IProposalQuery,
   OrderByProposalFields,
   OrderByVoteFields,
-  WhereProposal,
-  WhereVote,
+  Proposal_Filter,
+  Vote_Filter,
 } from './starknet/graphql';
 import { Address, GraphQL, RoundType } from '../types';
 import {
@@ -53,7 +53,6 @@ import {
 import {
   GlobalStatsQuery,
   ManyProposalsQuery,
-  ManyRoundProposalsQuery,
   ManyVotesQuery,
   ProposalQuery,
   RoundIdQuery,
@@ -473,7 +472,7 @@ export class QueryWrapper {
    * @param config Filtering, pagination, and ordering configuration
    */
   public async getProposals(
-    config: Partial<QueryConfig<OrderByProposalFields, WhereProposal>> = {},
+    config: Partial<QueryConfig<OrderByProposalFields, Proposal_Filter>> = {},
   ): Promise<Proposal[]> {
     const { proposals } = await this._gql.starknet.request(
       ManyProposalsQuery,
@@ -489,7 +488,7 @@ export class QueryWrapper {
    */
   public async getProposalsByAccount(
     proposerAddress: Address,
-    config: Partial<QueryConfig<OrderByProposalFields, WhereProposal>> = {},
+    config: Partial<QueryConfig<OrderByProposalFields, Proposal_Filter>> = {},
   ) {
     return this.getProposals({
       ...config,
@@ -507,33 +506,18 @@ export class QueryWrapper {
    */
   public async getProposalsForRound(
     roundAddress: Address,
-    config: Partial<QueryConfig<OrderByProposalFields, WhereProposal>> = {},
+    config: Partial<QueryConfig<OrderByProposalFields, Proposal_Filter>> = {},
   ) {
-    const { rounds } = await this._gql.starknet.request(ManyRoundProposalsQuery, {
-      ...toPaginated(this.merge(getDefaultConfig(OrderByProposalFields.ReceivedAt), config)),
+    return this.getProposals({
+      ...config,
       where: {
         ...config.where,
-        sourceChainRound: roundAddress.toLowerCase(),
+        round_: {
+          ...config.where?.round_,
+          sourceChainRound: roundAddress.toLowerCase(),
+        },
       },
     });
-    if (!rounds?.length) {
-      throw new Error(`No round found for address ${roundAddress}`);
-    }
-    return (
-      rounds?.[0]?.proposals!.map(p => ({
-        id: p!.proposalId,
-        proposer: p!.proposer.id,
-        round: roundAddress.toLowerCase(),
-        metadataURI: p!.metadataUri,
-        title: p!.title,
-        body: p!.body,
-        isCancelled: p!.isCancelled,
-        isWinner: p!.isWinner,
-        receivedAt: p!.receivedAt,
-        txHash: p!.txHash,
-        votingPower: p!.votingPower,
-      })) ?? []
-    );
   }
 
   /**
@@ -556,7 +540,7 @@ export class QueryWrapper {
    * @param config Filtering, pagination, and ordering configuration
    */
   public async getVotes(
-    config: Partial<QueryConfig<OrderByVoteFields, WhereVote>> = {},
+    config: Partial<QueryConfig<OrderByVoteFields, Vote_Filter>> = {},
   ): Promise<Vote[]> {
     const { votes } = await this._gql.starknet.request(
       ManyVotesQuery,
@@ -573,13 +557,40 @@ export class QueryWrapper {
   }
 
   /**
+   * Get paginated votes for the provided round address and proposal id
+   * @param roundAddress The round address
+   * @param proposalId The proposal ID
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getVotesForProposal(
+    roundAddress: Address,
+    proposalId: number,
+    config: Partial<QueryConfig<OrderByVoteFields, Vote_Filter>> = {},
+  ): Promise<Vote[]> {
+    return this.getVotes({
+      ...config,
+      where: {
+        ...config.where,
+        round_: {
+          ...config.where?.round_,
+          sourceChainRound: roundAddress.toLowerCase(),
+        },
+        proposal_: {
+          ...config.where?.proposal_,
+          proposalId,
+        },
+      },
+    });
+  }
+
+  /**
    * Get paginated votes by the provided voter address
    * @param voterAddress The voter address
    * @param config Filtering, pagination, and ordering configuration
    */
   public async getVotesByAccount(
     voterAddress: Address,
-    config: Partial<QueryConfig<OrderByVoteFields, WhereVote>> = {},
+    config: Partial<QueryConfig<OrderByVoteFields, Vote_Filter>> = {},
   ): Promise<Vote[]> {
     return this.getVotes({
       ...config,

@@ -108,6 +108,15 @@ export interface HouseInfo<T extends HouseType> {
 //#region Timed Round
 
 export namespace Timed {
+  export enum RoundState {
+    UNKNOWN,
+    CANCELLED,
+    NOT_STARTED,
+    IN_PROPOSING_PERIOD,
+    IN_VOTING_PERIOD,
+    IN_CLAIMING_PERIOD,
+    COMPLETE,
+  }
   export interface Config<CS extends Custom | void> {
     awards: Asset[];
     proposalThreshold?: BigNumberish;
@@ -198,6 +207,13 @@ export namespace Timed {
 //#region Infinite Round
 
 export namespace Infinite {
+  export enum RoundState {
+    UNKNOWN,
+    CANCELLED,
+    NOT_STARTED,
+    ACTIVE,
+    COMPLETE,
+  }
   export interface Config<CS extends Custom | void> {
     proposalThreshold?: BigNumberish;
     proposingStrategies?: GovPowerStrategyConfig<CS>[];
@@ -298,22 +314,8 @@ export enum RoundType {
   TIMED = 'TIMED',
 }
 
-// TODO: Move to timed and update
-export enum RoundState {
-  UNKNOWN,
-  CANCELLED,
-  AWAITING_REGISTRATION,
-  NOT_STARTED,
-  IN_PROPOSING_PERIOD,
-  IN_VOTING_PERIOD,
-  IN_CLAIMING_PERIOD,
-  COMPLETE,
-}
-
-// TODO: These are stale
 export enum RoundEventState {
-  AWAITING_REGISTRATION = 'AWAITING_REGISTRATION',
-  REGISTERED = 'REGISTERED',
+  CREATED = 'CREATED',
   FINALIZED = 'FINALIZED',
   CANCELLED = 'CANCELLED',
 }
@@ -372,6 +374,7 @@ export enum GovPowerStrategyType {
   BALANCE_OF = 'BALANCE_OF',
   ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
+  UNKNOWN = 'UNKNOWN',
 }
 
 // Helpful aliases

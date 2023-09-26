@@ -2,7 +2,7 @@ import { RoundType, getContractAddressesForChainOrThrow } from '@prophouse/sdk';
 import { getAddress } from '@ethersproject/address';
 import { BigNumber } from '@ethersproject/bignumber';
 import { TransactionStatus, Uint256 } from './types';
-import { FullBlock } from '@snapshot-labs/checkpoint';
+import { FullBlock } from 'checkpoint-beta';
 
 const {
   starknet: { classHashes },
