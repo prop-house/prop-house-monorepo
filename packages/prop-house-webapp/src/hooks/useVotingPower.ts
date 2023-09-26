@@ -31,7 +31,7 @@ const useVotingPower = (
 
     setLoadingVotingPower(true);
     try {
-      /** REMOVE COMMENTS ONCE NEW SDK IS DEPLOYED AND VOTING STRATS WORK */
+      /** TODO: REMOVE COMMENTS ONCE NEW SDK IS DEPLOYED AND VOTING STRATS WORK */
 
       // const strategyVotingPowers = await propHouse.voting.getVotingPowerForStrategies(
       //   account as string,
