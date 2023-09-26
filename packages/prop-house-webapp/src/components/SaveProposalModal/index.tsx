@@ -5,18 +5,17 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { UpdatedProposal } from '@nouns/prop-house-wrapper/dist/builders';
 
 const SaveProposalModal: React.FC<{
   propId: number;
-  roundId: number;
+  roundAddress: string;
   setShowSavePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
   const {
     propId,
-    roundId,
+    roundAddress,
     setShowSavePropModal,
     setEditProposalMode,
     dismissModalAndRefreshProps,
@@ -37,18 +36,10 @@ const SaveProposalModal: React.FC<{
 
   const handleSaveProposal = async () => {
     try {
-      if (!propId || !roundId) return;
+      if (!propId || !roundAddress) return;
 
-      await client.current.updateProposal(
-        new UpdatedProposal(
-          propId,
-          updatedProposal.title,
-          updatedProposal.what,
-          updatedProposal.tldr,
-          roundId,
-          updatedProposal.reqAmount,
-        ),
-      );
+      // todo: handle updating proposal
+
       setErrorSaving(false);
       setHasBeenSaved(true);
     } catch (error) {

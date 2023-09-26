@@ -1,12 +1,9 @@
 import classes from './ProposalModalFooter.module.css';
 import clsx from 'clsx';
 import { ButtonColor } from '../Button';
-import { Dispatch, SetStateAction, useEffect } from 'react';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
-import { execStrategy } from '@prophouse/communities';
-import { setVotingPower } from '../../state/slices/voting';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import ProposalModalVotingModule from '../ProposalModalVotingModule';
 import ProposalModalNavButtons from '../ProposalModalNavButtons';
@@ -15,9 +12,7 @@ import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import { isActiveProp } from '../../utils/isActiveProp';
-import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { RoundState, RoundType } from '@prophouse/sdk-react';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -44,42 +39,16 @@ const ProposalModalFooter: React.FC<{
   } = props;
 
   const dispatch = useDispatch();
+  const account = useAccount();
   const { t } = useTranslation();
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const round = useAppSelector(state => state.propHouse.activeRound);
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const provider = useEthersProvider({
-    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
-  });
-  const { address: account } = useAccount();
-
-  const isProposingWindow = round && auctionStatus(round) === AuctionStatus.AuctionAcceptingProps;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
-
-  useEffect(() => {
-    if (!account || !provider || !community || !round) return;
-
-    const fetchVotes = async () => {
-      try {
-        const strategyPayload = {
-          strategyName: round.voteStrategy.strategyName,
-          account,
-          provider,
-          ...round.voteStrategy,
-        };
-        const votes = await execStrategy(strategyPayload);
-
-        dispatch(setVotingPower(votes));
-      } catch (e) {
-        console.log('error fetching votes: ', e);
-      }
-    };
-    fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  const isProposingWindow = round && round.state === RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round && round.state === RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round && round.state > RoundState.IN_VOTING_PERIOD;
 
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
@@ -132,10 +101,10 @@ const ProposalModalFooter: React.FC<{
           <div className={classes.footerPadding}>
             {/** TIMED ROUND */}
             {round &&
-              isTimedAuction(round) &&
+              round.type === RoundType.TIMED_FUNDING &&
               (isRoundOver && proposal.isWinner ? (
                 <WinningProposalBanner numOfVotes={Number(proposal.votingPower)} />
-              ) : !isRoundOver && !account ? (
+              ) : !isRoundOver && !account.isConnected ? (
                 connectDiv
               ) : isProposingWindow ? (
                 <ProposalWindowButtons
@@ -160,7 +129,7 @@ const ProposalModalFooter: React.FC<{
               isInfAuction(round) &&
               (isWinner ? (
                 <WinningProposalBanner numOfVotes={proposal.voteCountFor} />
-              ) : !isRoundOver && !account ? (
+              ) : !isRoundOver && account.isConnected ? (
                 connectDiv
               ) : (
                 isActiveProp(proposal, round) &&

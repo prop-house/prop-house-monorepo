@@ -3,29 +3,20 @@ import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import ReactModal from 'react-modal';
 import { useParams } from 'react-router';
-import { useNavigate } from 'react-router-dom';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../hooks';
-import { buildRoundPath } from '../../utils/buildRoundPath';
 import { setOnchainActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
 import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
-import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useAccount, useBlockNumber } from 'wagmi';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { isTimedAuction } from '../../utils/auctionType';
-import { signerIsContract } from '../../utils/signerIsContract';
-import { submitVotes } from '../../utils/submitVotes';
-import { useEthersProvider } from '../../hooks/useEthersProvider';
-import { Proposal } from '@prophouse/sdk-react';
+import { Proposal, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const { proposals } = props;
@@ -34,25 +25,15 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const params = useParams();
   const { id } = params;
-  const navigate = useNavigate();
-
-  const provider = useEthersProvider();
   const signer = useEthersSigner();
-  const { address: account } = useAccount();
+  const propHouse = usePropHouse();
 
   const dispatch = useDispatch();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const round = useAppSelector(state => state.propHouse.activeRound);
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const activeProposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const activeProposals = useAppSelector(state => state.propHouse.activeProposals);
-  const infRoundProposals = useAppSelector(state => state.propHouse.infRoundFilteredProposals);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
-  const { data: blocknumber } = useBlockNumber({
-    chainId: round?.voteStrategy?.chainId ?? 1,
-  });
 
   const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
@@ -125,28 +106,26 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   };
 
   const handleSubmitVote = async () => {
-    if (!activeProposal || !round || !community || !blocknumber) return;
+    console.log('handling vote from prop modal');
+    if (!activeProposal || !round) return;
     try {
-      setIsContract(
-        await signerIsContract(
-          signer ? signer : undefined,
-          provider,
-          account ? account : undefined,
-        ),
-      );
-      await submitVotes(
-        voteAllotments,
-        Number(blocknumber),
-        community,
-        backendClient.current,
-        isContract,
-      );
+      const votes = voteAllotments
+        .filter(a => a.votes > 0)
+        .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
 
+      const result = await propHouse.round.timedFunding.voteViaSignature({
+        round: round.address,
+        votes,
+      });
+
+      if (!result?.transaction_hash) {
+        throw new Error(`Vote submission failed: ${result}`);
+      }
+
+      // todo: handle updating proposals
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round, dispatch);
-      // refreshActiveProposal(backendClient.current, activeProposal, dispatch);
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
@@ -188,7 +167,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
       {showSavePropModal && activeProposal && round && (
         <SaveProposalModal
           propId={activeProposal.id}
-          roundId={round.id}
+          roundAddress={round.address}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}

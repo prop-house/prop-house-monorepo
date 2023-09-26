@@ -38,7 +38,6 @@ const RoundContent: React.FC<{
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
 
-      console.log('votes: ', votes);
       const result = await propHouse.round.timedFunding.voteViaSignature({
         round: round.address,
         votes,
