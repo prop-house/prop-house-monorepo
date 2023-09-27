@@ -1,34 +1,26 @@
-import { useLocation } from 'react-router-dom';
 import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import classes from './Round.module.css';
+import classes from './RoundPage.module.css';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
-import { RoundState, usePropHouse } from '@prophouse/sdk-react';
+import { usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
-import {
-  setOnChainActiveProposals,
-  setOnchainActiveHouse,
-  setOnchainActiveRound,
-} from '../../state/slices/propHouse';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 
-const Round = () => {
-  const location = useLocation();
-  const roundAddress = location.pathname.substring(1).split('/')[0];
-  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
-
+const RoundPage: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
   const dispatch = useAppDispatch();
+  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
   const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
@@ -38,30 +30,13 @@ const Round = () => {
   const [loadingProposals, setLoadingProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
 
-  // fetch round
-  useEffect(() => {
-    if (round) return;
-    const fetchRound = async () => {
-      try {
-        setLoadingRound(true);
-        const round = await propHouse.query.getRoundWithHouseInfo(roundAddress);
-        dispatch(setOnchainActiveRound(round));
-        dispatch(setOnchainActiveHouse(round.house));
-      } catch (e) {
-        setLoadingRoundFailed(true);
-      }
-      setLoadingRound(false);
-    };
-    fetchRound();
-  });
-
   // fetch proposals
   useEffect(() => {
-    if (proposals) return;
+    if (proposals || !round) return;
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
-        const proposals = await propHouse.query.getProposalsForRound(roundAddress);
+        const proposals = await propHouse.query.getProposalsForRound(round.address);
         dispatch(setOnChainActiveProposals(proposals));
       } catch (e) {
         setLoadingProposalsFailed(true);
@@ -119,4 +94,4 @@ const Round = () => {
   );
 };
 
-export default Round;
+export default RoundPage;

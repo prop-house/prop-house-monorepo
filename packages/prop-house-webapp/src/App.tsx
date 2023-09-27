@@ -11,7 +11,7 @@ import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import PropCreatorProtectedRoute from './components/PropCreatorProtectedRoute';
 import NotFound from './components/NotFound';
-import Round from './pages/Round';
+import Round from './pages/RoundPage';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
@@ -38,8 +38,8 @@ import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
-import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
 import MainApp from './pages/MainApp';
+import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 
 const { chains, publicClient } = configureChains(
   // [mainnet, baseChain, polygon, polygonMumbai],
@@ -111,7 +111,7 @@ function App() {
 
                   <Routes>
                     <Route path="/app" element={<MainApp />} />
-                    <Route path="/:round" element={<Round />} />
+                    <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create" element={<Create />} />
 
