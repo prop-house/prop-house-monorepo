@@ -1215,10 +1215,10 @@ chalk@^4.0.0:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
 
-checkpoint-beta@^0.1.0-beta.21:
-  version "0.1.0-beta.21"
-  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.21.tgz#02a4f873b18b7157aeb4dae1722745c4cc72274d"
-  integrity sha512-cD+8OUc0RYlYz3d9ScbT4onHtoM64EyBJKgrEeYalZvkLR42Nmruu/L5mUfoD/JwHDjsnZW5jHdNM36iIvnEpw==
+checkpoint-beta@^0.1.0-beta.22:
+  version "0.1.0-beta.22"
+  resolved "https://registry.npmjs.org/checkpoint-beta/-/checkpoint-beta-0.1.0-beta.22.tgz#a0ae258a919b0658f1d620626f4a1236b757dcc6"
+  integrity sha512-pwdFK9ONJ9TW1ymzXipRsQSzKa6rNR47LWL7iPAuTkJgNl89hdENmXoSZ3ZnieEDLfszB5ZTkhji9Du34RhnUw==
   dependencies:
     "@graphql-tools/schema" "^8.5.1"
     bluebird "^3.7.2"
