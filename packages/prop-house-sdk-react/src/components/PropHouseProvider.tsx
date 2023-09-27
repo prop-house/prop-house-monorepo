@@ -4,7 +4,7 @@ import {
   Starknet,
   Newable,
   StrategyHandlerBase,
-  VotingStrategyConfig,
+  GovPowerStrategyConfig,
 } from '@prophouse/sdk';
 import React, { createContext, useEffect, useState } from 'react';
 import { useProvider, useSigner } from 'wagmi';
@@ -12,7 +12,7 @@ import { useProvider, useSigner } from 'wagmi';
 export type PropHouseProps<CS extends Custom | void = void> = {
   children: React.ReactNode;
   starknet?: Starknet;
-  customStrategies?: Newable<StrategyHandlerBase<VotingStrategyConfig<CS>>>[];
+  customStrategies?: Newable<StrategyHandlerBase<GovPowerStrategyConfig<CS>>>[];
   customStarknetRelayer?: string;
 };
 
