@@ -1,4 +1,4 @@
-import classes from './House.module.css';
+import classes from './HousePage.module.css';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isMobile } from 'web3modal';
 
-const House = () => {
+const HousePage = () => {
   const location = useLocation();
   const slug = location.pathname.substring(1, location.pathname.length);
 
@@ -136,7 +136,7 @@ const House = () => {
 
   return (
     <>
-      {community && (
+      {/* {community && (
         <OpenGraphElements
           title={`${community.name} Prop House`}
           description={markdownComponentToPlainText(
@@ -144,7 +144,7 @@ const House = () => {
           )}
           imageUrl={cardServiceUrl(CardType.house, community.id).href}
         />
-      )}
+      )} */}
 
       {loadingCommunity ? (
         <LoadingIndicator height={isMobile() ? 288 : 349} />
@@ -199,4 +199,4 @@ const House = () => {
   );
 };
 
-export default House;
+export default HousePage;

@@ -1,7 +1,7 @@
 import { usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import House from '../../pages/House';
+import HousePage from '../../pages/HousePage';
 import RoundPage from '../../pages/RoundPage';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setOnchainActiveHouse, setOnchainActiveRound } from '../../state/slices/propHouse';
@@ -45,7 +45,7 @@ const RoundOrHouseRouter: React.FC<{}> = props => {
   if (loading) return <LoadingIndicator />;
   if (!loading && errorFetchingRoundAndHouse) return <>Errror fetching round or house</>;
 
-  return round ? <RoundPage /> : <House />;
+  return round ? <RoundPage /> : <HousePage />;
 };
 
 export default RoundOrHouseRouter;
