@@ -1,29 +1,15 @@
 import classes from './HousePage.module.css';
-import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
-import React, { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { setActiveCommunity } from '../../state/slices/propHouse';
-import { slugToName } from '../../utils/communitySlugs';
+import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
-import RoundCard from '../../components/RoundCard';
 import HouseUtilityBar from '../../components/HouseUtilityBar';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ErrorMessageCard from '../../components/ErrorMessageCard';
 import NoSearchResults from '../../components/NoSearchResults';
-import NotFound from '../../components/NotFound';
 import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../components/StatusFilters';
-import OpenGraphElements from '../../components/OpenGraphElements';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
-import ReactMarkdown from 'react-markdown';
-import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { isMobile } from 'web3modal';
 import { Round, RoundState, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard_ from '../../components/_RoundCard';
 
@@ -108,7 +94,7 @@ const HousePage: React.FC<{}> = () => {
 
   return (
     <>
-      {/* {community && (
+      {/* {community && (todo: handle 
         <OpenGraphElements
           title={`${community.name} Prop House`}
           description={markdownComponentToPlainText(
