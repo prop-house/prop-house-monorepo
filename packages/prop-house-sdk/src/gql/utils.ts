@@ -13,7 +13,7 @@ export interface QueryConfig<OB, W> {
 export const GRAPHQL_APIS: Record<number, GraphQL> = {
   [ChainId.EthereumGoerli]: {
     evm: 'https://api.thegraph.com/subgraphs/name/prop-house/prop-house-goerli-v2',
-    starknet: 'https://checkpoint-820u.onrender.com',
+    starknet: 'https://checkpoint-v2-api.onrender.com',
   },
   [ChainId.EthereumHardhat]: {
     evm: 'http://localhost:8020',

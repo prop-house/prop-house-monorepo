@@ -163,7 +163,7 @@ export const handleProposalEdited: CheckpointWriter = async ({ block, rawEvent, 
   };
 
   try {
-    metadata.uri = intSequenceToString(event.metadata_uri);
+    metadata.uri = intSequenceToString(event.updated_metadata_uri);
   } catch (error) {
     console.log(`Failed to parse metadata URI with error: ${error}`);
   }

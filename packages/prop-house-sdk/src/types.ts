@@ -152,6 +152,7 @@ export namespace Timed {
   export interface EditProposalMessage {
     round: string;
     authStrategy: string;
+    proposalId: number;
     metadataUri: string;
   }
   export interface VoteMessage {
@@ -182,6 +183,7 @@ export namespace Timed {
   }
   export interface EditProposalConfig {
     round: string;
+    proposalId: number;
     metadataUri: string;
   }
   export enum Action {
@@ -205,6 +207,11 @@ export namespace Timed {
     proposer: string;
     metadataUri: string;
     usedProposingStrategies: GovPowerUserStrategy[];
+  }
+  export interface EditProposalCalldataConfig {
+    proposer: string;
+    proposalId: number;
+    metadataUri: string;
   }
   export interface VoteCalldataConfig {
     voter: string;

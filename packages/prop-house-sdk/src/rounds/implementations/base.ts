@@ -61,7 +61,7 @@ export abstract class RoundBase<
    * Default Starknet relayers
    */
   public static readonly DEFAULT_STARKNET_RELAYERS: Record<number, string> = {
-    [ChainId.EthereumGoerli]: 'https://starknet-relayer.onrender.com',
+    [ChainId.EthereumGoerli]: 'https://starknet-relayer-v2.onrender.com',
   };
 
   /**
