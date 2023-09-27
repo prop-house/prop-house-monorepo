@@ -774,7 +774,7 @@ export class QueryWrapper {
         return {
           id: strategy.id,
           strategyType: GovPowerStrategyType.BALANCE_OF,
-          address: `0x${BigInt(address).toString(16)}`,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
       };
@@ -783,7 +783,7 @@ export class QueryWrapper {
         return {
           id: strategy.id,
           strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF,
-          address: `0x${BigInt(address).toString(16)}`,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
           tokenId: tokenId.toString(),
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
