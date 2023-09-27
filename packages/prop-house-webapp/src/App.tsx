@@ -3,15 +3,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
-import Home from './pages/Home';
 import Create from './pages/Create';
 import Footer from './components/Footer';
 import './App.css';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
-import PropCreatorProtectedRoute from './components/PropCreatorProtectedRoute';
 import NotFound from './components/NotFound';
-import Round from './pages/RoundPage';
 import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
@@ -74,18 +71,8 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
-  const bannerContent = (
-    <>
-      <a href="/base" rel="noreferrer">
-        Onchain Summer is here! Close to 100 ETH in grants are available for those building on Base.{' '}
-        <b>View the rounds →</b>
-      </a>
-    </>
-  );
-
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
-  const noNavPath =
-    location.pathname === '/' || location.pathname === '/faq' || location.pathname === '/create';
+  const noNavPath = location.pathname === '/faq' || location.pathname === '/create';
 
   return (
     <>
@@ -106,17 +93,15 @@ function App() {
             >
               <Suspense fallback={<LoadingIndicator />}>
                 <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-                  {location.pathname === '/' && <Banner content={bannerContent} />}
                   {!noNavPath && <NavBar />}
 
                   <Routes>
-                    <Route path="/app" element={<MainApp />} />
+                    <Route path="/" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create" element={<Create />} />
 
                     <Route path="/rounds" element={<StatusRoundCards />} />
-                    <Route path="/" element={<Home />} />
 
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
