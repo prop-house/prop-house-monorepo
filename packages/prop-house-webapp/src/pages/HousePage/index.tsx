@@ -24,59 +24,32 @@ import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 import { useTranslation } from 'react-i18next';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { isMobile } from 'web3modal';
+import { Round, RoundState, usePropHouse } from '@prophouse/sdk-react';
+import RoundCard_ from '../../components/_RoundCard';
 
-const HousePage = () => {
-  const location = useLocation();
-  const slug = location.pathname.substring(1, location.pathname.length);
+const HousePage: React.FC<{}> = () => {
+  const propHouse = usePropHouse();
 
-  const signer = useEthersSigner();
-
-  const dispatch = useAppDispatch();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  const [rounds, setRounds] = useState<StoredAuctionBase[]>([]);
-  const [roundsOnDisplay, setRoundsOnDisplay] = useState<StoredAuctionBase[]>([]);
-  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
-  const [input, setInput] = useState<string>('');
-  const [loadingCommunity, setLoadingCommunity] = useState(false);
-  const [failedLoadingCommunity, setFailedLoadingCommunity] = useState(false);
+  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const [rounds, setRounds] = useState<Round[]>();
   const [loadingRounds, setLoadingRounds] = useState(false);
   const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);
+  const [roundsOnDisplay, setRoundsOnDisplay] = useState<Round[]>([]);
+  const [currentRoundStatus, setCurrentRoundStatus] = useState<number>(RoundStatus.AllRounds);
+  const [input, setInput] = useState<string>('');
+
   const { t } = useTranslation();
 
   const [numberOfRoundsPerStatus, setNumberOfRoundsPerStatus] = useState<number[]>([]);
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  // fetch community
-  useEffect(() => {
-    const fetchCommunity = async () => {
-      try {
-        setLoadingCommunity(true);
-        const community = await client.current.getCommunityWithName(slugToName(slug));
-        dispatch(setActiveCommunity(community));
-        setLoadingCommunity(false);
-      } catch (e) {
-        setLoadingCommunity(false);
-        setFailedLoadingCommunity(true);
-      }
-    };
-    fetchCommunity();
-  }, [slug, dispatch]);
-
   // fetch rounds
   useEffect(() => {
-    if (!community) return;
+    if (!house || rounds) return;
 
     const fetchRounds = async () => {
+      setLoadingRounds(true);
       try {
-        setLoadingRounds(true);
-        const rounds = await client.current.getAuctionsForCommunity(community.id);
-
+        const rounds = await propHouse.query.getRoundsForHouse(house.address);
         setRounds(rounds);
 
         // Number of rounds under a certain status type in a House
@@ -84,8 +57,7 @@ const HousePage = () => {
           // number of active rounds (proposing & voting)
           rounds.filter(
             r =>
-              auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-              auctionStatus(r) === AuctionStatus.AuctionVoting,
+              r.state === RoundState.IN_PROPOSING_PERIOD || r.state === RoundState.IN_VOTING_PERIOD,
           ).length,
           rounds.length,
         ]);
@@ -93,8 +65,7 @@ const HousePage = () => {
         // if there are no active rounds, default filter by all rounds
         rounds.filter(
           r =>
-            auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-            auctionStatus(r) === AuctionStatus.AuctionVoting,
+            r.state === RoundState.IN_PROPOSING_PERIOD || r.state === RoundState.IN_VOTING_PERIOD,
         ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
 
         setLoadingRounds(false);
@@ -104,8 +75,9 @@ const HousePage = () => {
       }
     };
     fetchRounds();
-  }, [community]);
+  }, []);
 
+  // search functionality
   useEffect(() => {
     rounds &&
       // check if searching via input
@@ -118,8 +90,8 @@ const HousePage = () => {
             setRoundsOnDisplay(
               rounds.filter(
                 r =>
-                  auctionStatus(r) === AuctionStatus.AuctionAcceptingProps ||
-                  auctionStatus(r) === AuctionStatus.AuctionVoting,
+                  r.state === RoundState.IN_PROPOSING_PERIOD ||
+                  r.state === RoundState.IN_VOTING_PERIOD,
               ),
             )
         : // filter by search input that matches round title or description
@@ -146,54 +118,48 @@ const HousePage = () => {
         />
       )} */}
 
-      {loadingCommunity ? (
-        <LoadingIndicator height={isMobile() ? 288 : 349} />
-      ) : !loadingCommunity && failedLoadingCommunity ? (
-        <NotFound />
-      ) : (
-        community && (
-          <>
+      {house && (
+        <>
+          <Container>
+            <HouseHeader house={house} />
+          </Container>
+
+          <div className={classes.stickyContainer}>
             <Container>
-              <HouseHeader community={community} />
+              <HouseUtilityBar
+                numberOfRoundsPerStatus={numberOfRoundsPerStatus}
+                currentRoundStatus={currentRoundStatus}
+                setCurrentRoundStatus={setCurrentRoundStatus}
+                input={input}
+                setInput={setInput}
+              />
             </Container>
+          </div>
 
-            <div className={classes.stickyContainer}>
-              <Container>
-                <HouseUtilityBar
-                  numberOfRoundsPerStatus={numberOfRoundsPerStatus}
-                  currentRoundStatus={currentRoundStatus}
-                  setCurrentRoundStatus={setCurrentRoundStatus}
-                  input={input}
-                  setInput={setInput}
-                />
-              </Container>
-            </div>
-
-            <div className={classes.houseContainer}>
-              <Container>
-                <Row>
-                  {loadingRounds ? (
-                    <LoadingIndicator />
-                  ) : !loadingRounds && failedLoadingRounds ? (
-                    <ErrorMessageCard message={t('noRoundsAvailable')} />
-                  ) : roundsOnDisplay.length > 0 ? (
-                    sortRoundByStatus(roundsOnDisplay).map((round, index) => (
-                      <Col key={index} xl={6}>
-                        <RoundCard round={round} />
-                      </Col>
-                    ))
-                  ) : input === '' ? (
-                    <Col>
-                      <ErrorMessageCard message={t('noRoundsAvailable')} />
+          <div className={classes.houseContainer}>
+            <Container>
+              <Row>
+                {loadingRounds ? (
+                  <LoadingIndicator />
+                ) : !loadingRounds && failedLoadingRounds ? (
+                  <ErrorMessageCard message={t('noRoundsAvailable')} />
+                ) : roundsOnDisplay.length > 0 ? (
+                  sortRoundByStatus(roundsOnDisplay).map((round, index) => (
+                    <Col key={index} xl={6}>
+                      <RoundCard_ round={round} house={house} />
                     </Col>
-                  ) : (
-                    <NoSearchResults />
-                  )}
-                </Row>
-              </Container>
-            </div>
-          </>
-        )
+                  ))
+                ) : input === '' ? (
+                  <Col>
+                    <ErrorMessageCard message={t('noRoundsAvailable')} />
+                  </Col>
+                ) : (
+                  <NoSearchResults />
+                )}
+              </Row>
+            </Container>
+          </div>
+        </>
       )}
     </>
   );

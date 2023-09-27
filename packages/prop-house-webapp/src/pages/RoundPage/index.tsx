@@ -6,7 +6,7 @@ import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { isMobile } from 'web3modal';
-import { usePropHouse } from '@prophouse/sdk-react';
+import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import ProposalModal from '../../components/ProposalModal';
 import OpenGraphElements from '../../components/OpenGraphElements';
@@ -18,11 +18,10 @@ import RoundContent from '../../components/RoundContent';
 
 const RoundPage: React.FC<{}> = () => {
   const propHouse = usePropHouse();
-
   const dispatch = useAppDispatch();
-  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
 
   const [loadingRound, setLoadingRound] = useState(false);

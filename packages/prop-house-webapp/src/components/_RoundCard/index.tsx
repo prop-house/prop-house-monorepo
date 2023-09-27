@@ -1,22 +1,17 @@
 import classes from './RoundCard.module.css';
-import { RoundWithHouse } from '@prophouse/sdk-react';
+import { House, Round } from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import AwardsDisplay from '../AwardsDisplay';
 import { useNavigate } from 'react-router-dom';
-import { nameToSlug } from '../../utils/communitySlugs';
 
-const RoundCard_: React.FC<{ round: RoundWithHouse }> = props => {
-  const { round } = props;
+const RoundCard_: React.FC<{ round: Round; house: House }> = props => {
+  const { round, house } = props;
 
   let navigate = useNavigate();
 
   return (
-    <div
-      onClick={e => {
-        navigate(`/${nameToSlug(round.address)}`);
-      }}
-    >
+    <div onClick={e => navigate(`/${round.address}`)}>
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
@@ -26,11 +21,8 @@ const RoundCard_: React.FC<{ round: RoundWithHouse }> = props => {
           <div className={classes.title}>{round.title}</div>
           <div className={classes.creatorAndAwardContainer}>
             <EthAddress
-              address={round.house.address}
-              imgSrc={round.house.imageURI?.replace(
-                /prophouse.mypinata.cloud/g,
-                'cloudflare-ipfs.com',
-              )}
+              address={house.address}
+              imgSrc={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
               addAvatar={true}
               className={classes.roundCreator}
             />

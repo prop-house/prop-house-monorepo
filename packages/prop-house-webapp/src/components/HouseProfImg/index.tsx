@@ -1,21 +1,20 @@
-import classes from './CommunityProfImg.module.css';
+import classes from './HouseProfImg.module.css';
 import { Link } from 'react-router-dom';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import loadingNoun from '../../assets/loading-skull-noun.gif';
 import clsx from 'clsx';
-import { nameToSlug } from '../../utils/communitySlugs';
+import { House } from '@prophouse/sdk-react';
 
-const CommunityProfImg: React.FC<{
-  community?: Community;
+const HouseProfImg: React.FC<{
+  house?: House;
   inactiveTokenURI?: string;
   hover?: boolean;
 }> = props => {
-  const { community, hover } = props;
+  const { house, hover } = props;
 
-  return community ? (
-    <Link to={`/${nameToSlug(community.name)}`}>
+  return house ? (
+    <Link to={`/${house.address}}`}>
       <img
-        src={community.profileImageUrl}
+        src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
         crossOrigin="anonymous"
         alt="community profile "
         className={clsx(classes.img, hover && classes.hoverImg)}
@@ -30,4 +29,4 @@ const CommunityProfImg: React.FC<{
   );
 };
 
-export default CommunityProfImg;
+export default HouseProfImg;

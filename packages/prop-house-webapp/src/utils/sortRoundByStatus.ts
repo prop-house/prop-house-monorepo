@@ -1,21 +1,21 @@
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { AuctionStatus, auctionStatus } from './auctionStatus';
-import { isInfAuction, isTimedAuction } from './auctionType';
+import { Round, RoundState, RoundType } from '@prophouse/sdk-react';
 
 /**
  * Sort rounds, or groups of rounds, by their status.
  * Custom order: Proposing, Voting, Not Started, Ended
  */
-export const sortRoundByStatus = (rounds: StoredAuctionBase[]) => [
+export const sortRoundByStatus = (rounds: Round[]) => [
   ...rounds.filter(
-    round => auctionStatus(round) === AuctionStatus.AuctionAcceptingProps && isInfAuction(round),
+    r => r.state === RoundState.IN_PROPOSING_PERIOD && r.type !== RoundType.TIMED_FUNDING,
   ),
   ...rounds.filter(
-    round => auctionStatus(round) === AuctionStatus.AuctionAcceptingProps && isTimedAuction(round),
+    r => r.state === RoundState.IN_PROPOSING_PERIOD && r.type === RoundType.TIMED_FUNDING,
   ),
-  ...rounds.filter(round => auctionStatus(round) === AuctionStatus.AuctionVoting),
-  ...rounds.filter(round => auctionStatus(round) === AuctionStatus.AuctionNotStarted),
+  ...rounds.filter(r => r.state === RoundState.IN_VOTING_PERIOD),
+  ...rounds.filter(r => r.state === RoundState.NOT_STARTED),
   ...rounds
-    .filter(round => auctionStatus(round) === AuctionStatus.AuctionEnded)
-    .sort((a, b) => (a.startTime > b.startTime ? -1 : 1)),
+    .filter(r => r.state > RoundState.IN_VOTING_PERIOD)
+    .sort((a, b) =>
+      a.config.proposalPeriodStartTimestamp > b.config.proposalPeriodStartTimestamp ? -1 : 1,
+    ),
 ];

@@ -1,6 +1,6 @@
 import classes from './CommunityCard.module.css';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import CommunityProfImg from '../CommunityProfImg';
+import CommunityProfImg from '../HouseProfImg';
 import { useTranslation } from 'react-i18next';
 import TruncateThousands from '../TruncateThousands';
 import getHouseCurrency from '../../utils/getHouseCurrency';
