@@ -20,7 +20,7 @@ const MainApp = () => {
           rounds.map(r => {
             return (
               <Col xl={6}>
-                <RoundCard_ round={r} />
+                <RoundCard_ round={r} house={r.house} />
               </Col>
             );
           })}
