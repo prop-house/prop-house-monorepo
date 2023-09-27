@@ -346,6 +346,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
+      proposalId: config.proposalId,
       proposer: address,
       authStrategy: encoding.hexPadLeft(this._addresses.starknet.auth.timed.sig),
       salt: this.generateSalt(),
@@ -366,7 +367,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * Edit a proposal message and submit it to the Starknet relayer
    * @param config The round address and proposal metadata URI
    */
-  public async editProposalViaSignature(config: Timed.ProposeConfig) {
+  public async editProposalViaSignature(config: Timed.EditProposalConfig) {
     const { address, signature, message } = await this.signEditProposalMessage(config);
     return this.sendToRelayer<Timed.RequestParams>({
       address,
@@ -474,6 +475,26 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Relay a signed edit proposal payload to Starknet
+   * @param account The Starknet account used to submit the transaction
+   * @param params The edit proposal request params
+   */
+  public async relaySignedEditProposalPayload(
+    account: Account,
+    params: Omit<Timed.RequestParams<Timed.Action.EDIT_PROPOSAL>, 'action'>,
+  ) {
+    const payload = {
+      ...params,
+      action: Timed.Action.EDIT_PROPOSAL,
+    };
+    const call = this.createEVMSigAuthCall(payload, 'authenticate_edit_proposal', this.getEditProposalCalldata(params.data));
+    const fee = await account.estimateFee(call);
+    return account.execute(call, undefined, {
+      maxFee: fee.suggestedMaxFee,
+    });
+  }
+
+  /**
    * Relay a signed vote payload to Starknet
    * @param account The Starknet account used to submit the transaction
    * @param params The vote request params
@@ -552,6 +573,20 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       ...config.usedProposingStrategies.flatMap(({ id, userParams }) => 
         [id, userParams.length, ...userParams],
       ).map(v => v.toString()),
+    ];
+  }
+
+  /**
+   * Generates a calldata array used to submit a proposal through an authenticator
+   * @param config The information required to generate the propose calldata
+   */
+  public getEditProposalCalldata(config: Timed.EditProposalCalldataConfig): string[] {
+    const metadataUri = intsSequence.IntsSequence.LEFromString(config.metadataUri);
+    return [
+      config.proposer,
+      `0x${config.proposalId.toString(16)}`,
+      `0x${metadataUri.values.length.toString(16)}`,
+      ...metadataUri.values,
     ];
   }
 
