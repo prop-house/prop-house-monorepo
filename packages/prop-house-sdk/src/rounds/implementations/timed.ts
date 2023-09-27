@@ -235,6 +235,29 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   }
 
   /**
+   * Determine if the provided user is eligible to propose a round
+   * @param round The round address
+   * @param user The user address
+   */
+  public async getProposeEligibility(round: string, user: string) {
+    const roundWithStrategies = await this._query.getRoundWithStrategiesRaw(round);
+    const nonZeroStrategyProposingPowers = await this._govPower.getPowerForStrategies(
+      user,
+      roundWithStrategies.config.proposalPeriodStartTimestamp,
+      roundWithStrategies.proposingStrategies,
+    );
+    const userProposingPower = nonZeroStrategyProposingPowers.reduce(
+      (acc, { govPower }) => acc.add(govPower),
+      BigNumber.from(0),
+    );
+    return {
+      canPropose: userProposingPower.gte(roundWithStrategies.config.proposalThreshold),
+      requiredProposingPower: roundWithStrategies.config.proposalThreshold,
+      userProposingPower,
+    };
+  }
+
+  /**
    * Estimate the round registration message fee cost (in wei)
    * @param configStruct The round configuration struct
    */
@@ -390,7 +413,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const { govPowerStrategies } = await this._query.getRoundVotingStrategies(config.round);
+    const govPowerStrategies = await this._query.getRoundVotingStrategiesRaw(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -510,7 +533,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const { govPowerStrategies } = await this._query.getGovPowerStrategies({
+    const govPowerStrategies = await this._query.getGovPowerStrategiesRaw({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },

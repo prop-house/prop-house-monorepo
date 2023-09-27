@@ -289,7 +289,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const { govPowerStrategies } = await this._query.getRoundVotingStrategies(config.round);
+    const govPowerStrategies = await this._query.getRoundVotingStrategiesRaw(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -396,7 +396,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const { govPowerStrategies } = await this._query.getGovPowerStrategies({
+    const govPowerStrategies = await this._query.getGovPowerStrategiesRaw({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },

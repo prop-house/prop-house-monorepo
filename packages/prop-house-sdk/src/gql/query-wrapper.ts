@@ -294,6 +294,18 @@ export class QueryWrapper {
   }
 
   /**
+   * Get detailed information for a single round with raw proposing and voting strategies
+   * @param roundAddress The round address
+   */
+  public async getRoundWithStrategiesRaw(roundAddress: Address) {
+    const { round } = await this._gql.evm.request(RoundQuery, { id: roundAddress.toLowerCase() });
+    if (!round) {
+      throw new Error(`Round not found: ${roundAddress}`);
+    }
+    return this.toRoundWithRawStrategies(round);
+  }
+
+  /**
    * Get detailed information for a single round
    * @param roundAddress The round address
    */
@@ -363,16 +375,66 @@ export class QueryWrapper {
   }
 
   /**
-   * Get governance power strategy information
+   * Get raw governance power strategy information
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getGovPowerStrategiesRaw(
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
+  ) {
+    const { govPowerStrategies } = await this._gql.evm.request(
+      ManyGovPowerStrategiesQuery,
+      toPaginated(this.merge(getDefaultConfig(GovPowerStrategy_OrderBy.Id), config)),
+    );
+    return govPowerStrategies;
+  }
+
+  /**
+   * Get raw proposing strategy information for a single round
+   * @param roundAddress The round address
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getRoundProposingStrategiesRaw(
+    roundAddress: Address,
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
+  ) {
+    return this.getGovPowerStrategiesRaw({
+      ...config,
+      where: {
+        ...config.where,
+        proposingStrategyRounds_: { round: roundAddress.toLowerCase() },
+      },
+    });
+  }
+
+  /**
+   * Get raw voting strategy information for a single round
+   * @param roundAddress The round address
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getRoundVotingStrategiesRaw(
+    roundAddress: Address,
+    config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
+  ) {
+    return this.getGovPowerStrategiesRaw({
+      ...config,
+      where: {
+        ...config.where,
+        votingStrategyRounds_: { round: roundAddress.toLowerCase() },
+      },
+    });
+  }
+
+  /**
+   * Get parsed governance power strategy information
    * @param config Filtering, pagination, and ordering configuration
    */
   public async getGovPowerStrategies(
     config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
   ) {
-    return this._gql.evm.request(
-      ManyGovPowerStrategiesQuery,
-      toPaginated(this.merge(getDefaultConfig(GovPowerStrategy_OrderBy.Id), config)),
+    const rawStrategies = await this.getGovPowerStrategiesRaw(
+      config,
     );
+    return rawStrategies.map(strategy => this.toParsedGovPowerStrategy(strategy));
   }
 
   /**
@@ -523,18 +585,23 @@ export class QueryWrapper {
   }
 
   /**
-   * Fetch a proposal using the provided round address and proposal id
+   * Fetch a proposal using the provided round address and proposal ID
    * @param roundAddress The round address
    * @param proposalId The proposal id
    */
   public async getProposal(roundAddress: string, proposalId: number): Promise<Proposal> {
-    const { proposal } = await this._gql.starknet.request(ProposalQuery, {
-      id: `${roundAddress}-${proposalId}`.toLowerCase(),
+    const proposals = await this.getProposals({
+      where: {
+        proposalId,
+        round_: {
+          sourceChainRound: roundAddress.toLowerCase(),
+        },
+      },
     });
-    if (!proposal) {
+    if (!proposals?.length) {
       throw new Error(`Proposal ID ${proposalId} not found for round ${roundAddress}`);
     }
-    return this.toProposal(proposal);
+    return proposals[0];
   }
 
   /**
@@ -625,10 +692,10 @@ export class QueryWrapper {
   }
 
   /**
-   * Convert a raw round query result to a round object
+   * Convert a raw round query result to a round object with raw strategies
    * @param round The round to convert
    */
-  protected toRound(round: IRoundQuery['round']): Round {
+  protected toRoundWithRawStrategies(round: IRoundQuery['round']) {
     if (!round) throw new Error('Round information not present during attempted conversion');
     if (!round.timedConfig)
       throw new Error('Round config information not present during attempted conversion');
@@ -656,8 +723,20 @@ export class QueryWrapper {
         claimPeriodEndTimestamp: Number(config.claimPeriodEndTimestamp),
         awards: this.toParsedAwards(config.winnerCount, config.awards),
       },
-      proposingStrategies: round.proposingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
-      votingStrategies: round.votingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
+      proposingStrategies: round.proposingStrategies.map(({ strategy }) => strategy),
+      votingStrategies: round.votingStrategies.map(({ strategy }) => strategy),
+    };
+  }
+
+  /**
+   * Convert a raw round query result to a round object
+   * @param round The round to convert
+   */
+  protected toRound(round: IRoundQuery['round']): Round {
+    return {
+      ...this.toRoundWithRawStrategies(round),
+      proposingStrategies: round!.proposingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
+      votingStrategies: round!.votingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
     };
   }
 
