@@ -3308,7 +3308,7 @@
     "@ethersproject/constants" "^5.6.0"
     "@ethersproject/logger" "^5.6.0"
 
-"@ethersproject/strings@5.7.0", "@ethersproject/strings@^5.7.0":
+"@ethersproject/strings@5.7.0", "@ethersproject/strings@^5.7.0", "@ethersproject/strings@~5.7.0":
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/strings/-/strings-5.7.0.tgz#54c9d2a7c57ae8f1205c88a9d3a56471e14d5ed2"
   integrity sha512-/9nu+lj0YswRNSH0NXYqrh8775XNyEdUQAuf3f+SmOrnVewcJ5SBNAjF7lpgehKi4abvNNXyf+HX86czCdJ8Mg==
@@ -4516,19 +4516,19 @@
   dependencies:
     ethers "~5.5.0"
 
-"@prophouse/protocol@^0.1.0-alpha":
-  version "0.1.0-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/protocol/-/protocol-0.1.0-alpha.tgz#9048d1730b9209d02aafb914585209c439159df1"
-  integrity sha512-QoC3abbj8uND0rf61ZiPZbrBYQaJHfVfEFqmRDRfZbx6kkqb6Rz2e6cvrbphgWwHBMpbRKt0h3w1BKvswOJo9Q==
+"@prophouse/protocol@^0.2.0-alpha":
+  version "0.2.0-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/protocol/-/protocol-0.2.0-alpha.tgz#976532fb335fa9293c7678853340a09b4a6d28dd"
+  integrity sha512-h68jgrbKxqYZ2MPKIS37T1BI1IObM+tT9VbMGKdeaWwA4wp35rewucAzNioVXLCOEUeaUh1Ttxfjqv9eXiwRMA==
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.1.0-alpha.16":
-  version "0.1.0-alpha.16"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.1.0-alpha.16.tgz#c971442d7d1d90ffd55d5efde070f8a20035440c"
-  integrity sha512-NW0hvDg3cMIoB2g0dO8OWyiW07gsfxc5E4CooKBMzbujdQHEBBZf3rKkFUJ5G2LB7gA2Ukwpi3LpT7W8yVyGJw==
+"@prophouse/sdk-react@0.2.0-alpha.2":
+  version "0.2.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.2.0-alpha.2.tgz#dabb28d4dc7c1ad1302c36559dc0948295eaf3b2"
+  integrity sha512-y/1m8h4A6RLoDCD58zF/498s6uWjphtEuk+kZBRwzsGm/oW2DTeoAjp/l28/IwVDd+lgzoDEyKArcpFECLrAsw==
   dependencies:
-    "@prophouse/sdk" "~0.1.0-alpha.25"
+    "@prophouse/sdk" "~0.2.0-alpha.5"
 
 "@prophouse/sdk@^0.1.0-alpha.8":
   version "0.1.0-alpha.8"
@@ -4552,10 +4552,10 @@
     starknet "4.19.3"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@~0.1.0-alpha.25":
-  version "0.1.0-alpha.25"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.1.0-alpha.25.tgz#c47d39fe9045b8b00ed6d1871ffd22366db649c9"
-  integrity sha512-Ogf6rYPZznUg2JaVfyjztgmPGbVxYqqQmdcd+zrTZTDE+nwuShqVTeeNFa5hO/mS2VBQf7oqJPOuMl//HsuS1w==
+"@prophouse/sdk@~0.2.0-alpha.5":
+  version "0.2.0-alpha.5"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.2.0-alpha.5.tgz#50a3cfed1fce90e93c01e1648239bc6dedec5da1"
+  integrity sha512-5M4ZGiLBQE95suPzmrncjGuqbv0XUbU+FimddzUqvJLccqKJZAApBkFKuCnE/6dYf/kJyW3PGonlm44ko5P29g==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -4568,13 +4568,15 @@
     "@ethersproject/keccak256" "~5.7.0"
     "@ethersproject/providers" "~5.7.0"
     "@ethersproject/solidity" "~5.7.0"
+    "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
-    "@prophouse/protocol" "^0.1.0-alpha"
+    "@prophouse/protocol" "^0.2.0-alpha"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
     graphql "^16.5.0"
     graphql-request "5.0.0"
+    micro-starknet "^0.2.3"
     randombytes "^2.1.0"
     starknet "4.22.0"
     time-ts "^0.1.0"
@@ -16215,6 +16217,14 @@ methods@^1.1.2, methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
+
+micro-starknet@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/micro-starknet/-/micro-starknet-0.2.3.tgz#ff4e7caf599255d2110e9c57bb483dfaf493ccb3"
+  integrity sha512-6XBcC+GerlwJSR4iA0VaeXtS2wrayWFcA4PEzrJPMuFmWCaUtuGIq5K/DB5F/XgnL54/zl2Bxo690Lj7mYVA8A==
+  dependencies:
+    "@noble/curves" "~1.0.0"
+    "@noble/hashes" "~1.3.0"
 
 microevent.ts@~0.1.1:
   version "0.1.1"
