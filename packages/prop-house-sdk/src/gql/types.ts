@@ -25,7 +25,7 @@ export interface RoundCreator {
 }
 
 export interface RawGovPowerStrategy extends GovPowerStrategyWithID {
-  type: GovPowerStrategyType;
+  type: string;
 }
 
 export interface BalanceOfStrategy {
@@ -99,6 +99,8 @@ export interface Round {
   createdAt: number;
   state: RoundState;
   config: RoundConfig;
+  proposingStrategiesRaw: RawGovPowerStrategy[];
+  votingStrategiesRaw: RawGovPowerStrategy[];
   proposingStrategies: ProposingStrategy[];
   votingStrategies: VotingStrategy[];
 }

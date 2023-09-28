@@ -240,11 +240,11 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    * @param user The user address
    */
   public async getProposeEligibility(round: string, user: string) {
-    const roundWithStrategies = await this._query.getRoundWithStrategiesRaw(round);
+    const roundWithStrategies = await this._query.getRound(round);
     const nonZeroStrategyProposingPowers = await this._govPower.getPowerForStrategies(
       user,
       roundWithStrategies.config.proposalPeriodStartTimestamp,
-      roundWithStrategies.proposingStrategies,
+      roundWithStrategies.proposingStrategiesRaw,
     );
     const userProposingPower = nonZeroStrategyProposingPowers.reduce(
       (acc, { govPower }) => acc.add(govPower),
@@ -413,7 +413,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const govPowerStrategies = await this._query.getRoundVotingStrategiesRaw(config.round);
+    const { govPowerStrategiesRaw } = await this._query.getRoundVotingStrategies(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -423,7 +423,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
       address,
       timestamp,
-      govPowerStrategies,
+      govPowerStrategiesRaw,
     );
     const totalVotingPower = nonZeroStrategyVotingPowers.reduce(
       (acc, { govPower }) => acc.add(govPower),
@@ -533,7 +533,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const govPowerStrategies = await this._query.getGovPowerStrategiesRaw({
+    const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
@@ -544,7 +544,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voter,
       timestamp,
-      govPowerStrategies,
+      govPowerStrategiesRaw,
     );
 
     const call = this.createEVMSigAuthCall(payload, 'authenticate_vote', this.getVoteCalldata(params.data));
