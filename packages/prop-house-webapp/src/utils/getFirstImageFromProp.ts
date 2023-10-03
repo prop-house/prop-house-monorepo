@@ -14,9 +14,7 @@ const getFirstImageFromProp = async (proposal: StoredProposalWithVotes) => {
   if (!match) return undefined;
 
   // check if there's an image in the description or it is a ph pinata upload
-  return (await isImage(match[1])) || match[1].includes('prophouse.mypinata')
-    ? match[1]
-    : undefined;
+  return (await isImage(match[1])) || match[1].includes('ipfs') ? match[1] : undefined;
 };
 
 export default getFirstImageFromProp;
