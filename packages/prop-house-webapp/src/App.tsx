@@ -34,7 +34,6 @@ import CreateRound from './pages/CreateRound';
 import { baseChain } from './types/baseChain';
 import { polygon } from './types/polygon';
 import { polygonMumbai } from './types/polygonMumbai';
-import Banner from './components/Banner';
 
 const { chains, publicClient } = configureChains(
   [mainnet, baseChain, polygon, polygonMumbai],
@@ -67,15 +66,6 @@ function App() {
     }
   }, [noActiveCommunity, location.state]);
 
-  const bannerContent = (
-    <>
-      <a href="/base" rel="noreferrer">
-        Onchain Summer is here! Close to 100 ETH in grants are available for those building on Base.{' '}
-        <b>View the rounds →</b>
-      </a>
-    </>
-  );
-
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
   const noNavPath =
     location.pathname === '/' || location.pathname === '/faq' || location.pathname === '/create';
@@ -98,7 +88,6 @@ function App() {
           >
             <Suspense fallback={<LoadingIndicator />}>
               <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-                {location.pathname === '/' && <Banner content={bannerContent} />}
                 {!noNavPath && <NavBar />}
 
                 <Routes>
