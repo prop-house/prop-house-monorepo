@@ -89,7 +89,7 @@ mod SingleSlotProof {
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: self._fact_registry.read() };
         let slot_value = facts_registry.get_storage_uint(
-            eth_block_number,
+            eth_block_number - 1, // Shift by 1 due to Herodotus v1 offset.
             contract_address,
             slot,
             proof_sizes_bytes,
