@@ -47,10 +47,6 @@ export const intSequenceToString = (intSequence: bigint[]): string => {
     .join('');
 };
 
-export const uint256toString = (uint256: Uint256): string => {
-  return (BigInt(uint256.low) + (BigInt(uint256.high) << BigInt(128))).toString();
-};
-
 export const toAddress = (bn: BigNumber) => {
   try {
     return getAddress(BigNumber.from(bn).toHexString());

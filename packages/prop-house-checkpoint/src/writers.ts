@@ -5,7 +5,6 @@ import {
   getTxStatus,
   intSequenceToString,
   toAddress,
-  uint256toString,
   unixTimestamp,
 } from './utils';
 import { validateAndParseAddress } from 'starknet';
@@ -214,7 +213,7 @@ export const handleVoteCast: CheckpointWriter = async ({
 
   const round = validateAndParseAddress(rawEvent.from_address);
   const voter = toAddress(event.voter);
-  const power = uint256toString(event.voting_power);
+  const power = BigInt(event.voting_power).toString();
   const proposalId = parseInt(event.proposal_id, 16);
   const proposal = `${round}-${proposalId}`;
   const timestamp = block?.timestamp ?? unixTimestamp();
