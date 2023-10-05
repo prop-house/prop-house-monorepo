@@ -1,39 +1,38 @@
-import CommunityCard from '../CommunityCard';
 import classes from './CommunityCardGrid.module.css';
 import { useEffect, useState } from 'react';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-
 import ErrorMessageCard from '../ErrorMessageCard';
 import LoadingIndicator from '../LoadingIndicator';
 import { useTranslation } from 'react-i18next';
+import HouseCard from '../CommunityCard';
+import { House } from '@prophouse/sdk-react';
 
-interface CommunityCardGridProps {
+interface HouseCardGridProps {
   input: string;
-  communities: Community[];
+  houses: House[];
   isLoading: boolean;
 }
 
-const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridProps) => {
-  const [filteredHouses, setFilteredHouses] = useState<Community[]>([]);
+const HouseCardGrid = ({ input, houses, isLoading }: HouseCardGridProps) => {
+  const [filteredHouses, setFilteredHouses] = useState<House[]>([]);
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (!communities || communities.length === 0) return;
-    if (input.length === 0) setFilteredHouses(communities);
+    if (!houses || houses.length === 0) return;
+    if (input.length === 0) setFilteredHouses(houses);
 
     setFilteredHouses(
-      communities.filter(c => {
+      houses.filter(h => {
         const query = input.toLowerCase();
 
         return (
-          c.name.toLowerCase().indexOf(query) >= 0 ||
-          c.description?.toString().toLowerCase().indexOf(query) >= 0
+          h.name!.toLowerCase().indexOf(query) >= 0 ||
+          h.description!.toString().toLowerCase().indexOf(query) >= 0
         );
       }),
     );
-  }, [communities, input]);
+  }, [houses, input]);
 
-  const cards = filteredHouses.map((c, i) => <CommunityCard community={c} key={i} />);
+  const cards = filteredHouses.map((house, i) => <HouseCard house={house} key={i} />);
 
   return (
     <>
@@ -50,4 +49,4 @@ const CommunityCardGrid = ({ input, communities, isLoading }: CommunityCardGridP
   );
 };
 
-export default CommunityCardGrid;
+export default HouseCardGrid;
