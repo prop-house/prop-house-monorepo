@@ -22,7 +22,7 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
-import { RoundState, RoundType, usePropHouse } from '@prophouse/sdk-react';
+import { RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
@@ -54,7 +54,7 @@ const Create: React.FC<{}> = () => {
   };
 
   const submitProposal = async () => {
-    if (!round || round.state !== RoundState.IN_PROPOSING_PERIOD) return;
+    if (!round || round.state !== Timed.RoundState.IN_PROPOSING_PERIOD) return;
 
     const { title, what, tldr } = proposalEditorData;
 
@@ -62,6 +62,8 @@ const Create: React.FC<{}> = () => {
     const blob = new Blob([json], { type: 'application/json' });
     const file = new File([blob], 'proposal.json', { type: 'application/json' });
     const result = await client.current.postFile(file, file.name);
+
+    // todo
     const proposal = await propHouse.round.timedFunding.proposeViaSignature({
       round: round.address,
       metadataUri: `ipfs://${result.data.ipfsHash}`,
@@ -199,7 +201,7 @@ const Create: React.FC<{}> = () => {
                   <span className={classes.boldLabel}>{house.name}</span> house
                 </h1>
 
-                {round.type === RoundType.TIMED_FUNDING && (
+                {round.type === RoundType.TIMED && (
                   <span className={classes.fundingCopy}>
                     <span className={classes.boldLabel}>{round.config.awards.length}</span> winners
                     will be selected to receive{' '}
@@ -234,7 +236,7 @@ const Create: React.FC<{}> = () => {
                       duplicateFile={duplicateFile}
                       setDuplicateFile={setDuplicateFile}
                       remainingBal={remainingBal}
-                      isInfRound={round.type !== RoundType.TIMED_FUNDING}
+                      isInfRound={round.type !== RoundType.TIMED}
                     />
                   )}
                 </Col>
@@ -250,9 +252,7 @@ const Create: React.FC<{}> = () => {
                         return !prev;
                       })
                     }
-                    disabled={
-                      !isValidPropData(round.type !== RoundType.TIMED_FUNDING, proposalEditorData)
-                    }
+                    disabled={!isValidPropData(round.type !== RoundType.TIMED, proposalEditorData)}
                   />
 
                   {showPreview &&
@@ -263,10 +263,7 @@ const Create: React.FC<{}> = () => {
                         bgColor={ButtonColor.Pink}
                         onClick={submitProposal}
                         disabled={
-                          !isValidPropData(
-                            round.type !== RoundType.TIMED_FUNDING,
-                            proposalEditorData,
-                          )
+                          !isValidPropData(round.type !== RoundType.TIMED, proposalEditorData)
                         }
                       />
                     ) : (

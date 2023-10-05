@@ -10,7 +10,7 @@ import NoSearchResults from '../../components/NoSearchResults';
 import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../components/StatusFilters';
 import { useTranslation } from 'react-i18next';
-import { Round, RoundState, usePropHouse } from '@prophouse/sdk-react';
+import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard_ from '../../components/_RoundCard';
 
 const HousePage: React.FC<{}> = () => {
@@ -43,7 +43,8 @@ const HousePage: React.FC<{}> = () => {
           // number of active rounds (proposing & voting)
           rounds.filter(
             r =>
-              r.state === RoundState.IN_PROPOSING_PERIOD || r.state === RoundState.IN_VOTING_PERIOD,
+              r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
+              r.state === Timed.RoundState.IN_VOTING_PERIOD,
           ).length,
           rounds.length,
         ]);
@@ -51,7 +52,8 @@ const HousePage: React.FC<{}> = () => {
         // if there are no active rounds, default filter by all rounds
         rounds.filter(
           r =>
-            r.state === RoundState.IN_PROPOSING_PERIOD || r.state === RoundState.IN_VOTING_PERIOD,
+            r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
+            r.state === Timed.RoundState.IN_VOTING_PERIOD,
         ).length === 0 && setCurrentRoundStatus(RoundStatus.AllRounds);
 
         setLoadingRounds(false);
@@ -76,8 +78,8 @@ const HousePage: React.FC<{}> = () => {
             setRoundsOnDisplay(
               rounds.filter(
                 r =>
-                  r.state === RoundState.IN_PROPOSING_PERIOD ||
-                  r.state === RoundState.IN_VOTING_PERIOD,
+                  r.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
+                  r.state === Timed.RoundState.IN_VOTING_PERIOD,
               ),
             )
         : // filter by search input that matches round title or description

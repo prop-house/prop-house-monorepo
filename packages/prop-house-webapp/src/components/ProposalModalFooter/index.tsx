@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
-import { RoundState, RoundType } from '@prophouse/sdk-react';
+import { RoundType, Timed } from '@prophouse/sdk-react';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -46,9 +46,9 @@ const ProposalModalFooter: React.FC<{
   const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
-  const isProposingWindow = round && round.state === RoundState.IN_PROPOSING_PERIOD;
-  const isVotingWindow = round && round.state === RoundState.IN_VOTING_PERIOD;
-  const isRoundOver = round && round.state > RoundState.IN_VOTING_PERIOD;
+  const isProposingWindow = round && round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round && round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round && round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   const noVotesDiv = proposal && (
     <div className={classes.noVotesContainer}>
@@ -101,7 +101,7 @@ const ProposalModalFooter: React.FC<{
           <div className={classes.footerPadding}>
             {/** TIMED ROUND */}
             {round &&
-              round.type === RoundType.TIMED_FUNDING &&
+              round.type === RoundType.TIMED &&
               (isRoundOver && proposal.isWinner ? (
                 <WinningProposalBanner numOfVotes={Number(proposal.votingPower)} />
               ) : !isRoundOver && !account.isConnected ? (

@@ -10,7 +10,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
-import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import RoundModuleCancelled from '../RoundModuleCancelled';
 import RoundModuleUnknownState from '../RoundModuleUnknownState';
 
@@ -48,19 +48,19 @@ const TimedRoundModules: React.FC<{
     // }
   }, [account, proposals]);
 
-  const roundStateUnknown = round.state === RoundState.UNKNOWN && <RoundModuleUnknownState />;
+  const roundStateUnknown = round.state === Timed.RoundState.UNKNOWN && <RoundModuleUnknownState />;
 
-  const roundCancelled = round.state === RoundState.CANCELLED && <RoundModuleCancelled />;
+  const roundCancelled = round.state === Timed.RoundState.CANCELLED && <RoundModuleCancelled />;
 
-  const notStartedModule = round.state === RoundState.NOT_STARTED && (
+  const notStartedModule = round.state === Timed.RoundState.NOT_STARTED && (
     <RoundModuleNotStarted round={round} />
   );
 
-  const acceptingPropsModule = round.state === RoundState.IN_PROPOSING_PERIOD && (
+  const acceptingPropsModule = round.state === Timed.RoundState.IN_PROPOSING_PERIOD && (
     <TimedRoundAcceptingPropsModule round={round} />
   );
 
-  const timedRoundVotingModule = round.state === RoundState.IN_VOTING_PERIOD && (
+  const timedRoundVotingModule = round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <TimedRoundVotingModule
       round={round}
       setShowVotingModal={setShowVotingModal}
@@ -68,7 +68,7 @@ const TimedRoundModules: React.FC<{
     />
   );
 
-  const roundOverModule = round.state > RoundState.IN_VOTING_PERIOD && (
+  const roundOverModule = round.state > Timed.RoundState.IN_VOTING_PERIOD && (
     <RoundOverModule numOfProposals={proposals.length} totalVotes={totalVotesAcrossAllProps} />
   );
 

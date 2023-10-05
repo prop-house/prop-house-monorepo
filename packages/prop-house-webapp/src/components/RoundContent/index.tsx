@@ -8,7 +8,7 @@ import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import { Row, Col } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Proposal, Round, RoundState, RoundType, usePropHouse } from '@prophouse/sdk-react';
+import { Proposal, Round, RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
@@ -38,14 +38,16 @@ const RoundContent: React.FC<{
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
 
-      const result = await propHouse.round.timedFunding.voteViaSignature({
-        round: round.address,
-        votes,
-      });
+      // todo:
+      // const result = await propHouse.round.timedFunding.voteViaSignature({
+      //   round: round.address,
+      //   votes,
+      // });
 
-      if (!result?.transaction_hash) {
-        throw new Error(`Vote submission failed: ${result}`);
-      }
+      // todo:
+      // if (!result?.transaction_hash) {
+      //   throw new Error(`Vote submission failed: ${result}`);
+      // }
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
@@ -84,11 +86,11 @@ const RoundContent: React.FC<{
 
       <Row className={classes.propCardsRow}>
         <Col xl={8} className={classes.propCardsCol}>
-          {round.state === RoundState.UNKNOWN ? (
+          {round.state === Timed.RoundState.UNKNOWN ? (
             <ErrorMessageCard message={'Error determining the state of the round'} />
-          ) : round.state === RoundState.CANCELLED ? (
+          ) : round.state === Timed.RoundState.CANCELLED ? (
             <ErrorMessageCard message={'Round was cancelled'} />
-          ) : round.state === RoundState.NOT_STARTED ? (
+          ) : round.state === Timed.RoundState.NOT_STARTED ? (
             <ErrorMessageCard
               message={'Round starting soon'}
               date={new Date(round.config.proposalPeriodStartTimestamp * 1000)}
@@ -109,7 +111,7 @@ const RoundContent: React.FC<{
             </>
           )}
         </Col>
-        {round.type === RoundType.TIMED_FUNDING ? (
+        {round.type === RoundType.TIMED ? (
           <TimedRoundModules
             round={round}
             proposals={proposals}

@@ -27,7 +27,7 @@ import { isMobile } from 'web3modal';
 import { infRoundBalance } from '../../utils/infRoundBalance';
 import RoundModuleRejected from '../RoundModuleRejected';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
-import { Proposal, Round, RoundState } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import InfRoundAcceptingPropsModule from '../InfRoundAcceptingPropsModule';
 
 const InfRoundModules: React.FC<{
@@ -40,10 +40,10 @@ const InfRoundModules: React.FC<{
   const { address: account } = useAccount();
 
   // auction statuses
-  const roundNotStarted = round.state < RoundState.IN_PROPOSING_PERIOD;
-  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
-  const isVotingWindow = round.state === RoundState.IN_VOTING_PERIOD;
-  const isRoundOver = round.state > RoundState.IN_PROPOSING_PERIOD;
+  const roundNotStarted = round.state < Timed.RoundState.IN_PROPOSING_PERIOD;
+  const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const isVotingWindow = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const isRoundOver = round.state > Timed.RoundState.IN_PROPOSING_PERIOD;
 
   const getVoteTotal = () =>
     proposals.reduce((total, prop) => (total = total + Number(prop.votingPower)), 0);

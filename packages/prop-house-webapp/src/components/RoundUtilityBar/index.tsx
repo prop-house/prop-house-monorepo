@@ -2,7 +2,7 @@ import classes from './RoundUtilityBar.module.css';
 import clsx from 'clsx';
 import { Col } from 'react-bootstrap';
 import { useAppSelector } from '../../hooks';
-import { Round, RoundState } from '@prophouse/sdk-react';
+import { Round, Timed } from '@prophouse/sdk-react';
 import TimedRoundUtilityBarItems from '../TimedRoundUtilityBarItems';
 
 const RoundUtilityBar: React.FC<{ round: Round }> = props => {
@@ -13,7 +13,7 @@ const RoundUtilityBar: React.FC<{ round: Round }> = props => {
     <div className={classes.roundUtilityBar}>
       {/** FILTERS */}
       <div className={classes.utilitySection}>
-        {round.state < RoundState.IN_PROPOSING_PERIOD && (
+        {round.state < Timed.RoundState.IN_PROPOSING_PERIOD && (
           <div
             className={clsx(
               classes.sortToggles,
