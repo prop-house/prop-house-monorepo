@@ -48,12 +48,12 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
   /**
    * The minimum proposal submission period duration
    */
-  public static MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
+  public static MIN_PROPOSAL_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
 
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
 
   /**
    * Maximum winner count for this strategy
@@ -177,8 +177,8 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
    */
   public async getConfigStruct(config: Timed.Config<CS>): Promise<Timed.ConfigStruct> {
     // prettier-ignore
-    if (config.proposalPeriodStartUnixTimestamp + config.proposalPeriodDurationSecs < TimedRound._TIMESTAMP_SECS + TimedRound.MIN_PROPOSAL_PERIOD_DURATION) {
-      throw new Error('Remaining proposal period duration is too short');
+    if (config.proposalPeriodDurationSecs < TimedRound.MIN_PROPOSAL_PERIOD_DURATION) {
+      throw new Error('Proposal period duration is too short');
     }
     if (config.votePeriodDurationSecs < TimedRound.MIN_VOTE_PERIOD_DURATION) {
       throw new Error('Vote period duration is too short');

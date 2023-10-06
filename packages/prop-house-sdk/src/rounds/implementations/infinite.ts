@@ -40,7 +40,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
 
   /**
    * EIP712 infinite round types
