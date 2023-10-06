@@ -363,16 +363,20 @@ export class QueryWrapper {
   }
 
   /**
-   * Get governance power strategy information
+   * Get parsed governance power strategy information
    * @param config Filtering, pagination, and ordering configuration
    */
   public async getGovPowerStrategies(
     config: Partial<QueryConfig<GovPowerStrategy_OrderBy, GovPowerStrategy_Filter>> = {},
   ) {
-    return this._gql.evm.request(
+    const { govPowerStrategies: govPowerStrategiesRaw } = await this._gql.evm.request(
       ManyGovPowerStrategiesQuery,
       toPaginated(this.merge(getDefaultConfig(GovPowerStrategy_OrderBy.Id), config)),
     );
+    return {
+      govPowerStrategiesRaw,
+      govPowerStrategies: govPowerStrategiesRaw.map(strategy => this.toParsedGovPowerStrategy(strategy)),
+    };
   }
 
   /**
@@ -523,18 +527,23 @@ export class QueryWrapper {
   }
 
   /**
-   * Fetch a proposal using the provided round address and proposal id
+   * Fetch a proposal using the provided round address and proposal ID
    * @param roundAddress The round address
    * @param proposalId The proposal id
    */
   public async getProposal(roundAddress: string, proposalId: number): Promise<Proposal> {
-    const { proposal } = await this._gql.starknet.request(ProposalQuery, {
-      id: `${roundAddress}-${proposalId}`.toLowerCase(),
+    const proposals = await this.getProposals({
+      where: {
+        proposalId,
+        round_: {
+          sourceChainRound: roundAddress.toLowerCase(),
+        },
+      },
     });
-    if (!proposal) {
+    if (!proposals?.length) {
       throw new Error(`Proposal ID ${proposalId} not found for round ${roundAddress}`);
     }
-    return this.toProposal(proposal);
+    return proposals[0];
   }
 
   /**
@@ -634,6 +643,8 @@ export class QueryWrapper {
       throw new Error('Round config information not present during attempted conversion');
 
     const config = round.timedConfig;
+    const proposingStrategiesRaw = round.proposingStrategies.map(({ strategy }) => strategy);
+    const votingStrategiesRaw = round.votingStrategies.map(({ strategy }) => strategy);
     return {
       address: round.id,
       type: round.type as RoundType,
@@ -656,8 +667,10 @@ export class QueryWrapper {
         claimPeriodEndTimestamp: Number(config.claimPeriodEndTimestamp),
         awards: this.toParsedAwards(config.winnerCount, config.awards),
       },
-      proposingStrategies: round.proposingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
-      votingStrategies: round.votingStrategies.map(({ strategy }) => this.toParsedGovPowerStrategy(strategy)),
+      proposingStrategiesRaw,
+      votingStrategiesRaw,
+      proposingStrategies: proposingStrategiesRaw.map(strategy => this.toParsedGovPowerStrategy(strategy)),
+      votingStrategies: votingStrategiesRaw.map(strategy => this.toParsedGovPowerStrategy(strategy)),
     };
   }
 
@@ -695,7 +708,7 @@ export class QueryWrapper {
         return {
           id: strategy.id,
           strategyType: GovPowerStrategyType.BALANCE_OF,
-          address: `0x${BigInt(address).toString(16)}`,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
       };
@@ -704,7 +717,7 @@ export class QueryWrapper {
         return {
           id: strategy.id,
           strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF,
-          address: `0x${BigInt(address).toString(16)}`,
+          tokenAddress: `0x${BigInt(address).toString(16)}`,
           tokenId: tokenId.toString(),
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };

@@ -102,7 +102,7 @@ export function getAssetTypeString(assetType: AssetType): string {
  * @param addr The governance power strategy address
  */
 export function getGovPowerStrategyType(addr: string): string {
-  if (addr == '0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd') {
+  if (addr == '0x3d94956a6bed18f62c865f1c4c15e8197960edaa4d8b382ccc6f1fd6b9f476e' || addr == '0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd') {
     return GovPowerStrategyType.BALANCE_OF;
   }
   if (addr == '0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a') {

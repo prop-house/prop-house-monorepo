@@ -40,7 +40,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
   /**
    * The minimum vote period duration
    */
-  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Days);
+  public static MIN_VOTE_PERIOD_DURATION = Time.toSeconds(1, TimeUnit.Hours);
 
   /**
    * EIP712 infinite round types
@@ -289,7 +289,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     if (suppliedVotingPower.eq(0)) {
       throw new Error('Must vote on at least one proposal');
     }
-    const { govPowerStrategies } = await this._query.getRoundVotingStrategies(config.round);
+    const { govPowerStrategiesRaw } = await this._query.getRoundVotingStrategies(config.round);
 
     if (isAddress(config.round)) {
       // If the origin chain round is provided, fetch the Starknet round address
@@ -299,7 +299,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     const nonZeroStrategyVotingPowers = await this._govPower.getPowerForStrategies(
       address,
       timestamp,
-      govPowerStrategies,
+      govPowerStrategiesRaw,
     );
     const totalVotingPower = nonZeroStrategyVotingPowers.reduce(
       (acc, { govPower }) => acc.add(govPower),
@@ -396,7 +396,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
 
     // TODO: Avoid calling these twice...
     const timestamp = await this.getSnapshotTimestamp(params.data.round);
-    const { govPowerStrategies } = await this._query.getGovPowerStrategies({
+    const { govPowerStrategiesRaw } = await this._query.getGovPowerStrategies({
       where: {
         id_in: params.data.usedVotingStrategies.map(({ id }) => id),
       },
@@ -407,7 +407,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     const preCalls = await this._govPower.getPreCallsForStrategies(
       params.data.voter,
       timestamp,
-      govPowerStrategies,
+      govPowerStrategiesRaw,
     );
 
     const call = this.createEVMSigAuthCall(payload, 'authenticate_vote', this.getVoteCalldata(params.data));

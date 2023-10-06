@@ -7,8 +7,8 @@
       "creatorPassIssuer": "0x67f6a11367a7151C63B136C08cBB9E5f2b23FA08",
       "starknetCommit": "0xE1084D85469638d59d66693e2106A451aD6Bf0A8",
       "communityHouseImpl": "0xf4426d1b78E00b002d2426384D1FFcFE167080ea",
-      "infiniteRoundImpl": "0x93ECDa6B04530c7713035B98Da6888c127e84a2E",
-      "timedRoundImpl": "0x54fd5F0329369718939DB9717e98022745EBa172"
+      "infiniteRoundImpl": "0xA0998b0af691C2ba760F23c41dA1bf939cd2633E",
+      "timedRoundImpl": "0xEab928d4261779a0471Df52d2bcC724919aD20f3"
     }
   },
   "starknet": {
@@ -16,7 +16,7 @@
       "roundFactory": "0x5b0b4ac85df4b47cba473a6ffaea0ae596f4b53200bc1eb81c60333772bc07d",
       "ethExecutionStrategy": "0x114f6484129e30224486fb3ba8d07112378c6f1c78b4d1deaafd19cbdea46e6",
       "strategyRegistry": "0x428c3456c99d887ca1fc8e84a48d777e1985cd0ac0d9c2d62fa838cd2045370",
-      "roundDependencyRegistry": "0x68be1153be2388a18db57d5d765bc66e4dd517b41c3fa1454bc242dc5123306",
+      "roundDependencyRegistry": "0x127b4297c0f87f5c05c832aa1c077d23bbc3a17c8182aa49d9b349825761835",
       "ethBlockRegistry": "0xd47af0634be59f8fb4df46843e92a076356dddd50ecdf1c60d6496d1ef7a7b",
       "infiniteRoundEthTxAuthStrategy": "0x4301e1268474fc794d3f9ee8fc329fce1364e1af405ac477f5e8933eb30bedd",
       "infiniteRoundEthSigAuthStrategy": "0x5c12e2d262ea55aec1be90f6752bf1048748a2d5da5a176ae9ecc1c2c142b89",
@@ -24,15 +24,15 @@
       "timedRoundEthSigAuthStrategy": "0x63c79878bf77b4fbd3f3e14e4b5c89cc1fdeb42048e1c434abde34ad6569239",
       "vanillaGovPowerStrategy": "0x23a5d2474eb348d62d9da78c9383abfe557e7b95999edc6b261bae81bf3a769",
       "allowlistGovPowerStrategy": "0x37bebb719da8869531a12be866732dbaa6e840f507b94b30e0e438ac560b1a",
-      "ethBalanceOfGovPowerStrategy": "0x77b9d96e71380b1cba3cdc6450c103c9806c7c17611fc5ac9b57943cb919cbd",
+      "ethBalanceOfGovPowerStrategy": "0x3d94956a6bed18f62c865f1c4c15e8197960edaa4d8b382ccc6f1fd6b9f476e",
       "herodotus": {
         "factRegistry": "0x5e6c5b45485f2eb7609a27e413aad727536b3590a64e18ceb5950e30852288f",
         "l1HeadersStore": "0x1d9b36a00d7d5300e5da456c56d09c46dfefbc91b3a6b1552b6f2a34d6e34c4"
       }
     },
     "classHash": {
-      "infiniteRound": "0x37067a670a76bcc511d2693dca05c7a8d91a086737cf20daa1c2ef92a4a8507",
-      "timedRound": "0x63b591ce31c701c801f7292e44f8de0a6bcad6c765597cb9efce389bdc8fb54"
+      "infiniteRound": "0x193760dd0f6b7bf2ba9e9c7875f8b553b010c4bad373431bd56717912b0e056",
+      "timedRound": "0x4ec95e3d82a180bec617f5dc4c178d186bd43559be221302e3a65e7b05bb0cf"
     }
   }
 }

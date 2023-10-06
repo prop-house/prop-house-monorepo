@@ -643,17 +643,17 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@prophouse/protocol@^0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.2.0-alpha.tgz#976532fb335fa9293c7678853340a09b4a6d28dd"
-  integrity sha512-h68jgrbKxqYZ2MPKIS37T1BI1IObM+tT9VbMGKdeaWwA4wp35rewucAzNioVXLCOEUeaUh1Ttxfjqv9eXiwRMA==
+"@prophouse/protocol@~0.3.0-alpha":
+  version "0.3.0-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.3.0-alpha.tgz#5a7590369cd817ad4d57bd27d736706cc1f1efdf"
+  integrity sha512-OrbMODEIrbzF8CiDpPEIqn1UNlBkAgQpIpfSRt/5aAmcxQrlBi4yR/qQ8krAhHiz9q2li6jeeuza9ne1ODz7gA==
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk@^0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.2.0-alpha.tgz#194ed4534f7bf2d898a30d360206dcc6bb7afaa8"
-  integrity sha512-fn0qacHj1qLkErZYX/9NV5RGCvZ37a1kxjY0LfYVzbTnM/lDhvmUd67cg+wLZAbDbDvNpQsWNCsguoFYwtApJw==
+"@prophouse/sdk@^0.3.0-alpha":
+  version "0.3.0-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.3.0-alpha.tgz#519c87b48c6fd635b25e4a160b26bc52a9ca1e48"
+  integrity sha512-tc7aa48rl/fOJ4+JJ1XokW9eocC+CeRICDkLIsWEbwwRykn9Hl3b0t4Q0VghY11rgLmbAQ0LUnW5IcOkhF+e2A==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -668,7 +668,7 @@
     "@ethersproject/solidity" "~5.7.0"
     "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
-    "@prophouse/protocol" "^0.2.0-alpha"
+    "@prophouse/protocol" "~0.3.0-alpha"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
