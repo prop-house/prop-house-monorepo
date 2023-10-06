@@ -21,10 +21,10 @@ contract TimedRound is ITimedRound, AssetRound {
     uint256 public constant MAX_WINNER_COUNT = 25;
 
     /// @notice The minimum proposal submission period duration
-    uint256 public constant MIN_PROPOSAL_PERIOD_DURATION = 1 days;
+    uint256 public constant MIN_PROPOSAL_PERIOD_DURATION = 60 minutes;
 
     /// @notice The minimum vote period duration
-    uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
+    uint256 public constant MIN_VOTE_PERIOD_DURATION = 60 minutes;
 
     /// @notice The current state of the timed round. `Active` upon deployment.
     RoundState public state;
@@ -227,6 +227,9 @@ contract TimedRound is ITimedRound, AssetRound {
     function _register(RoundConfig memory config) internal {
         _validate(config);
 
+        // Set the proposal period start timestamp to the current block timestamp if it is in the past.
+        config.proposalPeriodStartTimestamp = _max(config.proposalPeriodStartTimestamp, uint40(block.timestamp));
+
         // Write round metadata to storage. This will be consumed by the token URI later.
         proposalPeriodStartTimestamp = config.proposalPeriodStartTimestamp;
         proposalPeriodDuration = config.proposalPeriodDuration;
@@ -253,9 +256,9 @@ contract TimedRound is ITimedRound, AssetRound {
     // prettier-ignore
     /// @notice Revert if the round configuration is invalid
     /// @param config The round configuration
-    function _validate(RoundConfig memory config) internal view {
-        if (config.proposalPeriodStartTimestamp + config.proposalPeriodDuration < block.timestamp + MIN_PROPOSAL_PERIOD_DURATION) {
-            revert REMAINING_PROPOSAL_PERIOD_DURATION_TOO_SHORT();
+    function _validate(RoundConfig memory config) internal pure {
+        if (config.proposalPeriodDuration < MIN_PROPOSAL_PERIOD_DURATION) {
+            revert PROPOSAL_PERIOD_DURATION_TOO_SHORT();
         }
         if (config.votePeriodDuration < MIN_VOTE_PERIOD_DURATION) {
             revert VOTE_PERIOD_DURATION_TOO_SHORT();
@@ -322,5 +325,12 @@ contract TimedRound is ITimedRound, AssetRound {
             return 0;
         }
         return keccak256(abi.encode(awards.packMany())).mask250();
+    }
+
+    /// @dev Returns the largest of two numbers.
+    /// @param a The first number
+    /// @param b The second number
+    function _max(uint40 a, uint40 b) internal pure returns (uint40) {
+        return a > b ? a : b;
     }
 }

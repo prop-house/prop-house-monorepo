@@ -17,10 +17,10 @@ contract InfiniteRound is IInfiniteRound, AssetRound {
     uint256 public constant MAX_WINNER_TREE_DEPTH = 10;
 
     /// @notice The asset reclamation delay, applicable in 'FinalizationPending' or 'Finalized' states.
-    uint256 public constant ASSET_RECLAIM_DELAY = 1 weeks;
+    uint256 public constant ASSET_RECLAIM_DELAY = 7 days;
 
     /// @notice The minimum vote period duration
-    uint256 public constant MIN_VOTE_PERIOD_DURATION = 1 days;
+    uint256 public constant MIN_VOTE_PERIOD_DURATION = 60 minutes;
 
     /// @notice The current state of the infinite round. `Active` upon deployment.
     RoundState public state;
