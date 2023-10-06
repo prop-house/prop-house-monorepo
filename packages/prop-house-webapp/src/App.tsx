@@ -27,7 +27,6 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-import CreateRound from './pages/CreateRound';
 import { baseChain } from './types/baseChain';
 import { polygon } from './types/polygon';
 import { polygonMumbai } from './types/polygonMumbai';
@@ -100,10 +99,9 @@ function App() {
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create" element={<Create />} />
+                    <Route path="/create-round" element={<HouseManager />} />
 
                     <Route path="/rounds" element={<StatusRoundCards />} />
-
-                    <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/admin" element={<HouseManager />} />
                     <Route path="/admin/rounds" element={<Rounds />} />
