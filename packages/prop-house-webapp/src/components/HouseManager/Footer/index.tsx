@@ -108,7 +108,7 @@ const Footer: React.FC = () => {
       description: round.description,
       config: {
         awards,
-        strategies: round.voters,
+        votingStrategies: round.voters,
         proposalPeriodStartUnixTimestamp: round.proposalPeriodStartUnixTimestamp,
         proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
         votePeriodDurationSecs: round.votePeriodDurationSecs,

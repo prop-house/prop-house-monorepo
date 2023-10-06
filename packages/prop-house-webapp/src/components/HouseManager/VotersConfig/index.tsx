@@ -9,10 +9,11 @@ import UploadCSVModal, { CSVRow } from '../UploadCSVModal';
 import {
   VotingStrategyType,
   AssetType,
-  VotingStrategyConfig,
-  Whitelist,
-  DefaultVotingConfigs,
+  GovPowerStrategyConfig,
+  AllowlistConfig,
+  DefaultGovPowerConfigs,
 } from '@prophouse/sdk-react';
+
 import VotersModal from '../VotersModal';
 import { isAddress } from 'ethers/lib/utils.js';
 import createUploadMessage from '../utils/createUploadMessage';
@@ -69,18 +70,18 @@ const VotersConfig = () => {
   const round = useAppSelector(state => state.round.round);
 
   // if there are no voters, set the voters to an empty array
-  const [voters, setVoters] = useState<VotingStrategyConfig[]>(
+  const [voters, setVoters] = useState<GovPowerStrategyConfig[]>(
     round.voters.length ? round.voters : [],
   );
 
   const handleCSVUpload = async (data: CSVRow[]) => {
     const invalid: CSVRow[] = []; // Store the invalid addresses
     const duplicates: CSVRow[] = []; // Store the duplicates
-    let allowList: Whitelist | undefined;
+    let allowList: AllowlistConfig | undefined;
 
     // Find existing Whitelist strategy
     const existingStrategyIndex = voters.findIndex(
-      existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
+      existingStrategy => existingStrategy.strategyType === VotingStrategyType.ALLOWLIST,
     );
 
     if (existingStrategyIndex > -1) {
@@ -106,14 +107,14 @@ const VotersConfig = () => {
         // If the address is valid and unique, add it to the voters list
         const newMember = {
           address: row.address,
-          votingPower: row.votes.toString(),
+          govPower: row.votes.toString(),
         };
 
         if (allowList) {
           allowList.members = [...allowList.members, newMember]; // Create a new array
         } else {
           allowList = {
-            strategyType: VotingStrategyType.WHITELIST,
+            strategyType: VotingStrategyType.ALLOWLIST,
             members: [newMember],
           };
         }
@@ -161,12 +162,12 @@ const VotersConfig = () => {
   const handleRemoveVoter = (address: string, type: string) => {
     if (type === VotingStrategyType.VANILLA) return;
 
-    let updatedVoters: DefaultVotingConfigs[] = [...voters];
+    let updatedVoters: DefaultGovPowerConfigs[] = [...voters];
 
-    if (type === VotingStrategyType.WHITELIST) {
+    if (type === VotingStrategyType.ALLOWLIST) {
       // Find existing Whitelist strategy
       const existingStrategyIndex = voters.findIndex(
-        existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
+        existingStrategy => existingStrategy.strategyType === VotingStrategyType.ALLOWLIST,
       );
 
       if (existingStrategyIndex > -1) {
@@ -218,7 +219,7 @@ const VotersConfig = () => {
     let visibleCount = 0;
 
     updatedVoters.forEach(voter => {
-      if (voter.strategyType === VotingStrategyType.WHITELIST && voter.members) {
+      if (voter.strategyType === VotingStrategyType.ALLOWLIST && voter.members) {
         visibleCount += Math.min(voter.members.length, displayCount!);
       } else {
         visibleCount += 1;
@@ -232,7 +233,7 @@ const VotersConfig = () => {
   // this is used to determine whether or not we should show the "View X more voter(s)" link
   const getVoterCount = () => {
     return voters.reduce((count, voter) => {
-      if (voter.strategyType === VotingStrategyType.WHITELIST && 'members' in voter) {
+      if (voter.strategyType === VotingStrategyType.ALLOWLIST && 'members' in voter) {
         // Add the number of members to the count
         return count + voter.members.length;
       } else {
@@ -284,13 +285,13 @@ const VotersConfig = () => {
             s.strategyType === VotingStrategyType.VANILLA ? (
               <></>
             ) : // if it's a whitelist, we need to map over the members
-            s.strategyType === VotingStrategyType.WHITELIST ? (
+            s.strategyType === VotingStrategyType.ALLOWLIST ? (
               s.members.slice(0, displayCount).map((m, idx) => (
                 <Voter
                   key={idx}
                   type={s.strategyType}
                   address={m.address}
-                  multiplier={Number(m.votingPower)}
+                  multiplier={Number(m.govPower)}
                   removeVoter={handleRemoveVoter}
                   // if there's 1 voter, we don't want to allow them to remove it
                   isDisabled={s.members.length === 1}

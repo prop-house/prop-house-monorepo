@@ -5,7 +5,7 @@ import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import { saveRound } from '../../../state/thunks';
 import VotersModal from '../VotersModal';
-import { DefaultVotingConfigs, VotingStrategyType } from '@prophouse/sdk-react';
+import { VotingStrategyType, DefaultGovPowerConfigs } from '@prophouse/sdk-react';
 import OverflowScroll from '../OverflowScroll';
 import Group from '../Group';
 import Voter from '../Voter';
@@ -19,7 +19,7 @@ const EditVotersModal: React.FC<{
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const [editedVoters, setEditedVoters] = useState<DefaultVotingConfigs[]>(round.voters);
+  const [editedVoters, setEditedVoters] = useState<DefaultGovPowerConfigs[]>(round.voters);
   const [isAddingVoter, setIsAddingVoter] = useState(false);
 
   const handleEditVotersSave = () => {
@@ -31,12 +31,12 @@ const EditVotersModal: React.FC<{
   const handleRemoveVoter = (address: string, type: string) => {
     if (type === VotingStrategyType.VANILLA) return;
 
-    let updatedVoters: DefaultVotingConfigs[] = [...editedVoters];
+    let updatedVoters: DefaultGovPowerConfigs[] = [...editedVoters];
 
-    if (type === VotingStrategyType.WHITELIST) {
+    if (type === VotingStrategyType.ALLOWLIST) {
       // Find existing Whitelist strategy
       const existingStrategyIndex = editedVoters.findIndex(
-        existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
+        existingStrategy => existingStrategy.strategyType === VotingStrategyType.ALLOWLIST,
       );
 
       if (existingStrategyIndex > -1) {
@@ -104,13 +104,13 @@ const EditVotersModal: React.FC<{
                 s.strategyType === VotingStrategyType.VANILLA ? (
                   <></>
                 ) : // if it's a whitelist, we need to map over the members
-                s.strategyType === VotingStrategyType.WHITELIST ? (
+                s.strategyType === VotingStrategyType.ALLOWLIST ? (
                   s.members.map((m, idx) => (
                     <Voter
                       key={idx}
                       type={s.strategyType}
                       address={m.address}
-                      multiplier={Number(m.votingPower)}
+                      multiplier={Number(m.govPower)}
                       isDisabled={s.members.length === 1}
                       removeVoter={handleRemoveVoter}
                     />

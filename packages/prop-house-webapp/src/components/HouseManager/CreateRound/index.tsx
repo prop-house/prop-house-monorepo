@@ -110,14 +110,14 @@ const CreateRound = () => {
             {round.voters.map((s, idx) =>
               s.strategyType === VotingStrategyType.VANILLA ? (
                 <></>
-              ) : s.strategyType === VotingStrategyType.WHITELIST ? (
+              ) : s.strategyType === VotingStrategyType.ALLOWLIST ? (
                 // with whitelist, we need to show a card for each member
                 s.members.map((m, idx) => (
                   <VoterCard
                     key={idx}
                     type={s.strategyType}
                     address={m.address}
-                    multiplier={Number(m.votingPower)}
+                    multiplier={Number(m.govPower)}
                   />
                 ))
               ) : (

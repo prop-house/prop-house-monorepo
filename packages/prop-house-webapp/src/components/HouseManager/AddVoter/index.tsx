@@ -12,7 +12,7 @@ import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { AssetType, VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import { AssetType, GovPowerStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { saveRound } from '../../../state/thunks';
@@ -42,9 +42,9 @@ const AddVoter: React.FC<{
   editMode?: boolean;
   voter: NewVoter;
   selectedStrategy: string;
-  voters: VotingStrategyConfig[];
+  voters: GovPowerStrategyConfig[];
   setVoter: (strat: NewVoter) => void;
-  setVoters: (voters: VotingStrategyConfig[]) => void;
+  setVoters: (voters: GovPowerStrategyConfig[]) => void;
   setSelectedStrategy: (selectedStrategy: string) => void;
   handleCancel: () => void;
 }> = props => {
@@ -69,12 +69,12 @@ const AddVoter: React.FC<{
     let v = createVoterStrategy(voter);
 
     if (v) {
-      let updatedVoters: VotingStrategyConfig[] = [];
+      let updatedVoters: GovPowerStrategyConfig[] = [];
 
-      if (v.strategyType === VotingStrategyType.WHITELIST) {
+      if (v.strategyType === VotingStrategyType.ALLOWLIST) {
         // Find existing Whitelist strategy
         const existingStrategyIndex = voters.findIndex(
-          existingStrategy => existingStrategy.strategyType === VotingStrategyType.WHITELIST,
+          existingStrategy => existingStrategy.strategyType === VotingStrategyType.ALLOWLIST,
         );
 
         if (existingStrategyIndex > -1) {
@@ -136,7 +136,7 @@ const AddVoter: React.FC<{
     } else if (selectedType === StrategyType.Allowlist) {
       setVoter({
         ...newVoter,
-        type: VotingStrategyType.WHITELIST,
+        type: VotingStrategyType.ALLOWLIST,
       });
     }
   };
@@ -155,11 +155,11 @@ const AddVoter: React.FC<{
 
     const isDuplicate = voters.some(s => {
       if (
-        s.strategyType !== VotingStrategyType.WHITELIST &&
+        s.strategyType !== VotingStrategyType.ALLOWLIST &&
         s.strategyType !== VotingStrategyType.VANILLA
       ) {
         return s.address.toLowerCase() === voter.address.toLowerCase();
-      } else if (s.strategyType === VotingStrategyType.WHITELIST) {
+      } else if (s.strategyType === VotingStrategyType.ALLOWLIST) {
         return s.members.some(m => m.address.toLowerCase() === voter.address.toLowerCase());
       } else {
         return null;
@@ -182,7 +182,7 @@ const AddVoter: React.FC<{
     }
 
     // if address is EOA, check against string vs AssetType
-    if (voter.type === VotingStrategyType.WHITELIST) {
+    if (voter.type === VotingStrategyType.ALLOWLIST) {
       if (data !== 'EOA') {
         setVoter({
           ...voter,

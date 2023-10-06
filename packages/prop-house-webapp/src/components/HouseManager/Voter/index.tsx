@@ -26,14 +26,14 @@ const Voter: React.FC<{
 
       setTokenInfo({ name, image });
     };
-    if (type !== VotingStrategyType.WHITELIST) fetchTokenInfo();
+    if (type !== VotingStrategyType.ALLOWLIST) fetchTokenInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [address, type]);
 
   return (
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
-        {type === VotingStrategyType.WHITELIST ? (
+        {type === VotingStrategyType.ALLOWLIST ? (
           // if it's a whitelist use, show the ENS & avatar
           <Group row gap={4} classNames={classes.ens}>
             <AddressAvatar address={address} size={16} />
@@ -52,7 +52,7 @@ const Voter: React.FC<{
         <div className={classes.votesText}>
           {/* tokens show x-vote(s), users show "vote(s) per token" */}
           {`${multiplier} vote${multiplier === 1 ? '' : 's'}${
-            type !== VotingStrategyType.WHITELIST ? ' / token' : ''
+            type !== VotingStrategyType.ALLOWLIST ? ' / token' : ''
           }`}
         </div>
       </div>

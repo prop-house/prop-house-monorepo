@@ -41,10 +41,10 @@ const VotesPerAddress: React.FC<{
   return (
     <Group mt={8} gap={4}>
       <Text type="subtitle">
-        {voter.type === VotingStrategyType.WHITELIST ? 'Votes per user' : 'Votes per token'}
+        {voter.type === VotingStrategyType.ALLOWLIST ? 'Votes per user' : 'Votes per token'}
       </Text>
       <Text type="body">{`Choose how many votes are allotted for each ${
-        voter.type === VotingStrategyType.WHITELIST ? 'user' : `${AssetType[voter.asset]} held`
+        voter.type === VotingStrategyType.ALLOWLIST ? 'user' : `${AssetType[voter.asset]} held`
       }.`}</Text>
 
       <Group row gap={16} classNames={classes.voteContainer}>

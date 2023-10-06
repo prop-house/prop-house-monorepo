@@ -21,12 +21,12 @@ const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }
       const { name, image } = await getTokenInfo(address, provider);
       setTokenInfo({ name, image });
     };
-    if (type !== VotingStrategyType.WHITELIST) fetchTokenInfo();
+    if (type !== VotingStrategyType.ALLOWLIST) fetchTokenInfo();
   }, [address, provider, type]);
 
   return (
     <div className={classes.container}>
-      {type !== VotingStrategyType.WHITELIST ? (
+      {type !== VotingStrategyType.ALLOWLIST ? (
         <div className={classes.imageContainer}>
           <img className={classes.image} src={tokenInfo.image} alt="avatar" />
         </div>
@@ -36,7 +36,7 @@ const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }
 
       <div className={classes.text}>
         <Text type="subtitle">
-          {!isLoading && type !== VotingStrategyType.WHITELIST
+          {!isLoading && type !== VotingStrategyType.ALLOWLIST
             ? tokenInfo.name
             : ens
             ? ens
@@ -45,7 +45,7 @@ const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }
 
         <Text type="body">
           {`${multiplier} vote${multiplier === 1 ? '' : 's'}${
-            type !== VotingStrategyType.WHITELIST ? ' / token' : ''
+            type !== VotingStrategyType.ALLOWLIST ? ' / token' : ''
           }`}
         </Text>
       </div>
