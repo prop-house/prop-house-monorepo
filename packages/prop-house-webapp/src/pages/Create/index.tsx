@@ -63,8 +63,7 @@ const Create: React.FC<{}> = () => {
     const file = new File([blob], 'proposal.json', { type: 'application/json' });
     const result = await client.current.postFile(file, file.name);
 
-    // todo
-    const proposal = await propHouse.round.timedFunding.proposeViaSignature({
+    const proposal = await propHouse.round.timed.proposeViaSignature({
       round: round.address,
       metadataUri: `ipfs://${result.data.ipfsHash}`,
     });
