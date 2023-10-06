@@ -12,7 +12,7 @@ import { task, types } from 'hardhat/config';
 import { NonceManager } from '@ethersproject/experimental';
 import { Starknet } from 'starknet-hardhat-plugin-extended/dist/src/types/starknet';
 import { existsSync, writeFileSync, mkdirSync } from 'fs';
-import { utils } from '@prophouse/sdk';
+import { RoundType, utils } from '@prophouse/sdk';
 import { constants } from 'ethers';
 
 enum ChainId {
@@ -37,6 +37,11 @@ const DOMAIN_SEPARATORS: Record<number, BigInt | undefined> = {
 
 const STRATEGY_REGISTRY_ADDRESS_KEY = utils.encoding.asciiToHex('STRATEGY_REGISTRY_ADDRESS');
 const ROUND_DEP_REGISTRY_ADDRESS_KEY = utils.encoding.asciiToHex('ROUND_DEP_REGISTRY_ADDRESS');
+
+const DEPENDENCY_KEY = {
+  EXECUTION_STRATEGY: utils.encoding.asciiToHex('EXECUTION_STRATEGY'),
+  AUTH_STRATEGIES: utils.encoding.asciiToHex('AUTH_STRATEGIES'),
+};
 
 const networkConfig: Record<number, NetworkConfig> = {
   [ChainId.Mainnet]: {
@@ -382,6 +387,64 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     await (await manager.registerHouse(communityHouseImpl.address)).wait();
     await manager.registerRound(communityHouseImpl.address, timedRoundImpl.address);
     await manager.registerRound(communityHouseImpl.address, infiniteRoundImpl.address);
+
+  
+    // Add Ethereum auth strategies
+    await starknetDeployer.invoke(
+      roundDependencyRegistry,
+      'update_dependencies_if_not_locked',
+      [
+        ethNetwork.chainId,
+        utils.encoding.asciiToHex(RoundType.TIMED),
+        DEPENDENCY_KEY.AUTH_STRATEGIES,
+        2,
+        timedRoundEthTxAuthStrategy.address,
+        timedRoundEthSigAuthStrategy.address,
+      ],
+      {
+        rawInput: true,
+      },
+    );
+    await starknetDeployer.invoke(
+      roundDependencyRegistry,
+      'update_dependencies_if_not_locked',
+      [
+        ethNetwork.chainId,
+        utils.encoding.asciiToHex(RoundType.INFINITE),
+        DEPENDENCY_KEY.AUTH_STRATEGIES,
+        2,
+        infiniteRoundEthTxAuthStrategy.address,
+        infiniteRoundEthSigAuthStrategy.address,
+      ],
+      {
+        rawInput: true,
+      },
+    );
+
+    // Add Ethereum execution strategies
+    for (const type of Object.values(RoundType)) {
+      await starknetDeployer.invoke(
+        roundDependencyRegistry,
+        'update_dependency_if_not_locked',
+        {
+          origin_chain_id: ethNetwork.chainId,
+          round_type: utils.encoding.asciiToHex(type),
+          key: DEPENDENCY_KEY.EXECUTION_STRATEGY,
+          dependency: ethExecutionStrategy.address,
+        },
+      );
+    }
+
+    // Lock round dependencies
+    for (const type of Object.values(RoundType)) {
+      for (const key of Object.values(DEPENDENCY_KEY)) {
+        await starknetDeployer.invoke(roundDependencyRegistry, 'lock_key', {
+          origin_chain_id: ethNetwork.chainId,
+          round_type: utils.encoding.asciiToHex(type),
+          key,
+        });
+      }
+    }
 
     const deployment = {
       ethereum: {
