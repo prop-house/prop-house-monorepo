@@ -279,7 +279,7 @@ export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, 
 
   const query = `
     UPDATE rounds SET state = ?, merkleRoot = ? WHERE id = ? LIMIT 1;
-    UPDATE proposals SET isWinner = true WHERE id IN ?;
+    UPDATE proposals SET isWinner = true WHERE id IN ("${winningIds.join('","')}");
   `;
-  await mysql.queryAsync(query, [RoundState.FINALIZED, event.merkle_root, round, winningIds]);
+  await mysql.queryAsync(query, [RoundState.FINALIZED, event.merkle_root, round]);
 };
