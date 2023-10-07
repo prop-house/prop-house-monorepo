@@ -273,13 +273,13 @@ export const handleRoundFinalized: CheckpointWriter = async ({ rawEvent, event, 
   if (!rawEvent || !event) return;
 
   const round = validateAndParseAddress(rawEvent.from_address);
-  const winningIds = event.winners.map(
-    ({ proposal_id }: Proposal) => `${round}-${parseInt(proposal_id, 16)}`,
+  const winningIds = event.winning_proposal_ids.map(
+    (proposal_id: string) => `${round}-${parseInt(proposal_id, 16)}`,
   );
 
   const query = `
-    UPDATE rounds SET state = ? WHERE id = ? LIMIT 1;
+    UPDATE rounds SET state = ?, merkleRoot = ? WHERE id = ? LIMIT 1;
     UPDATE proposals SET isWinner = true WHERE id IN ?;
   `;
-  await mysql.queryAsync(query, [RoundState.FINALIZED, round, winningIds]);
+  await mysql.queryAsync(query, [RoundState.FINALIZED, event.merkle_root, round, winningIds]);
 };
