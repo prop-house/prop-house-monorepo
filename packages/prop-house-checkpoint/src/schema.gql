@@ -49,6 +49,9 @@ type Round {
   "The transaction in which the round was registered"
   txHash: String!
 
+  "The merkle root containing the winning proposal information"
+  merkleRoot: String
+
   "All proposals that have been submitted to the round"
   proposals: [Proposal]! @derivedFrom(field: "round")
 
