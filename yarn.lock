@@ -4516,19 +4516,19 @@
   dependencies:
     ethers "~5.5.0"
 
-"@prophouse/protocol@^0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/protocol/-/protocol-0.2.0-alpha.tgz#976532fb335fa9293c7678853340a09b4a6d28dd"
-  integrity sha512-h68jgrbKxqYZ2MPKIS37T1BI1IObM+tT9VbMGKdeaWwA4wp35rewucAzNioVXLCOEUeaUh1Ttxfjqv9eXiwRMA==
+"@prophouse/protocol@~0.3.0-alpha":
+  version "0.3.0-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/protocol/-/protocol-0.3.0-alpha.tgz#5a7590369cd817ad4d57bd27d736706cc1f1efdf"
+  integrity sha512-OrbMODEIrbzF8CiDpPEIqn1UNlBkAgQpIpfSRt/5aAmcxQrlBi4yR/qQ8krAhHiz9q2li6jeeuza9ne1ODz7gA==
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.2.0-alpha.2":
-  version "0.2.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.2.0-alpha.2.tgz#dabb28d4dc7c1ad1302c36559dc0948295eaf3b2"
-  integrity sha512-y/1m8h4A6RLoDCD58zF/498s6uWjphtEuk+kZBRwzsGm/oW2DTeoAjp/l28/IwVDd+lgzoDEyKArcpFECLrAsw==
+"@prophouse/sdk-react@0.3.0-alpha":
+  version "0.3.0-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.3.0-alpha.tgz#12f7bb47c54ce1bd8cb15d0ab16fefea1a427a27"
+  integrity sha512-XCDsIza3mJmg2ynNW3Idfb+Y/xksHQgWmucGBGrzXVo5kfrei2vTnICBz5MVNm5giqjlhpOMeikDvLUKUyTgsA==
   dependencies:
-    "@prophouse/sdk" "~0.2.0-alpha.5"
+    "@prophouse/sdk" "~0.3.0-alpha"
 
 "@prophouse/sdk@^0.1.0-alpha.8":
   version "0.1.0-alpha.8"
@@ -4552,10 +4552,10 @@
     starknet "4.19.3"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@~0.2.0-alpha.5":
-  version "0.2.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.2.0-alpha.5.tgz#50a3cfed1fce90e93c01e1648239bc6dedec5da1"
-  integrity sha512-5M4ZGiLBQE95suPzmrncjGuqbv0XUbU+FimddzUqvJLccqKJZAApBkFKuCnE/6dYf/kJyW3PGonlm44ko5P29g==
+"@prophouse/sdk@~0.3.0-alpha":
+  version "0.3.0-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.3.0-alpha.tgz#519c87b48c6fd635b25e4a160b26bc52a9ca1e48"
+  integrity sha512-tc7aa48rl/fOJ4+JJ1XokW9eocC+CeRICDkLIsWEbwwRykn9Hl3b0t4Q0VghY11rgLmbAQ0LUnW5IcOkhF+e2A==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -4570,7 +4570,7 @@
     "@ethersproject/solidity" "~5.7.0"
     "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
-    "@prophouse/protocol" "^0.2.0-alpha"
+    "@prophouse/protocol" "~0.3.0-alpha"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
