@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react';
 import VotesVerificationModal from '../VotesVerificationModal';
 import TruncateThousands from '../TruncateThousands';
 import { Proposal, Vote, usePropHouse } from '@prophouse/sdk-react';
+import { useAppSelector } from '../../hooks';
 
 const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
   const { proposal } = props;
 
   const prophouse = usePropHouse();
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const [votes, setVotes] = useState<Vote[]>([]);
 
-  // TODO: REMOVE ONCE WE HAVE GETVOTESFORPROPOSAL FUNC OIN SDK
   useEffect(() => {
-    const fetchVotes = async () => {
-      const votes = await prophouse.query.getVotes();
-      setVotes(votes);
-    };
+    if (!round) return;
+    const fetchVotes = async () =>
+      setVotes(await prophouse.query.getVotesForProposal(round.address, proposal.id));
     fetchVotes();
   });
 
