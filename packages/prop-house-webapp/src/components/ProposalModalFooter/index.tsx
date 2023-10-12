@@ -5,7 +5,6 @@ import { Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useDispatch } from 'react-redux';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
-import ProposalModalVotingModule from '../ProposalModalVotingModule';
 import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +12,7 @@ import ProposalWindowButtons from '../ProposalWindowButtons';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import { RoundType, Timed } from '@prophouse/sdk-react';
+import ProposalModalTimedVotingModule from '../ProposalModalTimedVotingModule';
 
 const ProposalModalFooter: React.FC<{
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
@@ -115,7 +115,7 @@ const ProposalModalFooter: React.FC<{
                   setShowDeletePropModal={setShowDeletePropModal}
                 />
               ) : isVotingWindow && votingPower > 0 ? (
-                <ProposalModalVotingModule
+                <ProposalModalTimedVotingModule
                   proposal={proposal}
                   setShowVotingModal={setShowVotingModal}
                   setShowVoteAllotmentModal={setShowVoteAllotmentModal}

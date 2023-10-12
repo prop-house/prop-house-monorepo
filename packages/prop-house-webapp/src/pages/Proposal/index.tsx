@@ -13,7 +13,7 @@ import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
 import { useAccount } from 'wagmi';
-import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
+import ProposalModalVotingModule from '../../components/ProposalModalTimedVotingModule';
 import { ButtonColor } from '../../components/Button';
 import ConnectButton from '../../components/ConnectButton';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +22,7 @@ import useVotingPower from '../../hooks/useVotingPower';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
 import ErrorVotingModal from '../../components/ErrorVotingModal';
 import SuccessVotingModal from '../../components/SuccessVotingModal';
-import { RoundState, usePropHouse } from '@prophouse/sdk-react';
+import { Timed, usePropHouse } from '@prophouse/sdk-react';
 
 const Proposal = () => {
   const params = useParams();
@@ -83,7 +83,7 @@ const Proposal = () => {
 
   const handleSubmitVote = async () => {};
 
-  const votingBar = proposal && round && round.state === RoundState.IN_VOTING_PERIOD && (
+  const votingBar = proposal && round && round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.votingBar}>
       {isConnected ? (
         loadingVotingPower ? (

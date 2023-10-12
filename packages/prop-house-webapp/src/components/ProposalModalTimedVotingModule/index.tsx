@@ -8,21 +8,16 @@ import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
 import { execStrategy } from '@prophouse/communities';
-import { setVotesByUserInActiveRound, setVotingPower } from '../../state/slices/voting';
+import { setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount } from 'wagmi';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import { countVotesRemainingForInfRound } from '../../utils/countVotesRemainingForInfRound';
-import { countNumVotesForProp } from '../../utils/countNumVotesForProp';
-import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
-import InfRoundVotingControls from '../InfRoundVotingControls';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { useEthersProvider } from '../../hooks/useEthersProvider';
 import { Proposal } from '@prophouse/sdk-react';
 
-const ProposalModalVotingModule: React.FC<{
+const ProposalModalTimedVotingModule: React.FC<{
   proposal: Proposal;
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
   setShowVoteAllotmentModal?: Dispatch<SetStateAction<boolean>>;
@@ -43,25 +38,15 @@ const ProposalModalVotingModule: React.FC<{
   });
   const { address: account } = useAccount();
 
-  const numVotesCasted =
-    round && isTimedAuction(round)
-      ? countNumVotes(votesByUserInActiveRound)
-      : countNumVotesForProp(votesByUserInActiveRound, proposal.id);
+  const numVotesCasted = countNumVotes(votesByUserInActiveRound);
 
-  const votesRemaining =
-    round && isInfAuction(round)
-      ? countVotesRemainingForInfRound(
-          proposal.id,
-          votingPower,
-          votesByUserInActiveRound,
-          voteAllotments,
-        )
-      : countVotesRemainingForTimedRound(votingPower, votesByUserInActiveRound, voteAllotments);
+  const votesRemaining = countVotesRemainingForTimedRound(
+    votingPower,
+    votesByUserInActiveRound,
+    voteAllotments,
+  );
 
-  const votesAlloted =
-    round && isTimedAuction(round)
-      ? countTotalVotesAlloted(voteAllotments)
-      : countVotesAllottedToProp(voteAllotments, proposal.id);
+  const votesAlloted = countTotalVotesAlloted(voteAllotments);
 
   useEffect(() => {
     if (!account || !provider || !community || !round) return;
@@ -83,16 +68,6 @@ const ProposalModalVotingModule: React.FC<{
     };
     fetchVotes();
   }, [account, provider, dispatch, community, round]);
-
-  // update submitted votes on proposal changes
-  useEffect(() => {
-    if (proposals && account)
-      dispatch(
-        setVotesByUserInActiveRound(
-          proposals.flatMap(p => p.votes).filter(v => v.address === account),
-        ),
-      );
-  }, [proposals, account, dispatch]);
 
   return (
     <>
@@ -134,11 +109,7 @@ const ProposalModalVotingModule: React.FC<{
           )}
 
           <div className={classes.icon}>
-            {round && isTimedAuction(round) && (
-              <>
-                <VotesDisplay proposal={proposal} /> <span>+</span>
-              </>
-            )}
+            <VotesDisplay proposal={proposal} /> <span>+</span>
           </div>
 
           <div className={classes.mobileTooltipContainer}>
@@ -169,4 +140,4 @@ const ProposalModalVotingModule: React.FC<{
   );
 };
 
-export default ProposalModalVotingModule;
+export default ProposalModalTimedVotingModule;
