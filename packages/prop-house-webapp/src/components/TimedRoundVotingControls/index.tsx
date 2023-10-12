@@ -3,13 +3,14 @@ import classes from './VotingControls.module.css';
 import Button, { ButtonColor } from '../Button';
 import clsx from 'clsx';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { allotVotes } from '../../state/slices/voting';
+import { allotVotes, setVotesByUserInActiveRound } from '../../state/slices/voting';
 import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import React, { useCallback, useEffect, useState } from 'react';
 import { countVotesAllottedToProp } from '../../utils/countVotesAllottedToProp';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useTranslation } from 'react-i18next';
-import { Proposal } from '@prophouse/sdk-react';
+import { Proposal, usePropHouse } from '@prophouse/sdk-react';
+import { useAccount } from 'wagmi';
 
 const TimedRoundVotingControls: React.FC<{
   proposal: Proposal;
@@ -20,9 +21,12 @@ const TimedRoundVotingControls: React.FC<{
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
+  const activeRound = useAppSelector(state => state.propHouse.onchainActiveRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const dispatch = useAppDispatch();
+  const propHouse = usePropHouse();
+  const { address: account } = useAccount();
   const { t } = useTranslation();
 
   const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
@@ -47,6 +51,16 @@ const TimedRoundVotingControls: React.FC<{
     if (allottedVotesForProp === undefined) return;
     setVoteCountDisplayed(allottedVotesForProp);
   }, [allottedVotesForProp]);
+
+  useEffect(() => {
+    if (!account || !activeRound) return;
+    const fetchVotesSubmitted = async () => {
+      const votes = await propHouse.query.getVotesByAccount(account as string);
+      const votesInRound = votes.filter(v => v.round === activeRound.address);
+      dispatch(setVotesByUserInActiveRound(votesInRound));
+    };
+    fetchVotesSubmitted();
+  }, []);
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
