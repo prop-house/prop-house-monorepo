@@ -38,7 +38,6 @@ const useVotingPower = (
       );
       setLoadingVotingPower(false);
       setVotingPower(govPower.toNumber());
-      console.log(govPower.toNumber());
     } catch (e) {
       console.log('Error fetching voting power: ', e);
       setLoadingVotingPower(false);
