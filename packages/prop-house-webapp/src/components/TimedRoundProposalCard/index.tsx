@@ -15,6 +15,7 @@ import { isMobile } from 'web3modal';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
 import { Proposal, Timed } from '@prophouse/sdk-react';
+import { useAppSelector } from '../../hooks';
 
 const TimedRoundProposalCard: React.FC<{
   proposal: Proposal;
@@ -24,14 +25,14 @@ const TimedRoundProposalCard: React.FC<{
   const { proposal, roundState, isWinner } = props;
 
   const dispatch = useDispatch();
+  const govPower = useAppSelector(state => state.voting.votingPower);
 
   const roundIsActive =
     roundState === Timed.RoundState.IN_PROPOSING_PERIOD ||
     roundState === Timed.RoundState.IN_VOTING_PERIOD;
   const roundEnded = roundState > Timed.RoundState.IN_VOTING_PERIOD;
   const showVoteDisplay = roundState >= Timed.RoundState.IN_VOTING_PERIOD;
-
-  const showVoteControls = roundState === Timed.RoundState.IN_VOTING_PERIOD;
+  const showVoteControls = roundState === Timed.RoundState.IN_VOTING_PERIOD && govPower > 0;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
@@ -123,7 +124,7 @@ const TimedRoundProposalCard: React.FC<{
                 >
                   {showVoteDisplay && <VotesDisplay proposal={proposal} />}
 
-                  {roundState === Timed.RoundState.IN_VOTING_PERIOD && (
+                  {showVoteControls && (
                     <div className={classes.votingArrows}>
                       <span className={classes.plusArrow}>+</span>
                       <TimedRoundVotingControls proposal={proposal} />
