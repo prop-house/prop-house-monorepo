@@ -31,20 +31,14 @@ const useVotingPower = (
 
     setLoadingVotingPower(true);
     try {
-      /** TODO: REMOVE COMMENTS ONCE NEW SDK IS DEPLOYED AND VOTING STRATS WORK */
-
-      // const strategyVotingPowers = await propHouse.voting.getVotingPowerForStrategies(
-      //   account as string,
-      //   round.config.proposalPeriodStartTimestamp,
-      //   round.votingStrategies,
-      // );
+      const govPower = await propHouse.govPower.getTotalPower(
+        account as string,
+        round.config.proposalPeriodStartTimestamp,
+        round.votingStrategiesRaw,
+      );
       setLoadingVotingPower(false);
-      // setVotingPower(
-      //   strategyVotingPowers.reduce((prev, current) => {
-      //     return current.votingPower.toNumber() + prev;
-      //   }, 0),
-      // );
-      setVotingPower(1);
+      setVotingPower(govPower.toNumber());
+      console.log(govPower.toNumber());
     } catch (e) {
       console.log('Error fetching voting power: ', e);
       setLoadingVotingPower(false);
@@ -56,8 +50,7 @@ const useVotingPower = (
     fetchVotingPower();
   }, [round]);
 
-  // return [loadingVotingPower, errorLoadingVotingPower, votingPower];
-  return [false, false, 10];
+  return [loadingVotingPower, errorLoadingVotingPower, votingPower];
 };
 
 export default useVotingPower;
