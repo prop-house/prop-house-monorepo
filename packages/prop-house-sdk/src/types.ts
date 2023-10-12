@@ -1,5 +1,5 @@
 import { CommunityHouseContract, InfiniteRoundContract, TimedRoundContract } from '@prophouse/protocol';
-import { SequencerProvider, SequencerProviderOptions } from 'starknet';
+import { RpcProvider as StarknetRpcProvider, RpcProviderOptions as StarknetRpcProviderOptions } from 'starknet';
 import { BigNumberish } from '@ethersproject/bignumber';
 import { Signer } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/providers';
@@ -16,7 +16,7 @@ export type EVM = Signer | Provider | string;
 /**
  * Starknet connection information
  */
-export type Starknet = SequencerProvider | SequencerProviderOptions;
+export type Starknet = StarknetRpcProvider | StarknetRpcProviderOptions;
 
 export interface ChainConfig {
   evmChainId: number;

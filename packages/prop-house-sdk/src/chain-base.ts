@@ -3,7 +3,7 @@ import {
   ContractAddresses,
   getContractAddressesForChainOrThrow,
 } from '@prophouse/protocol';
-import { constants, SequencerProvider } from 'starknet';
+import { RpcProvider as StarknetRpcProvider } from 'starknet';
 import { JsonRpcProvider, JsonRpcSigner, Web3Provider } from '@ethersproject/providers';
 import { Signer, TypedDataSigner } from '@ethersproject/abstract-signer';
 import { Provider } from '@ethersproject/abstract-provider';
@@ -13,15 +13,15 @@ import { ChainConfig, EVM } from './types';
 export class ChainBase {
   protected readonly _evmChainId: number;
   protected readonly _addresses: ContractAddresses;
-  protected readonly _starknet: SequencerProvider;
+  protected readonly _starknet: StarknetRpcProvider;
   protected _evm: Signer | Provider;
 
   /**
    * EVM to Starknet chain ID mappings
    */
-  public static readonly EVM_TO_STARKNET_CHAIN_ID: Record<number, constants.StarknetChainId> = {
-    [ChainId.EthereumMainnet]: constants.StarknetChainId.MAINNET,
-    [ChainId.EthereumGoerli]: constants.StarknetChainId.TESTNET,
+  public static readonly EVM_TO_DEFAULT_STARKNET_RPC: Record<number, string> = {
+    [ChainId.EthereumMainnet]: 'https://starknet-mainnet.infura.io/v3/7ec322178a4849f0888bae9b59401b39',
+    [ChainId.EthereumGoerli]: 'https://starknet-goerli.infura.io/v3/7ec322178a4849f0888bae9b59401b39',
   };
 
   /**
@@ -58,8 +58,8 @@ export class ChainBase {
     this._evmChainId = config.evmChainId;
     this._addresses = getContractAddressesForChainOrThrow(config.evmChainId);
     this._evm = this.toEVMSignerOrProvider(config.evm);
-    this._starknet = config.starknet instanceof SequencerProvider ? config.starknet : new SequencerProvider(config.starknet ?? {
-      network: ChainBase.EVM_TO_STARKNET_CHAIN_ID[config.evmChainId],
+    this._starknet = config.starknet instanceof StarknetRpcProvider ? config.starknet : new StarknetRpcProvider(config.starknet ?? {
+      nodeUrl: ChainBase.EVM_TO_DEFAULT_STARKNET_RPC[config.evmChainId],
     });
   }
 

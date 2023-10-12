@@ -1,6 +1,6 @@
 {
   "name": "@prophouse/sdk",
-  "version": "0.3.0-alpha",
+  "version": "0.3.1-alpha",
   "description": "Useful tools for interacting with the Prop House protocol",
   "author": "solimander",
   "homepage": "https://prop.house",
@@ -39,7 +39,7 @@
     "graphql-request": "5.0.0",
     "micro-starknet": "^0.2.3",
     "randombytes": "^2.1.0",
-    "starknet": "4.22.0",
+    "starknet": "5.19.5",
     "time-ts": "^0.1.0"
   },
   "devDependencies": {

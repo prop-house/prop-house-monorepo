@@ -26689,6 +26689,19 @@ starknet@4.22.0:
     ts-custom-error "^3.3.1"
     url-join "^4.0.1"
 
+starknet@5.19.5, starknet@^5.19.3:
+  version "5.19.5"
+  resolved "https://registry.npmjs.org/starknet/-/starknet-5.19.5.tgz#59a2e0f707dc1f64fbe9894195984ae97f623449"
+  integrity sha512-S7V4ifyYd+ApsIwYTd7YA5U2Px+NZkCsQPnmgY/wkc5LLFKhYMNpzHQ5nIA15p70AwtSXCcsEBnHNRBOuci13Q==
+  dependencies:
+    "@noble/curves" "~1.2.0"
+    "@scure/starknet" "~0.3.0"
+    abi-wan-kanabi "^1.0.3"
+    isomorphic-fetch "^3.0.0"
+    lossless-json "^2.0.8"
+    pako "^2.0.4"
+    url-join "^4.0.1"
+
 starknet@^5.0.0-beta.4:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/starknet/-/starknet-5.0.0.tgz#bcdca4137b2dc3965d0719ff8a858f103b306906"
@@ -26702,19 +26715,6 @@ starknet@^5.0.0-beta.4:
     minimalistic-assert "^1.0.1"
     pako "^2.0.4"
     ts-custom-error "^3.3.1"
-    url-join "^4.0.1"
-
-starknet@^5.19.3:
-  version "5.19.5"
-  resolved "https://registry.npmjs.org/starknet/-/starknet-5.19.5.tgz#59a2e0f707dc1f64fbe9894195984ae97f623449"
-  integrity sha512-S7V4ifyYd+ApsIwYTd7YA5U2Px+NZkCsQPnmgY/wkc5LLFKhYMNpzHQ5nIA15p70AwtSXCcsEBnHNRBOuci13Q==
-  dependencies:
-    "@noble/curves" "~1.2.0"
-    "@scure/starknet" "~0.3.0"
-    abi-wan-kanabi "^1.0.3"
-    isomorphic-fetch "^3.0.0"
-    lossless-json "^2.0.8"
-    pako "^2.0.4"
     url-join "^4.0.1"
 
 starknet@~5.19.3:

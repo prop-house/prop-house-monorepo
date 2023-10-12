@@ -12,7 +12,7 @@ import { TimedRound__factory } from '@prophouse/protocol';
 import { encoding, intsSequence, splitUint256 } from '../../utils';
 import { defaultAbiCoder } from '@ethersproject/abi';
 import { ADDRESS_ONE } from '../../constants';
-import { Account, hash } from 'starknet';
+import { Account, BlockTag, hash } from 'starknet';
 import { Time, TimeUnit } from 'time-ts';
 import { RoundBase } from './base';
 import { isAddress } from '@ethersproject/address';
@@ -274,13 +274,16 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
 
     payload[9] = configStruct.proposalThreshold.toString();
 
-    const response = (await this._starknet.estimateMessageFee({
-      from_address: this._addresses.evm.messenger,
-      to_address: this._addresses.starknet.roundFactory,
-      entry_point_selector: hash.getSelectorFromName('register_round'),
-      payload: payload.map(p => p.toString()),
-    })) as unknown as { overall_fee: number; unit: string };
-    if (!response.overall_fee || response.unit !== 'wei') {
+    const response = await this._starknet['fetchEndpoint']('starknet_estimateMessageFee', {
+      message: {
+        from_address: this._addresses.evm.messenger,
+        to_address: this._addresses.starknet.roundFactory,
+        entry_point_selector: hash.getSelectorFromName('register_round'),
+        payload: payload.map(p => `0x${BigInt(p).toString(16)}`),
+      },
+      block_id: BlockTag.pending as any,
+    });
+    if (!response.overall_fee) {
       throw new Error(`Unexpected message fee response: ${response}`);
     }
     return response.overall_fee.toString();
