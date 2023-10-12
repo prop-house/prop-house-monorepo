@@ -106,14 +106,13 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   };
 
   const handleSubmitVote = async () => {
-    console.log('handling vote from prop modal');
     if (!activeProposal || !round) return;
     try {
       const votes = voteAllotments
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
 
-      const result = await propHouse.round.timedFunding.voteViaSignature({
+      const result = await propHouse.round.timed.voteViaSignature({
         round: round.address,
         votes,
       });

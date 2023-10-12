@@ -38,16 +38,14 @@ const RoundContent: React.FC<{
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
 
-      // todo:
-      // const result = await propHouse.round.timedFunding.voteViaSignature({
-      //   round: round.address,
-      //   votes,
-      // });
+      const result = await propHouse.round.timed.voteViaSignature({
+        round: round.address,
+        votes,
+      });
 
-      // todo:
-      // if (!result?.transaction_hash) {
-      //   throw new Error(`Vote submission failed: ${result}`);
-      // }
+      if (!result?.transaction_hash) {
+        throw new Error(`Vote submission failed: ${result}`);
+      }
 
       setShowErrorVotingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
