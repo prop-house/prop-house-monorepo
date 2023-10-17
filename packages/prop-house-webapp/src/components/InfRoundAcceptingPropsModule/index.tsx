@@ -17,7 +17,7 @@ import useProposalGrants from '../../hooks/useProposalGrants';
 import { BsPersonFill, BsFillAwardFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
-import { Round, RoundState } from '@prophouse/sdk-react';
+import { Round, Timed } from '@prophouse/sdk-react';
 
 const InfRoundAcceptingPropsModule: React.FC<{
   round: Round;
@@ -26,7 +26,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
   const { round, community } = props;
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const isProposingWindow = round.state === RoundState.IN_PROPOSING_PERIOD;
+  const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { address: account } = useAccount();
