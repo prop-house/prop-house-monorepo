@@ -17,7 +17,6 @@ export const nounsDelegatedVotes: StrategyFactory<nounsDelegatedVotesStratArgs> 
   params: nounsDelegatedVotesStratArgs,
 ): _Strategy => {
   return async () => {
-    console.log('here');
     const { account, blockTag, provider, multiplier } = params;
     const _contract = new Contract(
       '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03',
