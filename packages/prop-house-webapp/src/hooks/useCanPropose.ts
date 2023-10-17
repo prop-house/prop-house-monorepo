@@ -31,20 +31,13 @@ const useCanPropose = (
 
     setLoadingCanPropose(true);
     try {
-      /** TODO: REMOVE COMMENTS ONCE NEW SDK IS DEPLOYED AND VOTING STRATS WORK */
-
-      // const strategyVotingPowers = await propHouse.voting.getVotingPowerForStrategies(
-      //   account as string,
-      //   round.config.proposalPeriodStartTimestamp,
-      //   round.votingStrategies,
-      // );
+      const govPower = await propHouse.govPower.getTotalPower(
+        account as string,
+        round.config.proposalPeriodStartTimestamp,
+        round.proposingStrategiesRaw,
+      );
+      setCanPropose(govPower.toNumber() >= round.config.proposalThreshold);
       setLoadingCanPropose(false);
-      // setVotingPower(
-      //   strategyVotingPowers.reduce((prev, current) => {
-      //     return current.votingPower.toNumber() + prev;
-      //   }, 0),
-      // );
-      setCanPropose(true);
     } catch (e) {
       console.log('Error fetching canPropose: ', e);
       setLoadingCanPropose(false);
@@ -56,8 +49,7 @@ const useCanPropose = (
     fetchCanPropose();
   }, [round]);
 
-  //   return [loadingCanPropose, errorLoadingCanPropose, canPropose]
-  return [false, false, true];
+  return [loadingCanPropose, errorLoadingCanPropose, canPropose];
 };
 
 export default useCanPropose;
