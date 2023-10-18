@@ -24,10 +24,10 @@ const MainApp = () => {
     <Container>
       <Row>
         {rounds &&
-          rounds.map(r => {
+          rounds.map((round, i) => {
             return (
-              <Col xl={6}>
-                <RoundCard_ round={r} house={r.house} />
+              <Col xl={6} key={i}>
+                <RoundCard_ round={round} house={round.house} />
               </Col>
             );
           })}

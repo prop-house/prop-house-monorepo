@@ -11,7 +11,6 @@ const ProposingStrategiesDisplay: React.FC<{
   propThreshold: number;
 }> = props => {
   const { proposingStrategies, propThreshold } = props;
-  console.log('proposing strats: ', proposingStrategies);
 
   const [showModal, setShowModal] = useState(false);
 
