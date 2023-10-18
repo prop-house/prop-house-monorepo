@@ -9,13 +9,10 @@ import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import LoadingIndicator from '../LoadingIndicator';
-import { BsPersonFill } from 'react-icons/bs';
-import { MdHowToVote } from 'react-icons/md';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Round } from '@prophouse/sdk-react';
 import useCanPropose from '../../hooks/useCanPropose';
-import useProposingCopy from '../../hooks/useProposingCopy';
-import useVotingCopy from '../../hooks/useVotingCopy';
+import ProposingStrategiesDisplay from '../ProposingStrategiesDisplay';
+import VotingStrategiesDisplay from '../VotingStrategiesDisplay';
 
 const TimedRoundAcceptingPropsModule: React.FC<{
   round: Round;
@@ -28,28 +25,19 @@ const TimedRoundAcceptingPropsModule: React.FC<{
   const { t } = useTranslation();
 
   const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
-  const proposingCopy = useProposingCopy(round.votingStrategies); // todo: change to round.proposingStrategies
-  const votingCopy = useVotingCopy(round.votingStrategies);
 
   const content = (
     <>
       <div className={classes.list}>
         <div className={classes.listItem}>
-          <div className={classes.icon}>
-            <BsPersonFill color="" />
-          </div>
-          <p>
-            <ReactMarkdown className="markdown" children={proposingCopy} />
-          </p>
+          <ProposingStrategiesDisplay
+            proposingStrategies={round.proposingStrategies}
+            propThreshold={round.config.proposalThreshold}
+          />
         </div>
 
         <div className={classes.listItem}>
-          <div className={classes.icon}>
-            <MdHowToVote />
-          </div>
-          <p>
-            <ReactMarkdown className="markdown" children={votingCopy} />
-          </p>
+          <VotingStrategiesDisplay votingStrategies={round.votingStrategies} />
         </div>
       </div>
       {account ? (

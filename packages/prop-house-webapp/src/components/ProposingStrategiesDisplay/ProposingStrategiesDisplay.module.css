@@ -1,0 +1,29 @@
+.icon {
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-gray-hint);
+  border: 1px solid var(--brand-gray-semi-transparent);
+  color: var(--brand-black);
+}
+
+.singleStratDisplayContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+.singleStratDisplayContainer a,
+.singleStratDisplayContainer .content p a {
+  font-weight: bold;
+  color: var(--brand-pink) !important;
+  cursor: pointer;
+}
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

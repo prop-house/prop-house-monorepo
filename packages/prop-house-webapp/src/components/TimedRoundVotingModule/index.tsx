@@ -19,7 +19,7 @@ import { GiDeadHead } from 'react-icons/gi';
 import LoadingIndicator from '../LoadingIndicator';
 import { Round } from '@prophouse/sdk-react';
 import { setVotingPower } from '../../state/slices/voting';
-import useVotingCopy from '../../hooks/useVotingCopy';
+import VotingStrategiesDisplay from '../VotingStrategiesDisplay';
 
 export interface TimedRoundVotingModuleProps {
   round: Round;
@@ -37,7 +37,6 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
-  const votingCopy = useVotingCopy(round.votingStrategies);
   const dispatch = useAppDispatch();
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
@@ -90,12 +89,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
         ) : (
           <div className={classes.list}>
             <div className={classes.listItem}>
-              <div className={classes.icon}>
-                <MdHowToVote />
-              </div>
-              <p>
-                <ReactMarkdown className="markdown" children={votingCopy} />
-              </p>
+              <VotingStrategiesDisplay votingStrategies={round.votingStrategies} />
             </div>
 
             <div className={classes.listItem}>
@@ -118,12 +112,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           </div>
 
           <div className={classes.listItem}>
-            <div className={classes.icon}>
-              <MdHowToVote />
-            </div>
-            <p>
-              <ReactMarkdown className="markdown" children={votingCopy} />
-            </p>
+            <VotingStrategiesDisplay votingStrategies={round.votingStrategies} />
           </div>
         </div>
       )}
