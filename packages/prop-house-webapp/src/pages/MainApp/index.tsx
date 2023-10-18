@@ -9,7 +9,14 @@ const MainApp = () => {
 
   useEffect(() => {
     if (rounds) return;
-    const fetchRounds = async () => setRounds(await prophouse.query.getRoundsWithHouseInfo());
+
+    const fetchRounds = async () => {
+      try {
+        setRounds(await prophouse.query.getRoundsWithHouseInfo());
+      } catch (e) {
+        console.log(e);
+      }
+    };
     fetchRounds();
   });
 
