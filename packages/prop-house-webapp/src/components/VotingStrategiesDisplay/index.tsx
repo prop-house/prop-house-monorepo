@@ -93,13 +93,13 @@ const VotingStrategiesDisplay: React.FC<{
   ) : oneStratAndAllowListHasOneMember || oneStrat ? (
     singleStratCopy(votingStrategies[0])
   ) : (
-    <a onClick={() => setShowModal(true)}>
+    <div onClick={() => setShowModal(true)}>
       {formattedContent(
         <>
           Owners of multiple tokens can vote. <a>See who can vote ↗</a>
         </>,
       )}
-    </a>
+    </div>
   );
 };
 
