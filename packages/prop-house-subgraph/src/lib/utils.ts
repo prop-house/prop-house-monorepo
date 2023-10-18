@@ -27,20 +27,16 @@ export class AssetStruct extends ethereum.Tuple {
  */
 export function get2DArray(votingStrategyParamsFlat: BigInt[]): BigInt[][] {
   const array2D: BigInt[][] = [];
+  const numArrays = votingStrategyParamsFlat[0].toI32();
 
-  const numArrays = votingStrategyParamsFlat[0];
-  if (numArrays.toI32() == 1) {
-    array2D.push(votingStrategyParamsFlat.slice(2));
-    return array2D;
-  }
-  
-  for (let i = 0; i < numArrays.toI32(); i++) {
-    const start = votingStrategyParamsFlat[i + 1];
-    const end = votingStrategyParamsFlat[i + 2];
-    array2D.push(votingStrategyParamsFlat.slice(
-      start.plus(numArrays).plus(BIGINT_ONE).toU32(),
-      end.plus(numArrays).plus(BIGINT_ONE).toU32()),
-    );
+  // Extract the offsets from the flat array
+  const offsets = votingStrategyParamsFlat.slice(1, 1 + numArrays);
+
+  // For each offset, extract the corresponding sub-array
+  for (let i = 0; i < numArrays; i++) {
+    const start = offsets[i].toI32();
+    const end = (i === numArrays - 1) ? votingStrategyParamsFlat.length : votingStrategyParamsFlat[i + 2].toI32();
+    array2D.push(votingStrategyParamsFlat.slice(start + numArrays + 1, end + numArrays + 1));
   }
   return array2D;
 }
