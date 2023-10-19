@@ -1,7 +1,7 @@
 #[starknet::contract]
-mod EthereumBalanceOfGovernancePowerStrategy {
+mod EthereumBalanceOfERC1155GovernancePowerStrategy {
     use starknet::ContractAddress;
-    use prop_house::common::utils::storage::get_slot_key;
+    use prop_house::common::utils::storage::get_nested_slot_key;
     use prop_house::common::utils::traits::IGovernancePowerStrategy;
     use prop_house::common::libraries::single_slot_proof::SingleSlotProof;
     use array::{ArrayTrait, SpanTrait};
@@ -18,7 +18,7 @@ mod EthereumBalanceOfGovernancePowerStrategy {
     }
 
     #[external(v0)]
-    impl EthereumBalanceOfGovernancePowerStrategy of IGovernancePowerStrategy<ContractState> {
+    impl EthereumBalanceOfERC1155GovernancePowerStrategy of IGovernancePowerStrategy<ContractState> {
         /// Returns the governance power of the user at the given timestamp.
         /// * `timestamp` - The timestamp at which to get the governance power.
         /// * `user` - The address of the user.
@@ -29,24 +29,26 @@ mod EthereumBalanceOfGovernancePowerStrategy {
         ) -> u256 {
             let params_len = params.len();
 
-            // Expects contract_address and slot_index, with an optional governance_power_multiplier
-            assert(params_len == 2 || params_len == 3, 'EthBO: Bad param length');
+            // Expects contract_address, slot_index, and token_id, with an optional governance_power_multiplier
+            assert(params_len == 3 || params_len == 4, 'EthBO: Bad param length');
 
             let contract_address = *params.at(0);
             let slot_index = *params.at(1);
+            let token_id = *params.at(2);
 
-            let valid_slot = get_slot_key(slot_index.into(), user.into());
+            let mut mapping_keys = array![user.into(), token_id.into()];
+            let valid_slot = get_nested_slot_key(slot_index.into(), mapping_keys.span());
 
             let governance_power = SingleSlotProof::get_slot_value(
                 @SingleSlotProof::unsafe_new_contract_state(), timestamp, contract_address, valid_slot, params, user_params
             );
             assert(governance_power.is_non_zero(), 'EthBO: No governance power');
 
-            if params_len == 2 {
+            if params_len == 3 {
                 return governance_power;
             }
 
-            let governance_power_multiplier = *params.at(2);
+            let governance_power_multiplier = *params.at(3);
             assert(governance_power_multiplier.is_non_zero(), 'EthBO: Invalid multiplier');
 
             governance_power * governance_power_multiplier.into()

@@ -37,7 +37,6 @@ trait IFactsRegistry<TContractState> {
 #[starknet::contract]
 mod SingleSlotProof {
     use starknet::ContractAddress;
-    use prop_house::common::utils::storage::get_slot_key;
     use prop_house::common::registry::ethereum_block::{
         IEthereumBlockRegistryDispatcherTrait, IEthereumBlockRegistryDispatcher
     };
@@ -63,11 +62,12 @@ mod SingleSlotProof {
 
     /// Returns the value of the mapping storage slot at the given timestamp.
     /// * `timestamp` - The timestamp of the block to query.
-    /// * `user` - The user address to query.
+    /// * `contract_address` - The address of the contract whose storage will be queried.
+    /// * `valid_slot` - The expected storage slot key.
     /// * `params` - The params, containing the contract address and slot index.
     /// * `user_params` - The user params, containing the slot, proof sizes, and proofs.
     fn get_slot_value(
-        self: @ContractState, timestamp: u64, user: felt252, params: Span<felt252>, user_params: Span<felt252>, 
+        self: @ContractState, timestamp: u64, contract_address: felt252, valid_slot: u256, params: Span<felt252>, user_params: Span<felt252>,
     ) -> u256 {
         let ethereum_block_registry = IEthereumBlockRegistryDispatcher {
             contract_address: self._ethereum_block_registry.read()
@@ -77,14 +77,6 @@ mod SingleSlotProof {
         let (slot, proof_sizes_bytes, proof_sizes_words, proofs_concat) = _decode_param_array(
             user_params
         );
-
-        // Extract contract address and desired slot index
-        assert(params.len() >= 2, 'SSP: Bad param length');
-        let contract_address = *params.at(0);
-        let slot_index = *params.at(1);
-
-        // Ensure the slot proof is for the correct slot
-        let valid_slot = get_slot_key(slot_index.into(), user.into());
         assert(slot.into() == valid_slot, 'SSP: Invalid slot');
 
         let facts_registry = IFactsRegistryDispatcher { contract_address: self._fact_registry.read() };
