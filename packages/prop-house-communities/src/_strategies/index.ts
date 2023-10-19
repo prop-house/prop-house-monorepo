@@ -6,6 +6,7 @@ import { thankApe, thankApeStratArgs } from './thankApe';
 import { minimumBalance, minimumBalanceStratArgs } from './minimumBalance';
 import { balanceOfErc1155, balanceOfErc1155StratArgs } from './balanceOfErc1155';
 import { nounsDelegatedVotes, nounsDelegatedVotesStratArgs } from './nounsDelegatedVotes';
+import { kiwi } from './kiwi';
 
 export const StrategyNames = [
   'balanceOfErc721',
@@ -16,6 +17,7 @@ export const StrategyNames = [
   'minimumBalance',
   'balanceOfErc1155',
   'nounsDelegatedVotes',
+  'kiwi',
 ] as const;
 
 export type StrategyName = typeof StrategyNames[number];
@@ -39,4 +41,5 @@ export const _strategies = {
   minimumBalance: minimumBalance,
   balanceOfErc1155: balanceOfErc1155,
   nounsDelegatedVotes: nounsDelegatedVotes,
+  kiwi: kiwi,
 };
