@@ -613,6 +613,29 @@ export class QueryWrapper {
   }
 
   /**
+   * Get paginated votes by the provided voter address in a specific round
+   * @param voterAddress The voter address
+   * @param roundAddress The round address
+   * @param config Filtering, pagination, and ordering configuration
+   */
+  public async getVotesByAccountForRound(
+    voterAddress: Address,
+    roundAddress: string,
+    config: Partial<QueryConfig<OrderByVoteFields, Vote_Filter>> = {},
+  ): Promise<Vote[]> {
+    return this.getVotes({
+      ...config,
+      where: {
+        ...config.where,
+        voter: voterAddress.toLowerCase(),
+        round_: {
+          sourceChainRound: roundAddress.toLowerCase(),
+        },
+      },
+    });
+  }
+
+  /**
    * Convert a raw house query result to a house object
    * @param house The house to convert
    */
@@ -712,11 +735,11 @@ export class QueryWrapper {
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
         };
       };
-      case GovPowerStrategyType.ERC1155_BALANCE_OF: {
+      case GovPowerStrategyType.BALANCE_OF_ERC1155: {
         const [address, tokenId, _, multiplier] = strategy.params;
         return {
           id: strategy.id,
-          strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF,
+          strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155,
           tokenAddress: `0x${BigInt(address).toString(16)}`,
           tokenId: tokenId.toString(),
           ...(multiplier ? { multiplier: Number(multiplier) } : {}),
