@@ -6,21 +6,30 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: 100%;
-  row-gap: 20px;
+  row-gap: 12px;
 }
-.title {
+
+.roundCreator {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--brand-gray);
+}
+
+.roundTitle {
   font-size: 22px;
   font-weight: bold;
 }
 
-.creatorAndAwardContainer {
+.awardsModalContentContainer {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
 }
-.roundCreator {
-  font-size: 16px;
+.awardsModalContentContainer .place {
   font-weight: bold;
+}
+.awardsModalContentContainer .amountAndSymbol {
+  font-weight: bold;
+  color: var(--brand-gray);
 }
