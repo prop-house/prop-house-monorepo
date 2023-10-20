@@ -19,7 +19,7 @@ import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
-import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
+import { createConfig, configureChains, WagmiConfig } from 'wagmi';
 import { goerli } from 'wagmi/chains';
 import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
@@ -32,14 +32,13 @@ import {
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import CreateRound from './pages/CreateRound';
-import { baseChain } from './types/baseChain';
-import { polygon } from './types/polygon';
-import { polygonMumbai } from './types/polygonMumbai';
+// import { baseChain } from './types/baseChain';
+// import { polygon } from './types/polygon';
+// import { polygonMumbai } from './types/polygonMumbai';
 import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
 import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
-import RoundCreatorProtectedRoute from './components/RoundCreatorProtectedRoute';
 
 const { chains, publicClient } = configureChains(
   // [mainnet, baseChain, polygon, polygonMumbai],
