@@ -24,13 +24,13 @@ const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => 
       address: voter.address,
       multiplier: voter.multiplier,
     };
-  } else if (voter.type === VotingStrategyType.WHITELIST) {
-    const newMember: WhitelistMember = {
+  } else if (voter.type === VotingStrategyType.ALLOWLIST) {
+    const newMember: AllowlistMember = {
       address: voter.address,
-      votingPower: voter.multiplier.toString(),
+      govPower: voter.multiplier.toString(),
     };
     s = {
-      strategyType: VotingStrategyType.WHITELIST,
+      strategyType: VotingStrategyType.ALLOWLIST,
       members: [newMember],
     };
   }

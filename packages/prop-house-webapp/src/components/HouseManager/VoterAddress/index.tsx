@@ -28,7 +28,7 @@ const VoterAddress: React.FC<{
         <Group gap={4} classNames={classes.addressAndTitle}>
           <Group row>
             <Text type="subtitle">
-              {voter.type === VotingStrategyType.WHITELIST ? 'Wallet' : 'Contract'} Address
+              {voter.type === VotingStrategyType.ALLOWLIST ? 'Wallet' : 'Contract'} Address
             </Text>
 
             {verifiedAddress && (
@@ -44,7 +44,7 @@ const VoterAddress: React.FC<{
           <Group>
             {verifiedAddress ? (
               <button className={classes.addressSuccess} onClick={handleSwitch}>
-                {voter.type === VotingStrategyType.WHITELIST ? (
+                {voter.type === VotingStrategyType.ALLOWLIST ? (
                   <EthAddress address={voter.address} addAvatar />
                 ) : (
                   <div className={classes.addressImgAndTitle}>
