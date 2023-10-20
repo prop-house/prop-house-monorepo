@@ -1,9 +1,10 @@
 import clsx from 'clsx';
 import classes from './StatusLabel.module.css';
-import { RoundState } from '@prophouse/sdk-react';
+import { Timed } from '@prophouse/sdk-react';
 
-const StatusLabel: React.FC<{ state: RoundState }> = props => {
+const StatusLabel: React.FC<{ state: Timed.RoundState }> = props => {
   const { state } = props;
+  const { RoundState } = Timed;
 
   let copy = '';
   let bgClass = '';

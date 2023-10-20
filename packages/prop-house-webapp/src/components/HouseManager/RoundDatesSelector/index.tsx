@@ -23,7 +23,7 @@ const RoundDatesSelector = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const [isTimedRound, setIsTimedRound] = useState(round.roundType === RoundType.TIMED_FUNDING);
+  const [isTimedRound, setIsTimedRound] = useState(round.roundType === RoundType.TIMED);
 
   const changeTimingType = () => {
     // TODO - returning to "disable" until we have designs for infinite round, after we can remove this

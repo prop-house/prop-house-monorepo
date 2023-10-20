@@ -67,7 +67,7 @@ export const initialRound: NewRound = {
   voters: [],
   awards: [NewAward],
   splitAwards: true,
-  roundType: RoundType.TIMED_FUNDING,
+  roundType: RoundType.TIMED,
   funding: { tokens: [], depositingFunds: false },
 };
 
