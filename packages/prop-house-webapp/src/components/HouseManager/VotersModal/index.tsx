@@ -2,7 +2,7 @@ import classes from './VotersModal.module.css';
 import React, { useState } from 'react';
 import ReactModal from 'react-modal';
 import { newVoter, NewVoter } from '../VotersConfig';
-import { VotingStrategyConfig } from '@prophouse/sdk-react';
+import { GovPowerStrategyConfig } from '@prophouse/sdk-react';
 import AddVoter, { StrategyType } from '../AddVoter';
 
 /**
@@ -15,8 +15,8 @@ import AddVoter, { StrategyType } from '../AddVoter';
 const VotersModal: React.FC<{
   editMode?: boolean;
   setEditedRound?: React.Dispatch<React.SetStateAction<NewVoter>>;
-  voters: VotingStrategyConfig[];
-  setVoters: (voters: VotingStrategyConfig[]) => void;
+  voters: GovPowerStrategyConfig[];
+  setVoters: (voters: GovPowerStrategyConfig[]) => void;
   setShowVotersModal: (show: boolean) => void;
   setIsAddingVoter?: (show: boolean) => void;
 }> = props => {

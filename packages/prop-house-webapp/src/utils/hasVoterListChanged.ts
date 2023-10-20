@@ -1,4 +1,4 @@
-import { VotingStrategyConfig } from '@prophouse/sdk-react';
+import { GovPowerStrategyConfig } from '@prophouse/sdk-react';
 
 /**
  * This will check if the voter list has changed. Meaning the two arrays are not the same length or not every element is the same.
@@ -7,8 +7,8 @@ import { VotingStrategyConfig } from '@prophouse/sdk-react';
  */
 
 export const hasVoterListChanged = (
-  originalVoters: VotingStrategyConfig[],
-  editedVoters: VotingStrategyConfig[],
+  originalVoters: GovPowerStrategyConfig[],
+  editedVoters: GovPowerStrategyConfig[],
 ) => {
   return (
     originalVoters.length !== editedVoters.length ||

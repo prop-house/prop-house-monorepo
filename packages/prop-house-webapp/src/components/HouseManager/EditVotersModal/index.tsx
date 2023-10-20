@@ -5,7 +5,7 @@ import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';
 import { saveRound } from '../../../state/thunks';
 import VotersModal from '../VotersModal';
-import { DefaultVotingConfigs, VotingStrategyType } from '@prophouse/sdk-react';
+import { DefaultGovPowerConfigs, VotingStrategyType } from '@prophouse/sdk-react';
 import OverflowScroll from '../OverflowScroll';
 import Group from '../Group';
 import Voter from '../Voter';
@@ -19,7 +19,7 @@ const EditVotersModal: React.FC<{
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const [editedVoters, setEditedVoters] = useState<DefaultVotingConfigs[]>(round.voters);
+  const [editedVoters, setEditedVoters] = useState<DefaultGovPowerConfigs[]>(round.voters);
   const [isAddingVoter, setIsAddingVoter] = useState(false);
 
   const handleEditVotersSave = () => {

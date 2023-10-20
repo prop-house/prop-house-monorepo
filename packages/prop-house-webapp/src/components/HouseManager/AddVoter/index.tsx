@@ -12,7 +12,7 @@ import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { AssetType, VotingStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import { AssetType, GovPowerStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../utils/getTokenInfo';
 import useAddressType from '../utils/useAddressType';
 import { saveRound } from '../../../state/thunks';
@@ -42,9 +42,9 @@ const AddVoter: React.FC<{
   editMode?: boolean;
   voter: NewVoter;
   selectedStrategy: string;
-  voters: VotingStrategyConfig[];
+  voters: GovPowerStrategyConfig[];
   setVoter: (strat: NewVoter) => void;
-  setVoters: (voters: VotingStrategyConfig[]) => void;
+  setVoters: (voters: GovPowerStrategyConfig[]) => void;
   setSelectedStrategy: (selectedStrategy: string) => void;
   handleCancel: () => void;
 }> = props => {

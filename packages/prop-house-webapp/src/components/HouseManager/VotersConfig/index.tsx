@@ -9,9 +9,9 @@ import UploadCSVModal, { CSVRow } from '../UploadCSVModal';
 import {
   VotingStrategyType,
   AssetType,
-  VotingStrategyConfig,
-  Whitelist,
-  DefaultVotingConfigs,
+  GovPowerStrategyConfig,
+  AllowlistConfig,
+  DefaultGovPowerConfigs,
 } from '@prophouse/sdk-react';
 import VotersModal from '../VotersModal';
 import { isAddress } from 'ethers/lib/utils.js';

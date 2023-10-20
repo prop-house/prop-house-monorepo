@@ -1,13 +1,13 @@
 import {
   AssetType,
-  VotingStrategyConfig,
+  GovPowerStrategyConfig,
   VotingStrategyType,
-  WhitelistMember,
+  AllowlistMember,
 } from '@prophouse/sdk-react';
 import { NewVoter } from '../VotersConfig';
 
-const createVoterStrategy = (voter: NewVoter): VotingStrategyConfig | null => {
-  let s: VotingStrategyConfig | null = null;
+const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => {
+  let s: GovPowerStrategyConfig | null = null;
 
   if (voter.type === VotingStrategyType.ERC1155_BALANCE_OF) {
     s = {
