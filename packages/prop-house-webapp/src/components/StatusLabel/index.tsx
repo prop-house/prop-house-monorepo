@@ -18,10 +18,6 @@ const StatusLabel: React.FC<{ state: Timed.RoundState }> = props => {
       copy = 'Cancelled';
       bgClass = classes.redBg;
       break;
-    case RoundState.AWAITING_REGISTRATION:
-      copy = 'Awaiting Registration';
-      bgClass = classes.orangeBg;
-      break;
     case RoundState.NOT_STARTED:
       copy = 'Not Started';
       bgClass = classes.yellowBg;
