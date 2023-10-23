@@ -27,7 +27,6 @@ import {
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
 import HouseManager from './pages/HouseManager';
-import Rounds from './components/HouseManager/Rounds';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 
@@ -93,10 +92,7 @@ function App() {
                     <Route path="/create-round" element={<HouseManager />} />
 
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/admin" element={<HouseManager />} />
-                    <Route path="/admin/rounds" element={<Rounds />} />
                     <Route path="/proposal/:id" element={<Proposal />} />
-
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
