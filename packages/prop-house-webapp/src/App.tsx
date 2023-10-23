@@ -32,10 +32,7 @@ import Rounds from './components/HouseManager/Rounds';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 
-const { chains, publicClient } = configureChains(
-  [goerli, mainnet],
-  [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
-);
+const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
 const { wallets } = getDefaultWallets({
   appName: 'Prop House',
