@@ -17,6 +17,7 @@ import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
 import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { goerli } from 'wagmi/chains';
+import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import {
   connectorsForWallets,
@@ -31,7 +32,10 @@ import Rounds from './components/HouseManager/Rounds';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 
-const { chains, publicClient } = configureChains([goerli, mainnet], [publicProvider()]);
+const { chains, publicClient } = configureChains(
+  [goerli, mainnet],
+  [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
+);
 
 const { wallets } = getDefaultWallets({
   appName: 'Prop House',
@@ -79,6 +83,7 @@ function App() {
               theme={lightTheme({
                 accentColor: 'var(--brand-purple)',
               })}
+              initialChain={goerli}
             >
               <Suspense fallback={<LoadingIndicator />}>
                 <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
