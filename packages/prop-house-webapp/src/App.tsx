@@ -17,7 +17,6 @@ import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
 import { createConfig, mainnet, configureChains, WagmiConfig } from 'wagmi';
 import { goerli } from 'wagmi/chains';
-import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import {
   connectorsForWallets,
