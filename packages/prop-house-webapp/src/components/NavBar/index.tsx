@@ -54,7 +54,12 @@ const NavBar = () => {
               </Nav.Link>
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <ConnectButton showBalance={false} label={t('connect')} chainStatus={'none'} />
+                <ConnectButton
+                  showBalance={false}
+                  label={'Connect'}
+                  accountStatus={'full'}
+                  chainStatus={'icon'}
+                />
               </Nav.Link>
             </div>
           </Nav>
