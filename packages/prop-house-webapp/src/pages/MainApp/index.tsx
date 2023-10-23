@@ -84,9 +84,10 @@ const MainApp = () => {
           <h5 style={{ marginBottom: '16px' }}>Communities</h5>
           <div className={classes.housesContainer}>
             {houses &&
-              houses.map(house => {
+              houses.map((house, i) => {
                 return (
                   <div
+                    key={i}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -129,10 +130,10 @@ const MainApp = () => {
           <h5 style={{ marginBottom: '16px' }}>Activity</h5>
           <div className={classes.activityContainer}>
             {activity &&
-              activity.map(item => {
+              activity.map((item, i) => {
                 if ('proposer' in item) {
                   return (
-                    <p className={classes.activityItem}>
+                    <p className={classes.activityItem} key={i}>
                       <EthAddress
                         address={item.proposer}
                         addAvatar={true}
@@ -144,7 +145,7 @@ const MainApp = () => {
                   );
                 }
                 return (
-                  <p className={classes.activityItem}>
+                  <p className={classes.activityItem} key={i}>
                     <EthAddress
                       address={item.voter}
                       addAvatar={true}

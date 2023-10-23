@@ -4,7 +4,6 @@ import diffTime from '../../utils/diffTime';
 import { RoundUtilBarItem, RoundUtilBarItemTooltip } from '../RoundUtilBarItem';
 import { useTranslation } from 'react-i18next';
 import { Proposal, Round } from '@prophouse/sdk-react';
-import AwardsDisplay from '../AwardsDisplay';
 
 const TimedRoundUtilityBarItems: React.FC<{
   round: Round;
@@ -20,7 +19,6 @@ const TimedRoundUtilityBarItems: React.FC<{
         tooltipContent={`${dayjs(deadlineTime(round)).tz().format('MMMM D, YYYY h:mm A z')}`}
         titleColor="purple"
       />
-      <RoundUtilBarItem title={'Awards'} content={<AwardsDisplay awards={round.config.awards} />} />
       <RoundUtilBarItem
         title={proposals.length === 1 ? t('proposalCap') : t('proposalsCap')}
         content={proposals.length.toString()}

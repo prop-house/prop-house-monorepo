@@ -12,7 +12,7 @@ const AwardLabels: React.FC<{
     <div className={classes.awardLabelsContainer}>
       {awards.map((award, i) => {
         if (i <= 2) return <AwardLabel key={i} award={award} place={i + 1} />;
-        return <></>;
+        return null;
       })}
       {awards.length > 3 && <MoreAwardsLabel setShowModal={setShowModal} />}
     </div>
