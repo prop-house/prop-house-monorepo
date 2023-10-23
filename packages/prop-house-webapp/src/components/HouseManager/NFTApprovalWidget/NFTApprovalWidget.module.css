@@ -1,0 +1,166 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0px;
+  gap: 8px;
+  background: white;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-high);
+  border-radius: 8px;
+  flex-basis: calc(50% - 8px);
+  padding: 14px;
+}
+.container :global(.award) {
+  border: 1px solid red !important;
+}
+.row {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.place p {
+  font-size: 12px;
+}
+.divider {
+  border: 0.5px solid var(--border-light);
+  width: 30%;
+  margin: 3px 0px;
+}
+.awardNameImg {
+  align-items: center;
+}
+.imageContainer {
+  overflow: hidden;
+  background: #fff;
+  line-height: 1px;
+  min-width: 14px;
+}
+.image {
+  height: 14px;
+  width: 14px;
+  border-radius: 2px !important;
+}
+.text {
+  text-align: center;
+  max-width: 90%;
+}
+.text .awardNameImg p {
+  color: var(--brand-black);
+  font-size: 16px;
+}
+.text p {
+  color: var(--brand-gray-transparent);
+  font-weight: 700 !important;
+}
+.amount {
+  color: var(--brand-gray);
+  font-weight: 700 !important;
+}
+.button {
+  width: 100%;
+}
+.progressBar {
+  width: 100%;
+}
+.progressBar :global(.progress) {
+  height: 0.25rem !important;
+  background: white;
+}
+.progressBar :global(.progress) :global(.progress-bar):first-child {
+  margin-right: 0.15rem !important;
+  border-radius: 0.25rem !important;
+}
+.progressBar :global(.progress) :global(.progress-bar):nth-child(2) {
+  margin-left: 0.15rem !important;
+  border-radius: 0.25rem !important;
+}
+.progressBar :global(.bg-warning) {
+  background-color: var(--border-med) !important;
+}
+.addFunds {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+:is(.maxText, .addFundsText) {
+  font-size: 12px;
+}
+.addFundsText {
+  color: var(--brand-black);
+  font-weight: 700 !important;
+}
+.input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  width: 100%;
+  height: 32px;
+  border: 1px solid var(--border-med);
+}
+.input:active,
+.input:focus:focus-visible {
+  outline: none;
+  border: 1px solid var(--border-dark) !important;
+}
+.input::placeholder {
+  color: var(--brand-black-semi-transparent);
+}
+/* Chrome, Safari, Edge, Opera */
+.input[type='number']::-webkit-outer-spin-button,
+.input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+.input[type='number'] {
+  -moz-appearance: textfield;
+}
+.addressSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 100%;
+  background: white !important;
+  cursor: 'pointer';
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 12px !important;
+  font-weight: 500;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med) !important;
+  font-size: 14px;
+}
+.addressSuccess span {
+  color: var(--brand-black);
+  font-weight: 700;
+}
+:is(.amountText, .approvedAmount) {
+  font-size: 14px;
+}
+.amountText {
+  color: var(--brand-gray) !important;
+  font-weight: 500 !important;
+}
+.approvedAmount {
+  font-weight: 700 !important;
+  color: var(--brand-gray-semi-transparent) !important;
+}
+@media (max-width: 1280px) {
+  .container {
+    flex-basis: calc(50% - 8px);
+    width: calc(50% - 8px);
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}

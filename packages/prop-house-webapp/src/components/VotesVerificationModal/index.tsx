@@ -1,45 +1,26 @@
 import classes from './VotesVerificationModal.module.css';
-import {
-  Direction,
-  SignatureState,
-  StoredProposalWithVotes,
-  StoredVote,
-} from '@nouns/prop-house-wrapper/dist/builders';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
-import { MdOutlinePendingActions } from 'react-icons/md';
-import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
+import { Proposal, Vote } from '@prophouse/sdk-react';
 
 const VotesVerificationModal: React.FC<{
   setDisplayVotesVerifModal: Dispatch<SetStateAction<boolean>>;
-  proposal: StoredProposalWithVotes;
-  votes: StoredVote[];
-  direction?: Direction;
+  proposal: Proposal;
+  votes: Vote[];
 }> = props => {
-  const { proposal, setDisplayVotesVerifModal, votes, direction } = props;
-  const { t } = useTranslation();
+  const { proposal, setDisplayVotesVerifModal, votes } = props;
 
   const verifiedVotes = (
     <div className={classes.votesContainer}>
-      {votes
-        .filter(v => v.signatureState !== SignatureState.FAILED_VALIDATION)
-        .map((vote, index) => (
-          <div key={index} className={classes.votesRow}>
-            <div className={classes.voteRowTitle}>
-              {`${vote.weight} ${
-                direction ? (direction === Direction.Up ? 'FOR' : 'AGAINST') : ''
-              } ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
-              <EthAddress address={vote.address} />
-            </div>
-
-            {vote.signatureState === SignatureState.PENDING_VALIDATION && (
-              <button className={classes.verifyVoteBtn} disabled={true}>
-                {t('pending')} <MdOutlinePendingActions />
-              </button>
-            )}
+      {votes.map((vote, index) => (
+        <div key={index} className={classes.votesRow}>
+          <div className={classes.voteRowTitle}>
+            {`${vote.votingPower} FOR  ${Number(vote.votingPower) === 1 ? 'vote' : 'votes'} by `}
+            <EthAddress address={vote.voter} />
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 
@@ -47,9 +28,9 @@ const VotesVerificationModal: React.FC<{
     <div onClick={e => e.stopPropagation()}>
       <Modal
         title={proposal.title}
-        subtitle={`${proposal.voteCountFor} ${
-          proposal.voteCountFor === 1 ? t('vote') : t('votes')
-        } ${t('haveBeenCast')}`}
+        subtitle={`${proposal.votingPower} ${
+          Number(proposal.votingPower) === 1 ? 'vote' : 'votes'
+        } have been cast`}
         body={verifiedVotes}
         setShowModal={setDisplayVotesVerifModal}
       />

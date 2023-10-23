@@ -1,9 +1,7 @@
 import classes from './Modal.module.css';
 import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
-import Button, { ButtonColor } from '../Button';
-import Divider from '../Divider';
-import { useTranslation } from 'react-i18next';
+
 import LoadingIndicator from '../LoadingIndicator';
 import { IoClose } from 'react-icons/io5';
 import clsx from 'clsx';
@@ -18,7 +16,7 @@ const Modal: React.FC<{
   button?: any;
   secondButton?: any;
   bottomContainer?: JSX.Element;
-  onRequestClose?: () => void;
+  handleClose?: () => void;
   setShowModal: Dispatch<SetStateAction<boolean>>;
   fullScreenOnMobile?: boolean;
 }> = props => {
@@ -31,15 +29,13 @@ const Modal: React.FC<{
     secondButton,
     body,
     setShowModal,
-    onRequestClose,
+    handleClose,
     bottomContainer,
     fullScreenOnMobile,
   } = props;
-  const { t } = useTranslation();
 
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const closeModal = () => setShowModal(false);
-  const closeButton = <Button text={t('Close')} bgColor={ButtonColor.White} onClick={closeModal} />;
 
   useEffect(() => {
     const disableScroll = () => {
@@ -75,61 +71,80 @@ const Modal: React.FC<{
     };
   }, [fullScreenOnMobile]);
 
+  const titleAndSubtitle = (
+    <div className={classes.titleAndSubtitleContainer}>
+      {title && <p className={classes.modalTitle}>{title}</p>}
+      {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+    </div>
+  );
+
   return (
     <ReactModal
       isOpen={true}
       appElement={document.getElementById('root')!}
-      onRequestClose={onRequestClose ? onRequestClose : closeModal}
+      onRequestClose={handleClose ? handleClose : closeModal}
       className={clsx(
         classes.modal,
         fullScreenOnMobile && classes.fullScreenOnMobile,
         'proposalModalContainer',
       )}
     >
-      <>
-        <div ref={modalContainerRef} className={classes.container}>
-          <div>
-            {loading ? (
-              <LoadingIndicator width={150} height={125} />
-            ) : (
-              image && (
+      <div ref={modalContainerRef} className={classes.container}>
+        <div>
+          {loading ? (
+            <LoadingIndicator width={150} height={125} />
+          ) : (
+            image && (
+              <div className={classes.titleContainer}>
+                <div style={{ width: '32px' }}></div>
                 <div className={classes.imgContainer}>
                   {<img src={image.src} alt={image.alt} />}
                 </div>
-              )
-            )}
-
-            <div className={classes.titleContainer}>
-              <div className={classes.titleAndSubtitleContainer}>
-                {title && <p className={classes.modalTitle}>{title}</p>}
-                {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
-              </div>
-              {fullScreenOnMobile && (
-                <div className={classes.closeBtn} onClick={() => setShowModal(false)}>
+                <div className={classes.closeBtn} onClick={handleClose ? handleClose : closeModal}>
                   <IoClose size={'1.5rem'} />
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
+            )
+          )}
 
-          <Divider noMarginDown />
-          {body && <div className={classes.body}>{body}</div>}
+          <div className={classes.titleContainer}>
+            {image ? (
+              titleAndSubtitle
+            ) : (
+              <>
+                {/* Balance for the X button width to keep title centered */}
+                <div className={classes.gap}>{''}</div>
 
-          <Divider noMarginUp />
-          <div>
-            <div className={classes.buttonContainer}>
-              {bottomContainer ? (
-                bottomContainer
-              ) : (
-                <>
-                  {button ? button : closeButton}
-                  {secondButton && secondButton}
-                </>
-              )}
-            </div>
+                {titleAndSubtitle}
+
+                <div className={classes.closeBtn} onClick={handleClose ? handleClose : closeModal}>
+                  <IoClose size={'1.5rem'} />
+                </div>
+              </>
+            )}
           </div>
         </div>
-      </>
+
+        {body && <div className={classes.body}>{body}</div>}
+
+        <div
+          className={clsx(
+            classes.footer,
+            !button && !secondButton && !bottomContainer && classes.noFooter,
+          )}
+        >
+          <div className={classes.buttonContainer}>
+            {bottomContainer ? (
+              bottomContainer
+            ) : (
+              <>
+                {button && button}
+                {secondButton && secondButton}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </ReactModal>
   );
 };

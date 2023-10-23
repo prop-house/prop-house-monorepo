@@ -9,10 +9,9 @@
   justify-content: space-between;
 }
 .communityInfoCol > * {
-  margin: 0.75rem 0;
+  margin: 0.2rem 0;
 }
-.date {
-  margin: 0;
+.communityInfoCol .date {
   color: var(--brand-pink) !important;
   font-weight: bold;
 }

@@ -5,8 +5,6 @@ import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import AdminTool from '../AdminTool';
-import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
@@ -25,7 +23,6 @@ const NavBar = () => {
             {!isMobile() && (
               <>
                 <div className={classes.navbarBrand}>{t('propHouse')}</div>
-                <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
               </>
             )}
           </Navbar.Brand>
@@ -57,12 +54,13 @@ const NavBar = () => {
               </Nav.Link>
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <ConnectButton showBalance={false} label={t('connect')} chainStatus={'none'} />
+                <ConnectButton
+                  showBalance={false}
+                  label={'Connect'}
+                  accountStatus={'full'}
+                  chainStatus={'icon'}
+                />
               </Nav.Link>
-
-              <AdminTool>
-                <DevEnvDropDown />
-              </AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>

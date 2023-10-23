@@ -46,7 +46,6 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -138,7 +137,8 @@ const ProposalInputs: React.FC<{
               {/** TITLE */}
               {titleAndTldrInputs(formData[0], true)}
               {/** FUNDS REQ */}
-              {fundReqData.isInfRound && (
+              {/** todo: resolve when funReq is provided by protocol */}
+              {/* {fundReqData.isInfRound && (
                 <InputFormGroup
                   titleLabel="Funds Request"
                   content={
@@ -165,7 +165,7 @@ const ProposalInputs: React.FC<{
                   }
                   formGroupClasses={classes.fundReqFormGroup}
                 />
-              )}
+              )} */}
             </div>
 
             {/** TLDR */}

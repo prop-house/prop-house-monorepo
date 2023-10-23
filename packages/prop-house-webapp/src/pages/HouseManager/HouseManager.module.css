@@ -1,0 +1,13 @@
+.cardsContainer {
+  display: flex;
+  gap: 30px;
+  width: 100%;
+  color: var(--brand-black);
+}
+@media (max-width: 767px) {
+  .cardsContainer {
+    flex-direction: column-reverse;
+    gap: 0px;
+    position: relative;
+  }
+}

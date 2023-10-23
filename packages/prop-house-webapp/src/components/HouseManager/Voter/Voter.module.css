@@ -1,0 +1,72 @@
+.row {
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.addressSuccess {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white !important;
+  cursor: default;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 12px !important;
+  font-weight: 500;
+  height: 36px;
+  width: 100%;
+  border: 1px solid var(--border-med) !important;
+  font-size: 14px;
+}
+.ens {
+  align-items: center;
+}
+.ens div {
+  height: 16px;
+  display: flex;
+  vertical-align: inherit;
+}
+.addressSuccess span {
+  color: var(--brand-black);
+  font-weight: 700;
+}
+.addressImgAndTitle {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.addressImgAndTitle span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  margin-right: 5px;
+}
+.addressImgAndTitle img {
+  border-radius: 12%;
+  max-width: 16px;
+  max-height: 16px;
+  object-fit: cover;
+}
+.votesText {
+  min-width: max-content;
+}
+.xButtonDesktop {
+  min-width: max-content;
+}
+@media (min-width: 501px) {
+  .xButtonMobile {
+    display: none;
+  }
+}
+@media (max-width: 500px) {
+  .addressAndTitle {
+    min-width: 100%;
+  }
+  .xButtonDesktop {
+    display: none;
+  }
+}

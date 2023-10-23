@@ -145,7 +145,7 @@ const ImageUploadModal: React.FC<{
       }
       loading={loading}
       setShowModal={setShowImageUploadModal}
-      onRequestClose={handleDismiss}
+      handleClose={handleDismiss}
       body={
         uploadError ? null : loading ? null : successfulUpload ? null : (
           <DragDropFileInput
@@ -159,14 +159,6 @@ const ImageUploadModal: React.FC<{
         )
       }
       button={
-        <Button
-          text={t('Close')}
-          disabled={loading}
-          bgColor={ButtonColor.White}
-          onClick={handleDismiss}
-        />
-      }
-      secondButton={
         uploadError ? (
           <Button
             text={'Retry'}

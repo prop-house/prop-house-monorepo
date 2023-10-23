@@ -7,7 +7,7 @@ import { Dispatch } from 'redux';
 import {
   filterInfRoundProposals,
   InfRoundFilterType,
-  setActiveProposal,
+  setOnchainActiveProposal,
   setActiveProposals,
   sortTimedRoundProposals,
   TimedRoundSortType,
@@ -20,7 +20,9 @@ const refreshActiveProposal = (
   activeProposal: StoredProposalWithVotes,
   dispatch: Dispatch,
 ) => {
-  client.getProposal(activeProposal.id).then(proposal => dispatch(setActiveProposal(proposal)));
+  client
+    .getProposal(activeProposal.id)
+    .then(proposal => dispatch(setOnchainActiveProposal(proposal)));
 };
 
 export const refreshActiveProposals = async (

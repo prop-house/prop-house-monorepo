@@ -8,6 +8,7 @@ import fileDefault from '../../assets/files/file-blank.png';
 import fileJpg from '../../assets/files/jpg.png';
 import fileJpeg from '../../assets/files/jpg.png';
 import filePng from '../../assets/files/png.png';
+import fileCsv from '../../assets/files/csv.png';
 import fileGif from '../../assets/files/gif.png';
 import fileSvg from '../../assets/files/svg.png';
 import fileMov from '../../assets/files/mov.png';
@@ -21,6 +22,7 @@ export const fileIcons: FileIconProps = {
   png: filePng,
   jpg: fileJpg,
   jpeg: fileJpeg,
+  csv: fileCsv,
   gif: fileGif,
   svg: fileSvg,
   'svg+xml': fileSvg,

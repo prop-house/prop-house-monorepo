@@ -1,0 +1,77 @@
+.step {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  letter-spacing: 0.02em;
+  gap: 12px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.step :not(:last-child) {
+  margin-bottom: 4px;
+}
+.number {
+  font-weight: 900;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  border-radius: 50%;
+  padding: 0px 6px;
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+}
+.textContainer {
+  display: flex;
+  flex-direction: column;
+}
+.textContainer p:first-child {
+  font-size: 16px;
+}
+.currentStep .number {
+  background: var(--brand-pink);
+  color: white;
+  border: 2px solid var(--brand-pink);
+}
+.futureStep span {
+  color: var(--brand-pink) !important;
+}
+.futureStep .number {
+  border: 2px solid var(--brand-pink-transparent);
+}
+.completedStep .number {
+  background: var(--brand-green);
+  border: 2px solid transparent;
+  color: white;
+}
+.step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 25px;
+  width: 2px;
+  height: 60%;
+  border: 1px dashed var(--brand-pink);
+}
+.completedStep::after {
+  border: 1px dashed var(--brand-green) !important;
+}
+
+@media (max-width: 991px) {
+  .step:not(:last-child)::after {
+    display: none;
+  }
+  .step {
+    align-items: flex-start;
+    margin-bottom: 0px;
+  }
+  .textContainer {
+    min-width: 180px;
+  }
+  .textContainer p:first-child {
+    min-width: max-content;
+  }
+}

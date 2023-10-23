@@ -1,0 +1,11 @@
+.card {
+  font-size: 16px;
+  padding: 2px 10px;
+  display: flex;
+  align-items: center !important;
+  justify-self: center !important;
+  font-weight: bold;
+  font-size: 14px;
+  gap: 4px;
+  margin-bottom: 0;
+}

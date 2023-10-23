@@ -7,26 +7,24 @@ import EthAddress from '../EthAddress';
 import { openInNewTab } from '../../utils/openInNewTab';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { buildRoundPath } from '../../utils/buildRoundPath';
-import { TimedAuction, Community } from '@nouns/prop-house-wrapper/dist/builders';
 import { useAccount } from 'wagmi';
+import { House, Round } from '@prophouse/sdk-react';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
-  proposalId?: number;
-  house: Community;
-  round: TimedAuction;
+  propSubmissionTxId?: string;
+  house: House;
+  round: Round;
 }> = props => {
-  const { setShowProposalSuccessModal, proposalId, house, round } = props;
+  const { setShowProposalSuccessModal, propSubmissionTxId, house, round } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { address: account } = useAccount();
-  const twitterContent = `Check out my @nounsprophouse prop: https://prop.house/proposal/${proposalId}`;
+  const twitterContent = `Check out my @nounsprophouse prop: https://prop.house/proposal/${propSubmissionTxId}`;
 
   const backToRound = () => {
-    navigate(buildRoundPath(house, round), { replace: false });
-
+    navigate(`/${round.address}`, { replace: false });
     setShowProposalSuccessModal(false);
   };
   return (
@@ -39,14 +37,12 @@ const ProposalSuccessModal: React.FC<{
       }
       subtitle={
         <>
-          {' '}
           {t(`successfulSubmission`)} <b>{round.title}</b> for <b>{house.name}</b>.
         </>
       }
       image={NounImage.Heart}
-      onRequestClose={backToRound}
-      button={<Button text={t('backToRound')} bgColor={ButtonColor.White} onClick={backToRound} />}
-      secondButton={
+      handleClose={backToRound}
+      button={
         <Button
           text={'Share on Twitter'}
           bgColor={ButtonColor.Purple}

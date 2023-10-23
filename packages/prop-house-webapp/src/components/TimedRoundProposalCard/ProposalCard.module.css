@@ -1,0 +1,214 @@
+.proposalCard {
+  display: flex;
+  flex-direction: column;
+  will-change: background-color, filter;
+  transition: background-color var(--card-transition), filter var(--card-transition);
+  filter: drop-shadow(var(--shadow-low));
+  border: 1px solid var(--border-med);
+  margin: 8px 0;
+}
+.proposalCard:hover {
+  cursor: pointer;
+  filter: drop-shadow(var(--shadow-high));
+}
+.proposalCard:active {
+  filter: drop-shadow(var(--shadow-none));
+}
+.propCopy {
+  font-size: small;
+  color: var(--brand-black-transparent);
+}
+.divider {
+  margin: 12px 0px 8px 0px;
+  background-color: var(--border-dark);
+}
+.propTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--brand-black);
+  display: flex;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.propTitle span {
+  font-weight: normal;
+  color: var(--brand-black-transparent);
+  display: inline;
+}
+.crownNoun {
+  display: flex;
+}
+.crownNoun img {
+  height: 14px;
+}
+.date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.title {
+  font-size: 22px;
+  line-height: 140%;
+  font-weight: bold;
+  color: var(--brand-black);
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-height: X;
+  max-height: X * N;
+}
+.tooltipTitle {
+  cursor: help;
+}
+.submissionInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  justify-content: space-between;
+}
+.timestamp {
+  font-size: 15px;
+  color: var(--brand-gray);
+  font-weight: 600;
+  align-self: flex-start;
+}
+.voteCountCopy {
+  font-size: 16px;
+  font-weight: bold !important;
+  color: var(--brand-gray);
+  display: flex;
+}
+.votingArrows {
+  display: flex;
+  align-items: center;
+}
+.plusArrow {
+  padding: 0px 4px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--brand-gray-transparent);
+}
+.truncatedTldr {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  color: var(--brand-gray);
+  font-size: 16px;
+  font-weight: 500;
+  word-break: break-word;
+}
+.truncatedTldr p {
+  margin-bottom: 0;
+}
+.textContainter {
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+.propInfo {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+.propImgContainer {
+  height: 120px;
+  width: 120px;
+  border-radius: 6px;
+  outline: 1px solid var(--border-light);
+  min-width: min-content;
+  overflow: hidden;
+}
+.propImgContainer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 120px;
+  min-width: 120px;
+}
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+}
+.addressAndTimestamp {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  gap: 4px;
+  font-size: 14px !important;
+  color: var(--brand-gray);
+}
+.bullet {
+  color: var(--brand-black-semi-transparent);
+  font-size: 8px !important;
+}
+.winner {
+  border: 1px solid var(--brand-green-semi-transparent) !important;
+}
+.winner .propTitle {
+  color: var(--brand-green);
+}
+.hideDate {
+  font-size: 14px;
+}
+@media (max-width: 767px) {
+  .hideDate {
+    display: none;
+  }
+}
+@media (max-width: 575px) {
+  .addressAndTimestamp {
+    width: max-content;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: flex;
+    overflow: hidden;
+  }
+  .date {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .propInfo {
+    flex-direction: column;
+  }
+  .propTitle {
+    -webkit-line-clamp: 2;
+  }
+  .propImgContainer {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+  }
+  .titleContainer {
+    align-items: flex-start;
+  }
+  .crownNoun {
+    margin-top: 3px;
+    display: block;
+  }
+}
+.hideVoteModule {
+  display: none;
+}
+.truncate {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
+  overflow: hidden;
+}

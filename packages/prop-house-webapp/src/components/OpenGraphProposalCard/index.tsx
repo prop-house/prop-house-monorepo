@@ -9,7 +9,6 @@ import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import classes from './OpenGraphProposalCard.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
-import getFirstImageFromProp from '../../utils/getFirstImageFromProp';
 import { InfuraProvider } from '@ethersproject/providers';
 import AddressAvatar from '../AddressAvatar';
 
@@ -20,7 +19,7 @@ const OpenGraphProposalCard: React.FC = () => {
   const [proposal, setProposal] = useState<StoredProposalWithVotes>();
   const [round, setRound] = useState<TimedAuction>();
   const [community, setCommunity] = useState<Community>();
-  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  // const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [ens, setEns] = useState<null | string>(null);
 
   const backendHost = useAppSelector(state => state.configuration.backendHost);
@@ -57,9 +56,9 @@ const OpenGraphProposalCard: React.FC = () => {
 
     lookUpEns();
 
-    const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
-
-    getImg();
+    // tood: resolve image
+    // const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
+    // getImg();
   }, [proposal]);
 
   return (
@@ -79,11 +78,11 @@ const OpenGraphProposalCard: React.FC = () => {
                 <div className={classes.propName}>{proposal.title}</div>
               </div>
 
-              {imageUrl && (
+              {/* {imageUrl && (
                 <div className={classes.propImgContainer}>
                   <img src={imageUrl} crossOrigin="anonymous" alt="propImage" />
                 </div>
-              )}
+              )} */}
             </span>
           </span>
 

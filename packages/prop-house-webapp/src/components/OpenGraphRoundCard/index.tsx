@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import formatTime from '../../utils/formatTime';
-import CommunityProfImg from '../CommunityProfImg';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
@@ -57,7 +56,8 @@ const OpenGraphRoundCard: React.FC = () => {
             </span>
 
             <span className={classes.houseImg}>
-              <CommunityProfImg community={community} />
+              {/* todo: resolve */}
+              {/* <CommunityProfImg community={community} /> */}
             </span>
           </span>
 

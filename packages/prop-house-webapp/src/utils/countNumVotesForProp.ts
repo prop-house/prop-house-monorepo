@@ -1,9 +1,9 @@
-import { SignatureState, StoredVote } from '@nouns/prop-house-wrapper/dist/builders';
+import { Vote } from '@prophouse/sdk-react';
 
 /**
  * Counts total number of validated `vote.weight` from `votes` for proposal
  */
-export const countNumVotesForProp = (votes: StoredVote[], proposalId: number) =>
+export const countNumVotesForProp = (votes: Vote[], proposalId: number) =>
   votes
-    .filter(v => v.signatureState === SignatureState.VALIDATED && v.proposalId === proposalId)
-    .reduce((prev, current) => prev + Number(current.weight), 0);
+    .filter(v => v.proposalId === proposalId)
+    .reduce((prev, current) => prev + Number(current.votingPower), 0);

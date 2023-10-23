@@ -1,0 +1,71 @@
+.container {
+  width: 100%;
+}
+.input {
+  min-width: 100%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 32px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+  font-size: 14px;
+}
+.input::placeholder {
+  font-style: italic;
+}
+.inputError {
+  border: 1px solid red !important;
+}
+.input::placeholder {
+  color: var(--brand-gray-transparent) !important;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+}
+.input:active,
+.input:focus:focus-visible {
+  outline: none;
+  border: 1px solid var(--border-dark) !important;
+}
+.input::placeholder {
+  color: var(--brand-black-semi-transparent);
+}
+.error {
+  color: red;
+  font-size: 12px;
+  font-weight: 700;
+  font-style: italic;
+}
+.descriptionTitile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.houseManagerEditor :global(.ql-toolbar) {
+  border: 1px solid var(--border-med) !important;
+}
+.houseManagerEditor :global(.ql-container.ql-snow) {
+  padding: 0.5rem !important;
+  border: 1px solid var(--border-med) !important;
+  border-top: 1px solid transparent !important;
+}
+.houseManagerEditor :global(.ql-editor p),
+.houseManagerEditor :global(.ql-editor.ql-blank::before) {
+  font-size: 14px !important;
+}
+.houseManagerEditor :global(.ql-container) {
+  min-height: auto !important;
+  height: 12rem !important ;
+}
+.houseManagerEditor :global(.ql-editor) {
+  min-height: auto !important;
+}
+.editorError :global(.ql-toolbar) {
+  border: 1px solid red !important;
+}
+.editorError :global(.ql-container.ql-snow) {
+  border: 1px solid red !important;
+  border-top: 1px solid transparent !important;
+}

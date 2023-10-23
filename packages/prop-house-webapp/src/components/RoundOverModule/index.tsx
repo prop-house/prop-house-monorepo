@@ -1,18 +1,15 @@
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { isTimedAuction } from '../../utils/auctionType';
 import RoundModuleCard from '../RoundModuleCard';
 import classes from './RoundOverModule.module.css';
 
 export interface RoundOverModuleProps {
-  totalVotes: number | undefined;
+  totalVotes: number;
   numOfProposals: number;
-  round: StoredAuctionBase;
 }
 
 const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleProps) => {
-  const { numOfProposals, totalVotes, round } = props;
+  const { numOfProposals, totalVotes } = props;
   const { t } = useTranslation();
 
   const content = (
@@ -21,7 +18,7 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
     </p>
   );
 
-  return isTimedAuction(round) ? (
+  return (
     <RoundModuleCard
       title={t('votingEnded')}
       subtitle={
@@ -32,13 +29,6 @@ const RoundOverModule: React.FC<RoundOverModuleProps> = (props: RoundOverModuleP
       }
       content={content}
       type="ended"
-    />
-  ) : (
-    <RoundModuleCard
-      title={'Round has ended'}
-      subtitle={<>No awards remaining</>}
-      content={<>{`${totalVotes} votes were casted to award ${numOfProposals} proposals`}</>}
-      type="winner"
     />
   );
 };

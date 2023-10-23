@@ -11,14 +11,7 @@ const Reply: React.FC<{ reply: StoredReply; isProposer: boolean }> = props => {
     <div className={classes.replyContainer}>
       <div className={classes.replyHeader}>
         <div className={classes.address}>
-          {
-            <EthAddress
-              className={classes.ethAddress}
-              address={reply.address}
-              addAvatar={true}
-              avatarDiameter={14}
-            />
-          }
+          {<EthAddress className={classes.ethAddress} address={reply.address} addAvatar={true} />}
         </div>
         {isProposer && <div className={clsx(classes.authorPill, classes.proposer)}>proposer</div>}
 

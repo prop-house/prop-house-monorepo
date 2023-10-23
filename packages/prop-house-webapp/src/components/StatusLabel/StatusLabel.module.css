@@ -1,0 +1,41 @@
+.pillContainer {
+  display: inline-block;
+  padding: 2.5px 0.5rem;
+  border-radius: 10px;
+  position: relative;
+  right: -8px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: max-content;
+  align-self: flex-start;
+}
+@media (max-width: 497px) {
+  .pillContainer {
+    right: 0px;
+  }
+}
+
+.grayBg {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+  color: var(--brand-gray);
+}
+.greenBg {
+  background-color: var(--brand-green-hint);
+  border: 1px solid var(--brand-green-semi-transparent);
+  color: var(--brand-green);
+}
+.purpleBg {
+  background-color: var(--brand-purple-hint);
+  border: 1px solid var(--brand-purple-semi-transparent);
+  color: var(--brand-purple);
+}
+.pinkBg {
+  color: var(--brand-pink);
+  background-color: var(--brand-pink-transparent);
+}
+.whiteBg {
+  background-color: white;
+  color: black;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
