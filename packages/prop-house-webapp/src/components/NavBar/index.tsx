@@ -25,7 +25,6 @@ const NavBar = () => {
             {!isMobile() && (
               <>
                 <div className={classes.navbarBrand}>{t('propHouse')}</div>
-                <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
               </>
             )}
           </Navbar.Brand>
@@ -59,10 +58,6 @@ const NavBar = () => {
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <ConnectButton showBalance={false} label={t('connect')} chainStatus={'none'} />
               </Nav.Link>
-
-              <AdminTool>
-                <DevEnvDropDown />
-              </AdminTool>
             </div>
           </Nav>
         </Navbar.Collapse>
