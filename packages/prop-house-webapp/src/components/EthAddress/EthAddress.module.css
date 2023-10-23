@@ -8,6 +8,7 @@
   align-items: center;
   gap: 6px;
   font-size: 14px;
+  width: max-content;
 }
 
 .ethAddress a:visited {
