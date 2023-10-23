@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Modal from '../Modal';
 import useFullRoundAwards from '../../hooks/useFullRoundAward';
 import LoadingIndicator from '../LoadingIndicator';
+import RoundCardStatusBar from '../RoundCardStatusBar';
 
 const RoundCard_: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -57,20 +58,23 @@ const RoundCard_: React.FC<{ round: Round; house: House }> = props => {
         onHoverEffect={true}
       >
         <div className={classes.container}>
-          <div className={classes.roundCreator}>
-            <EthAddress
-              address={house.address}
-              imgSrc={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
-              addAvatar={true}
-              className={classes.roundCreator}
-            />
-          </div>
-          <div className={classes.roundTitle}>
-            {round.title[0].toUpperCase() + round.title.slice(1)}
+          <div className={classes.roundCreatorAndTitleContainer}>
+            <div className={classes.roundCreator}>
+              <EthAddress
+                address={house.address}
+                imgSrc={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
+                addAvatar={true}
+                className={classes.roundCreator}
+              />
+            </div>
+            <div className={classes.roundTitle}>
+              {round.title[0].toUpperCase() + round.title.slice(1)}
+            </div>
           </div>
           <AwardLabels awards={round.config.awards} setShowModal={setShowModal} />
         </div>
       </Card>
+      <RoundCardStatusBar round={round} />
     </div>
   );
 };

@@ -12,8 +12,9 @@ const StatusPill: React.FC<{
   copy: string | ReactNode;
   color: StatusPillColor;
   size?: number;
+  borderRadius?: number;
 }> = props => {
-  const { copy, color, size } = props;
+  const { copy, color, size, borderRadius } = props;
 
   let bgClass = '';
 
@@ -32,7 +33,10 @@ const StatusPill: React.FC<{
   return (
     <span
       className={clsx(classes.pillContainer, bgClass)}
-      style={{ fontSize: `${size ? size : 14}px` }}
+      style={{
+        fontSize: `${size ? size : 14}px`,
+        borderRadius: `${borderRadius ? borderRadius : 10}px`,
+      }}
     >
       {copy}
     </span>

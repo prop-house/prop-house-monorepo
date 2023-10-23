@@ -23,7 +23,7 @@ export const MoreAwardsLabel: React.FC<{
         borderRadius={CardBorderRadius.ten}
         classNames={classes.card}
       >
-        ...
+        +
       </Card>
     </div>
   );

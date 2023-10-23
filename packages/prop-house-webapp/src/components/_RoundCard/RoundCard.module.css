@@ -1,13 +1,16 @@
 .roundCard {
   min-height: 10rem;
   height: 10rem;
-  max-height: 10rem;
+  max-height: 12rem;
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--border-med);
 }
 .container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  row-gap: 12px;
+  justify-content: space-between;
 }
 
 .roundCreator {
@@ -19,6 +22,18 @@
 .roundTitle {
   font-size: 22px;
   font-weight: bold;
+  line-height: 115%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.roundCreatorAndTitleContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
 }
 
 .awardsModalContentContainer {
