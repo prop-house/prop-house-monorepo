@@ -82,10 +82,7 @@ const Home = () => {
         <NavBar />
         <HomeHeader input={input} handleSeachInputChange={handleSeachInputChange} stats={stats} />
       </div>
-
-      <Container className={classes.homeCardsContainer}>
-        <CommunityCardGrid input={input} communities={communities} isLoading={isLoading} />
-      </Container>
+      <Container className={classes.homeCardsContainer}></Container>
     </>
   );
 };

@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { buildImageURL } from '../utils/buildImageURL';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
-import { changeTagToParagraph, changeTagToSpan } from '../../RoundCard';
+import { changeTagToParagraph, changeTagToSpan } from '../../ChangeTo';
 import { useAccount } from 'wagmi';
 import LoadingIndicator from '../../LoadingIndicator';
 

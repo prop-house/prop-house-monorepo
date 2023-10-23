@@ -57,9 +57,9 @@ const OpenGraphProposalCard: React.FC = () => {
 
     lookUpEns();
 
-    const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
-
-    getImg();
+    // tood: resolve image
+    // const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
+    // getImg();
   }, [proposal]);
 
   return (

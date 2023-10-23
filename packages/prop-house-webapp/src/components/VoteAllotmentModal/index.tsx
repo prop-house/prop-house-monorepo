@@ -38,14 +38,15 @@ const VoteAllotmentModal: React.FC<{
             disabled={v.proposalId === propId}
             className={classes.propLink}
             onClick={e => {
-              if (cmdPlusClicked(e)) {
-                openInNewTab(`${buildRoundPath(community, round)}/${v.proposalId}`);
-                setShowModal(false);
-                return;
-              }
-              const p = proposals && proposals.find(p => p.id === v.proposalId);
-              p && dispatch(setOnchainActiveProposal(p));
-              setShowModal(false);
+              // todo: fix this
+              // if (cmdPlusClicked(e)) {
+              //   openInNewTab(`${buildRoundPath(community, round)}/${v.proposalId}`);
+              //   setShowModal(false);
+              //   return;
+              // }
+              // const p = proposals && proposals.find(p => p.id === v.proposalId);
+              // p && dispatch(setOnchainActiveProposal(p));
+              // setShowModal(false);
             }}
           >
             <FaLink />

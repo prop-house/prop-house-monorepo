@@ -46,7 +46,7 @@ const OpenGraphHouseCard: React.FC = () => {
 
           <span className={classes.infoAndImage}>
             <span className={classes.houseImg}>
-              <CommunityProfImg community={community} />
+              {/* <CommunityProfImg community={community} /> */}
             </span>
 
             <span className={classes.houseInfoCountainer}>

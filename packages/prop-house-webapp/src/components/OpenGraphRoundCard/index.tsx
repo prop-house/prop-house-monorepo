@@ -57,7 +57,8 @@ const OpenGraphRoundCard: React.FC = () => {
             </span>
 
             <span className={classes.houseImg}>
-              <CommunityProfImg community={community} />
+              {/* todo: resolve */}
+              {/* <CommunityProfImg community={community} /> */}
             </span>
           </span>
 

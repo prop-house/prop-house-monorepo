@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import Text from '../Text';
 import Markdown from 'markdown-to-jsx';
-import { changeTagToParagraph, changeTagToSpan } from '../../RoundCard';
 import sanitizeHtml from 'sanitize-html';
 import Group from '../Group';
 import StatusLabel from '../../StatusLabel';
 import Divider from '../../Divider';
 import Button, { ButtonColor } from '../../Button';
+import { changeTagToParagraph, changeTagToSpan } from '../../ChangeTo';
 
 const Rounds: React.FC = () => {
   const propHouse = usePropHouse();

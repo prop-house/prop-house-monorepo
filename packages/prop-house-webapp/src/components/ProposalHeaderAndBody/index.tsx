@@ -177,13 +177,13 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
   return (
     <>
       <Container>
-        {proposal && (
+        {/*TODO:  {proposal && (
           <OpenGraphElements
             title={proposal.title}
             description={proposal.body.substring(0, 120)}
             imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
           />
-        )}
+        )} */}
 
         {proposals && (
           <div id="propContainer" className={classes.propContainer}>
@@ -240,6 +240,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                     setInvalidFileMessage={setInvalidFileMessage}
                     duplicateFile={duplicateFile}
                     setDuplicateFile={setDuplicateFile}
+                    isInfRound={false}
                   />
                 </span>
               ) : (

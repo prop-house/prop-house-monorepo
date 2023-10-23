@@ -63,9 +63,7 @@ const ProposalWindowButtons: React.FC<{
                     text={'Save'}
                     bgColor={ButtonColor.Purple}
                     onClick={() => setShowSavePropModal(true)}
-                    disabled={
-                      !isValidPropData(round.type === RoundType.TIMED_FUNDING, proposalEditorData)
-                    }
+                    disabled={!isValidPropData(round.type === RoundType.TIMED, proposalEditorData)}
                   />
                 </div>
               </>

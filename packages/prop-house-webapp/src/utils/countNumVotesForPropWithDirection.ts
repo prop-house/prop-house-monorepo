@@ -1,15 +1,6 @@
-import { Direction, SignatureState, StoredVote } from '@nouns/prop-house-wrapper/dist/builders';
+import { Vote } from '@prophouse/sdk-react';
 
-export const countNumVotesForPropWithDirection = (
-  votes: StoredVote[],
-  proposalId: number,
-  direction: Direction,
-) =>
+export const countNumVotesForPropWithDirection = (votes: Vote[], proposalId: number) =>
   votes
-    .filter(
-      v =>
-        v.signatureState === SignatureState.VALIDATED &&
-        v.proposalId === proposalId &&
-        v.direction === direction,
-    )
-    .reduce((prev, current) => prev + Number(current.weight), 0);
+    .filter(v => v.proposalId === proposalId)
+    .reduce((prev, current) => prev + Number(current.votingPower), 0);

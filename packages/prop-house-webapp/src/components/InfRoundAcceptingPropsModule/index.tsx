@@ -1,36 +1,36 @@
 import classes from './AcceptingPropsModule.module.css';
-import { Community, StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+
 import { useDispatch } from 'react-redux';
 import { clearProposal } from '../../state/slices/editor';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import RoundModuleCard from '../RoundModuleCard';
-import { isInfAuction } from '../../utils/auctionType';
-import dayjs from 'dayjs';
+
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import LoadingIndicator from '../LoadingIndicator';
-import useProposalGrants from '../../hooks/useProposalGrants';
+
 import { BsPersonFill, BsFillAwardFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Round, Timed } from '@prophouse/sdk-react';
+import useCanPropose from '../../hooks/useCanPropose';
 
 const InfRoundAcceptingPropsModule: React.FC<{
   round: Round;
-  community: Community;
 }> = props => {
-  const { round, community } = props;
+  const { round } = props;
 
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { address: account } = useAccount();
   const { t } = useTranslation();
+  const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
 
   const content = (
     <>
@@ -57,21 +57,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
           <div className={classes.icon}>
             <BsFillAwardFill />
           </div>
-          <p>
-            {isInfAuction(auction) ? (
-              'Proposals that meet quorum will get funded.'
-            ) : (
-              <>
-                {' '}
-                {t('theTop')} <b>{auction.numWinners}</b>{' '}
-                {auction.numWinners === 1 ? 'proposal' : 'proposals'} {t('willGetFunded')}{' '}
-                <b>
-                  {auction.fundingAmount} {auction.currencyType}{' '}
-                </b>
-                {t('each')}.
-              </>
-            )}
-          </p>
+          <p>'Proposals that meet quorum will get funded.'</p>
         </div>
       </div>
 
@@ -93,7 +79,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
             bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create', { state: { auction, community, proposals } });
+              navigate('/create');
             }}
             disabled={!canPropose}
           />
@@ -106,14 +92,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
   return (
     <RoundModuleCard
       title={t('acceptingProposals')}
-      subtitle={
-        <>
-          Until{' '}
-          {isInfAuction(auction)
-            ? 'funding is depleted'
-            : dayjs(auction.proposalEndTime).format('MMMM D')}
-        </>
-      }
+      subtitle={<>Until funding is depleted</>}
       content={content}
       type="proposing"
     />

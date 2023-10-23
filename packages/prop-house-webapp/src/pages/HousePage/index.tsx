@@ -11,7 +11,7 @@ import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../components/StatusFilters';
 import { useTranslation } from 'react-i18next';
 import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
-import RoundCard_ from '../../components/_RoundCard';
+import RoundCard_ from '../../components/RoundCard';
 
 const HousePage: React.FC<{}> = () => {
   const propHouse = usePropHouse();

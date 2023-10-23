@@ -1,7 +1,7 @@
 import classes from './MainApp.module.css';
 import { House, Proposal, RoundWithHouse, Vote, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import RoundCard_ from '../../components/_RoundCard';
+import RoundCard_ from '../../components/RoundCard';
 import { Col, Container, Row } from 'react-bootstrap';
 import EthAddress from '../../components/EthAddress';
 import { useNavigate } from 'react-router-dom';

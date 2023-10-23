@@ -59,7 +59,7 @@ const RoundHeader: React.FC<{
 
         <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
-            {round.type !== RoundType.TIMED_FUNDING
+            {round.type !== RoundType.TIMED
               ? `${
                   dayjs().isBefore(round.config.proposalPeriodStartTimestamp) ? `Starts` : `Started`
                 } ${formatTime(getDateFromTimestamp(round.config.proposalPeriodStartTimestamp))}`

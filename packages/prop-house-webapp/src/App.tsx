@@ -32,7 +32,6 @@ import { polygon } from './types/polygon';
 import { polygonMumbai } from './types/polygonMumbai';
 import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
-import StatusRoundCards from './components/StatusRoundCards';
 import Rounds from './components/HouseManager/Rounds';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
@@ -101,7 +100,6 @@ function App() {
                     <Route path="/create" element={<Create />} />
                     <Route path="/create-round" element={<HouseManager />} />
 
-                    <Route path="/rounds" element={<StatusRoundCards />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="/admin" element={<HouseManager />} />
                     <Route path="/admin/rounds" element={<Rounds />} />

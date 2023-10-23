@@ -138,7 +138,8 @@ const ProposalInputs: React.FC<{
               {/** TITLE */}
               {titleAndTldrInputs(formData[0], true)}
               {/** FUNDS REQ */}
-              {fundReqData.isInfRound && (
+              {/** todo: resolve when funReq is provided by protocol */}
+              {/* {fundReqData.isInfRound && (
                 <InputFormGroup
                   titleLabel="Funds Request"
                   content={
@@ -165,7 +166,7 @@ const ProposalInputs: React.FC<{
                   }
                   formGroupClasses={classes.fundReqFormGroup}
                 />
-              )}
+              )} */}
             </div>
 
             {/** TLDR */}

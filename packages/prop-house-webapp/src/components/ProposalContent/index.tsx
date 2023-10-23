@@ -20,14 +20,15 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
     <>
       <div className="proposalCopy">
         <span className={classes.proposalBody}>
-          {fields.reqAmount && (
+          {/** todo: resolves for req amounts when sdk provides it */}
+          {/* {fields.reqAmount && (
             <>
               <h2>Funds requested</h2>
               <p>
                 {fields.reqAmount} {roundCurrency}
               </p>
             </>
-          )}
+          )} */}
           {fields.tldr && (
             <>
               <h2>{t('tldr')}</h2>
@@ -59,7 +60,7 @@ const ProposalContent: React.FC<ProposalContentProps> = props => {
                 }),
               (whatText: string) => whatText.replaceAll('&amp;', '&'),
               (whatText: string) => whatText.replaceAll(/<img/g, '<img crossorigin="anonymous"'),
-              (whatText: string) => replaceIpfsGateway(whatText)
+              (whatText: string) => replaceIpfsGateway(whatText),
             )(fields.what)}
           </Markdown>
         </span>
