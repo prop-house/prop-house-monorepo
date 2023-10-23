@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react';
 import RoundCard_ from '../../components/_RoundCard';
 import { Col, Container, Row } from 'react-bootstrap';
 import EthAddress from '../../components/EthAddress';
+import { useNavigate } from 'react-router-dom';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
+  const navigate = useNavigate();
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
   const [activity, setActivity] = useState<(Proposal | Vote)[]>();
-
   const [fetchedProps, setFetchedProps] = useState(false);
   const [fetchedVotes, setFetchedVotes] = useState(false);
 
@@ -76,10 +77,8 @@ const MainApp = () => {
     fetchVotes();
   });
 
-  console.log(activity);
-
   return (
-    <Container fluid>
+    <Container>
       <Row>
         <Col xl={2}>
           <h5 style={{ marginBottom: '16px' }}>Communities</h5>
@@ -87,35 +86,45 @@ const MainApp = () => {
             {houses &&
               houses.map(house => {
                 return (
-                  <EthAddress
-                    address={house.address}
-                    imgSrc={house.imageURI?.replace(
-                      /prophouse.mypinata.cloud/g,
-                      'cloudflare-ipfs.com',
-                    )}
-                    addAvatar={true}
-                    className={classes.houseAddress}
-                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontWeight: 'bold',
+                      color: 'var(--brand-gray)',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      navigate(`/${house.address}`);
+                    }}
+                  >
+                    <img
+                      src={house.imageURI?.replace(
+                        /prophouse.mypinata.cloud/g,
+                        'cloudflare-ipfs.com',
+                      )}
+                      style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
+                    />
+                    {house.name}
+                  </div>
                 );
               })}
           </div>
         </Col>
-        <Col xl={6}>
-          <Row>
-            <h5>Rounds</h5>
-            <div className={classes.roundsContainer}>
-              {rounds &&
-                rounds.map((round, i) => {
-                  return (
-                    <Col xl={10} key={i}>
-                      <RoundCard_ round={round} house={round.house} />
-                    </Col>
-                  );
-                })}
-            </div>
-          </Row>
+        <Col xl={5} className="mx-auto">
+          <h5>Rounds</h5>
+          <div className={classes.roundsContainer}>
+            {rounds &&
+              rounds.map((round, i) => {
+                return (
+                  <Col xl={12} key={i}>
+                    <RoundCard_ round={round} house={round.house} />
+                  </Col>
+                );
+              })}
+          </div>
         </Col>
-        <Col xl={3}>
+        <Col xl={4}>
           <h5 style={{ marginBottom: '16px' }}>Activity</h5>
           <div className={classes.activityContainer}>
             {activity &&
