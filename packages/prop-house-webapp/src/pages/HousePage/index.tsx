@@ -11,7 +11,7 @@ import { sortRoundByStatus } from '../../utils/sortRoundByStatus';
 import { RoundStatus } from '../../components/StatusFilters';
 import { useTranslation } from 'react-i18next';
 import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
-import RoundCard_ from '../../components/RoundCard';
+import RoundCard from '../../components/RoundCard';
 
 const HousePage: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -63,7 +63,7 @@ const HousePage: React.FC<{}> = () => {
       }
     };
     fetchRounds();
-  }, []);
+  }, [house, propHouse.query, rounds]);
 
   // search functionality
   useEffect(() => {
@@ -92,7 +92,7 @@ const HousePage: React.FC<{}> = () => {
               );
             }),
           ));
-  }, [input, currentRoundStatus, rounds]);
+  }, [input, currentRoundStatus, rounds, house, propHouse.query]);
 
   return (
     <>
@@ -134,7 +134,7 @@ const HousePage: React.FC<{}> = () => {
                 ) : roundsOnDisplay.length > 0 ? (
                   sortRoundByStatus(roundsOnDisplay).map((round, index) => (
                     <Col key={index} xl={6}>
-                      <RoundCard_ round={round} house={house} />
+                      <RoundCard round={round} house={house} />
                     </Col>
                   ))
                 ) : input === '' ? (

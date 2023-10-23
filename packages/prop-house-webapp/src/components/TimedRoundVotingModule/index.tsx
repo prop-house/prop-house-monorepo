@@ -12,9 +12,7 @@ import ConnectButton from '../ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useAccount } from 'wagmi';
 import { BsPersonFill } from 'react-icons/bs';
-import { MdHowToVote } from 'react-icons/md';
 import useVotingPower from '../../hooks/useVotingPower';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { GiDeadHead } from 'react-icons/gi';
 import LoadingIndicator from '../LoadingIndicator';
 import { Round } from '@prophouse/sdk-react';
@@ -52,12 +50,14 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
     setNumAllotedVotes(countTotalVotesAlloted(voteAllotments));
 
     dispatch(setVotingPower(votingPower));
-  }, [votesByUserInActiveRound, voteAllotments, votingPower]);
+  }, [votesByUserInActiveRound, voteAllotments, votingPower, dispatch]);
 
   const content = (
     <>
       {account ? (
-        loadingVotingPower ? (
+        errorLoadingVotingPower ? (
+          <>Error loading voting power.</>
+        ) : loadingVotingPower ? (
           <LoadingIndicator height={50} width={50} />
         ) : votingPower && votingPower > 0 ? (
           <>

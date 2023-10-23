@@ -4,8 +4,7 @@ import clsx from 'clsx';
 import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
@@ -21,32 +20,10 @@ const TimedRoundModules: React.FC<{
 }> = props => {
   const { round, proposals, setShowVotingModal } = props;
 
-  const { address: account } = useAccount();
-
   const totalVotesAcrossAllProps = proposals.reduce(
     (total, prop) => (total = total + Number(prop.votingPower)),
     0,
   );
-  const [fetchedUserProps, setFetchedUserProps] = useState(false);
-
-  useEffect(() => {
-    if (!account || !proposals) return;
-    setFetchedUserProps(false);
-
-    // TODO: //
-    // set user props
-    // if (proposals.some(p => isSameAddress(p.address, account))) {
-    //   setUserProposals(
-    //     proposals
-    //       .filter(p => isSameAddress(p.address, account))
-    //       .sort((a: { voteCountFor: any }, b: { voteCountFor: any }) =>
-    //         a.voteCountFor < b.voteCountFor ? 1 : -1,
-    //       ),
-    //   );
-
-    //   setFetchedUserProps(true);
-    // }
-  }, [account, proposals]);
 
   const roundStateUnknown = round.state === Timed.RoundState.UNKNOWN && <RoundModuleUnknownState />;
 
@@ -72,23 +49,6 @@ const TimedRoundModules: React.FC<{
     <RoundOverModule numOfProposals={proposals.length} totalVotes={totalVotesAcrossAllProps} />
   );
 
-  // const userPropCardModule = (isInfAuction(auction)
-  //   ? infRoundFilter === InfRoundFilterType.Active
-  //   : true) &&
-  //   !auctionNotStarted &&
-  //   account &&
-  //   userProposals &&
-  //   userProposals.length > 0 &&
-  //   fetchedUserProps && (
-  //     <UserPropCard
-  //       userProps={userProposals}
-  //       proposals={proposals}
-  //       numOfWinners={isInfAuction(auction) ? 0 : auction.numWinners}
-  //       status={auctionStatus(auction)}
-  //       winningIds={winningIds && winningIds}
-  //     />
-  //   );
-
   const modules = [
     roundStateUnknown,
     roundCancelled,
@@ -96,7 +56,6 @@ const TimedRoundModules: React.FC<{
     acceptingPropsModule,
     timedRoundVotingModule,
     roundOverModule,
-    // userPropCardModule,
   ];
 
   return (

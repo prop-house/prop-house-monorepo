@@ -26,28 +26,27 @@ const useVotingPower = (
 
   const propHouse = usePropHouse();
 
-  const fetchVotingPower = async () => {
-    if (!round) return;
-
-    setLoadingVotingPower(true);
-    try {
-      const govPower = await propHouse.govPower.getTotalPower(
-        account as string,
-        round.config.proposalPeriodStartTimestamp,
-        round.votingStrategiesRaw,
-      );
-      setLoadingVotingPower(false);
-      setVotingPower(govPower.toNumber());
-    } catch (e) {
-      console.log('Error fetching voting power: ', e);
-      setLoadingVotingPower(false);
-      setErrorLoadingVotingPower(true);
-    }
-  };
-
   useEffect(() => {
+    const fetchVotingPower = async () => {
+      if (!round) return;
+
+      setLoadingVotingPower(true);
+      try {
+        const govPower = await propHouse.govPower.getTotalPower(
+          account as string,
+          round.config.proposalPeriodStartTimestamp,
+          round.votingStrategiesRaw,
+        );
+        setLoadingVotingPower(false);
+        setVotingPower(govPower.toNumber());
+      } catch (e) {
+        console.log('Error fetching voting power: ', e);
+        setLoadingVotingPower(false);
+        setErrorLoadingVotingPower(true);
+      }
+    };
     fetchVotingPower();
-  }, [round]);
+  }, [round, propHouse.govPower, account]);
 
   return [loadingVotingPower, errorLoadingVotingPower, votingPower];
 };

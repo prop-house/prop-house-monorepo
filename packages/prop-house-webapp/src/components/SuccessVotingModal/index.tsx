@@ -11,9 +11,8 @@ import { buildProposalPath } from '../../utils/buildPropsalPath';
 const SuccessVotingModal: React.FC<{
   setShowSuccessVotingModal: Dispatch<SetStateAction<boolean>>;
   numPropsVotedFor: number;
-  signerIsContract: boolean;
 }> = props => {
-  const { setShowSuccessVotingModal, numPropsVotedFor, signerIsContract } = props;
+  const { setShowSuccessVotingModal, numPropsVotedFor } = props;
   const { t } = useTranslation();
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
@@ -25,9 +24,6 @@ const SuccessVotingModal: React.FC<{
   const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
     numPropsVotedFor === 1 ? t('prop') : t('props')
   }!`;
-  const contractSignerMsg = `${t('youveSubmittedVotesFor')} ${
-    numPropsVotedFor === 1 ? t('prop') : t('props')
-  }. ${t('theyWillBeCounted')}.`;
 
   const votedCopy =
     community && round
@@ -47,7 +43,7 @@ const SuccessVotingModal: React.FC<{
       setShowModal={setShowSuccessVotingModal}
       handleClose={() => setShowSuccessVotingModal(false)}
       title={t('veryNounish')}
-      subtitle={signerIsContract ? contractSignerMsg : eoaSignerMsg}
+      subtitle={eoaSignerMsg}
       image={NounImage.Glasses}
       button={
         <Button

@@ -3,8 +3,6 @@ import ProposalContent from '../ProposalContent';
 import proposalFields, { ProposalFields } from '../../utils/proposalFields';
 import { IoClose } from 'react-icons/io5';
 import { Col, Container } from 'react-bootstrap';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
-import OpenGraphElements from '../OpenGraphElements';
 import ProposalModalHeader from '../ProposalModalHeader';
 import Divider from '../Divider';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';

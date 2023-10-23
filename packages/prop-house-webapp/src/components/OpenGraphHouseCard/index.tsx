@@ -3,7 +3,6 @@ import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
-import CommunityProfImg from '../HouseProfImg';
 import { Community } from '@nouns/prop-house-wrapper/dist/builders';
 import getHouseCurrency from '../../utils/getHouseCurrency';
 import TruncateThousands from '../TruncateThousands';

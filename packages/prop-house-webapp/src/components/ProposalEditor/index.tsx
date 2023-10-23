@@ -73,11 +73,6 @@ const ProposalEditor: React.FC<{
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-
-  // TODO: resolve for currency
-  const roundCurreny = 'ETH';
-
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);

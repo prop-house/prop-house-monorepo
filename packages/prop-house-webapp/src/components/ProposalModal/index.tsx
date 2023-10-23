@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import ReactModal from 'react-modal';
@@ -15,7 +15,6 @@ import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
 import { Proposal, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
@@ -25,7 +24,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const params = useParams();
   const { id } = params;
-  const signer = useEthersSigner();
   const propHouse = usePropHouse();
 
   const dispatch = useDispatch();
@@ -33,11 +31,8 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const activeProposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-
-  const [propModalEl, setPropModalEl] = useState<Element | null>();
+  // const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
-  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
   // modals
@@ -77,18 +72,18 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   // eslint-disable-next-line
   useEffect(() => {
-    setPropModalEl(document.querySelector('#propModal'));
+    // setPropModalEl(document.querySelector('#propModal'));
   });
 
-  const handleKeyPress = useCallback(event => {
-    if (event.key === 'ArrowDown') {
-      setHideScrollButton(true);
-    }
-  }, []);
+  // const handleKeyPress = useCallback(event => {
+  //   if (event.key === 'ArrowDown') {
+  //     setHideScrollButton(true);
+  //   }
+  // }, []);
 
-  const handleScroll = useCallback(event => {
-    setHideScrollButton(true);
-  }, []);
+  // const handleScroll = useCallback(event => {
+  //   setHideScrollButton(true);
+  // }, []);
 
   const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
@@ -151,7 +146,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={isContract}
         />
       )}
 

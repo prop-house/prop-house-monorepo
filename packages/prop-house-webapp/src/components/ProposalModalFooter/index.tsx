@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { ButtonColor } from '../Button';
 import { Dispatch, SetStateAction } from 'react';
 import { useAppSelector } from '../../hooks';
-import { useDispatch } from 'react-redux';
 import WinningProposalBanner from '../WinningProposalBanner/WinningProposalBanner';
 import ProposalModalNavButtons from '../ProposalModalNavButtons';
 import VotesDisplay from '../VotesDisplay';
@@ -38,7 +37,6 @@ const ProposalModalFooter: React.FC<{
     setShowDeletePropModal,
   } = props;
 
-  const dispatch = useDispatch();
   const account = useAccount();
   const { t } = useTranslation();
 

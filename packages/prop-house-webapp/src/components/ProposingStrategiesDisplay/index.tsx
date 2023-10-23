@@ -36,7 +36,11 @@ const ProposingStrategiesDisplay: React.FC<{
     if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex)
       copy = (
         <>
-          <a href={buildEtherscanPath(strat.members[memberIndex].address)} target="_blank">
+          <a
+            href={buildEtherscanPath(strat.members[memberIndex].address)}
+            target="_blank"
+            rel="noreferrer"
+          >
             {trimEthAddress(strat.members[memberIndex].address)}
           </a>{' '}
           can propose.
@@ -47,7 +51,7 @@ const ProposingStrategiesDisplay: React.FC<{
       copy = (
         <>
           Owners of the{' '}
-          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank">
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
           token can propose. {propThreshold > 1 && `${propThreshold} tokens required`}
@@ -58,7 +62,7 @@ const ProposingStrategiesDisplay: React.FC<{
       copy = (
         <>
           Owners of the{' '}
-          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank">
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
           token with id {strat.tokenId} can propose. {propThreshold} tokens required.;
@@ -100,13 +104,13 @@ const ProposingStrategiesDisplay: React.FC<{
   ) : oneStratAndAllowListHasOneMember || oneStrat ? (
     singleStratCopy(proposingStrategies[0])
   ) : (
-    <a onClick={() => setShowModal(true)}>
+    <div onClick={() => setShowModal(true)}>
       {formattedContent(
         <>
-          Owners of multiple tokens can propose. <a>See who can propose ↗</a>
+          Owners of multiple tokens can propose. <span>See who can propose ↗</span>
         </>,
       )}
-    </a>
+    </div>
   );
 };
 

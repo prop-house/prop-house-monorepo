@@ -1,4 +1,4 @@
-import { StoredAuctionBase, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
 import dayjs from 'dayjs';
 import { isInfAuction } from './auctionType';
 import { Round, Timed } from '@prophouse/sdk-react';

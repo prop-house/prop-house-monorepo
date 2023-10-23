@@ -37,7 +37,6 @@ const Create: React.FC<{}> = () => {
   const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
 
   const [showPreview, setShowPreview] = useState(false);
-  const [propId, setPropId] = useState<null | number>(null);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
   const [propSubmissionTxId, setPropSubmissionTxId] = useState<null | string>(null);
 

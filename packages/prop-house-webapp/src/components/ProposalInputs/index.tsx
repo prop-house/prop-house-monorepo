@@ -46,7 +46,6 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);

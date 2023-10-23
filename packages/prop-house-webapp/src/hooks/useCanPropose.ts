@@ -26,28 +26,27 @@ const useCanPropose = (
 
   const propHouse = usePropHouse();
 
-  const fetchCanPropose = async () => {
-    if (!round) return;
-
-    setLoadingCanPropose(true);
-    try {
-      const govPower = await propHouse.govPower.getTotalPower(
-        account as string,
-        round.config.proposalPeriodStartTimestamp,
-        round.proposingStrategiesRaw,
-      );
-      setCanPropose(govPower.toNumber() >= round.config.proposalThreshold);
-      setLoadingCanPropose(false);
-    } catch (e) {
-      console.log('Error fetching canPropose: ', e);
-      setLoadingCanPropose(false);
-      setErrorLoadingCanPropose(true);
-    }
-  };
-
   useEffect(() => {
+    const fetchCanPropose = async () => {
+      if (!round) return;
+
+      setLoadingCanPropose(true);
+      try {
+        const govPower = await propHouse.govPower.getTotalPower(
+          account as string,
+          round.config.proposalPeriodStartTimestamp,
+          round.proposingStrategiesRaw,
+        );
+        setCanPropose(govPower.toNumber() >= round.config.proposalThreshold);
+        setLoadingCanPropose(false);
+      } catch (e) {
+        console.log('Error fetching canPropose: ', e);
+        setLoadingCanPropose(false);
+        setErrorLoadingCanPropose(true);
+      }
+    };
     fetchCanPropose();
-  }, [round]);
+  }, [round, account, propHouse.govPower]);
 
   return [loadingCanPropose, errorLoadingCanPropose, canPropose];
 };

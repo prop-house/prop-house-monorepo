@@ -43,7 +43,9 @@ const TimedRoundAcceptingPropsModule: React.FC<{
       {account ? (
         <Button
           text={
-            loadingCanPropose ? (
+            errorLoadingCanPropose ? (
+              <>Error loading account requirements</>
+            ) : loadingCanPropose ? (
               <div className={classes.loadingCopy}>
                 Verifying account requirements
                 <LoadingIndicator height={30} width={30} />

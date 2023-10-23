@@ -36,7 +36,6 @@ const ProposalWindowButtons: React.FC<{
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 
-  // const [loadingCanPropose, canPropose] = useProposalGrants(round!, account);
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(
     round!,
     account,
@@ -73,7 +72,9 @@ const ProposalWindowButtons: React.FC<{
                   <Button
                     classNames={classes.fullWidthButton}
                     text={
-                      loadingVotingPower ? (
+                      errorLoadingVotingPower ? (
+                        <div>There was an error loading voting power</div>
+                      ) : loadingVotingPower ? (
                         <div>Checking for account requirements...</div>
                       ) : votingPower > 0 && !loadingVotingPower ? (
                         'Create your proposal'

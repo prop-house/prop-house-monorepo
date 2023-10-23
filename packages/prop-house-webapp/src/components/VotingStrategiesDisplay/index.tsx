@@ -35,7 +35,11 @@ const VotingStrategiesDisplay: React.FC<{
     if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex)
       copy = (
         <>
-          <a href={buildEtherscanPath(strat.members[memberIndex].address)} target="_blank">
+          <a
+            href={buildEtherscanPath(strat.members[memberIndex].address)}
+            target="_blank"
+            rel="noreferrer"
+          >
             {trimEthAddress(strat.members[memberIndex].address)}
           </a>{' '}
           can vote with {strat.members[memberIndex].govPower} votes.
@@ -46,7 +50,7 @@ const VotingStrategiesDisplay: React.FC<{
       copy = (
         <>
           Owners of the{' '}
-          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank">
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
           token can vote. {strat.multiplier ? strat.multiplier : 1} vote per token.
@@ -57,7 +61,7 @@ const VotingStrategiesDisplay: React.FC<{
       copy = (
         <>
           Owners of the{' '}
-          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank">
+          <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
           token with id {strat.tokenId} can vote. {strat.multiplier ? strat.multiplier : 1} vote per
@@ -96,7 +100,7 @@ const VotingStrategiesDisplay: React.FC<{
     <div onClick={() => setShowModal(true)}>
       {formattedContent(
         <>
-          Owners of multiple tokens can vote. <a>See who can vote ↗</a>
+          Owners of multiple tokens can vote. <span>See who can vote ↗</span>
         </>,
       )}
     </div>

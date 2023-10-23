@@ -1,7 +1,6 @@
 import classes from './VotesVerificationModal.module.css';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
-import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
 import { Proposal, Vote } from '@prophouse/sdk-react';
 
@@ -11,7 +10,6 @@ const VotesVerificationModal: React.FC<{
   votes: Vote[];
 }> = props => {
   const { proposal, setDisplayVotesVerifModal, votes } = props;
-  const { t } = useTranslation();
 
   const verifiedVotes = (
     <div className={classes.votesContainer}>

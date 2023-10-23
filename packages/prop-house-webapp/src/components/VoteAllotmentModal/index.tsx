@@ -1,12 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import classes from './VoteAllotmentModal.module.css';
 import { useAppSelector } from '../../hooks';
-import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { buildRoundPath } from '../../utils/buildRoundPath';
-import { openInNewTab } from '../../utils/openInNewTab';
 import { FaLink } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { setOnchainActiveProposal } from '../../state/slices/propHouse';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
@@ -16,8 +11,6 @@ const VoteAllotmentModal: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
   const { propId, setShowModal } = props;
-  const dispatch = useDispatch();
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);

@@ -7,7 +7,6 @@ import VoteConfirmationModal from '../VoteConfirmationModal';
 import SuccessVotingModal from '../SuccessVotingModal';
 import ErrorVotingModal from '../ErrorVotingModal';
 import { Row, Col } from 'react-bootstrap';
-import { useTranslation } from 'react-i18next';
 import { Proposal, Round, RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
 import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
@@ -22,11 +21,9 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [isContract, setIsContract] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
-  const { t } = useTranslation();
   const dispatch = useDispatch();
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
@@ -74,7 +71,6 @@ const RoundContent: React.FC<{
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
           numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={isContract}
         />
       )}
 

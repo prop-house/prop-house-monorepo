@@ -46,7 +46,7 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
       }
     };
     fetchRoundOrHouse();
-  }, [round, house, roundOrHouseAddress]);
+  }, [round, house, roundOrHouseAddress, dispatch, lastAddressFetched, loading, propHouse.query]);
 
   if (errorFetchingRoundAndHouse) return <>Error fetching round or house</>;
   if (loading) return <LoadingIndicator />;

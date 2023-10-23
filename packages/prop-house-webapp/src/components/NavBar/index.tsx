@@ -5,8 +5,6 @@ import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import AdminTool from '../AdminTool';
-import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';

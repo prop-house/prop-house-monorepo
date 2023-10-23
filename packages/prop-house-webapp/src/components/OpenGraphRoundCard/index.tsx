@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import formatTime from '../../utils/formatTime';
-import CommunityProfImg from '../HouseProfImg';
 import TruncateThousands from '../TruncateThousands';
 import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { useEthersSigner } from '../../hooks/useEthersSigner';

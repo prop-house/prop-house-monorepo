@@ -68,6 +68,9 @@ const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
         case 'ERC721':
         case 'ERC1155':
           return 1;
+        default:
+          //todo
+          return 1;
       }
     });
 
@@ -83,7 +86,7 @@ const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
     );
 
     if (oneCurrencyForAllAwards) setOneCurrencyTotalAmount(parsedAmounts.reduce((a, b) => a + b));
-  });
+  }, [symbols, decimals, fullRoundAwards, oneCurrencyForAllAwards, awards]);
 
   const modal = (
     <Modal
@@ -108,6 +111,8 @@ const AwardsDisplay: React.FC<{ awards: RoundAward[] }> = props => {
 
   return showModal ? (
     modal
+  ) : errorLoadingDecimals || errorLoadingSymbols ? (
+    <>Error loading data</>
   ) : loadingSymbols || loadingDecimals ? (
     <LoadingIndicator height={18} width={26} />
   ) : !oneCurrencyForAllAwards ? (

@@ -1,57 +1,57 @@
-import {
-  Community,
-  StoredProposalWithVotes,
-  StoredAuctionBase,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import classes from '../TimedRoundModules/TimedRoundModules.module.css';
-import { Col } from 'react-bootstrap';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import clsx from 'clsx';
-import getWinningIds from '../../utils/getWinningIds';
-import UserPropCard from '../UserPropCard';
-import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
-import TimedRoundVotingModule from '../TimedRoundVotingModule';
-import RoundOverModule from '../RoundOverModule';
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { isSameAddress } from '../../utils/isSameAddress';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { useAccount } from 'wagmi';
-import InfRoundVotingModule from '../InfRoundVotingModule';
-import { useAppSelector } from '../../hooks';
-import { InfRoundFilterType } from '../../state/slices/propHouse';
-import RoundModuleWinner from '../RoundModuleWinner';
-import RoundModuleStale from '../RoundModuleStale';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
-import { infRoundBalance } from '../../utils/infRoundBalance';
-import RoundModuleRejected from '../RoundModuleRejected';
+import classes from '../TimedRoundModules/TimedRoundModules.module.css';
+import { Col } from 'react-bootstrap';
+import { Proposal, Round } from '@prophouse/sdk-react';
+import clsx from 'clsx';
+// import {
+//   Community,
+//   StoredProposalWithVotes,
+//   StoredAuctionBase,
+// } from '@nouns/prop-house-wrapper/dist/builders';
+// import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+// import getWinningIds from '../../utils/getWinningIds';
+// import UserPropCard from '../UserPropCard';
+// import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
+// import TimedRoundVotingModule from '../TimedRoundVotingModule';
+// import RoundOverModule from '../RoundOverModule';
+// import { isSameAddress } from '../../utils/isSameAddress';
+// import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
+// import { infRoundBalance } from '../../utils/infRoundBalance';
+// import RoundModuleRejected from '../RoundModuleRejected';
+// import InfRoundAcceptingPropsModule from '../InfRoundAcceptingPropsModule';
+// import InfRoundVotingModule from '../InfRoundVotingModule';
+// import { useAppSelector } from '../../hooks';
+// import { InfRoundFilterType } from '../../state/slices/propHouse';
+// import RoundModuleWinner from '../RoundModuleWinner';
+// import RoundModuleStale from '../RoundModuleStale';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
-import { Proposal, Round, Timed } from '@prophouse/sdk-react';
-import InfRoundAcceptingPropsModule from '../InfRoundAcceptingPropsModule';
 
 const InfRoundModules: React.FC<{
   round: Round;
   proposals: Proposal[];
   setShowVotingModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { round, proposals, setShowVotingModal } = props;
+  const { round, proposals } = props;
 
   const { address: account } = useAccount();
 
   // auction statuses
-  const roundNotStarted = round.state < Timed.RoundState.IN_PROPOSING_PERIOD;
-  const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const isVotingWindow = round.state === Timed.RoundState.IN_VOTING_PERIOD;
-  const isRoundOver = round.state > Timed.RoundState.IN_PROPOSING_PERIOD;
+  // const roundNotStarted = round.state < Timed.RoundState.IN_PROPOSING_PERIOD;
+  // const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  // const isVotingWindow = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  // const isRoundOver = round.state > Timed.RoundState.IN_PROPOSING_PERIOD;
 
-  const getVoteTotal = () =>
-    proposals.reduce((total, prop) => (total = total + Number(prop.votingPower)), 0);
-  const [fetchedUserProps, setFetchedUserProps] = useState(false);
+  // const getVoteTotal = () =>
+  //   proposals.reduce((total, prop) => (total = total + Number(prop.votingPower)), 0);
+  // const [fetchedUserProps, setFetchedUserProps] = useState(false);
 
   useEffect(() => {
     if (!account || !proposals) return;
-    setFetchedUserProps(false);
+    // setFetchedUserProps(false);
 
     // set user props
     // if (proposals.some(p => isSameAddress(p.address, account))) {

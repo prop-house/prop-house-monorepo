@@ -1,8 +1,5 @@
 import classes from '../TimedRoundAcceptingPropsModule/TimedRoundAcceptingPropsModule.module.css';
 import RoundModuleCard from '../RoundModuleCard';
-import { BsPersonFill } from 'react-icons/bs';
-import { MdHowToVote } from 'react-icons/md';
-import { ReactMarkdown } from 'react-markdown/lib/react-markdown';
 import { Round } from '@prophouse/sdk-react';
 import ProposingStrategiesDisplay from '../ProposingStrategiesDisplay';
 import VotingStrategiesDisplay from '../VotingStrategiesDisplay';

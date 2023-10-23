@@ -13,7 +13,7 @@ export interface ProposalContentProps {
 }
 
 const ProposalContent: React.FC<ProposalContentProps> = props => {
-  const { fields, roundCurrency } = props;
+  const { fields } = props;
   const { t } = useTranslation();
 
   return (

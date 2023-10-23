@@ -32,7 +32,7 @@ const SaveProposalModal: React.FC<{
 
   const [hasBeenSaved, setHasBeenSaved] = useState(false);
   const [errorSaving, setErrorSaving] = useState(false);
-  const updatedProposal = useAppSelector(state => state.editor.proposal);
+  // const updatedProposal = useAppSelector(state => state.editor.proposal);
 
   const handleSaveProposal = async () => {
     try {

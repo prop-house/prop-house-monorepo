@@ -27,18 +27,13 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-import { baseChain } from './types/baseChain';
-import { polygon } from './types/polygon';
-import { polygonMumbai } from './types/polygonMumbai';
-import Banner from './components/Banner';
 import HouseManager from './pages/HouseManager';
 import Rounds from './components/HouseManager/Rounds';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 
 const { chains, publicClient } = configureChains(
-  // [mainnet, baseChain, polygon, polygonMumbai],
-  [goerli],
+  [goerli, mainnet],
   [infuraProvider({ apiKey: process.env.REACT_APP_INFURA_PROJECT_ID! }), publicProvider()],
 );
 

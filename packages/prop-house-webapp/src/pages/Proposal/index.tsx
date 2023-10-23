@@ -37,14 +37,10 @@ const Proposal = () => {
   const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
 
-  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-
   const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
-  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
-  const [isContract, setIsContract] = useState(false);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
 
@@ -86,7 +82,9 @@ const Proposal = () => {
   const votingBar = proposal && round && round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.votingBar}>
       {isConnected ? (
-        loadingVotingPower ? (
+        errorLoadingVotingPower ? (
+          <>Error loading voting power.</>
+        ) : loadingVotingPower ? (
           <div className={classes.loadingVoting}>
             <LoadingIndicator height={50} width={50} />
           </div>
@@ -129,8 +127,7 @@ const Proposal = () => {
       {showSuccessVotingModal && (
         <SuccessVotingModal
           setShowSuccessVotingModal={setShowSuccessVotingModal}
-          numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={isContract}
+          numPropsVotedFor={666} // todo: fix
         />
       )}
 

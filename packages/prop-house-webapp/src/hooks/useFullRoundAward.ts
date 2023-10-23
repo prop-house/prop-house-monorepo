@@ -40,22 +40,14 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
   });
 
   // fetch symbols
-  const {
-    data: symbols,
-    isError: errorLoadingSymbols,
-    isLoading: loadingSymbols,
-  } = useContractReads({
+  const { data: symbols, isLoading: loadingSymbols } = useContractReads({
     contracts: awardContracts.map(awardContract => {
       return { ...awardContract, functionName: 'symbol' };
     }),
   });
 
   // fetch decimals
-  const {
-    data: decimals,
-    isError: errorLoadingDecimals,
-    isLoading: loadingDecimals,
-  } = useContractReads({
+  const { data: decimals, isLoading: loadingDecimals } = useContractReads({
     contracts: awardContracts.map(awardContract => {
       return { ...awardContract, functionName: 'decimals' };
     }),
@@ -74,6 +66,8 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
         case 'ERC721':
         case 'ERC1155': //todo handle er`1155: sometimes it's an erc20, sometimes its an erc721
           return 1;
+        default:
+          return 1;
       }
     });
 
@@ -87,7 +81,7 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
         };
       }),
     );
-  });
+  }, [symbols, fullRoundAwards, decimals, awards]);
 
   return [loadingSymbols, loadingDecimals, fullRoundAwards];
 };

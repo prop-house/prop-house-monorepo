@@ -60,7 +60,7 @@ const TimedRoundVotingControls: React.FC<{
       dispatch(setVotesByUserInActiveRound(votesInRound));
     };
     fetchVotesSubmitted();
-  }, []);
+  }, [account, activeRound, dispatch, propHouse.query]);
 
   // handles votes by clicking up/down arrows
   const handleClickVote = (e: any, direction: Direction) => {
