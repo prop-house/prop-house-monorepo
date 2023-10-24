@@ -31,7 +31,7 @@ const ProposalWindowButtons: React.FC<{
 
   const navigate = useNavigate();
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 

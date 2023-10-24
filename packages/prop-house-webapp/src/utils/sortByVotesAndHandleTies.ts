@@ -1,14 +1,11 @@
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { getLastUpdatedDate } from './getLastUpdatedDate';
 import dayjs from 'dayjs';
+import { Proposal } from '@prophouse/sdk-react';
 
-export const sortByVotesAndHandleTies = (
-  proposals: StoredProposalWithVotes[],
-  ascending: boolean,
-) =>
+export const sortByVotesAndHandleTies = (proposals: Proposal[], ascending: boolean) =>
   proposals.sort((a, b) => {
-    const gt = a.voteCountFor > b.voteCountFor;
-    const eq = a.voteCountFor === b.voteCountFor;
+    const gt = a.votingPower > b.votingPower;
+    const eq = a.votingPower === b.votingPower;
     const sortedByUpdatedAsc =
       (dayjs(getLastUpdatedDate(b)) as any) - (dayjs(getLastUpdatedDate(a)) as any);
     const sortedByUpdatedDes =
