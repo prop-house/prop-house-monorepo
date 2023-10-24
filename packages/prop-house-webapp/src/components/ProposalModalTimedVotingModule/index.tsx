@@ -7,15 +7,13 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useAppSelector } from '../../hooks';
 import { countVotesRemainingForTimedRound } from '../../utils/countVotesRemainingForTimedRound';
 import { useDispatch } from 'react-redux';
-import { execStrategy } from '@prophouse/communities';
 import { setVotingPower } from '../../state/slices/voting';
 import VoteAllotmentTooltip from '../VoteAllotmentTooltip';
 import VotesDisplay from '../VotesDisplay';
 import { countNumVotes } from '../../utils/countNumVotes';
 import { useAccount } from 'wagmi';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
-import { useEthersProvider } from '../../hooks/useEthersProvider';
-import { Proposal } from '@prophouse/sdk-react';
+import { Proposal, usePropHouse } from '@prophouse/sdk-react';
 
 const ProposalModalTimedVotingModule: React.FC<{
   proposal: Proposal;
@@ -26,15 +24,13 @@ const ProposalModalTimedVotingModule: React.FC<{
 
   const dispatch = useDispatch();
 
-  const round = useAppSelector(state => state.propHouse.activeRound);
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
 
-  const provider = useEthersProvider({
-    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
-  });
   const { address: account } = useAccount();
+  const propHouse = usePropHouse();
 
   const numVotesCasted = countNumVotes(votesByUserInActiveRound);
 
@@ -47,25 +43,23 @@ const ProposalModalTimedVotingModule: React.FC<{
   const votesAlloted = countTotalVotesAlloted(voteAllotments);
 
   useEffect(() => {
-    if (!account || !provider || !round) return;
+    if (!account || !round) return;
 
     const fetchVotes = async () => {
       try {
-        const strategyPayload = {
-          strategyName: round.voteStrategy.strategyName,
+        const votes = await propHouse.govPower.getTotalPower(
           account,
-          provider,
-          ...round.voteStrategy,
-        };
-        const votes = await execStrategy(strategyPayload);
+          round.config.proposalPeriodStartTimestamp,
+          round.votingStrategiesRaw,
+        );
 
-        dispatch(setVotingPower(votes));
+        dispatch(setVotingPower(votes.toNumber()));
       } catch (e) {
         console.log('error fetching votes: ', e);
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, round]);
+  }, [account, dispatch, round, propHouse.govPower]);
 
   return (
     <>

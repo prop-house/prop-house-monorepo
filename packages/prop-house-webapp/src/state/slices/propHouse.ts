@@ -1,8 +1,4 @@
-import {
-  StoredProposalWithVotes,
-  StoredAuctionBase,
-  InfiniteAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes, InfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
 import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
@@ -14,7 +10,6 @@ export interface PropHouseSlice {
   onchainActiveRound?: Round;
   onchainActiveHouse?: House;
 
-  activeRound?: StoredAuctionBase;
   activeProposals?: StoredProposalWithVotes[];
   modalActive: boolean;
   infRoundFilteredProposals?: StoredProposalWithVotes[];
@@ -48,9 +43,6 @@ export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
   reducers: {
-    setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
-      state.activeRound = action.payload;
-    },
     setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
       state.onchainActiveRound = action.payload;
     },
@@ -108,7 +100,6 @@ export const {
   setOnchainActiveRound,
   setOnchainActiveHouse,
 
-  setActiveRound,
   setActiveProposals,
   appendProposal,
   sortTimedRoundProposals,

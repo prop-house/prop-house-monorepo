@@ -7,7 +7,7 @@ import { VoteAllotment } from '../../types/VoteAllotment';
 import { useTranslation } from 'react-i18next';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
 import Modal from '../Modal';
-import { isTimedAuction } from '../../utils/auctionType';
+import { RoundType } from '@prophouse/sdk-react';
 
 const VoteConfirmationModal: React.FC<{
   setShowVoteConfirmationModal: Dispatch<SetStateAction<boolean>>;
@@ -15,7 +15,7 @@ const VoteConfirmationModal: React.FC<{
 }> = props => {
   const { setShowVoteConfirmationModal, submitVote } = props;
 
-  const round = useAppSelector(state => state.propHouse.activeRound);
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
@@ -43,7 +43,7 @@ const VoteConfirmationModal: React.FC<{
         </>
       }
       subtitle={
-        round && isTimedAuction(round) ? (
+        round && round.type === RoundType.TIMED ? (
           <>
             {t('youllHave')} {votesLeft} {t('votesRemaining')}
           </>
