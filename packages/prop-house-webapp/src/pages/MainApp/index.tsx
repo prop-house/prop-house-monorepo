@@ -6,6 +6,8 @@ import EthAddress from '../../components/EthAddress';
 import { useNavigate } from 'react-router-dom';
 import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
+import Jazzicon from 'react-jazzicon/dist/Jazzicon';
+import { jsNumberForAddress } from 'react-jazzicon';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -93,16 +95,27 @@ const MainApp = () => {
                   fontWeight: 'bold',
                   color: 'var(--brand-gray)',
                   cursor: 'pointer',
+                  rowGap: '8px',
                 }}
                 onClick={() => {
                   navigate(`/${house.address}`);
                 }}
               >
-                <img
-                  src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
-                  alt="house profile"
-                  style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
-                />
+                {house.imageURI?.includes('prop.house') ? (
+                  <img
+                    src={house.imageURI?.replace(
+                      /prophouse.mypinata.cloud/g,
+                      'cloudflare-ipfs.com',
+                    )}
+                    alt="house profile"
+                    style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
+                  />
+                ) : (
+                  <span style={{ marginRight: 6 }}>
+                    <Jazzicon diameter={16} seed={jsNumberForAddress(house.address)} />
+                  </span>
+                )}
+
                 {house.name}
               </div>
             );
@@ -114,7 +127,7 @@ const MainApp = () => {
   const roundsFeed = (
     <Col xl={5} className="mx-auto">
       <h5>Rounds</h5>
-      <div className={classes.roundsContainer}>
+      <div>
         {rounds &&
           rounds.map((round, i) => {
             return (
