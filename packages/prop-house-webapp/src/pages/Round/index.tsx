@@ -1,7 +1,7 @@
 import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import classes from './RoundPage.module.css';
+import classes from './Round.module.css';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
@@ -15,7 +15,7 @@ import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 
-const RoundPage: React.FC<{}> = () => {
+const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
@@ -83,4 +83,4 @@ const RoundPage: React.FC<{}> = () => {
   );
 };
 
-export default RoundPage;
+export default Round;

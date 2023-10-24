@@ -9,7 +9,7 @@ import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
 import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
-import { House, Round, RoundType } from '@prophouse/sdk-react';
+import { House, Round } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../HouseManager/utils/getDateFromTimestamp';
 
 const RoundHeader: React.FC<{
