@@ -5,37 +5,32 @@ import { StrategyHandlerBase } from './base';
 
 // prettier-ignore
 export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS> {
-  protected readonly _TIMESTAMP_TO_ETH_BLOCK_NUMBER_STORE = 'Timestamp_timestamp_to_eth_block_number';
-  protected readonly _L1_LATEST_BLOCK_STORE = '_latest_l1_block';
-
-  // TODO: Consider additional function that takes strategy address and params
+  protected readonly _TIMESTAMP_TO_ETH_BLOCK_NUMBER_STORE = '_timestamp_to_eth_block_number';
+  protected readonly _L1_LATEST_BLOCK_STORE = '_latest_l1_block';  
 
   /**
-   * Fetches the inputs required to prove a mapping storage key
-   * @param account The user account address
-   * @param timestamp The timestamp used to query the block for the proof
-   * @param strategyId The governance power strategy ID
+   * Fetches the inputs required to prove a storage key
+   * @param contractAddress The address of the contract whose storage is being proven
+   * @param slotKey The storage key to prove
+   * @param timestamp The timestamp used to fetch the block number to prove
    */
-  protected async fetchProofInputs(account: string, timestamp: string, strategyId: string) {
-    const strategy = await this.getStrategyAddressAndParams(strategyId);
-    const block = await this.getBlockNumberForTimestamp(strategy.addr, timestamp);
-
+  protected async fetchProofInputs(contractAddress: string, slotKey: string, timestamp: string | number) {
+    const block = await this.getBlockNumberForTimestamp(timestamp);
     const result = await this.provider.send('eth_getProof', [
-      hexZeroPad(strategy.params[0], 20), // Contract Address
-      [encoding.getSlotKey(account, strategy.params[1])], // Storage Key
+      hexZeroPad(contractAddress, 20), // Contract Address
+      [slotKey], // Storage Key
       `0x${block.toString(16)}`, // Block Number
     ]);
     return storageProofs.getProofInputs(block, result);
   }
 
   /**
-   * Get the block number for the given timestamp. Fetch the latest block number
-   * from the header store is not present in the governance power strategy store.
-   * @param strategy The governance power strategy address
+   * Get the block number for the given timestamp from the block registry. If it has not
+   * been populated yet, then query the header store for the latest block number.
    * @param timestamp The unix timestamp
    */
-  protected async getBlockNumberForTimestamp(strategy: string, timestamp: string | number) {
-    let block = await this.getBlockNumberFromStrategy(strategy, timestamp);
+  protected async getBlockNumberForTimestamp(timestamp: string | number) {
+    let block = await this.getBlockNumberFromRegistry(timestamp);
     if (!block) {
       block = await this.getLatestBlockNumberFromHeadersStore();
     }
@@ -43,17 +38,16 @@ export abstract class SingleSlotProofHandler<CS> extends StrategyHandlerBase<CS>
   }
 
   /**
-   * Get the block number for the given timestamp stored on the governance power strategy
-   * @param strategy The governance power strategy address
+   * Get the block number for the given timestamp from the block registry.
    * @param timestamp The unix timestamp
    */
-  protected async getBlockNumberFromStrategy(strategy: string, timestamp: string | number) {
+  protected async getBlockNumberFromRegistry(timestamp: string | number) {
     const key = encoding.getStorageVarAddress(
       this._TIMESTAMP_TO_ETH_BLOCK_NUMBER_STORE,
       BigNumber.from(timestamp).toHexString(),
     );
     const block = parseInt(
-      (await this._starknet.getStorageAt(strategy, key)).toString(),
+      (await this._starknet.getStorageAt(this._addresses.starknet.blockRegistry, key)).toString(),
       16,
     );
 

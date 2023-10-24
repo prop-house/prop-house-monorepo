@@ -35,9 +35,9 @@ export interface BalanceOfStrategy {
   multiplier?: number;
 }
 
-export interface ERC1155BalanceOfStrategy {
+export interface BalanceOfERC1155Strategy {
   id: string;
-  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155;
   tokenAddress: string;
   tokenId: string;
   multiplier?: number;
@@ -58,7 +58,7 @@ export interface UnknownStrategy extends GovPowerStrategyWithID {
   strategyType: GovPowerStrategyType.UNKNOWN;
 }
 
-export type ParsedGovPowerStrategy = BalanceOfStrategy | ERC1155BalanceOfStrategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
+export type ParsedGovPowerStrategy = BalanceOfStrategy | BalanceOfERC1155Strategy | AllowlistStrategy | VanillaStrategy | UnknownStrategy;
 
 export type ProposingStrategy = ParsedGovPowerStrategy;
 export type VotingStrategy = ParsedGovPowerStrategy;

@@ -10,10 +10,16 @@ export const ADDRESS_ONE = '0x0000000000000000000000000000000000000001';
 export const BALANCE_OF_FUNC = 'function balanceOf(address account) external view returns (uint256)';
 
 /**
+ * The `balanceOf` function signature for ERC1155 tokens.
+ */
+// prettier-ignore
+export const BALANCE_OF_ERC1155_FUNC = 'function balanceOf(address account, uint256 id) external view returns (uint256)';
+
+/**
  * A JavaScript tracer that's used to detect the slot index of the first mapping that's read.
  * This tracer returns the slot index as well as the number of mapping reads.
  */
-export const BALANCE_OF_TRACER = `{
+export const SINGLE_MAPPING_INDEX_TRACER = `{
   count: 0,
   prev: undefined,
   index: '-1',

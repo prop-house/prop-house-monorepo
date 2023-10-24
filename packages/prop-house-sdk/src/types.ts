@@ -392,7 +392,7 @@ export interface GovPowerChainConfig<CS extends Custom | void> extends ChainConf
 }
 
 export enum GovPowerStrategyType {
-  ERC1155_BALANCE_OF = 'ERC1155_BALANCE_OF',
+  BALANCE_OF_ERC1155 = 'BALANCE_OF_ERC1155',
   BALANCE_OF = 'BALANCE_OF',
   ALLOWLIST = 'ALLOWLIST',
   VANILLA = 'VANILLA',
@@ -413,8 +413,8 @@ export interface BalanceOfConfig {
   multiplier?: number;
 }
 
-export interface ERC1155BalanceOfConfig {
-  strategyType: GovPowerStrategyType.ERC1155_BALANCE_OF;
+export interface BalanceOfERC1155Config {
+  strategyType: GovPowerStrategyType.BALANCE_OF_ERC1155;
   assetType: AssetType.ERC1155;
   address: string;
   tokenId: string;
@@ -439,7 +439,7 @@ export interface Custom {
   strategyType: string;
 }
 
-export type DefaultGovPowerConfigs = BalanceOfConfig | ERC1155BalanceOfConfig | AllowlistConfig | VanillaConfig;
+export type DefaultGovPowerConfigs = BalanceOfConfig | BalanceOfERC1155Config | AllowlistConfig | VanillaConfig;
 
 // prettier-ignore
 export type GovPowerStrategyConfig<C extends Custom | void = void> = C extends void ? DefaultGovPowerConfigs : DefaultGovPowerConfigs | C;

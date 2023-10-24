@@ -22,19 +22,18 @@ fn get_slot_key(slot_index: u256, mapping_key: u256) -> u256 {
 /// * `slot_index` - The slot index.
 /// * `mapping_key` - The mapping key.
 fn get_nested_slot_key(slot_index: u256, mut mapping_keys: Span<u256>) -> u256 {
-    let mut encoded_array = ArrayTrait::new();
+    let outermost_mapping_key = *mapping_keys.pop_front().unwrap();
+    let mut slot_key = get_slot_key(slot_index, outermost_mapping_key);
     loop {
         match mapping_keys.pop_front() {
             Option::Some(k) => {
-                encoded_array.append(*k);
+                slot_key = get_slot_key(slot_key, *k);
             },
             Option::None(_) => {
-                break;
+                break slot_key;
             },
         };
-    };
-    encoded_array.append(slot_index);
-    keccak_u256s_be(encoded_array.span())
+    }
 }
 
 /// Read a generic span from storage.

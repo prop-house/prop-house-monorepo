@@ -178,6 +178,9 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     const ethBalanceOfGovPowerStrategyFactory = await starknet.getContractFactory(
       'prop_house_EthereumBalanceOfGovernancePowerStrategy',
     );
+    const ethBalanceOfErc1155GovPowerStrategyFactory = await starknet.getContractFactory(
+      'prop_house_EthereumBalanceOfERC1155GovernancePowerStrategy',
+    );
 
     // Infinite round factories
     const infiniteRoundL2Factory = await starknet.getContractFactory(
@@ -209,6 +212,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
       vanillaGovPowerStrategyFactory,
       allowlistGovPowerStrategyFactory,
       ethBalanceOfGovPowerStrategyFactory,
+      ethBalanceOfErc1155GovPowerStrategyFactory,
       infiniteRoundEthTxAuthStrategyFactory,
       infiniteRoundEthSigAuthStrategyFactory,
       timedRoundEthTxAuthStrategyFactory,
@@ -299,6 +303,14 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
     );
     const ethBalanceOfGovPowerStrategy = await starknetDeployer.deploy(
       ethBalanceOfGovPowerStrategyFactory,
+      {
+        fact_registry: args.herodotusFactRegistry,
+        ethereum_block_registry: ethBlockRegistry.address,
+      },
+      { maxFee: MAX_FEE },
+    );
+    const ethBalanceOfErc1155GovPowerStrategy = await starknetDeployer.deploy(
+      ethBalanceOfErc1155GovPowerStrategyFactory,
       {
         fact_registry: args.herodotusFactRegistry,
         ethereum_block_registry: ethBlockRegistry.address,
@@ -473,6 +485,7 @@ task('deploy', 'Deploys all Prop House protocol L1 & L2 contracts')
           vanillaGovPowerStrategy: vanillaGovPowerStrategy.address,
           allowlistGovPowerStrategy: allowlistGovPowerStrategy.address,
           ethBalanceOfGovPowerStrategy: ethBalanceOfGovPowerStrategy.address,
+          ethBalanceOfErc1155GovPowerStrategy: ethBalanceOfErc1155GovPowerStrategy.address,
           herodotus: config.herodotus,
         },
         classHash: {

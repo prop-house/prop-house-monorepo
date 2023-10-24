@@ -35,7 +35,7 @@ mod AllowlistGovernancePowerStrategy {
         let user_params_len = user_params.len();
         let leaf_len = 3; // [user, governance_power.low, governance_power.high]
 
-        assert(user_params_len >= leaf_len, 'Allowlist: Invalid parameters');
+        assert(user_params_len >= leaf_len && params.len() >= 1, 'Allowlist: Invalid parameters');
 
         let leaf_user = *user_params.at(0);
         let leaf_governance_power = u256 {

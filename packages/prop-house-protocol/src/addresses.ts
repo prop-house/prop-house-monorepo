@@ -18,6 +18,7 @@ export interface RoundImpls {
 export interface GovPowerStrategies {
   allowlist: string;
   balanceOf: string;
+  balanceOfErc1155: string;
   vanilla: string;
 }
 
@@ -51,6 +52,7 @@ export interface EVMContracts {
 export interface StarknetContracts {
   roundFactory: string;
   strategyRegistry: string;
+  blockRegistry: string;
   govPower: GovPowerStrategies;
   auth: AuthStrategies;
   herodotus: HetodotusContracts;
@@ -78,9 +80,11 @@ export const contracts: Record<number, ContractAddresses> = {
     starknet: {
       roundFactory: goerli.starknet.address.roundFactory,
       strategyRegistry: goerli.starknet.address.strategyRegistry,
+      blockRegistry: goerli.starknet.address.ethBlockRegistry,
       govPower: {
         allowlist: goerli.starknet.address.allowlistGovPowerStrategy,
         balanceOf: goerli.starknet.address.ethBalanceOfGovPowerStrategy,
+        balanceOfErc1155: goerli.starknet.address.ethBalanceOfErc1155GovPowerStrategy,
         vanilla: goerli.starknet.address.vanillaGovPowerStrategy,
       },
       auth: {

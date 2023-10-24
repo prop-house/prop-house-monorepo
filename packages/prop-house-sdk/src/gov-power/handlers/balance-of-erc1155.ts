@@ -1,14 +1,15 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { BalanceOfConfig, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
+import { BalanceOfERC1155Config, ChainConfig, GovPowerStrategyType, GovPowerConfig } from '../../types';
 import { ChainId } from '@prophouse/protocol';
 import { SingleSlotProofHandler } from './base';
 import { encoding, storageProofs } from '../../utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Contract } from '@ethersproject/contracts';
-import { ADDRESS_ONE, BALANCE_OF_FUNC } from '../../constants';
+import { ADDRESS_ONE, BALANCE_OF_ERC1155_FUNC } from '../../constants';
 import { Call } from 'starknet';
+import { Zero } from '@ethersproject/constants';
 
-export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
+export class BalanceOfERC1155Handler extends SingleSlotProofHandler<BalanceOfERC1155Config> {
   // prettier-ignore
   private readonly _traceRpcs: Record<number, string> = {
     [ChainId.EthereumGoerli]: 'https://goerli.blockpi.network/v1/rpc/756ed7f20b1fcbed679bc9384c021a69ffd59cfc',
@@ -18,25 +19,25 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
   private readonly _traceProvider: JsonRpcProvider;
 
   /**
-   * Returns a `BalanceOfHandler` instance for the provided chain configuration
+   * Returns a `BalanceOfERC1155Handler` instance for the provided chain configuration
    * @param config The chain config
    */
   public static for(config: ChainConfig) {
-    return new BalanceOfHandler(config);
+    return new BalanceOfERC1155Handler(config);
   }
 
   /**
    * The governance power strategy type
    */
   public get type() {
-    return GovPowerStrategyType.BALANCE_OF;
+    return GovPowerStrategyType.BALANCE_OF_ERC1155;
   }
 
   /**
    * The governance power strategy address
    */
   public get address() {
-    return this._addresses.starknet.govPower.balanceOf;
+    return this._addresses.starknet.govPower.balanceOfErc1155;
   }
 
   /**
@@ -55,23 +56,23 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
    * @notice Get the governance power strategy params that will be shared amongst all users
    * @param strategy The governance power strategy information
    */
-  public async getStrategyParams(strategy: BalanceOfConfig): Promise<string[]> {
+  public async getStrategyParams(strategy: BalanceOfERC1155Config): Promise<string[]> {
     const { slotIndex } = await storageProofs.getSlotIndexOfQueriedMapping(
       this._traceProvider,
       strategy.address,
       'balanceOf',
-      [ADDRESS_ONE],
+      [ADDRESS_ONE, Zero],
     );
     if (strategy.multiplier && BigNumber.from(strategy.multiplier).gt(1)) {
-      return [strategy.address, slotIndex, strategy.multiplier.toString()];
+      return [strategy.address, slotIndex, strategy.tokenId, strategy.multiplier.toString()];
     }
-    return [strategy.address, slotIndex];
+    return [strategy.address, slotIndex, strategy.tokenId];
   }
 
   // TODO: May need to generalize this (accept custom string[])
   public async getUserParams(account: string, timestamp: string, strategyId: string) {
     const strategy = await this.getStrategyAddressAndParams(strategyId);
-    const slotKey = encoding.getSlotKey(account, strategy.params[1]);
+    const slotKey = encoding.getNestedSlotKey([account, strategy.params[2]], strategy.params[1]);
     const {
       storageProofs: [proof],
     } = await this.fetchProofInputs(strategy.params[0], slotKey, timestamp);
@@ -84,7 +85,7 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
     strategyId: string,
   ): Promise<Call[]> {
     const strategy = await this.getStrategyAddressAndParams(strategyId);
-    const slotKey = encoding.getSlotKey(account, strategy.params[1]);
+    const slotKey = encoding.getNestedSlotKey([account, strategy.params[2]], strategy.params[1]);
     const proofInputs = await this.fetchProofInputs(strategy.params[0], slotKey, timestamp);
     return [
       {
@@ -114,10 +115,10 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
   public async getPower(config: GovPowerConfig): Promise<BigNumber> {
     const block = await this.getBlockNumberForTimestamp(config.timestamp);
     const token = BigNumber.from(config.params[0]).toHexString();
-    const balance = await this.contractFor(token).balanceOf(config.user, {
+    const balance = await this.contractFor(token).balanceOf(config.user, config.params[2], {
       blockTag: block,
     });
-    return balance.mul(config.params?.[2] ?? 1);
+    return balance.mul(config.params?.[3] ?? 1);
   }
 
   /**
@@ -125,6 +126,6 @@ export class BalanceOfHandler extends SingleSlotProofHandler<BalanceOfConfig> {
    * @param token The token address
    */
   private contractFor(token: string) {
-    return new Contract(token, [BALANCE_OF_FUNC], this._evm);
+    return new Contract(token, [BALANCE_OF_ERC1155_FUNC], this._evm);
   }
 }
