@@ -28,7 +28,7 @@ const useCanPropose = (
 
   useEffect(() => {
     const fetchCanPropose = async () => {
-      if (!round) return;
+      if (!round || !account) return;
 
       setLoadingCanPropose(true);
       try {
