@@ -66,10 +66,11 @@ export const propHouseSlice = createSlice({
       });
       state.infRoundFilteredProposals = action.payload;
     },
-    setOnChainActiveProposals: (state, action: PayloadAction<Proposal[]>) => {
-      state.onchainActiveProposals = action.payload.sort(
-        (a, b) => Number(b.votingPower) - Number(a.votingPower),
-      );
+    setOnChainActiveProposals: (state, action: PayloadAction<Proposal[] | undefined>) => {
+      state.onchainActiveProposals =
+        action.payload === undefined
+          ? undefined
+          : action.payload.sort((a, b) => Number(b.votingPower) - Number(a.votingPower));
     },
     appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
       state.activeProposals?.push(action.payload.proposal);

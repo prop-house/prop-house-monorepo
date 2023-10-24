@@ -24,11 +24,12 @@ const Round: React.FC<{}> = () => {
   const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
 
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [loadedProposals, setLoadedProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
 
   // fetch proposals
   useEffect(() => {
-    if (proposals || !round) return;
+    if (loadedProposals || !round) return;
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
@@ -38,8 +39,12 @@ const Round: React.FC<{}> = () => {
         setLoadingProposalsFailed(true);
       }
       setLoadingProposals(false);
+      setLoadedProposals(true);
     };
     fetchProposals();
+    return () => {
+      dispatch(setOnChainActiveProposals(undefined));
+    };
   });
 
   return (
