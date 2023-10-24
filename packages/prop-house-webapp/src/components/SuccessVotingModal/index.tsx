@@ -15,9 +15,9 @@ const SuccessVotingModal: React.FC<{
   const { setShowSuccessVotingModal, numPropsVotedFor } = props;
   const { t } = useTranslation();
 
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const activeProp = useAppSelector(state => state.propHouse.onchainActiveProposal);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const activeProp = useAppSelector(state => state.propHouse.activeProposal);
 
   console.log('activeProp:', activeProp);
 

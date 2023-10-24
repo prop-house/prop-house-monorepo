@@ -22,7 +22,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
 }> = props => {
   const { round } = props;
 
-  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const isProposingWindow = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
 
   const dispatch = useDispatch();

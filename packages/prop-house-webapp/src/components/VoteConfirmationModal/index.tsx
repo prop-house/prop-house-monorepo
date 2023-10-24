@@ -15,7 +15,7 @@ const VoteConfirmationModal: React.FC<{
 }> = props => {
   const { setShowVoteConfirmationModal, submitVote } = props;
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);

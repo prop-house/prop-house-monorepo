@@ -12,7 +12,7 @@ const VoteAllotmentModal: React.FC<{
 }> = props => {
   const { propId, setShowModal } = props;
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   const voteAllotmentData = sortVoteAllotmentsByVotes(voteAllotments).map((v, idx) => (

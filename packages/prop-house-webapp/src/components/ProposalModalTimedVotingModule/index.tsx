@@ -24,7 +24,7 @@ const ProposalModalTimedVotingModule: React.FC<{
 
   const dispatch = useDispatch();
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);

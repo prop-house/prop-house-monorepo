@@ -18,10 +18,10 @@ import RoundContent from '../../components/RoundContent';
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
   const isModalActive = useAppSelector(state => state.propHouse.modalActive);
-  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const [loadingProposals, setLoadingProposals] = useState(false);
   const [loadedProposals, setLoadedProposals] = useState(false);

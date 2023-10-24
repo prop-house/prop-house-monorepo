@@ -22,7 +22,7 @@ const SaveProposalModal: React.FC<{
   } = props;
 
   const host = useAppSelector(state => state.configuration.backendHost);
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const client = useRef(new PropHouseWrapper(host));
   const signer = useEthersSigner();
 

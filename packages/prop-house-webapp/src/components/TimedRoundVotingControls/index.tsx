@@ -21,7 +21,7 @@ const TimedRoundVotingControls: React.FC<{
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
-  const activeRound = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const activeRound = useAppSelector(state => state.propHouse.activeRound);
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
 
   const dispatch = useAppDispatch();

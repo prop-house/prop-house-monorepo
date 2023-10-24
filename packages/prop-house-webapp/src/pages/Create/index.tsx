@@ -33,8 +33,8 @@ const Create: React.FC<{}> = () => {
   // const remainingBal = infRoundBalance(activeProps, activeAuction);
   const remainingBal = 10;
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
 
   const [showPreview, setShowPreview] = useState(false);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);

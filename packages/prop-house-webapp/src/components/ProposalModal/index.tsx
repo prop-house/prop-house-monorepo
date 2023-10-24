@@ -27,8 +27,8 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const propHouse = usePropHouse();
 
   const dispatch = useDispatch();
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const activeProposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   // const [propModalEl, setPropModalEl] = useState<Element | null>();

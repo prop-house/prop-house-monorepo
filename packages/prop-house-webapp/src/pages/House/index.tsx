@@ -16,7 +16,7 @@ import RoundCard from '../../components/RoundCard';
 const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
   const [rounds, setRounds] = useState<Round[]>();
   const [loadingRounds, setLoadingRounds] = useState(false);
   const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);

@@ -13,8 +13,8 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
 
   const [loading, setLoading] = useState(false);
   const [isRoundOrHouse, setIsRoundOrHouse] = useState<'round' | 'house'>();

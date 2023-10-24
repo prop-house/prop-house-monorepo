@@ -34,8 +34,8 @@ const Proposal = () => {
   const { openAccountModal } = useAccountModal();
 
   const dispatch = useDispatch();
-  const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
+  const round = useAppSelector(state => state.propHouse.activeRound);
 
   const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);

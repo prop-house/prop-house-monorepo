@@ -30,8 +30,8 @@ const ProposalWindowButtons: React.FC<{
   const { address: account } = useAccount();
 
   const navigate = useNavigate();
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 

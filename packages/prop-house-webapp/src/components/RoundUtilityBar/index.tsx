@@ -7,7 +7,7 @@ import TimedRoundUtilityBarItems from '../TimedRoundUtilityBarItems';
 
 const RoundUtilityBar: React.FC<{ round: Round }> = props => {
   const { round } = props;
-  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   return (
     <div className={classes.roundUtilityBar}>

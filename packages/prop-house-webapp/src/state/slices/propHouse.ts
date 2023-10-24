@@ -4,10 +4,10 @@ import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
 import { House, Proposal, Round } from '@prophouse/sdk-react';
 
 export interface PropHouseSlice {
-  onchainActiveProposal?: Proposal;
-  onchainActiveProposals?: Proposal[];
-  onchainActiveRound?: Round;
-  onchainActiveHouse?: House;
+  activeProposal?: Proposal;
+  activeProposals?: Proposal[];
+  activeRound?: Round;
+  activeHouse?: House;
 
   modalActive: boolean;
   infRoundFilteredProposals?: StoredProposalWithVotes[];
@@ -42,27 +42,24 @@ export const propHouseSlice = createSlice({
   initialState,
   reducers: {
     setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
-      state.onchainActiveRound = action.payload;
+      state.activeRound = action.payload;
     },
     setOnchainActiveProposal: (state, action: PayloadAction<Proposal>) => {
-      state.onchainActiveProposal = action.payload;
+      state.activeProposal = action.payload;
     },
 
     setOnChainActiveProposals: (state, action: PayloadAction<Proposal[] | undefined>) => {
-      state.onchainActiveProposals =
+      state.activeProposals =
         action.payload === undefined
           ? undefined
           : action.payload.sort((a, b) => Number(b.votingPower) - Number(a.votingPower));
     },
     appendProposal: (state, action: PayloadAction<{ proposal: Proposal }>) => {
-      state.onchainActiveProposals?.push(action.payload.proposal);
+      state.activeProposals?.push(action.payload.proposal);
     },
     sortTimedRoundProposals: (state, action: PayloadAction<TimedRoundSortProps>) => {
-      if (!state.onchainActiveProposals) return;
-      state.onchainActiveProposals = sortTimedRoundProps(
-        state.onchainActiveProposals,
-        action.payload,
-      );
+      if (!state.activeProposals) return;
+      state.activeProposals = sortTimedRoundProps(state.activeProposals, action.payload);
     },
     filterInfRoundProposals: (
       state,
@@ -80,7 +77,7 @@ export const propHouseSlice = createSlice({
       state.infRoundFilterType = action.payload;
     },
     setOnchainActiveHouse: (state, action: PayloadAction<House | undefined>) => {
-      state.onchainActiveHouse = action.payload;
+      state.activeHouse = action.payload;
     },
     setModalActive: (state, action: PayloadAction<boolean>) => {
       state.modalActive = action.payload;

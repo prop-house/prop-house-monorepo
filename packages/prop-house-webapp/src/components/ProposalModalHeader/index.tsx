@@ -37,7 +37,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
 
   const { t } = useTranslation();
   const [tooltipContent, setTooltipContent] = useState('Click to copy');
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const propURL = round && buildProposalPath(round, proposal.id);
 
   const shareBtn = (onClick?: () => void) => (
