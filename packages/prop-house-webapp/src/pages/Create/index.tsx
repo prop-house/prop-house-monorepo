@@ -15,7 +15,6 @@ import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 import validFileType from '../../utils/validFileType';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import changeFileExtension from '../../utils/changeFileExtension';
-import FundingAmount from '../../components/FundingAmount';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
@@ -193,7 +192,6 @@ const Create: React.FC<{}> = () => {
               <NavBar />
               <Container>
                 <h1 className={classes.title}>Creating your proposal for</h1>
-
                 <h1 className={classes.proposalTitle}>
                   <span className={classes.boldLabel}>{round.title}</span> in the{' '}
                   <span className={classes.boldLabel}>{house.name}</span> house

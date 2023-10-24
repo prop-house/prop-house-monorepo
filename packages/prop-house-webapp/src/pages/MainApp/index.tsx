@@ -148,7 +148,7 @@ const MainApp = () => {
           activity.map((item, i) => {
             if ('proposer' in item) {
               return (
-                <p className={classes.activityItem} key={i}>
+                <div className={classes.activityItem} key={i}>
                   <EthAddress
                     address={item.proposer}
                     addAvatar={true}
@@ -156,11 +156,11 @@ const MainApp = () => {
                     className={classes.address}
                   />
                   &nbsp;proposed&nbsp;{item.title}
-                </p>
+                </div>
               );
             }
             return (
-              <p className={classes.activityItem} key={i}>
+              <div className={classes.activityItem} key={i}>
                 <EthAddress
                   address={item.voter}
                   addAvatar={true}
@@ -168,7 +168,7 @@ const MainApp = () => {
                   className={classes.address}
                 />
                 &nbsp;voted&nbsp;{item.votingPower}&nbsp;
-              </p>
+              </div>
             );
           })}
       </div>
