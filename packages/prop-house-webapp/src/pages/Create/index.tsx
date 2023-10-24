@@ -198,18 +198,6 @@ const Create: React.FC<{}> = () => {
                   <span className={classes.boldLabel}>{round.title}</span> in the{' '}
                   <span className={classes.boldLabel}>{house.name}</span> house
                 </h1>
-
-                {round.type === RoundType.TIMED && (
-                  <span className={classes.fundingCopy}>
-                    <span className={classes.boldLabel}>{round.config.awards.length}</span> winners
-                    will be selected to receive{' '}
-                    <span className={classes.boldLabel}>
-                      {' '}
-                      {/** TODO: RESOLVE FOR AMOUNT AND CURRENCYTYPE */}
-                      <FundingAmount amount={100} currencyType={'ETH'} />
-                    </span>
-                  </span>
-                )}
               </Container>
             </div>
 
