@@ -12,7 +12,6 @@ const VoteAllotmentModal: React.FC<{
 }> = props => {
   const { propId, setShowModal } = props;
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
@@ -26,7 +25,7 @@ const VoteAllotmentModal: React.FC<{
           <span className={classes.propTitle}>{v.proposalTitle}</span>
         </span>
 
-        {round && community && (
+        {round && (
           <button
             disabled={v.proposalId === propId}
             className={classes.propLink}

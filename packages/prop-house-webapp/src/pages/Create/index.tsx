@@ -15,7 +15,6 @@ import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 import validFileType from '../../utils/validFileType';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import changeFileExtension from '../../utils/changeFileExtension';
-import FundingAmount from '../../components/FundingAmount';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
 import NavBar from '../../components/NavBar';
@@ -33,8 +32,8 @@ const Create: React.FC<{}> = () => {
   // const remainingBal = infRoundBalance(activeProps, activeAuction);
   const remainingBal = 10;
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
 
   const [showPreview, setShowPreview] = useState(false);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
@@ -62,13 +61,28 @@ const Create: React.FC<{}> = () => {
     const file = new File([blob], 'proposal.json', { type: 'application/json' });
     const result = await client.current.postFile(file, file.name);
 
-    const proposal = await propHouse.round.timed.proposeViaSignature({
+    const propResult = await propHouse.round.timed.proposeViaSignature({
       round: round.address,
       metadataUri: `ipfs://${result.data.ipfsHash}`,
     });
 
-    setPropSubmissionTxId(proposal.transaction_hash);
-    dispatch(appendProposal({ proposal }));
+    // todo: use propResult instead of `newProp` below when SDK returns new proposal
+    const newProp = {
+      id: 0,
+      proposer: account as string,
+      round: round.address,
+      metadataURI: `ipfs://${result.data.ipfsHash}`,
+      title: title,
+      body: what,
+      isCancelled: false,
+      isWinner: false,
+      receivedAt: 0,
+      txHash: propResult.transaction_hash,
+      votingPower: '0',
+    };
+
+    setPropSubmissionTxId(propResult.transaction_hash);
+    dispatch(appendProposal({ proposal: newProp }));
     dispatch(clearProposal());
     setShowProposalSuccessModal(true);
   };
@@ -193,23 +207,10 @@ const Create: React.FC<{}> = () => {
               <NavBar />
               <Container>
                 <h1 className={classes.title}>Creating your proposal for</h1>
-
                 <h1 className={classes.proposalTitle}>
                   <span className={classes.boldLabel}>{round.title}</span> in the{' '}
                   <span className={classes.boldLabel}>{house.name}</span> house
                 </h1>
-
-                {round.type === RoundType.TIMED && (
-                  <span className={classes.fundingCopy}>
-                    <span className={classes.boldLabel}>{round.config.awards.length}</span> winners
-                    will be selected to receive{' '}
-                    <span className={classes.boldLabel}>
-                      {' '}
-                      {/** TODO: RESOLVE FOR AMOUNT AND CURRENCYTYPE */}
-                      <FundingAmount amount={100} currencyType={'ETH'} />
-                    </span>
-                  </span>
-                )}
               </Container>
             </div>
 

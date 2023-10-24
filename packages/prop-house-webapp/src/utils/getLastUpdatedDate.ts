@@ -1,9 +1,9 @@
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
+import { Proposal } from '@prophouse/sdk-react';
 
 /**
  * If a prop has been edited, the last updated date will be used to compare versus created date.
  * @param proposal Proposal
  * @returns a timedstamp
  */
-export const getLastUpdatedDate = (proposal: StoredProposalWithVotes) =>
-  proposal.lastUpdatedDate ? proposal.lastUpdatedDate : proposal.createdDate;
+// todo: update when SDK provides updatedDate data
+export const getLastUpdatedDate = (proposal: Proposal) => proposal.receivedAt;

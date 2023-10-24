@@ -40,8 +40,8 @@ const ProposalModalFooter: React.FC<{
   const account = useAccount();
   const { t } = useTranslation();
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const proposal = useAppSelector(state => state.propHouse.onchainActiveProposal);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const votingPower = useAppSelector(state => state.voting.votingPower);
 
   const isProposingWindow = round && round.state === Timed.RoundState.IN_PROPOSING_PERIOD;

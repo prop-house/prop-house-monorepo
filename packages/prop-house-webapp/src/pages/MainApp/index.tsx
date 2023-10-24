@@ -6,6 +6,8 @@ import EthAddress from '../../components/EthAddress';
 import { useNavigate } from 'react-router-dom';
 import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
+import Jazzicon from 'react-jazzicon/dist/Jazzicon';
+import { jsNumberForAddress } from 'react-jazzicon';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -80,7 +82,7 @@ const MainApp = () => {
 
   const housesFeed = (
     <Col xl={2}>
-      <h5 style={{ marginBottom: '16px' }}>Communities</h5>
+      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Communities</h5>}
       <div className={classes.housesContainer}>
         {houses &&
           houses.map((house, i) => {
@@ -93,16 +95,27 @@ const MainApp = () => {
                   fontWeight: 'bold',
                   color: 'var(--brand-gray)',
                   cursor: 'pointer',
+                  rowGap: '8px',
                 }}
                 onClick={() => {
                   navigate(`/${house.address}`);
                 }}
               >
-                <img
-                  src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
-                  alt="house profile"
-                  style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
-                />
+                {house.imageURI?.includes('prop.house') ? (
+                  <img
+                    src={house.imageURI?.replace(
+                      /prophouse.mypinata.cloud/g,
+                      'cloudflare-ipfs.com',
+                    )}
+                    alt="house profile"
+                    style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
+                  />
+                ) : (
+                  <span style={{ marginRight: 6 }}>
+                    <Jazzicon diameter={16} seed={jsNumberForAddress(house.address)} />
+                  </span>
+                )}
+
                 {house.name}
               </div>
             );
@@ -113,8 +126,8 @@ const MainApp = () => {
 
   const roundsFeed = (
     <Col xl={5} className="mx-auto">
-      <h5>Rounds</h5>
-      <div className={classes.roundsContainer}>
+      {!isMobile() && <h5>Rounds</h5>}
+      <div>
         {rounds &&
           rounds.map((round, i) => {
             return (
@@ -129,13 +142,13 @@ const MainApp = () => {
 
   const activityFeed = (
     <Col xl={4}>
-      <h5 style={{ marginBottom: '16px' }}>Activity</h5>
+      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Activity</h5>}
       <div className={classes.activityContainer}>
         {activity &&
           activity.map((item, i) => {
             if ('proposer' in item) {
               return (
-                <p className={classes.activityItem} key={i}>
+                <div className={classes.activityItem} key={i}>
                   <EthAddress
                     address={item.proposer}
                     addAvatar={true}
@@ -143,11 +156,11 @@ const MainApp = () => {
                     className={classes.address}
                   />
                   &nbsp;proposed&nbsp;{item.title}
-                </p>
+                </div>
               );
             }
             return (
-              <p className={classes.activityItem} key={i}>
+              <div className={classes.activityItem} key={i}>
                 <EthAddress
                   address={item.voter}
                   addAvatar={true}
@@ -155,7 +168,7 @@ const MainApp = () => {
                   className={classes.address}
                 />
                 &nbsp;voted&nbsp;{item.votingPower}&nbsp;
-              </p>
+              </div>
             );
           })}
       </div>
@@ -167,7 +180,7 @@ const MainApp = () => {
       <Row>
         {isMobile() ? (
           <>
-            <Tabs defaultActiveKey="rounds" className="mb-3">
+            <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="houses" title="Houses">
                 {housesFeed}
               </Tab>

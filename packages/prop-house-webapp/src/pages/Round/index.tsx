@@ -1,7 +1,7 @@
 import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
-import classes from './RoundPage.module.css';
+import classes from './Round.module.css';
 import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
@@ -15,20 +15,22 @@ import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 
-const RoundPage: React.FC<{}> = () => {
+const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
   const isModalActive = useAppSelector(state => state.propHouse.modalActive);
-  const proposals = useAppSelector(state => state.propHouse.onchainActiveProposals);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [loadedProposals, setLoadedProposals] = useState(false);
   const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
 
   // fetch proposals
   useEffect(() => {
-    if (proposals || !round) return;
+    if (proposals || loadedProposals || !round) return;
+
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
@@ -38,9 +40,14 @@ const RoundPage: React.FC<{}> = () => {
         setLoadingProposalsFailed(true);
       }
       setLoadingProposals(false);
+      setLoadedProposals(true);
     };
     fetchProposals();
-  });
+    return () => {
+      dispatch(setOnChainActiveProposals(undefined));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -83,4 +90,4 @@ const RoundPage: React.FC<{}> = () => {
   );
 };
 
-export default RoundPage;
+export default Round;

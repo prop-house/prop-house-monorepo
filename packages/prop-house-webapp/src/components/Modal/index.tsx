@@ -73,8 +73,8 @@ const Modal: React.FC<{
 
   const titleAndSubtitle = (
     <div className={classes.titleAndSubtitleContainer}>
-      {title && <p className={classes.modalTitle}>{title}</p>}
-      {subtitle && <p className={classes.modalSubtitle}>{subtitle}</p>}
+      {title && <div className={classes.modalTitle}>{title}</div>}
+      {subtitle && <div className={classes.modalSubtitle}>{subtitle}</div>}
     </div>
   );
 

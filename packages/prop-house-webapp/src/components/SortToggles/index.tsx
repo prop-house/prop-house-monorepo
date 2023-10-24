@@ -18,8 +18,9 @@ const InfRoundSortToggles: React.FC<{
 
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const isInfRoundOver =
-    proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0;
+
+  const isInfRoundOver = false;
+  // proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0; // todo: fix
 
   const dispatch = useDispatch();
 

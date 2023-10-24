@@ -11,7 +11,6 @@ import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../hooks';
 import LoadingIndicator from '../LoadingIndicator';
-
 import { BsPersonFill, BsFillAwardFill } from 'react-icons/bs';
 import { MdHowToVote } from 'react-icons/md';
 import { ReactMarkdown } from 'react-markdown/lib/react-markdown';

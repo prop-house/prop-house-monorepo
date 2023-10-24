@@ -10,7 +10,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
   const { proposal } = props;
 
   const prophouse = usePropHouse();
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const round = useAppSelector(state => state.propHouse.activeRound);
   const [votes, setVotes] = useState<Vote[]>([]);
 
   useEffect(() => {

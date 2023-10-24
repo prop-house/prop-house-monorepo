@@ -15,9 +15,9 @@ const SuccessVotingModal: React.FC<{
   const { setShowSuccessVotingModal, numPropsVotedFor } = props;
   const { t } = useTranslation();
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const activeProp = useAppSelector(state => state.propHouse.onchainActiveProposal);
+  const activeProp = useAppSelector(state => state.propHouse.activeProposal);
 
   console.log('activeProp:', activeProp);
 
@@ -26,16 +26,12 @@ const SuccessVotingModal: React.FC<{
   }!`;
 
   const votedCopy =
-    community && round
+    house && round
       ? activeProp
-        ? `I just voted for ${activeProp.title}: ${buildProposalPath(
-            community,
+        ? `I just voted for ${activeProp.title}: ${buildProposalPath(round, activeProp.id)}`
+        : `I just voted in ${house.name}'s ${round.title} round: https://prop.house${buildRoundPath(
             round,
-            activeProp.id,
           )}`
-        : `I just voted in ${community.name}'s ${
-            round.title
-          } round: https://prop.house${buildRoundPath(community, round)}`
       : 'I just voted @ https://prop.house';
 
   return (

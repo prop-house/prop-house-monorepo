@@ -1,8 +1,6 @@
-import { Community, AuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { nameToSlug } from './communitySlugs';
+import { Round } from '@prophouse/sdk-react';
 
 /**
- * build url path to round (/:community-name/:round-name)
+ * build url path to round (/:roundAddress)
  */
-export const buildRoundPath = (community: Community, round: AuctionBase) =>
-  `/${nameToSlug(community.name)}/${nameToSlug(round.title)}`;
+export const buildRoundPath = (round: Round) => `/$${round.address}`;

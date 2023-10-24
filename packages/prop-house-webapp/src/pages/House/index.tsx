@@ -1,4 +1,4 @@
-import classes from './HousePage.module.css';
+import classes from './House.module.css';
 import { useAppSelector } from '../../hooks';
 import HouseHeader from '../../components/HouseHeader';
 import React, { useEffect, useState } from 'react';
@@ -13,10 +13,10 @@ import { useTranslation } from 'react-i18next';
 import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard from '../../components/RoundCard';
 
-const HousePage: React.FC<{}> = () => {
+const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
   const [rounds, setRounds] = useState<Round[]>();
   const [loadingRounds, setLoadingRounds] = useState(false);
   const [failedLoadingRounds, setFailedLoadingRounds] = useState(false);
@@ -153,4 +153,4 @@ const HousePage: React.FC<{}> = () => {
   );
 };
 
-export default HousePage;
+export default House;

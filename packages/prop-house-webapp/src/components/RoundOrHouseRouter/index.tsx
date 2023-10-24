@@ -1,11 +1,11 @@
 import { usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import HousePage from '../../pages/HousePage';
-import RoundPage from '../../pages/RoundPage';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setOnchainActiveHouse, setOnchainActiveRound } from '../../state/slices/propHouse';
 import LoadingIndicator from '../LoadingIndicator';
+import House from '../../pages/House';
+import Round from '../../pages/Round';
 
 const RoundOrHouseRouter: React.FC<{}> = () => {
   const { roundOrHouse: roundOrHouseAddress } = useParams();
@@ -13,8 +13,8 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
 
-  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
-  const house = useAppSelector(state => state.propHouse.onchainActiveHouse);
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
 
   const [loading, setLoading] = useState(false);
   const [isRoundOrHouse, setIsRoundOrHouse] = useState<'round' | 'house'>();
@@ -51,10 +51,10 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
   if (errorFetchingRoundAndHouse) return <>Error fetching round or house</>;
   if (loading) return <LoadingIndicator />;
 
-  if (isRoundOrHouse === 'house' && house) return <HousePage />;
-  if (isRoundOrHouse === 'round' && round && house) return <RoundPage />;
+  if (isRoundOrHouse === 'house' && house) return <House />;
+  if (isRoundOrHouse === 'round' && round && house) return <Round />;
 
-  return <>Error</>;
+  return <></>;
 };
 
 export default RoundOrHouseRouter;

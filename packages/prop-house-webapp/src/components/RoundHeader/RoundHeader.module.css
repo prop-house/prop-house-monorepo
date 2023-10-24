@@ -24,6 +24,12 @@
 .titleRow .title {
   font-size: xx-large;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .titleRow .contractAddressPill {
   background-color: rgba(128, 128, 128, 0.1);
