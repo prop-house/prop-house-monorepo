@@ -54,7 +54,7 @@ const RoundOrHouseRouter: React.FC<{}> = () => {
   if (isRoundOrHouse === 'house' && house) return <House />;
   if (isRoundOrHouse === 'round' && round && house) return <Round />;
 
-  return <>Error</>;
+  return <></>;
 };
 
 export default RoundOrHouseRouter;
