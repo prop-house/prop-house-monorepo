@@ -14,7 +14,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
   const [votes, setVotes] = useState<Vote[]>([]);
 
   useEffect(() => {
-    if (!round) return;
+    if (!round || votes) return;
     const fetchVotes = async () =>
       setVotes(await prophouse.query.getVotesForProposal(round.address, proposal.id));
     fetchVotes();
