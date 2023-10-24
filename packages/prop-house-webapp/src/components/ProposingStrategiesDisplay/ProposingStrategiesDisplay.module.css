@@ -27,3 +27,9 @@
   flex-direction: column;
   align-items: center;
 }
+
+.singleStratDisplayContainer p span {
+  font-weight: bold;
+  color: var(--brand-pink);
+  cursor: pointer;
+}
