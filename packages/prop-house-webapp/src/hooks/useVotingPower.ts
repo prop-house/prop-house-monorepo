@@ -28,7 +28,7 @@ const useVotingPower = (
 
   useEffect(() => {
     const fetchVotingPower = async () => {
-      if (!round) return;
+      if (!round || !account) return;
 
       setLoadingVotingPower(true);
       try {

@@ -14,6 +14,7 @@ import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
 import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
+import { setVoteAllotments } from '../../state/slices/voting';
 
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -44,6 +45,7 @@ const Round: React.FC<{}> = () => {
     };
     fetchProposals();
     return () => {
+      dispatch(setVoteAllotments([]));
       dispatch(setOnChainActiveProposals(undefined));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
