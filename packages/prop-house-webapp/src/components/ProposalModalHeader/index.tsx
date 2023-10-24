@@ -37,9 +37,8 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
 
   const { t } = useTranslation();
   const [tooltipContent, setTooltipContent] = useState('Click to copy');
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
-  const round = useAppSelector(state => state.propHouse.activeRound);
-  const propURL = community && round && buildProposalPath(community, round, proposal.id);
+  const round = useAppSelector(state => state.propHouse.onchainActiveRound);
+  const propURL = round && buildProposalPath(round, proposal.id);
 
   const shareBtn = (onClick?: () => void) => (
     <button className={classes.shareButton} onClick={onClick}>
@@ -61,7 +60,7 @@ const ProposalModalHeader: React.FC<ProposalModalHeaderProps> = props => {
         <div
           onMouseEnter={() => setTooltipContent(t('clickToCopy'))}
           onClick={() => {
-            if (!community || !round) return;
+            if (!round) return;
             setTooltipContent(t('copied'));
             propURL && navigator.clipboard.writeText(propURL);
           }}

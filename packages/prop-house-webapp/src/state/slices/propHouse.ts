@@ -1,6 +1,5 @@
 import {
   StoredProposalWithVotes,
-  Community,
   StoredAuctionBase,
   InfiniteAuction,
 } from '@nouns/prop-house-wrapper/dist/builders';
@@ -17,7 +16,6 @@ export interface PropHouseSlice {
 
   activeRound?: StoredAuctionBase;
   activeProposals?: StoredProposalWithVotes[];
-  activeCommunity?: Community;
   modalActive: boolean;
   infRoundFilteredProposals?: StoredProposalWithVotes[];
   infRoundFilterType: InfRoundFilterType;
@@ -94,9 +92,6 @@ export const propHouseSlice = createSlice({
     setInfRoundFilterType: (state, action: PayloadAction<InfRoundFilterType>) => {
       state.infRoundFilterType = action.payload;
     },
-    setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
-      state.activeCommunity = action.payload;
-    },
     setOnchainActiveHouse: (state, action: PayloadAction<House | undefined>) => {
       state.onchainActiveHouse = action.payload;
     },
@@ -118,7 +113,6 @@ export const {
   appendProposal,
   sortTimedRoundProposals,
   filterInfRoundProposals,
-  setActiveCommunity,
   setModalActive,
   setInfRoundFilterType,
 } = propHouseSlice.actions;

@@ -26,7 +26,6 @@ const ProposalModalTimedVotingModule: React.FC<{
 
   const dispatch = useDispatch();
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
@@ -48,7 +47,7 @@ const ProposalModalTimedVotingModule: React.FC<{
   const votesAlloted = countTotalVotesAlloted(voteAllotments);
 
   useEffect(() => {
-    if (!account || !provider || !community || !round) return;
+    if (!account || !provider || !round) return;
 
     const fetchVotes = async () => {
       try {
@@ -66,7 +65,7 @@ const ProposalModalTimedVotingModule: React.FC<{
       }
     };
     fetchVotes();
-  }, [account, provider, dispatch, community, round]);
+  }, [account, provider, dispatch, round]);
 
   return (
     <>

@@ -30,7 +30,6 @@ const ProposalWindowButtons: React.FC<{
   const { address: account } = useAccount();
 
   const navigate = useNavigate();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.onchainActiveRound);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
@@ -89,7 +88,7 @@ const ProposalWindowButtons: React.FC<{
                     }
                     onClick={() => {
                       dispatch(clearProposal());
-                      navigate('/create', { state: { auction: round, community, proposals } });
+                      navigate('/create', { state: { auction: round, proposals } });
                     }}
                     disabled={!(votingPower > 0)}
                   />
@@ -132,7 +131,7 @@ const ProposalWindowButtons: React.FC<{
               }
               onClick={() => {
                 dispatch(clearProposal());
-                navigate('/create', { state: { auction: round, community, proposals } });
+                navigate('/create', { state: { auction: round, proposals } });
               }}
               disabled={!(votingPower > 0)}
             />
