@@ -59,13 +59,9 @@ const RoundHeader: React.FC<{
 
         <Col lg={12} className={classes.communityInfoCol}>
           <div className={classes.date}>
-            {round.type !== RoundType.TIMED
-              ? `${
-                  dayjs().isBefore(round.config.proposalPeriodStartTimestamp) ? `Starts` : `Started`
-                } ${formatTime(getDateFromTimestamp(round.config.proposalPeriodStartTimestamp))}`
-              : `${formatTime(
-                  getDateFromTimestamp(round.config.proposalPeriodStartTimestamp),
-                )} - ${formatTime(getDateFromTimestamp(round.config.proposalPeriodEndTimestamp))}`}
+            {`${
+              dayjs().isBefore(round.config.proposalPeriodStartTimestamp) ? `Starts` : `Started`
+            } ${formatTime(getDateFromTimestamp(round.config.proposalPeriodStartTimestamp))}`}
           </div>
           <Col className={clsx(classes.titleRow, isLongName(house.name!) && classes.longName)}>
             <div className={classes.title}>{`${round.title}`}</div>
