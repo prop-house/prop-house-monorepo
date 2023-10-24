@@ -82,7 +82,7 @@ const MainApp = () => {
 
   const housesFeed = (
     <Col xl={2}>
-      <h5 style={{ marginBottom: '16px' }}>Communities</h5>
+      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Communities</h5>}
       <div className={classes.housesContainer}>
         {houses &&
           houses.map((house, i) => {
@@ -126,7 +126,7 @@ const MainApp = () => {
 
   const roundsFeed = (
     <Col xl={5} className="mx-auto">
-      <h5>Rounds</h5>
+      {!isMobile() && <h5>Rounds</h5>}
       <div>
         {rounds &&
           rounds.map((round, i) => {
@@ -142,7 +142,7 @@ const MainApp = () => {
 
   const activityFeed = (
     <Col xl={4}>
-      <h5 style={{ marginBottom: '16px' }}>Activity</h5>
+      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Activity</h5>}
       <div className={classes.activityContainer}>
         {activity &&
           activity.map((item, i) => {
@@ -180,7 +180,7 @@ const MainApp = () => {
       <Row>
         {isMobile() ? (
           <>
-            <Tabs defaultActiveKey="rounds" className="mb-3">
+            <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="houses" title="Houses">
                 {housesFeed}
               </Tab>
