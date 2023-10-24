@@ -21,7 +21,7 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
-import { Proposal, RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();

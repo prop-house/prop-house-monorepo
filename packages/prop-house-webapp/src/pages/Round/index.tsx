@@ -46,6 +46,7 @@ const Round: React.FC<{}> = () => {
     return () => {
       dispatch(setOnChainActiveProposals(undefined));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
