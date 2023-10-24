@@ -29,7 +29,8 @@ const Round: React.FC<{}> = () => {
 
   // fetch proposals
   useEffect(() => {
-    if (loadedProposals || !round) return;
+    if (proposals || loadedProposals || !round) return;
+
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
@@ -45,7 +46,7 @@ const Round: React.FC<{}> = () => {
     return () => {
       dispatch(setOnChainActiveProposals(undefined));
     };
-  });
+  }, []);
 
   return (
     <>

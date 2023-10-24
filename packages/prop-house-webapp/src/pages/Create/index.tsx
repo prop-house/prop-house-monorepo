@@ -21,7 +21,7 @@ import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
-import { RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { Proposal, RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
@@ -61,13 +61,28 @@ const Create: React.FC<{}> = () => {
     const file = new File([blob], 'proposal.json', { type: 'application/json' });
     const result = await client.current.postFile(file, file.name);
 
-    const proposal = await propHouse.round.timed.proposeViaSignature({
+    const propResult = await propHouse.round.timed.proposeViaSignature({
       round: round.address,
       metadataUri: `ipfs://${result.data.ipfsHash}`,
     });
 
-    setPropSubmissionTxId(proposal.transaction_hash);
-    dispatch(appendProposal({ proposal }));
+    // todo: use propResult instead of `newProp` below when SDK returns new proposal
+    const newProp = {
+      id: 0,
+      proposer: account as string,
+      round: round.address,
+      metadataURI: `ipfs://${result.data.ipfsHash}`,
+      title: title,
+      body: what,
+      isCancelled: false,
+      isWinner: false,
+      receivedAt: 0,
+      txHash: propResult.transaction_hash,
+      votingPower: '0',
+    };
+
+    setPropSubmissionTxId(propResult.transaction_hash);
+    dispatch(appendProposal({ proposal: newProp }));
     dispatch(clearProposal());
     setShowProposalSuccessModal(true);
   };
