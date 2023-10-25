@@ -57,7 +57,7 @@ const VotingStrategiesDisplay: React.FC<{
         </>
       );
 
-    if (stratType === GovPowerStrategyType.ERC1155_BALANCE_OF)
+    if (stratType === GovPowerStrategyType.BALANCE_OF_ERC1155)
       copy = (
         <>
           Owners of the{' '}
