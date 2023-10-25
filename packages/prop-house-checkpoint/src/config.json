@@ -3,9 +3,9 @@
   "optimistic_indexing": true,
   "sources": [
     {
-      "contract": "0x5b0b4ac85df4b47cba473a6ffaea0ae596f4b53200bc1eb81c60333772bc07d",
+      "contract": "0x628f829e598f292a0df9655b3487fb1883203f55773aa36ac9d3f54f12a27d",
       "abi": "EthereumRoundFactory",
-      "start": 869427,
+      "start": 888684,
       "events": [
         {
           "name": "RoundRegistered",
