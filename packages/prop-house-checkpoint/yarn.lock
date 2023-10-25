@@ -653,17 +653,17 @@
     is-ipfs "^0.6.0"
     path "^0.12.7"
 
-"@prophouse/protocol@~0.4.1-alpha":
-  version "0.4.1-alpha"
-  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.4.1-alpha.tgz#547167b6fb4f3796f7f203f6908a44f7e15b4918"
-  integrity sha512-0mfxXl1sGYjVClxroBjvkNk38KYrgZRriXNLSDKmz/wEIvvCIZu/pWC6CegX4xEG0GjBuH9eomXiBzl8RL29dg==
+"@prophouse/protocol@~0.4.2-alpha":
+  version "0.4.2-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/protocol/-/protocol-0.4.2-alpha.tgz#a74b757a5c159bf8ede130680a87bacdb5a91a62"
+  integrity sha512-57gPZH2eZ+YgLsoujjhPicg6tJV+KW3bCWkUdqtMteHZGyCc0CYgmEUpyeXm4Lfo15oIEmk2yOwQsG95I17aeQ==
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk@^0.4.0-alpha":
-  version "0.4.0-alpha"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.4.0-alpha.tgz#1311e8d539d4d5e463e25073e1effa8d476772d5"
-  integrity sha512-VJMq7NbbU1UVMjrJ1rTFAdDr7bL5waRd6I4PZe0l+p42mF2A2sL1/JFIdazHWZdsBDLZMCNKWDjimx7JnuGraA==
+"@prophouse/sdk@^0.4.1-alpha":
+  version "0.4.1-alpha"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-0.4.1-alpha.tgz#e9fa7347aa9a40f5b6ea20b2fb15c4f7fdfb8c69"
+  integrity sha512-DgKB5J8G8SRKxNO1D9fgBK4kGJNBk8xavtdeWPVyIEMGfQHABmYye0dxHaCt7UNifWV6lhca6aYzuOXgLSqjGg==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -679,7 +679,7 @@
     "@ethersproject/strings" "~5.7.0"
     "@ethersproject/wallet" "^5.7.0"
     "@pinata/sdk" "^2.1.0"
-    "@prophouse/protocol" "~0.4.1-alpha"
+    "@prophouse/protocol" "~0.4.2-alpha"
     bn.js "^5.2.1"
     ethereumjs-fork-block "^4.2.4"
     ethereumjs-fork-common "^3.1.3"
