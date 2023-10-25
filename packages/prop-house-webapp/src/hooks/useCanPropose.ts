@@ -45,7 +45,7 @@ const useCanPropose = (
       }
     };
     fetchCanPropose();
-  }, [round, account, propHouse.govPower]);
+  }, [round, account, propHouse.round.timed]);
 
   return [loadingCanPropose, errorLoadingCanPropose, canPropose];
 };
