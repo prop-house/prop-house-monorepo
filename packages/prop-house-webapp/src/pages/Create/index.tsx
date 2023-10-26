@@ -6,7 +6,7 @@ import ProposalEditor from '../../components/ProposalEditor';
 import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { appendProposal } from '../../state/slices/propHouse';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { ProposalFields } from '../../utils/proposalFields';
 import { useTranslation } from 'react-i18next';
@@ -22,10 +22,13 @@ import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
 import { RoundType, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { NounImage } from '../../utils/getNounImage';
+import Modal from '../../components/Modal';
+import { useLocation } from 'react-router-dom';
 
 const Create: React.FC<{}> = () => {
   const { address: account } = useAccount();
-
+  const { state } = useLocation();
   const { t } = useTranslation();
 
   // TODO: fix
@@ -37,14 +40,14 @@ const Create: React.FC<{}> = () => {
 
   const [showPreview, setShowPreview] = useState(false);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [propSubmissionTxId, setPropSubmissionTxId] = useState<null | string>(null);
 
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
-
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-
   const propHouse = usePropHouse();
 
   const onDataChange = (data: Partial<ProposalFields>) => {
@@ -56,35 +59,45 @@ const Create: React.FC<{}> = () => {
 
     const { title, what, tldr } = proposalEditorData;
 
-    const json = JSON.stringify({ title, what, tldr }, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const file = new File([blob], 'proposal.json', { type: 'application/json' });
-    const result = await client.current.postFile(file, file.name);
+    try {
+      setShowLoadingModal(true);
+      const json = JSON.stringify({ title, what, tldr }, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const file = new File([blob], 'proposal.json', { type: 'application/json' });
 
-    const propResult = await propHouse.round.timed.proposeViaSignature({
-      round: round.address,
-      metadataUri: `ipfs://${result.data.ipfsHash}`,
-    });
+      const result = await client.current.postFile(file, file.name);
 
-    // todo: use propResult instead of `newProp` below when SDK returns new proposal
-    const newProp = {
-      id: 0,
-      proposer: account as string,
-      round: round.address,
-      metadataURI: `ipfs://${result.data.ipfsHash}`,
-      title: title,
-      body: what,
-      isCancelled: false,
-      isWinner: false,
-      receivedAt: 0,
-      txHash: propResult.transaction_hash,
-      votingPower: '0',
-    };
+      const propResult = await propHouse.round.timed.proposeViaSignature({
+        round: round.address,
+        metadataUri: `ipfs://${result.data.ipfsHash}`,
+      });
 
-    setPropSubmissionTxId(propResult.transaction_hash);
-    dispatch(appendProposal({ proposal: newProp }));
-    dispatch(clearProposal());
-    setShowProposalSuccessModal(true);
+      // todo: use propResult instead of `newProp` below when SDK returns new proposal
+      const newProp = {
+        id: 0,
+        proposer: account as string,
+        round: round.address,
+        metadataURI: `ipfs://${result.data.ipfsHash}`,
+        title: title,
+        body: what,
+        isCancelled: false,
+        isWinner: false,
+        receivedAt: 0,
+        txHash: propResult.transaction_hash,
+        votingPower: '0',
+      };
+      setShowLoadingModal(false);
+
+      setPropSubmissionTxId(propResult.transaction_hash);
+      dispatch(setOnChainActiveProposals([...state.proposals, newProp]));
+      dispatch(clearProposal());
+      setShowProposalSuccessModal(true);
+    } catch (e) {
+      setShowLoadingModal(false);
+      setShowProposalSuccessModal(false);
+      setShowErrorModal(true);
+      console.log(`Error submitting proposal: `, e);
+    }
   };
 
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
@@ -194,6 +207,23 @@ const Create: React.FC<{}> = () => {
             showImageUploadModal={showImageUploadModal}
             setShowImageUploadModal={setShowImageUploadModal}
           >
+            {showErrorModal && (
+              <Modal
+                title={'Error'}
+                subtitle={'Error submitting your proposal. Please try again.'}
+                image={NounImage.Banana}
+                setShowModal={setShowErrorModal}
+              />
+            )}
+            {showLoadingModal && (
+              <Modal
+                title={'Loading'}
+                subtitle={'Sending your prop through the Ether...'}
+                body={<LoadingIndicator />}
+                setShowModal={setShowLoadingModal}
+              />
+            )}
+
             {showProposalSuccessModal && propSubmissionTxId && (
               <ProposalSuccessModal
                 setShowProposalSuccessModal={setShowProposalSuccessModal}

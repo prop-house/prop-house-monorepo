@@ -13,6 +13,7 @@ import { Round } from '@prophouse/sdk-react';
 import useCanPropose from '../../hooks/useCanPropose';
 import ProposingStrategiesDisplay from '../ProposingStrategiesDisplay';
 import VotingStrategiesDisplay from '../VotingStrategiesDisplay';
+import { useAppSelector } from '../../hooks';
 
 const TimedRoundAcceptingPropsModule: React.FC<{
   round: Round;
@@ -23,6 +24,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
   const navigate = useNavigate();
   const { address: account } = useAccount();
   const { t } = useTranslation();
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
 
@@ -59,7 +61,8 @@ const TimedRoundAcceptingPropsModule: React.FC<{
           bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
           onClick={() => {
             dispatch(clearProposal());
-            navigate('/create');
+            // pass state so that we can re-populate the round with proposals + newly created prop
+            navigate('/create', { state: { proposals } });
           }}
           disabled={!canPropose}
         />
