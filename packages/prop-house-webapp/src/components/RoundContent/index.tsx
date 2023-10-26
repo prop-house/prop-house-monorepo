@@ -12,6 +12,8 @@ import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
 import { clearVoteAllotments } from '../../state/slices/voting';
+import Modal from '../Modal';
+import LoadingIndicator from '../LoadingIndicator';
 
 const RoundContent: React.FC<{
   round: Round;
@@ -21,6 +23,7 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
@@ -31,6 +34,7 @@ const RoundContent: React.FC<{
 
   const handleSubmitVote = async () => {
     try {
+      setShowLoadingModal(true);
       const votes = voteAllotments
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
@@ -43,8 +47,7 @@ const RoundContent: React.FC<{
       if (!result?.transaction_hash) {
         throw new Error(`Vote submission failed: ${result}`);
       }
-
-      setShowErrorVotingModal(false);
+      setShowLoadingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
 
@@ -54,6 +57,7 @@ const RoundContent: React.FC<{
       setShowVoteConfirmationModal(false);
     } catch (e) {
       console.log(e);
+      setShowLoadingModal(true);
       setShowErrorVotingModal(true);
     }
   };
@@ -76,6 +80,15 @@ const RoundContent: React.FC<{
 
       {showErrorVotingModal && (
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
+      )}
+
+      {showLoadingModal && (
+        <Modal
+          title={'Submitting Votes'}
+          subtitle={`Signing.. Sending...`}
+          body={<LoadingIndicator />}
+          setShowModal={setShowLoadingModal}
+        />
       )}
 
       <Row className={classes.propCardsRow}>

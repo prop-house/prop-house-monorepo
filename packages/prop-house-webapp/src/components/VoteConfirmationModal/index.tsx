@@ -65,7 +65,14 @@ const VoteConfirmationModal: React.FC<{
         </div>
       }
       button={
-        <Button text={t('signAndSubmit')} bgColor={ButtonColor.Purple} onClick={submitVote} />
+        <Button
+          text={t('signAndSubmit')}
+          bgColor={ButtonColor.Purple}
+          onClick={() => {
+            setShowVoteConfirmationModal(false);
+            submitVote();
+          }}
+        />
       }
     />
   );
