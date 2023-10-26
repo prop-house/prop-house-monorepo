@@ -14,6 +14,7 @@ import InfRoundModules from '../InfRoundModules';
 import { clearVoteAllotments } from '../../state/slices/voting';
 import Modal from '../Modal';
 import LoadingIndicator from '../LoadingIndicator';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const RoundContent: React.FC<{
   round: Round;
@@ -51,13 +52,21 @@ const RoundContent: React.FC<{
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
 
-      // TODO: For now, handle locally. This may take 1-2 mins
-      // refreshActiveProposals(propHouse, round, dispatch);
+      // refresh props with new votes
+      const updatedProps = proposals.map(prop => {
+        const voteForProp = votes.find(v => v.proposalId === prop.id);
+        let newProp = { ...prop };
+        if (voteForProp)
+          newProp.votingPower = `${Number(newProp.votingPower) + voteForProp.votingPower}`;
+        return newProp;
+      });
+      dispatch(setOnChainActiveProposals(updatedProps));
+
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
       console.log(e);
-      setShowLoadingModal(true);
+      setShowLoadingModal(false);
       setShowErrorVotingModal(true);
     }
   };
