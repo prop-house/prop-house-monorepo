@@ -43,13 +43,24 @@ const ProposalSuccessModal: React.FC<{
       image={NounImage.Heart}
       handleClose={backToRound}
       button={
-        <Button
-          text={'Share on Twitter'}
-          bgColor={ButtonColor.Purple}
-          onClick={() => {
-            openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
-          }}
-        />
+        <>
+          <Button
+            text={'Share on Warpcast'}
+            bgColor={ButtonColor.Purple}
+            onClick={() => {
+              openInNewTab(
+                `https://warpcast.com/~/compose?text=Check+out+my+prop:+https://prop.house/${propSubmissionTxId}/`,
+              );
+            }}
+          />
+          <Button
+            text={'Share on Twitter'}
+            bgColor={ButtonColor.Purple}
+            onClick={() => {
+              openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
+            }}
+          />
+        </>
       }
     />
   );
