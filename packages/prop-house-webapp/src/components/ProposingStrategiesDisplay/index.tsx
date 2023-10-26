@@ -80,13 +80,13 @@ const ProposingStrategiesDisplay: React.FC<{
     console.log(strats);
     return (
       <div className={classes.modalBody}>
-        {strats.map(strat => {
+        {strats.map((strat, key) => {
           if (strat.strategyType === GovPowerStrategyType.ALLOWLIST) {
             strat.members.map((_, index) => {
-              return <p>{singleStratCopy(strat, index)}</p>;
+              return <div key={`${key}${index}`}>{singleStratCopy(strat, index)}</div>;
             });
           }
-          return <p>{singleStratCopy(strat)}</p>;
+          return <div key={key}>{singleStratCopy(strat)}</div>;
         })}
       </div>
     );
