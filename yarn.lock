@@ -4535,39 +4535,17 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.4.3-alpha":
-  version "0.4.3-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.3-alpha.tgz#76d4e4c55e3c5b2fe39835c330a06e1f0b4b6700"
-  integrity sha512-AV3IuAu8kXPCUt6NdpoEq2rAmFgWXpnzUdcr6GCB2zY5trWxEk86JsorNb8UFpxEHTSHQNkP+J+1GRTV13lWwA==
-  dependencies:
-    "@prophouse/sdk" "~0.4.4-alpha"
-
-"@prophouse/sdk@^0.1.0-alpha.8":
-  version "0.1.0-alpha.8"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.1.0-alpha.8.tgz#6ed23b6f3e80b7b866a3cdde73b3423bfda43d4b"
-  integrity sha512-K8h5fWQfYTaH44z6m9Kbmuc+U+A3sFjAUVmPua4OSioTMEXVqN34hA6IGDZwXMz+0gyYb0k7D5bWa1DiSpXO+Q==
-  dependencies:
-    "@ethereumjs/block" "~3.6.3"
-    "@ethereumjs/common" "~2.6.5"
-    "@ethersproject/abi" "~5.5.0"
-    "@ethersproject/address" "~5.5.0"
-    "@ethersproject/bignumber" "~5.5.0"
-    "@ethersproject/bytes" "~5.5.0"
-    "@ethersproject/constants" "~5.5.0"
-    "@ethersproject/contracts" "~5.5.0"
-    "@ethersproject/keccak256" "~5.5.0"
-    "@ethersproject/providers" "~5.5.0"
-    "@ethersproject/solidity" "~5.5.0"
-    "@prophouse/contracts" "^0.1.0-alpha.7"
-    bn.js "^5.2.1"
-    randombytes "^2.1.0"
-    starknet "4.19.3"
-    time-ts "^0.1.0"
-
-"@prophouse/sdk@~0.4.4-alpha":
+"@prophouse/sdk-react@0.4.4-alpha":
   version "0.4.4-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.4-alpha.tgz#655a96bfa1a634f987ecde067c745591c071a93f"
-  integrity sha512-czlNwKTKlhH14lsMO5ZtxEcai8KojOEEo3MLLWK5IGYzZolWfeEbPFONd9A/kDpUAbxPqbSYHvpvBQiCoYpVcg==
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.4-alpha.tgz#486ce315290b09d570a4be4c9d3a32c804c8b97a"
+  integrity sha512-58GONfw58sgx/dg0Pi3gjIVD0BZ3h61O2XU/XGJnoNh1GCKNhPdAYEjysSwXGmmK0K/c6yES13Io9kQKbilWZA==
+  dependencies:
+    "@prophouse/sdk" "0.4.5-alpha"
+
+"@prophouse/sdk@0.4.5-alpha":
+  version "0.4.5-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.5-alpha.tgz#2e142822f115c96e2c6104ee75321c5b819e1da2"
+  integrity sha512-R/D50lxaszk3fJQ1SwCjFv+DNYLFvSbn9ttjehIvE876vWsPlhnQGYn7aaYG5s1DACp1xYPKWb01pjmOIBDZvg==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
@@ -4592,6 +4570,28 @@
     micro-starknet "^0.2.3"
     randombytes "^2.1.0"
     starknet "5.19.5"
+    time-ts "^0.1.0"
+
+"@prophouse/sdk@^0.1.0-alpha.8":
+  version "0.1.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.1.0-alpha.8.tgz#6ed23b6f3e80b7b866a3cdde73b3423bfda43d4b"
+  integrity sha512-K8h5fWQfYTaH44z6m9Kbmuc+U+A3sFjAUVmPua4OSioTMEXVqN34hA6IGDZwXMz+0gyYb0k7D5bWa1DiSpXO+Q==
+  dependencies:
+    "@ethereumjs/block" "~3.6.3"
+    "@ethereumjs/common" "~2.6.5"
+    "@ethersproject/abi" "~5.5.0"
+    "@ethersproject/address" "~5.5.0"
+    "@ethersproject/bignumber" "~5.5.0"
+    "@ethersproject/bytes" "~5.5.0"
+    "@ethersproject/constants" "~5.5.0"
+    "@ethersproject/contracts" "~5.5.0"
+    "@ethersproject/keccak256" "~5.5.0"
+    "@ethersproject/providers" "~5.5.0"
+    "@ethersproject/solidity" "~5.5.0"
+    "@prophouse/contracts" "^0.1.0-alpha.7"
+    bn.js "^5.2.1"
+    randombytes "^2.1.0"
+    starknet "4.19.3"
     time-ts "^0.1.0"
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":

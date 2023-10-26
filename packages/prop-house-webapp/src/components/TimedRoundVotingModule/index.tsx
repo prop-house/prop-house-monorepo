@@ -35,6 +35,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
   const numVotesByUserInActiveRound = countNumVotes(votesByUserInActiveRound);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
+  const hasVotingPower = votingPower && votingPower > 0;
   const dispatch = useAppDispatch();
 
   const [votesLeftToAllot, setVotesLeftToAllot] = useState(0);
@@ -59,7 +60,7 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           <>Error loading voting power.</>
         ) : loadingVotingPower ? (
           <LoadingIndicator height={50} width={50} />
-        ) : votingPower && votingPower > 0 ? (
+        ) : hasVotingPower ? (
           <>
             <h1 className={clsx(classes.sideCardTitle, classes.votingInfo)}>
               <span>{t('castYourVotes')}</span>
@@ -85,6 +86,15 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
 
               <ProgressBar variant="warning" now={(numAllotedVotes / votingPower) * 100} key={2} />
             </ProgressBar>
+            <Button
+              text={t('submitVotes')}
+              bgColor={ButtonColor.Purple}
+              onClick={() => setShowVotingModal(true)}
+              disabled={
+                countTotalVotesAlloted(voteAllotments) === 0 ||
+                numVotesByUserInActiveRound === votingPower
+              }
+            />
           </>
         ) : (
           <div className={classes.list}>
@@ -103,32 +113,22 @@ const TimedRoundVotingModule: React.FC<TimedRoundVotingModuleProps> = (
           </div>
         )
       ) : (
-        <div className={classes.list}>
-          <div className={classes.listItem}>
-            <div className={classes.icon}>
-              <BsPersonFill color="" />
+        <>
+          <div className={classes.list}>
+            <div className={classes.listItem}>
+              <div className={classes.icon}>
+                <BsPersonFill color="" />
+              </div>
+              <p>Proposers can connect their wallet to view the status of their proposal.</p>
             </div>
-            <p>Proposers can connect their wallet to view the status of their proposal.</p>
-          </div>
 
-          <div className={classes.listItem}>
-            <VotingStrategiesDisplay votingStrategies={round.votingStrategies} />
+            <div className={classes.listItem}>
+              <VotingStrategiesDisplay votingStrategies={round.votingStrategies} />
+            </div>
           </div>
-        </div>
+          <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
+        </>
       )}
-      {!account ? (
-        <ConnectButton text={t('connectToVote')} color={ButtonColor.Pink} />
-      ) : account && votingPower ? (
-        <Button
-          text={t('submitVotes')}
-          bgColor={ButtonColor.Purple}
-          onClick={() => setShowVotingModal(true)}
-          disabled={
-            countTotalVotesAlloted(voteAllotments) === 0 ||
-            numVotesByUserInActiveRound === votingPower
-          }
-        />
-      ) : null}
     </>
   );
 

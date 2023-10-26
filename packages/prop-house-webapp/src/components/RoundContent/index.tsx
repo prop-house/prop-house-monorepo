@@ -12,6 +12,9 @@ import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
 import { clearVoteAllotments } from '../../state/slices/voting';
+import Modal from '../Modal';
+import LoadingIndicator from '../LoadingIndicator';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const RoundContent: React.FC<{
   round: Round;
@@ -21,6 +24,7 @@ const RoundContent: React.FC<{
 
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
   const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
   const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
@@ -31,6 +35,7 @@ const RoundContent: React.FC<{
 
   const handleSubmitVote = async () => {
     try {
+      setShowLoadingModal(true);
       const votes = voteAllotments
         .filter(a => a.votes > 0)
         .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
@@ -43,17 +48,25 @@ const RoundContent: React.FC<{
       if (!result?.transaction_hash) {
         throw new Error(`Vote submission failed: ${result}`);
       }
-
-      setShowErrorVotingModal(false);
+      setShowLoadingModal(false);
       setNumPropsVotedFor(voteAllotments.length);
       setShowSuccessVotingModal(true);
 
-      // TODO: For now, handle locally. This may take 1-2 mins
-      // refreshActiveProposals(propHouse, round, dispatch);
+      // refresh props with new votes
+      const updatedProps = proposals.map(prop => {
+        const voteForProp = votes.find(v => v.proposalId === prop.id);
+        let newProp = { ...prop };
+        if (voteForProp)
+          newProp.votingPower = `${Number(newProp.votingPower) + voteForProp.votingPower}`;
+        return newProp;
+      });
+      dispatch(setOnChainActiveProposals(updatedProps));
+
       dispatch(clearVoteAllotments());
       setShowVoteConfirmationModal(false);
     } catch (e) {
       console.log(e);
+      setShowLoadingModal(false);
       setShowErrorVotingModal(true);
     }
   };
@@ -76,6 +89,15 @@ const RoundContent: React.FC<{
 
       {showErrorVotingModal && (
         <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
+      )}
+
+      {showLoadingModal && (
+        <Modal
+          title={'Submitting Votes'}
+          subtitle={`Signing.. Sending...`}
+          body={<LoadingIndicator />}
+          setShowModal={setShowLoadingModal}
+        />
       )}
 
       <Row className={classes.propCardsRow}>

@@ -11,7 +11,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
 
   const prophouse = usePropHouse();
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const [votes, setVotes] = useState<Vote[]>([]);
+  const [votes, setVotes] = useState<Vote[] | undefined>();
 
   useEffect(() => {
     if (!round || votes) return;
@@ -23,6 +23,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
   const [displayVotesVerifModal, setDisplayVotesVerifModal] = useState<boolean>(false);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!votes) return;
     e.stopPropagation();
     if (votes.length > 0) setDisplayVotesVerifModal(prev => !prev);
     return;
@@ -30,7 +31,7 @@ const TimedRoundPropVotesDisplay: React.FC<{ proposal: Proposal }> = props => {
 
   return (
     <>
-      {displayVotesVerifModal && (
+      {displayVotesVerifModal && votes && (
         <VotesVerificationModal
           setDisplayVotesVerifModal={setDisplayVotesVerifModal}
           proposal={proposal}

@@ -19,8 +19,6 @@ const SuccessVotingModal: React.FC<{
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProp = useAppSelector(state => state.propHouse.activeProposal);
 
-  console.log('activeProp:', activeProp);
-
   const eoaSignerMsg = `${t('youveSuccessfullyVotedFor')} ${numPropsVotedFor} ${
     numPropsVotedFor === 1 ? t('prop') : t('props')
   }!`;

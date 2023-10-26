@@ -23,8 +23,11 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   useEffect(() => {
     if (numProps) return;
     const fetchProps = async () => {
-      const props = await propHouse.query.getProposalsForRound(round.address);
-      setNumProps(props.length);
+      try {
+        setNumProps(await propHouse.query.getRoundProposalCount(round.address));
+      } catch (e) {
+        console.log(e);
+      }
     };
     fetchProps();
   });

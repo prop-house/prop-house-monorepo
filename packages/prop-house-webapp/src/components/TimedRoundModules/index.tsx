@@ -72,7 +72,7 @@ const TimedRoundModules: React.FC<{
           )}
         </Swiper>
       ) : (
-        modules.map(m => m)
+        modules.map((m, i) => <div key={i}>{m}</div>)
       )}
     </Col>
   );
