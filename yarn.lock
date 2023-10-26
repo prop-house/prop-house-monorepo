@@ -4535,12 +4535,12 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.4.1-alpha":
-  version "0.4.1-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.1-alpha.tgz#fbd0d845cf9b3bade90087e9077c0a2b68952d68"
-  integrity sha512-pKr+Ddyi8YObb9xpeVcfLzhGim+Y3UZvKj+swpYmrBQ5LRadLJNA4qFWI3p1ns58h1Gd8TYSaC/xd2VJhv+KLA==
+"@prophouse/sdk-react@0.4.3-alpha":
+  version "0.4.3-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.3-alpha.tgz#76d4e4c55e3c5b2fe39835c330a06e1f0b4b6700"
+  integrity sha512-AV3IuAu8kXPCUt6NdpoEq2rAmFgWXpnzUdcr6GCB2zY5trWxEk86JsorNb8UFpxEHTSHQNkP+J+1GRTV13lWwA==
   dependencies:
-    "@prophouse/sdk" "~0.4.2-alpha"
+    "@prophouse/sdk" "~0.4.4-alpha"
 
 "@prophouse/sdk@^0.1.0-alpha.8":
   version "0.1.0-alpha.8"
@@ -4564,10 +4564,10 @@
     starknet "4.19.3"
     time-ts "^0.1.0"
 
-"@prophouse/sdk@~0.4.2-alpha":
-  version "0.4.2-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.2-alpha.tgz#42cabec75d2d010adfe1153e910d1f32753c683d"
-  integrity sha512-ocjQ/NgEEnMUcCA4oGphNLjecvr7GnPc8XERQjY7tXnaUgL4LUO0owNWEJNfgktTMEJmy+w/cFCrFcoCqlnOYQ==
+"@prophouse/sdk@~0.4.4-alpha":
+  version "0.4.4-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.4-alpha.tgz#655a96bfa1a634f987ecde067c745591c071a93f"
+  integrity sha512-czlNwKTKlhH14lsMO5ZtxEcai8KojOEEo3MLLWK5IGYzZolWfeEbPFONd9A/kDpUAbxPqbSYHvpvBQiCoYpVcg==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
