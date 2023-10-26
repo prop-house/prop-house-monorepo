@@ -30,10 +30,10 @@ const ProposingStrategiesDisplay: React.FC<{
   );
 
   const singleStratCopy = (strat: ProposingStrategy, memberIndex?: number) => {
-    let copy = <>allowlist detected, todo: resolve when implemented</>;
+    let copy = <></>;
     const stratType = strat.strategyType;
 
-    if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex)
+    if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex !== undefined)
       copy = (
         <>
           <a
@@ -69,23 +69,20 @@ const ProposingStrategiesDisplay: React.FC<{
         </>
       );
 
-    // todo: remove vanilla check for prod as it won't make it there
-    if (stratType === GovPowerStrategyType.VANILLA) copy = <>vanilla strat.</>;
     if (stratType === GovPowerStrategyType.UNKNOWN) copy = <>Error reading proposing strategy</>;
 
     return formattedContent(copy);
   };
 
   const multiStratContent = (strats: ProposingStrategy[]) => {
-    console.log(strats);
     return (
       <div className={classes.modalBody}>
         {strats.map((strat, key) => {
-          if (strat.strategyType === GovPowerStrategyType.ALLOWLIST) {
-            strat.members.map((_, index) => {
-              return <div key={`${key}${index}`}>{singleStratCopy(strat, index)}</div>;
-            });
-          }
+          if (strat.strategyType === GovPowerStrategyType.ALLOWLIST)
+            // iterate through ea member on the allowlist
+            return strat.members.map((_, index) => (
+              <div key={`${key}${index}`}>{singleStratCopy(strat, index)}</div>
+            ));
           return <div key={key}>{singleStratCopy(strat)}</div>;
         })}
       </div>
