@@ -55,7 +55,7 @@ const TimedRoundVotingControls: React.FC<{
   useEffect(() => {
     if (!account || !activeRound) return;
     const fetchVotesSubmitted = async () => {
-      const votes = await propHouse.query.getVotesByAccount(account as string);
+      const votes = await propHouse.query.getVotesByAccountForRound(account, activeRound.address);
       const votesInRound = votes.filter(v => v.round === activeRound.address);
       dispatch(setVotesByUserInActiveRound(votesInRound));
     };

@@ -47,9 +47,7 @@ const MainApp = () => {
     if (fetchedProps) return;
     const fetchProps = async () => {
       try {
-        const props = await prophouse.query.getProposalsForRound(
-          '0xab6e5c6ab3472175a5de62c7d79226d6238b7f37',
-        );
+        const props = await prophouse.query.getProposals();
         setActivity(prev => [...(prev ?? []), ...(props ?? [])]);
         setFetchedProps(true);
       } catch (e) {
@@ -64,12 +62,7 @@ const MainApp = () => {
     if (fetchedVotes) return;
     const fetchVotes = async () => {
       try {
-        const votes = await prophouse.query.getVotesByAccount(
-          '0xb0dd496FffFa300df1EFf42702066aCa81834404',
-          {
-            where: { round_: { sourceChainRound: '0xab6e5c6ab3472175a5de62c7d79226d6238b7f37' } },
-          },
-        );
+        const votes = await prophouse.query.getVotes();
         setActivity(prev => [...(prev ?? []), ...(votes ?? [])]);
         setFetchedVotes(true);
       } catch (e) {

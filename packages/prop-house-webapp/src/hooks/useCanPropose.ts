@@ -32,12 +32,11 @@ const useCanPropose = (
 
       setLoadingCanPropose(true);
       try {
-        const govPower = await propHouse.govPower.getTotalPower(
-          account as string,
-          round.config.proposalPeriodStartTimestamp,
-          round.proposingStrategiesRaw,
+        const { canPropose } = await propHouse.round.timed.getProposeEligibility(
+          round.address,
+          account,
         );
-        setCanPropose(govPower.toNumber() >= round.config.proposalThreshold);
+        setCanPropose(canPropose);
         setLoadingCanPropose(false);
       } catch (e) {
         console.log('Error fetching canPropose: ', e);
@@ -46,7 +45,7 @@ const useCanPropose = (
       }
     };
     fetchCanPropose();
-  }, [round, account, propHouse.govPower]);
+  }, [round, account, propHouse.round.timed]);
 
   return [loadingCanPropose, errorLoadingCanPropose, canPropose];
 };

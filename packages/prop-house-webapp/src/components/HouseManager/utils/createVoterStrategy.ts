@@ -9,7 +9,7 @@ import { NewVoter } from '../VotersConfig';
 const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => {
   let s: GovPowerStrategyConfig | null = null;
 
-  if (voter.type === VotingStrategyType.ERC1155_BALANCE_OF) {
+  if (voter.type === VotingStrategyType.BALANCE_OF_ERC1155) {
     s = {
       strategyType: voter.type,
       assetType: AssetType.ERC1155,
