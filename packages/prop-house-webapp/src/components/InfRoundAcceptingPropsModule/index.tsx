@@ -78,7 +78,7 @@ const InfRoundAcceptingPropsModule: React.FC<{
             bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
             onClick={() => {
               dispatch(clearProposal());
-              navigate('/create');
+              navigate('/create-prop');
             }}
             disabled={!canPropose}
           />

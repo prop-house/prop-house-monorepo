@@ -86,7 +86,7 @@ function App() {
                     <Route path="/" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create" element={<Create />} />
+                    <Route path="/create-prop" element={<Create />} />
                     <Route path="/create-round" element={<HouseManager />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />

@@ -88,7 +88,7 @@ const ProposalWindowButtons: React.FC<{
                     }
                     onClick={() => {
                       dispatch(clearProposal());
-                      navigate('/create', { state: { auction: round, proposals } });
+                      navigate('/create-prop', { state: { auction: round, proposals } });
                     }}
                     disabled={!(votingPower > 0)}
                   />
@@ -131,7 +131,7 @@ const ProposalWindowButtons: React.FC<{
               }
               onClick={() => {
                 dispatch(clearProposal());
-                navigate('/create', { state: { auction: round, proposals } });
+                navigate('/create-prop', { state: { auction: round, proposals } });
               }}
               disabled={!(votingPower > 0)}
             />
