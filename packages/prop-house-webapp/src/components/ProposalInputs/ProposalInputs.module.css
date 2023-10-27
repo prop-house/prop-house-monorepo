@@ -1,16 +1,11 @@
-.form {
-  margin-top: 3rem;
-}
 .inputLabel {
   font-size: 18px;
   font-weight: 700;
   color: var(--brand-black-transparent);
 }
-.inputGroup {
-  margin-bottom: 2rem;
-}
+
 .inputSection {
-  margin: 3rem 0rem;
+  margin: 2rem 0rem;
 }
 .inputInfo {
   display: flex;
@@ -45,8 +40,6 @@
   margin-bottom: 1.75rem;
   white-space: pre-line;
   margin-bottom: 0rem;
-  border-radius: 12px;
-  border: 1px solid #ccc !important;
   padding: 0.75rem !important;
   font-size: 16px !important;
 }
@@ -96,4 +89,13 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.editor div div:nth-child(3) {
+  border: none;
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+.editor div div:nth-child(4) {
+  border: none;
+  border-radius: 0 0 0.25rem 0.25rem;
 }

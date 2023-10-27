@@ -132,7 +132,7 @@ const ProposalInputs: React.FC<{
     <>
       <Row>
         <Col xl={12}>
-          <Form className={classes.form}>
+          <Form>
             <div className={clsx(fundReqData.isInfRound && classes.infRoundSectionsContainer)}>
               {/** TITLE */}
               {titleAndTldrInputs(formData[0], true)}
@@ -174,6 +174,7 @@ const ProposalInputs: React.FC<{
             {/** DESCRIPTION */}
 
             <InputFormGroup
+              formGroupClasses={classes.editor}
               titleLabel={descriptionData.title}
               content={
                 <>
@@ -189,13 +190,13 @@ const ProposalInputs: React.FC<{
                     onBlur={() => {
                       setEditorBlurred(true);
                     }}
+                    className={classes.editor}
                   />
                   {loading && (
                     <div className={classes.loadingOverlay}>
                       <LoadingIndicator />
                     </div>
                   )}
-
                   {editorBlurred &&
                     quill &&
                     !inputHasImage(descriptionData.fieldValue) &&
