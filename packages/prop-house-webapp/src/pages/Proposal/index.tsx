@@ -51,10 +51,7 @@ const Proposal = () => {
     if (!roundAddress || !id || proposal) return;
     const fetchProposal = async () => {
       try {
-        // TODO: uncomment once query.getProposal is fixed
-        // const proposal = await propHouse.query.getProposal(roundAddress, Number(id));
-        const proposals = await propHouse.query.getProposalsForRound(roundAddress);
-        const proposal = proposals[0];
+        const proposal = await propHouse.query.getProposal(roundAddress, Number(id));
         const round = await propHouse.query.getRound(roundAddress);
 
         document.title = `${proposal.title}`;
