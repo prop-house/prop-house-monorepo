@@ -9,7 +9,6 @@ import './App.css';
 import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import NotFound from './components/NotFound';
-import bgColorForPage from './utils/bgColorForPage';
 import clsx from 'clsx';
 import OpenGraphHouseCard from './components/OpenGraphHouseCard';
 import OpenGraphRoundCard from './components/OpenGraphRoundCard';
@@ -29,6 +28,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import HouseManager from './pages/HouseManager';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
+import bgColorFor, { BgColorElement } from './utils/bgColorFor';
 
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
@@ -60,7 +60,6 @@ function App() {
   }, [noActiveCommunity, location.state]);
 
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
-  const noNavPath = location.pathname === '/faq' || location.pathname === '/create';
 
   return (
     <>
@@ -81,18 +80,15 @@ function App() {
               initialChain={goerli}
             >
               <Suspense fallback={<LoadingIndicator />}>
-                <div className={clsx(bgColorForPage(location.pathname), 'wrapper')}>
-                  {!noNavPath && <NavBar />}
-
+                <div className={clsx(bgColorFor(BgColorElement.App, location.pathname), 'wrapper')}>
+                  <NavBar />
                   <Routes>
                     <Route path="/" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create" element={<Create />} />
+                    <Route path="/create-prop" element={<Create />} />
                     <Route path="/create-round" element={<HouseManager />} />
-
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 

@@ -62,7 +62,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
           onClick={() => {
             dispatch(clearProposal());
             // pass state so that we can re-populate the round with proposals + newly created prop
-            navigate('/create', { state: { proposals } });
+            navigate('/create-prop', { state: { proposals } });
           }}
           disabled={!canPropose}
         />

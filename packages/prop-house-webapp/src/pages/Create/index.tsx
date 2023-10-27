@@ -3,7 +3,6 @@ import { Row, Col, Container } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../components/Button';
 import { useState, useRef } from 'react';
 import ProposalEditor from '../../components/ProposalEditor';
-import Preview from '../Preview';
 import { clearProposal, patchProposal } from '../../state/slices/editor';
 import { useAppDispatch, useAppSelector } from '../../hooks';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
@@ -17,7 +16,6 @@ import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import changeFileExtension from '../../utils/changeFileExtension';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ProposalSuccessModal from '../../components/ProposalSuccessModal';
-import NavBar from '../../components/NavBar';
 import { isValidPropData } from '../../utils/isValidPropData';
 import ConnectButton from '../../components/ConnectButton';
 import { useAccount } from 'wagmi';
@@ -38,7 +36,6 @@ const Create: React.FC<{}> = () => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const house = useAppSelector(state => state.propHouse.activeHouse);
 
-  const [showPreview, setShowPreview] = useState(false);
   const [showProposalSuccessModal, setShowProposalSuccessModal] = useState(false);
   const [showLoadingModal, setShowLoadingModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
@@ -233,75 +230,46 @@ const Create: React.FC<{}> = () => {
               />
             )}
 
-            <div className="gradientBg">
-              <NavBar />
-              <Container>
-                <h1 className={classes.title}>Creating your proposal for</h1>
-                <h1 className={classes.proposalTitle}>
-                  <span className={classes.boldLabel}>{round.title}</span> in the{' '}
-                  <span className={classes.boldLabel}>{house.name}</span> house
-                </h1>
-              </Container>
-            </div>
-
             <Container>
               <Row>
+                <h1 className={classes.proposalTitle}>
+                  Creating a proposal for <span>{round.title}</span> for <span>{house.name}</span>
+                </h1>
+              </Row>
+              <Row>
                 <Col xl={12}>
-                  {/** TODO: RESOLVE ROUND CURRENCY */}
-                  {showPreview ? (
-                    <Preview roundCurrency={'ETH'} />
-                  ) : (
-                    <ProposalEditor
-                      onDataChange={onDataChange}
-                      showImageUploadModal={showImageUploadModal}
-                      setShowImageUploadModal={setShowImageUploadModal}
-                      files={files}
-                      setFiles={setFiles}
-                      onFileDrop={onFileDrop}
-                      invalidFileError={invalidFileError}
-                      setInvalidFileError={setInvalidFileError}
-                      invalidFileMessage={invalidFileMessage}
-                      setInvalidFileMessage={setInvalidFileMessage}
-                      duplicateFile={duplicateFile}
-                      setDuplicateFile={setDuplicateFile}
-                      remainingBal={remainingBal}
-                      isInfRound={round.type !== RoundType.TIMED}
-                    />
-                  )}
+                  <ProposalEditor
+                    onDataChange={onDataChange}
+                    showImageUploadModal={showImageUploadModal}
+                    setShowImageUploadModal={setShowImageUploadModal}
+                    files={files}
+                    setFiles={setFiles}
+                    onFileDrop={onFileDrop}
+                    invalidFileError={invalidFileError}
+                    setInvalidFileError={setInvalidFileError}
+                    invalidFileMessage={invalidFileMessage}
+                    setInvalidFileMessage={setInvalidFileMessage}
+                    duplicateFile={duplicateFile}
+                    setDuplicateFile={setDuplicateFile}
+                    remainingBal={remainingBal}
+                    isInfRound={round.type !== RoundType.TIMED}
+                  />
                 </Col>
               </Row>
-
               <Row>
                 <Col xl={12} className={classes.btnContainer}>
-                  <Button
-                    text={showPreview ? t('backToEditor') : t('preview')}
-                    bgColor={ButtonColor.Pink}
-                    onClick={() =>
-                      setShowPreview(prev => {
-                        return !prev;
-                      })
-                    }
-                    disabled={!isValidPropData(round.type !== RoundType.TIMED, proposalEditorData)}
-                  />
-
-                  {showPreview &&
-                    (account ? (
-                      <Button
-                        classNames={classes.actionBtn}
-                        text={t('signAndSubmit')}
-                        bgColor={ButtonColor.Pink}
-                        onClick={submitProposal}
-                        disabled={
-                          !isValidPropData(round.type !== RoundType.TIMED, proposalEditorData)
-                        }
-                      />
-                    ) : (
-                      <ConnectButton
-                        classNames={classes.actionBtn}
-                        color={ButtonColor.Pink}
-                        text={t('connectWallet')}
-                      />
-                    ))}
+                  {account ? (
+                    <Button
+                      text={'Submit'}
+                      bgColor={ButtonColor.Pink}
+                      onClick={submitProposal}
+                      disabled={
+                        !isValidPropData(round.type !== RoundType.TIMED, proposalEditorData)
+                      }
+                    />
+                  ) : (
+                    <ConnectButton color={ButtonColor.Pink} text={t('connectWallet')} />
+                  )}
                 </Col>
               </Row>
             </Container>

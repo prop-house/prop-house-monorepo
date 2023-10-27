@@ -1,5 +1,5 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
 import LocaleSwitcher from '../LocaleSwitcher';
@@ -8,14 +8,16 @@ import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
+import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 
 const NavBar = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <Container>
+    <Container className={bgColorFor(BgColorElement.Nav, location.pathname)}>
       <Navbar bg="transparent" expand="lg" className={classes.navbar} expanded={isNavExpanded}>
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
