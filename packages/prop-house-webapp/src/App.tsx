@@ -92,7 +92,6 @@ function App() {
                     <Route path="/create-round" element={<HouseManager />} />
 
                     <Route path="/faq" element={<FAQ />} />
-                    <Route path="/proposal/:id" element={<Proposal />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 
