@@ -1,7 +1,7 @@
 import classes from './Footer.module.css';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
-import bgColorForFooter from '../../utils/bgColorForFooter';
+import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { externalURL, ExternalURL } from '../../utils/externalURLs';
 import tos from '../../assets/files/prophouse-tos.pdf';
 
@@ -13,7 +13,12 @@ const Footer = () => {
   const githubURL = externalURL(ExternalURL.github);
 
   return (
-    <div className={clsx(classes.footerContainer, bgColorForFooter(location.pathname))}>
+    <div
+      className={clsx(
+        classes.footerContainer,
+        bgColorFor(BgColorElement.Footer, location.pathname),
+      )}
+    >
       <div className={classes.footer}>
         <a href={twitterURL} target="_blank" rel="noreferrer">
           twitter
