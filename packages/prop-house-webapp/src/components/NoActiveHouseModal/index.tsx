@@ -10,11 +10,13 @@ const NoActiveHouseModal: React.FC<{}> = () => {
 
   return (
     <Modal
-      setShowModal={() => {}}
-      handleClose={() => navigate(`/`)}
-      title={t('noRoundSelected')}
-      subtitle={t('proposalCreation')}
-      image={NounImage.Glasses}
+      modalProps={{
+        setShowModal: () => {}, // Replace this with the actual setShowModal logic
+        handleClose: () => navigate(`/`),
+        title: t('noRoundSelected'),
+        subtitle: t('proposalCreation'),
+        image: NounImage.Glasses,
+      }}
     />
   );
 };

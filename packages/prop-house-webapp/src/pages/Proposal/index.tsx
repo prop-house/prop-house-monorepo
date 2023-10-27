@@ -74,8 +74,6 @@ const Proposal = () => {
     navigate(`/${round.address}`, { replace: false });
   };
 
-  const handleSubmitVote = async () => {};
-
   const votingBar = proposal && round && round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.votingBar}>
       {isConnected ? (
@@ -117,7 +115,7 @@ const Proposal = () => {
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
-          submitVote={handleSubmitVote}
+          round={round}
         />
       )}
 

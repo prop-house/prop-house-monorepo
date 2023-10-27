@@ -158,19 +158,21 @@ const UploadCSVModal: React.FC<{
 
   return (
     <Modal
-      setShowModal={setShowUploadCSVModal}
-      title={'Add Voters'}
-      subtitle={'Upload a CSV file with addresses and voting power.'}
-      handleClose={handleCancel}
-      body={data}
-      button={
-        <Button
-          text={'Upload'}
-          disabled={!readyToUpload}
-          bgColor={ButtonColor.Green}
-          onClick={() => handleUpload(csvData)}
-        />
-      }
+      modalProps={{
+        setShowModal: setShowUploadCSVModal,
+        title: 'Add Voters',
+        subtitle: 'Upload a CSV file with addresses and voting power.',
+        handleClose: handleCancel,
+        body: data,
+        button: (
+          <Button
+            text={'Upload'}
+            disabled={!readyToUpload}
+            bgColor={ButtonColor.Green}
+            onClick={() => handleUpload(csvData)}
+          />
+        ),
+      }}
     />
   );
 };

@@ -91,10 +91,12 @@ const VotingStrategiesDisplay: React.FC<{
 
   return showModal ? (
     <Modal
-      title="Voting eligibility"
-      subtitle="Below is the criteria required to vote"
-      body={multiStratContent(votingStrategies)}
-      setShowModal={setShowModal}
+      modalProps={{
+        title: 'Voting eligibility',
+        subtitle: 'Below is the criteria required to vote',
+        body: multiStratContent(votingStrategies),
+        setShowModal: setShowModal,
+      }}
     />
   ) : oneStratAndAllowListHasOneMember || oneStrat ? (
     singleStratCopy(votingStrategies[0])

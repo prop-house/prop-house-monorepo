@@ -77,17 +77,17 @@ const CreateRoundModal: React.FC<{
 
   return (
     <Modal
-      title={titleText}
-      subtitle={subtitleText}
-      handleClose={handleClose}
-      body={status.isLoading && <LoadingIndicator />}
-      image={image}
-      setShowModal={setShowCreateRoundModal}
-      button={
-        status.isSuccess && (
+      modalProps={{
+        title: titleText,
+        subtitle: subtitleText,
+        handleClose: handleClose,
+        body: status.isLoading && <LoadingIndicator />,
+        image: image,
+        setShowModal: setShowCreateRoundModal,
+        button: status.isSuccess && (
           <Button text="View my rounds" bgColor={ButtonColor.Pink} onClick={handleClick} />
-        )
-      }
+        ),
+      }}
     />
   );
 };

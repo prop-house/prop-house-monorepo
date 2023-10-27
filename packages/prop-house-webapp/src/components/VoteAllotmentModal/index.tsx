@@ -52,11 +52,13 @@ const VoteAllotmentModal: React.FC<{
 
   return (
     <Modal
-      title={noVotesAllotted ? 'No votes allotted' : 'Votes allotted'}
-      subtitle={noVotesAllotted ? '' : 'You have allotted votes for the following proposals'}
-      body={!noVotesAllotted && <div className={classes.votesContainer}>{voteAllotmentData}</div>}
-      image={noVotesAllotted && NounImage.Blackhole}
-      setShowModal={setShowModal}
+      modalProps={{
+        title: noVotesAllotted ? 'No votes allotted' : 'Votes allotted',
+        subtitle: noVotesAllotted ? '' : 'You have allotted votes for the following proposals',
+        body: !noVotesAllotted && <div className={classes.votesContainer}>{voteAllotmentData}</div>,
+        image: noVotesAllotted ? NounImage.Blackhole : null,
+        setShowModal: setShowModal,
+      }}
     />
   );
 };

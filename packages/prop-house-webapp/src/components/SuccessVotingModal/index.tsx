@@ -34,29 +34,31 @@ const SuccessVotingModal: React.FC<{
 
   return (
     <Modal
-      setShowModal={setShowSuccessVotingModal}
-      handleClose={() => setShowSuccessVotingModal(false)}
-      title={t('veryNounish')}
-      subtitle={eoaSignerMsg}
-      image={NounImage.Glasses}
-      button={
-        <Button
-          text={t('close')}
-          bgColor={ButtonColor.White}
-          onClick={() => {
-            setShowSuccessVotingModal(false);
-          }}
-        />
-      }
-      secondButton={
-        <Button
-          text={'Share on Twitter'}
-          bgColor={ButtonColor.Purple}
-          onClick={() => {
-            openInNewTab(`https://twitter.com/intent/tweet?text=${votedCopy}`);
-          }}
-        />
-      }
+      modalProps={{
+        setShowModal: setShowSuccessVotingModal,
+        handleClose: () => setShowSuccessVotingModal(false),
+        title: t('veryNounish'),
+        subtitle: eoaSignerMsg,
+        image: NounImage.Glasses,
+        button: (
+          <Button
+            text={t('close')}
+            bgColor={ButtonColor.White}
+            onClick={() => {
+              setShowSuccessVotingModal(false);
+            }}
+          />
+        ),
+        secondButton: (
+          <Button
+            text={'Share on Twitter'}
+            bgColor={ButtonColor.Purple}
+            onClick={() => {
+              openInNewTab(`https://twitter.com/intent/tweet?text=${votedCopy}`);
+            }}
+          />
+        ),
+      }}
     />
   );
 };

@@ -44,10 +44,12 @@ const RoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   return showModal ? (
     <Modal
-      title="Awards"
-      subtitle="See all awards"
-      setShowModal={setShowModal}
-      body={awardsModalContent}
+      modalProps={{
+        title: 'Awards',
+        subtitle: 'See all awards',
+        setShowModal: setShowModal,
+        body: awardsModalContent,
+      }}
     />
   ) : (
     <div onClick={e => navigate(`/${round.address}`)}>

@@ -91,10 +91,12 @@ const ProposingStrategiesDisplay: React.FC<{
 
   return showModal ? (
     <Modal
-      title="Proposing eligibility"
-      subtitle="Below is the criteria required to propose"
-      body={multiStratContent(proposingStrategies)}
-      setShowModal={setShowModal}
+      modalProps={{
+        title: 'Proposing eligibility',
+        subtitle: 'Below is the criteria required to propose',
+        body: multiStratContent(proposingStrategies),
+        setShowModal: setShowModal,
+      }}
     />
   ) : proposingStrategies.length === 0 ? (
     formattedContent(<>All accounts are welcome to propose.</>)

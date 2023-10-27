@@ -11,10 +11,12 @@ const ErrorVotingModal: React.FC<{
 
   return (
     <Modal
-      title={t('errorModalTitle')}
-      subtitle={t('errorModalMessage')}
-      image={NounImage.Banana}
-      setShowModal={setShowErrorVotingModal}
+      modalProps={{
+        title: t('errorModalTitle'),
+        subtitle: t('errorModalMessage'),
+        image: { src: NounImage.Banana, alt: 'Banana' },
+        setShowModal: setShowErrorVotingModal,
+      }}
     />
   );
 };

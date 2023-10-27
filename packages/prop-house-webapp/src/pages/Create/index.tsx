@@ -206,18 +206,23 @@ const Create: React.FC<{}> = () => {
           >
             {showErrorModal && (
               <Modal
-                title={'Error'}
-                subtitle={'Error submitting your proposal. Please try again.'}
-                image={NounImage.Banana}
-                setShowModal={setShowErrorModal}
+                modalProps={{
+                  title: 'Error',
+                  subtitle: 'Error submitting your proposal. Please try again.',
+                  image: NounImage.Banana,
+                  setShowModal: setShowErrorModal,
+                }}
               />
             )}
+
             {showLoadingModal && (
               <Modal
-                title={'Loading'}
-                subtitle={'Sending your prop through the Ether...'}
-                body={<LoadingIndicator />}
-                setShowModal={setShowLoadingModal}
+                modalProps={{
+                  title: 'Loading',
+                  subtitle: 'Sending your prop through the Ether...',
+                  body: <LoadingIndicator />,
+                  setShowModal: setShowLoadingModal,
+                }}
               />
             )}
 

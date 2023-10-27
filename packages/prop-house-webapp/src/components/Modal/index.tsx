@@ -1,15 +1,15 @@
 import classes from './Modal.module.css';
 import React, { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import ReactModal from 'react-modal';
-
 import LoadingIndicator from '../LoadingIndicator';
 import { IoClose } from 'react-icons/io5';
 import clsx from 'clsx';
 import { isMobile } from 'web3modal';
 
-const Modal: React.FC<{
+export interface ModalProps {
   title: string | JSX.Element | boolean;
   subtitle: string | JSX.Element | boolean;
+  setShowModal: Dispatch<SetStateAction<boolean>>;
   image?: { src: string; alt: string } | any;
   loading?: boolean;
   body?: string | JSX.Element | any;
@@ -17,8 +17,11 @@ const Modal: React.FC<{
   secondButton?: any;
   bottomContainer?: JSX.Element;
   handleClose?: () => void;
-  setShowModal: Dispatch<SetStateAction<boolean>>;
   fullScreenOnMobile?: boolean;
+}
+
+const Modal: React.FC<{
+  modalProps: ModalProps;
 }> = props => {
   const {
     title,
@@ -32,7 +35,7 @@ const Modal: React.FC<{
     handleClose,
     bottomContainer,
     fullScreenOnMobile,
-  } = props;
+  } = props.modalProps;
 
   const modalContainerRef = useRef<HTMLDivElement>(null);
   const closeModal = () => setShowModal(false);

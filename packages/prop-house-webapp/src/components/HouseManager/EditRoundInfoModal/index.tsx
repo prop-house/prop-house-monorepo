@@ -41,19 +41,21 @@ const EditRoundInfoModal: React.FC<{
 
   return (
     <Modal
-      title="Edit round name and description"
-      subtitle=""
-      body={<RoundFields editMode round={editedRound} setEditedRound={setEditedRound} />}
-      handleClose={handleCancel}
-      setShowModal={setShowRoundInfoModal}
-      button={
-        <Button
-          text={'Save Changes'}
-          bgColor={ButtonColor.Pink}
-          onClick={handleSave}
-          disabled={isDisabled()}
-        />
-      }
+      modalProps={{
+        title: 'Edit round name and description',
+        subtitle: '',
+        body: <RoundFields editMode round={editedRound} setEditedRound={setEditedRound} />,
+        handleClose: handleCancel,
+        setShowModal: setShowRoundInfoModal,
+        button: (
+          <Button
+            text={'Save Changes'}
+            bgColor={ButtonColor.Pink}
+            onClick={handleSave}
+            disabled={isDisabled()}
+          />
+        ),
+      }}
     />
   );
 };

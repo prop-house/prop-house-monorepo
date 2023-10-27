@@ -29,39 +29,42 @@ const ProposalSuccessModal: React.FC<{
   };
   return (
     <Modal
-      setShowModal={setShowProposalSuccessModal}
-      title={
-        <>
-          {t('congrats')} {account && <EthAddress className={classes.address} address={account} />}!
-        </>
-      }
-      subtitle={
-        <>
-          {t(`successfulSubmission`)} <b>{round.title}</b> for <b>{house.name}</b>.
-        </>
-      }
-      image={NounImage.Heart}
-      handleClose={backToRound}
-      button={
-        <>
-          <Button
-            text={'Share on Warpcast'}
-            bgColor={ButtonColor.Purple}
-            onClick={() => {
-              openInNewTab(
-                `https://warpcast.com/~/compose?text=Check+out+my+prop:+https://prop.house/${propSubmissionTxId}/`,
-              );
-            }}
-          />
-          <Button
-            text={'Share on Twitter'}
-            bgColor={ButtonColor.Purple}
-            onClick={() => {
-              openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
-            }}
-          />
-        </>
-      }
+      modalProps={{
+        setShowModal: setShowProposalSuccessModal,
+        title: (
+          <>
+            {t('congrats')}{' '}
+            {account && <EthAddress className={classes.address} address={account} />}!
+          </>
+        ),
+        subtitle: (
+          <>
+            {t(`successfulSubmission`)} <b>{round.title}</b> for <b>{house.name}</b>.
+          </>
+        ),
+        image: NounImage.Heart,
+        handleClose: backToRound,
+        button: (
+          <>
+            <Button
+              text={'Share on Warpcast'}
+              bgColor={ButtonColor.Purple}
+              onClick={() => {
+                openInNewTab(
+                  `https://warpcast.com/~/compose?text=Check+out+my+prop:+https://prop.house/${propSubmissionTxId}/`,
+                );
+              }}
+            />
+            <Button
+              text={'Share on Twitter'}
+              bgColor={ButtonColor.Purple}
+              onClick={() => {
+                openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
+              }}
+            />
+          </>
+        ),
+      }}
     />
   );
 };

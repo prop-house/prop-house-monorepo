@@ -31,22 +31,24 @@ const EditDatesModal: React.FC<{
 
   return (
     <Modal
-      title="Edit round timing"
-      subtitle=""
-      body={<TimedRound editMode round={editedRound} setEditedRound={setEditedRound} />}
-      setShowModal={setShowDatesModal}
-      button={
-        <Button
-          text={'Save Changes'}
-          bgColor={ButtonColor.Pink}
-          onClick={handleDateSave}
-          disabled={
-            editedRound.proposalPeriodStartUnixTimestamp === 0 ||
-            editedRound.proposalPeriodDurationSecs === 0 ||
-            editedRound.votePeriodDurationSecs === 0
-          }
-        />
-      }
+      modalProps={{
+        title: 'Edit round timing',
+        subtitle: '',
+        body: <TimedRound editMode round={editedRound} setEditedRound={setEditedRound} />,
+        setShowModal: setShowDatesModal,
+        button: (
+          <Button
+            text={'Save Changes'}
+            bgColor={ButtonColor.Pink}
+            onClick={handleDateSave}
+            disabled={
+              editedRound.proposalPeriodStartUnixTimestamp === 0 ||
+              editedRound.proposalPeriodDurationSecs === 0 ||
+              editedRound.votePeriodDurationSecs === 0
+            }
+          />
+        ),
+      }}
     />
   );
 };

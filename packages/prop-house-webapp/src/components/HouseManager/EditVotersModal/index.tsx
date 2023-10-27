@@ -85,10 +85,10 @@ const EditVotersModal: React.FC<{
 
   return (
     <Modal
-      title="Edit voters"
-      subtitle=""
-      body={
-        isAddingVoter ? (
+      modalProps={{
+        title: 'Edit voters',
+        subtitle: '',
+        body: isAddingVoter ? (
           <VotersModal
             editMode
             voters={editedVoters}
@@ -100,11 +100,9 @@ const EditVotersModal: React.FC<{
           <OverflowScroll height={200}>
             <Group gap={12} mb={12}>
               {editedVoters.map((s, idx) =>
-                // not supported
                 s.strategyType === VotingStrategyType.VANILLA ? (
                   <></>
-                ) : // if it's a whitelist, we need to map over the members
-                s.strategyType === VotingStrategyType.ALLOWLIST ? (
+                ) : s.strategyType === VotingStrategyType.ALLOWLIST ? (
                   s.members.map((m, idx) => (
                     <Voter
                       key={idx}
@@ -116,7 +114,6 @@ const EditVotersModal: React.FC<{
                     />
                   ))
                 ) : (
-                  // otherwise, proceed as normal
                   <Voter
                     key={idx}
                     type={s.strategyType}
@@ -129,27 +126,24 @@ const EditVotersModal: React.FC<{
               )}
             </Group>
           </OverflowScroll>
-        )
-      }
-      setShowModal={setShowVotersModal}
-      button={
-        <Button
-          text={'Add a voter'}
-          bgColor={ButtonColor.Green}
-          onClick={() => setIsAddingVoter(true)}
-        />
-      }
-      secondButton={
-        // If the voter list has changed, show the save button
-        hasVoterListChanged(round.voters, editedVoters) && (
+        ),
+        setShowModal: setShowVotersModal,
+        button: (
+          <Button
+            text={'Add a voter'}
+            bgColor={ButtonColor.Green}
+            onClick={() => setIsAddingVoter(true)}
+          />
+        ),
+        secondButton: hasVoterListChanged(round.voters, editedVoters) ? (
           <Button
             text={'Save Changes'}
             bgColor={ButtonColor.Pink}
             onClick={handleEditVotersSave}
             disabled={editedVoters.length < 1}
           />
-        )
-      }
+        ) : null, // Set to null if not needed
+      }}
     />
   );
 };

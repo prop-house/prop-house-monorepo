@@ -265,12 +265,52 @@ const IndividualAwards: React.FC<{
     <>
       {showIndividualAwardModal && (
         <Modal
-          title={
-            award.state === 'success' ? `Edit ${getNumberWithOrdinal(awardIdx)} place` : 'Add award'
-          }
-          subtitle=""
-          handleClose={handleModalClose}
-          body={
+          modalProps={{
+            title:
+              award.state === 'success'
+                ? `Edit ${getNumberWithOrdinal(awardIdx)} place`
+                : 'Add award',
+            subtitle: '',
+            handleClose: handleModalClose,
+            body: (
+              <>
+                <AddAward
+                  isTyping={isTyping}
+                  setIsTyping={setIsTyping}
+                  award={award}
+                  selectedAward={selectedAward}
+                  setAward={setAward}
+                  setSelectedAward={setSelectedAward}
+                  handleAddressChange={handleAddressChange}
+                  handleTokenBlur={handleTokenBlur}
+                  handleSelectAward={handleSelectAward}
+                  handleSwitchInput={handleSwitchInput}
+                  handleERC20AddressBlur={handleERC20AddressBlur}
+                />
+              </>
+            ),
+            button: (
+              <Button
+                text={'Save Changes'}
+                bgColor={ButtonColor.Purple}
+                onClick={handleSaveAward}
+                disabled={isDisabled()}
+              />
+            ),
+            setShowModal: setShowIndividualAwardModal,
+          }}
+        />
+      )}
+
+      <Modal
+        modalProps={{
+          title:
+            award.state === 'success'
+              ? `Edit ${getNumberWithOrdinal(awardIdx)} place`
+              : 'Add award',
+          subtitle: '',
+          handleClose: handleModalClose,
+          body: (
             <>
               <AddAward
                 isTyping={isTyping}
@@ -286,18 +326,18 @@ const IndividualAwards: React.FC<{
                 handleERC20AddressBlur={handleERC20AddressBlur}
               />
             </>
-          }
-          button={
+          ),
+          button: (
             <Button
               text={'Save Changes'}
               bgColor={ButtonColor.Purple}
               onClick={handleSaveAward}
               disabled={isDisabled()}
             />
-          }
-          setShowModal={setShowIndividualAwardModal}
-        />
-      )}
+          ),
+          setShowModal: setShowIndividualAwardModal,
+        }}
+      />
 
       <Group gap={16}>
         {awards.map((award, idx) => {

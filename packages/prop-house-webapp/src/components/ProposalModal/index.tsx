@@ -8,14 +8,11 @@ import { useAppSelector } from '../../hooks';
 import { setOnchainActiveProposal, setModalActive } from '../../state/slices/propHouse';
 import ProposalHeaderAndBody from '../ProposalHeaderAndBody';
 import ProposalModalFooter from '../ProposalModalFooter';
-import ErrorVotingModal from '../ErrorVotingModal';
 import VoteConfirmationModal from '../VoteConfirmationModal';
-import SuccessVotingModal from '../SuccessVotingModal';
-import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteAllotmentModal from '../VoteAllotmentModal';
 import SaveProposalModal from '../SaveProposalModal';
 import DeleteProposalModal from '../DeleteProposalModal';
-import { Proposal, usePropHouse } from '@prophouse/sdk-react';
+import { Proposal } from '@prophouse/sdk-react';
 
 const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const { proposals } = props;
@@ -24,21 +21,16 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const params = useParams();
   const { id } = params;
-  const propHouse = usePropHouse();
 
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
-  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
   // const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
-  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
 
   // modals
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
   const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [showSavePropModal, setShowSavePropModal] = useState(false);
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
@@ -100,34 +92,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
     dispatch(setOnchainActiveProposal(proposals[newPropIndex]));
   };
 
-  const handleSubmitVote = async () => {
-    if (!activeProposal || !round) return;
-    try {
-      const votes = voteAllotments
-        .filter(a => a.votes > 0)
-        .map(a => ({ proposalId: a.proposalId, votingPower: a.votes }));
-
-      const result = await propHouse.round.timed.voteViaSignature({
-        round: round.address,
-        votes,
-      });
-
-      if (!result?.transaction_hash) {
-        throw new Error(`Vote submission failed: ${result}`);
-      }
-
-      // todo: handle updating proposals
-      setShowErrorVotingModal(false);
-      setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessVotingModal(true);
-      dispatch(clearVoteAllotments());
-      setShowVoteConfirmationModal(false);
-    } catch (e) {
-      console.log(e);
-      setShowErrorVotingModal(true);
-    }
-  };
-
   const handleClose = () => {
     setEditProposalMode(false);
     handleClosePropModal();
@@ -138,19 +102,8 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
-          submitVote={handleSubmitVote}
+          round={round}
         />
-      )}
-
-      {showSuccessVotingModal && (
-        <SuccessVotingModal
-          setShowSuccessVotingModal={setShowSuccessVotingModal}
-          numPropsVotedFor={numPropsVotedFor}
-        />
-      )}
-
-      {showErrorVotingModal && (
-        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
       {showVoteAllotmentModal && activeProposal && (

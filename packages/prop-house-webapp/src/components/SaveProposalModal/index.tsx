@@ -59,32 +59,32 @@ const SaveProposalModal: React.FC<{
 
   return (
     <Modal
-      title={
-        errorSaving ? 'Error Saving' : hasBeenSaved ? 'Saved Successfully!' : 'Save this version?'
-      }
-      subtitle={
-        errorSaving ? (
-          ' Your proposal could not be saved. Please try again.'
+      modalProps={{
+        title: errorSaving
+          ? 'Error Saving'
+          : hasBeenSaved
+          ? 'Saved Successfully!'
+          : 'Save this version?',
+        subtitle: errorSaving ? (
+          'Your proposal could not be saved. Please try again.'
         ) : hasBeenSaved ? (
           <>
             Proposal <b>#{propId}</b> has been updated.
           </>
         ) : (
           'By confirming, these changes will be saved and your proposal will be updated.'
-        )
-      }
-      image={errorSaving ? NounImage.Laptop : hasBeenSaved ? NounImage.Thumbsup : null}
-      setShowModal={setShowSavePropModal}
-      handleClose={handleClose}
-      button={
-        !hasBeenSaved && (
+        ),
+        image: errorSaving ? NounImage.Laptop : hasBeenSaved ? NounImage.Thumbsup : null,
+        setShowModal: setShowSavePropModal,
+        handleClose: handleClose,
+        button: !hasBeenSaved && (
           <Button
             text={errorSaving ? 'Retry' : 'Save Prop'}
             bgColor={ButtonColor.Purple}
             onClick={handleSaveProposal}
           />
-        )
-      }
+        ),
+      }}
     />
   );
 };
