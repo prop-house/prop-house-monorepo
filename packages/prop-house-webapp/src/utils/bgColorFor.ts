@@ -11,7 +11,6 @@ const bgColorFor = (element: BgColorElement, path: string) => {
   const app = element === BgColorElement.App;
   const nav = element === BgColorElement.Nav;
   const footer = element === BgColorElement.Footer;
-  const createProp = element === BgColorElement.CreateProp;
 
   const isHomePath = path === '/';
   const isRoundOrHousePath =
