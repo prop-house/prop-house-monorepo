@@ -1,5 +1,5 @@
 import classes from './JumboRoundCard.module.css';
-import { House, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
@@ -8,7 +8,6 @@ import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
-import RoundCardStatusBar from '../RoundCardStatusBar';
 import { Col } from 'react-bootstrap';
 import StatusPill, { StatusPillColor } from '../StatusPill';
 import { shortFromNow } from '../../utils/shortenFromNow';
@@ -29,11 +28,6 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   );
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
-
-  const notStarted = round.state === Timed.RoundState.NOT_STARTED;
-  const proposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const voting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
-  const ended = round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   useEffect(() => {
     if (numProps) return;

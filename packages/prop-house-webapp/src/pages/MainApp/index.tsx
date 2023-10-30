@@ -1,8 +1,7 @@
 import classes from './MainApp.module.css';
-import { House, Proposal, RoundWithHouse, Vote, usePropHouse } from '@prophouse/sdk-react';
+import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
-import EthAddress from '../../components/EthAddress';
 import { useNavigate } from 'react-router-dom';
 import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
