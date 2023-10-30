@@ -113,7 +113,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
       {showSavePropModal && activeProposal && round && (
         <SaveProposalModal
           propId={activeProposal.id}
-          roundAddress={round.address}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
           dismissModalAndRefreshProps={dismissModalAndRefreshProps}

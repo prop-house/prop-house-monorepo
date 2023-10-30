@@ -1,57 +1,81 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
 import { useAppSelector } from '../../hooks';
 import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
 import { NounImage } from '../../utils/getNounImage';
 import Modal from '../Modal';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { usePropHouse } from '@prophouse/sdk-react';
+import { useAccount } from 'wagmi';
+import LoadingIndicator from '../LoadingIndicator';
+import { useDispatch } from 'react-redux';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const SaveProposalModal: React.FC<{
   propId: number;
-  roundAddress: string;
   setShowSavePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
   dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const {
-    propId,
-    roundAddress,
-    setShowSavePropModal,
-    setEditProposalMode,
-    dismissModalAndRefreshProps,
-  } = props;
+  const { propId, setShowSavePropModal, setEditProposalMode, dismissModalAndRefreshProps } = props;
 
+  const propHouse = usePropHouse();
+  const { address: account } = useAccount();
+  const updatedProposal = useAppSelector(state => state.editor.proposal);
   const host = useAppSelector(state => state.configuration.backendHost);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const client = useRef(new PropHouseWrapper(host));
-  const signer = useEthersSigner();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
+  const [propSubmitted, setPropSubmitted] = useState(false);
+  const [errorSubmittingProp, setErrorSubmittingProp] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [hasBeenSaved, setHasBeenSaved] = useState(false);
-  const [errorSaving, setErrorSaving] = useState(false);
-  // const updatedProposal = useAppSelector(state => state.editor.proposal);
+  const submitProposal = async () => {
+    if (!round || !account || !proposals || !proposal) return;
 
-  const handleSaveProposal = async () => {
+    const { title, what, tldr } = updatedProposal;
+
     try {
-      if (!propId || !roundAddress) return;
+      setLoading(true);
+      const json = JSON.stringify({ title, what, tldr }, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const file = new File([blob], 'proposal.json', { type: 'application/json' });
 
-      // todo: handle updating proposal
+      const result = await client.current.postFile(file, file.name);
+      await propHouse.round.timed.editProposalViaSignature({
+        round: round.address,
+        proposalId: proposal.id,
+        metadataUri: `ipfs://${result.data.ipfsHash}`,
+      });
 
-      setErrorSaving(false);
-      setHasBeenSaved(true);
-    } catch (error) {
-      setErrorSaving(true);
-      console.log(error);
+      const updatedProp = {
+        ...proposal,
+        metadataURI: `ipfs://${result.data.ipfsHash}`,
+        title,
+        body: what,
+      };
+
+      const updatedProposals = proposals.map(proposal =>
+        proposal.id === updatedProp.id ? updatedProp : proposal,
+      );
+
+      dispatch(setOnChainActiveProposals([...updatedProposals]));
+      setLoading(false);
+      setPropSubmitted(true);
+    } catch (e) {
+      setLoading(false);
+      setPropSubmitted(false);
+      setErrorSubmittingProp(true);
+      console.log(`Error submitting proposal: `, e);
     }
   };
 
   const handleClose = () => {
     setShowSavePropModal(false);
 
-    if (hasBeenSaved && round) {
+    if (propSubmitted && round) {
       dismissModalAndRefreshProps();
       setEditProposalMode(false);
     }
@@ -60,30 +84,37 @@ const SaveProposalModal: React.FC<{
   return (
     <Modal
       modalProps={{
-        title: errorSaving
+        title: loading
+          ? 'Submitting'
+          : errorSubmittingProp
           ? 'Error Saving'
-          : hasBeenSaved
+          : propSubmitted
           ? 'Saved Successfully!'
           : 'Save this version?',
-        subtitle: errorSaving ? (
+        subtitle: loading ? (
+          'Sending it through the ether...'
+        ) : errorSubmittingProp ? (
           'Your proposal could not be saved. Please try again.'
-        ) : hasBeenSaved ? (
+        ) : propSubmitted ? (
           <>
             Proposal <b>#{propId}</b> has been updated.
           </>
         ) : (
           'By confirming, these changes will be saved and your proposal will be updated.'
         ),
-        image: errorSaving ? NounImage.Laptop : hasBeenSaved ? NounImage.Thumbsup : null,
+        image: errorSubmittingProp ? NounImage.Laptop : propSubmitted ? NounImage.Thumbsup : null,
         setShowModal: setShowSavePropModal,
         handleClose: handleClose,
-        button: !hasBeenSaved && (
-          <Button
-            text={errorSaving ? 'Retry' : 'Save Prop'}
-            bgColor={ButtonColor.Purple}
-            onClick={handleSaveProposal}
-          />
-        ),
+        body: loading && <LoadingIndicator />,
+        button: loading
+          ? null
+          : !propSubmitted && (
+              <Button
+                text={errorSubmittingProp ? 'Retry' : 'Save Prop'}
+                bgColor={ButtonColor.Purple}
+                onClick={submitProposal}
+              />
+            ),
       }}
     />
   );
