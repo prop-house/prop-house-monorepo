@@ -138,7 +138,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
                 <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
                 <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
-                &nbsp;<span>toastee.eth</span>&nbsp;and&nbsp;<span>10others</span>
+                &nbsp;<span>toastee.eth</span>&nbsp;and&nbsp;<span>10 others</span>
                 &nbsp;proposed
               </div>
               <Button text="View round" bgColor={ButtonColor.Purple} />
