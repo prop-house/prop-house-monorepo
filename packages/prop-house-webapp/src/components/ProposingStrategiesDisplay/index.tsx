@@ -65,7 +65,8 @@ const ProposingStrategiesDisplay: React.FC<{
           <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
-          token with id {strat.tokenId} can propose. {propThreshold} tokens required.;
+          token with id {strat.tokenId} can propose. {propThreshold} token
+          {propThreshold !== 1 && 's'} required.
         </>
       );
 

@@ -64,8 +64,8 @@ const VotingStrategiesDisplay: React.FC<{
           <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
             {trimEthAddress(strat.tokenAddress)}
           </a>{' '}
-          token with id {strat.tokenId} can vote. {strat.multiplier ? strat.multiplier : 1} vote per
-          token.;
+          token with id {strat.tokenId} can vote. {strat.multiplier ? strat.multiplier : 1} vote
+          {strat.multiplier && 's'} per token.
         </>
       );
 
