@@ -8,6 +8,7 @@ import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
+import ActivityFeed from '../../components/ActivityFeed';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -15,9 +16,6 @@ const MainApp = () => {
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
-  const [activity, setActivity] = useState<(Proposal | Vote)[]>();
-  const [fetchedProps, setFetchedProps] = useState(false);
-  const [fetchedVotes, setFetchedVotes] = useState(false);
 
   useEffect(() => {
     if (rounds) return;
@@ -43,39 +41,21 @@ const MainApp = () => {
     fetchHouses();
   });
 
-  useEffect(() => {
-    if (fetchedProps) return;
-    const fetchProps = async () => {
-      try {
-        const props = await prophouse.query.getProposals();
-        setActivity(prev => [...(prev ?? []), ...(props ?? [])]);
-        setFetchedProps(true);
-      } catch (e) {
-        setFetchedProps(true);
-        console.log(e);
-      }
-    };
-    fetchProps();
-  });
-
-  useEffect(() => {
-    if (fetchedVotes) return;
-    const fetchVotes = async () => {
-      try {
-        const votes = await prophouse.query.getVotes();
-        setActivity(prev => [...(prev ?? []), ...(votes ?? [])]);
-        setFetchedVotes(true);
-      } catch (e) {
-        setFetchedVotes(true);
-        console.log(e);
-      }
-    };
-    fetchVotes();
-  });
+  const roundsFeed = (
+    <Row>
+      {rounds &&
+        rounds.map((round, i) => {
+          return (
+            <Col xl={6} key={i}>
+              <RoundCard house={round.house} round={round} />
+            </Col>
+          );
+        })}
+    </Row>
+  );
 
   const housesFeed = (
-    <Col xl={2}>
-      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Communities</h5>}
+    <Col>
       <div className={classes.housesContainer}>
         {houses &&
           houses.map((house, i) => {
@@ -117,59 +97,8 @@ const MainApp = () => {
     </Col>
   );
 
-  const roundsFeed = (
-    <Col xl={5} className="mx-auto">
-      {!isMobile() && <h5>Rounds</h5>}
-      <div>
-        {rounds &&
-          rounds.map((round, i) => {
-            return (
-              <Col xl={12} key={i}>
-                <RoundCard round={round} house={round.house} />
-              </Col>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
-  const activityFeed = (
-    <Col xl={4}>
-      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Activity</h5>}
-      <div className={classes.activityContainer}>
-        {activity &&
-          activity.map((item, i) => {
-            if ('proposer' in item) {
-              return (
-                <div className={classes.activityItem} key={i}>
-                  <EthAddress
-                    address={item.proposer}
-                    addAvatar={true}
-                    avatarSize={12}
-                    className={classes.address}
-                  />
-                  &nbsp;proposed&nbsp;{item.title}
-                </div>
-              );
-            }
-            return (
-              <div className={classes.activityItem} key={i}>
-                <EthAddress
-                  address={item.voter}
-                  addAvatar={true}
-                  avatarSize={12}
-                  className={classes.address}
-                />
-                &nbsp;voted&nbsp;{item.votingPower}&nbsp;
-              </div>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
   return (
-    <Container>
+    <Container fluid>
       <Row>
         {isMobile() ? (
           <>
@@ -181,15 +110,17 @@ const MainApp = () => {
                 {roundsFeed}
               </Tab>
               <Tab eventKey="activity" title="Activity">
-                {activityFeed}
+                <ActivityFeed />
               </Tab>
             </Tabs>
           </>
         ) : (
           <>
-            {housesFeed}
-            {roundsFeed}
-            {activityFeed}
+            <Col xl={8}>{roundsFeed}</Col>
+            <Col xl={4}>
+              {housesFeed}
+              <ActivityFeed />
+            </Col>
           </>
         )}
       </Row>

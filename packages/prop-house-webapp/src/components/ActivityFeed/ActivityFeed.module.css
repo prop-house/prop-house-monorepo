@@ -1,0 +1,20 @@
+.activityContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 70vh;
+  overflow-y: scroll;
+  padding-top: 12px;
+}
+.activityItem {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: var(--brand-gray);
+  font-size: 16px;
+}
+.activityItem .address {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--brand-black);
+}
