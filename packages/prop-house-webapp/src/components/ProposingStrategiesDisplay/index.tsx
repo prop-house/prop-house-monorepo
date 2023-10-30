@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Modal from '../Modal';
 import { BsPersonFill } from 'react-icons/bs';
 import buildEtherscanPath from '../HouseManager/utils/buildEtherscanPath';
+import useTokenNames from '../../hooks/useTokenNames';
 
 const ProposingStrategiesDisplay: React.FC<{
   proposingStrategies: ProposingStrategy[];
@@ -13,6 +14,13 @@ const ProposingStrategiesDisplay: React.FC<{
   const { proposingStrategies, propThreshold } = props;
 
   const [showModal, setShowModal] = useState(false);
+  const [loadingTokenNames, tokenNames] = useTokenNames(proposingStrategies);
+
+  const display = (address: string) => {
+    return !loadingTokenNames && tokenNames && tokenNames[address]
+      ? tokenNames[address]
+      : trimEthAddress(address);
+  };
 
   const oneStrat = proposingStrategies.length === 1;
   const oneStratAndAllowListHasOneMember =
@@ -52,7 +60,7 @@ const ProposingStrategiesDisplay: React.FC<{
         <>
           Owners of the{' '}
           <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
-            {trimEthAddress(strat.tokenAddress)}
+            {display(strat.tokenAddress)}
           </a>{' '}
           token can propose. {propThreshold > 1 && `${propThreshold} tokens required`}
         </>

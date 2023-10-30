@@ -1,4 +1,4 @@
-import { GovPowerStrategyType, ParsedGovPowerStrategy, RoundAward } from '@prophouse/sdk-react';
+import { GovPowerStrategyType, ParsedGovPowerStrategy } from '@prophouse/sdk-react';
 import { erc721ABI } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import { useContractReads } from 'wagmi';
@@ -33,6 +33,7 @@ const useTokenNames = (strategies: ParsedGovPowerStrategy[]): UseTokenNamesResul
           address: strategy.tokenAddress as `0x${string}`,
           abi: isErc20OrErc721 && erc721ABI,
         };
+      return undefined;
     })
     .filter(Boolean) as { address: `0x${string}`; abi: readonly any[] }[];
 
@@ -51,11 +52,12 @@ const useTokenNames = (strategies: ParsedGovPowerStrategy[]): UseTokenNamesResul
     if (!data || isLoading) return;
 
     const parsedResults: { [address: string]: string } = {};
-    data.map((name, index) => {
+    data.forEach((name, index) => {
       parsedResults[contracts[index].address] = name.result as string;
     });
     setTokenNames(parsedResults);
-  }, [data]);
+    // eslint-disable-next-line
+  }, []);
 
   return [isLoading, tokenNames];
 };
