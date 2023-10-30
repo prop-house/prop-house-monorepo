@@ -7,7 +7,7 @@ import { clearProposal } from '../../state/slices/editor';
 import { isValidPropData } from '../../utils/isValidPropData';
 import { useAccount } from 'wagmi';
 import { Proposal, RoundType } from '@prophouse/sdk-react';
-import useVotingPower from '../../hooks/useVotingPower';
+import useCanPropose from '../../hooks/useCanPropose';
 
 /**
  * New, Edit and Delete buttons
@@ -35,9 +35,29 @@ const ProposalWindowButtons: React.FC<{
   const proposalEditorData = useAppSelector(state => state.editor.proposal);
   const dispatch = useAppDispatch();
 
-  const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(
-    round!,
-    account,
+  const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
+
+  const createPropBtn = (
+    <Button
+      classNames={classes.fullWidthButton}
+      text={
+        errorLoadingCanPropose ? (
+          <div>There was an error loading checking eligibility</div>
+        ) : loadingCanPropose ? (
+          <div>Checking for account requirements...</div>
+        ) : canPropose && !loadingCanPropose ? (
+          'Create your proposal'
+        ) : (
+          'Your account is not eligible to submit a proposal'
+        )
+      }
+      bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
+      onClick={() => {
+        dispatch(clearProposal());
+        navigate('/create-prop', { state: { auction: round, proposals } });
+      }}
+      disabled={!canPropose}
+    />
   );
 
   return (
@@ -66,33 +86,9 @@ const ProposalWindowButtons: React.FC<{
                 </div>
               </>
             ) : (
-              votingPower && (
+              canPropose && (
                 <>
-                  <Button
-                    classNames={classes.fullWidthButton}
-                    text={
-                      errorLoadingVotingPower ? (
-                        <div>There was an error loading voting power</div>
-                      ) : loadingVotingPower ? (
-                        <div>Checking for account requirements...</div>
-                      ) : votingPower > 0 && !loadingVotingPower ? (
-                        'Create your proposal'
-                      ) : (
-                        'Your account is not eligible to submit a proposal'
-                      )
-                    }
-                    bgColor={
-                      loadingVotingPower || !(votingPower > 0)
-                        ? ButtonColor.Gray
-                        : ButtonColor.Green
-                    }
-                    onClick={() => {
-                      dispatch(clearProposal());
-                      navigate('/create-prop', { state: { auction: round, proposals } });
-                    }}
-                    disabled={!(votingPower > 0)}
-                  />
-
+                  {createPropBtn}
                   <div className={classes.editModeButtons}>
                     <Button
                       classNames={classes.fullWidthButton}
@@ -113,29 +109,8 @@ const ProposalWindowButtons: React.FC<{
             )}
           </div>
         ) : (
-          votingPower && (
-            // NOT MY PROP
-            <Button
-              classNames={classes.fullWidthButton}
-              text={
-                loadingVotingPower ? (
-                  <div>Checking for account requirements...</div>
-                ) : votingPower > 0 && !loadingVotingPower ? (
-                  'Create your proposal'
-                ) : (
-                  'Your account is not eligible to submit a proposal'
-                )
-              }
-              bgColor={
-                loadingVotingPower || !(votingPower > 0) ? ButtonColor.Gray : ButtonColor.Green
-              }
-              onClick={() => {
-                dispatch(clearProposal());
-                navigate('/create-prop', { state: { auction: round, proposals } });
-              }}
-              disabled={!(votingPower > 0)}
-            />
-          )
+          // NOT MY PROP
+          canPropose && createPropBtn
         ))}
     </>
   );
