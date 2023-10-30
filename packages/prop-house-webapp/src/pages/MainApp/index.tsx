@@ -85,7 +85,7 @@ const MainApp = () => {
   );
 
   return (
-    <Container fluid>
+    <Container>
       <Row>
         {isMobile() ? (
           <>
@@ -112,7 +112,7 @@ const MainApp = () => {
           </>
         ) : (
           <>
-            <Col xl={8}>
+            <Col xl={9}>
               <Row>
                 {rounds && rounds[0] && (
                   <JumboRoundCard round={rounds[5]} house={rounds[0].house} />
@@ -123,13 +123,13 @@ const MainApp = () => {
                   rounds.map((round, i) => {
                     return (
                       <Col xl={6} key={i}>
-                        <RoundCard house={round.house} round={round} displayBottomBar={false} />
+                        <RoundCard house={round.house} round={round} displayBottomBar={true} />
                       </Col>
                     );
                   })}
               </Row>
             </Col>
-            <Col xl={4}>
+            <Col xl={3}>
               <ActivityFeed />
             </Col>
           </>
