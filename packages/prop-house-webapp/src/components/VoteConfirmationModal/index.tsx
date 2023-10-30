@@ -10,7 +10,7 @@ import { Round, usePropHouse } from '@prophouse/sdk-react';
 import LoadingIndicator from '../LoadingIndicator';
 import { NounImage } from '../../utils/getNounImage';
 import { useDispatch } from 'react-redux';
-import { setOnChainActiveProposals } from '../../state/slices/propHouse';
+import { setOnChainActiveProposals, setOnchainActiveProposal } from '../../state/slices/propHouse';
 import { clearVoteAllotments } from '../../state/slices/voting';
 
 const VoteConfirmationModal: React.FC<{
@@ -22,6 +22,7 @@ const VoteConfirmationModal: React.FC<{
   const propHouse = usePropHouse();
   const dispatch = useDispatch();
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const proposal = useAppSelector(state => state.propHouse.activeProposal);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
   const votingPower = useAppSelector(state => state.voting.votingPower);
   const votesByUserInActiveRound = useAppSelector(state => state.voting.votesByUserInActiveRound);
@@ -39,7 +40,6 @@ const VoteConfirmationModal: React.FC<{
   const sortedVoteAllottments = sortVoteAllotmentsByVotes(voteAllotments);
 
   const handleSubmitVote = async () => {
-    if (!proposals) return;
     try {
       setCurrentModalData(loadingData);
       const votes = voteAllotments
@@ -58,14 +58,18 @@ const VoteConfirmationModal: React.FC<{
       setCurrentModalData(successData);
 
       // refresh props with new votes
-      const updatedProps = proposals.map(prop => {
+      // check if we're updating from the round page (multiple props) or the prop page (single prop)
+      const propsToCheck = proposals ? proposals : proposal ? [proposal] : [];
+      const updatedProps = propsToCheck.map(prop => {
         const voteForProp = votes.find(v => v.proposalId === prop.id);
         let newProp = { ...prop };
         if (voteForProp)
           newProp.votingPower = `${Number(newProp.votingPower) + voteForProp.votingPower}`;
         return newProp;
       });
-      dispatch(setOnChainActiveProposals(updatedProps));
+      proposals
+        ? dispatch(setOnChainActiveProposals(updatedProps))
+        : dispatch(setOnchainActiveProposal(updatedProps[0]));
       dispatch(clearVoteAllotments());
     } catch (e: any) {
       console.log(e);
