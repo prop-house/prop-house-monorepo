@@ -1,0 +1,120 @@
+.roundCard {
+  min-height: 15rem;
+  height: 15rem;
+  max-height: 15rem;
+  position: relative;
+  z-index: 1;
+  border: 1px solid var(--border-med);
+}
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  justify-content: space-between;
+  padding: 8px;
+}
+.container .leftCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.roundCreator {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--brand-gray);
+}
+
+.roundTitle {
+  font-size: 32px;
+  font-weight: bold;
+  line-height: 115%;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.container .leftCol .roundCreatorAndTitleContainer {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+.container .leftCol .statusItemContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 1.2rem;
+}
+.container .leftCol .statusItemContainer .item {
+  display: flex;
+  flex-direction: column;
+}
+.container .leftCol .statusItemContainer .item:nth-child(2),
+.container .leftCol .statusItemContainer .item:nth-child(3) {
+  border-left: 1px var(--brand-gray-hint) solid;
+  padding-left: 1rem;
+}
+.container .leftCol .statusItemContainer .item .title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: medium;
+  color: var(--brand-gray-transparent);
+  margin-bottom: 6px;
+}
+.container .leftCol .statusItemContainer .item .title svg {
+  margin-right: 6px;
+}
+.container .leftCol .statusItemContainer .item .content {
+  font-weight: bold;
+  font-size: 22px;
+}
+
+.awardsModalContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.awardsModalContentContainer .place {
+  font-weight: bold;
+}
+.awardsModalContentContainer .amountAndSymbol {
+  font-weight: bold;
+  color: var(--brand-gray);
+}
+
+.container .rightCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.container .rightCol .awardsContainer .title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--brand-gray-transparent);
+}
+.container .rightCol .awardsContainer .title svg {
+  margin-right: 6px;
+}
+
+.container .rightCol .bottomContainer .activeAccounts {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--brand-gray);
+}
+
+.container .rightCol .bottomContainer .activeAccounts span {
+  color: var(--brand-black);
+}
+
+.container .rightCol .bottomContainer button {
+  width: 100%;
+}

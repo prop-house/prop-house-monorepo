@@ -9,6 +9,7 @@ import { isMobile } from 'web3modal';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
+import JumboRoundCard from '../../components/JumoboRoundCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -40,19 +41,6 @@ const MainApp = () => {
     };
     fetchHouses();
   });
-
-  const roundsFeed = (
-    <Row>
-      {rounds &&
-        rounds.map((round, i) => {
-          return (
-            <Col xl={6} key={i}>
-              <RoundCard house={round.house} round={round} />
-            </Col>
-          );
-        })}
-    </Row>
-  );
 
   const housesFeed = (
     <Col>
@@ -107,7 +95,16 @@ const MainApp = () => {
                 {housesFeed}
               </Tab>
               <Tab eventKey="rounds" title="Rounds">
-                {roundsFeed}
+                <Row>
+                  {rounds &&
+                    rounds.map((round, i) => {
+                      return (
+                        <Col xl={6} key={i}>
+                          <RoundCard house={round.house} round={round} displayBottomBar={true} />
+                        </Col>
+                      );
+                    })}
+                </Row>
               </Tab>
               <Tab eventKey="activity" title="Activity">
                 <ActivityFeed />
@@ -116,9 +113,24 @@ const MainApp = () => {
           </>
         ) : (
           <>
-            <Col xl={8}>{roundsFeed}</Col>
+            <Col xl={8}>
+              <Row>
+                {rounds && rounds[0] && (
+                  <JumboRoundCard round={rounds[5]} house={rounds[0].house} />
+                )}
+              </Row>
+              <Row>
+                {rounds &&
+                  rounds.map((round, i) => {
+                    return (
+                      <Col xl={6} key={i}>
+                        <RoundCard house={round.house} round={round} displayBottomBar={false} />
+                      </Col>
+                    );
+                  })}
+              </Row>
+            </Col>
             <Col xl={4}>
-              {housesFeed}
               <ActivityFeed />
             </Col>
           </>
