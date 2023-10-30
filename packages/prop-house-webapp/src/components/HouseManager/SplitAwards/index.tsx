@@ -237,40 +237,42 @@ const SplitAwards: React.FC<{
     <>
       {showSplitAwardModal && (
         <Modal
-          title="Edit award"
-          subtitle=""
-          handleClose={handleModalClose}
-          body={
-            <>
-              <ERC20Buttons
-                award={award}
-                isTyping={isTyping}
-                handleSwitch={handleSwitchInput}
-                handleBlur={handleAwardAddressBlur}
-                handleSelectAward={handleSelectAward}
-                handleChange={handleAwardAddressChange}
-              />
-              <Group gap={6} mt={12}>
-                <Text type="subtitle">Amount</Text>
-                <input
-                  className={classes.input}
-                  type="number"
-                  placeholder="3"
-                  onChange={handleAwardInputChange}
-                  value={award.amount}
+          modalProps={{
+            title: 'Edit award',
+            subtitle: '',
+            handleClose: handleModalClose,
+            body: (
+              <>
+                <ERC20Buttons
+                  award={award}
+                  isTyping={isTyping}
+                  handleSwitch={handleSwitchInput}
+                  handleBlur={handleAwardAddressBlur}
+                  handleSelectAward={handleSelectAward}
+                  handleChange={handleAwardAddressChange}
                 />
-              </Group>
-            </>
-          }
-          button={
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Purple}
-              onClick={handleAwardsSave}
-              disabled={!(award.state === 'success' && award.amount > 0)}
-            />
-          }
-          setShowModal={setShowSplitAwardModal}
+                <Group gap={6} mt={12}>
+                  <Text type="subtitle">Amount</Text>
+                  <input
+                    className={classes.input}
+                    type="number"
+                    placeholder="3"
+                    onChange={handleAwardInputChange}
+                    value={award.amount}
+                  />
+                </Group>
+              </>
+            ),
+            button: (
+              <Button
+                text={'Save Changes'}
+                bgColor={ButtonColor.Purple}
+                onClick={handleAwardsSave}
+                disabled={!(award.state === 'success' && award.amount > 0)}
+              />
+            ),
+            setShowModal: setShowSplitAwardModal,
+          }}
         />
       )}
 

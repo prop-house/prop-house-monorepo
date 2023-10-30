@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Modal from '../Modal';
 import buildEtherscanPath from '../HouseManager/utils/buildEtherscanPath';
 import { MdHowToVote } from 'react-icons/md';
+import useTokenNames from '../../hooks/useTokenNames';
 
 const VotingStrategiesDisplay: React.FC<{
   votingStrategies: VotingStrategy[];
@@ -12,6 +13,13 @@ const VotingStrategiesDisplay: React.FC<{
   const { votingStrategies } = props;
 
   const [showModal, setShowModal] = useState(false);
+  const [loadingTokenNames, tokenNames] = useTokenNames(votingStrategies);
+
+  const display = (address: string) => {
+    return !loadingTokenNames && tokenNames && tokenNames[address]
+      ? tokenNames[address]
+      : trimEthAddress(address);
+  };
 
   const oneStrat = votingStrategies.length === 1;
   const oneStratAndAllowListHasOneMember =
@@ -51,7 +59,7 @@ const VotingStrategiesDisplay: React.FC<{
         <>
           Owners of the{' '}
           <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
-            {trimEthAddress(strat.tokenAddress)}
+            {display(strat.tokenAddress)}
           </a>{' '}
           token can vote. {strat.multiplier ? strat.multiplier : 1} vote per token.
         </>
@@ -62,10 +70,10 @@ const VotingStrategiesDisplay: React.FC<{
         <>
           Owners of the{' '}
           <a href={buildEtherscanPath(strat.tokenAddress)} target="_blank" rel="noreferrer">
-            {trimEthAddress(strat.tokenAddress)}
+            {display(strat.tokenAddress)}
           </a>{' '}
-          token with id {strat.tokenId} can vote. {strat.multiplier ? strat.multiplier : 1} vote per
-          token.;
+          token with id {strat.tokenId} can vote. {strat.multiplier ? strat.multiplier : 1} vote
+          {strat.multiplier && 's'} per token.
         </>
       );
 
@@ -91,10 +99,12 @@ const VotingStrategiesDisplay: React.FC<{
 
   return showModal ? (
     <Modal
-      title="Voting eligibility"
-      subtitle="Below is the criteria required to vote"
-      body={multiStratContent(votingStrategies)}
-      setShowModal={setShowModal}
+      modalProps={{
+        title: 'Voting eligibility',
+        subtitle: 'Below is the criteria required to vote',
+        body: multiStratContent(votingStrategies),
+        setShowModal: setShowModal,
+      }}
     />
   ) : oneStratAndAllowListHasOneMember || oneStrat ? (
     singleStratCopy(votingStrategies[0])

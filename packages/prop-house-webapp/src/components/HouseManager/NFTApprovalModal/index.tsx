@@ -54,16 +54,16 @@ const NFTApprovalModal: React.FC<{
 
   return (
     <Modal
-      title={titleText}
-      subtitle={subtitleText}
-      body={status.isLoading && <LoadingIndicator />}
-      image={image}
-      setShowModal={setShowNFTApprovalModal}
-      button={
-        status.isSuccess && (
+      modalProps={{
+        title: titleText,
+        subtitle: subtitleText,
+        body: status.isLoading && <LoadingIndicator />,
+        image: image,
+        setShowModal: setShowNFTApprovalModal,
+        button: status.isSuccess && (
           <Button text="Finish creating round" bgColor={ButtonColor.Pink} onClick={handleClose} />
-        )
-      }
+        ),
+      }}
     />
   );
 };

@@ -47,15 +47,13 @@ const DeleteProposalModal: React.FC<{
 
   return (
     <Modal
-      title={
-        errorDeleting
+      modalProps={{
+        title: errorDeleting
           ? 'Error Deleting'
           : hasBeenDeleted
           ? 'Successfully Deleted!'
-          : 'Delete your prop?'
-      }
-      subtitle={
-        errorDeleting ? (
+          : 'Delete your prop?',
+        subtitle: errorDeleting ? (
           'Your proposal could not be deleted. Please try again.'
         ) : hasBeenDeleted ? (
           <>
@@ -63,20 +61,22 @@ const DeleteProposalModal: React.FC<{
           </>
         ) : (
           'Are you sure you want to delete your proposal? This action cannot be undone.'
-        )
-      }
-      image={errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null}
-      setShowModal={setShowDeletePropModal}
-      handleClose={handleClose}
-      button={
-        !hasBeenDeleted && (
+        ),
+        image: errorDeleting
+          ? { src: NounImage.Computer, alt: 'Computer' }
+          : hasBeenDeleted
+          ? { src: NounImage.Trashcan, alt: 'Trashcan' }
+          : null,
+        setShowModal: setShowDeletePropModal,
+        handleClose: handleClose,
+        button: !hasBeenDeleted && (
           <Button
             text={errorDeleting ? 'Retry' : 'Delete Prop'}
             bgColor={errorDeleting ? ButtonColor.Purple : ButtonColor.Red}
             onClick={handleDeleteProposal}
           />
-        )
-      }
+        ),
+      }}
     />
   );
 };

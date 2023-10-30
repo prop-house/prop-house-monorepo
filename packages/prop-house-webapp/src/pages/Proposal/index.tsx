@@ -20,8 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
-import ErrorVotingModal from '../../components/ErrorVotingModal';
-import SuccessVotingModal from '../../components/SuccessVotingModal';
 import { Timed, usePropHouse } from '@prophouse/sdk-react';
 
 const Proposal = () => {
@@ -39,8 +37,6 @@ const Proposal = () => {
 
   const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
 
   const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
 
@@ -73,8 +69,6 @@ const Proposal = () => {
     if (!round) return;
     navigate(`/${round.address}`, { replace: false });
   };
-
-  const handleSubmitVote = async () => {};
 
   const votingBar = proposal && round && round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.votingBar}>
@@ -117,19 +111,8 @@ const Proposal = () => {
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
-          submitVote={handleSubmitVote}
+          round={round}
         />
-      )}
-
-      {showSuccessVotingModal && (
-        <SuccessVotingModal
-          setShowSuccessVotingModal={setShowSuccessVotingModal}
-          numPropsVotedFor={666} // todo: fix
-        />
-      )}
-
-      {showErrorVotingModal && (
-        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
       )}
 
       {proposal && (

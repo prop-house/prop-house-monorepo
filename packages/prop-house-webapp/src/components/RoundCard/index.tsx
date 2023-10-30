@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import AwardLabels from '../AwardLabels';
 import { useState } from 'react';
 import Modal from '../Modal';
-import useFullRoundAwards from '../../hooks/useFullRoundAward';
+import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
 import RoundCardStatusBar from '../RoundCardStatusBar';
 
@@ -44,10 +44,12 @@ const RoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   return showModal ? (
     <Modal
-      title="Awards"
-      subtitle="See all awards"
-      setShowModal={setShowModal}
-      body={awardsModalContent}
+      modalProps={{
+        title: 'Awards',
+        subtitle: 'See all awards',
+        setShowModal: setShowModal,
+        body: awardsModalContent,
+      }}
     />
   ) : (
     <div onClick={e => navigate(`/${round.address}`)}>

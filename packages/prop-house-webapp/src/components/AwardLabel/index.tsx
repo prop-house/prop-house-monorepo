@@ -5,7 +5,7 @@ import { HiTrophy } from 'react-icons/hi2';
 import LoadingIndicator from '../LoadingIndicator';
 import { truncateThousands } from '../../utils/truncateThousands';
 import { Dispatch, SetStateAction } from 'react';
-import useFullRoundAwards from '../../hooks/useFullRoundAward';
+import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 
 export const MoreAwardsLabel: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;

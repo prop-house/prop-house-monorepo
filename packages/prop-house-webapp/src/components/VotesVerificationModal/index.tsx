@@ -27,12 +27,14 @@ const VotesVerificationModal: React.FC<{
   return (
     <div onClick={e => e.stopPropagation()}>
       <Modal
-        title={proposal.title}
-        subtitle={`${proposal.votingPower} ${
-          Number(proposal.votingPower) === 1 ? 'vote' : 'votes'
-        } have been cast`}
-        body={verifiedVotes}
-        setShowModal={setDisplayVotesVerifModal}
+        modalProps={{
+          title: proposal.title,
+          subtitle: `${proposal.votingPower} ${
+            Number(proposal.votingPower) === 1 ? 'vote' : 'votes'
+          } have been cast`,
+          body: verifiedVotes,
+          setShowModal: setDisplayVotesVerifModal,
+        }}
       />
     </div>
   );

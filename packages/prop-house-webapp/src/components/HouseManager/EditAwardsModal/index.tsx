@@ -31,18 +31,20 @@ const EditAwardsModal: React.FC<{
 
   return (
     <Modal
-      title="Edit awards"
-      subtitle=""
-      body={<AssetSelector editMode editedRound={editedRound} setEditedRound={setEditedRound} />}
-      setShowModal={setShowAwardsModal}
-      button={
-        <Button
-          text={'Save Changes'}
-          bgColor={ButtonColor.Pink}
-          onClick={handleEditModeSave}
-          disabled={editedRound.numWinners < 1}
-        />
-      }
+      modalProps={{
+        title: 'Edit awards',
+        subtitle: '',
+        body: <AssetSelector editMode editedRound={editedRound} setEditedRound={setEditedRound} />,
+        setShowModal: setShowAwardsModal,
+        button: (
+          <Button
+            text={'Save Changes'}
+            bgColor={ButtonColor.Pink}
+            onClick={handleEditModeSave}
+            disabled={editedRound.numWinners < 1}
+          />
+        ),
+      }}
     />
   );
 };
