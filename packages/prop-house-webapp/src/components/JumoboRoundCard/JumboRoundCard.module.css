@@ -1,7 +1,7 @@
 .roundCard {
-  min-height: 15rem;
-  height: 15rem;
-  max-height: 15rem;
+  min-height: 17rem;
+  height: 17rem;
+  max-height: 17rem;
   position: relative;
   z-index: 1;
   border: 1px solid var(--border-med);
@@ -107,7 +107,7 @@
   display: flex;
   align-items: center;
   font-weight: 500;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--brand-gray);
 }
 
