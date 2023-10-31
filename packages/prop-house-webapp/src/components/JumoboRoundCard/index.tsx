@@ -1,5 +1,5 @@
 import classes from './JumboRoundCard.module.css';
-import { House, Round, usePropHouse } from '@prophouse/sdk-react';
+import { House, Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
 import Avatar from '../Avatar';
 import RoundStatusPill from '../RoundStatusPill';
+import ProposalRankings from '../ProposalRankings';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -28,6 +29,10 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   );
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
+  const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
+
+  const isProposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const isVoting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
 
   useEffect(() => {
     if (numProps) return;
@@ -39,6 +44,23 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
       }
     };
     fetchProps();
+  });
+
+  useEffect(() => {
+    if (topThreeProps) return;
+    const fetchTopThreeProps = async () => {
+      try {
+        console.log(round.address);
+        const props = await propHouse.query.getProposalsForRound(round.address, {
+          page: 1,
+          perPage: 3,
+        });
+        setTopThreeProps(props);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchTopThreeProps();
   });
 
   const awardsModalContent = (
@@ -126,23 +148,18 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             </div>
           </Col>
           <Col className={classes.rightCol}>
-            <div className={classes.awardsContainer}>
-              <div className={classes.title}>
-                <HiTrophy size={14} color={'C0C0C0'} />
-                Awards
+            {isProposing && (
+              <div className={classes.awardsContainer}>
+                <div className={classes.title}>
+                  <HiTrophy size={14} color={'C0C0C0'} />
+                  Awards
+                </div>
+                <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
               </div>
-              <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={18} />
-            </div>
-            <div className={classes.bottomContainer}>
-              <div className={classes.activeAccounts}>
-                <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
-                <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
-                <Avatar address={'0xb0dd496FffFa300df1EFf42702066aCa81834404'} diameter={12} />
-                &nbsp;<span>toastee.eth</span>&nbsp;and&nbsp;<span>10 others</span>
-                &nbsp;proposed
-              </div>
-              <Button text="View round" bgColor={ButtonColor.Purple} />
-            </div>
+            )}
+
+            {isVoting && topThreeProps && <ProposalRankings proposals={topThreeProps} />}
+            <Button text="View round" bgColor={ButtonColor.Purple} />
           </Col>
         </div>
       </Card>

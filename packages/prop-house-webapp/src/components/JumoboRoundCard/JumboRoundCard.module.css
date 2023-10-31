@@ -104,22 +104,6 @@
   margin-right: 6px;
 }
 
-.container .rightCol .bottomContainer .activeAccounts {
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-  margin-bottom: 8px;
-  color: var(--brand-gray);
-}
-.container .rightCol .bottomContainer .activeAccounts > div:nth-child(1),
-.container .rightCol .bottomContainer .activeAccounts > div:nth-child(2) {
-  margin-right: -4px !important;
-}
-
-.container .rightCol .bottomContainer .activeAccounts span {
-  color: var(--brand-black);
-}
-
-.container .rightCol .bottomContainer button {
+.container .rightCol button {
   width: 100%;
 }

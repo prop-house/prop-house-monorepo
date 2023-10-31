@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 12px;
+}
+.container .title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--brand-gray);
+}
+.container .item {
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px var(--brand-gray-hint) solid;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  color: var(--brand-gray);
+}
+.container .item .place {
+  display: inline-block;
+  width: 16px;
+}
+.container .item .title {
+  color: var(--brand-black);
+}
+.container .item:nth-child(4) {
+  border-bottom: none;
+}
+.container .item span {
+  color: var(--brand-black);
+}
