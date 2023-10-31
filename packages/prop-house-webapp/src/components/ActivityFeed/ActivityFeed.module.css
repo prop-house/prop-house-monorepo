@@ -1,0 +1,35 @@
+.activityContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 70vh;
+  overflow-y: scroll;
+  padding-top: 12px;
+}
+.activityItem {
+  display: flex;
+  align-items: center;
+  margin: 0.2rem 0;
+}
+.activityItem .timestamp {
+  font-weight: medium;
+  font-size: 14px;
+  color: var(--brand-gray);
+  min-width: 2rem;
+}
+.activityItem .address {
+  font-size: 16px;
+  font-weight: medium;
+  color: var(--brand-black);
+}
+.activityItem .activityContent {
+  font-weight: medium;
+  font-size: 14px;
+  color: var(--brand-gray);
+}
+
+.activityItem .activityContent span {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 500;
+}
