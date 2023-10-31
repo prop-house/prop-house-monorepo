@@ -1,6 +1,5 @@
 import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import classes from './RoundCardStatusBar.module.css';
-import StatusPill, { StatusPillColor } from '../StatusPill';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { IoTime } from 'react-icons/io5';
@@ -8,6 +7,7 @@ import { HiDocument } from 'react-icons/hi';
 import clsx from 'clsx';
 import { deadlineTime } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
+import RoundStatusPill from '../RoundStatusPill';
 
 const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   const { round } = props;
@@ -16,8 +16,6 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   const [numProps, setNumProps] = useState<number | undefined>();
 
   const notStarted = round.state === Timed.RoundState.NOT_STARTED;
-  const proposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const voting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
   const ended = round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   useEffect(() => {
@@ -31,15 +29,6 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
     };
     fetchProps();
   });
-
-  const statusPill = () => {
-    if (notStarted)
-      return <StatusPill copy="Not started" color={StatusPillColor.Gray} borderRadius={6} />;
-    if (proposing)
-      return <StatusPill copy="Proposing" color={StatusPillColor.Green} borderRadius={6} />;
-    if (voting) return <StatusPill copy="Voting" color={StatusPillColor.Purple} borderRadius={6} />;
-    if (ended) return <StatusPill copy="Complete" color={StatusPillColor.Gray} borderRadius={6} />;
-  };
 
   const copy = () => {
     if (notStarted) {
@@ -55,7 +44,9 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   return (
     <div className={classes.container}>
       <div className={clsx(classes.content, (notStarted || ended) && classes.textContent)}>
-        <div>{statusPill()}</div>
+        <div>
+          <RoundStatusPill round={round} />
+        </div>
         {notStarted || ended ? (
           <div className={classes.copy}>{copy()}</div>
         ) : (

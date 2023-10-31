@@ -9,7 +9,6 @@ import Modal from '../Modal';
 import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col } from 'react-bootstrap';
-import StatusPill, { StatusPillColor } from '../StatusPill';
 import { shortFromNow } from '../../utils/shortenFromNow';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
@@ -17,6 +16,7 @@ import { HiDocument } from 'react-icons/hi';
 import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
 import Avatar from '../Avatar';
+import RoundStatusPill from '../RoundStatusPill';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -105,7 +105,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   <FaClipboardCheck /> Status
                 </div>
                 <div className={classes.content}>
-                  <StatusPill copy={'Proposing'} color={StatusPillColor.Green} />
+                  <RoundStatusPill round={round} />
                 </div>
               </div>
               <div className={classes.item}>
