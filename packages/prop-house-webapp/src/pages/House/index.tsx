@@ -134,7 +134,7 @@ const House: React.FC<{}> = () => {
                 ) : roundsOnDisplay.length > 0 ? (
                   sortRoundByStatus(roundsOnDisplay).map((round, index) => (
                     <Col key={index} xl={6}>
-                      <RoundCard round={round} house={house} />
+                      <RoundCard round={round} house={house} displayBottomBar={true} />
                     </Col>
                   ))
                 ) : input === '' ? (

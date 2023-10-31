@@ -9,8 +9,9 @@ import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 
 export const MoreAwardsLabel: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
+  size?: number;
 }> = props => {
-  const { setShowModal } = props;
+  const { setShowModal, size } = props;
   return (
     <div
       onClick={e => {
@@ -23,31 +24,31 @@ export const MoreAwardsLabel: React.FC<{
         borderRadius={CardBorderRadius.ten}
         classNames={classes.card}
       >
-        +
+        <div style={{ fontSize: size ? size : '14px' }}>+</div>
       </Card>
     </div>
   );
 };
 
-const AwardLabel: React.FC<{ award: RoundAward; place: number }> = props => {
-  const { award, place } = props;
+const AwardLabel: React.FC<{ award: RoundAward; place: number; size?: number }> = props => {
+  const { award, place, size } = props;
   const iconFill = place === 1 ? 'F6A64E' : place === 2 ? 'C0C0C0' : 'AC6700';
 
   const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards([award]);
 
   return (
     <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.ten} classNames={classes.card}>
-      <HiTrophy size={14} color={iconFill} />
+      <HiTrophy size={size ? size : 14} color={iconFill} />
       {loadingDecimals || loadingSymbols ? (
         <LoadingIndicator height={18} width={26} />
       ) : (
         fullRoundAwards && (
-          <>
+          <div style={{ fontSize: size ? size : '14px' }}>
             {fullRoundAwards[0].parsedAmount >= 1000
               ? truncateThousands(fullRoundAwards[0].parsedAmount)
               : fullRoundAwards[0].parsedAmount}{' '}
             {fullRoundAwards[0].symbol}
-          </>
+          </div>
         )
       )}
     </Card>

@@ -8,6 +8,7 @@ import { isMobile } from 'web3modal';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
+import JumboRoundCard from '../../components/JumoboRoundCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -112,9 +113,11 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
-            {housesFeed}
-            {roundsFeed}
-            {activityFeed}
+              <Row>
+                {rounds && rounds[0] && (
+                  <JumboRoundCard round={rounds[5]} house={rounds[0].house} />
+                )}
+              </Row>
               <Row>
                 {rounds &&
                   rounds.map((round, i) => {
