@@ -1,0 +1,21 @@
+.pagesCol {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.pageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 0.5rem 9px;
+  font-size: 12px;
+  width: 5rem;
+  height: 2rem;
+  font-weight: bold;
+  border: 1px var(--border-dark) solid;
+  border-radius: 7px;
+}
+.pageButton:hover {
+  color: var(--brand-gray);
+}

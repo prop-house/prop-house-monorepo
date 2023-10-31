@@ -8,7 +8,7 @@ import { isMobile } from 'web3modal';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
-import JumboRoundCard from '../../components/JumoboRoundCard';
+import RoundsFeed from '../../components/RoundsFeed';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -21,7 +21,7 @@ const MainApp = () => {
     if (rounds) return;
     const fetchRounds = async () => {
       try {
-        setRounds(await prophouse.query.getRoundsWithHouseInfo());
+        setRounds(await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 }));
       } catch (e) {
         console.log(e);
       }
@@ -113,21 +113,7 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
-              <Row>
-                {rounds && rounds[0] && (
-                  <JumboRoundCard round={rounds[5]} house={rounds[0].house} />
-                )}
-              </Row>
-              <Row>
-                {rounds &&
-                  rounds.map((round, i) => {
-                    return (
-                      <Col xl={6} key={i}>
-                        <RoundCard house={round.house} round={round} displayBottomBar={true} />
-                      </Col>
-                    );
-                  })}
-              </Row>
+              <RoundsFeed />
             </Col>
             <Col xl={3}>
               <ActivityFeed />
