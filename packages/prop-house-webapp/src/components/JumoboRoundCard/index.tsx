@@ -111,7 +111,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               <div className={classes.item}>
                 <div className={classes.title}>
                   <IoTime />
-                  Time left
+                  Deadline
                 </div>
                 <div className={classes.content}>
                   {shortFromNow(round.config.proposalPeriodEndTimestamp * 1000)}

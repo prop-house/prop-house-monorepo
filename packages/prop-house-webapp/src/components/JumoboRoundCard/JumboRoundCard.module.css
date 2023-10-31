@@ -90,6 +90,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding-left: 4rem;
 }
 
 .container .rightCol .awardsContainer .title {
