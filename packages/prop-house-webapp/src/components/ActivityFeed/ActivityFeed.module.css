@@ -8,14 +8,17 @@
 }
 .activityItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  justify-content: space-between;
   margin: 0.2rem 0;
 }
 .activityItem .timestamp {
-  font-weight: medium;
+  font-weight: 500;
   font-size: 14px;
   color: var(--brand-gray);
-  min-width: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 2.5rem;
 }
 .activityItem .address {
   font-size: 16px;

@@ -85,7 +85,6 @@ const ActivityFeed: React.FC<{}> = () => {
             activity.map((item, i) => {
               return (
                 <div className={classes.activityItem} key={i}>
-                  <div className={classes.timestamp}>{shortFromNow(item.receivedAt * 1000)}</div>
                   <div>
                     <EthAddress
                       address={'proposer' in item ? item.proposer : item.voter}
@@ -95,6 +94,7 @@ const ActivityFeed: React.FC<{}> = () => {
                     />
                     <div className={classes.activityContent}>{activityContent(item)}</div>
                   </div>
+                  <div className={classes.timestamp}>{shortFromNow(item.receivedAt * 1000)}</div>
                 </div>
               );
             })}
