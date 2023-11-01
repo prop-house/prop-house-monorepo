@@ -126,7 +126,7 @@ const MainApp = () => {
                   .slice(0, 3)
                   .map((house, index) => <CommunityCard key={index} house={house} />)}
 
-              <div className={classes.sectionTitle}>Activity</div>
+              <div className={(classes.sectionTitle, classes.activitySectionTitle)}>Activity</div>
               <ActivityFeed />
             </Col>
           </>

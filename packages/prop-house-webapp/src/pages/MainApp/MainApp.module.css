@@ -23,6 +23,9 @@
   font-weight: 500;
   color: var(--brand-black);
 }
+.activitySectionTitle {
+  margin-top: 1rem;
+}
 .tabs li button[aria-selected='true'] {
   border: none !important;
   font-weight: bold !important;
