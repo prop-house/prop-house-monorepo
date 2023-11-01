@@ -37,16 +37,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
-  const handleClosePropModal = () => {
-    dispatch(setModalActive(false));
-  };
-
-  const dismissModalAndRefreshProps = () => {
-    // refreshActiveProposals(backendClient.current, round!, dispatch);
-    // refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
-    // handleClosePropModal();
-  };
-
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
     return () => {
@@ -94,7 +84,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const handleClose = () => {
     setEditProposalMode(false);
-    handleClosePropModal();
+    dispatch(setModalActive(false));
   };
 
   return (
@@ -115,7 +105,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
           propId={activeProposal.id}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
-          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
         />
       )}
 
@@ -123,7 +112,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
         <DeleteProposalModal
           id={activeProposal.id}
           setShowDeletePropModal={setShowDeletePropModal}
-          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
         />
       )}
 
@@ -139,7 +127,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
               currentProposal={activeProposal}
               currentPropIndex={currentPropIndex}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
-              handleClosePropModal={handleClosePropModal}
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}

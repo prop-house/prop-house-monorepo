@@ -15,12 +15,13 @@ import getDuplicateFileMessage from '../../utils/getDuplicateFileMessage';
 import changeFileExtension from '../../utils/changeFileExtension';
 import getInvalidFileTypeMessage from '../../utils/getInvalidFileTypeMessage';
 import { Proposal } from '@prophouse/sdk-react';
+import { setModalActive } from '../../state/slices/propHouse';
 
 interface ProposalHeaderAndBodyProps {
   currentProposal: Proposal;
   currentPropIndex: number;
   handleDirectionalArrowClick: any;
-  handleClosePropModal: () => void;
+
   hideScrollButton: boolean;
   setHideScrollButton: Dispatch<SetStateAction<boolean>>;
   showVoteAllotmentModal: boolean;
@@ -36,7 +37,6 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
     currentProposal,
     currentPropIndex,
     handleDirectionalArrowClick,
-    handleClosePropModal,
     hideScrollButton,
     setHideScrollButton,
     showVoteAllotmentModal,
@@ -193,7 +193,7 @@ const ProposalHeaderAndBody: React.FC<ProposalHeaderAndBodyProps> = (
                       className={classes.backToAuction}
                       onClick={() => {
                         setEditProposalMode(false);
-                        handleClosePropModal();
+                        dispatch(setModalActive(false));
                       }}
                     >
                       <IoClose size={'1.5rem'} />
