@@ -56,6 +56,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
           page: 1,
           perPage: 3,
           orderBy: OrderByProposalFields.VotingPower,
+          where: { isCancelled: false },
         });
         setTopThreeProps(props);
       } catch (e) {
@@ -69,7 +70,9 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     if (proposals || !isProposing) return;
     const fetchProposals = async () => {
       try {
-        const props = await propHouse.query.getProposalsForRound(round.address);
+        const props = await propHouse.query.getProposalsForRound(round.address, {
+          where: { isCancelled: false },
+        });
         setProposals(props);
       } catch (e) {
         console.log(e);

@@ -20,7 +20,11 @@ const ActivityFeed: React.FC<{}> = () => {
     const fetchProps = async () => {
       try {
         setFetchingProps(true);
-        const props = await propHouse.query.getProposals({ page: 1, perPage: 10 });
+        const props = await propHouse.query.getProposals({
+          page: 1,
+          perPage: 10,
+          where: { isCancelled: false },
+        });
         setActivity(prev => {
           const newData = [...(prev ?? []), ...(props ?? [])].sort((a, b) =>
             a.receivedAt < b.receivedAt ? 1 : -1,

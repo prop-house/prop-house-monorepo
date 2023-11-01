@@ -1,59 +1,66 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
-import { useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { usePropHouse } from '@prophouse/sdk-react';
+import LoadingIndicator from '../LoadingIndicator';
+import { setModalActive, setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const DeleteProposalModal: React.FC<{
   id: number;
   setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
-  dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { id, setShowDeletePropModal, dismissModalAndRefreshProps } = props;
+  const { id, setShowDeletePropModal } = props;
 
-  const signer = useEthersSigner();
+  const propHouse = usePropHouse();
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const dispatch = useAppDispatch();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
 
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
   const handleDeleteProposal = async () => {
-    if (!id) return;
+    if (!round) return;
 
     try {
-      await client.current.deleteProposal(new DeleteProposal(id));
-      setErrorDeleting(false);
+      setDeleting(true);
+      const res = await propHouse.round.timed.cancelProposalViaSignature({
+        round: round.address,
+        proposalId: id,
+      });
       setHasBeenDeleted(true);
-    } catch (error) {
+      setDeleting(false);
+    } catch (e) {
+      console.log(e);
+      setDeleting(false);
       setErrorDeleting(true);
-      console.log(error);
     }
   };
 
   const handleClose = () => {
+    if (!proposals) return;
+    const updatedProps = proposals.filter(p => p.id !== id);
+    dispatch(setOnChainActiveProposals(updatedProps));
     setShowDeletePropModal(false);
-
-    if (hasBeenDeleted) dismissModalAndRefreshProps();
+    dispatch(setModalActive(false));
   };
 
   return (
     <Modal
       modalProps={{
-        title: errorDeleting
+        title: deleting
+          ? 'Deleting'
+          : errorDeleting
           ? 'Error Deleting'
           : hasBeenDeleted
           ? 'Successfully Deleted!'
           : 'Delete your prop?',
-        subtitle: errorDeleting ? (
+        subtitle: deleting ? (
+          'Sending the prop to the void...'
+        ) : errorDeleting ? (
           'Your proposal could not be deleted. Please try again.'
         ) : hasBeenDeleted ? (
           <>
@@ -62,14 +69,11 @@ const DeleteProposalModal: React.FC<{
         ) : (
           'Are you sure you want to delete your proposal? This action cannot be undone.'
         ),
-        image: errorDeleting
-          ? { src: NounImage.Computer, alt: 'Computer' }
-          : hasBeenDeleted
-          ? { src: NounImage.Trashcan, alt: 'Trashcan' }
-          : null,
+        image: errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null,
         setShowModal: setShowDeletePropModal,
         handleClose: handleClose,
-        button: !hasBeenDeleted && (
+        body: deleting && <LoadingIndicator />,
+        button: !hasBeenDeleted && !deleting && (
           <Button
             text={errorDeleting ? 'Retry' : 'Delete Prop'}
             bgColor={errorDeleting ? ButtonColor.Purple : ButtonColor.Red}
