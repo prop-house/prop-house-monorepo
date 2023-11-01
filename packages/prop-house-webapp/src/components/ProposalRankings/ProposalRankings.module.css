@@ -3,7 +3,7 @@
   flex-direction: column;
   padding-bottom: 12px;
 }
-.container .title {
+.container .rankingTitle {
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 1rem;
@@ -12,22 +12,31 @@
 .container .item {
   font-size: 16px;
   display: flex;
-  justify-content: space-between;
   border-bottom: 1px var(--brand-gray-hint) solid;
   padding-bottom: 6px;
   margin-bottom: 6px;
   color: var(--brand-gray);
 }
 .container .item .place {
-  display: inline-block;
-  width: 16px;
+  min-width: 16px;
+}
+.container .item .avatar {
+  flex-shrink: 0;
+  margin-right: 6px;
 }
 .container .item .title {
   color: var(--brand-black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .container .item:nth-child(4) {
   border-bottom: none;
 }
 .container .item span {
   color: var(--brand-black);
+}
+.container .item .votingPower {
+  flex-shrink: 0;
+  margin-left: auto;
 }

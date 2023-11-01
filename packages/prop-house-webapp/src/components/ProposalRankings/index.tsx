@@ -6,14 +6,14 @@ const ProposalRankings: React.FC<{ proposals: Proposal[] }> = props => {
   const { proposals } = props;
   return (
     <div className={classes.container}>
-      <div className={classes.title}># Rankings</div>
+      <div className={classes.rankingTitle}># Rankings</div>
       {proposals.map((p, index) => (
         <div className={classes.item}>
-          <div>
-            <span className={classes.place}>{index + 1}.</span>{' '}
-            <Avatar address={p.proposer} diameter={12} />{' '}
-            <span className={classes.title}>{p.title}</span>
-          </div>
+          <span className={classes.place}>{index + 1}.</span>{' '}
+          <span className={classes.avatar}>
+            <Avatar address={p.proposer} diameter={12} />
+          </span>
+          <span className={classes.title}>{p.title}</span>
           <div className={classes.votingPower}>{p.votingPower} votes</div>
         </div>
       ))}
