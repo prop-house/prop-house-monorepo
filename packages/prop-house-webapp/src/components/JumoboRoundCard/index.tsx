@@ -18,6 +18,7 @@ import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
 import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
+import ProposedSummary from '../ProposedSummary';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -149,17 +150,32 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
           </Col>
           <Col className={classes.rightCol}>
             {isProposing && (
-              <div className={classes.awardsContainer}>
-                <div className={classes.title}>
-                  <HiTrophy size={14} color={'C0C0C0'} />
-                  Awards
+              <>
+                <div className={classes.awardsContainer}>
+                  <div className={classes.title}>
+                    <HiTrophy size={14} color={'C0C0C0'} />
+                    Awards
+                  </div>
+                  <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
                 </div>
-                <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
-              </div>
+                <div>
+                  {topThreeProps && numProps && (
+                    <ProposedSummary
+                      highlightAddresses={topThreeProps.map(p => p.proposer)}
+                      totalNumProps={numProps}
+                    />
+                  )}
+                  <Button text="View round" bgColor={ButtonColor.Purple} />
+                </div>
+              </>
             )}
 
-            {isVoting && topThreeProps && <ProposalRankings proposals={topThreeProps} />}
-            <Button text="View round" bgColor={ButtonColor.Purple} />
+            {isVoting && (
+              <>
+                {topThreeProps && <ProposalRankings proposals={topThreeProps} />}
+                <Button text="View round" bgColor={ButtonColor.Purple} />
+              </>
+            )}
           </Col>
         </div>
       </Card>
