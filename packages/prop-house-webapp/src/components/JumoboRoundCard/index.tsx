@@ -1,5 +1,6 @@
 import classes from './JumboRoundCard.module.css';
 import { House, Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { OrderByProposalFields } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/starknet/graphql';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +16,6 @@ import { IoTime } from 'react-icons/io5';
 import { HiDocument } from 'react-icons/hi';
 import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
-import Avatar from '../Avatar';
 import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
 
@@ -53,7 +53,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
         const props = await propHouse.query.getProposalsForRound(round.address, {
           page: 1,
           perPage: 3,
-          // orderBy: OrderByPopo
+          orderBy: OrderByProposalFields.VotingPower,
         });
         setTopThreeProps(props);
       } catch (e) {
