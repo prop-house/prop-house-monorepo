@@ -9,33 +9,36 @@ import LoadingIndicator from '../LoadingIndicator';
 const RoundsFeed = () => {
   const propHouse = usePropHouse();
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
-  const [loadingRounds, setLoadingRounds] = useState(false);
+  const [fetchingRounds, setFetchingRounds] = useState(false);
+  const [fetchNewRounds, setFetchNewRounds] = useState(true);
 
   const [pageIndex, setPageIndex] = useState(1);
 
   const isInitialPage = pageIndex === 1;
 
   useEffect(() => {
-    if (rounds && !loadingRounds) return;
-    const fetchRounds = async () => {
+    if (!fetchNewRounds) return;
+    const _fetchRounds = async () => {
       try {
-        setLoadingRounds(true);
+        setFetchingRounds(true);
         setRounds(
           await propHouse.query.getRoundsWithHouseInfo({
             page: pageIndex,
             perPage: isInitialPage ? 5 : 6,
           }),
         );
-        setLoadingRounds(false);
+        setFetchingRounds(false);
+        setFetchNewRounds(false);
       } catch (e) {
         console.log(e);
-        setLoadingRounds(false);
+        setFetchNewRounds(false);
+        setFetchingRounds(false);
       }
     };
-    fetchRounds();
-  }, [pageIndex, isInitialPage, loadingRounds, propHouse.query, rounds]);
+    _fetchRounds();
+  }, [pageIndex, isInitialPage, fetchingRounds, fetchNewRounds, propHouse.query, rounds]);
 
-  return loadingRounds ? (
+  return fetchingRounds ? (
     <LoadingIndicator />
   ) : (
     <>
@@ -58,7 +61,7 @@ const RoundsFeed = () => {
             <div
               className={classes.pageButton}
               onClick={() => {
-                setLoadingRounds(true);
+                setFetchNewRounds(true);
                 setPageIndex(prev => prev - 1);
               }}
             >
@@ -68,7 +71,7 @@ const RoundsFeed = () => {
           <div
             className={classes.pageButton}
             onClick={() => {
-              setLoadingRounds(true);
+              setFetchNewRounds(true);
               setPageIndex(prev => prev + 1);
             }}
           >
