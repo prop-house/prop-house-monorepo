@@ -115,9 +115,11 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
+              <div className={classes.sectionTitle}>Rounds</div>
               <RoundsFeed />
             </Col>
             <Col xl={3}>
+              <div className={classes.sectionTitle}>Activity</div>
               <ActivityFeed />
             </Col>
           </>

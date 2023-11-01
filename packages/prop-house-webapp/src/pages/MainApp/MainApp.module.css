@@ -18,6 +18,11 @@
   color: var(--brand-gray);
   transition: none !important;
 }
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-black);
+}
 .tabs li button[aria-selected='true'] {
   border: none !important;
   font-weight: bold !important;
