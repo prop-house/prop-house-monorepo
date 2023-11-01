@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import ReactModal from 'react-modal';
@@ -26,7 +26,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
 
-  // const [propModalEl, setPropModalEl] = useState<Element | null>();
+  const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
 
   // modals
@@ -34,7 +34,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [showSavePropModal, setShowSavePropModal] = useState(false);
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
-
   const [hideScrollButton, setHideScrollButton] = useState(false);
 
   useEffect(() => {
@@ -54,18 +53,31 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   // eslint-disable-next-line
   useEffect(() => {
-    // setPropModalEl(document.querySelector('#propModal'));
+    setPropModalEl(document.querySelector('#propModal'));
   });
 
-  // const handleKeyPress = useCallback(event => {
-  //   if (event.key === 'ArrowDown') {
-  //     setHideScrollButton(true);
-  //   }
-  // }, []);
+  const handleKeyPress = useCallback(event => {
+    if (event.key === 'ArrowDown') {
+      setHideScrollButton(true);
+    }
+  }, []);
 
-  // const handleScroll = useCallback(event => {
-  //   setHideScrollButton(true);
-  // }, []);
+  const handleScroll = useCallback(event => {
+    setHideScrollButton(true);
+  }, []);
+
+  useEffect(() => {
+    if (!propModalEl) return;
+    if (propModalEl.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
+    propModalEl.addEventListener('scroll', handleScroll, false);
+  }, [handleScroll, hideScrollButton, propModalEl]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
