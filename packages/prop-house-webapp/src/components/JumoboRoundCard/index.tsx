@@ -9,7 +9,7 @@ import Modal from '../Modal';
 import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col } from 'react-bootstrap';
-import { shortFromNow } from '../../utils/shortenFromNow';
+import { timeFromNow } from '../../utils/timeFromNow';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
 import { HiDocument } from 'react-icons/hi';
@@ -50,10 +50,10 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     if (topThreeProps) return;
     const fetchTopThreeProps = async () => {
       try {
-        console.log(round.address);
         const props = await propHouse.query.getProposalsForRound(round.address, {
           page: 1,
           perPage: 3,
+          // orderBy: OrderByPopo
         });
         setTopThreeProps(props);
       } catch (e) {
@@ -136,7 +136,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   Deadline
                 </div>
                 <div className={classes.content}>
-                  {shortFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
+                  {timeFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
                 </div>
               </div>
               <div className={classes.item}>

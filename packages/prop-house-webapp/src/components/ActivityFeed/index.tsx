@@ -3,7 +3,7 @@ import { Proposal, Vote, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import EthAddress from '../EthAddress';
-import { shortFromNow } from '../../utils/shortenFromNow';
+import { timeFromNow } from '../../utils/timeFromNow';
 import { useNavigate } from 'react-router-dom';
 
 const ActivityFeed: React.FC<{}> = () => {
@@ -94,7 +94,7 @@ const ActivityFeed: React.FC<{}> = () => {
                     />
                     <div className={classes.activityContent}>{activityContent(item)}</div>
                   </div>
-                  <div className={classes.timestamp}>{shortFromNow(item.receivedAt * 1000)}</div>
+                  <div className={classes.timestamp}>{timeFromNow(item.receivedAt * 1000)}</div>
                 </div>
               );
             })}
