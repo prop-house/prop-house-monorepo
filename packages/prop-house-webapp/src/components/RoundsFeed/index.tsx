@@ -33,7 +33,7 @@ const RoundsFeed = () => {
       }
     };
     fetchRounds();
-  }, [pageIndex]);
+  }, [pageIndex, isInitialPage, loadingRounds, propHouse.query, rounds]);
 
   return loadingRounds ? (
     <LoadingIndicator />

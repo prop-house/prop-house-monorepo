@@ -4,8 +4,6 @@ import dayjs from 'dayjs';
  * Returns a short string representing the time difference between the now and the given timestamp.
  */
 export const timeFromNow = (timestamp: number) => {
-  const diff = dayjs(timestamp).diff(dayjs(), 'week');
-
   const weekDiff = Math.abs(dayjs(timestamp).diff(dayjs(), 'week'));
   if (weekDiff > 0) return `${weekDiff}w`;
 

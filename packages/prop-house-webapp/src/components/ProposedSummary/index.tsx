@@ -11,7 +11,7 @@ const ProposedSummary: React.FC<{
     <div className={classes.container}>
       <div className={classes.avatars}>
         {highlightAddresses.map((address, index) => {
-          return <Avatar address={address} diameter={14} />;
+          return <Avatar key={index} address={address} diameter={14} />;
         })}
       </div>
       <span>{trimEthAddress(highlightAddresses[0])}</span>&nbsp;and&nbsp;
