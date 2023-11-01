@@ -89,12 +89,9 @@ const MainApp = () => {
     <Container>
       <Row>
         {isMobile() ? (
-          <>
+          <Col>
             {rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
-              <Tab eventKey="houses" title="Houses">
-                {housesFeed}
-              </Tab>
               <Tab eventKey="rounds" title="Rounds">
                 <Row>
                   {rounds &&
@@ -110,8 +107,11 @@ const MainApp = () => {
               <Tab eventKey="activity" title="Activity">
                 <ActivityFeed />
               </Tab>
+              <Tab eventKey="communities" title="Communities">
+                {housesFeed}
+              </Tab>
             </Tabs>
-          </>
+          </Col>
         ) : (
           <>
             <Col xl={9}>

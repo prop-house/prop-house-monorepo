@@ -13,7 +13,7 @@
   border-bottom: none;
 }
 .tabs li button {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 500;
   color: var(--brand-gray);
   transition: none !important;
