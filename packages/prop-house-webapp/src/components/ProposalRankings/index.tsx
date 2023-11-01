@@ -8,7 +8,7 @@ const ProposalRankings: React.FC<{ proposals: Proposal[] }> = props => {
     <div className={classes.container}>
       <div className={classes.rankingTitle}># Rankings</div>
       {proposals.map((p, index) => (
-        <div className={classes.item}>
+        <div key={index} className={classes.item}>
           <span className={classes.place}>{index + 1}.</span>{' '}
           <span className={classes.avatar}>
             <Avatar address={p.proposer} diameter={12} />
