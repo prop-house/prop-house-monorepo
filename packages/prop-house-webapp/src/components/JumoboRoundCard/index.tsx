@@ -31,6 +31,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
+  const [proposals, setProposals] = useState<Proposal[]>();
 
   const isProposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
   const isVoting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
@@ -48,7 +49,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (topThreeProps) return;
+    if (topThreeProps || !isVoting) return;
     const fetchTopThreeProps = async () => {
       try {
         const props = await propHouse.query.getProposalsForRound(round.address, {
@@ -62,6 +63,19 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
       }
     };
     fetchTopThreeProps();
+  });
+
+  useEffect(() => {
+    if (proposals || !isProposing) return;
+    const fetchProposals = async () => {
+      try {
+        const props = await propHouse.query.getProposalsForRound(round.address);
+        setProposals(props);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchProposals();
   });
 
   const awardsModalContent = (
@@ -160,12 +174,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
                 </div>
                 <div className={classes.rightColBottomContainer}>
-                  {topThreeProps && numProps && (
-                    <ProposedSummary
-                      highlightAddresses={topThreeProps.map(p => p.proposer)}
-                      totalNumProps={numProps}
-                    />
-                  )}
+                  {proposals && <ProposedSummary proposers={proposals.map(p => p.proposer)} />}
                   <Button text="View round" bgColor={ButtonColor.Purple} />
                 </div>
               </>

@@ -8,7 +8,8 @@
 }
 .container .avatars {
   display: flex;
-  width: 36px;
+  width: auto;
+  padding-right: 12px;
 }
 .container .avatars div {
   margin-right: -6px !important;
