@@ -5,12 +5,14 @@ import { Col, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumoboRoundCard';
 import RoundCard from '../RoundCard';
 import LoadingIndicator from '../LoadingIndicator';
+import { NounImage } from '../../utils/getNounImage';
 
 const RoundsFeed = () => {
   const propHouse = usePropHouse();
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [fetchingRounds, setFetchingRounds] = useState(false);
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
+  const [noMoreRounds, setNoMoreRounds] = useState(false);
 
   const [pageIndex, setPageIndex] = useState(1);
 
@@ -21,12 +23,12 @@ const RoundsFeed = () => {
     const _fetchRounds = async () => {
       try {
         setFetchingRounds(true);
-        setRounds(
-          await propHouse.query.getRoundsWithHouseInfo({
-            page: pageIndex,
-            perPage: isInitialPage ? 5 : 6,
-          }),
-        );
+        const rounds = await propHouse.query.getRoundsWithHouseInfo({
+          page: pageIndex,
+          perPage: isInitialPage ? 5 : 6,
+        });
+        setNoMoreRounds(rounds.length === 0);
+        setRounds(rounds);
         setFetchingRounds(false);
         setFetchNewRounds(false);
       } catch (e) {
@@ -42,6 +44,14 @@ const RoundsFeed = () => {
     <LoadingIndicator />
   ) : (
     <>
+      {noMoreRounds && (
+        <Row>
+          <div className={classes.noMoreRoundsContainer}>
+            <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
+            <p>You've reached the end of the rainbow</p>
+          </div>
+        </Row>
+      )}
       <Row>
         {isInitialPage && rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
       </Row>
@@ -68,15 +78,17 @@ const RoundsFeed = () => {
               Back
             </div>
           )}
-          <div
-            className={classes.pageButton}
-            onClick={() => {
-              setFetchNewRounds(true);
-              setPageIndex(prev => prev + 1);
-            }}
-          >
-            Next page
-          </div>
+          {!noMoreRounds && (
+            <div
+              className={classes.pageButton}
+              onClick={() => {
+                setFetchNewRounds(true);
+                setPageIndex(prev => prev + 1);
+              }}
+            >
+              Next page
+            </div>
+          )}
         </Col>
       </Row>
     </>
