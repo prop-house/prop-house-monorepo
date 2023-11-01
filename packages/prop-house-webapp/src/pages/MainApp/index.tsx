@@ -10,6 +10,7 @@ import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
 import JumboRoundCard from '../../components/JumoboRoundCard';
+import CommunityCard from '../../components/CommunityCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -119,6 +120,12 @@ const MainApp = () => {
               <RoundsFeed />
             </Col>
             <Col xl={3}>
+              <div className={classes.sectionTitle}>Communities</div>
+              {houses &&
+                houses
+                  .slice(0, 3)
+                  .map((house, index) => <CommunityCard key={index} house={house} />)}
+
               <div className={classes.sectionTitle}>Activity</div>
               <ActivityFeed />
             </Col>
