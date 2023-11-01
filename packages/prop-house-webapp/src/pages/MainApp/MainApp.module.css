@@ -9,15 +9,19 @@
   font-weight: bold;
   font-size: 16px;
 }
-
+.tabs {
+  border-bottom: none;
+}
 .tabs li button {
-  font-weight: bold;
+  font-size: 21px;
+  font-weight: 500;
   color: var(--brand-gray);
   transition: none !important;
 }
 .tabs li button[aria-selected='true'] {
-  font-weight: bold;
   border: none !important;
-  border-bottom: 2px solid var(--brand-pink) !important;
+  font-weight: bold !important;
+  color: var(--brand-black) !important;
+  border-bottom: 2px solid var(--brand-purple) !important;
   background-color: transparent !important;
 }
