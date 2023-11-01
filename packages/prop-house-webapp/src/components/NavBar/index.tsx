@@ -18,7 +18,12 @@ const NavBar = () => {
 
   return (
     <Container className={bgColorFor(BgColorElement.Nav, location.pathname)}>
-      <Navbar bg="transparent" expand="lg" className={classes.navbar} expanded={isNavExpanded}>
+      <Navbar
+        bg="transparent"
+        expand="lg"
+        className={clsx(classes.navbar, isMobile() && classes.mobileNavbar)}
+        expanded={isNavExpanded}
+      >
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
           <Navbar.Brand>

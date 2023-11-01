@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
-import { Col } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import { timeFromNow } from '../../utils/timeFromNow';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
@@ -104,8 +104,8 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
         classNames={classes.roundCard}
         onHoverEffect={true}
       >
-        <div className={classes.container}>
-          <Col className={classes.leftCol}>
+        <Row className={classes.container}>
+          <Col className={classes.leftCol} xs={12} md={6}>
             <div className={classes.roundCreatorAndTitleContainer}>
               <div className={classes.roundCreator}>
                 <EthAddress
@@ -148,7 +148,8 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               </div>
             </div>
           </Col>
-          <Col className={classes.rightCol}>
+
+          <Col className={classes.rightCol} xs={12} md={6}>
             {isProposing && (
               <>
                 <div className={classes.awardsContainer}>
@@ -158,7 +159,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   </div>
                   <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
                 </div>
-                <div>
+                <div className={classes.rightColBottomContainer}>
                   {topThreeProps && numProps && (
                     <ProposedSummary
                       highlightAddresses={topThreeProps.map(p => p.proposer)}
@@ -177,7 +178,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               </>
             )}
           </Col>
-        </div>
+        </Row>
       </Card>
     </div>
   );
