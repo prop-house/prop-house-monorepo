@@ -9,6 +9,7 @@ import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
+import JumboRoundCard from '../../components/JumoboRoundCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
@@ -89,6 +90,7 @@ const MainApp = () => {
       <Row>
         {isMobile() ? (
           <>
+            {rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="houses" title="Houses">
                 {housesFeed}

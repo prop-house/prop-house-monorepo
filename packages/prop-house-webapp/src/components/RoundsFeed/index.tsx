@@ -40,9 +40,7 @@ const RoundsFeed = () => {
   ) : (
     <>
       <Row>
-        {isInitialPage && rounds && rounds[0] && (
-          <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
-        )}
+        {isInitialPage && rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
       </Row>
       <Row>
         {rounds &&
