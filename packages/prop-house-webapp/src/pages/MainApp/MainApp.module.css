@@ -22,10 +22,11 @@
   font-size: 18px;
   font-weight: 500;
   color: var(--brand-black);
+  height: 3rem;
+  display: flex;
+  align-items: center;
 }
-.activitySectionTitle {
-  margin-top: 1rem;
-}
+
 .tabs li button[aria-selected='true'] {
   border: none !important;
   font-weight: bold !important;

@@ -1,3 +1,15 @@
+.titleAndNavBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 3rem;
+}
+.titleAndNavBar .title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-black);
+}
+
 .pagesCol {
   display: flex;
   flex-direction: row;
@@ -15,9 +27,14 @@
   font-weight: bold;
   border: 1px var(--border-dark) solid;
   border-radius: 7px;
+  margin: 0 inherit;
 }
-.pageButton:hover {
-  color: var(--brand-gray);
+.pageButton:not([disabled]):hover {
+  opacity: 0.75;
+}
+
+.pageButton[disabled] {
+  cursor: default;
 }
 .noMoreRoundsContainer {
   width: 100%;

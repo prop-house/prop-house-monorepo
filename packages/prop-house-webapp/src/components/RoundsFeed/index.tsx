@@ -6,6 +6,7 @@ import JumboRoundCard from '../JumoboRoundCard';
 import RoundCard from '../RoundCard';
 import LoadingIndicator from '../LoadingIndicator';
 import { NounImage } from '../../utils/getNounImage';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
 const RoundsFeed = () => {
   const propHouse = usePropHouse();
@@ -40,57 +41,63 @@ const RoundsFeed = () => {
     _fetchRounds();
   }, [pageIndex, isInitialPage, fetchingRounds, fetchNewRounds, propHouse.query, rounds]);
 
-  return fetchingRounds ? (
-    <LoadingIndicator />
-  ) : (
+  return (
     <>
-      {noMoreRounds && (
-        <Row>
-          <div className={classes.noMoreRoundsContainer}>
-            <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
-            <p>You've reached the end of the rainbow</p>
-          </div>
-        </Row>
-      )}
-      <Row>
-        {isInitialPage && rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
-      </Row>
-      <Row>
-        {rounds &&
-          rounds.slice(0, isInitialPage ? 4 : 6).map((round, i) => {
-            return (
-              <Col xl={6} key={i}>
-                <RoundCard house={round.house} round={round} displayBottomBar={false} />
-              </Col>
-            );
-          })}
-      </Row>
-      <Row>
+      <Row className={classes.titleAndNavBar}>
+        <Col className={classes.title}>Rounds</Col>
         <Col className={classes.pagesCol}>
-          {!isInitialPage && (
-            <div
-              className={classes.pageButton}
-              onClick={() => {
-                setFetchNewRounds(true);
-                setPageIndex(prev => prev - 1);
-              }}
-            >
-              Back
-            </div>
-          )}
-          {!noMoreRounds && (
-            <div
-              className={classes.pageButton}
-              onClick={() => {
-                setFetchNewRounds(true);
-                setPageIndex(prev => prev + 1);
-              }}
-            >
-              Next page
-            </div>
-          )}
+          <button
+            className={classes.pageButton}
+            disabled={isInitialPage || fetchingRounds}
+            onClick={() => {
+              setFetchNewRounds(true);
+              setPageIndex(prev => prev - 1);
+            }}
+          >
+            <FaArrowLeft />
+          </button>
+
+          <button
+            className={classes.pageButton}
+            disabled={noMoreRounds || fetchingRounds}
+            onClick={() => {
+              setFetchNewRounds(true);
+              setPageIndex(prev => prev + 1);
+            }}
+          >
+            <FaArrowRight />
+          </button>
         </Col>
       </Row>
+      {fetchingRounds ? (
+        <LoadingIndicator />
+      ) : (
+        <>
+          {noMoreRounds && (
+            <Row>
+              <div className={classes.noMoreRoundsContainer}>
+                <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
+                <p>You've reached the end of the rainbow</p>
+              </div>
+            </Row>
+          )}
+          <Row>
+            {isInitialPage && rounds && (
+              <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
+            )}
+          </Row>
+          <Row>
+            {rounds &&
+              rounds.slice(0, isInitialPage ? 4 : 6).map((round, i) => {
+                return (
+                  <Col xl={6} key={i}>
+                    <RoundCard house={round.house} round={round} displayBottomBar={false} />
+                  </Col>
+                );
+              })}
+          </Row>
+        </>
+      )}
     </>
   );
 };
