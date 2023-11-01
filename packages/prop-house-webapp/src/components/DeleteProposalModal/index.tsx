@@ -27,7 +27,7 @@ const DeleteProposalModal: React.FC<{
 
     try {
       setDeleting(true);
-      const res = await propHouse.round.timed.cancelProposalViaSignature({
+      await propHouse.round.timed.cancelProposalViaSignature({
         round: round.address,
         proposalId: id,
       });
