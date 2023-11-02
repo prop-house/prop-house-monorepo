@@ -5,7 +5,15 @@ import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { NewRound, setNextStep, setPrevStep } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
-import { Asset, AssetType, HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
+import {
+  Asset,
+  AssetType,
+  GovPowerStrategyType,
+  HouseInfo,
+  HouseType,
+  RoundInfo,
+  RoundType,
+} from '@prophouse/sdk-react';
 import { usePropHouse } from '@prophouse/sdk-react';
 import { BigNumber, ethers } from 'ethers';
 import { Award } from '../AssetSelector';
@@ -102,16 +110,50 @@ const Footer: React.FC = () => {
       awards = round.awards.map(createAward);
     }
 
+    // one minute from now
+    const startTime = Math.floor(new Date().getTime() / 1000) + 60;
+    // one hour (the min)
+    const duration = 300;
+    // one hour (the min)
+    const votingPeriod = 3600 * 24 * 70;
+
     const roundInfo: RoundInfo<RoundType> = {
       roundType: round.roundType,
       title: round.title,
       description: round.description,
       config: {
         awards,
-        votingStrategies: round.voters,
-        proposalPeriodStartUnixTimestamp: round.proposalPeriodStartUnixTimestamp,
-        proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
-        votePeriodDurationSecs: round.votePeriodDurationSecs,
+        proposingStrategies: [
+          {
+            strategyType: GovPowerStrategyType.BALANCE_OF,
+            assetType: AssetType.ERC721,
+            address: '0x1d0030f304b542D5A5F77CC0E5945fd79ec89D8E',
+          },
+          {
+            strategyType: GovPowerStrategyType.ALLOWLIST,
+            members: [
+              { address: '0xb0dd496FffFa300df1EFf42702066aCa81834404', govPower: '500' },
+              { address: '0x4Cca86FEe04eE3980b44d89B7402680bd370eC06', govPower: '500' },
+            ],
+          },
+        ],
+        votingStrategies: [
+          {
+            strategyType: GovPowerStrategyType.BALANCE_OF,
+            assetType: AssetType.ERC721,
+            address: '0x1d0030f304b542D5A5F77CC0E5945fd79ec89D8E',
+          },
+          {
+            strategyType: GovPowerStrategyType.ALLOWLIST,
+            members: [
+              { address: '0xb0dd496FffFa300df1EFf42702066aCa81834404', govPower: '500' },
+              { address: '0x4Cca86FEe04eE3980b44d89B7402680bd370eC06', govPower: '500' },
+            ],
+          },
+        ],
+        proposalPeriodStartUnixTimestamp: startTime,
+        proposalPeriodDurationSecs: duration,
+        votePeriodDurationSecs: votingPeriod,
         winnerCount: round.numWinners,
       },
     };

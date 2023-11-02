@@ -11,6 +11,7 @@
 }
 .tabs {
   border-bottom: none;
+  justify-content: center;
 }
 .tabs li button {
   font-size: 18px;
