@@ -43,49 +43,6 @@ const MainApp = () => {
     fetchHouses();
   });
 
-  const housesFeed = (
-    <Col>
-      <div className={classes.housesContainer}>
-        {houses &&
-          houses.map((house, i) => {
-            return (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  color: 'var(--brand-gray)',
-                  cursor: 'pointer',
-                  rowGap: '8px',
-                }}
-                onClick={() => {
-                  navigate(`/${house.address}`);
-                }}
-              >
-                {house.imageURI?.includes('prop.house') ? (
-                  <img
-                    src={house.imageURI?.replace(
-                      /prophouse.mypinata.cloud/g,
-                      'cloudflare-ipfs.com',
-                    )}
-                    alt="house profile"
-                    style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
-                  />
-                ) : (
-                  <span style={{ marginRight: 6 }}>
-                    <Jazzicon diameter={16} seed={jsNumberForAddress(house.address)} />
-                  </span>
-                )}
-
-                {house.name}
-              </div>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
   return (
     <Container>
       <Row>
