@@ -2,11 +2,8 @@ import classes from './MainApp.module.css';
 import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
-import Jazzicon from 'react-jazzicon/dist/Jazzicon';
-import { jsNumberForAddress } from 'react-jazzicon';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
 import JumboRoundCard from '../../components/JumoboRoundCard';
@@ -14,7 +11,6 @@ import CommunityCard from '../../components/CommunityCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
-  const navigate = useNavigate();
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
