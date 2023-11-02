@@ -44,18 +44,21 @@ const MainApp = () => {
       <Row>
         {isMobile() ? (
           <Col>
-            {rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
                 <Row>
-                  {rounds &&
-                    rounds.map((round, i) => {
-                      return (
-                        <Col xl={6} key={i}>
-                          <RoundCard house={round.house} round={round} displayBottomBar={true} />
-                        </Col>
-                      );
-                    })}
+                  {rounds && (
+                    <>
+                      <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
+                      {rounds.map((round, i) => {
+                        return (
+                          <Col xl={6} key={i}>
+                            <RoundCard house={round.house} round={round} displayBottomBar={true} />
+                          </Col>
+                        );
+                      })}
+                    </>
+                  )}
                 </Row>
               </Tab>
               <Tab eventKey="activity" title="Activity">
