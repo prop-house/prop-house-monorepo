@@ -109,7 +109,8 @@ const MainApp = () => {
                 <ActivityFeed />
               </Tab>
               <Tab eventKey="communities" title="Communities">
-                {housesFeed}
+                {houses &&
+                  houses.map((house, index) => <CommunityCard key={index} house={house} />)}
               </Tab>
             </Tabs>
           </Col>
