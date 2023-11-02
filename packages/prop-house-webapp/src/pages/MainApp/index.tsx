@@ -1,29 +1,25 @@
 import classes from './MainApp.module.css';
-import { House, Proposal, RoundWithHouse, Vote, usePropHouse } from '@prophouse/sdk-react';
+import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
-import EthAddress from '../../components/EthAddress';
-import { useNavigate } from 'react-router-dom';
 import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
-import Jazzicon from 'react-jazzicon/dist/Jazzicon';
-import { jsNumberForAddress } from 'react-jazzicon';
+import ActivityFeed from '../../components/ActivityFeed';
+import RoundsFeed from '../../components/RoundsFeed';
+import JumboRoundCard from '../../components/JumoboRoundCard';
+import CommunityCard from '../../components/CommunityCard';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
-  const navigate = useNavigate();
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
-  const [activity, setActivity] = useState<(Proposal | Vote)[]>();
-  const [fetchedProps, setFetchedProps] = useState(false);
-  const [fetchedVotes, setFetchedVotes] = useState(false);
 
   useEffect(() => {
     if (rounds) return;
     const fetchRounds = async () => {
       try {
-        setRounds(await prophouse.query.getRoundsWithHouseInfo());
+        setRounds(await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 }));
       } catch (e) {
         console.log(e);
       }
@@ -43,153 +39,53 @@ const MainApp = () => {
     fetchHouses();
   });
 
-  useEffect(() => {
-    if (fetchedProps) return;
-    const fetchProps = async () => {
-      try {
-        const props = await prophouse.query.getProposals();
-        setActivity(prev => [...(prev ?? []), ...(props ?? [])]);
-        setFetchedProps(true);
-      } catch (e) {
-        setFetchedProps(true);
-        console.log(e);
-      }
-    };
-    fetchProps();
-  });
-
-  useEffect(() => {
-    if (fetchedVotes) return;
-    const fetchVotes = async () => {
-      try {
-        const votes = await prophouse.query.getVotes();
-        setActivity(prev => [...(prev ?? []), ...(votes ?? [])]);
-        setFetchedVotes(true);
-      } catch (e) {
-        setFetchedVotes(true);
-        console.log(e);
-      }
-    };
-    fetchVotes();
-  });
-
-  const housesFeed = (
-    <Col xl={2}>
-      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Communities</h5>}
-      <div className={classes.housesContainer}>
-        {houses &&
-          houses.map((house, i) => {
-            return (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontWeight: 'bold',
-                  color: 'var(--brand-gray)',
-                  cursor: 'pointer',
-                  rowGap: '8px',
-                }}
-                onClick={() => {
-                  navigate(`/${house.address}`);
-                }}
-              >
-                {house.imageURI?.includes('prop.house') ? (
-                  <img
-                    src={house.imageURI?.replace(
-                      /prophouse.mypinata.cloud/g,
-                      'cloudflare-ipfs.com',
-                    )}
-                    alt="house profile"
-                    style={{ height: 16, width: 16, borderRadius: 8, marginRight: 6 }}
-                  />
-                ) : (
-                  <span style={{ marginRight: 6 }}>
-                    <Jazzicon diameter={16} seed={jsNumberForAddress(house.address)} />
-                  </span>
-                )}
-
-                {house.name}
-              </div>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
-  const roundsFeed = (
-    <Col xl={5} className="mx-auto">
-      {!isMobile() && <h5>Rounds</h5>}
-      <div>
-        {rounds &&
-          rounds.map((round, i) => {
-            return (
-              <Col xl={12} key={i}>
-                <RoundCard round={round} house={round.house} />
-              </Col>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
-  const activityFeed = (
-    <Col xl={4}>
-      {!isMobile() && <h5 style={{ marginBottom: '16px' }}>Activity</h5>}
-      <div className={classes.activityContainer}>
-        {activity &&
-          activity.map((item, i) => {
-            if ('proposer' in item) {
-              return (
-                <div className={classes.activityItem} key={i}>
-                  <EthAddress
-                    address={item.proposer}
-                    addAvatar={true}
-                    avatarSize={12}
-                    className={classes.address}
-                  />
-                  &nbsp;proposed&nbsp;{item.title}
-                </div>
-              );
-            }
-            return (
-              <div className={classes.activityItem} key={i}>
-                <EthAddress
-                  address={item.voter}
-                  addAvatar={true}
-                  avatarSize={12}
-                  className={classes.address}
-                />
-                &nbsp;voted&nbsp;{item.votingPower}&nbsp;
-              </div>
-            );
-          })}
-      </div>
-    </Col>
-  );
-
   return (
     <Container>
       <Row>
         {isMobile() ? (
-          <>
+          <Col>
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
-              <Tab eventKey="houses" title="Houses">
-                {housesFeed}
-              </Tab>
               <Tab eventKey="rounds" title="Rounds">
-                {roundsFeed}
+                <Row>
+                  {rounds && (
+                    <>
+                      <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
+                      {rounds.map((round, i) => {
+                        return (
+                          <Col xl={6} key={i}>
+                            <RoundCard house={round.house} round={round} displayBottomBar={true} />
+                          </Col>
+                        );
+                      })}
+                    </>
+                  )}
+                </Row>
               </Tab>
               <Tab eventKey="activity" title="Activity">
-                {activityFeed}
+                <ActivityFeed />
+              </Tab>
+              <Tab eventKey="communities" title="Communities">
+                {houses &&
+                  houses.map((house, index) => <CommunityCard key={index} house={house} />)}
               </Tab>
             </Tabs>
-          </>
+          </Col>
         ) : (
           <>
-            {housesFeed}
-            {roundsFeed}
-            {activityFeed}
+            <Col xl={9}>
+              <RoundsFeed />
+            </Col>
+            <Col xl={3}>
+              <div className={classes.sectionTitle}>Communities</div>
+              {houses &&
+                houses
+                  .slice(0, 3)
+                  .map((house, index) => <CommunityCard key={index} house={house} />)}
+
+              <div className={classes.sectionTitle}>Activity</div>
+
+              <ActivityFeed />
+            </Col>
           </>
         )}
       </Row>

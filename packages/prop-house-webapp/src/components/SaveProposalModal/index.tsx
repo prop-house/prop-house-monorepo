@@ -14,9 +14,8 @@ const SaveProposalModal: React.FC<{
   propId: number;
   setShowSavePropModal: Dispatch<SetStateAction<boolean>>;
   setEditProposalMode: (e: any) => void;
-  dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { propId, setShowSavePropModal, setEditProposalMode, dismissModalAndRefreshProps } = props;
+  const { propId, setShowSavePropModal, setEditProposalMode } = props;
 
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
@@ -74,11 +73,7 @@ const SaveProposalModal: React.FC<{
 
   const handleClose = () => {
     setShowSavePropModal(false);
-
-    if (propSubmitted && round) {
-      dismissModalAndRefreshProps();
-      setEditProposalMode(false);
-    }
+    if (propSubmitted && round) setEditProposalMode(false);
   };
 
   return (

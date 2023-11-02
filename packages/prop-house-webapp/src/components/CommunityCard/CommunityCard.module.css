@@ -1,97 +1,17 @@
-.infoContainer {
-  width: 100%;
-  padding: 0px 6px;
+.cardContainer {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: transparent !important;
+  border-color: var(--border-med);
 }
-
-.title {
-  margin-top: 12px;
+.image {
+  height: 40px;
+  width: 40px;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+.name {
   font-weight: bold;
-  font-size: 16px;
-  line-height: normal;
-  text-align: left;
-  align-self: flex-start;
-  padding: 0px 6px;
-}
-.cardInfo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.divider {
-  margin: 8px 0px 8px 0px;
-  background-color: var(--border-dark);
-}
-
-.infoText {
   font-size: 14px;
-  color: var(--brand-black-transparent);
-  font-weight: 700;
-}
-.infoWithSymbol {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.symbolContainer {
-  display: flex;
-}
-.symbolContainer img {
-  height: 12px;
-  border-radius: 6px;
-  box-shadow: var(--shadow-high);
-  align-self: center;
-}
-
-.infoAmount {
-  color: var(--brand-black);
-}
-
-.container {
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 12px 16px;
-  border: 1px solid var(--border-light);
-  border-radius: 24px;
-  background: #f5f5f5;
-  filter: drop-shadow(var(--shadow-none));
-  will-change: background-color, filter;
-  transition: background-color var(--card-transition), filter var(--card-transition);
-}
-.container a {
-  min-width: 100%;
-}
-.container a img {
-  object-fit: cover;
-  width: 212px;
-  height: 212px;
-}
-
-.container:hover {
-  background-color: var(--bg-light);
-  filter: drop-shadow(var(--shadow-low));
-  border: 1px solid var(--border-med);
-  cursor: pointer;
-}
-.container:hover img {
-  cursor: pointer;
-}
-.container:active {
-  filter: drop-shadow(var(--shadow-none));
-}
-
-@media (max-width: 767px) {
-  .container {
-    gap: 2px;
-  }
-}
-@media (max-width: 450px) {
-  .title {
-    font-size: 14px;
-  }
-  .infoText {
-    font-size: 12px;
-  }
 }

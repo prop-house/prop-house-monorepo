@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import classes from './ProposalModal.module.css';
 import clsx from 'clsx';
 import ReactModal from 'react-modal';
@@ -26,7 +26,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const round = useAppSelector(state => state.propHouse.activeRound);
   const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
 
-  // const [propModalEl, setPropModalEl] = useState<Element | null>();
+  const [propModalEl, setPropModalEl] = useState<Element | null>();
   const [currentPropIndex, setCurrentPropIndex] = useState<number | undefined>();
 
   // modals
@@ -34,18 +34,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
   const [showVoteAllotmentModal, setShowVoteAllotmentModal] = useState(false);
   const [showSavePropModal, setShowSavePropModal] = useState(false);
   const [showDeletePropModal, setShowDeletePropModal] = useState(false);
-
   const [hideScrollButton, setHideScrollButton] = useState(false);
-
-  const handleClosePropModal = () => {
-    dispatch(setModalActive(false));
-  };
-
-  const dismissModalAndRefreshProps = () => {
-    // refreshActiveProposals(backendClient.current, round!, dispatch);
-    // refreshActiveProposal(backendClient.current, activeProposal!, dispatch);
-    // handleClosePropModal();
-  };
 
   useEffect(() => {
     if (activeProposal) document.title = `${activeProposal.title}`;
@@ -64,18 +53,31 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   // eslint-disable-next-line
   useEffect(() => {
-    // setPropModalEl(document.querySelector('#propModal'));
+    setPropModalEl(document.querySelector('#propModal'));
   });
 
-  // const handleKeyPress = useCallback(event => {
-  //   if (event.key === 'ArrowDown') {
-  //     setHideScrollButton(true);
-  //   }
-  // }, []);
+  const handleKeyPress = useCallback(event => {
+    if (event.key === 'ArrowDown') {
+      setHideScrollButton(true);
+    }
+  }, []);
 
-  // const handleScroll = useCallback(event => {
-  //   setHideScrollButton(true);
-  // }, []);
+  const handleScroll = useCallback(event => {
+    setHideScrollButton(true);
+  }, []);
+
+  useEffect(() => {
+    if (!propModalEl) return;
+    if (propModalEl.scrollTop !== 0 && !hideScrollButton) setHideScrollButton(true);
+    propModalEl.addEventListener('scroll', handleScroll, false);
+  }, [handleScroll, hideScrollButton, propModalEl]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress);
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const handleDirectionalArrowClick = (direction: 1 | -1) => {
     if (
@@ -94,7 +96,7 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
 
   const handleClose = () => {
     setEditProposalMode(false);
-    handleClosePropModal();
+    dispatch(setModalActive(false));
   };
 
   return (
@@ -115,7 +117,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
           propId={activeProposal.id}
           setShowSavePropModal={setShowSavePropModal}
           setEditProposalMode={setEditProposalMode}
-          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
         />
       )}
 
@@ -123,7 +124,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
         <DeleteProposalModal
           id={activeProposal.id}
           setShowDeletePropModal={setShowDeletePropModal}
-          dismissModalAndRefreshProps={dismissModalAndRefreshProps}
         />
       )}
 
@@ -139,7 +139,6 @@ const ProposalModal: React.FC<{ proposals: Proposal[] }> = props => {
               currentProposal={activeProposal}
               currentPropIndex={currentPropIndex}
               handleDirectionalArrowClick={handleDirectionalArrowClick}
-              handleClosePropModal={handleClosePropModal}
               hideScrollButton={hideScrollButton}
               setHideScrollButton={setHideScrollButton}
               showVoteAllotmentModal={showVoteAllotmentModal}

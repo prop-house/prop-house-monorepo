@@ -35,7 +35,9 @@ const Round: React.FC<{}> = () => {
     const fetchProposals = async () => {
       try {
         setLoadingProposals(true);
-        const proposals = await propHouse.query.getProposalsForRound(round.address);
+        const proposals = await propHouse.query.getProposalsForRound(round.address, {
+          where: { isCancelled: false },
+        });
         dispatch(setOnChainActiveProposals(proposals));
       } catch (e) {
         setLoadingProposalsFailed(true);

@@ -9,40 +9,29 @@
   font-weight: bold;
   font-size: 16px;
 }
-
-.activityContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 70vh;
-  overflow-y: scroll;
-  padding-top: 12px;
+.tabs {
+  border-bottom: none;
+  justify-content: center;
 }
-.activityItem {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  color: var(--brand-gray);
-  font-size: 16px;
-}
-.activityItem .address {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--brand-black);
-}
-
 .tabs li button {
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 500;
   color: var(--brand-gray);
   transition: none !important;
 }
-.tabs li button[aria-selected='true'] {
-  font-weight: bold;
-  border: none !important;
-  border-bottom: 2px solid var(--brand-pink) !important;
-  background-color: transparent !important;
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-black);
+  height: 3rem;
+  display: flex;
+  align-items: center;
 }
 
-.tabs li button.active {
-  color: red;
+.tabs li button[aria-selected='true'] {
+  border: none !important;
+  font-weight: bold !important;
+  color: var(--brand-black) !important;
+  border-bottom: 2px solid var(--brand-purple) !important;
+  background-color: transparent !important;
 }

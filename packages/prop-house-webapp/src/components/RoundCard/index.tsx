@@ -10,8 +10,8 @@ import useFullRoundAwards from '../../hooks/useFullRoundAwards';
 import LoadingIndicator from '../LoadingIndicator';
 import RoundCardStatusBar from '../RoundCardStatusBar';
 
-const RoundCard: React.FC<{ round: Round; house: House }> = props => {
-  const { round, house } = props;
+const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolean }> = props => {
+  const { round, house, displayBottomBar } = props;
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -76,7 +76,7 @@ const RoundCard: React.FC<{ round: Round; house: House }> = props => {
           <AwardLabels awards={round.config.awards} setShowModal={setShowModal} />
         </div>
       </Card>
-      <RoundCardStatusBar round={round} />
+      {displayBottomBar && <RoundCardStatusBar round={round} />}
     </div>
   );
 };

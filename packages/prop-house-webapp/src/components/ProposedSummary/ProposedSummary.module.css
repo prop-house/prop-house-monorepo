@@ -1,0 +1,21 @@
+.container {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+
+  color: var(--brand-gray-transparent);
+  font-size: 14px;
+}
+.container .avatars {
+  display: flex;
+  width: auto;
+  padding-right: 12px;
+}
+.container .avatars div {
+  margin-right: -6px !important;
+  border: 1px white solid;
+  border-radius: 7px;
+}
+.container span {
+  color: var(--brand-black);
+}

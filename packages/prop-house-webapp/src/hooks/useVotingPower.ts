@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Round, usePropHouse } from '@prophouse/sdk-react';
+import { BigNumber } from 'ethers';
 
 export type UseVotingPowerResults = [
   /**
@@ -38,7 +39,9 @@ const useVotingPower = (
           round.votingStrategiesRaw,
         );
         setLoadingVotingPower(false);
-        setVotingPower(govPower.toNumber());
+
+        const maxSafeInteger = BigNumber.from(Number.MAX_SAFE_INTEGER.toString());
+        setVotingPower(govPower.gt(maxSafeInteger) ? Number.MAX_SAFE_INTEGER : govPower.toNumber());
       } catch (e) {
         console.log('Error fetching voting power: ', e);
         setLoadingVotingPower(false);
