@@ -48,7 +48,7 @@ const HouseHeader: React.FC<{
       <div className={classes.communityInfoCol}>
         <div className={classes.houseTitleInfo}>
           <div className={clsx(classes.titleRow, isLongName(house.name ?? '') && classes.longName)}>
-            <div className={classes.title}>{house.name ?? ''} House</div>
+            <div className={classes.title}>{house.name}</div>
           </div>
 
           {/** todo: resolve for community.numProposals. removed all because # of rounds alone doesn't look good */}
