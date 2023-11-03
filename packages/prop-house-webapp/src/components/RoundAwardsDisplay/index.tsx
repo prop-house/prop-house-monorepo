@@ -25,7 +25,7 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
           {place < 4 ? (
             <HiTrophy
               size={14}
-              color={trophyColors(place === 0 ? 'first' : place === 1 ? 'second' : 'third')}
+              color={trophyColors(place === 1 ? 'first' : place === 2 ? 'second' : 'third')}
             />
           ) : (
             <>{place}</>
@@ -66,7 +66,7 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
           {fullAwards &&
             fullAwards.map((award, i) => (
               <SwiperSlide key={i} className={classes.swiperSlide}>
-                {awardDisplay(award, i)}
+                {awardDisplay(award, i + 1)}
               </SwiperSlide>
             ))}
         </Swiper>
