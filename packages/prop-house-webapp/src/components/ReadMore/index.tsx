@@ -14,21 +14,22 @@ const ReadMore: React.FC<{
   useLayoutEffect(() => {
     // @ts-ignore
     if (ref.current && ref.current.clientHeight < ref.current.scrollHeight) {
-      setShowLink(true)
+      setShowLink(true);
     }
-  }, [ref])
+  }, [ref]);
 
   return (
     <div className={classes.readMoreContainer}>
-      <div className={clsx(classes.readMoreText, open && classes.clampLine)} ref={ref}> {description} </div>
+      <div className={clsx(classes.readMoreText, open && classes.clampLine)} ref={ref}>
+        {description}
+      </div>
 
-      {showLink &&
-        <div className={classes.readMoreLessButton} onClick={() => setOpen(!open)} >
+      {showLink && (
+        <div className={classes.readMoreLessButton} onClick={() => setOpen(!open)}>
           {open ? 'Read less' : 'Read more'}
         </div>
-      }
+      )}
     </div>
-
   );
 };
 
