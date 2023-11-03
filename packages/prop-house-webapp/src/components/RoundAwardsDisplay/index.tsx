@@ -23,7 +23,7 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
         {fullAwards &&
           fullAwards.slice(awardsIndex * 6, (awardsIndex + 1) * 6).map((award, i) => {
             return (
-              <div className={clsx(classes.awardDisplay)}>
+              <div className={clsx(classes.awardDisplay)} key={i}>
                 <span className={classes.placeIndicator}>
                   {i < 3 && isInitialPage ? (
                     <HiTrophy
