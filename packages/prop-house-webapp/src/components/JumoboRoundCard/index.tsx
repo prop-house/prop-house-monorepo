@@ -19,6 +19,7 @@ import { HiTrophy } from 'react-icons/hi2';
 import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
 import ProposedSummary from '../ProposedSummary';
+import { trophyColors } from '../../utils/trophyColors';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -171,7 +172,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               <>
                 <div className={classes.awardsContainer}>
                   <div className={classes.title}>
-                    <HiTrophy size={14} color={'C0C0C0'} />
+                    <HiTrophy size={14} color={trophyColors('second')} />
                     Awards
                   </div>
                   <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
