@@ -4,11 +4,13 @@ import { formatEther } from 'viem';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
 import { useContractReads } from 'wagmi';
+import useAwardImages from './useAwardImages';
 
 interface FullRoundAward extends RoundAward {
   symbol: string;
   decimals: number | undefined;
   parsedAmount: number;
+  tokenImg?: string;
 }
 
 type UseFullRoundAwardResults = [
@@ -24,6 +26,8 @@ type UseFullRoundAwardResults = [
  */
 const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
   const [fullRoundAwards, setFullRoundAwards] = useState<FullRoundAward[] | undefined>();
+
+  const tokenImgs = useAwardImages(awards);
 
   const awardContracts = awards.map(award => {
     return {
@@ -71,10 +75,11 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
           symbol: award.asset.assetType === 'NATIVE' ? 'ETH' : (symbols[index].result as string),
           decimals: decimals[index].result as number | undefined,
           parsedAmount: parsedAmounts[index],
+          tokenImg: tokenImgs[index],
         };
       }),
     );
-  }, [symbols, fullRoundAwards, decimals, awards]);
+  }, [symbols, fullRoundAwards, decimals, awards, tokenImgs]);
 
   return [loadingDecimals || loadingSymbols, fullRoundAwards];
 };
