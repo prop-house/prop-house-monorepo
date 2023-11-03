@@ -1,16 +1,15 @@
 .awardsAndNavigationContainer {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
 }
 
 .navContainer {
-  margin-top: 1rem;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
+  margin-left: 3rem;
+  gap: 12px;
 }
 .awardsNavControl {
-  margin-left: 6px;
   background-color: white;
   color: var(--brand-gray);
   height: 20px;
@@ -27,6 +26,11 @@
 }
 .awardsNavControl:disabled {
   background-color: var(--bg-dark);
+}
+
+.awardsNavControl:disabled:hover {
+  opacity: 1;
+  cursor: default;
 }
 
 .awardDisplayContainer {

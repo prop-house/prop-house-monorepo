@@ -3,7 +3,7 @@ import { Round } from '@prophouse/sdk-react';
 import useFullRoundAwards, { FullRoundAward } from '../../hooks/useFullRoundAwards';
 import { HiTrophy } from 'react-icons/hi2';
 import { trophyColors } from '../../utils/trophyColors';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
 import { useState } from 'react';
 import LoadingIndicator from '../LoadingIndicator';
 import clsx from 'clsx';
@@ -85,14 +85,14 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
                 onClick={() => setAwardsIndex(prev => prev - 1)}
                 disabled={isInitialPage}
               >
-                <FaArrowLeft size={10} />
+                <FaArrowUp size={10} />
               </button>
               <button
                 className={classes.awardsNavControl}
                 onClick={() => setAwardsIndex(prev => prev + 1)}
                 disabled={isLastPage}
               >
-                <FaArrowRight size={10} />
+                <FaArrowDown size={10} />
               </button>
             </div>
           )}
