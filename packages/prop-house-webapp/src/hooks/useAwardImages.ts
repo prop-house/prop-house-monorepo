@@ -32,7 +32,7 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
   const hasErc1155s = erc1155Awards.length > 0;
 
   // fetch erc1155 tokenURIs
-  const { data: erc1155TokenUris, isLoading: loadingErc1155TokenUris } = useContractReads({
+  const { data: erc1155TokenUriFetch, isLoading: loadingErc1155TokenUris } = useContractReads({
     contracts: awards
       .filter(a => a.asset.assetType === 'ERC1155')
       .map(award => {
@@ -46,7 +46,7 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
   });
 
   // fetch erc721 tokenURIs
-  const { data: erc721TokenUris, isLoading: loadingErc721TokenUri } = useContractReads({
+  const { data: erc721TokenUriFetch, isLoading: loadingErc721TokenUri } = useContractReads({
     contracts: awards
       .filter(a => a.asset.assetType === 'ERC721')
       .map(award => {
@@ -61,12 +61,12 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
 
   // parse erc1155 tokenURIs into image URIs
   useEffect(() => {
-    if (!hasErc1155s || !erc1155TokenUris || erc1155imgUris) return;
+    if (!hasErc1155s || !erc1155TokenUriFetch || erc1155imgUris || loadingErc1155TokenUris) return;
 
     const resolveImageUris = async () => {
       let mapped: { [key: string]: string } = {};
       // decode base64 tokenURIs
-      const imageUrisPromises = erc1155TokenUris.map(uri => {
+      const imageUrisPromises = erc1155TokenUriFetch.map(uri => {
         if (!uri.result) return null;
         return resolveUri(uri.result as string);
       });
@@ -80,16 +80,16 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
       setErc1155imgUris(mapped);
     };
     resolveImageUris();
-  }, [erc1155TokenUris]);
+  }, [erc1155TokenUriFetch, hasErc1155s, erc1155Awards, loadingErc1155TokenUris, erc1155imgUris]);
 
   // parse erc721 tokenURIs into image URIs
   useEffect(() => {
-    if (!hasErc721s || !erc721TokenUris || erc721imgUris) return;
+    if (!hasErc721s || !erc721TokenUriFetch || erc721imgUris || loadingErc721TokenUri) return;
 
     const resolveImageUris = async () => {
       let mapped: { [key: string]: string } = {};
       // decode base64 tokenURIs
-      const imageUrisPromises = erc721TokenUris.map(uri => {
+      const imageUrisPromises = erc721TokenUriFetch.map(uri => {
         if (!uri.result) return null;
         return resolveUri(uri.result as string);
       });
@@ -102,7 +102,7 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
       setErc721imgUris(mapped);
     };
     resolveImageUris();
-  }, [erc721TokenUris]);
+  }, [erc721TokenUriFetch, hasErc721s, erc721Awards, loadingErc721TokenUri, erc721imgUris]);
 
   useEffect(() => {
     if (awardImages || (hasErc721s && !erc721imgUris) || (hasErc1155s && !erc1155imgUris)) return;
@@ -126,7 +126,7 @@ const useAwardImages = (awards: RoundAward[]): string[] | undefined => {
       }
     });
     setAwardImages(mappedAwards);
-  }, [erc721imgUris, erc1155imgUris, awardImages]);
+  }, [awards, erc721imgUris, erc1155imgUris, hasErc721s, hasErc1155s, awardImages]);
 
   return awardImages;
 };

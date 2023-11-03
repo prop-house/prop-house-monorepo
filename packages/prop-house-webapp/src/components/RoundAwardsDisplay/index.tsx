@@ -34,7 +34,7 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
                     <>{awardsIndex * 6 + i + 1}</>
                   )}
                 </span>
-                <img src={award.tokenImg} />
+                <img src={award.tokenImg} alt="token logo" />
                 <div className={classes.amountAndSymbolLabel}>
                   {award.asset.assetType === 'ERC721' ? (
                     <>
