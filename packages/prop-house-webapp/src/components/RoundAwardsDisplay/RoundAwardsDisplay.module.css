@@ -66,6 +66,7 @@
   border: 1px var(--border-dark) solid;
   font-size: 12px;
   font-weight: bold;
+  color: var(--brand-gray);
 }
 .awardDisplayPadding {
   padding: 12px 0;
