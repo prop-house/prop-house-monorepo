@@ -141,11 +141,17 @@
   .longName .contractAddressPill {
     margin-left: 0 !important;
   }
+  .awardsCol {
+    padding-left: 12px;
+  }
 }
 
 @media (max-width: 576px) {
   .backToHouse {
     padding-bottom: 25px;
+  }
+  .awardsSubtitle {
+    margin-bottom: 0.5rem;
   }
 }
 

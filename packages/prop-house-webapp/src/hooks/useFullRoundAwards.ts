@@ -6,7 +6,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useContractReads } from 'wagmi';
 import useAwardImages from './useAwardImages';
 
-interface FullRoundAward extends RoundAward {
+export interface FullRoundAward extends RoundAward {
   symbol: string;
   decimals: number | undefined;
   parsedAmount: number;

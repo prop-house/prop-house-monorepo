@@ -85,3 +85,17 @@
   font-weight: bold;
   color: var(--brand-gray);
 }
+.swiper {
+  padding: 20px 0 !important;
+  width: 100vw !important;
+}
+.swiperSlide {
+  width: auto !important;
+}
+.breakOut {
+  width: 100vw;
+  max-width: none !important;
+  position: relative;
+  left: -12px;
+  height: max-content !important;
+}
