@@ -40,12 +40,12 @@ const AwardLabel: React.FC<{ award: RoundAward; place: number; size?: number }> 
       ? trophyColors('second')
       : trophyColors('third');
 
-  const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards([award]);
+  const [loading, fullRoundAwards] = useFullRoundAwards([award]);
 
   return (
     <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.ten} classNames={classes.card}>
       <HiTrophy size={size ? size : 14} color={iconFill} />
-      {loadingDecimals || loadingSymbols ? (
+      {loading ? (
         <LoadingIndicator height={18} width={26} />
       ) : (
         fullRoundAwards && (

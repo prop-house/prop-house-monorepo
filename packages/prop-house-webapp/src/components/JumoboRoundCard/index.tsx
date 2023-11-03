@@ -26,9 +26,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards(
-    round.config.awards,
-  );
+  const [loading, fullRoundAwards] = useFullRoundAwards(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
@@ -84,7 +82,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   const awardsModalContent = (
     <div className={classes.awardsModalContentContainer}>
-      {loadingSymbols || loadingDecimals ? (
+      {loading ? (
         <LoadingIndicator />
       ) : (
         fullRoundAwards &&

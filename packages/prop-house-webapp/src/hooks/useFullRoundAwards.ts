@@ -13,16 +13,9 @@ interface FullRoundAward extends RoundAward {
 
 type UseFullRoundAwardResults = [
   /**
-   * loadingSymbols
+   * loading
    */
   boolean,
-  /**
-   * loadingDecimals
-   */
-  boolean,
-  /**
-   * votingPower
-   */
   FullRoundAward[] | undefined,
 ];
 
@@ -55,7 +48,7 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
 
   // parse symbols, decimals and amounts into award as FullRoundAward
   useEffect(() => {
-    if (!symbols || fullRoundAwards || !decimals) return;
+    if (!symbols || fullRoundAwards || !decimals || !tokenImgs) return;
 
     const parsedAmounts = awards.map((award, index) => {
       switch (award.asset.assetType) {
@@ -83,7 +76,7 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
     );
   }, [symbols, fullRoundAwards, decimals, awards]);
 
-  return [loadingSymbols, loadingDecimals, fullRoundAwards];
+  return [loadingDecimals || loadingSymbols, fullRoundAwards];
 };
 
 export default useFullRoundAwards;
