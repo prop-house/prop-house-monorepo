@@ -8,6 +8,7 @@
   font-weight: bold;
   line-height: 140%;
 }
+
 .btn div {
   margin: auto;
 }
@@ -35,6 +36,12 @@
 .btnPurpleBg {
   background-color: var(--brand-purple);
   border: none;
+}
+.btnPurpleBg:active,
+.btnPurpleBg:focus,
+.btnPurpleBg:hover {
+  background-color: var(--brand-purple-transparent) !important;
+  box-shadow: none !important;
 }
 
 /* PURPLE LIGHT BG */
