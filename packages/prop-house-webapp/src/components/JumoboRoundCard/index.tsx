@@ -31,6 +31,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const [numProps, setNumProps] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
   const [proposals, setProposals] = useState<Proposal[]>();
+  const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
 
   const isProposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
   const isVoting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
@@ -51,14 +52,17 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     if (topThreeProps || !isVoting) return;
     const fetchTopThreeProps = async () => {
       try {
+        setFetchingTop3Props(true);
         const props = await propHouse.query.getProposalsForRound(round.address, {
           page: 1,
           perPage: 3,
           orderBy: OrderByProposalFields.VotingPower,
           where: { isCancelled: false },
         });
+        setFetchingTop3Props(false);
         setTopThreeProps(props);
       } catch (e) {
+        setFetchingTop3Props(false);
         console.log(e);
       }
     };
@@ -184,7 +188,11 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
 
             {isVoting && (
               <>
-                {topThreeProps && <ProposalRankings proposals={topThreeProps} />}
+                {fetchingTop3Props ? (
+                  <LoadingIndicator />
+                ) : (
+                  topThreeProps && <ProposalRankings proposals={topThreeProps} />
+                )}
                 <Button text="View round" bgColor={ButtonColor.Purple} />
               </>
             )}
