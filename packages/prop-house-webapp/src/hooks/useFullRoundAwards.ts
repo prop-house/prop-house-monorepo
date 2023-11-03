@@ -4,25 +4,20 @@ import { formatEther } from 'viem';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
 import { useContractReads } from 'wagmi';
+import useAwardImages from './useAwardImages';
 
-interface FullRoundAward extends RoundAward {
+export interface FullRoundAward extends RoundAward {
   symbol: string;
   decimals: number | undefined;
   parsedAmount: number;
+  tokenImg?: string;
 }
 
 type UseFullRoundAwardResults = [
   /**
-   * loadingSymbols
+   * loading
    */
   boolean,
-  /**
-   * loadingDecimals
-   */
-  boolean,
-  /**
-   * votingPower
-   */
   FullRoundAward[] | undefined,
 ];
 
@@ -31,6 +26,8 @@ type UseFullRoundAwardResults = [
  */
 const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
   const [fullRoundAwards, setFullRoundAwards] = useState<FullRoundAward[] | undefined>();
+
+  const tokenImgs = useAwardImages(awards);
 
   const awardContracts = awards.map(award => {
     return {
@@ -55,7 +52,7 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
 
   // parse symbols, decimals and amounts into award as FullRoundAward
   useEffect(() => {
-    if (!symbols || fullRoundAwards || !decimals) return;
+    if (!symbols || fullRoundAwards || !decimals || !tokenImgs) return;
 
     const parsedAmounts = awards.map((award, index) => {
       switch (award.asset.assetType) {
@@ -78,12 +75,13 @@ const useFullRoundAwards = (awards: RoundAward[]): UseFullRoundAwardResults => {
           symbol: award.asset.assetType === 'NATIVE' ? 'ETH' : (symbols[index].result as string),
           decimals: decimals[index].result as number | undefined,
           parsedAmount: parsedAmounts[index],
+          tokenImg: tokenImgs[index],
         };
       }),
     );
-  }, [symbols, fullRoundAwards, decimals, awards]);
+  }, [symbols, fullRoundAwards, decimals, awards, tokenImgs]);
 
-  return [loadingSymbols, loadingDecimals, fullRoundAwards];
+  return [loadingDecimals || loadingSymbols, fullRoundAwards];
 };
 
 export default useFullRoundAwards;

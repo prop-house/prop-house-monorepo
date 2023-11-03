@@ -19,15 +19,14 @@ import { HiTrophy } from 'react-icons/hi2';
 import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
 import ProposedSummary from '../ProposedSummary';
+import { trophyColors } from '../../utils/trophyColors';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards(
-    round.config.awards,
-  );
+  const [loading, fullRoundAwards] = useFullRoundAwards(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
@@ -83,7 +82,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   const awardsModalContent = (
     <div className={classes.awardsModalContentContainer}>
-      {loadingSymbols || loadingDecimals ? (
+      {loading ? (
         <LoadingIndicator />
       ) : (
         fullRoundAwards &&
@@ -171,7 +170,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               <>
                 <div className={classes.awardsContainer}>
                   <div className={classes.title}>
-                    <HiTrophy size={14} color={'C0C0C0'} />
+                    <HiTrophy size={14} color={trophyColors('second')} />
                     Awards
                   </div>
                   <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />

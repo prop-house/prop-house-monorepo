@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
 import { House, Round } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../HouseManager/utils/getDateFromTimestamp';
+import RoundAwardsDisplay from '../RoundAwardsDisplay';
 
 const RoundHeader: React.FC<{
   round: Round;
@@ -46,9 +47,9 @@ const RoundHeader: React.FC<{
   );
 
   return (
-    <Row className={classes.profileHeaderRow}>
-      <Col>
-        <div className={classes.backToAuction} onClick={() => navigate(`/${house.address}`)}>
+    <Row className={classes.roundHeaderRow}>
+      <Col lg={12}>
+        <div className={classes.backToHouse} onClick={() => navigate(`/${house.address}`)}>
           <img
             src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
             alt="community profile"
@@ -56,8 +57,9 @@ const RoundHeader: React.FC<{
           />
           <div className={classes.commTitle}>{house.name}</div>
         </div>
-
-        <Col lg={12} className={classes.communityInfoCol}>
+      </Col>
+      <Row>
+        <Col lg={7} className={classes.communityInfoCol}>
           <div className={classes.date}>
             {`${
               dayjs().isBefore(round.config.proposalPeriodStartTimestamp) ? `Starts` : `Started`
@@ -71,7 +73,13 @@ const RoundHeader: React.FC<{
             <ReadMore description={roundDescription} />
           </Col>
         </Col>
-      </Col>
+
+        <Col lg={5} className={classes.awardsCol}>
+          <div className={classes.awardsTitle}>Awards</div>
+          <div className={classes.awardsSubtitle}>Props with the most votes win awards.</div>
+          <RoundAwardsDisplay round={round} />
+        </Col>
+      </Row>
     </Row>
   );
 };

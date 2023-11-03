@@ -6,6 +6,7 @@ import LoadingIndicator from '../LoadingIndicator';
 import { truncateThousands } from '../../utils/truncateThousands';
 import { Dispatch, SetStateAction } from 'react';
 import useFullRoundAwards from '../../hooks/useFullRoundAwards';
+import { trophyColors } from '../../utils/trophyColors';
 
 export const MoreAwardsLabel: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
@@ -32,14 +33,19 @@ export const MoreAwardsLabel: React.FC<{
 
 const AwardLabel: React.FC<{ award: RoundAward; place: number; size?: number }> = props => {
   const { award, place, size } = props;
-  const iconFill = place === 1 ? 'F6A64E' : place === 2 ? 'C0C0C0' : 'AC6700';
+  const iconFill =
+    place === 1
+      ? trophyColors('first')
+      : place === 2
+      ? trophyColors('second')
+      : trophyColors('third');
 
-  const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards([award]);
+  const [loading, fullRoundAwards] = useFullRoundAwards([award]);
 
   return (
     <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.ten} classNames={classes.card}>
       <HiTrophy size={size ? size : 14} color={iconFill} />
-      {loadingDecimals || loadingSymbols ? (
+      {loading ? (
         <LoadingIndicator height={18} width={26} />
       ) : (
         fullRoundAwards && (

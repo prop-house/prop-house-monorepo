@@ -15,13 +15,11 @@ const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolea
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [loadingSymbols, loadingDecimals, fullRoundAwards] = useFullRoundAwards(
-    round.config.awards,
-  );
+  const [loading, fullRoundAwards] = useFullRoundAwards(round.config.awards);
 
   const awardsModalContent = (
     <div className={classes.awardsModalContentContainer}>
-      {loadingSymbols || loadingDecimals ? (
+      {loading ? (
         <LoadingIndicator />
       ) : (
         fullRoundAwards &&

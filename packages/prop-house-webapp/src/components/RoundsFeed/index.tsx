@@ -14,9 +14,7 @@ const RoundsFeed = () => {
   const [fetchingRounds, setFetchingRounds] = useState(false);
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
   const [noMoreRounds, setNoMoreRounds] = useState(false);
-
   const [pageIndex, setPageIndex] = useState(1);
-
   const isInitialPage = pageIndex === 1;
 
   useEffect(() => {

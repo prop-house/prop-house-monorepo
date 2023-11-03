@@ -2,7 +2,6 @@ import RoundHeader from '../../components/RoundHeader';
 import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import RoundUtilityBar from '../../components/RoundUtilityBar';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
 import { usePropHouse } from '@prophouse/sdk-react';
@@ -68,11 +67,6 @@ const Round: React.FC<{}> = () => {
           <Container>
             <RoundHeader round={round} house={house} />
           </Container>
-          <div className={classes.stickyContainer}>
-            <Container>
-              <RoundUtilityBar round={round} />
-            </Container>
-          </div>
         </>
       )}
       <div className={classes.roundContainer}>
