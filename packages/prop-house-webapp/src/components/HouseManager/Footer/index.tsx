@@ -12,7 +12,7 @@ import { Award } from '../AssetSelector';
 import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
-import { isRoundFullyFunded } from '../utils/isRoundFullyFunded';
+import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
 
 /**
  * @overview

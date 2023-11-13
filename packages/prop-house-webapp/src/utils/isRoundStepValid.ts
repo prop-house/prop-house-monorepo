@@ -1,5 +1,5 @@
-import { NewRound } from '../../../state/slices/round';
-import removeTags from '../../../utils/removeTags';
+import { NewRound } from '../state/slices/round';
+import removeTags from './removeTags';
 
 // HOUSE INFO
 // Title: 3-255 characters

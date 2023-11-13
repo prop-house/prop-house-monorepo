@@ -1,4 +1,4 @@
-import { ERC20 } from '../AwardsConfig';
+import { ERC20 } from '../components/HouseManager/AwardsConfig';
 
 /**
  * This function takes an ERC20 token and returns the image path for that token.

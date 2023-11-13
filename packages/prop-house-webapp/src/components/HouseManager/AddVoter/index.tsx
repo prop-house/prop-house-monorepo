@@ -13,10 +13,10 @@ import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { AssetType, GovPowerStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
-import { getTokenInfo } from '../utils/getTokenInfo';
-import useAddressType from '../utils/useAddressType';
+import { getTokenInfo } from '../../../utils/getTokenInfo';
+import useAddressType from '../../../utils/useAddressType';
 import { saveRound } from '../../../state/thunks';
-import createVoterStrategy from '../utils/createVoterStrategy';
+import createVoterStrategy from '../../../utils/createVoterStrategy';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 /**

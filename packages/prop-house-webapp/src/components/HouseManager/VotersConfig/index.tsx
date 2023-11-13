@@ -16,7 +16,7 @@ import {
 
 import VotersModal from '../VotersModal';
 import { isAddress } from 'ethers/lib/utils.js';
-import createUploadMessage from '../utils/createUploadMessage';
+import createUploadMessage from '../../../utils/createUploadMessage';
 import { saveRound } from '../../../state/thunks';
 import Button, { ButtonColor } from '../../Button';
 import OverflowScroll from '../OverflowScroll';

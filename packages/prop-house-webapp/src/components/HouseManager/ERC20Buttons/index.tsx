@@ -3,7 +3,7 @@ import React from 'react';
 import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
-import { getERC20Image } from '../utils/getERC20Image';
+import { getERC20Image } from '../../../utils/getERC20Image';
 import { ERC20 } from '../AwardsConfig';
 import { Award } from '../AssetSelector';
 import Divider from '../../Divider';

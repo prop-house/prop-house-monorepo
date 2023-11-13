@@ -2,7 +2,7 @@ import classes from './Voter.module.css';
 import Group from '../Group';
 import EthAddress from '../../EthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
-import { getTokenInfo } from '../utils/getTokenInfo';
+import { getTokenInfo } from '../../../utils/getTokenInfo';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';

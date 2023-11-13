@@ -2,7 +2,7 @@ import classes from './AwardRow.module.css';
 import Group from '../Group';
 import { AssetType } from '@prophouse/sdk-react';
 import { Award } from '../AssetSelector';
-import { formatCommaNum } from '../utils/formatCommaNum';
+import { formatCommaNum } from '../../../utils/formatCommaNum';
 import trimEthAddress from '../../../utils/trimEthAddress';
 
 /**

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
+import { isRoundStepValid } from '../../utils/isRoundStepValid';
 import { AssetType, GovPowerStrategyConfig, HouseType, RoundType } from '@prophouse/sdk-react';
 import { Award, NewAward } from '../../components/HouseManager/AssetSelector';
 

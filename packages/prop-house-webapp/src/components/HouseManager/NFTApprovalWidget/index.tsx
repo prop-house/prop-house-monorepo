@@ -20,7 +20,7 @@ import {
   erc1155BalanceOfInterface,
   erc1155SetApprovalForAllInterface,
   erc1155IsApprovedForAllInterface,
-} from '../utils/contractABIs';
+} from '../../../utils/contractABIs';
 import { BigNumber, BigNumberish } from 'ethers';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { Award } from '../AssetSelector';

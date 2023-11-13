@@ -18,7 +18,7 @@ import {
   erc20AllowanceInterface,
   erc20ApproveInterface,
   erc20BalanceOfInterface,
-} from '../utils/contractABIs';
+} from '../../../utils/contractABIs';
 import { BigNumber, BigNumberish, ethers } from 'ethers';
 
 const EthErc20ApprovalWidget: React.FC<{

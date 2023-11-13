@@ -4,7 +4,7 @@ import {
   VotingStrategyType,
   AllowlistMember,
 } from '@prophouse/sdk-react';
-import { NewVoter } from '../VotersConfig';
+import { NewVoter } from '../components/HouseManager/VotersConfig';
 
 const createVoterStrategy = (voter: NewVoter): GovPowerStrategyConfig | null => {
   let s: GovPowerStrategyConfig | null = null;

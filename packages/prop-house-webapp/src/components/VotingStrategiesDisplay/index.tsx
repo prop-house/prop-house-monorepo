@@ -3,7 +3,7 @@ import { ProposingStrategy, GovPowerStrategyType, VotingStrategy } from '@propho
 import trimEthAddress from '../../utils/trimEthAddress';
 import { useState } from 'react';
 import Modal from '../Modal';
-import buildEtherscanPath from '../HouseManager/utils/buildEtherscanPath';
+import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import { MdHowToVote } from 'react-icons/md';
 import useTokenNames from '../../hooks/useTokenNames';
 

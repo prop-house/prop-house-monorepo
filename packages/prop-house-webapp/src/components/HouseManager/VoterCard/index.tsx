@@ -5,7 +5,7 @@ import { useEnsName } from 'wagmi';
 import trimEthAddress from '../../../utils/trimEthAddress';
 import { VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import { getTokenInfo } from '../utils/getTokenInfo';
+import { getTokenInfo } from '../../../utils/getTokenInfo';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 const VoterCard: React.FC<{ type: string; address: string; multiplier?: number }> = props => {

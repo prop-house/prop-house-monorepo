@@ -1,7 +1,7 @@
 import classes from './AwardWithPlace.module.css';
 import Text from '../Text';
 import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
-import { getAwardEmoji } from '../utils/getAwardEmoji';
+import { getAwardEmoji } from '../../../utils/getAwardEmoji';
 
 const AwardWithPlace: React.FC<{ place: number }> = props => {
   const { place } = props;
