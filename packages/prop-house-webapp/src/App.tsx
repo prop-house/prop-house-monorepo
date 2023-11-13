@@ -25,7 +25,7 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-import HouseManager from './pages/HouseManager';
+import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
@@ -87,7 +87,7 @@ function App() {
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<Create />} />
-                    <Route path="/create-round" element={<HouseManager />} />
+                    <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

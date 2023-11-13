@@ -1,11 +1,11 @@
-import classes from './HouseManager.module.css';
+import classes from './CreateRound.module.css';
 import { Col, Container, Row } from 'react-bootstrap';
 import PrimaryCard from '../../components/HouseManager/PrimaryCard';
 import SecondaryCard from '../../components/HouseManager/SecondaryCard';
 import { useAppSelector } from '../../hooks';
 import HouseNameAndImage from '../../components/HouseManager/HouseNameAndImage';
 
-const HouseManager = () => {
+const CreateRound = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
 
   return (
@@ -25,4 +25,4 @@ const HouseManager = () => {
   );
 };
 
-export default HouseManager;
+export default CreateRound;
