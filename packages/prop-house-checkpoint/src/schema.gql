@@ -90,6 +90,9 @@ type Proposal {
   "Whether the proposal has been selected as a winner"
   isWinner: Boolean!
 
+  "The position of the proposal in the winning proposals list (only populated if winner)"
+  winningPosition: Int
+
   "The unix timestamp when the proposal was received"
   receivedAt: Int!
 
