@@ -69,7 +69,7 @@ const OpenGraphProposalCard: React.FC = () => {
           <span>
             <div className={classes.cardTitle}>
               <div className={classes.houseImg}>
-                <img src={community.profileImageUrl} alt={community.name} />
+                <img src={community.profileImageUrl} alt={community.name} crossOrigin="anonymous" />
               </div>
               <span className={classes.roundName}>{round.title}</span>
             </div>
