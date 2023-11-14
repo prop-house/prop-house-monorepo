@@ -3,7 +3,6 @@ import 'react-datetime/css/react-datetime.css';
 import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
 import Group from '../Group';
-import InstructionBox from '../InstructionBox';
 import Text from '../Text';
 import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';

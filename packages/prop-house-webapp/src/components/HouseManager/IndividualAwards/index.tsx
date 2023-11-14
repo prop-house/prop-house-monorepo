@@ -36,9 +36,7 @@ const IndividualAwards: React.FC<{
   const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
-
   const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
-
   const [awardIdx, setAwardIdx] = useState(0);
 
   const provider = useEthersProvider();

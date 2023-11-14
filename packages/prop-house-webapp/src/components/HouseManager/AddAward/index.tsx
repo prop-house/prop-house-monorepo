@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { AwardType, ERC20 } from '../AwardsConfig';
+import { ERC20 } from '../AwardsConfig';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -13,12 +13,12 @@ import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
 import { Award, NewAward, erc20Name, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
-import { formatCommaNum } from '../../../utils/formatCommaNum';
 import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import { getUSDPrice } from '../../../utils/getUSDPrice';
 import { getTokenIdImage } from '../../../utils/getTokenIdImage';
+import { assetTypeString } from '../../../utils/assetTypeToString';
 
 const AddAward: React.FC<{
   award: Award;
@@ -26,14 +26,13 @@ const AddAward: React.FC<{
 }> = props => {
   const { award, setAward } = props;
 
-  const [selectedAwardType, setSelectedAwardType] = useState<string>(
-    award.type === AssetType.ERC721 ? AwardType.ERC721 : AwardType.ERC20,
-  );
+  const verifiedAddress = award.state === 'success';
+  const [selectedAwardType, setSelectedAwardType] = useState<AssetType>(AssetType.ETH);
+  const [isTyping, setIsTyping] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const provider = useEthersProvider();
-
-  const [isTyping, setIsTyping] = useState(false);
+  const { data } = useAddressType(award.address);
 
   const handleAddressChange = (value: string) => {
     setIsTyping(true);
@@ -70,19 +69,9 @@ const AddAward: React.FC<{
     setAward({ ...award, error: '', image });
   };
 
-  const handleSelectAwardType = (selectedType: AwardType) => {
+  const handleSelectAwardType = (selectedType: AssetType) => {
     setSelectedAwardType(selectedType);
-
-    // if you click the current award button, don't reset state
-    if (selectedType.replace('-', '') === AssetType[award.type]) return;
-
-    if (selectedType === AwardType.ERC721) {
-      setAward({ ...NewAward, id: award.id, type: AssetType.ERC721 });
-    } else if (selectedType === AwardType.ERC20) {
-      setAward({ ...NewAward, id: award.id, type: AssetType.ERC20 });
-    } else if (selectedType === AwardType.ERC1155) {
-      setAward({ ...NewAward, id: award.id, type: AssetType.ERC1155 });
-    }
+    setAward({ ...NewAward, id: award.id, type: award.type });
   };
 
   const handleSelectAward = async (token: ERC20) => {
@@ -113,9 +102,6 @@ const AddAward: React.FC<{
 
     setAward({ ...award, ...updated });
   };
-
-  // Get address type by calling verification contract
-  const { data } = useAddressType(award.address);
 
   const handleAddressBlur = async () => {
     setIsTyping(false);
@@ -165,23 +151,6 @@ const AddAward: React.FC<{
     }
   };
 
-  const awardTypes: AwardType[] = [AwardType.ERC20, AwardType.ERC721, AwardType.ERC1155];
-
-  const verifiedAddress = award.state === 'success';
-
-  const renderAwardButtons = () => {
-    return awardTypes.map(type => (
-      <div className={classes.stratBtnContainer} key={type}>
-        <Button
-          classNames={classes.strategyButton}
-          text={type}
-          bgColor={selectedAwardType === type ? ButtonColor.Purple : ButtonColor.White}
-          onClick={() => handleSelectAwardType(type)}
-        />
-      </div>
-    ));
-  };
-
   const handleTokenId = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = parseInt(e.target.value, 10);
 
@@ -193,140 +162,167 @@ const AddAward: React.FC<{
     }
   };
 
-  const awardContent = {
-    [AwardType.ERC20]: (
-      <Group gap={16}>
-        <Group gap={6}>
-          <ERC20Buttons
-            award={award}
-            isTyping={isTyping}
-            handleBlur={handleERC20AddressBlur}
-            handleSwitch={() => setAward({ ...award, state: 'input' })}
-            handleSelectAward={handleSelectAward}
-            handleChange={handleAddressChange}
-          />
-          {award.selectedAsset === ERC20.OTHER && (
-            // allows user to look up the address on etherscan
-            <ViewOnEtherscanButton address={award.address} isDisabled={!verifiedAddress} />
-          )}
+  const awardContent = (type: AssetType) => {
+    if (type === AssetType.ETH)
+      return (
+        <Group gap={16}>
+          <Group gap={6} classNames={classes.fullWidth}>
+            <Text type="subtitle">Amount</Text>
+
+            <input
+              className={classes.votesInput}
+              value={award.amount}
+              placeholder="1"
+              type="number"
+              onChange={handleAmountChange}
+              onPaste={handleInputPaste}
+            />
+          </Group>
         </Group>
+      );
 
-        <Group gap={6} classNames={classes.fullWidth}>
-          <Text type="subtitle">Amount</Text>
-
-          <input
-            className={classes.votesInput}
-            value={award.amount}
-            placeholder="1"
-            type="number"
-            onChange={handleAmountChange}
-            onPaste={handleInputPaste}
-          />
-
-          <Text type="body">${formatCommaNum(award.price * award.amount)}</Text>
-        </Group>
-      </Group>
-    ),
-    [AwardType.ERC721]: (
-      <Group gap={16}>
-        <Group gap={6}>
-          <Group row gap={6}>
-            <AwardAddress
-              isTyping={isTyping}
+    if (type === AssetType.ERC20)
+      return (
+        <Group gap={16}>
+          <Group gap={6}>
+            <ERC20Buttons
               award={award}
-              handleBlur={handleAddressBlur}
+              isTyping={isTyping}
+              handleBlur={handleERC20AddressBlur}
               handleSwitch={() => setAward({ ...award, state: 'input' })}
+              handleSelectAward={handleSelectAward}
               handleChange={handleAddressChange}
             />
-            <Group gap={6}>
-              <Tooltip
-                content={
-                  <Group row gap={4}>
-                    <Text type="subtitle">Token ID</Text>
+            {award.selectedAsset === ERC20.OTHER && (
+              // allows user to look up the address on etherscan
+              <ViewOnEtherscanButton address={award.address} isDisabled={!verifiedAddress} />
+            )}
+          </Group>
 
-                    <InfoSymbol />
-                  </Group>
-                }
-                tooltipContent="Enter the ID of the NFT"
+          <Group gap={6} classNames={classes.fullWidth}>
+            <Text type="subtitle">Amount</Text>
+
+            <input
+              className={classes.votesInput}
+              value={award.amount}
+              placeholder="1"
+              type="number"
+              onChange={handleAmountChange}
+              onPaste={handleInputPaste}
+            />
+          </Group>
+        </Group>
+      );
+
+    if (type === AssetType.ERC721)
+      return (
+        <Group gap={16}>
+          <Group gap={6}>
+            <Group row gap={6}>
+              <AwardAddress
+                isTyping={isTyping}
+                award={award}
+                handleBlur={handleAddressBlur}
+                handleSwitch={() => setAward({ ...award, state: 'input' })}
+                handleChange={handleAddressChange}
               />
+              <Group gap={6}>
+                <Tooltip
+                  content={
+                    <Group row gap={4}>
+                      <Text type="subtitle">Token ID</Text>
 
-              <input
-                ref={inputRef}
-                className={classes.tokenIdInput}
-                disabled={!verifiedAddress}
-                value={!verifiedAddress ? '' : award.tokenId}
-                placeholder="000"
-                type="number"
-                onChange={e => handleTokenId(e)}
-                onKeyDown={e => {
-                  // allow blur on Enter
-                  if (e.key === 'Enter') {
-                    handleTokenBlur(award.tokenId!);
-                    inputRef.current?.blur();
+                      <InfoSymbol />
+                    </Group>
                   }
-                }}
-                onBlur={() => handleTokenBlur(award.tokenId!)}
-                onPaste={handleInputPaste}
-              />
+                  tooltipContent="Enter the ID of the NFT"
+                />
+
+                <input
+                  ref={inputRef}
+                  className={classes.tokenIdInput}
+                  disabled={!verifiedAddress}
+                  value={!verifiedAddress ? '' : award.tokenId}
+                  placeholder="000"
+                  type="number"
+                  onChange={e => handleTokenId(e)}
+                  onKeyDown={e => {
+                    // allow blur on Enter
+                    if (e.key === 'Enter') {
+                      handleTokenBlur(award.tokenId!);
+                      inputRef.current?.blur();
+                    }
+                  }}
+                  onBlur={() => handleTokenBlur(award.tokenId!)}
+                  onPaste={handleInputPaste}
+                />
+              </Group>
             </Group>
+            {/* allows user to look up the address on OpenSea */}
+            <ViewOnOpenSeaButton address={award.address} isDisabled={!verifiedAddress} />
           </Group>
-          {/* allows user to look up the address on OpenSea */}
-          <ViewOnOpenSeaButton address={award.address} isDisabled={!verifiedAddress} />
         </Group>
-      </Group>
-    ),
-    [AwardType.ERC1155]: (
-      <Group gap={16}>
-        <Group gap={6}>
-          <Group row gap={6}>
-            <AwardAddress
-              isTyping={isTyping}
-              award={award}
-              handleBlur={handleAddressBlur}
-              handleSwitch={() => setAward({ ...award, state: 'input' })}
-              handleChange={handleAddressChange}
-            />
-            <Group gap={6}>
-              <Tooltip
-                content={
-                  <Group row gap={4}>
-                    <Text type="subtitle">Token ID</Text>
+      );
 
-                    <InfoSymbol />
-                  </Group>
-                }
-                tooltipContent="Enter the ID of the NFT"
+    if (type === AssetType.ERC1155)
+      return (
+        <Group gap={16}>
+          <Group gap={6}>
+            <Group row gap={6}>
+              <AwardAddress
+                isTyping={isTyping}
+                award={award}
+                handleBlur={handleAddressBlur}
+                handleSwitch={() => setAward({ ...award, state: 'input' })}
+                handleChange={handleAddressChange}
               />
+              <Group gap={6}>
+                <Tooltip
+                  content={
+                    <Group row gap={4}>
+                      <Text type="subtitle">Token ID</Text>
 
-              <input
-                className={classes.tokenIdInput}
-                disabled={!verifiedAddress}
-                value={!verifiedAddress ? '' : award.tokenId}
-                placeholder="0000"
-                type="number"
-                onChange={e => handleTokenId(e)}
-                onPaste={handleInputPaste}
-              />
+                      <InfoSymbol />
+                    </Group>
+                  }
+                  tooltipContent="Enter the ID of the NFT"
+                />
+
+                <input
+                  className={classes.tokenIdInput}
+                  disabled={!verifiedAddress}
+                  value={!verifiedAddress ? '' : award.tokenId}
+                  placeholder="0000"
+                  type="number"
+                  onChange={e => handleTokenId(e)}
+                  onPaste={handleInputPaste}
+                />
+              </Group>
             </Group>
-          </Group>
 
-          <ViewOnOpenSeaButton address={award.address} isDisabled={!verifiedAddress} />
+            <ViewOnOpenSeaButton address={award.address} isDisabled={!verifiedAddress} />
+          </Group>
         </Group>
-      </Group>
-    ),
+      );
   };
-
-  const renderContent = () => awardContent[selectedAwardType as AwardType];
 
   return (
     <div className={classes.container}>
       <Group row gap={8} classNames={classes.buttons}>
-        {renderAwardButtons()}
+        {/** Award type buttons */}
+        {[AssetType.ETH, AssetType.ERC20, AssetType.ERC721, AssetType.ERC1155].map(type => (
+          <div className={classes.stratBtnContainer} key={type}>
+            <Button
+              classNames={classes.strategyButton}
+              text={assetTypeString(type)}
+              bgColor={selectedAwardType === type ? ButtonColor.Purple : ButtonColor.White}
+              onClick={() => handleSelectAwardType(type)}
+            />
+          </div>
+        ))}
       </Group>
-
       <Divider />
-
-      <Group>{renderContent()}</Group>
+      <Group>{awardContent(selectedAwardType)}</Group>
     </div>
   );
 };

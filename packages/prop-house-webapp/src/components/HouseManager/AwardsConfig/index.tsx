@@ -17,11 +17,6 @@ import AssetSelector from '../AssetSelector';
  * @see AwardType - button options for individual awards
  */
 
-export enum AwardType {
-  ERC721 = 'ERC-721',
-  ERC1155 = 'ERC-1155',
-  ERC20 = 'ERC-20',
-}
 export enum ERC20 {
   ETH = 'ETH',
   WETH = 'WETH',
