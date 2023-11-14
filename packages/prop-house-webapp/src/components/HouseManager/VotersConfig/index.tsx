@@ -254,6 +254,7 @@ const VotersConfig = () => {
         <Text type="subtitle">Voters</Text>
         <Text type="body">Determine who can vote in your round and how many votes they get.</Text>
       </Group>
+      <Divider />
 
       {showVotersModal && (
         <VotersModal
