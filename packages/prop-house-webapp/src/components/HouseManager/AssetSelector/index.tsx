@@ -66,13 +66,6 @@ export const NewAward: Award = {
   allocated: 0,
 };
 
-// export const erc20TokenAddresses: { [key in ERC20]: string } = {
-//   [ERC20.WETH]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-//   [ERC20.USDC]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-//   [ERC20.APE]: '0x4d224452801ACEd8B2F0aebE155379bb5D594381',
-//   [ERC20.ETH]: '',
-//   [ERC20.OTHER]: '',
-// };
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.WETH]: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
   [ERC20.USDC]: '0x0d6B12630Db150559822bb5297227C107332A8bf',
@@ -156,7 +149,8 @@ const AssetSelector: FC<{
 
   return (
     <>
-      <Group>
+      {/** EDITED OUT TO SUPPORT ONLY IND AWARD UX AS IT IS SIMPLER TO GROK */}
+      {/* <Group>
         <DualSectionSelector onChange={changeAwardType}>
           <Section
             active={isSplitAward}
@@ -169,10 +163,8 @@ const AssetSelector: FC<{
             text="Choose a reward individually for each of the winners."
           />
         </DualSectionSelector>
+        <Divider />
       </Group>
-
-      <Divider />
-
       {isSplitAward ? (
         <SplitAwards
           editMode={editMode}
@@ -189,7 +181,14 @@ const AssetSelector: FC<{
           setEditedRound={setEditedRound}
           editedRound={editedRound}
         />
-      )}
+      )} */}
+      <IndividualAwards
+        editMode={editMode}
+        awards={editMode ? editedRound!.awards : individualAwards}
+        setAwards={setIndividualAwards}
+        setEditedRound={setEditedRound}
+        editedRound={editedRound}
+      />
     </>
   );
 };

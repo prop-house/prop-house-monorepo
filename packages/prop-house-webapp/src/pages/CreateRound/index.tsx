@@ -16,7 +16,6 @@ const CreateRound = () => {
 
           <Col xl={8} className={classes.cardsContainer}>
             <PrimaryCard />
-
             <SecondaryCard />
           </Col>
         </Row>

@@ -1,14 +1,5 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
-import Divider from '../../Divider';
-import DualSectionSelector from '../DualSectionSelector';
-import Group from '../Group';
-import Section from '../Section';
-import Text from '../Text';
 import TimedRound from '../TimedRound';
-import { saveRound } from '../../../state/thunks';
-import { RoundType } from '@prophouse/sdk-react';
 
 /**
  * @function changeTimingType - changes the round timing from timed to infinite or vice versa
@@ -20,29 +11,12 @@ import { RoundType } from '@prophouse/sdk-react';
  */
 
 const RoundDatesSelector = () => {
-  const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
-
-  const [isTimedRound, setIsTimedRound] = useState(round.roundType === RoundType.TIMED);
-
-  const changeTimingType = () => {
-    // TODO - returning to "disable" until we have designs for infinite round, after we can remove this
-    if (isTimedRound) return;
-
-    const updated = {
-      ...round,
-      proposalPeriodStartUnixTimestamp: 0,
-      proposalPeriodDurationSecs: 0,
-      votePeriodDurationSecs: 0,
-    };
-
-    setIsTimedRound(!isTimedRound);
-    dispatch(saveRound(updated));
-  };
 
   return (
     <>
-      <Group gap={4}>
+      {/** COMMENTED OUT UNTIL INFINITE ROUND IS SUPPORTED */}
+      {/* <Group gap={4}>
         <Text type="subtitle">Select a round type</Text>
         <DualSectionSelector onChange={changeTimingType}>
           <Section
@@ -58,10 +32,8 @@ const RoundDatesSelector = () => {
         </DualSectionSelector>
       </Group>
 
-      <Divider />
-
-      {/* TODO - add <InfiniteRound /> whenever we have designs */}
-      {isTimedRound ? <TimedRound round={round} /> : <div>infinite round</div>}
+      <Divider /> */}
+      <TimedRound round={round} />
     </>
   );
 };
