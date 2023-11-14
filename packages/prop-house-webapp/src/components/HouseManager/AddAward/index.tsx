@@ -1,5 +1,5 @@
 import classes from './AddAward.module.css';
-import React, { SetStateAction, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
@@ -17,36 +17,57 @@ import { formatCommaNum } from '../../../utils/formatCommaNum';
 import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
+import { getUSDPrice } from '../../../utils/getUSDPrice';
+import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 
 const AddAward: React.FC<{
   award: Award;
-  selectedAward: string;
-  isTyping: boolean;
-  setIsTyping: React.Dispatch<SetStateAction<boolean>>;
   setAward: (award: Award) => void;
+  selectedAward: string;
   setSelectedAward: (selectedAward: string) => void;
-  handleAddressChange: (value: string) => void;
-  handleTokenBlur: (id: string) => void;
   handleSelectAward: (token: ERC20) => void;
-  handleSwitchInput: () => void;
-  handleERC20AddressBlur: () => void;
 }> = props => {
-  const {
-    award,
-    selectedAward,
-    isTyping,
-    setIsTyping,
-    setAward,
-    handleTokenBlur,
-    setSelectedAward,
-    handleAddressChange,
-    handleSwitchInput,
-    handleSelectAward,
-    handleERC20AddressBlur,
-  } = props;
+  const { award, selectedAward, setAward, setSelectedAward, handleSelectAward } = props;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const provider = useEthersProvider();
+
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleAddressChange = (value: string) => {
+    setIsTyping(true);
+    setAward({ ...award, address: value });
+  };
+
+  const handleERC20AddressBlur = async () => {
+    setIsTyping(false);
+    // if address is empty, dont do anything
+    if (!award.address) {
+      setAward({ ...award, state: 'input' });
+      return;
+    }
+    // if address isn't valid, set error
+    if (!data) {
+      setAward({ ...award, state: 'error', error: 'Invalid address' });
+      return;
+    }
+    if (AssetType[award.type] !== data) {
+      setAward({ ...award, state: 'error', error: `Expected ERC20 and got ${data}` });
+      return;
+    } else {
+      // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
+      const { name, image, symbol } = await getTokenInfo(award.address, provider);
+      const { price } = await getUSDPrice(award.type, award.address, provider);
+      setAward({ ...award, state: 'success', name, image, symbol, price });
+    }
+  };
+
+  const handleTokenBlur = async (id: string) => {
+    if (award.tokenId === '') return;
+
+    const { image } = await getTokenIdImage(award.address, id, provider);
+    setAward({ ...award, error: '', image });
+  };
 
   const handleSelectAwardType = (selectedType: AwardType) => {
     setSelectedAward(selectedType);
@@ -150,7 +171,7 @@ const AddAward: React.FC<{
             award={award}
             isTyping={isTyping}
             handleBlur={handleERC20AddressBlur}
-            handleSwitch={handleSwitchInput}
+            handleSwitch={() => setAward({ ...award, state: 'input' })}
             handleSelectAward={handleSelectAward}
             handleChange={handleAddressChange}
           />
@@ -184,7 +205,7 @@ const AddAward: React.FC<{
               isTyping={isTyping}
               award={award}
               handleBlur={handleAddressBlur}
-              handleSwitch={handleSwitchInput}
+              handleSwitch={() => setAward({ ...award, state: 'input' })}
               handleChange={handleAddressChange}
             />
             <Group gap={6}>
@@ -232,7 +253,7 @@ const AddAward: React.FC<{
               isTyping={isTyping}
               award={award}
               handleBlur={handleAddressBlur}
-              handleSwitch={handleSwitchInput}
+              handleSwitch={() => setAward({ ...award, state: 'input' })}
               handleChange={handleAddressChange}
             />
             <Group gap={6}>

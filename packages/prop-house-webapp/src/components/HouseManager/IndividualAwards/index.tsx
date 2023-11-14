@@ -11,8 +11,6 @@ import Modal from '../../Modal';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../../../utils/getERC20Image';
 import { AwardType, ERC20 } from '../AwardsConfig';
-import { getTokenInfo } from '../../../utils/getTokenInfo';
-import useAddressType from '../../../utils/useAddressType';
 import { getUSDPrice } from '../../../utils/getUSDPrice';
 import AwardWithPlace from '../AwardWithPlace';
 import AddAward from '../AddAward';
@@ -43,6 +41,7 @@ const IndividualAwards: React.FC<{
 
   const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
   const [selectedAward, setSelectedAward] = useState<string>(AwardType.ERC20);
+  const [awardIdx, setAwardIdx] = useState(0);
 
   const provider = useEthersProvider();
   const dispatch = useDispatch();
@@ -154,44 +153,8 @@ const IndividualAwards: React.FC<{
     setShowIndividualAwardModal(false);
   };
 
-  // Get address type by calling verification contract
-  const { data } = useAddressType(award.address);
-
-  const [isTyping, setIsTyping] = useState(false);
-
-  const handleERC20AddressBlur = async () => {
-    setIsTyping(false);
-    // if address is empty, dont do anything
-    if (!award.address) {
-      setAward({ ...award, state: 'input' });
-      return;
-    }
-    // if address isn't valid, set error
-    if (!data) {
-      setAward({ ...award, state: 'error', error: 'Invalid address' });
-      return;
-    }
-    if (AssetType[award.type] !== data) {
-      setAward({ ...award, state: 'error', error: `Expected ERC20 and got ${data}` });
-      return;
-    } else {
-      // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const { name, image, symbol } = await getTokenInfo(award.address, provider);
-      const { price } = await getUSDPrice(award.type, award.address, provider);
-      setAward({ ...award, state: 'success', name, image, symbol, price });
-    }
-  };
-
-  const handleSwitchInput = () => setAward({ ...award, state: 'input' });
-
-  const handleAddressChange = (value: string) => {
-    setIsTyping(true);
-    setAward({ ...award, address: value });
-  };
-
   const handleModalClose = () => {
     setAwardIdx(0);
-
     setSelectedAward(AwardType.ERC20);
     setShowIndividualAwardModal(false);
   };
@@ -241,26 +204,6 @@ const IndividualAwards: React.FC<{
     }
   };
 
-  const [awardIdx, setAwardIdx] = useState(0);
-
-  const handleTokenBlur = async (id: string) => {
-    if (award.tokenId === '') return;
-
-    const { image } = await getTokenIdImage(award.address, id, provider);
-
-    if (isDuplicate) {
-      setAward({
-        ...award,
-        state: 'error',
-        error: `An award with ${award.name} #${award.tokenId} already exists`,
-      });
-      return;
-    } else {
-      setAward({ ...award, error: '', image });
-      return;
-    }
-  };
-
   return (
     <>
       {showIndividualAwardModal && (
@@ -275,17 +218,11 @@ const IndividualAwards: React.FC<{
             body: (
               <>
                 <AddAward
-                  isTyping={isTyping}
-                  setIsTyping={setIsTyping}
                   award={award}
                   selectedAward={selectedAward}
                   setAward={setAward}
                   setSelectedAward={setSelectedAward}
-                  handleAddressChange={handleAddressChange}
-                  handleTokenBlur={handleTokenBlur}
                   handleSelectAward={handleSelectAward}
-                  handleSwitchInput={handleSwitchInput}
-                  handleERC20AddressBlur={handleERC20AddressBlur}
                 />
               </>
             ),
