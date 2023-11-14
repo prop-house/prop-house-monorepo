@@ -15,7 +15,7 @@ import Divider from '../../Divider';
  * @see erc20Tokens - The list of predefined ERC20 tokens to map over & display
  */
 
-export const erc20Tokens: ERC20[] = [ERC20.ETH, ERC20.WETH, ERC20.USDC, ERC20.APE, ERC20.OTHER];
+export const erc20Tokens: ERC20[] = [ERC20.USDC, ERC20.APE, ERC20.OTHER];
 
 const ERC20Buttons: React.FC<{
   award: Award;

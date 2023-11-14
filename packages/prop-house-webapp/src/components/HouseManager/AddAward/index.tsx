@@ -74,9 +74,9 @@ const AddAward: React.FC<{
     setAward({ ...NewAward, id: award.id, type: award.type });
   };
 
-  const handleSelectAward = async (token: ERC20) => {
+  const handleSelectErc20Award = async (token: ERC20) => {
     let updated: Partial<Award>;
-    let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
+    let type = AssetType.ERC20;
 
     const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
 
@@ -190,7 +190,7 @@ const AddAward: React.FC<{
               isTyping={isTyping}
               handleBlur={handleERC20AddressBlur}
               handleSwitch={() => setAward({ ...award, state: 'input' })}
-              handleSelectAward={handleSelectAward}
+              handleSelectAward={handleSelectErc20Award}
               handleChange={handleAddressChange}
             />
             {award.selectedAsset === ERC20.OTHER && (

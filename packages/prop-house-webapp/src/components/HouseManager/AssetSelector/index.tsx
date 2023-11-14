@@ -60,17 +60,13 @@ export const NewAward: Award = {
 };
 
 export const erc20TokenAddresses: { [key in ERC20]: string } = {
-  [ERC20.WETH]: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
   [ERC20.USDC]: '0x0d6B12630Db150559822bb5297227C107332A8bf',
   [ERC20.APE]: '0x5242CD84b432969FeEF70E0dFa5725418dA38c20',
-  [ERC20.ETH]: '',
   [ERC20.OTHER]: '',
 };
 export const erc20Name: { [key in ERC20]: string } = {
-  [ERC20.WETH]: 'Wrapped Ether',
   [ERC20.USDC]: 'USD Coin',
   [ERC20.APE]: 'Ape Coin',
-  [ERC20.ETH]: 'Ethereum',
   [ERC20.OTHER]: '',
 };
 

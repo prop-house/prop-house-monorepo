@@ -52,49 +52,49 @@ const SplitAwards: React.FC<{
   // Get decimals of ERC20 token
   const { data: decimals } = useGetDecimals(award.address);
 
-  useEffect(() => {
-    const shouldFetchEthPrice = !awards.length || awards[0].price === 0;
-    // If there are no awards, or the award price is 0, fetch the ETH price
-    // Called once to fetch the ETH price of the initial award
-    if (shouldFetchEthPrice) {
-      const fetchEthPrice = async () => {
-        const ethPrice = await fetch(
-          `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`,
-        ).then(res => res.json());
-        setAward(prevAward => ({
-          ...prevAward,
-          price: ethPrice.ethereum.usd,
-          selectedAsset: ERC20.ETH,
-          state: 'success',
-        }));
-        setAwards([
-          { ...award, price: ethPrice.ethereum.usd, selectedAsset: ERC20.ETH, state: 'success' },
-        ]);
-        dispatch(
-          saveRound({
-            ...round,
-            awards: [
-              {
-                ...awards[0],
-                price: ethPrice.ethereum.usd,
-                selectedAsset: ERC20.ETH,
-                state: 'success',
-              },
-            ],
-          }),
-        );
-      };
-      fetchEthPrice();
-    } else {
-      // Set the award price based on the existing round data
-      setAward(awards[0]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   const shouldFetchEthPrice = !awards.length || awards[0].price === 0;
+  //   // If there are no awards, or the award price is 0, fetch the ETH price
+  //   // Called once to fetch the ETH price of the initial award
+  //   if (shouldFetchEthPrice) {
+  //     const fetchEthPrice = async () => {
+  //       const ethPrice = await fetch(
+  //         `https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd`,
+  //       ).then(res => res.json());
+  //       setAward(prevAward => ({
+  //         ...prevAward,
+  //         price: ethPrice.ethereum.usd,
+  //         selectedAsset: ERC20.ETH,
+  //         state: 'success',
+  //       }));
+  //       setAwards([
+  //         { ...award, price: ethPrice.ethereum.usd, selectedAsset: ERC20.ETH, state: 'success' },
+  //       ]);
+  //       dispatch(
+  //         saveRound({
+  //           ...round,
+  //           awards: [
+  //             {
+  //               ...awards[0],
+  //               price: ethPrice.ethereum.usd,
+  //               selectedAsset: ERC20.ETH,
+  //               state: 'success',
+  //             },
+  //           ],
+  //         }),
+  //       );
+  //     };
+  //     fetchEthPrice();
+  //   } else {
+  //     // Set the award price based on the existing round data
+  //     setAward(awards[0]);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
-  const handleSelectAward = async (token: ERC20) => {
+  const handleSelectErc20Award = async (token: ERC20) => {
     let updated: Partial<Award>;
-    let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
+    let type = AssetType.ERC20;
 
     // fetch the price of the selected asset
     const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
@@ -248,7 +248,7 @@ const SplitAwards: React.FC<{
                   isTyping={isTyping}
                   handleSwitch={handleSwitchInput}
                   handleBlur={handleAwardAddressBlur}
-                  handleSelectAward={handleSelectAward}
+                  handleSelectAward={handleSelectErc20Award}
                   handleChange={handleAwardAddressChange}
                 />
                 <Group gap={6} mt={12}>
