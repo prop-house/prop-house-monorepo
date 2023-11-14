@@ -170,10 +170,6 @@ const TimedRound: React.FC<{
 
   return (
     <>
-      <Group margin={16}>
-        <InstructionBox title="How timing works" text="Your round starts" />
-      </Group>
-
       <Group gap={6}>
         <Text type="subtitle">Round start time</Text>
 
