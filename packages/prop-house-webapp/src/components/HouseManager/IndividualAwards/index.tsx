@@ -301,44 +301,6 @@ const IndividualAwards: React.FC<{
           }}
         />
       )}
-
-      <Modal
-        modalProps={{
-          title:
-            award.state === 'success'
-              ? `Edit ${getNumberWithOrdinal(awardIdx)} place`
-              : 'Add award',
-          subtitle: '',
-          handleClose: handleModalClose,
-          body: (
-            <>
-              <AddAward
-                isTyping={isTyping}
-                setIsTyping={setIsTyping}
-                award={award}
-                selectedAward={selectedAward}
-                setAward={setAward}
-                setSelectedAward={setSelectedAward}
-                handleAddressChange={handleAddressChange}
-                handleTokenBlur={handleTokenBlur}
-                handleSelectAward={handleSelectAward}
-                handleSwitchInput={handleSwitchInput}
-                handleERC20AddressBlur={handleERC20AddressBlur}
-              />
-            </>
-          ),
-          button: (
-            <Button
-              text={'Save Changes'}
-              bgColor={ButtonColor.Purple}
-              onClick={handleSaveAward}
-              disabled={isDisabled()}
-            />
-          ),
-          setShowModal: setShowIndividualAwardModal,
-        }}
-      />
-
       <Group gap={16}>
         {awards.map((award, idx) => {
           const isSaved = editMode
