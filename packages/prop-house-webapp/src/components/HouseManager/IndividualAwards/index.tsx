@@ -5,13 +5,11 @@ import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
-import { Award, NewAward, erc20Name, erc20TokenAddresses } from '../AssetSelector';
+import { Award, NewAward, erc20TokenAddresses } from '../AssetSelector';
 import { SetStateAction, useState } from 'react';
 import Modal from '../../Modal';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../../../utils/getERC20Image';
-import { AwardType, ERC20 } from '../AwardsConfig';
-import { getUSDPrice } from '../../../utils/getUSDPrice';
 import AwardWithPlace from '../AwardWithPlace';
 import AddAward from '../AddAward';
 import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
@@ -40,7 +38,7 @@ const IndividualAwards: React.FC<{
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
 
   const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
-  const [selectedAward, setSelectedAward] = useState<string>(AwardType.ERC20);
+
   const [awardIdx, setAwardIdx] = useState(0);
 
   const provider = useEthersProvider();
@@ -48,35 +46,6 @@ const IndividualAwards: React.FC<{
   const round = useAppSelector(state => state.round.round);
 
   const isDuplicate = awards.some(a => a.address === award.address && a.tokenId === award.tokenId);
-
-  const handleSelectAward = async (token: ERC20) => {
-    let updated: Partial<Award>;
-    let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
-
-    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
-
-    // when selecting a new asset, reset the state
-    token === ERC20.OTHER
-      ? (updated = {
-          amount: 1,
-          address: '',
-          state: 'input',
-          selectedAsset: ERC20.OTHER,
-          type: AssetType.ERC20,
-        })
-      : (updated = {
-          amount: 1,
-          state: 'success',
-          selectedAsset: token,
-          name: erc20Name[token],
-          symbol: token,
-          price,
-          address: erc20TokenAddresses[token],
-          type,
-        });
-
-    setAward({ ...award, ...updated });
-  };
 
   const handleSaveAward = async () => {
     let image_url = null;
@@ -148,14 +117,12 @@ const IndividualAwards: React.FC<{
       );
     }
 
-    setSelectedAward(AwardType.ERC20);
     setAwardIdx(0);
     setShowIndividualAwardModal(false);
   };
 
   const handleModalClose = () => {
     setAwardIdx(0);
-    setSelectedAward(AwardType.ERC20);
     setShowIndividualAwardModal(false);
   };
 
@@ -215,17 +182,7 @@ const IndividualAwards: React.FC<{
                 : 'Add award',
             subtitle: '',
             handleClose: handleModalClose,
-            body: (
-              <>
-                <AddAward
-                  award={award}
-                  selectedAward={selectedAward}
-                  setAward={setAward}
-                  setSelectedAward={setSelectedAward}
-                  handleSelectAward={handleSelectAward}
-                />
-              </>
-            ),
+            body: <AddAward award={award} setAward={setAward} />,
             button: (
               <Button
                 text={'Save Changes'}

@@ -11,7 +11,7 @@ import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
-import { Award, NewAward } from '../AssetSelector';
+import { Award, NewAward, erc20Name, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import { formatCommaNum } from '../../../utils/formatCommaNum';
 import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
@@ -23,11 +23,12 @@ import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 const AddAward: React.FC<{
   award: Award;
   setAward: (award: Award) => void;
-  selectedAward: string;
-  setSelectedAward: (selectedAward: string) => void;
-  handleSelectAward: (token: ERC20) => void;
 }> = props => {
-  const { award, selectedAward, setAward, setSelectedAward, handleSelectAward } = props;
+  const { award, setAward } = props;
+
+  const [selectedAwardType, setSelectedAwardType] = useState<string>(
+    award.type === AssetType.ERC721 ? AwardType.ERC721 : AwardType.ERC20,
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const provider = useEthersProvider();
@@ -70,7 +71,7 @@ const AddAward: React.FC<{
   };
 
   const handleSelectAwardType = (selectedType: AwardType) => {
-    setSelectedAward(selectedType);
+    setSelectedAwardType(selectedType);
 
     // if you click the current award button, don't reset state
     if (selectedType.replace('-', '') === AssetType[award.type]) return;
@@ -82,6 +83,35 @@ const AddAward: React.FC<{
     } else if (selectedType === AwardType.ERC1155) {
       setAward({ ...NewAward, id: award.id, type: AssetType.ERC1155 });
     }
+  };
+
+  const handleSelectAward = async (token: ERC20) => {
+    let updated: Partial<Award>;
+    let type = token === ERC20.ETH ? AssetType.ETH : AssetType.ERC20;
+
+    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
+
+    // when selecting a new asset, reset the state
+    token === ERC20.OTHER
+      ? (updated = {
+          amount: 1,
+          address: '',
+          state: 'input',
+          selectedAsset: ERC20.OTHER,
+          type: AssetType.ERC20,
+        })
+      : (updated = {
+          amount: 1,
+          state: 'success',
+          selectedAsset: token,
+          name: erc20Name[token],
+          symbol: token,
+          price,
+          address: erc20TokenAddresses[token],
+          type,
+        });
+
+    setAward({ ...award, ...updated });
   };
 
   // Get address type by calling verification contract
@@ -145,7 +175,7 @@ const AddAward: React.FC<{
         <Button
           classNames={classes.strategyButton}
           text={type}
-          bgColor={selectedAward === type ? ButtonColor.Purple : ButtonColor.White}
+          bgColor={selectedAwardType === type ? ButtonColor.Purple : ButtonColor.White}
           onClick={() => handleSelectAwardType(type)}
         />
       </div>
@@ -286,7 +316,7 @@ const AddAward: React.FC<{
     ),
   };
 
-  const renderContent = () => awardContent[selectedAward as AwardType];
+  const renderContent = () => awardContent[selectedAwardType as AwardType];
 
   return (
     <div className={classes.container}>
