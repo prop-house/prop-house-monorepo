@@ -42,9 +42,7 @@ const AwardsConfig = () => {
         title="What will the winners be awarded?"
         subtitle="Specify the awards paid out for the winning props. Any ties will go to the prop created first."
       />
-
       <AssetSelector />
-
       <Footer />
     </>
   );
