@@ -82,7 +82,8 @@ const initialState: RoundState = {
   round: initialRound,
   // steps are disabled by default, and are enabled only when the user
   // completes the step criteria (e.g. fills out all required fields)
-  stepDisabledArray: [true, true, true, true, true, true],
+  // stepDisabledArray: [true, true, true, true, true, true],
+  stepDisabledArray: [false, false, false, false, false, false],
 };
 
 // this function removes any awards that are not completed to
