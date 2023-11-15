@@ -1,18 +1,15 @@
 import { FC, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
 import { AssetType } from '@prophouse/sdk-react';
-import { ERC20 } from '../AwardsConfig';
 import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
 import { NewRound } from '../../../state/slices/round';
+import { ERC20 } from '../AwardsConfig';
 
 /**
  * @function changeAwardType - changes the award type to split or individual, and resets the awards
  *
- * @components
- * @name DualSectionSelector - the wrapper for the two sections, handles changing the award type
- * @name Section - the two sections, split and individual
- * @name SplitAwards - the split awards section
+ * @component
  * @name IndividualAwards - the individual awards section
  *
  * @notes
@@ -35,9 +32,7 @@ export interface Award {
   symbol: string;
   amount: number;
   decimals: number;
-  selectedAsset: ERC20 | null;
-  price: number;
-  state: 'input' | 'success' | 'error' | 'dummy';
+  state: 'dummy' | 'editing' | 'valid' | 'saved' | 'error' | 'input';
   error?: string;
   allocated: number;
 }
@@ -50,11 +45,9 @@ export const NewAward: Award = {
   image: '/manager/eth.png',
   name: 'ETH',
   symbol: 'ETH',
-  selectedAsset: null,
-  amount: 1,
+  amount: 0,
   decimals: 18,
-  state: 'input',
-  price: 0,
+  state: 'dummy',
   error: '',
   allocated: 0,
 };
@@ -64,6 +57,7 @@ export const erc20TokenAddresses: { [key in ERC20]: string } = {
   [ERC20.APE]: '0x5242CD84b432969FeEF70E0dFa5725418dA38c20',
   [ERC20.OTHER]: '',
 };
+
 export const erc20Name: { [key in ERC20]: string } = {
   [ERC20.USDC]: 'USD Coin',
   [ERC20.APE]: 'Ape Coin',

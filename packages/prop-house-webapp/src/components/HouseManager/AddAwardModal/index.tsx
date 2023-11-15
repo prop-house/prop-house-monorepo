@@ -1,9 +1,8 @@
-import classes from './AddAward.module.css';
-import React, { useRef, useState } from 'react';
+import classes from './AddAwardModal.module.css';
+import React, { SetStateAction, useRef, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';
-import { ERC20 } from '../AwardsConfig';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
@@ -11,28 +10,44 @@ import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
-import { Award, NewAward, erc20Name, erc20TokenAddresses } from '../AssetSelector';
+import { Award, erc20Name, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
-import ViewOnEtherscanButton from '../ViewOnEtherscanButton';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
-import { getUSDPrice } from '../../../utils/getUSDPrice';
 import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 import { assetTypeString } from '../../../utils/assetTypeToString';
+import Modal from '../../Modal';
+import { ERC20 } from '../AwardsConfig';
 
-const AddAward: React.FC<{
+const AddAwardModal: React.FC<{
   award: Award;
-  setAward: (award: Award) => void;
+  modifyAward: React.Dispatch<SetStateAction<Award | undefined>>;
+  handleAddOrSaveAward: (award: Award) => void;
+  closeModal: React.Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { award, setAward } = props;
+  const { award, modifyAward: setAward, handleAddOrSaveAward, closeModal } = props;
 
-  const verifiedAddress = award.state === 'success';
-  const [selectedAwardType, setSelectedAwardType] = useState<AssetType>(AssetType.ETH);
+  const verifiedAddress = award.state === 'valid';
   const [isTyping, setIsTyping] = useState(false);
+
+  const [selectedAwardType, setSelectedAwardType] = useState<AssetType>(
+    award ? award.type : AssetType.ETH,
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const provider = useEthersProvider();
   const { data } = useAddressType(award.address);
+
+  const isDisabled = () => {
+    const isEth = award.type === AssetType.ETH;
+    const isErc20 = award.type === AssetType.ERC20;
+    const isErc1155 = award.type === AssetType.ERC1155;
+    const isErc721 = award.type === AssetType.ERC721;
+
+    if (isErc20) return award.address === '' || award.amount <= 0;
+    if (isEth) return award.amount <= 0;
+    if (isErc1155 || isErc721) return award.tokenId === '';
+  };
 
   const handleAddressChange = (value: string) => {
     setIsTyping(true);
@@ -57,8 +72,7 @@ const AddAward: React.FC<{
     } else {
       // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
       const { name, image, symbol } = await getTokenInfo(award.address, provider);
-      const { price } = await getUSDPrice(award.type, award.address, provider);
-      setAward({ ...award, state: 'success', name, image, symbol, price });
+      setAward({ ...award, state: 'valid', name, image, symbol });
     }
   };
 
@@ -67,40 +81,6 @@ const AddAward: React.FC<{
 
     const { image } = await getTokenIdImage(award.address, id, provider);
     setAward({ ...award, error: '', image });
-  };
-
-  const handleSelectAwardType = (selectedType: AssetType) => {
-    setSelectedAwardType(selectedType);
-    setAward({ ...NewAward, id: award.id, type: award.type });
-  };
-
-  const handleSelectErc20Award = async (token: ERC20) => {
-    let updated: Partial<Award>;
-    let type = AssetType.ERC20;
-
-    const { price } = await getUSDPrice(type, erc20TokenAddresses[token], provider);
-
-    // when selecting a new asset, reset the state
-    token === ERC20.OTHER
-      ? (updated = {
-          amount: 1,
-          address: '',
-          state: 'input',
-          selectedAsset: ERC20.OTHER,
-          type: AssetType.ERC20,
-        })
-      : (updated = {
-          amount: 1,
-          state: 'success',
-          selectedAsset: token,
-          name: erc20Name[token],
-          symbol: token,
-          price,
-          address: erc20TokenAddresses[token],
-          type,
-        });
-
-    setAward({ ...award, ...updated });
   };
 
   const handleAddressBlur = async () => {
@@ -126,8 +106,36 @@ const AddAward: React.FC<{
       // address is valid, and matches the expected type, so get token info
       const { name, image, symbol } = await getTokenInfo(award.address, provider);
 
-      setAward({ ...award, state: 'success', name, image, symbol });
+      setAward({ ...award, state: 'valid', name, image, symbol });
     }
+  };
+
+  const handleSelectAwardType = (selectedType: AssetType) => {
+    setSelectedAwardType(selectedType);
+    let updated = { ...award, type: selectedType, amount: 0 };
+    // handle ETH change
+    if (selectedType === AssetType.ETH) updated.symbol = 'ETH';
+    setAward(updated);
+  };
+
+  const handleSelectErc20Award = async (token: ERC20) => {
+    let updated: Partial<Award>;
+
+    // when selecting a new asset, reset the state
+    token === ERC20.OTHER
+      ? (updated = {
+          address: '',
+          state: 'input',
+          type: AssetType.ERC20,
+        })
+      : (updated = {
+          name: erc20Name[token],
+          symbol: token,
+          address: erc20TokenAddresses[token],
+          type: AssetType.ERC20,
+        });
+
+    setAward({ ...award, ...updated });
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,11 +176,9 @@ const AddAward: React.FC<{
         <Group gap={16}>
           <Group gap={6} classNames={classes.fullWidth}>
             <Text type="subtitle">Amount</Text>
-
             <input
               className={classes.votesInput}
-              value={award.amount}
-              placeholder="1"
+              defaultValue={award.amount ? award.amount : 0}
               type="number"
               onChange={handleAmountChange}
               onPaste={handleInputPaste}
@@ -193,19 +199,13 @@ const AddAward: React.FC<{
               handleSelectAward={handleSelectErc20Award}
               handleChange={handleAddressChange}
             />
-            {award.selectedAsset === ERC20.OTHER && (
-              // allows user to look up the address on etherscan
-              <ViewOnEtherscanButton address={award.address} isDisabled={!verifiedAddress} />
-            )}
           </Group>
 
           <Group gap={6} classNames={classes.fullWidth}>
             <Text type="subtitle">Amount</Text>
-
             <input
               className={classes.votesInput}
-              value={award.amount}
-              placeholder="1"
+              defaultValue={award.amount ? award.amount : 0}
               type="number"
               onChange={handleAmountChange}
               onPaste={handleInputPaste}
@@ -307,24 +307,41 @@ const AddAward: React.FC<{
   };
 
   return (
-    <div className={classes.container}>
-      <Group row gap={8} classNames={classes.buttons}>
-        {/** Award type buttons */}
-        {[AssetType.ETH, AssetType.ERC20, AssetType.ERC721, AssetType.ERC1155].map(type => (
-          <div className={classes.stratBtnContainer} key={type}>
-            <Button
-              classNames={classes.strategyButton}
-              text={assetTypeString(type)}
-              bgColor={selectedAwardType === type ? ButtonColor.Purple : ButtonColor.White}
-              onClick={() => handleSelectAwardType(type)}
-            />
+    <Modal
+      modalProps={{
+        title: award.state === 'editing' ? 'Edit award' : 'Add award',
+        subtitle: '',
+        body: (
+          <div className={classes.container}>
+            <Group row gap={8} classNames={classes.buttons}>
+              {/** Award type buttons */}
+              {[AssetType.ETH, AssetType.ERC20, AssetType.ERC721, AssetType.ERC1155].map(type => (
+                <div className={classes.stratBtnContainer} key={type}>
+                  <Button
+                    classNames={classes.strategyButton}
+                    text={assetTypeString(type)}
+                    bgColor={selectedAwardType === type ? ButtonColor.Purple : ButtonColor.White}
+                    onClick={() => handleSelectAwardType(type)}
+                  />
+                </div>
+              ))}
+            </Group>
+            <Divider />
+            <Group>{awardContent(selectedAwardType)}</Group>
           </div>
-        ))}
-      </Group>
-      <Divider />
-      <Group>{awardContent(selectedAwardType)}</Group>
-    </div>
+        ),
+        button: (
+          <Button
+            text={award.state === 'editing' ? 'Save changes' : 'Add award'}
+            bgColor={ButtonColor.Purple}
+            onClick={() => handleAddOrSaveAward(award)}
+            disabled={isDisabled()}
+          />
+        ),
+        setShowModal: closeModal,
+      }}
+    />
   );
 };
 
-export default AddAward;
+export default AddAwardModal;

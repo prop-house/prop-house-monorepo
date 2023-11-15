@@ -82,18 +82,15 @@ const initialState: RoundState = {
   round: initialRound,
   // steps are disabled by default, and are enabled only when the user
   // completes the step criteria (e.g. fills out all required fields)
-  // stepDisabledArray: [true, true, true, true, true, true],
-  stepDisabledArray: [false, false, false, false, false, false],
+  stepDisabledArray: [true, true, true, true, true, true],
 };
 
 // this function removes any awards that are not completed to
 // prevent the user from creating a round with incomplete awards
 const removeIncompleteAwards = (round: NewRound) => {
-  if (!round.splitAwards) {
-    const filteredAwards = round.awards.filter(award => award.state === 'success');
-    round.awards = filteredAwards;
-    round.numWinners = filteredAwards.length;
-  }
+  const filteredAwards = round.awards.filter(award => award.state === 'saved');
+  round.awards = filteredAwards;
+  round.numWinners = filteredAwards.length;
 };
 
 export const roundSlice = createSlice({

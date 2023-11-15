@@ -1,12 +1,12 @@
 import classes from './ERC20Buttons.module.css';
-import React from 'react';
+import React, { useState } from 'react';
 import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../../../utils/getERC20Image';
-import { ERC20 } from '../AwardsConfig';
-import { Award } from '../AssetSelector';
+import { Award, erc20TokenAddresses } from '../AssetSelector';
 import Divider from '../../Divider';
+import { ERC20 } from '../AwardsConfig';
 
 /**
  * @overview
@@ -15,9 +15,7 @@ import Divider from '../../Divider';
  * @see erc20Tokens - The list of predefined ERC20 tokens to map over & display
  */
 
-export const erc20Tokens: ERC20[] = [ERC20.USDC, ERC20.APE, ERC20.OTHER];
-
-const ERC20Buttons: React.FC<{
+export const ERC20Buttons: React.FC<{
   award: Award;
   isTyping: boolean;
   handleBlur: () => void;
@@ -27,34 +25,40 @@ const ERC20Buttons: React.FC<{
 }> = props => {
   const { award, isTyping, handleBlur, handleChange, handleSwitch, handleSelectAward } = props;
 
-  const renderTokenButtons = () => {
-    return erc20Tokens.map(token => (
-      <Group row gap={4} key={token}>
-        <button
-          className={clsx(
-            classes.strategyButton,
-            classes.tokenButton,
-            award.selectedAsset === token ? classes.btnPurpleBg : classes.btnWhiteBg,
-          )}
-          onClick={() => handleSelectAward(token)}
-        >
-          {token !== ERC20.OTHER && (
-            <img className={classes.tokenImage} src={getERC20Image(token)} alt="token" />
-          )}
-          <span>{token}</span>
-        </button>
-      </Group>
-    ));
-  };
+  const erc20Tokens: ERC20[] = [ERC20.USDC, ERC20.APE, ERC20.OTHER];
+
+  const [selectedOther, setSelectedOther] = useState(false);
 
   return (
     <>
       <Group row gap={8} classNames={classes.buttons}>
-        {renderTokenButtons()}
+        {erc20Tokens.map(token => (
+          <Group row gap={4} key={token}>
+            <button
+              className={clsx(
+                classes.strategyButton,
+                classes.tokenButton,
+                (award.address === erc20TokenAddresses[token] && token !== ERC20.OTHER) ||
+                  (selectedOther && token === ERC20.OTHER)
+                  ? classes.btnPurpleBg
+                  : classes.btnWhiteBg,
+              )}
+              onClick={() => {
+                handleSelectAward(token);
+                token === ERC20.OTHER && setSelectedOther(true);
+              }}
+            >
+              {token !== ERC20.OTHER && (
+                <img className={classes.tokenImage} src={getERC20Image(token)} alt="token" />
+              )}
+              <span>{token}</span>
+            </button>
+          </Group>
+        ))}
       </Group>
 
       {/* the custom address input */}
-      {award.selectedAsset === ERC20.OTHER && (
+      {selectedOther && (
         <>
           <Divider />
           <Group gap={6}>

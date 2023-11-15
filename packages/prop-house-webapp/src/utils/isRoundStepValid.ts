@@ -25,7 +25,7 @@ const isStep3Valid = (round: NewRound) => round.voters.length > 0;
 // AWARDS
 // At least one valid award
 const isStep4Valid = (round: NewRound) =>
-  round.awards.length > 0 && round.awards.some(a => a.state === 'success');
+  round.awards.length > 0 && round.awards.some(a => a.state === 'saved');
 
 // TIMING
 // A start time and both period durations must be set

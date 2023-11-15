@@ -14,6 +14,11 @@ import trimEthAddress from '../../../utils/trimEthAddress';
 const AwardRow: React.FC<{ award: Award }> = props => {
   const { award } = props;
 
+  const isEth = award.type === AssetType.ETH;
+  const isErc20 = award.type === AssetType.ERC20;
+  const isErc1155 = award.type === AssetType.ERC1155;
+  const isErc721 = award.type === AssetType.ERC721;
+
   return (
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
@@ -21,9 +26,9 @@ const AwardRow: React.FC<{ award: Award }> = props => {
           <img src={award.image ? award.image : '/manager/fallback.png'} alt={award.name} />
 
           <span>
-            {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&
-              `${formatCommaNum(award.amount)} ${award.symbol || award.name}`}
-            {(award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) &&
+            {(isEth || isErc20) &&
+              `${formatCommaNum(award.amount, isEth ? 3 : 2)} ${award.symbol || award.name}`}
+            {(isErc1155 || isErc721) &&
               `${award.name} #${
                 award.tokenId &&
                 (award.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
@@ -32,10 +37,7 @@ const AwardRow: React.FC<{ award: Award }> = props => {
         </div>
 
         <div className={classes.votesText}>
-          {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&
-            `$${formatCommaNum(award.price * award.amount)}`}
-          {(award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) &&
-            trimEthAddress(award.address)}
+          {(isErc1155 || isErc721) && trimEthAddress(award.address)}
         </div>
       </div>
     </Group>

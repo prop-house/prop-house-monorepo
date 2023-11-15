@@ -5,19 +5,17 @@ import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
-import { Award, NewAward, erc20TokenAddresses } from '../AssetSelector';
+import { Award, NewAward } from '../AssetSelector';
 import { SetStateAction, useState } from 'react';
-import Modal from '../../Modal';
 import { useAppSelector } from '../../../hooks';
 import { getERC20Image } from '../../../utils/getERC20Image';
 import AwardWithPlace from '../AwardWithPlace';
-import AddAward from '../AddAward';
-import getNumberWithOrdinal from '../../../utils/getNumberWithOrdinal';
 import AwardRow from '../AwardRow';
 import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 import { saveRound } from '../../../state/thunks';
 import { v4 as uuidv4 } from 'uuid';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
+import AddAwardModal from '../AddAwardModal';
 
 /**
  * @see editMode is used to determine whether or not we're editing from Step 6,
@@ -36,20 +34,24 @@ const IndividualAwards: React.FC<{
   const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
-  const [award, setAward] = useState({ ...NewAward, type: AssetType.ERC20 });
-  const [awardIdx, setAwardIdx] = useState(0);
+  const [awardBeingAddedOrEdited, setAwardBeingAddedOrEdited] = useState<Award>();
 
   const provider = useEthersProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const isDuplicate = awards.some(a => a.address === award.address && a.tokenId === award.tokenId);
+  const handleSaveAward = async (award: Award) => {
+    let imgUrl = null;
 
-  const handleSaveAward = async () => {
-    let image_url = null;
+    const isDuplicateErc721 = awards.some(
+      a =>
+        award.type === AssetType.ERC721 &&
+        a.address === award.address &&
+        a.tokenId === award.tokenId,
+    );
 
-    if (isDuplicate) {
-      setAward({
+    if (isDuplicateErc721) {
+      setAwardBeingAddedOrEdited({
         ...award,
         state: 'error',
         error: `An award with ${award.name} #${award.tokenId} already exists`,
@@ -58,47 +60,42 @@ const IndividualAwards: React.FC<{
     }
 
     // We need to fetch the image for ERC721 and ERC1155 tokens if the user does not blur the input, which also fetches the image
-    if (award.type === AssetType.ERC721 || (award.type === AssetType.ERC1155 && !award.image)) {
+    if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
       try {
         const { image } = await getTokenIdImage(award.address, award.tokenId!, provider);
-        image_url = image;
+        imgUrl = image;
       } catch (error) {
         console.error('Error fetching image', error);
       }
     }
 
+    if (award.type === AssetType.ERC20) {
+      imgUrl = getERC20Image(award.symbol as any);
+    }
+
+    if (award.type === AssetType.ETH) {
+      imgUrl = '/manager/eth.png';
+    }
+
     let updated: Partial<Award>;
 
     updated = {
-      address:
-        award.selectedAsset === null ? award.address : erc20TokenAddresses[award.selectedAsset],
       amount: award.amount,
       id: award.id,
-      image:
-        award.selectedAsset === null
-          ? award.type === AssetType.ERC721 || award.type === AssetType.ERC1155
-            ? image_url
-            : award.image
-          : getERC20Image(award.selectedAsset!),
+      image: imgUrl,
       name: award.name,
-      price: award.price,
-      selectedAsset: award.selectedAsset,
-      state: 'success',
+      state: 'saved',
       symbol: award.symbol,
       tokenId: award.tokenId,
       type: award.type,
     };
 
     const updatedAwards = awards.map(a => {
-      if (a.id === award.id) {
-        return { ...a, ...updated };
-      } else {
-        return { ...a };
-      }
+      return a.id === award.id ? { ...a, ...updated } : { ...a };
     });
 
     if (editMode) {
-      const filteredAwards = updatedAwards.filter(award => award.state === 'success');
+      const filteredAwards = updatedAwards.filter(award => award.state === 'saved');
       setEditedRound!({
         ...editedRound!,
         numWinners: filteredAwards.length,
@@ -115,16 +112,10 @@ const IndividualAwards: React.FC<{
       );
     }
 
-    setAwardIdx(0);
     setShowIndividualAwardModal(false);
   };
 
-  const handleModalClose = () => {
-    setAwardIdx(0);
-    setShowIndividualAwardModal(false);
-  };
-
-  const addNewAward = () => {
+  const addNewAwardFiller = () => {
     const updatedAwards = [...awards, { ...NewAward, id: uuidv4() }];
 
     if (editMode) {
@@ -143,7 +134,7 @@ const IndividualAwards: React.FC<{
     let updated: Award[] = awards.filter(award => award.id !== id);
 
     if (editMode) {
-      const filteredAwards = updated.filter(award => award.state === 'success');
+      const filteredAwards = updated.filter(award => award.state === 'saved');
 
       setEditedRound!({
         ...editedRound!,
@@ -157,81 +148,46 @@ const IndividualAwards: React.FC<{
     }
   };
 
-  const isDisabled = () => {
-    if (award.state !== 'success') {
-      return true;
-    }
-
-    if (award.type === AssetType.ERC20) {
-      return award.amount <= 0 || award.selectedAsset === null;
-    } else if (award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) {
-      return award.tokenId === '';
-    }
-  };
-
   return (
     <>
-      {showIndividualAwardModal && (
-        <Modal
-          modalProps={{
-            title:
-              award.state === 'success'
-                ? `Edit ${getNumberWithOrdinal(awardIdx)} place`
-                : 'Add award',
-            subtitle: '',
-            handleClose: handleModalClose,
-            body: <AddAward award={award} setAward={setAward} />,
-            button: (
-              <Button
-                text={'Save Changes'}
-                bgColor={ButtonColor.Purple}
-                onClick={handleSaveAward}
-                disabled={isDisabled()}
-              />
-            ),
-            setShowModal: setShowIndividualAwardModal,
-          }}
+      {showIndividualAwardModal && awardBeingAddedOrEdited && (
+        <AddAwardModal
+          award={awardBeingAddedOrEdited}
+          modifyAward={setAwardBeingAddedOrEdited}
+          handleAddOrSaveAward={handleSaveAward}
+          closeModal={setShowIndividualAwardModal}
         />
       )}
       <Group gap={16}>
         {awards.map((award, idx) => {
-          const isSaved = editMode
-            ? awards.some(
-                savedAward => savedAward.id === award.id && savedAward.state === 'success',
-              )
-            : round.awards.some(
-                savedAward => savedAward.id === award.id && savedAward.state === 'success',
-              );
-
           return (
             <Group key={award.id} gap={8}>
               <AwardWithPlace place={idx + 1} />
               <Group row gap={8}>
-                {isSaved ? (
-                  <>
-                    <AwardRow award={award} />
-                    <Button
-                      text="Edit"
-                      classNames={classes.awardBtn}
-                      bgColor={ButtonColor.White}
-                      onClick={() => {
-                        setAwardIdx(idx + 1);
-                        setShowIndividualAwardModal(true);
-                        setAward(awards[idx]);
-                      }}
-                    />
-                  </>
-                ) : (
+                {award.state !== 'dummy' && <AwardRow award={award} />}
+                {/** add award or edit btns */}
+                {award.state === 'dummy' ? (
                   <Button
                     text="Add award"
                     bgColor={ButtonColor.White}
                     classNames={classes.awardBtn}
                     onClick={() => {
                       setShowIndividualAwardModal(true);
-                      setAward(awards[idx]);
+                      setAwardBeingAddedOrEdited(awards[idx]);
+                    }}
+                  />
+                ) : (
+                  <Button
+                    text="Edit"
+                    classNames={classes.awardBtn}
+                    bgColor={ButtonColor.White}
+                    onClick={() => {
+                      setShowIndividualAwardModal(true);
+                      setAwardBeingAddedOrEdited({ ...awards[idx], state: 'editing' });
                     }}
                   />
                 )}
+                {/** remove btn (if not first place award) */}
                 {idx !== 0 && (
                   <Button
                     text="Remove"
@@ -243,7 +199,7 @@ const IndividualAwards: React.FC<{
             </Group>
           );
         })}
-        <Text type="link" onClick={addNewAward}>
+        <Text type="link" onClick={addNewAwardFiller}>
           Add more awards
         </Text>
       </Group>
