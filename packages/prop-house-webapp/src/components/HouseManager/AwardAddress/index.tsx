@@ -15,7 +15,7 @@ const AwardAddress: React.FC<{
 }> = props => {
   const { award, isTyping, handleBlur, handleChange, handleSwitch, placeholder } = props;
 
-  const verifiedAddress = award.state === 'success';
+  const verifiedAddress = award.state === 'valid';
 
   return (
     <>
