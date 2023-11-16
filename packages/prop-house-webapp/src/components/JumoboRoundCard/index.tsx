@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import AwardLabels from '../AwardLabels';
 import { useEffect, useState } from 'react';
 import Modal from '../Modal';
-import useFullRoundAwards from '../../hooks/useFullRoundAwards';
+import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
 import { timeFromNow } from '../../utils/timeFromNow';
@@ -26,7 +26,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [loading, fullRoundAwards] = useFullRoundAwards(round.config.awards);
+  const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
@@ -89,8 +89,8 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
       {loading ? (
         <LoadingIndicator />
       ) : (
-        fullRoundAwards &&
-        fullRoundAwards.map((award, i) => {
+        assetsWithMetadata &&
+        assetsWithMetadata.map((award, i) => {
           return (
             <div key={i}>
               <span className={classes.place}>

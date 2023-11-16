@@ -1,10 +1,10 @@
 import classes from './AwardLabels.module.css';
-import { RoundAward } from '@prophouse/sdk-react';
+import { Asset } from '@prophouse/sdk-react';
 import AwardLabel, { MoreAwardsLabel } from '../AwardLabel';
 import { Dispatch, SetStateAction } from 'react';
 
 const AwardLabels: React.FC<{
-  awards: RoundAward[];
+  awards: Asset[];
   setShowModal: Dispatch<SetStateAction<boolean>>;
   size?: number;
 }> = props => {

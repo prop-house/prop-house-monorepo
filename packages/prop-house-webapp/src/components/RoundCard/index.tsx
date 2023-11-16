@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import AwardLabels from '../AwardLabels';
 import { useState } from 'react';
 import Modal from '../Modal';
-import useFullRoundAwards from '../../hooks/useFullRoundAwards';
+import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import RoundCardStatusBar from '../RoundCardStatusBar';
 
@@ -15,15 +15,15 @@ const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolea
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [loading, fullRoundAwards] = useFullRoundAwards(round.config.awards);
+  const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
 
   const awardsModalContent = (
     <div className={classes.awardsModalContentContainer}>
       {loading ? (
         <LoadingIndicator />
       ) : (
-        fullRoundAwards &&
-        fullRoundAwards.map((award, i) => {
+        assetsWithMetadata &&
+        assetsWithMetadata.map((asset, i) => {
           return (
             <div key={i}>
               <span className={classes.place}>
@@ -31,7 +31,7 @@ const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolea
                 {i < 2 ? 'st' : 'th'} place:
               </span>{' '}
               <span className={classes.amountAndSymbol}>
-                {award.parsedAmount} {award.symbol}
+                {asset.parsedAmount} {asset.symbol}
               </span>
             </div>
           );

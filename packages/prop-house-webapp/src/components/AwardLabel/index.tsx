@@ -1,11 +1,11 @@
 import classes from './AwardLabel.module.css';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { RoundAward } from '@prophouse/sdk-react';
+import { Asset } from '@prophouse/sdk-react';
 import { HiTrophy } from 'react-icons/hi2';
 import LoadingIndicator from '../LoadingIndicator';
 import { truncateThousands } from '../../utils/truncateThousands';
 import { Dispatch, SetStateAction } from 'react';
-import useFullRoundAwards from '../../hooks/useFullRoundAwards';
+import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import { trophyColors } from '../../utils/trophyColors';
 
 export const MoreAwardsLabel: React.FC<{
@@ -31,7 +31,7 @@ export const MoreAwardsLabel: React.FC<{
   );
 };
 
-const AwardLabel: React.FC<{ award: RoundAward; place: number; size?: number }> = props => {
+const AwardLabel: React.FC<{ award: Asset; place: number; size?: number }> = props => {
   const { award, place, size } = props;
   const iconFill =
     place === 1
@@ -40,7 +40,7 @@ const AwardLabel: React.FC<{ award: RoundAward; place: number; size?: number }> 
       ? trophyColors('second')
       : trophyColors('third');
 
-  const [loading, fullRoundAwards] = useFullRoundAwards([award]);
+  const [loading, fullRoundAwards] = useAssetsWithMetadata([award]);
 
   return (
     <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.ten} classNames={classes.card}>
