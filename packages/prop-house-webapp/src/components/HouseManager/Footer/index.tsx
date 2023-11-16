@@ -89,18 +89,7 @@ const Footer: React.FC = () => {
       }
     };
 
-    let awards: Asset[] = [];
-
-    // Split Awards: each winner gets the same award
-    if (round.splitAwards) {
-      awards = Array.from({ length: round.numWinners }, () => round.awards)
-        .flat()
-        .map(createAward);
-    } else {
-      // Individual Awards: map each award to an Asset
-      // the number of winners is equal to the number of awards
-      awards = round.awards.map(createAward);
-    }
+    let awards: Asset[] = round.awards.map(createAward);
 
     const roundInfo: RoundInfo<RoundType> = {
       roundType: round.roundType,

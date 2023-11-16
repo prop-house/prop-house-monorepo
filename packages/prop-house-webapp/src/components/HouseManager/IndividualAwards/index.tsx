@@ -121,7 +121,6 @@ const IndividualAwards: React.FC<{
     if (editMode) {
       setEditedRound!({
         ...editedRound!,
-        splitAwards: false,
         numWinners: updatedAwards.length,
         awards: updatedAwards,
       });
@@ -138,7 +137,6 @@ const IndividualAwards: React.FC<{
 
       setEditedRound!({
         ...editedRound!,
-        splitAwards: false,
         numWinners: filteredAwards.length,
         awards: filteredAwards,
       });

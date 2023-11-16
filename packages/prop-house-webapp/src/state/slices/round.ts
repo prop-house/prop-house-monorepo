@@ -50,7 +50,6 @@ export interface NewRound {
   description: string;
   voters: GovPowerStrategyConfig[];
   awards: Award[];
-  splitAwards: boolean;
   roundType: RoundType;
   funding: Funding;
 }
@@ -66,7 +65,6 @@ export const initialRound: NewRound = {
   description: '',
   voters: [],
   awards: [NewAward],
-  splitAwards: true,
   roundType: RoundType.TIMED,
   funding: { tokens: [], depositingFunds: false },
 };
