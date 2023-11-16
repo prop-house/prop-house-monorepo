@@ -16,12 +16,6 @@ import AssetSelector from '../AssetSelector';
  * @see ERC20 - common ERC20 tokens, or custom erc-20 address
  */
 
-export enum ERC20 {
-  USDC = 'USDC',
-  APE = 'APE',
-  OTHER = 'Other',
-}
-
 const AwardsConfig = () => {
   const round = useAppSelector(state => state.round.round);
 

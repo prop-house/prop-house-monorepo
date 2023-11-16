@@ -4,9 +4,8 @@ import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../../../utils/getERC20Image';
-import { Award, erc20TokenAddresses } from '../AssetSelector';
+import { Award, DefaultERC20s, erc20TokenAddresses } from '../AssetSelector';
 import Divider from '../../Divider';
-import { ERC20 } from '../AwardsConfig';
 
 /**
  * @overview
@@ -21,11 +20,11 @@ export const ERC20Buttons: React.FC<{
   handleBlur: () => void;
   handleSwitch: () => void;
   handleChange: (value: string) => void;
-  handleSelectAward: (token: ERC20) => void;
+  handleSelectAward: (token: DefaultERC20s) => void;
 }> = props => {
   const { award, isTyping, handleBlur, handleChange, handleSwitch, handleSelectAward } = props;
 
-  const erc20Tokens: ERC20[] = [ERC20.USDC, ERC20.APE, ERC20.OTHER];
+  const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.APE, DefaultERC20s.OTHER];
 
   const [selectedOther, setSelectedOther] = useState(false);
 
@@ -38,17 +37,17 @@ export const ERC20Buttons: React.FC<{
               className={clsx(
                 classes.strategyButton,
                 classes.tokenButton,
-                (award.address === erc20TokenAddresses[token] && token !== ERC20.OTHER) ||
-                  (selectedOther && token === ERC20.OTHER)
+                (award.address === erc20TokenAddresses[token] && token !== DefaultERC20s.OTHER) ||
+                  (selectedOther && token === DefaultERC20s.OTHER)
                   ? classes.btnPurpleBg
                   : classes.btnWhiteBg,
               )}
               onClick={() => {
                 handleSelectAward(token);
-                token === ERC20.OTHER && setSelectedOther(true);
+                token === DefaultERC20s.OTHER && setSelectedOther(true);
               }}
             >
-              {token !== ERC20.OTHER && (
+              {token !== DefaultERC20s.OTHER && (
                 <img className={classes.tokenImage} src={getERC20Image(token)} alt="token" />
               )}
               <span>{token}</span>

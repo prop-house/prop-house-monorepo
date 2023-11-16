@@ -10,14 +10,13 @@ import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
-import { Award, erc20Name, erc20TokenAddresses } from '../AssetSelector';
+import { Award, DefaultERC20s, erc20Name, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 import { assetTypeString } from '../../../utils/assetTypeToString';
 import Modal from '../../Modal';
-import { ERC20 } from '../AwardsConfig';
 
 const AddAwardModal: React.FC<{
   award: Award;
@@ -118,11 +117,11 @@ const AddAwardModal: React.FC<{
     setAward(updated);
   };
 
-  const handleSelectErc20Award = async (token: ERC20) => {
+  const handleSelectErc20Award = async (token: DefaultERC20s) => {
     let updated: Partial<Award>;
 
     // when selecting a new asset, reset the state
-    token === ERC20.OTHER
+    token === DefaultERC20s.OTHER
       ? (updated = {
           address: '',
           state: 'input',

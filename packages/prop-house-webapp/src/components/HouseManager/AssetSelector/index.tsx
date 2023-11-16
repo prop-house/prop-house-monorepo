@@ -4,7 +4,6 @@ import { AssetType } from '@prophouse/sdk-react';
 import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
 import { NewRound } from '../../../state/slices/round';
-import { ERC20 } from '../AwardsConfig';
 
 /**
  * @function changeAwardType - changes the award type to split or individual, and resets the awards
@@ -52,16 +51,22 @@ export const NewAward: Award = {
   allocated: 0,
 };
 
-export const erc20TokenAddresses: { [key in ERC20]: string } = {
-  [ERC20.USDC]: '0x0d6B12630Db150559822bb5297227C107332A8bf',
-  [ERC20.APE]: '0x5242CD84b432969FeEF70E0dFa5725418dA38c20',
-  [ERC20.OTHER]: '',
+export enum DefaultERC20s {
+  USDC = 'USDC',
+  APE = 'APE',
+  OTHER = 'Other',
+}
+
+export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
+  [DefaultERC20s.USDC]: '0x0d6B12630Db150559822bb5297227C107332A8bf',
+  [DefaultERC20s.APE]: '0x5242CD84b432969FeEF70E0dFa5725418dA38c20',
+  [DefaultERC20s.OTHER]: '',
 };
 
-export const erc20Name: { [key in ERC20]: string } = {
-  [ERC20.USDC]: 'USD Coin',
-  [ERC20.APE]: 'Ape Coin',
-  [ERC20.OTHER]: '',
+export const erc20Name: { [key in DefaultERC20s]: string } = {
+  [DefaultERC20s.USDC]: 'USD Coin',
+  [DefaultERC20s.APE]: 'Ape Coin',
+  [DefaultERC20s.OTHER]: '',
 };
 
 const AssetSelector: FC<{
