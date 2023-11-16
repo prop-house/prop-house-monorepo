@@ -13,6 +13,6 @@ export const getERC20Image = (token: DefaultERC20s) => {
     case DefaultERC20s.APE:
       return '/manager/ape.png';
     default:
-      return '';
+      return '/manager/token.svg';
   }
 };
