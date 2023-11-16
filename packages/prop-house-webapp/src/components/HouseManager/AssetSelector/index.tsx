@@ -45,7 +45,7 @@ export const NewAward: Award = {
   name: 'ETH',
   symbol: 'ETH',
   amount: 0,
-  decimals: 18,
+  decimals: 0,
   state: 'dummy',
   error: '',
   allocated: 0,
@@ -58,8 +58,8 @@ export enum DefaultERC20s {
 }
 
 export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
-  [DefaultERC20s.USDC]: '0x0d6B12630Db150559822bb5297227C107332A8bf',
-  [DefaultERC20s.APE]: '0x5242CD84b432969FeEF70E0dFa5725418dA38c20',
+  [DefaultERC20s.USDC]: '0xd35cceead182dcee0f148ebac9447da2c4d449c4',
+  [DefaultERC20s.APE]: '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc',
   [DefaultERC20s.OTHER]: '',
 };
 
@@ -67,6 +67,12 @@ export const erc20Name: { [key in DefaultERC20s]: string } = {
   [DefaultERC20s.USDC]: 'USD Coin',
   [DefaultERC20s.APE]: 'Ape Coin',
   [DefaultERC20s.OTHER]: '',
+};
+
+export const erc20Decimals: { [key in DefaultERC20s]: number } = {
+  [DefaultERC20s.USDC]: 6,
+  [DefaultERC20s.APE]: 18,
+  [DefaultERC20s.OTHER]: 0,
 };
 
 const AssetSelector: FC<{

@@ -10,7 +10,13 @@ import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
 import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
-import { Award, DefaultERC20s, erc20Name, erc20TokenAddresses } from '../AssetSelector';
+import {
+  Award,
+  DefaultERC20s,
+  erc20Decimals,
+  erc20Name,
+  erc20TokenAddresses,
+} from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
@@ -131,6 +137,7 @@ const AddAwardModal: React.FC<{
           name: erc20Name[token],
           symbol: token,
           address: erc20TokenAddresses[token],
+          decimals: erc20Decimals[token],
           type: AssetType.ERC20,
         });
 

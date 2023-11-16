@@ -80,14 +80,9 @@ const IndividualAwards: React.FC<{
     let updated: Partial<Award>;
 
     updated = {
-      amount: award.amount,
-      id: award.id,
+      ...award,
       image: imgUrl,
-      name: award.name,
       state: 'saved',
-      symbol: award.symbol,
-      tokenId: award.tokenId,
-      type: award.type,
     };
 
     const updatedAwards = awards.map(a => {
