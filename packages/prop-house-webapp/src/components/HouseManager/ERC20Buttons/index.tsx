@@ -4,7 +4,7 @@ import Group from '../Group';
 import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../../../utils/getERC20Image';
-import { Award, DefaultERC20s, erc20TokenAddresses } from '../AssetSelector';
+import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
 import Divider from '../../Divider';
 
 /**
@@ -15,7 +15,7 @@ import Divider from '../../Divider';
  */
 
 export const ERC20Buttons: React.FC<{
-  award: Award;
+  award: EditableAsset;
   isTyping: boolean;
   handleBlur: () => void;
   handleSwitch: () => void;

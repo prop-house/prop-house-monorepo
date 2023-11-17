@@ -5,50 +5,30 @@ import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
 import { NewRound } from '../../../state/slices/round';
 
-/**
- * @function changeAwardType - changes the award type to split or individual, and resets the awards
- *
- * @component
- * @name IndividualAwards - the individual awards section
- *
- * @notes
- * @see NewAward - the base award object
- * @see erc20TokenAddresses - addresses for the predefined ERC20 tokens
- * @see erc20Name - names for the predefined ERC20 tokens
- * @see editMode - used to determine whether or not we're editing from Step 6,
- * in which case we don't want to dispatch the saveRound thunk, rather we want to
- * track the changes in the parent component and dispatch the saveRound thunk
- * when the user clicks "Save Changes"
- */
-
-export interface Award {
+interface EditableAssetMetadata {
   id: string;
-  type: AssetType;
-  address: string;
-  tokenId?: string;
-  image: string;
-  name: string;
-  symbol: string;
-  amount: number;
-  decimals: number;
   state: 'dummy' | 'editing' | 'valid' | 'saved' | 'error' | 'input';
   error?: string;
   allocated: number;
 }
+type AssetProps = {
+  assetType: AssetType;
+  address: string;
+  tokenId: string;
+  amount: string;
+};
 
-export const NewAward: Award = {
+export type EditableAsset = EditableAssetMetadata & AssetProps;
+
+export const newAward: EditableAsset = {
   id: uuidv4(),
-  type: AssetType.ETH,
-  address: '',
-  tokenId: '',
-  image: '/manager/eth.png',
-  name: 'ETH',
-  symbol: 'ETH',
-  amount: 0,
-  decimals: 0,
   state: 'dummy',
   error: '',
   allocated: 0,
+  assetType: AssetType.ETH,
+  amount: '0',
+  tokenId: '',
+  address: '',
 };
 
 export enum DefaultERC20s {
@@ -85,14 +65,18 @@ const AssetSelector: FC<{
   const round = useAppSelector(state => state.round.round);
 
   // Set the individual awards to 3 dummy awards if no awards set
-  const initialIndividualAwards: Award[] = [
-    { ...NewAward, id: uuidv4(), state: 'dummy' },
-    { ...NewAward, id: uuidv4(), state: 'dummy' },
-    { ...NewAward, id: uuidv4(), state: 'dummy' },
+  const initialIndividualAwards: EditableAsset[] = [
+    { ...newAward, id: uuidv4(), state: 'dummy' },
+    { ...newAward, id: uuidv4(), state: 'dummy' },
+    { ...newAward, id: uuidv4(), state: 'dummy' },
   ];
 
-  const [individualAwards, setIndividualAwards] = useState<Award[]>(
-    round.awards[0] && round.awards[0].id !== NewAward.id ? round.awards : initialIndividualAwards,
+  // const [individualAwards, setIndividualAwards] = useState<Award[]>(
+  //   round.awards[0] && round.awards[0].id !== NewAward.id ? round.awards : initialIndividualAwards,
+  // );
+
+  const [individualAwards, setIndividualAwards] = useState<EditableAsset[]>(
+    round.awards[0] && round.awards[0].id !== newAward.id ? round.awards : initialIndividualAwards,
   );
 
   return (

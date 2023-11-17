@@ -11,6 +11,8 @@ const erc20img = (tokenAddress: string) => {
     case '0xd35cceead182dcee0f148ebac9447da2c4d449c4':
     case '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':
       return '/manager/usdc.svg';
+    case '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc':
+      return '/manager/ape.png';
     case '0xdac17f958d2ee523a2206206994597c13d831ec7':
       return '/manager/usdt.svg';
     default:
@@ -102,9 +104,9 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
   }, [erc721TokenUriFetch, hasErc721s, erc721Assets, loadingErc721TokenUri, erc721imgUris]);
 
   useEffect(() => {
-    if (awardImages || (hasErc721s && !erc721imgUris) || (hasErc1155s && !erc1155imgUris)) return;
+    if ((hasErc721s && !erc721imgUris) || (hasErc1155s && !erc1155imgUris)) return;
 
-    const mappedAssets = assets.map((asset, index) => {
+    const mappedAssets = assets.map(asset => {
       switch (asset.assetType) {
         case AssetType.ETH:
           return '/manager/eth.png';
@@ -120,7 +122,11 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
           return '/manager/fallback.png';
       }
     });
-    setAwardImages(mappedAssets);
+
+    const shouldUpdate =
+      !awardImages || awardImages.some((uri, index) => uri !== mappedAssets[index]);
+
+    if (shouldUpdate) setAwardImages(mappedAssets);
   }, [assets, erc721imgUris, erc1155imgUris, hasErc721s, hasErc1155s, awardImages]);
 
   return awardImages;

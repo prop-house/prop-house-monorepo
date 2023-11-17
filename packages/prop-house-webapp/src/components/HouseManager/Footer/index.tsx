@@ -8,11 +8,11 @@ import { useAppSelector } from '../../../hooks';
 import { Asset, AssetType, HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
 import { usePropHouse } from '@prophouse/sdk-react';
 import { BigNumber, ethers } from 'ethers';
-import { Award } from '../AssetSelector';
 import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
+import { EditableAsset } from '../AssetSelector';
 
 /**
  * @overview
@@ -56,8 +56,8 @@ const Footer: React.FC = () => {
     };
 
     // Takes our Award type and converts it to an Asset type
-    const createAward = (award: Award) => {
-      switch (award.type) {
+    const createAward = (award: EditableAsset) => {
+      switch (award.assetType) {
         case AssetType.ETH:
           return {
             assetType: AssetType.ETH,
@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
             address: award.address,
             // ERC20 token amounts are represented in base units (the smallest sub-division of the token),
             // and need to be parsed using the token decimals to be handled correctly
-            amount: ethers.utils.parseUnits(award.amount.toString(), award.decimals).toString(),
+            amount: ethers.utils.parseUnits(award.amount.toString(), 18).toString(), // TODO: get decimals from token
           } as Asset;
         case AssetType.ERC721:
           return {
@@ -122,7 +122,8 @@ const Footer: React.FC = () => {
               amount: ethers.utils
                 .parseUnits(
                   token.allocated.toString(),
-                  round.awards.find(award => award.address === token.address)?.decimals || 18,
+                  18,
+                  // round.awards.find(award => award.address === token.address)?.decimals || 18, // TODO: get decimals from token
                 )
                 .toString(),
             };

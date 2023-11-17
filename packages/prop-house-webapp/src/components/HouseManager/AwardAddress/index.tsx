@@ -3,17 +3,21 @@ import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { Award } from '../AssetSelector';
+import { EditableAsset } from '../AssetSelector';
+import { AssetWithMetadata, useAssetWithMetadata } from '../../../hooks/useAssetsWithMetadata';
 
 const AwardAddress: React.FC<{
   isTyping: boolean;
-  award: Award;
+  award: EditableAsset;
   placeholder?: string;
   handleBlur: () => void;
   handleSwitch: () => void;
   handleChange: (value: string) => void;
 }> = props => {
   const { award, isTyping, handleBlur, handleChange, handleSwitch, placeholder } = props;
+
+  const [loading, assetWithMetadata] = useAssetWithMetadata(award);
+  const asset = { ...assetWithMetadata, ...award } as EditableAsset & AssetWithMetadata;
 
   const verifiedAddress = award.state === 'valid';
 
@@ -31,11 +35,11 @@ const AwardAddress: React.FC<{
                 {
                   <div className={classes.addressImgAndTitle}>
                     <img
-                      src={award.image ? award.image : '/manager/fallback.png'}
-                      alt={award.name}
+                      src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
+                      alt={asset.symbol}
                     />
 
-                    <span>{award.name}</span>
+                    <span>{asset.symbol}</span>
                   </div>
                 }
 

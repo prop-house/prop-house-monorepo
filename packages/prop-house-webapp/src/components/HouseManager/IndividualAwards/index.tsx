@@ -5,16 +5,13 @@ import { NewRound } from '../../../state/slices/round';
 import { useDispatch } from 'react-redux';
 import { AssetType } from '@prophouse/sdk-react';
 import Button, { ButtonColor } from '../../Button';
-import { Award, NewAward } from '../AssetSelector';
+import { EditableAsset, newAward } from '../AssetSelector';
 import { SetStateAction, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
-import { getERC20Image } from '../../../utils/getERC20Image';
 import AwardWithPlace from '../AwardWithPlace';
 import AwardRow from '../AwardRow';
-import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 import { saveRound } from '../../../state/thunks';
 import { v4 as uuidv4 } from 'uuid';
-import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import AddAwardModal from '../AddAwardModal';
 
 /**
@@ -26,26 +23,24 @@ import AddAwardModal from '../AddAwardModal';
 
 const IndividualAwards: React.FC<{
   editMode?: boolean;
-  awards: Award[];
-  setAwards: React.Dispatch<SetStateAction<Award[]>>;
+  awards: EditableAsset[];
+  setAwards: React.Dispatch<SetStateAction<EditableAsset[]>>;
   editedRound?: NewRound;
   setEditedRound?: React.Dispatch<React.SetStateAction<NewRound>>;
 }> = props => {
   const { editMode, awards, setAwards, editedRound, setEditedRound } = props;
 
   const [showIndividualAwardModal, setShowIndividualAwardModal] = useState(false);
-  const [awardBeingAddedOrEdited, setAwardBeingAddedOrEdited] = useState<Award>();
+  const [awardBeingAddedOrEdited, setAwardBeingAddedOrEdited] = useState<EditableAsset>();
 
-  const provider = useEthersProvider();
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
 
-  const handleSaveAward = async (award: Award) => {
-    let imgUrl = null;
-
+  const handleSaveAward = async (award: EditableAsset) => {
     const isDuplicateErc721 = awards.some(
       a =>
-        award.type === AssetType.ERC721 &&
+        award.assetType === AssetType.ERC721 &&
+        a.assetType === AssetType.ERC721 &&
         a.address === award.address &&
         a.tokenId === award.tokenId,
     );
@@ -54,38 +49,19 @@ const IndividualAwards: React.FC<{
       setAwardBeingAddedOrEdited({
         ...award,
         state: 'error',
-        error: `An award with ${award.name} #${award.tokenId} already exists`,
+        error: `An award with ${award.address} #${award.tokenId} already exists`,
       });
       return;
     }
 
-    // We need to fetch the image for ERC721 and ERC1155 tokens if the user does not blur the input, which also fetches the image
-    if (award.type === AssetType.ERC721 || award.type === AssetType.ERC1155) {
-      try {
-        const { image } = await getTokenIdImage(award.address, award.tokenId!, provider);
-        imgUrl = image;
-      } catch (error) {
-        console.error('Error fetching image', error);
-      }
-    }
-
-    if (award.type === AssetType.ERC20) {
-      imgUrl = getERC20Image(award.symbol as any);
-    }
-
-    if (award.type === AssetType.ETH) {
-      imgUrl = '/manager/eth.png';
-    }
-
-    let updated: Partial<Award>;
+    let updated: Partial<EditableAsset>;
 
     updated = {
       ...award,
-      image: imgUrl,
       state: 'saved',
     };
 
-    const updatedAwards = awards.map(a => {
+    const updatedAwards: EditableAsset[] = awards.map(a => {
       return a.id === award.id ? { ...a, ...updated } : { ...a };
     });
 
@@ -111,7 +87,7 @@ const IndividualAwards: React.FC<{
   };
 
   const addNewAwardFiller = () => {
-    const updatedAwards = [...awards, { ...NewAward, id: uuidv4() }];
+    const updatedAwards = [...awards, { ...newAward, id: uuidv4() }];
 
     if (editMode) {
       setEditedRound!({
@@ -125,7 +101,7 @@ const IndividualAwards: React.FC<{
   };
 
   const removeAward = (id: string) => {
-    let updated: Award[] = awards.filter(award => award.id !== id);
+    let updated: EditableAsset[] = awards.filter(award => award.id !== id);
 
     if (editMode) {
       const filteredAwards = updated.filter(award => award.state === 'saved');

@@ -24,7 +24,6 @@ import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
 import EditAwardsModal from '../EditAwardsModal';
 import EditVotersModal from '../EditVotersModal';
-import TokenApprovals from '../TokenApprovals';
 
 /**
  * @overview
@@ -155,8 +154,6 @@ const CreateRound = () => {
       </Group>
 
       <Divider />
-
-      <TokenApprovals />
 
       <Footer />
     </>

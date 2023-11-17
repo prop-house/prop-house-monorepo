@@ -8,26 +8,18 @@ import Text from '../Text';
 import Tooltip from '../../Tooltip';
 import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
-import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../utils/useAddressType';
-import {
-  Award,
-  DefaultERC20s,
-  erc20Decimals,
-  erc20Name,
-  erc20TokenAddresses,
-} from '../AssetSelector';
+import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
-import { getTokenIdImage } from '../../../utils/getTokenIdImage';
 import { assetTypeString } from '../../../utils/assetTypeToString';
 import Modal from '../../Modal';
 
 const AddAwardModal: React.FC<{
-  award: Award;
-  modifyAward: React.Dispatch<SetStateAction<Award | undefined>>;
-  handleAddOrSaveAward: (award: Award) => void;
+  award: EditableAsset;
+  modifyAward: React.Dispatch<SetStateAction<EditableAsset | undefined>>;
+  handleAddOrSaveAward: (award: EditableAsset) => void;
   closeModal: React.Dispatch<SetStateAction<boolean>>;
 }> = props => {
   const { award, modifyAward: setAward, handleAddOrSaveAward, closeModal } = props;
@@ -36,7 +28,7 @@ const AddAwardModal: React.FC<{
   const [isTyping, setIsTyping] = useState(false);
 
   const [selectedAwardType, setSelectedAwardType] = useState<AssetType>(
-    award ? award.type : AssetType.ETH,
+    award ? award.assetType : AssetType.ETH,
   );
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,13 +36,13 @@ const AddAwardModal: React.FC<{
   const { data } = useAddressType(award.address);
 
   const isDisabled = () => {
-    const isEth = award.type === AssetType.ETH;
-    const isErc20 = award.type === AssetType.ERC20;
-    const isErc1155 = award.type === AssetType.ERC1155;
-    const isErc721 = award.type === AssetType.ERC721;
+    const isEth = award.assetType === AssetType.ETH;
+    const isErc20 = award.assetType === AssetType.ERC20;
+    const isErc1155 = award.assetType === AssetType.ERC1155;
+    const isErc721 = award.assetType === AssetType.ERC721;
 
-    if (isErc20) return award.address === '' || award.amount <= 0;
-    if (isEth) return award.amount <= 0;
+    if (isErc20) return award.address === '' || BigInt(award.amount) <= 0;
+    if (isEth) return BigInt(award.amount) <= 0;
     if (isErc1155 || isErc721) return award.tokenId === '';
   };
 
@@ -60,85 +52,80 @@ const AddAwardModal: React.FC<{
   };
 
   const handleERC20AddressBlur = async () => {
-    setIsTyping(false);
-    // if address is empty, dont do anything
-    if (!award.address) {
-      setAward({ ...award, state: 'input' });
-      return;
-    }
-    // if address isn't valid, set error
-    if (!data) {
-      setAward({ ...award, state: 'error', error: 'Invalid address' });
-      return;
-    }
-    if (AssetType[award.type] !== data) {
-      setAward({ ...award, state: 'error', error: `Expected ERC20 and got ${data}` });
-      return;
-    } else {
-      // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-      const { name, image, symbol } = await getTokenInfo(award.address, provider);
-      setAward({ ...award, state: 'valid', name, image, symbol });
-    }
+    // setIsTyping(false);
+    // // if address is empty, dont do anything
+    // if (!award.address) {
+    //   setAward({ ...award, state: 'input' });
+    //   return;
+    // }
+    // // if address isn't valid, set error
+    // if (!data) {
+    //   setAward({ ...award, state: 'error', error: 'Invalid address' });
+    //   return;
+    // }
+    // if (AssetType[award.type] !== data) {
+    //   setAward({ ...award, state: 'error', error: `Expected ERC20 and got ${data}` });
+    //   return;
+    // } else {
+    //   // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
+    //   const { name, image, symbol } = await getTokenInfo(award.address, provider);
+    //   setAward({ ...award, state: 'valid', name, image, symbol });
+    // }
   };
 
   const handleTokenBlur = async (id: string) => {
-    if (award.tokenId === '') return;
-
-    const { image } = await getTokenIdImage(award.address, id, provider);
-    setAward({ ...award, error: '', image });
+    // if (award.tokenId === '') return;
+    // const { image } = await getTokenIdImage(award.address, id, provider);
+    // setAward({ ...award, error: '', image });
   };
 
   const handleAddressBlur = async () => {
-    setIsTyping(false);
-    // if address is empty, dont do anything
-    if (!award.address) {
-      setAward({ ...award, state: 'input' });
-      return;
-    }
-
-    // if address isn't valid, set error
-    if (!data) {
-      setAward({ ...award, state: 'error', error: 'Invalid address' });
-      return;
-    } else if (AssetType[award.type] !== data) {
-      setAward({
-        ...award,
-        state: 'error',
-        error: `Expected ${AssetType[award.type]} and got ${data}`,
-      });
-      return;
-    } else {
-      // address is valid, and matches the expected type, so get token info
-      const { name, image, symbol } = await getTokenInfo(award.address, provider);
-
-      setAward({ ...award, state: 'valid', name, image, symbol });
-    }
+    // setIsTyping(false);
+    // // if address is empty, dont do anything
+    // if (!award.address) {
+    //   setAward({ ...award, state: 'input' });
+    //   return;
+    // }
+    // // if address isn't valid, set error
+    // if (!data) {
+    //   setAward({ ...award, state: 'error', error: 'Invalid address' });
+    //   return;
+    // } else if (AssetType[award.type] !== data) {
+    //   setAward({
+    //     ...award,
+    //     state: 'error',
+    //     error: `Expected ${AssetType[award.type]} and got ${data}`,
+    //   });
+    //   return;
+    // } else {
+    //   // address is valid, and matches the expected type, so get token info
+    //   const { name, image, symbol } = await getTokenInfo(award.address, provider);
+    //   setAward({ ...award, state: 'valid', name, image, symbol });
+    // }
   };
 
   const handleSelectAwardType = (selectedType: AssetType) => {
     setSelectedAwardType(selectedType);
-    let updated = { ...award, type: selectedType, amount: 0 };
-    // handle ETH change
-    if (selectedType === AssetType.ETH) updated.symbol = 'ETH';
+    let updated: EditableAsset = { ...award, assetType: selectedType, amount: '0' };
     setAward(updated);
   };
 
   const handleSelectErc20Award = async (token: DefaultERC20s) => {
-    let updated: Partial<Award>;
+    let updated: Partial<EditableAsset>;
 
     // when selecting a new asset, reset the state
     token === DefaultERC20s.OTHER
       ? (updated = {
           address: '',
           state: 'input',
-          type: AssetType.ERC20,
+          assetType: AssetType.ERC20,
         })
       : (updated = {
-          name: erc20Name[token],
-          symbol: token,
+          // name: erc20Name[token],
+          // symbol: token,
           address: erc20TokenAddresses[token],
-          decimals: erc20Decimals[token],
-          type: AssetType.ERC20,
+          // decimals: erc20Decimals[token],
+          assetType: AssetType.ERC20,
         });
 
     setAward({ ...award, ...updated });
@@ -150,7 +137,7 @@ const AddAwardModal: React.FC<{
     // If value is NaN or negative, set to 0
     if (isNaN(value) || value < 0) value = 0;
 
-    setAward({ ...award, amount: value });
+    setAward({ ...award, amount: value.toString() });
   };
 
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {

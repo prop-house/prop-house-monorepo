@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
 import { useContractReads } from 'wagmi';
 import useAssetImages from './useAssetImages';
+import { isSameTokenAndAmount } from '../utils/isSameTokenAndAmount';
 
 interface AssetMetadata {
   symbol: string;
@@ -22,6 +23,17 @@ type UseAssetsWithMetadataResults = [
   boolean,
   AssetWithMetadata[] | undefined,
 ];
+type UseAssetWithMetadataResult = [
+  /**
+   * loading
+   */
+  boolean,
+  AssetWithMetadata | undefined,
+];
+export const useAssetWithMetadata = (asset: Asset): UseAssetWithMetadataResult => {
+  const [loading, assets] = useAssetsWithMetadata([asset]);
+  return [loading, assets ? assets[0] : undefined];
+};
 
 /**
  * Fetches symbols and decimals for each asset and returns AssetWithMetadata[]
@@ -64,7 +76,8 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
 
   // parse symbols, decimals and amounts into AssetWithMetadata
   useEffect(() => {
-    if (!symbols || !decimals || assetsWithMetadata || !tokenImgs) return;
+    const shoudUpdate = !assetsWithMetadata || isSameTokenAndAmount(assets, assetsWithMetadata);
+    if (!shoudUpdate || !symbols || !decimals || !tokenImgs) return;
 
     const assetSymbols = assets.map(asset => {
       const indexToUse = nonEthContracts.findIndex(
@@ -97,26 +110,37 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       }
     });
 
-    setAssetsWithMetadata(
-      assets.map((asset, index) => {
-        return {
-          ...asset,
-          symbol: assetSymbols[index],
-          decimals: assetDecimals[index],
-          parsedAmount: parsedAmounts[index],
-          tokenImg: tokenImgs[index],
-        };
-      }),
-    );
+    const result = assets.map((asset, index) => {
+      return {
+        ...asset,
+        symbol: assetSymbols[index],
+        decimals: assetDecimals[index],
+        parsedAmount: parsedAmounts[index],
+        tokenImg: tokenImgs[index],
+      };
+    });
+    setAssetsWithMetadata(result);
   }, [
-    assetsWithMetadata,
     assets,
-    tokenImgs,
+    symbols,
     decimals,
     nonEthContracts,
     onlyErc20Contracts,
-    symbols,
+    assetsWithMetadata,
+    tokenImgs,
   ]);
+
+  // update token images
+  useEffect(() => {
+    if (!tokenImgs || !assetsWithMetadata) return;
+    const updated = assetsWithMetadata.map((asset, index) => {
+      return {
+        ...asset,
+        tokenImg: tokenImgs[index],
+      };
+    });
+    setAssetsWithMetadata(updated);
+  }, [tokenImgs, assetsWithMetadata]);
 
   return [isLoadingSymbols || isLoadingDecimals, assetsWithMetadata];
 };
