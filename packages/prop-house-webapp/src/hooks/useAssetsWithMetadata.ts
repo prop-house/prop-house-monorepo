@@ -47,18 +47,16 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
   const decimals = useAssetDecimals(assets);
   const symbols = useAssetSymbols(assets);
 
-  // parse symbols and amounts into AssetWithMetadata
   useEffect(() => {
-    const shoudUpdate = !assetsWithMetadata || isSameTokenAndAmount(assets, assetsWithMetadata);
-    if (!shoudUpdate || !symbols || !decimals || !tokenImgs || !decimals) return;
+    if (!symbols || !decimals || !tokenImgs) return;
 
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
         case AssetType.ETH:
+          console.log(asset.amount.toString());
           return Number(formatEther(BigInt(asset.amount.toString())));
         case AssetType.ERC20:
-          return Number(formatUnits(BigInt(asset.amount.toString())));
-        // return Number(formatUnits(BigInt(asset.amount.toString()), assetDecimals[index]));
+          return Number(formatUnits(BigInt(asset.amount.toString()), decimals[index]));
         case AssetType.ERC721:
         case AssetType.ERC1155:
         default:
@@ -66,7 +64,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       }
     });
 
-    const result = assets.map((asset, index) => {
+    const updated = assets.map((asset, index) => {
       return {
         ...asset,
         symbol: symbols[index],
@@ -76,60 +74,18 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       };
     });
 
-    setAssetsWithMetadata(result);
-  }, [assets, symbols, decimals, assetsWithMetadata, tokenImgs]);
-
-  // update token images
-  useEffect(() => {
-    const shouldUpdate =
-      assetsWithMetadata &&
-      tokenImgs &&
-      assetsWithMetadata.some((a, i) => a.tokenImg !== tokenImgs[i]);
-
-    if (!shouldUpdate) return;
-
-    const updated = assetsWithMetadata.map((asset, index) => {
-      return {
-        ...asset,
-        tokenImg: tokenImgs[index],
-      };
+    const isAssetsWithMetadataSame = assetsWithMetadata?.every((asset, index) => {
+      const updatedAsset = updated[index];
+      return (
+        asset.symbol === updatedAsset.symbol &&
+        asset.decimals === updatedAsset.decimals &&
+        asset.parsedAmount === updatedAsset.parsedAmount &&
+        asset.tokenImg === updatedAsset.tokenImg
+      );
     });
-    setAssetsWithMetadata(updated);
-  }, [tokenImgs]);
 
-  // update decimals
-  useEffect(() => {
-    const shouldUpdate =
-      assetsWithMetadata &&
-      decimals &&
-      assetsWithMetadata.some((a, i) => a.decimals !== decimals[i]);
-
-    if (!shouldUpdate) return;
-
-    const updated = assetsWithMetadata.map((asset, index) => {
-      return {
-        ...asset,
-        decimals: decimals[index],
-      };
-    });
-    setAssetsWithMetadata(updated);
-  }, [decimals]);
-
-  // update symbols
-  useEffect(() => {
-    const shouldUpdate =
-      assetsWithMetadata && symbols && assetsWithMetadata.some((a, i) => a.symbol !== symbols[i]);
-
-    if (!shouldUpdate) return;
-
-    const updated = assetsWithMetadata.map((asset, index) => {
-      return {
-        ...asset,
-        symbol: symbols[index],
-      };
-    });
-    setAssetsWithMetadata(updated);
-  }, [symbols]);
+    if (!isAssetsWithMetadataSame) setAssetsWithMetadata(updated);
+  }, [assets, tokenImgs, decimals, symbols]);
 
   return [false, assetsWithMetadata];
 };
