@@ -53,7 +53,6 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
         case AssetType.ETH:
-          console.log(asset.amount.toString());
           return Number(formatEther(BigInt(asset.amount.toString())));
         case AssetType.ERC20:
           return Number(formatUnits(BigInt(asset.amount.toString()), decimals[index]));
