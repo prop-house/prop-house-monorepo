@@ -1,4 +1,4 @@
-import { Asset, AssetType } from '@prophouse/sdk-react';
+import { Asset, AssetType, ERC20 } from '@prophouse/sdk-react';
 import { erc20ABI, erc721ABI } from '@wagmi/core';
 import { formatEther } from 'viem';
 import { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useContractReads } from 'wagmi';
 import useAssetImages from './useAssetImages';
 import { isSameTokenAndAmount } from '../utils/isSameTokenAndAmount';
+import useAssetDecimals from './useAssetsWithDecimals';
 
 interface AssetMetadata {
   symbol: string;
@@ -42,6 +43,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
   const [assetsWithMetadata, setAssetsWithMetadata] = useState<AssetWithMetadata[] | undefined>();
 
   const tokenImgs = useAssetImages(assets);
+  const decimals = useAssetDecimals(assets);
 
   // filter out ETH assets
   const nonEthContracts = assets.reduce((acc, asset) => {
@@ -65,19 +67,10 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     ],
   });
 
-  // fetch decimals
-  const { data: decimals, isLoading: isLoadingDecimals } = useContractReads({
-    contracts: [
-      ...onlyErc20Contracts.map(contract => {
-        return { ...contract, functionName: 'decimals' };
-      }),
-    ],
-  });
-
-  // parse symbols, decimals and amounts into AssetWithMetadata
+  // parse symbols and amounts into AssetWithMetadata
   useEffect(() => {
     const shoudUpdate = !assetsWithMetadata || isSameTokenAndAmount(assets, assetsWithMetadata);
-    if (!shoudUpdate || !symbols || !decimals || !tokenImgs) return;
+    if (!shoudUpdate || !symbols || !decimals || !tokenImgs || !decimals) return;
 
     const assetSymbols = assets.map(asset => {
       const indexToUse = nonEthContracts.findIndex(
@@ -86,23 +79,13 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       return asset.assetType === AssetType.ETH ? 'ETH' : (symbols[indexToUse].result as string);
     });
 
-    const assetDecimals = assets.map(asset => {
-      const indexToUse = onlyErc20Contracts.findIndex(
-        c => asset.assetType === AssetType.ERC20 && c.address === asset.address,
-      );
-      return asset.assetType === AssetType.ETH
-        ? 18
-        : asset.assetType === AssetType.ERC20
-        ? (decimals[indexToUse].result as number)
-        : 1;
-    });
-
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
         case AssetType.ETH:
           return Number(formatEther(BigInt(asset.amount.toString())));
         case AssetType.ERC20:
-          return Number(formatUnits(BigInt(asset.amount.toString()), assetDecimals[index]));
+          return Number(formatUnits(BigInt(asset.amount.toString())));
+        // return Number(formatUnits(BigInt(asset.amount.toString()), assetDecimals[index]));
         case AssetType.ERC721:
         case AssetType.ERC1155:
         default:
@@ -114,11 +97,12 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       return {
         ...asset,
         symbol: assetSymbols[index],
-        decimals: assetDecimals[index],
         parsedAmount: parsedAmounts[index],
         tokenImg: tokenImgs[index],
+        decimals: decimals[index],
       };
     });
+
     setAssetsWithMetadata(result);
   }, [
     assets,
@@ -148,7 +132,27 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     setAssetsWithMetadata(updated);
   }, [tokenImgs]);
 
-  return [isLoadingSymbols || isLoadingDecimals, assetsWithMetadata];
+  // update decimals
+  useEffect(() => {
+    const shouldUpdate =
+      assetsWithMetadata &&
+      decimals &&
+      assetsWithMetadata.some((a, i) => a.decimals !== decimals[i]);
+
+    if (!shouldUpdate) return;
+
+    const updated = assetsWithMetadata.map((asset, index) => {
+      return {
+        ...asset,
+        decimals: decimals[index],
+      };
+    });
+    console.log('useef');
+    console.log(updated);
+    setAssetsWithMetadata(updated);
+  }, [decimals]);
+
+  return [isLoadingSymbols, assetsWithMetadata];
 };
 
 export default useAssetsWithMetadata;
