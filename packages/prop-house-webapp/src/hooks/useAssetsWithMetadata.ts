@@ -132,7 +132,13 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
 
   // update token images
   useEffect(() => {
-    if (!tokenImgs || !assetsWithMetadata) return;
+    const shouldUpdate =
+      assetsWithMetadata &&
+      tokenImgs &&
+      assetsWithMetadata.some((a, i) => a.tokenImg !== tokenImgs[i]);
+
+    if (!shouldUpdate) return;
+
     const updated = assetsWithMetadata.map((asset, index) => {
       return {
         ...asset,
@@ -140,7 +146,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       };
     });
     setAssetsWithMetadata(updated);
-  }, [tokenImgs, assetsWithMetadata]);
+  }, [tokenImgs]);
 
   return [isLoadingSymbols || isLoadingDecimals, assetsWithMetadata];
 };
