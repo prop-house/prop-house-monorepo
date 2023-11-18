@@ -47,7 +47,7 @@ const useAssetDecimals = (assets: Asset[]): number[] | undefined => {
     const shouldUpdate =
       decimals === undefined || decimals.some((aD, i) => aD !== mappedDecimals[i]);
 
-    if (shouldUpdate) setDecimals(fetchedDecimals);
+    if (shouldUpdate) setDecimals(mappedDecimals);
   }, [assets]);
 
   return decimals;

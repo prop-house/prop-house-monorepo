@@ -7,6 +7,7 @@ import { useContractReads } from 'wagmi';
 import useAssetImages from './useAssetImages';
 import { isSameTokenAndAmount } from '../utils/isSameTokenAndAmount';
 import useAssetDecimals from './useAssetsWithDecimals';
+import useAssetSymbols from './useAssetSymbols';
 
 interface AssetMetadata {
   symbol: string;
@@ -44,40 +45,12 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
 
   const tokenImgs = useAssetImages(assets);
   const decimals = useAssetDecimals(assets);
-
-  // filter out ETH assets
-  const nonEthContracts = assets.reduce((acc, asset) => {
-    if (asset.assetType !== AssetType.ETH) {
-      acc.push({
-        address: asset.address as `0x${string}`,
-        abi: asset.assetType === AssetType.ERC20 ? erc20ABI : erc721ABI,
-      });
-    }
-    return acc;
-  }, [] as Array<{ address: `0x${string}`; abi: any }>);
-
-  const onlyErc20Contracts = nonEthContracts.filter(contract => contract.abi === erc20ABI);
-
-  // fetch symbols
-  const { data: symbols, isLoading: isLoadingSymbols } = useContractReads({
-    contracts: [
-      ...nonEthContracts.map(contract => {
-        return { ...contract, functionName: 'symbol' };
-      }),
-    ],
-  });
+  const symbols = useAssetSymbols(assets);
 
   // parse symbols and amounts into AssetWithMetadata
   useEffect(() => {
     const shoudUpdate = !assetsWithMetadata || isSameTokenAndAmount(assets, assetsWithMetadata);
     if (!shoudUpdate || !symbols || !decimals || !tokenImgs || !decimals) return;
-
-    const assetSymbols = assets.map(asset => {
-      const indexToUse = nonEthContracts.findIndex(
-        c => asset.assetType !== AssetType.ETH && c.address === asset.address,
-      );
-      return asset.assetType === AssetType.ETH ? 'ETH' : (symbols[indexToUse].result as string);
-    });
 
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
@@ -96,7 +69,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     const result = assets.map((asset, index) => {
       return {
         ...asset,
-        symbol: assetSymbols[index],
+        symbol: symbols[index],
         parsedAmount: parsedAmounts[index],
         tokenImg: tokenImgs[index],
         decimals: decimals[index],
@@ -104,15 +77,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     });
 
     setAssetsWithMetadata(result);
-  }, [
-    assets,
-    symbols,
-    decimals,
-    nonEthContracts,
-    onlyErc20Contracts,
-    assetsWithMetadata,
-    tokenImgs,
-  ]);
+  }, [assets, symbols, decimals, assetsWithMetadata, tokenImgs]);
 
   // update token images
   useEffect(() => {
@@ -147,12 +112,26 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
         decimals: decimals[index],
       };
     });
-    console.log('useef');
-    console.log(updated);
     setAssetsWithMetadata(updated);
   }, [decimals]);
 
-  return [isLoadingSymbols, assetsWithMetadata];
+  // update symbols
+  useEffect(() => {
+    const shouldUpdate =
+      assetsWithMetadata && symbols && assetsWithMetadata.some((a, i) => a.symbol !== symbols[i]);
+
+    if (!shouldUpdate) return;
+
+    const updated = assetsWithMetadata.map((asset, index) => {
+      return {
+        ...asset,
+        symbol: symbols[index],
+      };
+    });
+    setAssetsWithMetadata(updated);
+  }, [symbols]);
+
+  return [false, assetsWithMetadata];
 };
 
 export default useAssetsWithMetadata;
