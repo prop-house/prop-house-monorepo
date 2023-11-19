@@ -15,6 +15,7 @@ import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import { assetTypeString } from '../../../utils/assetTypeToString';
 import Modal from '../../Modal';
+import AddEthAsset from '../AddEthAsset';
 
 const AddAwardModal: React.FC<{
   award: EditableAsset;
@@ -164,21 +165,7 @@ const AddAwardModal: React.FC<{
   };
 
   const awardContent = (type: AssetType) => {
-    if (type === AssetType.ETH)
-      return (
-        <Group gap={16}>
-          <Group gap={6} classNames={classes.fullWidth}>
-            <Text type="subtitle">Amount</Text>
-            <input
-              className={classes.votesInput}
-              defaultValue={award.amount ? award.amount : 0}
-              type="number"
-              onChange={handleAmountChange}
-              onPaste={handleInputPaste}
-            />
-          </Group>
-        </Group>
-      );
+    if (type === AssetType.ETH) return <AddEthAsset asset={award} setAsset={setAward} />;
 
     if (type === AssetType.ERC20)
       return (
