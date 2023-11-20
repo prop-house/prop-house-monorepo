@@ -27,17 +27,23 @@ const AwardRow: React.FC<{ award: EditableAsset }> = props => {
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
         <div className={classes.addressImgAndTitle}>
-          <img src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'} alt={asset.symbol} />
-
-          <span>
-            {(isEth || isErc20) &&
-              `${formatCommaNum(Number(asset.parsedAmount), isEth ? 3 : 2)} ${asset.symbol}`}
-            {(isErc1155 || isErc721) &&
-              `${asset.symbol} #${
-                asset.tokenId &&
-                (asset.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
-              }`}
-          </span>
+          {!loading && (
+            <>
+              <img
+                src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
+                alt={asset.symbol}
+              />
+              <span>
+                {(isEth || isErc20) &&
+                  `${formatCommaNum(Number(asset.parsedAmount), isEth ? 3 : 2)} ${asset.symbol}`}
+                {(isErc1155 || isErc721) &&
+                  `${asset.symbol} #${
+                    asset.tokenId &&
+                    (asset.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
+                  }`}
+              </span>
+            </>
+          )}
         </div>
 
         <div className={classes.votesText}>

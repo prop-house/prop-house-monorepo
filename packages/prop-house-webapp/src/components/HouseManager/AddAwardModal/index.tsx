@@ -1,5 +1,5 @@
 import classes from './AddAwardModal.module.css';
-import React, { SetStateAction, useRef, useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import Group from '../Group';

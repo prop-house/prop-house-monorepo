@@ -32,12 +32,15 @@ const AwardAddress: React.FC<{
               <button className={classes.addressSuccess} onClick={handleSwitch}>
                 {
                   <div className={classes.addressImgAndTitle}>
-                    <img
-                      src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
-                      alt={asset.symbol}
-                    />
-
-                    <span>{asset.symbol}</span>
+                    {!loading && (
+                      <>
+                        <img
+                          src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
+                          alt={asset.symbol}
+                        />
+                        <span>{asset.symbol}</span>
+                      </>
+                    )}
                   </div>
                 }
 

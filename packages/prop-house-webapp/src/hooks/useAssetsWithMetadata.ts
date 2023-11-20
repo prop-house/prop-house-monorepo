@@ -1,11 +1,8 @@
-import { Asset, AssetType, ERC20 } from '@prophouse/sdk-react';
-import { erc20ABI, erc721ABI } from '@wagmi/core';
+import { Asset, AssetType } from '@prophouse/sdk-react';
 import { formatEther } from 'viem';
 import { useEffect, useState } from 'react';
 import { formatUnits } from 'ethers/lib/utils';
-import { useContractReads } from 'wagmi';
 import useAssetImages from './useAssetImages';
-import { isSameTokenAndAmount } from '../utils/isSameTokenAndAmount';
 import useAssetDecimals from './useAssetsWithDecimals';
 import useAssetSymbols from './useAssetSymbols';
 

@@ -57,11 +57,6 @@ const AddTokenIdAsset: React.FC<{
     setAsset({ ...asset, tokenId: e.target.value });
   };
 
-  const hannleTokenIdBlur = () => {
-    setAsset({ ...asset, tokenId: tokenIdValue });
-    console.log('token blur!');
-  };
-
   return (
     <Group gap={16}>
       <Group gap={6}>

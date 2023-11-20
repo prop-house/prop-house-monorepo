@@ -2,7 +2,7 @@ import classes from './AddErc20Asset.module.css';
 import React, { SetStateAction, useEffect, useState } from 'react';
 import Group from '../Group';
 import Text from '../Text';
-import { AssetType, ERC20 } from '@prophouse/sdk-react';
+import { AssetType } from '@prophouse/sdk-react';
 import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
