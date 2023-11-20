@@ -37,7 +37,7 @@ const AwardCard: React.FC<{ award: EditableAsset; place: number }> = props => {
             `#${award.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId}`
           ) : (
             <>
-              <TruncateThousands amount={Number(award.amount)} decimals={1} /> {asset.symbol}
+              <TruncateThousands amount={asset.parsedAmount} decimals={1} /> {asset.symbol}
             </>
           )}
         </Text>
