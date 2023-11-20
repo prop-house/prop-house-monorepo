@@ -1,5 +1,5 @@
 import classes from './AddErc20Asset.module.css';
-import React, { SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import Group from '../Group';
 import Text from '../Text';
 import { AssetType, ERC20 } from '@prophouse/sdk-react';
@@ -8,7 +8,7 @@ import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
 import { useSingleAssetDecimals } from '../../../hooks/useAssetsWithDecimals';
 import { parseUnits, formatUnits, isAddress } from 'viem';
-import useIsValidErc20 from '../../../hooks/useIsValidErc20';
+import useAddressType from '../../../hooks/useAddressType';
 
 const AddErc20Asset: React.FC<{
   asset: EditableAsset;
@@ -19,6 +19,7 @@ const AddErc20Asset: React.FC<{
   const [isTyping, setIsTyping] = useState(false);
   const [value, setValue] = useState(''); // used to store the value input by user to update asset.amount once decimals are fetched
   const [formattedValue, setFormattedValue] = useState('');
+  const { data: contractType } = useAddressType(asset.address);
 
   const s =
     asset.address === erc20TokenAddresses[DefaultERC20s.USDC]
@@ -32,7 +33,6 @@ const AddErc20Asset: React.FC<{
   const [selectedErc20, setSelectedErc20] = useState(s);
 
   const decimals = useSingleAssetDecimals(asset);
-  const isValidErc20 = useIsValidErc20(asset as ERC20);
 
   // set asset.amount to the correct units when decimals are ready
   useEffect(() => {
@@ -90,7 +90,7 @@ const AddErc20Asset: React.FC<{
       return;
     }
 
-    if (!isValidErc20) {
+    if (!contractType || contractType !== 'ERC20') {
       setAsset({ ...asset, state: 'error', error: 'Invalid ERC20 contract' });
       return;
     }

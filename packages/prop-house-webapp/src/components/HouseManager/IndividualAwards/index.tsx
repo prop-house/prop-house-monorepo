@@ -121,7 +121,7 @@ const IndividualAwards: React.FC<{
     <>
       {showIndividualAwardModal && awardBeingAddedOrEdited && (
         <AddAwardModal
-          award={awardBeingAddedOrEdited}
+          asset={awardBeingAddedOrEdited}
           modifyAward={setAwardBeingAddedOrEdited}
           handleAddOrSaveAward={handleSaveAward}
           closeModal={setShowIndividualAwardModal}

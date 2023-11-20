@@ -47,10 +47,10 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
 
   // parse erc1155 tokenURIs into image URIs
   useEffect(() => {
-    if (!hasErc1155s || !erc1155TokenUriFetch || erc1155imgUris || loadingErc1155TokenUris) return;
+    if (!erc1155TokenUriFetch) return;
 
     const resolveImageUris = async () => {
-      let mapped: { [key: string]: string } = {};
+      let updatedImgUris: { [key: string]: string } = {};
       // decode base64 tokenURIs
       const imageUrisPromises = erc1155TokenUriFetch.map(uri => {
         if (!uri.result) return null;
@@ -58,22 +58,33 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
       });
       const imageUris = await Promise.all(imageUrisPromises);
 
-      //   map them to their corresponding token address + identifier
+      // map them to their corresponding token address + identifier
       erc1155Assets.forEach((a, index) => {
-        mapped[`${a.address}-${a.tokenId}`] = imageUris[index];
+        if (!imageUris[index]) return;
+        updatedImgUris[`${a.address}-${a.tokenId}`] = imageUris[index];
       });
 
-      setErc1155imgUris(mapped);
+      const updatedKeys = Object.keys(updatedImgUris);
+      const updatedValues = Object.values(updatedImgUris);
+      const storedKeys = Object.keys(erc1155imgUris || {});
+      const storedValues = Object.values(erc1155imgUris || {});
+
+      const shouldUpdate =
+        updatedKeys.some((key, index) => key !== storedKeys[index]) ||
+        updatedValues.some((value, index) => value !== storedValues[index]);
+
+      if (shouldUpdate) setErc1155imgUris(updatedImgUris);
     };
+
     resolveImageUris();
   }, [erc1155TokenUriFetch, hasErc1155s, erc1155Assets, loadingErc1155TokenUris, erc1155imgUris]);
 
   // parse erc721 tokenURIs into image URIs
   useEffect(() => {
-    if (!hasErc721s || !erc721TokenUriFetch || erc721imgUris || loadingErc721TokenUri) return;
+    if (!erc721TokenUriFetch) return;
 
     const resolveImageUris = async () => {
-      let mapped: { [key: string]: string } = {};
+      let updatedImgUris: { [key: string]: string } = {};
       // decode base64 tokenURIs
       const imageUrisPromises = erc721TokenUriFetch.map(uri => {
         if (!uri.result) return null;
@@ -83,10 +94,22 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
 
       // map them to their corresponding token address + identifier
       erc721Assets.forEach((a, index) => {
-        mapped[`${a.address}-${a.tokenId}`] = imageUris[index];
+        if (!imageUris[index]) return;
+        updatedImgUris[`${a.address}-${a.tokenId}`] = imageUris[index];
       });
-      setErc721imgUris(mapped);
+
+      const updatedKeys = Object.keys(updatedImgUris);
+      const updatedValues = Object.values(updatedImgUris);
+      const storedKeys = Object.keys(erc721imgUris || {});
+      const storedValues = Object.values(erc721imgUris || {});
+
+      const shouldUpdate =
+        updatedKeys.some((key, index) => key !== storedKeys[index]) ||
+        updatedValues.some((value, index) => value !== storedValues[index]);
+
+      if (shouldUpdate) setErc721imgUris(updatedImgUris);
     };
+
     resolveImageUris();
   }, [erc721TokenUriFetch, hasErc721s, erc721Assets, loadingErc721TokenUri, erc721imgUris]);
 

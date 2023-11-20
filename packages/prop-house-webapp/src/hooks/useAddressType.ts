@@ -1,5 +1,5 @@
-import { useContractRead } from 'wagmi';
-import { addressTypeABI } from './contractABIs';
+import { useChainId, useContractRead } from 'wagmi';
+import { addressTypeABI } from '../utils/contractABIs';
 
 // TODO - automatically detect network
 // !Mainnet
@@ -10,11 +10,13 @@ const contractAddress = '0xbA17ADA91737eE7530CA846183611c70B63bfB2c';
 const functionName = 'getType';
 
 export default function useAddressType(address: string) {
+  const chainId = useChainId();
   const { data, isLoading, isError } = useContractRead({
     address: contractAddress,
     abi: addressTypeABI,
     functionName,
     args: [address as `0x${string}`],
+    chainId: chainId,
   });
 
   return { data, isLoading, isError };

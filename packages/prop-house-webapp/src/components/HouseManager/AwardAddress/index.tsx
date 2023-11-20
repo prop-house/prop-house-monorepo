@@ -55,9 +55,7 @@ const AwardAddress: React.FC<{
                   onBlur={handleBlur}
                   onKeyDown={e => e.key === 'Enter' && handleBlur()}
                   onChange={e => handleChange(e.target.value)}
-                  placeholder={
-                    placeholder ? placeholder : 'ex: 0x0000000000000000000000000000000000000000'
-                  }
+                  placeholder={placeholder ? placeholder : '0x0...000'}
                 />
               </div>
             )}
