@@ -121,7 +121,7 @@ const AddErc20Asset: React.FC<{
         <Text type="subtitle">Amount</Text>
         <input
           className={classes.votesInput}
-          defaultValue={formattedValue}
+          defaultValue={formattedValue === '0' ? '' : formattedValue}
           type="number"
           onChange={handleAmountChange}
         />

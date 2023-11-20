@@ -36,7 +36,7 @@ const AddEthAsset: React.FC<{
         <Text type="subtitle">Amount</Text>
         <input
           className={classes.votesInput} // todo: rename classname to something useful
-          defaultValue={asset.amount ? formatEther(BigInt(asset.amount)) : 0}
+          defaultValue={asset.amount === '0' ? '' : formatEther(BigInt(asset.amount))}
           type="number"
           onChange={handleAmountChange}
           onPaste={handleInputPaste}
