@@ -3,6 +3,11 @@ import { erc20ABI } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import { useContractReads } from 'wagmi';
 
+export const useSingleAssetDecimals = (asset: Asset): number | undefined => {
+  const decimals = useAssetDecimals([asset]);
+  return decimals ? decimals[0] : undefined;
+};
+
 /**
  * Returns decimals for ERC20s by calling corresponding contracts along with expected ETH/721/1155 decimals
  */
