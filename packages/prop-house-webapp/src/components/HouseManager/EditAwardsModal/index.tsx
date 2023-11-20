@@ -17,7 +17,7 @@ const EditAwardsModal: React.FC<{
   const [editedRound, setEditedRound] = useState<NewRound>(round);
 
   const handleEditModeSave = () => {
-    const filteredAwards = editedRound.awards.filter(award => award.state === 'valid');
+    const filteredAwards = editedRound.awards.filter(award => award.state === 'saved');
     const updated = {
       ...editedRound,
       numWinners: filteredAwards.length,
