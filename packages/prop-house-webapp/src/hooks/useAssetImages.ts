@@ -5,20 +5,7 @@ import { useContractReads } from 'wagmi';
 import { resolveUri } from '../utils/resolveUri';
 import { erc1155ABI } from '../abi/ERC1155ABI';
 import { filterAssetsForType } from '../utils/filterAssetsForType';
-
-const erc20img = (tokenAddress: string) => {
-  switch (tokenAddress) {
-    case '0xd35cceead182dcee0f148ebac9447da2c4d449c4':
-    case '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':
-      return '/manager/usdc.svg';
-    case '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc':
-      return '/manager/ape.png';
-    case '0xdac17f958d2ee523a2206206994597c13d831ec7':
-      return '/manager/usdt.svg';
-    default:
-      return '/manager/token.svg';
-  }
-};
+import { erc20img } from '../components/HouseManager/AssetSelector';
 
 /**
  * Fetches symbols, decimals and token imgs for each award and returns a FullRoundAward

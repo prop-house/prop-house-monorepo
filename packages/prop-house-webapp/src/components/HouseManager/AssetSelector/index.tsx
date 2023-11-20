@@ -43,16 +43,17 @@ export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
   [DefaultERC20s.OTHER]: '',
 };
 
-export const erc20Name: { [key in DefaultERC20s]: string } = {
-  [DefaultERC20s.USDC]: 'USD Coin',
-  [DefaultERC20s.APE]: 'Ape Coin',
-  [DefaultERC20s.OTHER]: '',
-};
-
-export const erc20Decimals: { [key in DefaultERC20s]: number } = {
-  [DefaultERC20s.USDC]: 6,
-  [DefaultERC20s.APE]: 18,
-  [DefaultERC20s.OTHER]: 0,
+export const erc20img = (tokenAddress: string) => {
+  switch (tokenAddress) {
+    case '0xd35cceead182dcee0f148ebac9447da2c4d449c4': // goerli
+      return '/manager/usdc.svg';
+    case '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc': // goerli
+      return '/manager/ape.png';
+    case '0xdac17f958d2ee523a2206206994597c13d831ec7': // goerli
+      return '/manager/usdt.svg';
+    default:
+      return '/manager/token.svg';
+  }
 };
 
 const AssetSelector: FC<{

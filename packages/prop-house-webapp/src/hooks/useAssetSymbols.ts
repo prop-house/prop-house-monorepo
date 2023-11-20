@@ -3,6 +3,11 @@ import { erc20ABI } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import { useContractReads } from 'wagmi';
 
+export const useSingleAssetSymbol = (asset: Asset): string | undefined => {
+  const symbol = useAssetSymbols([asset]);
+  return symbol ? symbol[0] : undefined;
+};
+
 /**
  * Returns symbols for assets provided
  */

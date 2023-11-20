@@ -19,8 +19,6 @@ const AwardAddress: React.FC<{
   const [loading, assetWithMetadata] = useAssetWithMetadata(award);
   const asset = { ...assetWithMetadata, ...award } as EditableAsset & AssetWithMetadata;
 
-  const verifiedAddress = award.state === 'valid';
-
   return (
     <>
       <div className={classes.container}>
@@ -28,7 +26,7 @@ const AwardAddress: React.FC<{
           <Text type="subtitle">Contract Address</Text>
 
           <Group>
-            {verifiedAddress ? (
+            {award.state === 'valid' ? (
               // after onBlur verification, show the address' token info
               // it's a button so that the user can click it to switch back to the input
               <button className={classes.addressSuccess} onClick={handleSwitch}>
@@ -58,7 +56,7 @@ const AwardAddress: React.FC<{
                   onKeyDown={e => e.key === 'Enter' && handleBlur()}
                   onChange={e => handleChange(e.target.value)}
                   placeholder={
-                    placeholder ? placeholder : 'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'
+                    placeholder ? placeholder : 'ex: 0x0000000000000000000000000000000000000000'
                   }
                 />
               </div>

@@ -1,11 +1,10 @@
 import classes from './ERC20Buttons.module.css';
 import React, { useState } from 'react';
 import Group from '../Group';
-import AwardAddress from '../AwardAddress';
 import clsx from 'clsx';
 import { getERC20Image } from '../../../utils/getERC20Image';
+
 import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
-import Divider from '../../Divider';
 
 /**
  * @overview
@@ -15,17 +14,12 @@ import Divider from '../../Divider';
  */
 
 export const ERC20Buttons: React.FC<{
-  award: EditableAsset;
-  isTyping: boolean;
-  handleBlur: () => void;
-  handleSwitch: () => void;
-  handleChange: (value: string) => void;
+  asset: EditableAsset;
   handleSelectAward: (token: DefaultERC20s) => void;
 }> = props => {
-  const { award, isTyping, handleBlur, handleChange, handleSwitch, handleSelectAward } = props;
+  const { asset, handleSelectAward } = props;
 
   const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.APE, DefaultERC20s.OTHER];
-
   const [selectedOther, setSelectedOther] = useState(false);
 
   return (
@@ -37,7 +31,7 @@ export const ERC20Buttons: React.FC<{
               className={clsx(
                 classes.strategyButton,
                 classes.tokenButton,
-                (award.address === erc20TokenAddresses[token] && token !== DefaultERC20s.OTHER) ||
+                (asset.address === erc20TokenAddresses[token] && token !== DefaultERC20s.OTHER) ||
                   (selectedOther && token === DefaultERC20s.OTHER)
                   ? classes.btnPurpleBg
                   : classes.btnWhiteBg,
@@ -55,22 +49,6 @@ export const ERC20Buttons: React.FC<{
           </Group>
         ))}
       </Group>
-
-      {/* the custom address input */}
-      {selectedOther && (
-        <>
-          <Divider />
-          <Group gap={6}>
-            <AwardAddress
-              award={award}
-              isTyping={isTyping}
-              handleBlur={handleBlur}
-              handleSwitch={handleSwitch}
-              handleChange={handleChange}
-            />
-          </Group>
-        </>
-      )}
     </>
   );
 };

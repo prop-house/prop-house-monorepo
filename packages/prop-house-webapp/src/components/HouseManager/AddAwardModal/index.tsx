@@ -9,13 +9,13 @@ import Tooltip from '../../Tooltip';
 import InfoSymbol from '../../InfoSymbol';
 import { AssetType } from '@prophouse/sdk-react';
 import useAddressType from '../../../utils/useAddressType';
-import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
+import { EditableAsset } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
-import ERC20Buttons from '../ERC20Buttons';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import { assetTypeString } from '../../../utils/assetTypeToString';
 import Modal from '../../Modal';
 import AddEthAsset from '../AddEthAsset';
+import AddErc20Asset from '../AddErc20Asset';
 
 const AddAwardModal: React.FC<{
   award: EditableAsset;
@@ -50,28 +50,6 @@ const AddAwardModal: React.FC<{
   const handleAddressChange = (value: string) => {
     setIsTyping(true);
     setAward({ ...award, address: value });
-  };
-
-  const handleERC20AddressBlur = async () => {
-    // setIsTyping(false);
-    // // if address is empty, dont do anything
-    // if (!award.address) {
-    //   setAward({ ...award, state: 'input' });
-    //   return;
-    // }
-    // // if address isn't valid, set error
-    // if (!data) {
-    //   setAward({ ...award, state: 'error', error: 'Invalid address' });
-    //   return;
-    // }
-    // if (AssetType[award.type] !== data) {
-    //   setAward({ ...award, state: 'error', error: `Expected ERC20 and got ${data}` });
-    //   return;
-    // } else {
-    //   // address is valid, isn't an EOA, and matches the expected AssetType, so get token info
-    //   const { name, image, symbol } = await getTokenInfo(award.address, provider);
-    //   setAward({ ...award, state: 'valid', name, image, symbol });
-    // }
   };
 
   const handleTokenBlur = async (id: string) => {
@@ -111,36 +89,6 @@ const AddAwardModal: React.FC<{
     setAward(updated);
   };
 
-  const handleSelectErc20Award = async (token: DefaultERC20s) => {
-    let updated: Partial<EditableAsset>;
-
-    // when selecting a new asset, reset the state
-    token === DefaultERC20s.OTHER
-      ? (updated = {
-          address: '',
-          state: 'input',
-          assetType: AssetType.ERC20,
-        })
-      : (updated = {
-          // name: erc20Name[token],
-          // symbol: token,
-          address: erc20TokenAddresses[token],
-          // decimals: erc20Decimals[token],
-          assetType: AssetType.ERC20,
-        });
-
-    setAward({ ...award, ...updated });
-  };
-
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value);
-
-    // If value is NaN or negative, set to 0
-    if (isNaN(value) || value < 0) value = 0;
-
-    setAward({ ...award, amount: value.toString() });
-  };
-
   const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const clipboardData = e.clipboardData.getData('text');
 
@@ -167,32 +115,7 @@ const AddAwardModal: React.FC<{
   const awardContent = (type: AssetType) => {
     if (type === AssetType.ETH) return <AddEthAsset asset={award} setAsset={setAward} />;
 
-    if (type === AssetType.ERC20)
-      return (
-        <Group gap={16}>
-          <Group gap={6}>
-            <ERC20Buttons
-              award={award}
-              isTyping={isTyping}
-              handleBlur={handleERC20AddressBlur}
-              handleSwitch={() => setAward({ ...award, state: 'input' })}
-              handleSelectAward={handleSelectErc20Award}
-              handleChange={handleAddressChange}
-            />
-          </Group>
-
-          <Group gap={6} classNames={classes.fullWidth}>
-            <Text type="subtitle">Amount</Text>
-            <input
-              className={classes.votesInput}
-              defaultValue={award.amount ? award.amount : 0}
-              type="number"
-              onChange={handleAmountChange}
-              onPaste={handleInputPaste}
-            />
-          </Group>
-        </Group>
-      );
+    if (type === AssetType.ERC20) return <AddErc20Asset asset={award} setAsset={setAward} />;
 
     if (type === AssetType.ERC721)
       return (
