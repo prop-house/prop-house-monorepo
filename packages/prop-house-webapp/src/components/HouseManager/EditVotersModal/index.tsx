@@ -109,7 +109,7 @@ const EditVotersModal: React.FC<{
                       type={s.strategyType}
                       address={m.address}
                       multiplier={Number(m.govPower)}
-                      isDisabled={editedVoters.length === 1}
+                      isDisabled={s.members.length === 1}
                       removeVoter={handleRemoveVoter}
                     />
                   ))

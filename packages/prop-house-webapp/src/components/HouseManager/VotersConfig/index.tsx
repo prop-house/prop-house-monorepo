@@ -295,7 +295,7 @@ const VotersConfig = () => {
                   multiplier={Number(m.govPower)}
                   removeVoter={handleRemoveVoter}
                   // if there's 1 voter, we don't want to allow them to remove it
-                  isDisabled={s.members.length === 1}
+                  isDisabled={s.members.length === 1 && voters.length === 1}
                 />
               ))
             ) : (
