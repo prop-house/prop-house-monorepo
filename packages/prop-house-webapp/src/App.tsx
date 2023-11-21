@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
-import Create from './pages/Create';
+import CreateProp from './pages/CreateProp';
 import Footer from './components/Footer';
 import './App.css';
 import FAQ from './pages/FAQ';
@@ -86,7 +86,7 @@ function App() {
                     <Route path="/" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create-prop" element={<Create />} />
+                    <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />

@@ -1,4 +1,4 @@
-import classes from './Create.module.css';
+import classes from './CreateProp.module.css';
 import { Row, Col, Container } from 'react-bootstrap';
 import Button, { ButtonColor } from '../../components/Button';
 import { useState, useRef } from 'react';
@@ -24,7 +24,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Modal from '../../components/Modal';
 import { useLocation } from 'react-router-dom';
 
-const Create: React.FC<{}> = () => {
+const CreateProp: React.FC<{}> = () => {
   const { address: account } = useAccount();
   const { state } = useLocation();
   const { t } = useTranslation();
@@ -287,4 +287,4 @@ const Create: React.FC<{}> = () => {
   );
 };
 
-export default Create;
+export default CreateProp;
