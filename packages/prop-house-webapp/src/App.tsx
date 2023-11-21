@@ -29,6 +29,8 @@ import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
+import Manage from './pages/Manage';
+import RoundManager from './pages/RoundManager';
 
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
@@ -88,6 +90,8 @@ function App() {
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
+                    <Route path="/manage" element={<Manage />} />
+                    <Route path="/manage/:id" element={<RoundManager />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

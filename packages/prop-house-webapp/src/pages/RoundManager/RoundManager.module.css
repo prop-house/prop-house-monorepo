@@ -1,0 +1,52 @@
+.linksCol {
+  display: flex;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.linksCol span:first-child {
+  color: var(--brand-gray-transparent);
+  cursor: pointer;
+}
+
+.linksCol span:nth-child(2) {
+  margin-left: 8px;
+  color: var(--brand-black);
+}
+.headerCol {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 1rem;
+}
+.houseImg {
+  border-radius: 12px;
+  height: 100px;
+  width: 100px;
+}
+.roundName {
+  font-size: 26px;
+  font-weight: 550;
+}
+
+.tabs {
+  border-bottom: none;
+  justify-content: start;
+  border-bottom: 1px solid var(--brand-gray-semi-transparent);
+}
+.tabs li button {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-gray);
+  transition: none !important;
+}
+.tabs li button:hover {
+  border: none !important;
+  color: inherit !important;
+}
+.tabs li button[aria-selected='true'] {
+  border: none !important;
+  font-weight: bold !important;
+  color: var(--brand-black) !important;
+
+  background-color: transparent !important;
+}
