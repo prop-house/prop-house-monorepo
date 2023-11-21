@@ -5,12 +5,14 @@ import { formatUnits } from 'ethers/lib/utils';
 import useAssetImages from './useAssetImages';
 import useAssetDecimals from './useAssetsWithDecimals';
 import useAssetSymbols from './useAssetSymbols';
+import useAssetNames from './useAssetNames';
 
 interface AssetMetadata {
   symbol: string;
   decimals: number | undefined;
   parsedAmount: number;
   tokenImg?: string;
+  name: string;
 }
 
 export type AssetWithMetadata = Asset & AssetMetadata;
@@ -43,9 +45,10 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
   const tokenImgs = useAssetImages(assets);
   const decimals = useAssetDecimals(assets);
   const symbols = useAssetSymbols(assets);
+  const names = useAssetNames(assets);
 
   useEffect(() => {
-    if (!symbols || !decimals || !tokenImgs) return;
+    if (!symbols || !decimals || !tokenImgs || !names) return;
 
     const parsedAmounts = assets.map((asset, index) => {
       switch (asset.assetType) {
@@ -67,6 +70,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
         parsedAmount: parsedAmounts[index],
         tokenImg: tokenImgs[index],
         decimals: decimals[index],
+        name: names[index],
       };
     });
 
@@ -74,14 +78,15 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
       const updatedAsset = updated[index];
       return (
         asset.symbol === updatedAsset.symbol &&
-        asset.decimals === updatedAsset.decimals &&
-        asset.parsedAmount === updatedAsset.parsedAmount &&
-        asset.tokenImg === updatedAsset.tokenImg
+          asset.decimals === updatedAsset.decimals &&
+          asset.parsedAmount === updatedAsset.parsedAmount &&
+          asset.tokenImg === updatedAsset.tokenImg,
+        asset.name === updatedAsset.name
       );
     });
 
     if (!isAssetsWithMetadataSame) setAssetsWithMetadata(updated);
-  }, [assets, tokenImgs, decimals, symbols]);
+  }, [assets, tokenImgs, decimals, symbols, names]);
 
   return [false, assetsWithMetadata];
 };
