@@ -109,10 +109,20 @@ const EditVotersModal: React.FC<{
                       type={s.strategyType}
                       address={m.address}
                       multiplier={Number(m.govPower)}
-                      isDisabled={s.members.length === 1}
+                      isDisabled={editedVoters.length === 1}
                       removeVoter={handleRemoveVoter}
                     />
                   ))
+                ) : s.strategyType === VotingStrategyType.BALANCE_OF_ERC1155 ? (
+                  <Voter
+                    key={idx}
+                    type={s.strategyType}
+                    address={s.address}
+                    tokenId={s.tokenId}
+                    multiplier={s.multiplier}
+                    isDisabled={editedVoters.length === 1}
+                    removeVoter={handleRemoveVoter}
+                  />
                 ) : (
                   <Voter
                     key={idx}

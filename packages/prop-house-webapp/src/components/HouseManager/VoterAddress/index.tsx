@@ -6,7 +6,11 @@ import Bullet from '../Bullet';
 import { NewVoter } from '../VotersConfig';
 import EthAddress from '../../EthAddress';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { VotingStrategyType } from '@prophouse/sdk-react';
+import { Asset, AssetType, VotingStrategyType } from '@prophouse/sdk-react';
+import useAssetImages from '../../../hooks/useAssetImages';
+import useAssetNames from '../../../hooks/useAssetNames';
+import useAddressType from '../../../hooks/useAddressType';
+import { useEffect, useState } from 'react';
 
 const VoterAddress: React.FC<{
   isTyping: boolean;
@@ -21,6 +25,34 @@ const VoterAddress: React.FC<{
     props;
 
   const verifiedAddress = voter.state === 'success';
+
+  // TODO: Refactor hack that takes NewVoter and converts it to an Asset to use available hooks
+  const contractType = useAddressType(voter.address);
+  const [wrapperAsset, setWrapperAsset] = useState<Asset>();
+  const images = useAssetImages([wrapperAsset ?? ({} as Asset)]);
+  const name = useAssetNames([wrapperAsset ?? ({} as Asset)]);
+  useEffect(() => {
+    if (!contractType || wrapperAsset) return;
+
+    const { data: type } = contractType;
+    const assetType =
+      type === 'ERC721'
+        ? AssetType.ERC721
+        : type === 'ERC20'
+        ? AssetType.ERC20
+        : type === 'ERC1155'
+        ? AssetType.ERC1155
+        : undefined;
+    if (!assetType) return;
+
+    let _wrapperAsset = {
+      assetType,
+      address: voter.address,
+      tokenId: voter.tokenId,
+      amount: '0',
+    };
+    setWrapperAsset(_wrapperAsset);
+  }, [contractType]);
 
   return (
     <>
@@ -48,9 +80,9 @@ const VoterAddress: React.FC<{
                   <EthAddress address={voter.address} addAvatar />
                 ) : (
                   <div className={classes.addressImgAndTitle}>
-                    <img src={voter.image} alt={voter.name} />
+                    <img src={images ? images[0] : voter.image} alt={voter.name} />
 
-                    <span>{voter.name}</span>
+                    <span>{name ? name[0] : voter.name}</span>
                   </div>
                 )}
 

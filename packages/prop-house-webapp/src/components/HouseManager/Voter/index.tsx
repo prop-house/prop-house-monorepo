@@ -1,34 +1,56 @@
 import classes from './Voter.module.css';
 import Group from '../Group';
 import EthAddress from '../../EthAddress';
-import { VotingStrategyType } from '@prophouse/sdk-react';
-import { getTokenInfo } from '../../../utils/getTokenInfo';
+import { Asset, AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
+import useAddressType from '../../../hooks/useAddressType';
+import useAssetImages from '../../../hooks/useAssetImages';
+import useAssetNames from '../../../hooks/useAssetNames';
 
 const Voter: React.FC<{
   type: string;
   address: string;
   multiplier?: number;
+  tokenId?: string;
   isDisabled?: boolean;
   removeVoter: (address: string, type: string) => void;
 }> = props => {
-  const { type, address, multiplier, isDisabled, removeVoter } = props;
+  const { type, address, tokenId, multiplier, isDisabled, removeVoter } = props;
 
   const provider = useEthersProvider();
-  const [tokenInfo, setTokenInfo] = useState({ name: '', image: '' });
+
+  // TODO: Refactor hack that takes NewVoter and converts it to an Asset to use available hooks
+  const contractType = useAddressType(address);
+  const [wrapperAsset, setWrapperAsset] = useState<Asset>();
+  const images = useAssetImages([wrapperAsset ?? ({} as Asset)]);
+  const name = useAssetNames([wrapperAsset ?? ({} as Asset)]);
 
   useEffect(() => {
-    const fetchTokenInfo = async () => {
-      const { name, image } = await getTokenInfo(address, provider);
+    if (!contractType || wrapperAsset) return;
 
-      setTokenInfo({ name, image });
-    };
-    if (type !== VotingStrategyType.ALLOWLIST) fetchTokenInfo();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, type]);
+    const { data: type } = contractType;
+
+    const assetType =
+      type === 'ERC721'
+        ? AssetType.ERC721
+        : type === 'ERC20'
+        ? AssetType.ERC20
+        : type === 'ERC1155'
+        ? AssetType.ERC1155
+        : undefined;
+    if (!assetType) return;
+
+    let _wrapperAsset = {
+      assetType,
+      address: address,
+      tokenId: tokenId ? tokenId : '1',
+      amount: '0',
+    } as Asset;
+    setWrapperAsset(_wrapperAsset);
+  }, [contractType]);
 
   return (
     <Group row gap={15} classNames={classes.row}>
@@ -43,9 +65,9 @@ const Voter: React.FC<{
         ) : (
           // otherwise, show the token image & name
           <div className={classes.addressImgAndTitle}>
-            <img src={tokenInfo.image} alt={tokenInfo.name} />
+            <img src={images ? images[0] : ''} alt={name ? name[0] : ''} />
 
-            <span>{tokenInfo.name} holders</span>
+            <span>{name ? name[0] : ''} holders</span>
           </div>
         )}
 
