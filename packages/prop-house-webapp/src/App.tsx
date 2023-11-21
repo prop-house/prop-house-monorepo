@@ -91,7 +91,7 @@ function App() {
                     <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/manage" element={<Manage />} />
-                    <Route path="/manage/:id" element={<RoundManager />} />
+                    <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

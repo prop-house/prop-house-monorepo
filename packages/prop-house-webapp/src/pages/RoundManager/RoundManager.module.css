@@ -32,12 +32,14 @@
   border-bottom: none;
   justify-content: start;
   border-bottom: 1px solid var(--brand-gray-semi-transparent);
+  margin-bottom: 1rem;
 }
 .tabs li button {
   font-size: 18px;
   font-weight: 500;
   color: var(--brand-gray);
   transition: none !important;
+  border: none !important;
 }
 .tabs li button:hover {
   border: none !important;
