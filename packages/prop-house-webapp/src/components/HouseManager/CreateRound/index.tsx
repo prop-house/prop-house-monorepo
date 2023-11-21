@@ -119,6 +119,14 @@ const CreateRound = () => {
                     multiplier={Number(m.govPower)}
                   />
                 ))
+              ) : s.strategyType === VotingStrategyType.BALANCE_OF_ERC1155 ? (
+                <VoterCard
+                  key={idx}
+                  type={s.strategyType}
+                  tokenId={s.tokenId}
+                  address={s.address}
+                  multiplier={s.multiplier}
+                />
               ) : (
                 <VoterCard
                   key={idx}

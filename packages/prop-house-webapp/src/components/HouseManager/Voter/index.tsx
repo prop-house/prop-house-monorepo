@@ -20,8 +20,6 @@ const Voter: React.FC<{
 }> = props => {
   const { type, address, tokenId, multiplier, isDisabled, removeVoter } = props;
 
-  const provider = useEthersProvider();
-
   // TODO: Refactor hack that takes NewVoter and converts it to an Asset to use available hooks
   const contractType = useAddressType(address);
   const [wrapperAsset, setWrapperAsset] = useState<Asset>();
