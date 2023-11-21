@@ -5,14 +5,12 @@ import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { NewRound, setNextStep, setPrevStep } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
-import { Asset, AssetType, HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
+import { HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
 import { usePropHouse } from '@prophouse/sdk-react';
-import { BigNumber, ethers } from 'ethers';
 import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
-import { EditableAsset } from '../AssetSelector';
 
 /**
  * @overview
@@ -55,48 +53,12 @@ const Footer: React.FC = () => {
       config: { contractURI: round.house.contractURI },
     };
 
-    // Takes our Award type and converts it to an Asset type
-    const createAward = (award: EditableAsset) => {
-      switch (award.assetType) {
-        case AssetType.ETH:
-          return {
-            assetType: AssetType.ETH,
-            amount: ethers.utils.parseEther(award.amount.toString()),
-          } as Asset;
-        case AssetType.ERC20:
-          return {
-            assetType: AssetType.ERC20,
-            address: award.address,
-            // ERC20 token amounts are represented in base units (the smallest sub-division of the token),
-            // and need to be parsed using the token decimals to be handled correctly
-            amount: ethers.utils.parseUnits(award.amount.toString(), 18).toString(), // TODO: get decimals from token
-          } as Asset;
-        case AssetType.ERC721:
-          return {
-            assetType: AssetType.ERC721,
-            address: award.address,
-            tokenId: BigNumber.from(award.tokenId || 0),
-          } as Asset;
-        case AssetType.ERC1155:
-          return {
-            assetType: AssetType.ERC1155,
-            address: award.address,
-            tokenId: BigNumber.from(award.tokenId || 0),
-            amount: BigNumber.from(award.amount),
-          } as Asset;
-        default:
-          throw new Error('Invalid award type');
-      }
-    };
-
-    let awards: Asset[] = round.awards.map(createAward);
-
     const roundInfo: RoundInfo<RoundType> = {
       roundType: round.roundType,
       title: round.title,
       description: round.description,
       config: {
-        awards,
+        awards: round.awards,
         votingStrategies: round.voters,
         proposalPeriodStartUnixTimestamp: round.proposalPeriodStartUnixTimestamp,
         proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
