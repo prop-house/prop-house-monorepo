@@ -105,92 +105,24 @@ const Footer: React.FC = () => {
       },
     };
 
-    let funding: Asset[] = [];
-
-    if (round.funding && round.funding.depositingFunds) {
-      funding = round.funding.tokens.map(token => {
-        switch (token.type) {
-          case AssetType.ETH:
-            return {
-              assetType: AssetType.ETH,
-              amount: ethers.utils.parseEther(token.allocated.toString()),
-            };
-          case AssetType.ERC20:
-            return {
-              assetType: AssetType.ERC20,
-              address: token.address,
-              amount: ethers.utils
-                .parseUnits(
-                  token.allocated.toString(),
-                  18,
-                  // round.awards.find(award => award.address === token.address)?.decimals || 18, // TODO: get decimals from token
-                )
-                .toString(),
-            };
-          case AssetType.ERC721:
-            return {
-              assetType: AssetType.ERC721,
-              address: token.address,
-              tokenId: BigNumber.from(token.tokenId || 0),
-            };
-          case AssetType.ERC1155:
-            return {
-              assetType: AssetType.ERC1155,
-              address: token.address,
-              tokenId: BigNumber.from(token.tokenId || 0),
-              amount: BigNumber.from(token.allocated),
-            };
-          default:
-            throw new Error('Invalid token type');
-        }
-      });
-    }
-
-    if (round.funding && round.funding.depositingFunds) {
-      // If depositing funds is enabled, we have to choose between two "funding" functions
-      if (round.house.existingHouse) {
-        // If the house already exists, use the `createAndFundRoundOnExistingHouse` function
-        try {
-          const res = await propHouse.createAndFundRoundOnExistingHouse(
-            round.house.address,
-            roundInfo,
-            funding,
-          );
-          setTransactionHash(res.hash);
-          return res;
-        } catch (e) {
-          console.log('error', e);
-        }
-      } else if (round.house.contractURI !== '') {
-        // If the house doesn't exist yet, use the `createAndFundRoundOnNewHouse` function
-        try {
-          const res = await propHouse.createAndFundRoundOnNewHouse(houseInfo, roundInfo, funding);
-          setTransactionHash(res.hash);
-          return res;
-        } catch (e) {
-          console.log('error', e);
-        }
+    // If depositing funds is not enabled, use the original "non-funding" functions
+    if (round.house.existingHouse) {
+      // If the house already exists, use the `createRoundOnExistingHouse` function
+      try {
+        const res = await propHouse.createRoundOnExistingHouse(round.house.address, roundInfo);
+        setTransactionHash(res.hash);
+        return res;
+      } catch (e) {
+        console.log('error', e);
       }
-    } else {
-      // If depositing funds is not enabled, use the original "non-funding" functions
-      if (round.house.existingHouse) {
-        // If the house already exists, use the `createRoundOnExistingHouse` function
-        try {
-          const res = await propHouse.createRoundOnExistingHouse(round.house.address, roundInfo);
-          setTransactionHash(res.hash);
-          return res;
-        } catch (e) {
-          console.log('error', e);
-        }
-      } else if (round.house.contractURI !== '') {
-        // If the house doesn't exist yet, use the `createRoundOnNewHouse` function
-        try {
-          const res = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
-          setTransactionHash(res.hash);
-          return res;
-        } catch (e) {
-          console.log('error', e);
-        }
+    } else if (round.house.contractURI !== '') {
+      // If the house doesn't exist yet, use the `createRoundOnNewHouse` function
+      try {
+        const res = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
+        setTransactionHash(res.hash);
+        return res;
+      } catch (e) {
+        console.log('error', e);
       }
     }
   };
