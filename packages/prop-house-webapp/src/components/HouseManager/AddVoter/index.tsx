@@ -314,7 +314,6 @@ const AddVoter: React.FC<{
           </Group>
         </Group>
 
-        <ViewOnOpenSeaButton address={voter.address} isDisabled={!verifiedAddress} />
         <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),
