@@ -4,15 +4,15 @@ import DepositWidget from '../DepositWidget';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import { Col, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
+import { mergeAssets } from '../../utils/mergeAssets';
 
 const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
   const { round } = props;
 
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
-
   const [balances, setBalances] = useState<any[]>();
-  const [_, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
+  const [_, assetsWithMetadata] = useAssetsWithMetadata(mergeAssets(round.config.awards));
 
   useEffect(() => {
     if (!round || balances) return;
