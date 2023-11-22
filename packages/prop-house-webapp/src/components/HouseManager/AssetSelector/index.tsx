@@ -72,10 +72,6 @@ const AssetSelector: FC<{
     { ...newAward, id: uuidv4(), state: 'dummy' },
   ];
 
-  // const [individualAwards, setIndividualAwards] = useState<Award[]>(
-  //   round.awards[0] && round.awards[0].id !== NewAward.id ? round.awards : initialIndividualAwards,
-  // );
-
   const [individualAwards, setIndividualAwards] = useState<EditableAsset[]>(
     round.awards[0] && round.awards[0].id !== newAward.id ? round.awards : initialIndividualAwards,
   );

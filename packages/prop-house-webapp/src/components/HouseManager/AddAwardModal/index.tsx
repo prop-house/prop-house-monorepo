@@ -9,7 +9,8 @@ import { assetTypeString } from '../../../utils/assetTypeToString';
 import Modal from '../../Modal';
 import AddEthAsset from '../AddEthAsset';
 import AddErc20Asset from '../AddErc20Asset';
-import AddTokenIdAsset from '../AddTokenIdAsset';
+import AddErc721Asset from '../AddErc721Asset';
+import AddErc1155Asset from '../AddErc1155Asset';
 
 const AddAwardModal: React.FC<{
   asset: EditableAsset;
@@ -73,8 +74,10 @@ const AddAwardModal: React.FC<{
                 <AddEthAsset asset={asset} setAsset={setAward} />
               ) : asset.assetType === AssetType.ERC20 ? (
                 <AddErc20Asset asset={asset} setAsset={setAward} />
+              ) : asset.assetType === AssetType.ERC721 ? (
+                <AddErc721Asset asset={asset} setAsset={setAward} />
               ) : (
-                <AddTokenIdAsset asset={asset} setAsset={setAward} />
+                <AddErc1155Asset asset={asset} setAsset={setAward} />
               )}
             </Group>
           </div>

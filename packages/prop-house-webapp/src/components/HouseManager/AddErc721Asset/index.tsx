@@ -1,4 +1,4 @@
-import classes from './AddTokenIdAsset.module.css';
+import classes from './AddErc721Asset.module.css';
 import React, { SetStateAction, useRef, useState } from 'react';
 import Group from '../Group';
 import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
@@ -11,7 +11,7 @@ import AwardAddress from '../AwardAddress';
 import { isAddress } from 'viem';
 import useAddressType from '../../../hooks/useAddressType';
 
-const AddTokenIdAsset: React.FC<{
+const AddErc721Asset: React.FC<{
   asset: EditableAsset;
   setAsset: React.Dispatch<SetStateAction<EditableAsset | undefined>>;
 }> = props => {
@@ -98,4 +98,4 @@ const AddTokenIdAsset: React.FC<{
   );
 };
 
-export default AddTokenIdAsset;
+export default AddErc721Asset;
