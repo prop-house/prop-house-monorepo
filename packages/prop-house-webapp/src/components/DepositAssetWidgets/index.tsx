@@ -1,6 +1,5 @@
 import { AssetType, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import { Col, Row } from 'react-bootstrap';
 import { mergeAssets } from '../../utils/mergeAssets';
 import DepositEthWidget from '../DepositEthWidget';
@@ -10,7 +9,6 @@ const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
 
   const propHouse = usePropHouse();
   const [balances, setBalances] = useState<RoundBalance[]>();
-  const [_, assetsWithMetadata] = useAssetsWithMetadata(mergeAssets(round.config.awards));
 
   useEffect(() => {
     if (!round || balances) return;
@@ -23,15 +21,14 @@ const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
 
   return (
     <Row>
-      {assetsWithMetadata &&
-        assetsWithMetadata.map((asset, i) => (
+      {balances &&
+        mergeAssets(round.config.awards).map((asset, i) => (
           <Col key={i} xl={4}>
-            {asset.assetType === AssetType.ETH && balances && (
+            {asset.assetType === AssetType.ETH && (
               <DepositEthWidget
                 asset={asset}
                 round={round}
-                propHouse={propHouse}
-                balances={balances}
+                ethRoundBalance={balances.find(b => b.asset.assetType === AssetType.ETH)}
               />
             )}
           </Col>

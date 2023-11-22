@@ -1,39 +1,35 @@
-import { AssetType, ETH, PropHouse, Round, RoundBalance } from '@prophouse/sdk-react';
+import { ETH, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
 import DepositWidget from '../DepositWidget';
-import { AssetWithMetadata, useAssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
+import { useAssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import { useAccount, useBalance } from 'wagmi';
 import { useEffect, useState } from 'react';
 
 const DepositEthWidget: React.FC<{
-  asset: AssetWithMetadata;
+  asset: ETH;
   round: Round;
-  propHouse: PropHouse;
-  balances: RoundBalance[];
+  ethRoundBalance?: RoundBalance;
 }> = props => {
-  const { asset, round, propHouse, balances } = props;
+  const { asset, round, ethRoundBalance } = props;
 
+  const propHouse = usePropHouse();
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
 
   const { address: account } = useAccount();
-  const ethBalance = useBalance({ address: account });
+  const ethUserBalance = useBalance({ address: account });
   const [_, assetWithMetadata] = useAssetWithMetadata(asset);
 
   // parse deposited eth balance
   useEffect(() => {
-    if (!balances || balances.length === 0) return;
-
-    const ethBalance = balances.find(b => b.asset.assetType === AssetType.ETH);
-    const ethAsset = ethBalance?.asset as ETH;
-
-    setDepositedAmount(!ethBalance || !ethAsset ? '0' : ethAsset.amount.toString());
-  }, [balances]);
+    if (depositedAmount) return;
+    setDepositedAmount(!ethRoundBalance ? '0' : ethRoundBalance.balance.toString());
+  }, [ethRoundBalance]);
 
   // get user eth balance
   useEffect(() => {
-    if (!ethBalance.data) return;
-    setAvailAmountToDeposit(ethBalance.data.value.toString());
-  }, [ethBalance]);
+    if (!ethUserBalance.data) return;
+    setAvailAmountToDeposit(ethUserBalance.data.value.toString());
+  }, [ethUserBalance]);
 
   const deposit = async (amount: string) => {
     try {
