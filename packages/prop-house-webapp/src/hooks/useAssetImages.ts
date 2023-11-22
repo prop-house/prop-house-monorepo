@@ -87,7 +87,7 @@ const useAssetImages = (assets: Asset[]): string[] | undefined => {
       let updatedImgUris: { [key: string]: string } = {};
       // decode base64 tokenURIs
       const imageUrisPromises = erc721TokenUriFetch.map(uri => {
-        if (!uri.result) return null;
+        if (!uri.result) return '/manager/nft.svg';
         return resolveUri(uri.result as string);
       });
       const imageUris = await Promise.all(imageUrisPromises);
