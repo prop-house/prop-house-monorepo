@@ -49,12 +49,12 @@ const DepositWidget: React.FC<{
     ? isFullyFunded
       ? 1
       : 0
-    : asset.decimals &&
+    : asset.decimals !== undefined &&
       Number(formatUnits(BigInt(depositedAmount), asset.decimals)) /
         Number(formatUnits(BigInt(asset.amount.toString()), asset.decimals));
 
   const parsedDepositedAmount =
-    asset.decimals && formatUnits(BigInt(depositedAmount.toString()), asset.decimals);
+    asset.decimals !== undefined && formatUnits(BigInt(depositedAmount.toString()), asset.decimals);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isErc721 || !asset.decimals) return;
@@ -68,7 +68,7 @@ const DepositWidget: React.FC<{
   };
 
   const handleAllClick = () => {
-    if (isErc721 || !asset.decimals || !amountNeededToBeFullyFunded) return;
+    if (isErc721 || asset.decimals === undefined || !amountNeededToBeFullyFunded) return;
 
     // use avail balance if it's less than the amount needed to be fully funded
     const amountToUse = BigNumber.from(availAmountToDeposit).gt(amountNeededToBeFullyFunded)

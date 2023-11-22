@@ -57,9 +57,9 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
         case AssetType.ERC20:
           return Number(formatUnits(BigInt(asset.amount.toString()), decimals[index]));
         case AssetType.ERC721:
-        case AssetType.ERC1155:
-        default:
           return 1;
+        case AssetType.ERC1155:
+          return Number(asset.amount.toString());
       }
     });
 
