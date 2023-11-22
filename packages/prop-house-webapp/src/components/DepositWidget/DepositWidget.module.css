@@ -30,12 +30,11 @@
   background: white;
 }
 .progressBar :global(.progress) :global(.progress-bar):first-child {
-  margin-right: 0.15rem !important;
-  border-radius: 0.25rem !important;
+  background-color: var(--brand-purple);
+  border-radius: 0.25rem 0 0 0.25rem !important;
 }
 .progressBar :global(.progress) :global(.progress-bar):nth-child(2) {
-  margin-left: 0.15rem !important;
-  border-radius: 0.25rem !important;
+  border-radius: 0 0.25rem 0.25rem 0 !important;
 }
 .progressBar :global(.bg-warning) {
   background-color: var(--border-med) !important;
@@ -58,6 +57,7 @@
   border-radius: 10px;
   padding: 2px 8px;
   font-weight: 500;
+  font-size: 12px;
   width: 100%;
   height: 32px;
   border: 1px solid var(--border-med);
