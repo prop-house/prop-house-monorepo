@@ -32,10 +32,11 @@ const DepositWidget: React.FC<{
   } = props;
 
   const { openConnectModal } = useConnectModal();
-  const [inputValue, setInputValue] = useState<string>('');
-  const [amountToDeposit, setAmountToDeposit] = useState<string>('0');
-
   const isErc721 = asset.assetType === AssetType.ERC721;
+
+  const [inputValue, setInputValue] = useState<string>('');
+  const [amountToDeposit, setAmountToDeposit] = useState<string>(isErc721 ? '1' : '0');
+
   const isFullyFunded = !isErc721
     ? BigNumber.from(depositedAmount).gte(asset.amount)
     : BigNumber.from(depositedAmount).eq(1);
