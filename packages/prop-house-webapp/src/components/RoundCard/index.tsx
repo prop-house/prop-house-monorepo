@@ -10,8 +10,13 @@ import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import RoundCardStatusBar from '../RoundCardStatusBar';
 
-const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolean }> = props => {
-  const { round, house, displayBottomBar } = props;
+const RoundCard: React.FC<{
+  round: Round;
+  house: House;
+  displayBottomBar: boolean;
+  onClick?: () => void;
+}> = props => {
+  const { round, house, displayBottomBar, onClick } = props;
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +55,15 @@ const RoundCard: React.FC<{ round: Round; house: House; displayBottomBar: boolea
       }}
     />
   ) : (
-    <div onClick={e => navigate(`/${round.address}`)}>
+    <div
+      onClick={e => {
+        if (onClick) {
+          onClick();
+          return;
+        }
+        navigate(`/round/${round.address}`);
+      }}
+    >
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}

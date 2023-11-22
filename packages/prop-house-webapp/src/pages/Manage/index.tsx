@@ -3,16 +3,18 @@ import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
 import RoundCard from '../../components/RoundCard';
+import { useNavigate } from 'react-router-dom';
 
 const Manage = () => {
   const [rounds, setRounds] = useState<Round[]>();
   const [houses, setHouses] = useState<House[]>();
 
   const propHouse = usePropHouse();
+  const navigate = useNavigate();
   const { address: account } = useAccount();
 
   useEffect(() => {
-    if (!account) return;
+    if (!account || rounds) return;
 
     const fetchRounds = async () => {
       try {
@@ -31,12 +33,19 @@ const Manage = () => {
   return (
     <Container>
       <Row>
-        <Col xl={6}>
-          <h5>Manage Rounds</h5>
-          {rounds &&
-            houses &&
-            rounds.map(r => <RoundCard round={r} house={houses[0]} displayBottomBar={true} />)}
-        </Col>
+        <h5>Manage Rounds</h5>
+        {rounds &&
+          houses &&
+          rounds.map((r, i) => (
+            <Col key={i} xl={6}>
+              <RoundCard
+                round={r}
+                house={houses[0]}
+                displayBottomBar={false}
+                onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
+              />
+            </Col>
+          ))}
       </Row>
     </Container>
   );

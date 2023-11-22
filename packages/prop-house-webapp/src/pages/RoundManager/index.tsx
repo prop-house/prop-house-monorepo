@@ -37,38 +37,40 @@ const RoundManager = () => {
     <Container>
       {loading ? (
         <LoadingIndicator />
-      ) : !round ? (
+      ) : !loading && !round ? (
         <>error loading round</>
       ) : (
-        <>
-          <Row>
-            <Col className={classes.linksCol}>
-              <span onClick={() => navigate('/manage')}>Manage rounds →</span>{' '}
-              <span>{round.title}</span>
-            </Col>
-          </Row>
-          <Row>
-            <Col className={classes.headerCol}>
-              <div>
-                <img src={round.house.imageURI} className={classes.houseImg} />
-              </div>
-              <div>
-                <div className={classes.roundName}>{round.title}</div>
-                <div>{round.address}</div>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Tabs defaultActiveKey="rounds" className={classes.tabs}>
-              <Tab eventKey="rounds" title="Deposit awards">
-                <DepositAssetWidgets round={round} />
-              </Tab>
-              <Tab eventKey="activity" title="Cancel round">
-                Cancel round
-              </Tab>
-            </Tabs>
-          </Row>
-        </>
+        round && (
+          <>
+            <Row>
+              <Col className={classes.linksCol}>
+                <span onClick={() => navigate('/manage')}>Manage rounds →</span>{' '}
+                <span>{round.title}</span>
+              </Col>
+            </Row>
+            <Row>
+              <Col className={classes.headerCol}>
+                <div>
+                  <img src={round.house.imageURI} className={classes.houseImg} />
+                </div>
+                <div>
+                  <div className={classes.roundName}>{round.title}</div>
+                  <div>{round.address}</div>
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Tabs defaultActiveKey="rounds" className={classes.tabs}>
+                <Tab eventKey="rounds" title="Deposit awards">
+                  <DepositAssetWidgets round={round} />
+                </Tab>
+                <Tab eventKey="activity" title="Cancel round">
+                  Cancel round
+                </Tab>
+              </Tabs>
+            </Row>
+          </>
+        )
       )}
     </Container>
   );

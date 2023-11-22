@@ -2,7 +2,7 @@
   border: 1px solid var(--border-light);
   padding: 1rem 1.25rem;
   margin: 0.75rem 0;
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.1s;
   box-shadow: none;
 }
 
