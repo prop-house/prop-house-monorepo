@@ -1,7 +1,7 @@
 .linksCol {
   display: flex;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .linksCol span:first-child {
@@ -27,6 +27,25 @@
   font-size: 26px;
   font-weight: 550;
 }
+.roundAddress {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 2px var(--border-med) solid;
+  color: var(--brand-gray);
+  font-weight: bold;
+  width: fit-content;
+}
+.roundAddress:hover {
+  background-color: var(--border-med) !important;
+  cursor: pointer;
+}
+.roundAddress svg {
+  margin-left: 12px;
+}
 
 .tabs {
   border-bottom: none;
@@ -37,17 +56,18 @@
 .tabs li button {
   font-size: 18px;
   font-weight: 500;
-  color: var(--brand-gray);
+  color: var(--brand-gray-transparent);
   transition: none !important;
   border: none !important;
+  font-weight: bold !important;
 }
 .tabs li button:hover {
   border: none !important;
-  color: inherit !important;
+  color: var(--brand-gray-semi-transparent);
 }
 .tabs li button[aria-selected='true'] {
   border: none !important;
-  font-weight: bold !important;
+
   color: var(--brand-black) !important;
 
   background-color: transparent !important;

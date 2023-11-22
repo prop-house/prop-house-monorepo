@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react';
 import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { isAddress } from 'viem';
+import { FaArrowRightLong, FaArrowUpRightFromSquare } from 'react-icons/fa6';
+
+import trimEthAddress from '../../utils/trimEthAddress';
+import { openInNewTab } from '../../utils/openInNewTab';
+import buildEtherscanPath from '../../utils/buildEtherscanPath';
 
 const RoundManager = () => {
   const propHouse = usePropHouse();
@@ -44,7 +49,9 @@ const RoundManager = () => {
           <>
             <Row>
               <Col className={classes.linksCol}>
-                <span onClick={() => navigate('/manage')}>Manage rounds →</span>{' '}
+                <span onClick={() => navigate('/manage')}>
+                  Manage rounds <FaArrowRightLong size={12} />
+                </span>{' '}
                 <span>{round.title}</span>
               </Col>
             </Row>
@@ -55,7 +62,12 @@ const RoundManager = () => {
                 </div>
                 <div>
                   <div className={classes.roundName}>{round.title}</div>
-                  <div>{round.address}</div>
+                  <div
+                    className={classes.roundAddress}
+                    onClick={() => openInNewTab(buildEtherscanPath(round.address))}
+                  >
+                    {trimEthAddress(round.address, 'long')} <FaArrowUpRightFromSquare size={12} />
+                  </div>
                 </div>
               </Col>
             </Row>
