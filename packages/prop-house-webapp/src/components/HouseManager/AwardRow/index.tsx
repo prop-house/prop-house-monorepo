@@ -37,7 +37,7 @@ const AwardRow: React.FC<{ award: EditableAsset }> = props => {
                 {(isEth || isErc20) &&
                   `${formatCommaNum(Number(asset.parsedAmount), isEth ? 3 : 2)} ${asset.symbol}`}
                 {(isErc1155 || isErc721) &&
-                  `${asset.amount && asset.amount} ${asset.symbol} #${
+                  `${isErc1155 ? asset.amount : ''} ${asset.symbol} #${
                     asset.tokenId &&
                     (asset.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
                   }`}
