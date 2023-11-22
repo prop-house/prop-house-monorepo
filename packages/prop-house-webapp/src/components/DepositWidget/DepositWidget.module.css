@@ -18,6 +18,11 @@
   border-radius: 2px !important;
 }
 
+.awardNameRow {
+  display: flex;
+  align-items: center;
+}
+
 .amount {
   color: var(--brand-gray);
   font-weight: 700 !important;

@@ -37,7 +37,7 @@ const DepositWidget: React.FC<{
 
   const isErc721 = asset.assetType === AssetType.ERC721;
   const isFullyFunded = !isErc721
-    ? depositedAmount >= asset.amount
+    ? BigNumber.from(depositedAmount).gte(asset.amount)
     : BigNumber.from(depositedAmount).eq(1);
   const accountHasAssetToDeposit = BigNumber.from(availAmountToDeposit).gt(0);
 
@@ -153,7 +153,7 @@ const DepositWidget: React.FC<{
     <Card bgColor={CardBgColor.White} borderRadius={CardBorderRadius.twenty}>
       <Group classNames={classes.row}>
         <Group row classNames={classes.row}>
-          <Group row gap={4} classNames={classes.awardNameImg}>
+          <Group row gap={4} classNames={classes.awardNameRow}>
             <div className={classes.imageContainer}>
               <img
                 className={classes.image}
@@ -178,7 +178,7 @@ const DepositWidget: React.FC<{
           <ProgressBar>
             <ProgressBar now={percentageDeposited ? percentageDeposited * 100 : 0} />
             <ProgressBar
-              now={100 - (percentageDeposited ? percentageDeposited : 0)}
+              now={100 - (percentageDeposited ? percentageDeposited * 100 : 0)}
               variant="warning"
             />
           </ProgressBar>
