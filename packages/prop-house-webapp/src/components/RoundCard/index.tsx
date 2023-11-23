@@ -61,7 +61,7 @@ const RoundCard: React.FC<{
           onClick();
           return;
         }
-        navigate(`/round/${round.address}`);
+        navigate(`/${round.address}`);
       }}
     >
       <Card
