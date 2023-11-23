@@ -7,7 +7,7 @@ import { BigNumber } from 'ethers';
 export const mergeAssets = (assets: Asset[]): Asset[] => {
   let mergedAssets: Asset[] = [];
 
-  assets.map(asset => {
+  assets.forEach(asset => {
     const existingAsset = mergedAssets.find(a => {
       if (asset.assetType === AssetType.ETH) return a.assetType === AssetType.ETH;
       if (asset.assetType === AssetType.ERC20)

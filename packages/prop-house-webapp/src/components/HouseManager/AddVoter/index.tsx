@@ -6,7 +6,6 @@ import Divider from '../../Divider';
 import Group from '../Group';
 import { newVoter, NewVoter } from '../VotersConfig';
 import VoterAddress from '../VoterAddress';
-import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';

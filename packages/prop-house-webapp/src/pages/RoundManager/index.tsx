@@ -58,7 +58,7 @@ const RoundManager = () => {
             <Row>
               <Col className={classes.headerCol}>
                 <div>
-                  <img src={round.house.imageURI} className={classes.houseImg} />
+                  <img src={round.house.imageURI} className={classes.houseImg} alt={round.title} />
                 </div>
                 <div>
                   <div className={classes.roundName}>{round.title}</div>

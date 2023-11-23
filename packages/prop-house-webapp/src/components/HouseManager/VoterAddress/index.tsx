@@ -52,7 +52,7 @@ const VoterAddress: React.FC<{
       amount: '0',
     };
     setWrapperAsset(_wrapperAsset);
-  }, [contractType]);
+  }, [contractType, voter, wrapperAsset]);
 
   return (
     <>

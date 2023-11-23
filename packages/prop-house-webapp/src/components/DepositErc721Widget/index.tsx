@@ -38,13 +38,13 @@ const DepositErc721Widget: React.FC<{
   useEffect(() => {
     if (!ownerOfErc721 || hasErc721ToDeposit !== undefined) return;
     setHasErc721ToDeposit(ownerOfErc721 === account);
-  }, [ownerOfErc721]);
+  }, [ownerOfErc721, hasErc721ToDeposit, account]);
 
   // parse erc721 balance in round
   useEffect(() => {
     if (depositedAmount) return;
     setDepositedAmount(!erc721RoundBalance ? '0' : erc721RoundBalance.balance.toString());
-  }, [erc721RoundBalance]);
+  }, [erc721RoundBalance, depositedAmount]);
 
   // ph contract is approved to pull erc721
   const { data: approved } = useContractRead({
@@ -57,7 +57,7 @@ const DepositErc721Widget: React.FC<{
   useEffect(() => {
     if (!approved || isApproved !== undefined) return;
     setIsApproved(approved === propHouse.contract.address);
-  }, [approved]);
+  }, [approved, isApproved, propHouse.contract.address]);
 
   // request approval for ph contract to pull user's tokens
   const { config } = usePrepareContractWrite({

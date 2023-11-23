@@ -53,7 +53,7 @@ const useAssetDecimals = (assets: Asset[]): number[] | undefined => {
       decimals === undefined || decimals.some((aD, i) => aD !== mappedDecimals[i]);
 
     if (shouldUpdate) setDecimals(mappedDecimals);
-  }, [assets]);
+  }, [assets, _decimals, isLoadingDecimals, decimals, erc20Assets]);
 
   return decimals;
 };

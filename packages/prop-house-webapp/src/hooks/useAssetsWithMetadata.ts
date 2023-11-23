@@ -60,6 +60,8 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
           return 1;
         case AssetType.ERC1155:
           return Number(asset.amount.toString());
+        default:
+          return 0;
       }
     });
 
@@ -86,7 +88,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
     });
 
     if (!isAssetsWithMetadataSame) setAssetsWithMetadata(updated);
-  }, [assets, tokenImgs, decimals, symbols, names]);
+  }, [assets, tokenImgs, decimals, symbols, names, assetsWithMetadata]);
 
   return [false, assetsWithMetadata];
 };

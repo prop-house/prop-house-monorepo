@@ -49,7 +49,7 @@ const useAssetSymbols = (assets: Asset[]): string[] | undefined => {
     const shouldUpdate = symbols === undefined || symbols.some((aD, i) => aD !== mappedSymbols[i]);
 
     if (shouldUpdate) setSymbols(mappedSymbols);
-  }, [assets]);
+  }, [assets, fetchedSymbols, isLoadingSymbols, symbols, nonEthContracts]);
 
   return symbols;
 };

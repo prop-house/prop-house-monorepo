@@ -47,7 +47,7 @@ const VoterCard: React.FC<{
       amount: '0',
     } as Asset;
     setWrapperAsset(_wrapperAsset);
-  }, [contractType]);
+  }, [contractType, wrapperAsset, address, tokenId]);
 
   return (
     <div className={classes.container}>

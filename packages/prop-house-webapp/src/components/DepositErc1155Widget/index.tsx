@@ -32,14 +32,14 @@ const DepositErc1155Widget: React.FC<{
   useEffect(() => {
     if (!balanceOf || availAmountToDeposit !== undefined) return;
     setAvailAmountToDeposit(balanceOf.valueOf().toString());
-  }, [balanceOf]);
+  }, [balanceOf, availAmountToDeposit]);
 
   // parse token balance in round already
   useEffect(() => {
     if (depositedAmount !== undefined) return;
 
     setDepositedAmount(!erc1155RoundBalance ? '0' : erc1155RoundBalance.balance.toString());
-  }, [erc1155RoundBalance]);
+  }, [erc1155RoundBalance, depositedAmount]);
 
   // ph contract is approved to pull tokens
   const { data: approved } = useContractRead({
@@ -52,7 +52,7 @@ const DepositErc1155Widget: React.FC<{
   useEffect(() => {
     if (!approved || isApproved !== undefined) return;
     setIsApproved(approved);
-  }, [approved]);
+  }, [approved, isApproved]);
 
   // request approval for ph contract to pull user's tokens
   const { config } = usePrepareContractWrite({

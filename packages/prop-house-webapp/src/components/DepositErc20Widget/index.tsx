@@ -1,4 +1,4 @@
-import { AssetType, ERC20, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
+import { ERC20, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
 import DepositWidget from '../DepositWidget';
 import { useAssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import {
@@ -32,7 +32,7 @@ const DepositErc20Widget: React.FC<{
   useEffect(() => {
     if (depositedAmount) return;
     setDepositedAmount(!erc20RoundBalance ? '0' : erc20RoundBalance.balance.toString());
-  }, [erc20RoundBalance]);
+  }, [erc20RoundBalance, depositedAmount]);
 
   // get user erc20 token balance
   useEffect(() => {
@@ -52,7 +52,7 @@ const DepositErc20Widget: React.FC<{
     if (allowance === undefined) return;
     const _allowance = BigInt(allowance as string);
     setHasRequiredAllowance(_allowance >= BigInt(asset.amount.toString()));
-  }, [allowance]);
+  }, [allowance, asset.amount]);
 
   // request approval for ph contract to pull user's tokens
   const { config } = usePrepareContractWrite({
@@ -66,11 +66,10 @@ const DepositErc20Widget: React.FC<{
   const deposit = async (amount: string) => {
     try {
       const _asset = {
-        assetType: AssetType.ERC20,
-        address: asset.address,
+        ...asset,
         amount,
       };
-      await propHouse.depositTo(round.address, asset);
+      await propHouse.depositTo(round.address, _asset);
     } catch (e) {
       console.log(e);
     }

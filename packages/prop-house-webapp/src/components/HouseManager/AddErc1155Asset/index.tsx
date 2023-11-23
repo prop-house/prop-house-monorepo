@@ -17,7 +17,6 @@ const AddErc1155Asset: React.FC<{
   const { asset, setAsset } = props;
 
   const [isTyping, setIsTyping] = useState(false);
-  const [value, setValue] = useState('');
   const [tokenIdValue, setTokenIdValue] = useState(asset.tokenId ? asset.tokenId : '');
   const inputRef = useRef<HTMLInputElement>(null);
   const { data: contractType } = useAddressType(asset.address);

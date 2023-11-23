@@ -47,7 +47,7 @@ const useAssetNames = (assets: Asset[]): string[] | undefined => {
     const shouldUpdate = names === undefined || names.some((n, i) => n !== updatedNames[i]);
 
     if (shouldUpdate) setNames(updatedNames);
-  }, [assets]);
+  }, [assets, fetchedNames, loadingNames, names, nonEthContracts]);
 
   return names;
 };

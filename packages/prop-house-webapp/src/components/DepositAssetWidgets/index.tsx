@@ -20,7 +20,7 @@ const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
       setBalances(balances);
     };
     fetchBalances();
-  }, [balances]);
+  }, [balances, propHouse.query, round]);
 
   return (
     <Row>

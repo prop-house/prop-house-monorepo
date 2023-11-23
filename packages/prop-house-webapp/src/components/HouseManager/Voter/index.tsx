@@ -5,7 +5,6 @@ import { Asset, AssetType, VotingStrategyType } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import AddressAvatar from '../../AddressAvatar';
 import Button, { ButtonColor } from '../../Button';
-import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import useAddressType from '../../../hooks/useAddressType';
 import useAssetImages from '../../../hooks/useAssetImages';
 import useAssetNames from '../../../hooks/useAssetNames';
@@ -48,7 +47,7 @@ const Voter: React.FC<{
       amount: '0',
     } as Asset;
     setWrapperAsset(_wrapperAsset);
-  }, [contractType]);
+  }, [contractType, tokenId, wrapperAsset, address]);
 
   return (
     <Group row gap={15} classNames={classes.row}>

@@ -40,7 +40,7 @@ const AddErc20Asset: React.FC<{
 
     const units = parseUnits(value, decimals);
     if (units.toString() !== asset.amount) setAsset({ ...asset, amount: units.toString() });
-  }, [decimals, asset, value]);
+  }, [decimals, asset, value, setAsset]);
 
   // updated value displayed in the input on asset.amount change
   useEffect(() => {

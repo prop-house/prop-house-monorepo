@@ -1,7 +1,6 @@
 import classes from './AddErc721Asset.module.css';
 import React, { SetStateAction, useRef, useState } from 'react';
 import Group from '../Group';
-import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
 import InfoSymbol from '../../InfoSymbol';
