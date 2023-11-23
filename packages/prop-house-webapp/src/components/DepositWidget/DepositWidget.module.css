@@ -104,4 +104,14 @@
 }
 .bottomContentBtn {
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.postLoadMsg {
+  color: var(--brand-gray);
+  text-align: center;
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  font-style: italic;
 }

@@ -11,6 +11,7 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { FaCheckCircle } from 'react-icons/fa';
 import { useState } from 'react';
 import { BigNumber } from 'ethers';
+import LoadingIndicator from '../LoadingIndicator';
 
 const DepositWidget: React.FC<{
   asset: AssetWithMetadata;
@@ -20,6 +21,8 @@ const DepositWidget: React.FC<{
   depositAsset: (amount: string) => void;
   isApproved?: boolean;
   approve?: () => void;
+  loading: boolean;
+  postLoadMsg: string;
 }> = props => {
   const {
     asset,
@@ -29,6 +32,8 @@ const DepositWidget: React.FC<{
     isApproved,
     approve,
     depositAsset,
+    loading,
+    postLoadMsg,
   } = props;
 
   const { openConnectModal } = useConnectModal();
@@ -105,7 +110,7 @@ const DepositWidget: React.FC<{
       <Group>
         <Group>
           <Button
-            text="Deposit"
+            text={loading ? <LoadingIndicator height={22} width={22} color="white" /> : 'Deposit'}
             bgColor={ButtonColor.Pink}
             classNames={classes.bottomContentBtn}
             disabled={
@@ -115,6 +120,7 @@ const DepositWidget: React.FC<{
             }
             onClick={() => depositAsset(amountToDeposit)}
           />
+          <p className={classes.postLoadMsg}>{postLoadMsg}</p>
         </Group>
       </Group>
     </>
@@ -138,12 +144,21 @@ const DepositWidget: React.FC<{
           Account has no {asset.symbol} available
         </Group>
       ) : accountHasAssetToDeposit && !isApproved ? (
-        <Button
-          text={`Approve ${asset.symbol}`}
-          bgColor={ButtonColor.Pink}
-          classNames={classes.bottomContentBtn}
-          onClick={approve}
-        />
+        <>
+          <Button
+            text={
+              loading ? (
+                <LoadingIndicator height={22} width={22} color="white" />
+              ) : (
+                `Approve ${asset.symbol}`
+              )
+            }
+            bgColor={ButtonColor.Pink}
+            classNames={classes.bottomContentBtn}
+            onClick={approve}
+          />
+          <p>{postLoadMsg}</p>
+        </>
       ) : (
         accountHasAssetToDeposit && isApproved && inputAndDeposit
       )}

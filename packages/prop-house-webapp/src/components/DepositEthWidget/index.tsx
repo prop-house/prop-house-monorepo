@@ -12,12 +12,14 @@ const DepositEthWidget: React.FC<{
   const { asset, round, ethRoundBalance } = props;
 
   const propHouse = usePropHouse();
-  const [depositedAmount, setDepositedAmount] = useState<string>();
-  const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
-
   const { address: account } = useAccount();
   const ethUserBalance = useBalance({ address: account });
   const [_, assetWithMetadata] = useAssetWithMetadata(asset);
+
+  const [depositedAmount, setDepositedAmount] = useState<string>();
+  const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
+  const [loadingTx, setLoadingTx] = useState(false);
+  const [postLoadMsg, setPostLoadMsg] = useState('');
 
   // parse deposited eth balance
   useEffect(() => {
@@ -33,13 +35,20 @@ const DepositEthWidget: React.FC<{
 
   const deposit = async (amount: string) => {
     try {
+      setLoadingTx(true);
       const asset = {
         assetType: 0,
         amount,
       };
-      await propHouse.depositTo(round.address, asset);
+      const tx = await propHouse.depositTo(round.address, asset);
+      await tx.wait();
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit successful');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     } catch (e) {
-      console.log(e);
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit failed');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     }
   };
 
@@ -51,9 +60,11 @@ const DepositEthWidget: React.FC<{
       availAmountToDeposit={availAmountToDeposit}
       isApproved={true}
       depositAsset={deposit}
+      loading={loadingTx}
+      postLoadMsg={postLoadMsg}
     />
   ) : (
-    <>missing data</>
+    <></>
   );
 };
 
