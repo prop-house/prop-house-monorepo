@@ -6,17 +6,16 @@ import Divider from '../../Divider';
 import Group from '../Group';
 import { newVoter, NewVoter } from '../VotersConfig';
 import VoterAddress from '../VoterAddress';
-import ViewOnOpenSeaButton from '../ViewOnOpenSeaButton';
 import Text from '../Text';
 import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { AssetType, GovPowerStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
-import { getTokenInfo } from '../utils/getTokenInfo';
-import useAddressType from '../utils/useAddressType';
+import { getTokenInfo } from '../../../utils/getTokenInfo';
+import useAddressType from '../../../hooks/useAddressType';
 import { saveRound } from '../../../state/thunks';
-import createVoterStrategy from '../utils/createVoterStrategy';
+import createVoterStrategy from '../../../utils/createVoterStrategy';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 
 /**
@@ -314,7 +313,6 @@ const AddVoter: React.FC<{
           </Group>
         </Group>
 
-        <ViewOnOpenSeaButton address={voter.address} isDisabled={!verifiedAddress} />
         <VotesPerAddress voter={voter} disabled={!verifiedAddress} handleVote={handleVoteChange} />
       </Group>
     ),

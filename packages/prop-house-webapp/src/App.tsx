@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../src/css/globals.css';
 import { Suspense, useEffect, useState } from 'react';
 import NavBar from './components/NavBar';
-import Create from './pages/Create';
+import CreateProp from './pages/CreateProp';
 import Footer from './components/Footer';
 import './App.css';
 import FAQ from './pages/FAQ';
@@ -25,10 +25,12 @@ import {
 } from '@rainbow-me/rainbowkit';
 import { PropHouseProvider } from '@prophouse/sdk-react';
 import '@rainbow-me/rainbowkit/styles.css';
-import HouseManager from './pages/HouseManager';
+import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
+import Manage from './pages/Manage';
+import RoundManager from './pages/RoundManager';
 
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
@@ -86,8 +88,10 @@ function App() {
                     <Route path="/" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create-prop" element={<Create />} />
-                    <Route path="/create-round" element={<HouseManager />} />
+                    <Route path="/create-prop" element={<CreateProp />} />
+                    <Route path="/create-round" element={<CreateRound />} />
+                    <Route path="/manage" element={<Manage />} />
+                    <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

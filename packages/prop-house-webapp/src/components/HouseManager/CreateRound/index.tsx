@@ -17,14 +17,13 @@ import sanitizeHtml from 'sanitize-html';
 import { useDispatch } from 'react-redux';
 import { ForceOpenInNewTab } from '../../ForceOpenInNewTab';
 import { VotingStrategyType } from '@prophouse/sdk-react';
-import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
-import { getDateFromDuration } from '../utils/getDateFromDuration';
+import { getDateFromTimestamp } from '../../../utils/getDateFromTimestamp';
+import { getDateFromDuration } from '../../../utils/getDateFromDuration';
 import OverflowScroll from '../OverflowScroll';
 import EditRoundInfoModal from '../EditRoundInfoModal';
 import EditDatesModal from '../EditDatesModal';
 import EditAwardsModal from '../EditAwardsModal';
 import EditVotersModal from '../EditVotersModal';
-import TokenApprovals from '../TokenApprovals';
 
 /**
  * @overview
@@ -120,6 +119,14 @@ const CreateRound = () => {
                     multiplier={Number(m.govPower)}
                   />
                 ))
+              ) : s.strategyType === VotingStrategyType.BALANCE_OF_ERC1155 ? (
+                <VoterCard
+                  key={idx}
+                  type={s.strategyType}
+                  tokenId={s.tokenId}
+                  address={s.address}
+                  multiplier={s.multiplier}
+                />
               ) : (
                 <VoterCard
                   key={idx}
@@ -155,8 +162,6 @@ const CreateRound = () => {
       </Group>
 
       <Divider />
-
-      <TokenApprovals />
 
       <Footer />
     </>

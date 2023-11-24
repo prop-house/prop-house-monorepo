@@ -3,11 +3,12 @@ import clsx from 'clsx';
 import Group from '../Group';
 import Text from '../Text';
 import trimEthAddress from '../../../utils/trimEthAddress';
-import { Award } from '../AssetSelector';
+import { EditableAsset } from '../AssetSelector';
+import { AssetWithMetadata, useAssetWithMetadata } from '../../../hooks/useAssetsWithMetadata';
 
 const AwardAddress: React.FC<{
   isTyping: boolean;
-  award: Award;
+  award: EditableAsset;
   placeholder?: string;
   handleBlur: () => void;
   handleSwitch: () => void;
@@ -15,7 +16,8 @@ const AwardAddress: React.FC<{
 }> = props => {
   const { award, isTyping, handleBlur, handleChange, handleSwitch, placeholder } = props;
 
-  const verifiedAddress = award.state === 'success';
+  const [loading, assetWithMetadata] = useAssetWithMetadata(award);
+  const asset = { ...assetWithMetadata, ...award } as EditableAsset & AssetWithMetadata;
 
   return (
     <>
@@ -24,18 +26,21 @@ const AwardAddress: React.FC<{
           <Text type="subtitle">Contract Address</Text>
 
           <Group>
-            {verifiedAddress ? (
+            {award.state === 'valid' ? (
               // after onBlur verification, show the address' token info
               // it's a button so that the user can click it to switch back to the input
               <button className={classes.addressSuccess} onClick={handleSwitch}>
                 {
                   <div className={classes.addressImgAndTitle}>
-                    <img
-                      src={award.image ? award.image : '/manager/fallback.png'}
-                      alt={award.name}
-                    />
-
-                    <span>{award.name}</span>
+                    {!loading && (
+                      <>
+                        <img
+                          src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
+                          alt={asset.symbol}
+                        />
+                        <span>{asset.symbol}</span>
+                      </>
+                    )}
                   </div>
                 }
 
@@ -53,9 +58,7 @@ const AwardAddress: React.FC<{
                   onBlur={handleBlur}
                   onKeyDown={e => e.key === 'Enter' && handleBlur()}
                   onChange={e => handleChange(e.target.value)}
-                  placeholder={
-                    placeholder ? placeholder : 'ex: 0x1234567890ABCDEF1234567890ABCDEF12345678'
-                  }
+                  placeholder={placeholder ? placeholder : '0x0...000'}
                 />
               </div>
             )}

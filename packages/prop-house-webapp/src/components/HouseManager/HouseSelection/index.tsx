@@ -7,7 +7,7 @@ import Text from '../Text';
 import { HiOutlineChevronRight as ArrowIcon } from 'react-icons/hi';
 import Divider from '../../Divider';
 import { v4 as uuidv4 } from 'uuid';
-import { buildImageURL } from '../utils/buildImageURL';
+import { buildImageURL } from '../../../utils/buildImageURL';
 import sanitizeHtml from 'sanitize-html';
 import Markdown from 'markdown-to-jsx';
 import { changeTagToParagraph, changeTagToSpan } from '../../ChangeTo';

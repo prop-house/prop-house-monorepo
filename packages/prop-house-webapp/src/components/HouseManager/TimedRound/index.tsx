@@ -3,21 +3,20 @@ import 'react-datetime/css/react-datetime.css';
 import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
 import Group from '../Group';
-import InstructionBox from '../InstructionBox';
 import Text from '../Text';
 import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import NumberInput from '../NumberInput';
 import Bullet from '../Bullet';
 import formatDateTime from '../../../utils/formatDateTime';
-import { getDateFromTimestamp } from '../utils/getDateFromTimestamp';
-import { getSecondsFromDays } from '../utils/getSecondsFromDays';
+import { getDateFromTimestamp } from '../../../utils/getDateFromTimestamp';
+import { getSecondsFromDays } from '../../../utils/getSecondsFromDays';
 import { NewRound } from '../../../state/slices/round';
 import { useState } from 'react';
-import { getDateFromDuration } from '../utils/getDateFromDuration';
-import { getDaysFromSeconds } from '../utils/getDaysFromSeconds';
-import { getDurationBetweenDatesInSeconds } from '../utils/getDurationBetweenDatesInSeconds';
-import { getTimestampFromDate } from '../utils/getTimestampFromDate';
+import { getDateFromDuration } from '../../../utils/getDateFromDuration';
+import { getDaysFromSeconds } from '../../../utils/getDaysFromSeconds';
+import { getDurationBetweenDatesInSeconds } from '../../../utils/getDurationBetweenDatesInSeconds';
+import { getTimestampFromDate } from '../../../utils/getTimestampFromDate';
 import { useDispatch } from 'react-redux';
 import { saveRound } from '../../../state/thunks';
 
@@ -170,10 +169,6 @@ const TimedRound: React.FC<{
 
   return (
     <>
-      <Group margin={16}>
-        <InstructionBox title="How timing works" text="Your round starts" />
-      </Group>
-
       <Group gap={6}>
         <Text type="subtitle">Round start time</Text>
 

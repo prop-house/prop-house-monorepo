@@ -10,7 +10,7 @@ import { isLongName } from '../../utils/isLongName';
 import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
 import { House, Round } from '@prophouse/sdk-react';
-import { getDateFromTimestamp } from '../HouseManager/utils/getDateFromTimestamp';
+import { getDateFromTimestamp } from '../../utils/getDateFromTimestamp';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 
 const RoundHeader: React.FC<{

@@ -113,6 +113,16 @@ const EditVotersModal: React.FC<{
                       removeVoter={handleRemoveVoter}
                     />
                   ))
+                ) : s.strategyType === VotingStrategyType.BALANCE_OF_ERC1155 ? (
+                  <Voter
+                    key={idx}
+                    type={s.strategyType}
+                    address={s.address}
+                    tokenId={s.tokenId}
+                    multiplier={s.multiplier}
+                    isDisabled={editedVoters.length === 1}
+                    removeVoter={handleRemoveVoter}
+                  />
                 ) : (
                   <Voter
                     key={idx}

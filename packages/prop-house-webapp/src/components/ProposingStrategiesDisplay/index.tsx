@@ -4,7 +4,7 @@ import trimEthAddress from '../../utils/trimEthAddress';
 import { useState } from 'react';
 import Modal from '../Modal';
 import { BsPersonFill } from 'react-icons/bs';
-import buildEtherscanPath from '../HouseManager/utils/buildEtherscanPath';
+import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import useTokenNames from '../../hooks/useTokenNames';
 
 const ProposingStrategiesDisplay: React.FC<{

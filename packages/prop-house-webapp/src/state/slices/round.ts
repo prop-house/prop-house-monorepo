@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { isRoundStepValid } from '../../components/HouseManager/utils/isRoundStepValid';
+import { isRoundStepValid } from '../../utils/isRoundStepValid';
 import { AssetType, GovPowerStrategyConfig, HouseType, RoundType } from '@prophouse/sdk-react';
-import { Award, NewAward } from '../../components/HouseManager/AssetSelector';
+import { EditableAsset, newAward } from '../../components/HouseManager/AssetSelector';
 
 export interface HouseProps {
   existingHouse: boolean;
@@ -49,8 +49,7 @@ export interface NewRound {
   currencyType: string;
   description: string;
   voters: GovPowerStrategyConfig[];
-  awards: Award[];
-  splitAwards: boolean;
+  awards: EditableAsset[];
   roundType: RoundType;
   funding: Funding;
 }
@@ -65,8 +64,7 @@ export const initialRound: NewRound = {
   currencyType: '',
   description: '',
   voters: [],
-  awards: [NewAward],
-  splitAwards: true,
+  awards: [newAward],
   roundType: RoundType.TIMED,
   funding: { tokens: [], depositingFunds: false },
 };
@@ -88,11 +86,9 @@ const initialState: RoundState = {
 // this function removes any awards that are not completed to
 // prevent the user from creating a round with incomplete awards
 const removeIncompleteAwards = (round: NewRound) => {
-  if (!round.splitAwards) {
-    const filteredAwards = round.awards.filter(award => award.state === 'success');
-    round.awards = filteredAwards;
-    round.numWinners = filteredAwards.length;
-  }
+  const filteredAwards = round.awards.filter(award => award.state === 'saved');
+  round.awards = filteredAwards;
+  round.numWinners = filteredAwards.length;
 };
 
 export const roundSlice = createSlice({

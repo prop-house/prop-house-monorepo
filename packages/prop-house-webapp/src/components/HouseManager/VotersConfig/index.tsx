@@ -16,7 +16,7 @@ import {
 
 import VotersModal from '../VotersModal';
 import { isAddress } from 'ethers/lib/utils.js';
-import createUploadMessage from '../utils/createUploadMessage';
+import createUploadMessage from '../../../utils/createUploadMessage';
 import { saveRound } from '../../../state/thunks';
 import Button, { ButtonColor } from '../../Button';
 import OverflowScroll from '../OverflowScroll';
@@ -254,6 +254,7 @@ const VotersConfig = () => {
         <Text type="subtitle">Voters</Text>
         <Text type="body">Determine who can vote in your round and how many votes they get.</Text>
       </Group>
+      <Divider />
 
       {showVotersModal && (
         <VotersModal
@@ -294,7 +295,7 @@ const VotersConfig = () => {
                   multiplier={Number(m.govPower)}
                   removeVoter={handleRemoveVoter}
                   // if there's 1 voter, we don't want to allow them to remove it
-                  isDisabled={s.members.length === 1}
+                  isDisabled={s.members.length === 1 && voters.length === 1}
                 />
               ))
             ) : (

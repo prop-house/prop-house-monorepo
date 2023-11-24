@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import buildOpenSeaPath from '../utils/buildOpenSeaPath';
+import buildOpenSeaPath from '../../../utils/buildOpenSeaPath';
 import classes from './ViewOnOpenSeaButton.module.css';
 
 const ViewOnOpenSeaButton: FC<{ address: string; isDisabled: boolean }> = props => {

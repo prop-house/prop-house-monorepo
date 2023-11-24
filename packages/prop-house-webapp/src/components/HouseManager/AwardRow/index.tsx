@@ -1,9 +1,10 @@
 import classes from './AwardRow.module.css';
 import Group from '../Group';
 import { AssetType } from '@prophouse/sdk-react';
-import { Award } from '../AssetSelector';
-import { formatCommaNum } from '../utils/formatCommaNum';
+import { EditableAsset } from '../AssetSelector';
+import { formatCommaNum } from '../../../utils/formatCommaNum';
 import trimEthAddress from '../../../utils/trimEthAddress';
+import { AssetWithMetadata, useAssetWithMetadata } from '../../../hooks/useAssetsWithMetadata';
 
 /**
  * @overview
@@ -11,31 +12,42 @@ import trimEthAddress from '../../../utils/trimEthAddress';
  * It has the award image, name, amount, and USD value.
  */
 
-const AwardRow: React.FC<{ award: Award }> = props => {
+const AwardRow: React.FC<{ award: EditableAsset }> = props => {
   const { award } = props;
+
+  const [loading, assetWithMetadata] = useAssetWithMetadata(award);
+  const asset = { ...assetWithMetadata, ...award } as EditableAsset & AssetWithMetadata;
+
+  const isEth = asset.assetType === AssetType.ETH;
+  const isErc20 = asset.assetType === AssetType.ERC20;
+  const isErc1155 = asset.assetType === AssetType.ERC1155;
+  const isErc721 = asset.assetType === AssetType.ERC721;
 
   return (
     <Group row gap={15} classNames={classes.row}>
       <div className={classes.addressSuccess}>
         <div className={classes.addressImgAndTitle}>
-          <img src={award.image ? award.image : '/manager/fallback.png'} alt={award.name} />
-
-          <span>
-            {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&
-              `${formatCommaNum(award.amount)} ${award.symbol || award.name}`}
-            {(award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) &&
-              `${award.name} #${
-                award.tokenId &&
-                (award.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
-              }`}
-          </span>
+          {!loading && (
+            <>
+              <img
+                src={asset.tokenImg ? asset.tokenImg : '/manager/fallback.png'}
+                alt={asset.symbol}
+              />
+              <span>
+                {(isEth || isErc20) &&
+                  `${formatCommaNum(Number(asset.parsedAmount), isEth ? 3 : 2)} ${asset.symbol}`}
+                {(isErc1155 || isErc721) &&
+                  `${isErc1155 ? asset.amount : ''} ${asset.symbol} #${
+                    asset.tokenId &&
+                    (asset.tokenId.length > 5 ? trimEthAddress(award.tokenId) : award.tokenId)
+                  }`}
+              </span>
+            </>
+          )}
         </div>
 
         <div className={classes.votesText}>
-          {(award.type === AssetType.ETH || award.type === AssetType.ERC20) &&
-            `$${formatCommaNum(award.price * award.amount)}`}
-          {(award.type === AssetType.ERC1155 || award.type === AssetType.ERC721) &&
-            trimEthAddress(award.address)}
+          {(isErc1155 || isErc721) && trimEthAddress(award.address)}
         </div>
       </div>
     </Group>

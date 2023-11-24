@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import buildEtherscanPath from '../utils/buildEtherscanPath';
+import buildEtherscanPath from '../../../utils/buildEtherscanPath';
 import classes from './ViewOnEtherscanButton.module.css';
 
 const ViewOnEtherscanButton: FC<{ address: string; isDisabled: boolean }> = props => {
