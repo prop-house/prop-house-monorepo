@@ -89,7 +89,7 @@ const RoundsFeed = () => {
               rounds.slice(0, isInitialPage ? 4 : 6).map((round, i) => {
                 return (
                   <Col xl={6} key={i}>
-                    <RoundCard house={round.house} round={round} displayBottomBar={false} />
+                    <RoundCard house={round.house} round={round} displayBottomBar={true} />
                   </Col>
                 );
               })}

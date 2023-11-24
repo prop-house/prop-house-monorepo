@@ -44,9 +44,6 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   return (
     <div className={classes.container}>
       <div className={clsx(classes.content, (notStarted || ended) && classes.textContent)}>
-        <div>
-          <RoundStatusPill round={round} />
-        </div>
         {notStarted || ended ? (
           <div className={classes.copy}>{copy()}</div>
         ) : (
