@@ -104,15 +104,6 @@ const DepositErc1155Widget: React.FC<{
     }
   };
 
-  ////////////////////////////
-  const { config: disapproveConfig } = usePrepareContractWrite({
-    address: asset.address as `0x${string}`,
-    abi: erc1155ABI,
-    functionName: 'setApprovalForAll',
-    args: [propHouse.contract.address as `0x${string}`, false],
-  });
-  const { write: disapprove } = useContractWrite(disapproveConfig);
-
   return assetWithMetadata && depositedAmount ? (
     <>
       <DepositWidget
@@ -129,7 +120,6 @@ const DepositErc1155Widget: React.FC<{
         loading={loadingTx}
         postLoadMsg={postLoadMsg}
       />
-      <button onClick={() => disapprove?.()}>disapprove</button>
     </>
   ) : (
     <>missing data</>
