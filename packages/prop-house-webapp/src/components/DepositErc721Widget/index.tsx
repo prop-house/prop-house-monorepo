@@ -7,6 +7,7 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from 'wagmi';
 import { useEffect, useState } from 'react';
 import { erc721ApproveInterface } from '../../utils/contractABIs';
@@ -24,6 +25,8 @@ const DepositErc721Widget: React.FC<{
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [hasErc721ToDeposit, setHasErc721ToDeposit] = useState<boolean>();
   const [isApproved, setIsApproved] = useState<boolean>();
+  const [loadingTx, setLoadingTx] = useState(false);
+  const [postLoadMsg, setPostLoadMsg] = useState('');
 
   const { address: account } = useAccount();
 
@@ -36,7 +39,7 @@ const DepositErc721Widget: React.FC<{
   });
 
   useEffect(() => {
-    if (!ownerOfErc721 || hasErc721ToDeposit !== undefined) return;
+    if (ownerOfErc721 === undefined || hasErc721ToDeposit !== undefined) return;
     setHasErc721ToDeposit(ownerOfErc721 === account);
   }, [ownerOfErc721, hasErc721ToDeposit, account]);
 
@@ -52,12 +55,13 @@ const DepositErc721Widget: React.FC<{
     abi: erc721ABI,
     functionName: 'getApproved',
     args: [BigInt(asset.tokenId.toString())],
+    watch: true,
   });
 
   useEffect(() => {
-    if (!approved || isApproved !== undefined) return;
+    if (approved === undefined) return;
     setIsApproved(approved === propHouse.contract.address);
-  }, [approved, isApproved, propHouse.contract.address]);
+  }, [approved, propHouse.contract.address]);
 
   // request approval for ph contract to pull user's tokens
   const { config } = usePrepareContractWrite({
@@ -66,13 +70,34 @@ const DepositErc721Widget: React.FC<{
     functionName: 'approve',
     args: [propHouse.contract.address, asset.tokenId],
   });
-  const { write } = useContractWrite(config);
+  const { data: approveWriteTx, write } = useContractWrite(config);
+  const { data: waitForApproveTx } = useWaitForTransaction({
+    hash: approveWriteTx?.hash,
+  });
+
+  // wait for approval tx
+  useEffect(() => {
+    if (waitForApproveTx === undefined) return;
+    setIsApproved(true);
+    setLoadingTx(false);
+    setPostLoadMsg('Approval was successful');
+    setTimeout(() => setPostLoadMsg(''), 10000);
+  }, [waitForApproveTx]);
 
   const deposit = async () => {
     try {
-      await propHouse.depositTo(round.address, asset);
+      setLoadingTx(true);
+      setPostLoadMsg('');
+      const tx = await propHouse.depositTo(round.address, asset);
+      await tx.wait();
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit successful');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     } catch (e) {
       console.log(e);
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit failed');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     }
   };
 
@@ -83,8 +108,13 @@ const DepositErc721Widget: React.FC<{
       accountConnected={account !== undefined}
       availAmountToDeposit={hasErc721ToDeposit ? '1' : '0'}
       isApproved={isApproved}
-      approve={() => write?.()}
+      approve={() => {
+        setLoadingTx(true);
+        write?.();
+      }}
       depositAsset={deposit}
+      loading={loadingTx}
+      postLoadMsg={postLoadMsg}
     />
   ) : (
     <>missing data</>

@@ -43,7 +43,9 @@ const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
               <DepositErc721Widget
                 asset={asset}
                 round={round}
-                erc721RoundBalance={balances.find(b => b.asset.assetType === AssetType.ERC721)}
+                erc721RoundBalance={balances.find(
+                  b => b.asset.assetType === AssetType.ERC721 && b.asset.tokenId === asset.tokenId,
+                )}
               />
             ) : (
               <DepositErc1155Widget
