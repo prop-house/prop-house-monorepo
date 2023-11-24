@@ -62,7 +62,7 @@ const DepositWidget: React.FC<{
     asset.decimals !== undefined && formatUnits(BigInt(depositedAmount.toString()), asset.decimals);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isErc721 || !asset.decimals) return;
+    if (isErc721 || asset.decimals === undefined) return;
     let value = e.target.value;
 
     // if it's not a number or a decimal, don't change the input

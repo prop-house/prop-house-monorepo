@@ -1,7 +1,13 @@
 import { ERC1155, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
 import DepositWidget from '../DepositWidget';
 import { useAssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from 'wagmi';
 import { useEffect, useState } from 'react';
 import { erc1155ABI } from '../../abi/ERC1155ABI';
 
@@ -18,6 +24,8 @@ const DepositErc1155Widget: React.FC<{
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
   const [isApproved, setIsApproved] = useState<boolean>();
+  const [loadingTx, setLoadingTx] = useState(false);
+  const [postLoadMsg, setPostLoadMsg] = useState('');
 
   const { address: account } = useAccount();
 
@@ -27,6 +35,7 @@ const DepositErc1155Widget: React.FC<{
     abi: erc1155ABI,
     functionName: 'balanceOf',
     args: [account ? account : ('' as `0x${string}`), BigInt(asset.tokenId.toString())],
+    watch: true,
   });
 
   useEffect(() => {
@@ -47,6 +56,7 @@ const DepositErc1155Widget: React.FC<{
     abi: erc1155ABI,
     functionName: 'isApprovedForAll',
     args: [account ? account : ('' as `0x${string}`), propHouse.contract.address as `0x${string}`],
+    watch: true,
   });
 
   useEffect(() => {
@@ -61,26 +71,67 @@ const DepositErc1155Widget: React.FC<{
     functionName: 'setApprovalForAll',
     args: [propHouse.contract.address as `0x${string}`, true],
   });
-  const { write } = useContractWrite(config);
+  const { data: approveWriteTx, write } = useContractWrite(config);
+  const { data: waitForApproveTx } = useWaitForTransaction({
+    hash: approveWriteTx?.hash,
+  });
 
-  const deposit = async () => {
+  // wait for approval tx
+  useEffect(() => {
+    if (waitForApproveTx === undefined) return;
+    setIsApproved(true);
+    setLoadingTx(false);
+    setPostLoadMsg('Approval was successful');
+    setTimeout(() => setPostLoadMsg(''), 10000);
+  }, [waitForApproveTx]);
+
+  const deposit = async (amount: string) => {
     try {
-      await propHouse.depositTo(round.address, asset);
+      setLoadingTx(true);
+      const _asset = {
+        ...asset,
+        amount,
+      };
+      const tx = await propHouse.depositTo(round.address, _asset);
+      await tx.wait();
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit successful');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     } catch (e) {
       console.log(e);
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit failed');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     }
   };
 
+  ////////////////////////////
+  const { config: disapproveConfig } = usePrepareContractWrite({
+    address: asset.address as `0x${string}`,
+    abi: erc1155ABI,
+    functionName: 'setApprovalForAll',
+    args: [propHouse.contract.address as `0x${string}`, false],
+  });
+  const { write: disapprove } = useContractWrite(disapproveConfig);
+
   return assetWithMetadata && depositedAmount ? (
-    <DepositWidget
-      asset={assetWithMetadata}
-      depositedAmount={depositedAmount}
-      accountConnected={account !== undefined}
-      availAmountToDeposit={availAmountToDeposit ?? '0'}
-      isApproved={isApproved}
-      approve={() => write?.()}
-      depositAsset={deposit}
-    />
+    <>
+      <DepositWidget
+        asset={assetWithMetadata}
+        depositedAmount={depositedAmount}
+        accountConnected={account !== undefined}
+        availAmountToDeposit={availAmountToDeposit ?? '0'}
+        isApproved={isApproved}
+        approve={() => {
+          setLoadingTx(true);
+          write?.();
+        }}
+        depositAsset={deposit}
+        loading={loadingTx}
+        postLoadMsg={postLoadMsg}
+      />
+      <button onClick={() => disapprove?.()}>disapprove</button>
+    </>
   ) : (
     <>missing data</>
   );
