@@ -2,6 +2,7 @@ import { Asset, AssetType } from '@prophouse/sdk-react';
 import { erc20ABI } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import { useContractReads } from 'wagmi';
+import trimEthAddress from '../utils/trimEthAddress';
 
 export const useSingleAssetSymbol = (asset: Asset): string | undefined => {
   const symbol = useAssetSymbols([asset]);
@@ -43,7 +44,11 @@ const useAssetSymbols = (assets: Asset[]): string[] | undefined => {
       const indexToUse = nonEthContracts.findIndex(
         c => asset.assetType !== AssetType.ETH && c.address === asset.address,
       );
-      return asset.assetType === AssetType.ETH ? 'ETH' : _symbols[indexToUse];
+      return asset.assetType === AssetType.ETH
+        ? 'ETH'
+        : _symbols[indexToUse] !== undefined
+        ? _symbols[indexToUse]
+        : (trimEthAddress(asset.address) as string);
     });
 
     const shouldUpdate = symbols === undefined || symbols.some((aD, i) => aD !== mappedSymbols[i]);

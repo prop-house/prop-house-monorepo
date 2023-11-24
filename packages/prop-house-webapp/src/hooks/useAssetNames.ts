@@ -2,6 +2,7 @@ import { Asset, AssetType } from '@prophouse/sdk-react';
 import { erc20ABI } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import { useContractReads } from 'wagmi';
+import trimEthAddress from '../utils/trimEthAddress';
 
 /**
  * Returns names for assets provided
@@ -37,11 +38,12 @@ const useAssetNames = (assets: Asset[]): string[] | undefined => {
       const indexToUse = nonEthContracts.findIndex(
         c => asset.assetType !== AssetType.ETH && c.address === asset.address,
       );
+
       return asset.assetType === AssetType.ETH
         ? 'ETH'
-        : _names[indexToUse]
+        : _names[indexToUse] !== undefined
         ? _names[indexToUse]
-        : '';
+        : (trimEthAddress(asset.address) as string);
     });
 
     const shouldUpdate = names === undefined || names.some((n, i) => n !== updatedNames[i]);
