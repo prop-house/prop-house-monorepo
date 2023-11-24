@@ -72,14 +72,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
     </>
   );
 
-  return (
-    <RoundModuleCard
-      title={t('acceptingProposals')}
-      subtitle={<>{`Until ${dayjs(round.config.proposalPeriodEndTimestamp).format('MMMM D')}`}</>}
-      content={content}
-      type="proposing"
-    />
-  );
+  return <RoundModuleCard title={t('acceptingProposals')} content={content} type="proposing" />;
 };
 
 export default TimedRoundAcceptingPropsModule;
