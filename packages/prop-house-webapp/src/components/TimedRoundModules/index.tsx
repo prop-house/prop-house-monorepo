@@ -50,7 +50,7 @@ const TimedRoundModules: React.FC<{
     <RoundOverModule numOfProposals={proposals.length} totalVotes={totalVotesAcrossAllProps} />
   );
 
-  const timeline = (
+  const timeline = round.state <= Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.timelineContainer}>
       <div>
         <span>Proposal deadline</span>
@@ -62,7 +62,7 @@ const TimedRoundModules: React.FC<{
       </div>
     </div>
   );
-  // ));
+
   const modules = [
     timeline,
     roundStateUnknown,
