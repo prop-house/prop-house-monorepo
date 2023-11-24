@@ -2,8 +2,8 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import trimEthAddress from '../../utils/trimEthAddress';
 import React from 'react';
 import { Asset, AssetType } from '@prophouse/sdk-react';
-import { TbFaceIdError } from 'react-icons/tb';
 import LoadingIndicator from '../LoadingIndicator';
+import { TbFaceIdError } from 'react-icons/tb';
 
 const DepositAssetWidgetInfoCard: React.FC<{
   asset: Asset;
