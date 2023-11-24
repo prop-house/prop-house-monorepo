@@ -7,9 +7,11 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from 'wagmi';
 import { useEffect, useState } from 'react';
 import { erc20AllowanceInterface, erc20ApproveInterface } from '../../utils/contractABIs';
+import { BigNumber } from 'ethers';
 
 const DepositErc20Widget: React.FC<{
   asset: ERC20;
@@ -24,6 +26,8 @@ const DepositErc20Widget: React.FC<{
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
   const [hasRequiredAllowance, setHasRequiredAllowance] = useState<boolean>();
+  const [loadingTx, setLoadingTx] = useState(false);
+  const [postLoadMsg, setPostLoadMsg] = useState('');
 
   const { address: account } = useAccount();
   const userErc20Balance = useBalance({ address: account, token: asset.address as `0x${string}` });
@@ -46,13 +50,16 @@ const DepositErc20Widget: React.FC<{
     abi: erc20AllowanceInterface,
     functionName: 'allowance',
     args: [account, propHouse.contract.address],
+    watch: true,
   });
 
   useEffect(() => {
-    if (allowance === undefined) return;
-    const _allowance = BigInt(allowance as string);
-    setHasRequiredAllowance(_allowance >= BigInt(asset.amount.toString()));
-  }, [allowance, asset.amount]);
+    if (allowance === undefined || depositedAmount === undefined) return;
+    const _allowance = BigNumber.from(allowance);
+    const assetAmount = BigNumber.from(asset.amount.toString());
+    const remainingBalance = assetAmount.sub(depositedAmount);
+    setHasRequiredAllowance(_allowance.gte(remainingBalance));
+  }, [allowance, asset.amount, depositedAmount]);
 
   // request approval for ph contract to pull user's tokens
   const { config } = usePrepareContractWrite({
@@ -61,17 +68,35 @@ const DepositErc20Widget: React.FC<{
     functionName: 'approve',
     args: [propHouse.contract.address, asset.amount],
   });
-  const { write } = useContractWrite(config);
+  const { data: approveWriteTx, write } = useContractWrite(config);
+  const { data: waitForApproveTx } = useWaitForTransaction({
+    hash: approveWriteTx?.hash,
+  });
+
+  useEffect(() => {
+    if (waitForApproveTx === undefined) return;
+    setLoadingTx(false);
+    setPostLoadMsg('Approval was successful');
+    setTimeout(() => setPostLoadMsg(''), 10000);
+  }, [waitForApproveTx, allowance]);
 
   const deposit = async (amount: string) => {
     try {
+      setLoadingTx(true);
       const _asset = {
         ...asset,
         amount,
       };
-      await propHouse.depositTo(round.address, _asset);
+      const tx = await propHouse.depositTo(round.address, _asset);
+      await tx.wait();
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit successful');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     } catch (e) {
       console.log(e);
+      setLoadingTx(false);
+      setPostLoadMsg('Deposit failed');
+      setTimeout(() => setPostLoadMsg(''), 10000);
     }
   };
 
@@ -82,8 +107,13 @@ const DepositErc20Widget: React.FC<{
       accountConnected={account !== undefined}
       availAmountToDeposit={availAmountToDeposit}
       isApproved={hasRequiredAllowance}
-      approve={() => write?.()}
+      approve={() => {
+        setLoadingTx(true);
+        write?.();
+      }}
       depositAsset={deposit}
+      loading={loadingTx}
+      postLoadMsg={postLoadMsg}
     />
   ) : (
     <>missing data</>
