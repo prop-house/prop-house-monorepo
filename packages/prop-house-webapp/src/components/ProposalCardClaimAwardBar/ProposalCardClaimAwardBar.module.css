@@ -12,6 +12,7 @@
   background-color: var(--bg-med);
   min-height: 4rem;
   background-color: var(--brand-yellow);
+  border: 1px solid var(--brand-yellow-semi-transparent) !important;
 }
 
 .content {

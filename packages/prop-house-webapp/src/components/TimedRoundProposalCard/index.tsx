@@ -22,11 +22,8 @@ import { useAccount } from 'wagmi';
 const TimedRoundProposalCard: React.FC<{
   proposal: Proposal;
   round: Round;
-  isWinner: boolean;
 }> = props => {
   const { proposal, round } = props;
-
-  let isWinner = true;
 
   const dispatch = useDispatch();
   const govPower = useAppSelector(state => state.voting.votingPower);
@@ -65,13 +62,13 @@ const TimedRoundProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, isWinner && roundEnded && classes.winner)}
+          classNames={clsx(classes.proposalCard, proposal.isWinner && roundEnded && classes.winner)}
         >
           <div className={classes.propInfo}>
             <div className={classes.textContainter}>
               <div>
                 <div className={classes.titleContainer}>
-                  {isWinner && (
+                  {proposal.isWinner && (
                     <div className={classes.crownNoun}>
                       <img src="/heads/crown.png" alt="crown" />
                     </div>
@@ -141,7 +138,7 @@ const TimedRoundProposalCard: React.FC<{
             </div>
           </div>
         </Card>
-        {roundEnded && account.address === proposal.proposer && (
+        {roundEnded && account.address === proposal.proposer && proposal.isWinner && (
           <ProposalCardClaimAwardBar round={round} proposal={proposal} />
         )}
       </div>

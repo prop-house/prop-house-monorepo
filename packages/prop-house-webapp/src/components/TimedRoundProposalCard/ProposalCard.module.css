@@ -158,7 +158,7 @@
   font-size: 8px !important;
 }
 .winner {
-  border: 1px solid var(--brand-green-semi-transparent) !important;
+  border: 1px solid var(--brand-yellow-semi-transparent) !important;
 }
 .winner .propTitle {
   color: var(--brand-green);
