@@ -11,6 +11,7 @@ import {
 } from 'wagmi';
 import { useEffect, useState } from 'react';
 import { erc721ApproveInterface } from '../../utils/contractABIs';
+import DepositAssetWidgetErrorCard from '../DepositAssetWidgetInfoCard';
 
 const DepositErc721Widget: React.FC<{
   asset: ERC721;
@@ -21,7 +22,7 @@ const DepositErc721Widget: React.FC<{
 
   const propHouse = usePropHouse();
 
-  const [_, assetWithMetadata] = useAssetWithMetadata(asset);
+  const [loadingAssetWithMetadata, assetWithMetadata] = useAssetWithMetadata(asset);
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [hasErc721ToDeposit, setHasErc721ToDeposit] = useState<boolean>();
   const [isApproved, setIsApproved] = useState<boolean>();
@@ -101,7 +102,9 @@ const DepositErc721Widget: React.FC<{
     }
   };
 
-  return assetWithMetadata && depositedAmount ? (
+  return loadingAssetWithMetadata ? (
+    <DepositAssetWidgetErrorCard asset={asset} state={'loading'} />
+  ) : assetWithMetadata && depositedAmount ? (
     <DepositWidget
       asset={assetWithMetadata}
       depositedAmount={depositedAmount}
@@ -117,7 +120,7 @@ const DepositErc721Widget: React.FC<{
       postLoadMsg={postLoadMsg}
     />
   ) : (
-    <>missing data</>
+    <DepositAssetWidgetErrorCard asset={asset} state={'error'} />
   );
 };
 

@@ -10,6 +10,7 @@ import {
 } from 'wagmi';
 import { useEffect, useState } from 'react';
 import { erc1155ABI } from '../../abi/ERC1155ABI';
+import DepositAssetWidgetErrorCard from '../DepositAssetWidgetInfoCard';
 
 const DepositErc1155Widget: React.FC<{
   asset: ERC1155;
@@ -20,7 +21,7 @@ const DepositErc1155Widget: React.FC<{
 
   const propHouse = usePropHouse();
 
-  const [_, assetWithMetadata] = useAssetWithMetadata(asset);
+  const [loadingAssetWithMetadata, assetWithMetadata] = useAssetWithMetadata(asset);
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
   const [isApproved, setIsApproved] = useState<boolean>();
@@ -104,25 +105,25 @@ const DepositErc1155Widget: React.FC<{
     }
   };
 
-  return assetWithMetadata && depositedAmount ? (
-    <>
-      <DepositWidget
-        asset={assetWithMetadata}
-        depositedAmount={depositedAmount}
-        accountConnected={account !== undefined}
-        availAmountToDeposit={availAmountToDeposit ?? '0'}
-        isApproved={isApproved}
-        approve={() => {
-          setLoadingTx(true);
-          write?.();
-        }}
-        depositAsset={deposit}
-        loading={loadingTx}
-        postLoadMsg={postLoadMsg}
-      />
-    </>
+  return loadingAssetWithMetadata ? (
+    <DepositAssetWidgetErrorCard asset={asset} state={'loading'} />
+  ) : assetWithMetadata && depositedAmount ? (
+    <DepositWidget
+      asset={assetWithMetadata}
+      depositedAmount={depositedAmount}
+      accountConnected={account !== undefined}
+      availAmountToDeposit={availAmountToDeposit ?? '0'}
+      isApproved={isApproved}
+      approve={() => {
+        setLoadingTx(true);
+        write?.();
+      }}
+      depositAsset={deposit}
+      loading={loadingTx}
+      postLoadMsg={postLoadMsg}
+    />
   ) : (
-    <>missing data</>
+    <DepositAssetWidgetErrorCard asset={asset} state={'error'} />
   );
 };
 

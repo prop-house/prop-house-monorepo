@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from 'react';
 import { erc20AllowanceInterface, erc20ApproveInterface } from '../../utils/contractABIs';
 import { BigNumber } from 'ethers';
+import DepositAssetWidgetErrorCard from '../DepositAssetWidgetInfoCard';
 
 const DepositErc20Widget: React.FC<{
   asset: ERC20;
@@ -22,7 +23,7 @@ const DepositErc20Widget: React.FC<{
 
   const propHouse = usePropHouse();
 
-  const [_, assetWithMetadata] = useAssetWithMetadata(asset);
+  const [loadingAssetWithMetadata, assetWithMetadata] = useAssetWithMetadata(asset);
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
   const [hasRequiredAllowance, setHasRequiredAllowance] = useState<boolean>();
@@ -100,7 +101,9 @@ const DepositErc20Widget: React.FC<{
     }
   };
 
-  return assetWithMetadata && depositedAmount && availAmountToDeposit ? (
+  return loadingAssetWithMetadata ? (
+    <DepositAssetWidgetErrorCard asset={asset} state={'loading'} />
+  ) : assetWithMetadata && depositedAmount && availAmountToDeposit ? (
     <DepositWidget
       asset={assetWithMetadata}
       depositedAmount={depositedAmount}
@@ -116,7 +119,7 @@ const DepositErc20Widget: React.FC<{
       postLoadMsg={postLoadMsg}
     />
   ) : (
-    <>missing data</>
+    <DepositAssetWidgetErrorCard asset={asset} state={'error'} />
   );
 };
 

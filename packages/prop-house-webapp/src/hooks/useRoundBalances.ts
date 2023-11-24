@@ -13,6 +13,6 @@ export const useRoundBalances = (round: Round, interval: number = 5000) => {
     fetchBalances(); // initial fetch
     const _interval = setInterval(fetchBalances, interval);
     return () => clearInterval(_interval);
-  }, [propHouse.query, round]);
+  }, [propHouse.query, round, interval]);
   return balances;
 };

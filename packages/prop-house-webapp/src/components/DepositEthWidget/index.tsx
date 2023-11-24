@@ -3,6 +3,7 @@ import DepositWidget from '../DepositWidget';
 import { useAssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 import { useAccount, useBalance } from 'wagmi';
 import { useEffect, useState } from 'react';
+import DepositAssetWidgetErrorCard from '../DepositAssetWidgetInfoCard';
 
 const DepositEthWidget: React.FC<{
   asset: ETH;
@@ -14,7 +15,7 @@ const DepositEthWidget: React.FC<{
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
   const ethUserBalance = useBalance({ address: account });
-  const [_, assetWithMetadata] = useAssetWithMetadata(asset);
+  const [loadingAssetWithMetadata, assetWithMetadata] = useAssetWithMetadata(asset);
 
   const [depositedAmount, setDepositedAmount] = useState<string>();
   const [availAmountToDeposit, setAvailAmountToDeposit] = useState<string>();
@@ -52,7 +53,9 @@ const DepositEthWidget: React.FC<{
     }
   };
 
-  return assetWithMetadata && depositedAmount && availAmountToDeposit ? (
+  return loadingAssetWithMetadata ? (
+    <DepositAssetWidgetErrorCard asset={asset} state={'loading'} />
+  ) : assetWithMetadata && depositedAmount && availAmountToDeposit ? (
     <DepositWidget
       asset={assetWithMetadata}
       depositedAmount={depositedAmount}
@@ -64,7 +67,7 @@ const DepositEthWidget: React.FC<{
       postLoadMsg={postLoadMsg}
     />
   ) : (
-    <></>
+    <DepositAssetWidgetErrorCard asset={asset} state={'error'} />
   );
 };
 
