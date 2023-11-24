@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 28px 12px 8px 12px;
+  margin: -32px 0 1rem 0;
+  border: 1px solid var(--border-med);
+  border-top: none;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  background-color: var(--bg-med);
+  min-height: 4rem;
+  background-color: var(--brand-yellow);
+}
+
+.content {
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.content svg {
+  margin-left: 8px;
+}
+.inClaimPeriod:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
