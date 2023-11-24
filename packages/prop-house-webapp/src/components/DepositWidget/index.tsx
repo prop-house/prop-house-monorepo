@@ -157,7 +157,7 @@ const DepositWidget: React.FC<{
             classNames={classes.bottomContentBtn}
             onClick={approve}
           />
-          <p>{postLoadMsg}</p>
+          <p className={classes.postLoadMsg}>{postLoadMsg}</p>
         </>
       ) : (
         accountHasAssetToDeposit && isApproved && inputAndDeposit
