@@ -1,30 +1,20 @@
-import { AssetType, Round, RoundBalance, usePropHouse } from '@prophouse/sdk-react';
-import { useEffect, useState } from 'react';
+import { AssetType, Round } from '@prophouse/sdk-react';
 import { Col, Row } from 'react-bootstrap';
 import { mergeAssets } from '../../utils/mergeAssets';
 import DepositEthWidget from '../DepositEthWidget';
 import DepositErc20Widget from '../DepositErc20Widget';
 import DepositErc721Widget from '../DepositErc721Widget';
 import DepositErc1155Widget from '../DepositErc1155Widget';
+import { useRoundBalances } from '../../hooks/useRoundBalances';
 
 const DepositAssetWidgets: React.FC<{ round: Round }> = props => {
   const { round } = props;
 
-  const propHouse = usePropHouse();
-  const [balances, setBalances] = useState<RoundBalance[]>();
-
-  useEffect(() => {
-    if (!round || balances) return;
-    const fetchBalances = async () => {
-      const balances = await propHouse.query.getRoundBalances(round.address);
-      setBalances(balances);
-    };
-    fetchBalances();
-  }, [balances, propHouse.query, round]);
+  const balances = useRoundBalances(round);
 
   return (
     <Row>
-      {balances &&
+      {balances !== undefined &&
         mergeAssets(round.config.awards).map((asset, i) => (
           <Col key={i} xl={4}>
             {asset.assetType === AssetType.ETH ? (

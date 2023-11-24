@@ -34,8 +34,8 @@ const DepositErc20Widget: React.FC<{
 
   // parse deposited token balance
   useEffect(() => {
-    if (depositedAmount) return;
-    setDepositedAmount(!erc20RoundBalance ? '0' : erc20RoundBalance.balance.toString());
+    const newDepositedAmount = erc20RoundBalance ? erc20RoundBalance.balance.toString() : '0';
+    if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [erc20RoundBalance, depositedAmount]);
 
   // get user erc20 token balance

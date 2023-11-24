@@ -45,9 +45,8 @@ const DepositErc1155Widget: React.FC<{
 
   // parse token balance in round already
   useEffect(() => {
-    if (depositedAmount !== undefined) return;
-
-    setDepositedAmount(!erc1155RoundBalance ? '0' : erc1155RoundBalance.balance.toString());
+    const newDepositedAmount = erc1155RoundBalance ? erc1155RoundBalance.balance.toString() : '0';
+    if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [erc1155RoundBalance, depositedAmount]);
 
   // ph contract is approved to pull tokens

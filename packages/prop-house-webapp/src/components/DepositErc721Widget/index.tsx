@@ -45,8 +45,8 @@ const DepositErc721Widget: React.FC<{
 
   // parse erc721 balance in round
   useEffect(() => {
-    if (depositedAmount) return;
-    setDepositedAmount(!erc721RoundBalance ? '0' : erc721RoundBalance.balance.toString());
+    const newDepositedAmount = erc721RoundBalance ? erc721RoundBalance.balance.toString() : '0';
+    if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [erc721RoundBalance, depositedAmount]);
 
   // ph contract is approved to pull erc721

@@ -23,8 +23,8 @@ const DepositEthWidget: React.FC<{
 
   // parse deposited eth balance
   useEffect(() => {
-    if (depositedAmount) return;
-    setDepositedAmount(!ethRoundBalance ? '0' : ethRoundBalance.balance.toString());
+    const newDepositedAmount = ethRoundBalance ? ethRoundBalance.balance.toString() : '0';
+    if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [ethRoundBalance, depositedAmount]);
 
   // get user eth balance
