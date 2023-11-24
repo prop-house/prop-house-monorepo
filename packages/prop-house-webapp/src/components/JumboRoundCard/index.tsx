@@ -20,6 +20,7 @@ import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
 import ProposedSummary from '../ProposedSummary';
 import { trophyColors } from '../../utils/trophyColors';
+import { isMobile } from 'web3modal';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -126,31 +127,37 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
       >
         <Row className={classes.container}>
           <Col className={classes.leftCol} xs={12} md={6}>
-            <div className={classes.roundCreatorAndTitleContainer}>
-              <div className={classes.roundCreator}>
-                <EthAddress
-                  address={house.address}
-                  imgSrc={house.imageURI?.replace(
-                    /prophouse.mypinata.cloud/g,
-                    'cloudflare-ipfs.com',
-                  )}
-                  addAvatar={true}
-                  className={classes.roundCreator}
-                />
+            <div className={classes.headerContainer}>
+              <div className={classes.roundCreatorAndTitle}>
+                <div className={classes.roundCreator}>
+                  <EthAddress
+                    address={house.address}
+                    imgSrc={house.imageURI?.replace(
+                      /prophouse.mypinata.cloud/g,
+                      'cloudflare-ipfs.com',
+                    )}
+                    addAvatar={true}
+                    className={classes.roundCreator}
+                  />
+                </div>
+                <div className={classes.roundTitle}>
+                  {round.title[0].toUpperCase() + round.title.slice(1)}
+                </div>
               </div>
-              <div className={classes.roundTitle}>
-                {round.title[0].toUpperCase() + round.title.slice(1)}
-              </div>
+              {isMobile() && <RoundStatusPill round={round} />}
             </div>
             <div className={classes.statusItemContainer}>
-              <div className={classes.item}>
-                <div className={classes.title}>
-                  <FaClipboardCheck /> Status
+              {!isMobile() && (
+                <div className={classes.item}>
+                  <div className={classes.title}>
+                    <FaClipboardCheck /> Status
+                  </div>
+                  <div className={classes.content}>
+                    <RoundStatusPill round={round} />
+                  </div>
                 </div>
-                <div className={classes.content}>
-                  <RoundStatusPill round={round} />
-                </div>
-              </div>
+              )}
+
               <div className={classes.item}>
                 <div className={classes.title}>
                   <IoTime />

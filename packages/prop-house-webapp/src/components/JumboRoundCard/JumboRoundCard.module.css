@@ -36,10 +36,14 @@
   word-break: break-word;
 }
 
-.container .leftCol .roundCreatorAndTitleContainer {
+.container .leftCol .headerContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.container .leftCol .headerContainer .roundCreatorAndTitle {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
 }
 
 .container .leftCol .statusItemContainer {

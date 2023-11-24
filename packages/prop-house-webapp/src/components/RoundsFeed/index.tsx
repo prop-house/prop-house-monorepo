@@ -2,7 +2,7 @@ import classes from './RoundsFeed.module.css';
 import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import JumboRoundCard from '../JumoboRoundCard';
+import JumboRoundCard from '../JumboRoundCard';
 import RoundCard from '../RoundCard';
 import LoadingIndicator from '../LoadingIndicator';
 import { NounImage } from '../../utils/getNounImage';
