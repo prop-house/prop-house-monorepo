@@ -5,7 +5,6 @@ import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import RoundModuleCard from '../RoundModuleCard';
-import dayjs from 'dayjs';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
 import LoadingIndicator from '../LoadingIndicator';
