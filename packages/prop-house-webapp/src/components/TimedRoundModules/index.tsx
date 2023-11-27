@@ -4,15 +4,19 @@ import clsx from 'clsx';
 import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { isMobile } from 'web3modal';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
-import { Proposal, Round, Timed } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundModuleCancelled from '../RoundModuleCancelled';
 import RoundModuleUnknownState from '../RoundModuleUnknownState';
 import dayjs from 'dayjs';
+import Button, { ButtonColor } from '../Button';
+import { FaEdit } from 'react-icons/fa';
+import { useAccount } from 'wagmi';
+import { useNavigate } from 'react-router-dom';
 
 const TimedRoundModules: React.FC<{
   round: Round;
@@ -25,6 +29,20 @@ const TimedRoundModules: React.FC<{
     (total, prop) => (total = total + Number(prop.votingPower)),
     0,
   );
+
+  const { address: account } = useAccount();
+  const [isRoundManager, setIsRoundManager] = useState<boolean>();
+  const propHouse = usePropHouse();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!account) return;
+    const fetchIsRoundManager = async () => {
+      const rounds = await propHouse.query.getRoundsManagedByAccount(account);
+      setIsRoundManager(rounds.some(r => r.address === round.address));
+    };
+    fetchIsRoundManager();
+  });
 
   const roundStateUnknown = round.state === Timed.RoundState.UNKNOWN && <RoundModuleUnknownState />;
 
@@ -63,7 +81,21 @@ const TimedRoundModules: React.FC<{
     </div>
   );
 
+  const manageRoundBtn = isRoundManager && (
+    <Button
+      text={
+        <>
+          Manage Round <FaEdit />
+        </>
+      }
+      bgColor={ButtonColor.White}
+      classNames={classes.manageRoundBtn}
+      onClick={() => navigate(`/manage/${round.address}`)}
+    />
+  );
+
   const modules = [
+    manageRoundBtn,
     timeline,
     roundStateUnknown,
     roundCancelled,
