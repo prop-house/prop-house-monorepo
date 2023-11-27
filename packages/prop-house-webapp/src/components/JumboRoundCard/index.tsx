@@ -21,6 +21,7 @@ import ProposalRankings from '../ProposalRankings';
 import ProposedSummary from '../ProposedSummary';
 import { trophyColors } from '../../utils/trophyColors';
 import { isMobile } from 'web3modal';
+import RoundAwardsDisplay from '../RoundAwardsDisplay';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -34,8 +35,12 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const [proposals, setProposals] = useState<Proposal[]>();
   const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
 
-  const isProposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const isVoting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const showAwards =
+    round.state === Timed.RoundState.NOT_STARTED ||
+    round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const showProposed = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const showRankings = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
+  const roundEnded = round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   useEffect(() => {
     if (numProps) return;
@@ -50,7 +55,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (topThreeProps || !isVoting) return;
+    if (topThreeProps || !showRankings) return;
     const fetchTopThreeProps = async () => {
       try {
         setFetchingTop3Props(true);
@@ -71,7 +76,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (proposals || !isProposing) return;
+    if (proposals || !showProposed) return;
     const fetchProposals = async () => {
       try {
         const props = await propHouse.query.getProposalsForRound(round.address, {
@@ -177,32 +182,43 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
           </Col>
 
           <Col className={classes.rightCol} xs={12} md={6}>
-            {isProposing && (
-              <>
-                <div className={classes.awardsContainer}>
-                  <div className={classes.title}>
-                    <HiTrophy size={14} color={trophyColors('second')} />
-                    Awards
-                  </div>
-                  <AwardLabels awards={round.config.awards} setShowModal={setShowModal} size={14} />
+            {showAwards && (
+              <div className={classes.awardsContainer}>
+                <div className={classes.title}>
+                  <HiTrophy size={14} color={trophyColors('second')} />
+                  Awards
                 </div>
-                <div className={classes.rightColBottomContainer}>
-                  {proposals && <ProposedSummary proposers={proposals.map(p => p.proposer)} />}
-                  <Button text="View round" bgColor={ButtonColor.Purple} />
-                </div>
-              </>
+                <RoundAwardsDisplay
+                  round={round}
+                  breakout={false}
+                  hidePlace={true}
+                  slidesOffsetAfter={0}
+                  slidesOffsetBefore={0}
+                  showNav={!isMobile()}
+                />
+              </div>
             )}
 
-            {isVoting && (
+            {proposals && showProposed && (
+              <ProposedSummary proposers={proposals.map(p => p.proposer)} />
+            )}
+
+            {showRankings && (
               <>
                 {fetchingTop3Props ? (
                   <LoadingIndicator />
                 ) : (
-                  topThreeProps && <ProposalRankings proposals={topThreeProps} />
+                  topThreeProps && (
+                    <ProposalRankings proposals={topThreeProps} areWinners={roundEnded} />
+                  )
                 )}
-                <Button text="View round" bgColor={ButtonColor.Purple} />
               </>
             )}
+            <Button
+              text="View round"
+              bgColor={ButtonColor.Purple}
+              classNames={classes.rightColBtn}
+            />
           </Col>
         </Row>
       </Card>

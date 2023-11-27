@@ -2,11 +2,11 @@ import Avatar from '../Avatar';
 import classes from './ProposalRankings.module.css';
 import { Proposal } from '@prophouse/sdk-react';
 
-const ProposalRankings: React.FC<{ proposals: Proposal[] }> = props => {
-  const { proposals } = props;
+const ProposalRankings: React.FC<{ proposals: Proposal[]; areWinners?: boolean }> = props => {
+  const { proposals, areWinners } = props;
   return (
     <div className={classes.container}>
-      <div className={classes.rankingTitle}># Rankings</div>
+      <div className={classes.rankingTitle}>{`# ${areWinners ? 'Winners' : 'Rankings'}`}</div>
       {proposals.map((p, index) => (
         <div key={index} className={classes.item}>
           <span className={classes.place}>{index + 1}.</span>{' '}

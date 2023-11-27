@@ -1,38 +1,69 @@
 import classes from './RoundAwardsDisplay.module.css';
 import { AssetType, Round } from '@prophouse/sdk-react';
-import { HiTrophy } from 'react-icons/hi2';
 import { trophyColors } from '../../utils/trophyColors';
-import { FaArrowDown, FaArrowUp } from 'react-icons/fa';
-import { useState } from 'react';
+import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
+import { useCallback, useRef, useState } from 'react';
 import LoadingIndicator from '../LoadingIndicator';
 import clsx from 'clsx';
-import { isMobile } from 'web3modal';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper.min.css';
+import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';
 import useAssetsWithMetadata, { AssetWithMetadata } from '../../hooks/useAssetsWithMetadata';
 
-const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
-  const { round } = props;
+const RoundAwardsDisplay: React.FC<{
+  round: Round;
+  slidesOffsetBefore?: number;
+  slidesOffsetAfter?: number;
+  breakout?: boolean;
+  hidePlace?: boolean;
+  showNav?: boolean;
+  slidesPerView?: number;
+  spaceBetween?: number;
+}> = props => {
+  const {
+    round,
+    breakout,
+    hidePlace,
+    slidesOffsetBefore,
+    slidesOffsetAfter,
+    showNav,
+    slidesPerView,
+    spaceBetween,
+  } = props;
+
+  const sliderRef = useRef<SwiperRef>(null);
   const [loadingAssetsWithMetadata, assetsWithMetadata] = useAssetsWithMetadata(
     round.config.awards,
   );
-  const [awardsIndex, setAwardsIndex] = useState(0);
-  const isInitialPage = awardsIndex === 0;
-  const isLastPage = awardsIndex === Math.floor(round.config.awards.length / 6);
+
+  const handlePrev = useCallback(() => {
+    if (!sliderRef.current) return;
+    sliderRef.current.swiper.slidePrev();
+  }, []);
+
+  const handleNext = useCallback(() => {
+    if (!sliderRef.current) return;
+    sliderRef.current.swiper.slideNext();
+  }, []);
 
   const awardDisplay = (award: AssetWithMetadata, place: number) => {
     return (
       <div className={clsx(classes.awardDisplay)}>
-        <span className={classes.placeIndicator}>
-          {place < 4 ? (
-            <HiTrophy
-              size={14}
-              color={trophyColors(place === 1 ? 'first' : place === 2 ? 'second' : 'third')}
-            />
-          ) : (
-            <>{place}</>
-          )}
-        </span>
+        {!hidePlace && (
+          <span className={classes.placeIndicator}>
+            {place < 4 ? (
+              <div
+                style={{
+                  color: `#${trophyColors(
+                    place === 1 ? 'first' : place === 2 ? 'second' : 'third',
+                  )}`,
+                }}
+              >
+                {place === 1 ? '1st' : place === 2 ? '2nd' : '3rd'}
+              </div>
+            ) : (
+              <>{place}th</>
+            )}
+          </span>
+        )}
         <img src={award.tokenImg} alt="token logo" />
         <div className={classes.amountAndSymbolLabel}>
           {award.assetType === AssetType.ERC721 ? (
@@ -53,54 +84,52 @@ const RoundAwardsDisplay: React.FC<{ round: Round }> = props => {
     );
   };
 
+  const navigation = showNav && assetsWithMetadata && assetsWithMetadata.length > 3 && (
+    <div className={classes.navContainer}>
+      <button
+        className={classes.awardsNavControl}
+        onClick={e => {
+          e.stopPropagation();
+          handlePrev();
+        }}
+      >
+        <FaArrowLeft size={10} />
+      </button>
+      <button
+        className={classes.awardsNavControl}
+        onClick={e => {
+          e.stopPropagation();
+          handleNext();
+        }}
+      >
+        <FaArrowRight size={10} />
+      </button>
+    </div>
+  );
+
   return loadingAssetsWithMetadata ? (
     <LoadingIndicator />
-  ) : (
-    <div className={clsx(classes.awardsAndNavigationContainer, isMobile() && classes.breakOut)}>
-      {isMobile() ? (
-        <Swiper
-          slidesPerView={4}
-          spaceBetween={12}
-          className={classes.swiper}
-          slidesOffsetBefore={12}
-          slidesOffsetAfter={12}
-        >
-          {assetsWithMetadata &&
-            assetsWithMetadata.map((asset, i) => (
-              <SwiperSlide key={i} className={classes.swiperSlide}>
-                {awardDisplay(asset, i + 1)}
-              </SwiperSlide>
-            ))}
-        </Swiper>
-      ) : (
-        <>
-          <div className={classes.awardDisplayContainer}>
-            {assetsWithMetadata &&
-              assetsWithMetadata
-                .slice(awardsIndex * 6, (awardsIndex + 1) * 6)
-                .map((asset, i) => awardDisplay(asset, awardsIndex * 6 + i + 1))}
-          </div>
-          {assetsWithMetadata && assetsWithMetadata.length > 6 && (
-            <div className={classes.navContainer}>
-              <button
-                className={classes.awardsNavControl}
-                onClick={() => setAwardsIndex(prev => prev - 1)}
-                disabled={isInitialPage}
-              >
-                <FaArrowUp size={10} />
-              </button>
-              <button
-                className={classes.awardsNavControl}
-                onClick={() => setAwardsIndex(prev => prev + 1)}
-                disabled={isLastPage}
-              >
-                <FaArrowDown size={10} />
-              </button>
-            </div>
-          )}
-        </>
-      )}
+  ) : assetsWithMetadata ? (
+    <div className={clsx(classes.awardsAndNavigationContainer, breakout && classes.breakOut)}>
+      <Swiper
+        ref={sliderRef}
+        slidesPerView={slidesPerView ?? 3}
+        spaceBetween={spaceBetween ?? 12}
+        className={classes.swiper}
+        slidesOffsetBefore={slidesOffsetBefore ?? 12}
+        slidesOffsetAfter={slidesOffsetAfter ?? 12}
+        autoplay={{ delay: 50 }}
+      >
+        {assetsWithMetadata.map((asset, i) => (
+          <SwiperSlide key={i} className={classes.swiperSlide}>
+            {awardDisplay(asset, i + 1)}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      {showNav && assetsWithMetadata.length > 3 && navigation}
     </div>
+  ) : (
+    <>Error loading awards</>
   );
 };
 export default RoundAwardsDisplay;

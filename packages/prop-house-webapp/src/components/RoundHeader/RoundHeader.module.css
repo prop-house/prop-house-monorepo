@@ -103,7 +103,6 @@
 .awardsCol {
   border-left: 1px var(--border-light) solid;
   padding-left: 2rem;
-  width: auto;
 }
 .awardsTitle {
   font-size: 20px;
