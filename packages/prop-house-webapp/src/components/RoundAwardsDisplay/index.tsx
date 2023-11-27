@@ -2,7 +2,7 @@ import classes from './RoundAwardsDisplay.module.css';
 import { AssetType, Round } from '@prophouse/sdk-react';
 import { trophyColors } from '../../utils/trophyColors';
 import { FaArrowRight, FaArrowLeft } from 'react-icons/fa';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import LoadingIndicator from '../LoadingIndicator';
 import clsx from 'clsx';
 import { Swiper, SwiperRef, SwiperSlide } from 'swiper/react';

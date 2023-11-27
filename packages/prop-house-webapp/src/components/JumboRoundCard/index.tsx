@@ -4,7 +4,6 @@ import { OrderByProposalFields } from '@prophouse/sdk-react/node_modules/@propho
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
-import AwardLabels from '../AwardLabels';
 import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
