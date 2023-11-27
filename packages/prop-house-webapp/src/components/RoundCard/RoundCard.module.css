@@ -30,10 +30,15 @@
   word-break: break-word;
 }
 
-.roundCreatorAndTitleContainer {
+.headerContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.roundCreatorAndTitle {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
+  gap: 8px;
 }
 
 .awardsModalContentContainer {

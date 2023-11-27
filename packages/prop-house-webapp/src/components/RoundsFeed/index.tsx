@@ -2,7 +2,7 @@ import classes from './RoundsFeed.module.css';
 import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import JumboRoundCard from '../JumoboRoundCard';
+import JumboRoundCard from '../JumboRoundCard';
 import RoundCard from '../RoundCard';
 import LoadingIndicator from '../LoadingIndicator';
 import { NounImage } from '../../utils/getNounImage';
@@ -89,7 +89,7 @@ const RoundsFeed = () => {
               rounds.slice(0, isInitialPage ? 4 : 6).map((round, i) => {
                 return (
                   <Col xl={6} key={i}>
-                    <RoundCard house={round.house} round={round} displayBottomBar={false} />
+                    <RoundCard house={round.house} round={round} displayBottomBar={true} />
                   </Col>
                 );
               })}

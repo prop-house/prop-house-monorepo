@@ -42,11 +42,7 @@ const RoundContent: React.FC<{
             <>
               {proposals.map((prop, index) => (
                 <Col key={index}>
-                  <TimedRoundProposalCard
-                    proposal={prop}
-                    roundState={round.state}
-                    isWinner={prop.isWinner}
-                  />
+                  <TimedRoundProposalCard proposal={prop} round={round} />
                 </Col>
               ))}
             </>

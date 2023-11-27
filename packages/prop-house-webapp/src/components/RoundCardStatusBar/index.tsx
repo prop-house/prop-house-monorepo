@@ -7,7 +7,6 @@ import { HiDocument } from 'react-icons/hi';
 import clsx from 'clsx';
 import { deadlineTime } from '../../utils/auctionStatus';
 import diffTime from '../../utils/diffTime';
-import RoundStatusPill from '../RoundStatusPill';
 
 const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   const { round } = props;
@@ -44,9 +43,6 @@ const RoundCardStatusBar: React.FC<{ round: Round }> = props => {
   return (
     <div className={classes.container}>
       <div className={clsx(classes.content, (notStarted || ended) && classes.textContent)}>
-        <div>
-          <RoundStatusPill round={round} />
-        </div>
         {notStarted || ended ? (
           <div className={classes.copy}>{copy()}</div>
         ) : (

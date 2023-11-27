@@ -12,6 +12,7 @@ import formatTime from '../../utils/formatTime';
 import { House, Round } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../../utils/getDateFromTimestamp';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
+import { isMobile } from 'web3modal';
 
 const RoundHeader: React.FC<{
   round: Round;
@@ -77,7 +78,12 @@ const RoundHeader: React.FC<{
         <Col lg={5} className={classes.awardsCol}>
           <div className={classes.awardsTitle}>Awards</div>
           <div className={classes.awardsSubtitle}>Props with the most votes win awards.</div>
-          <RoundAwardsDisplay round={round} />
+          <RoundAwardsDisplay
+            round={round}
+            breakout={isMobile()}
+            slidesOffsetBefore={isMobile() ? 12 : 0}
+            showNav={!isMobile()}
+          />
         </Col>
       </Row>
     </Row>

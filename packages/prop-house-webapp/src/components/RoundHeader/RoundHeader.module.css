@@ -103,15 +103,14 @@
 .awardsCol {
   border-left: 1px var(--border-light) solid;
   padding-left: 2rem;
-  width: auto;
 }
 .awardsTitle {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   color: var(--brand-black);
 }
 .awardsSubtitle {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--brand-gray);
   margin-bottom: 1.2rem;

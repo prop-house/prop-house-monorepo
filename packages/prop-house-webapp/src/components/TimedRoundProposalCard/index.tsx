@@ -14,25 +14,28 @@ import { useEffect, useState } from 'react';
 import { isMobile } from 'web3modal';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { Proposal, Timed } from '@prophouse/sdk-react';
+import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
+import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
+import { useAccount } from 'wagmi';
 
 const TimedRoundProposalCard: React.FC<{
   proposal: Proposal;
-  roundState: Timed.RoundState;
-  isWinner: boolean;
+  round: Round;
 }> = props => {
-  const { proposal, roundState, isWinner } = props;
+  const { proposal, round } = props;
 
   const dispatch = useDispatch();
   const govPower = useAppSelector(state => state.voting.votingPower);
+  const account = useAccount();
 
   const roundIsActive =
-    roundState === Timed.RoundState.IN_PROPOSING_PERIOD ||
-    roundState === Timed.RoundState.IN_VOTING_PERIOD;
-  const roundEnded = roundState > Timed.RoundState.IN_VOTING_PERIOD;
-  const showVoteDisplay = roundState >= Timed.RoundState.IN_VOTING_PERIOD;
-  const showVoteControls = roundState === Timed.RoundState.IN_VOTING_PERIOD && govPower > 0;
+    round.state === Timed.RoundState.IN_PROPOSING_PERIOD ||
+    round.state === Timed.RoundState.IN_VOTING_PERIOD;
+
+  const roundEnded = round.config.votePeriodEndTimestamp < Date.now() / 1000;
+  const showVoteDisplay = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const showVoteControls = showVoteDisplay && govPower > 0;
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
@@ -59,13 +62,13 @@ const TimedRoundProposalCard: React.FC<{
         <Card
           bgColor={CardBgColor.White}
           borderRadius={CardBorderRadius.thirty}
-          classNames={clsx(classes.proposalCard, isWinner && roundEnded && classes.winner)}
+          classNames={clsx(classes.proposalCard, proposal.isWinner && roundEnded && classes.winner)}
         >
           <div className={classes.propInfo}>
             <div className={classes.textContainter}>
               <div>
                 <div className={classes.titleContainer}>
-                  {isWinner && (
+                  {proposal.isWinner && (
                     <div className={classes.crownNoun}>
                       <img src="/heads/crown.png" alt="crown" />
                     </div>
@@ -135,6 +138,9 @@ const TimedRoundProposalCard: React.FC<{
             </div>
           </div>
         </Card>
+        {roundEnded && account.address === proposal.proposer && proposal.isWinner && (
+          <ProposalCardClaimAwardBar round={round} proposal={proposal} />
+        )}
       </div>
     </>
   );

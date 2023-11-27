@@ -36,10 +36,14 @@
   word-break: break-word;
 }
 
-.container .leftCol .roundCreatorAndTitleContainer {
+.container .leftCol .headerContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.container .leftCol .headerContainer .roundCreatorAndTitle {
   display: flex;
   flex-direction: column;
-  row-gap: 8px;
 }
 
 .container .leftCol .statusItemContainer {
@@ -90,7 +94,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-left: 3rem;
+  padding-left: 1.5rem;
 }
 
 .container .rightCol .awardsContainer .title {
@@ -99,6 +103,7 @@
   font-size: 16px;
   font-weight: 500;
   color: var(--brand-gray-transparent);
+  margin-bottom: 0px;
 }
 .container .rightCol .awardsContainer .title svg {
   margin-right: 6px;
@@ -106,6 +111,7 @@
 
 .container .rightCol button {
   width: 100%;
+  margin-top: 12px;
 }
 
 @media (max-width: 768px) {
@@ -122,7 +128,10 @@
     margin-top: 1rem;
     padding-left: 12px;
   }
-  .container .rightCol .rightColBottomContainer {
-    margin-top: 2rem;
+  .container .rightCol .awardsContainer .title {
+    margin-bottom: 0px;
+  }
+  .container .rightCol button {
+    margin-top: 20px;
   }
 }

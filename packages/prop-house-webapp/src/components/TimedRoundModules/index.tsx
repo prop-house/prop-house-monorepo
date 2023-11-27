@@ -12,6 +12,7 @@ import RoundModuleNotStarted from '../RoundModuleNotStarted';
 import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import RoundModuleCancelled from '../RoundModuleCancelled';
 import RoundModuleUnknownState from '../RoundModuleUnknownState';
+import dayjs from 'dayjs';
 
 const TimedRoundModules: React.FC<{
   round: Round;
@@ -49,7 +50,21 @@ const TimedRoundModules: React.FC<{
     <RoundOverModule numOfProposals={proposals.length} totalVotes={totalVotesAcrossAllProps} />
   );
 
+  const timeline = round.state <= Timed.RoundState.IN_VOTING_PERIOD && (
+    <div className={classes.timelineContainer}>
+      <div>
+        <span>Proposal deadline</span>
+        <span>{dayjs(round.config.proposalPeriodEndTimestamp * 1000).format('MMM D @ h:mmA')}</span>
+      </div>
+      <div>
+        <span>Voting deadline</span>
+        <span>{dayjs(round.config.votePeriodEndTimestamp * 1000).format('MMM D @ h:mmA')}</span>
+      </div>
+    </div>
+  );
+
   const modules = [
+    timeline,
     roundStateUnknown,
     roundCancelled,
     notStartedModule,

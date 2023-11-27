@@ -2,11 +2,10 @@ import classes from './MainApp.module.css';
 import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
-import RoundCard from '../../components/RoundCard';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
-import JumboRoundCard from '../../components/JumoboRoundCard';
+import JumboRoundCard from '../../components/JumboRoundCard';
 import CommunityCard from '../../components/CommunityCard';
 
 const MainApp = () => {
@@ -49,11 +48,10 @@ const MainApp = () => {
                 <Row>
                   {rounds && (
                     <>
-                      <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
                       {rounds.map((round, i) => {
                         return (
                           <Col xl={6} key={i}>
-                            <RoundCard house={round.house} round={round} displayBottomBar={true} />
+                            <JumboRoundCard round={round} house={round.house} />
                           </Col>
                         );
                       })}

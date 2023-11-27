@@ -11,33 +11,23 @@
   border-bottom-right-radius: 16px;
   background-color: var(--bg-med);
   min-height: 4rem;
+  background-color: var(--brand-yellow);
+  border: 1px solid var(--brand-yellow-semi-transparent) !important;
 }
 
 .content {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-column-gap: 10px;
-}
-
-.textContent {
-  display: flex;
-  justify-content: center;
-}
-
-.content .copy {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--brand-gray);
-}
-.content .dataItem {
+  text-align: center;
+  color: white;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
 }
-
-.content .dataItem svg {
-  color: var(--brand-gray-transparent);
+.content svg {
+  margin-left: 8px;
+}
+.inClaimPeriod:hover {
+  cursor: pointer;
+  opacity: 0.5;
 }
