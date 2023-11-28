@@ -46,7 +46,7 @@ const DepositErc721Widget: React.FC<{
 
   // parse erc721 balance in round
   useEffect(() => {
-    const newDepositedAmount = erc721RoundBalance ? erc721RoundBalance.balance.toString() : '0';
+    const newDepositedAmount = erc721RoundBalance ? '1' : '0';
     if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [erc721RoundBalance, depositedAmount]);
 

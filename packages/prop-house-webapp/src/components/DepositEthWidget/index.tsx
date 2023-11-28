@@ -24,7 +24,9 @@ const DepositEthWidget: React.FC<{
 
   // parse deposited eth balance
   useEffect(() => {
-    const newDepositedAmount = ethRoundBalance ? ethRoundBalance.balance.toString() : '0';
+    const newDepositedAmount = ethRoundBalance
+      ? (ethRoundBalance.asset as ETH).amount.toString()
+      : '0';
     if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [ethRoundBalance, depositedAmount]);
 
