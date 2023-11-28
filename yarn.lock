@@ -4551,17 +4551,17 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@0.4.11-alpha":
-  version "0.4.11-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.11-alpha.tgz#6f37aee5603c13bf6cfd6cec11390845e3965d27"
-  integrity sha512-PbVkzTIhhwrDHmnC0aE91MGY3lJQPYx49wt90QPOK2/T/bi1sHnakYxciE0yq5Wcl5EzwS0rQXb1mSLp4xZCaA==
+"@prophouse/sdk-react@0.4.13-alpha":
+  version "0.4.13-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-0.4.13-alpha.tgz#5142aaeb9e74671b89705eb0344f5ef8bc4f0c4a"
+  integrity sha512-RNofjDJC1JtFmMFKbs7fvF0K1AoFRtxKGRB5z/DPFTUlBnWqKfeIDtE0siIUdgZcrrmF4lXB3YfGfIxlpr+rsw==
   dependencies:
-    "@prophouse/sdk" "0.4.12-alpha"
+    "@prophouse/sdk" "0.4.14-alpha"
 
-"@prophouse/sdk@0.4.12-alpha":
-  version "0.4.12-alpha"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.12-alpha.tgz#22b192c45a6769811e0cf437bec18cb6a782718f"
-  integrity sha512-Y45dMyJXJCTHZFFeE7wl+BkDF7i6Q9BFNCBsUrW4KLy+bh2VMUOVa6DkDcKpMeDxvJbzJgbG1HCDo148ubYBtQ==
+"@prophouse/sdk@0.4.14-alpha":
+  version "0.4.14-alpha"
+  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-0.4.14-alpha.tgz#fc71836edfdb2a716ee92e542b6d35402836aa27"
+  integrity sha512-3K2bYyj1s70wFf7Wlo3Ei0P4EwanYhQ6SWv7wBndr/J9z9crmtd955WJYJpWHK2DKMWJTOG8SHX7n5JKOXEzng==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
