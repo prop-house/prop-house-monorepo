@@ -1,5 +1,5 @@
 import classes from './RoundsFeed.module.css';
-import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
@@ -22,10 +22,12 @@ const RoundsFeed = () => {
     const _fetchRounds = async () => {
       try {
         setFetchingRounds(true);
-        const rounds = await propHouse.query.getRoundsWithHouseInfo({
-          page: pageIndex,
-          perPage: isInitialPage ? 5 : 6,
-        });
+        const rounds = (
+          await propHouse.query.getRoundsWithHouseInfo({
+            page: pageIndex,
+            perPage: isInitialPage ? 5 : 6,
+          })
+        ).filter(r => r.state !== Timed.RoundState.CANCELLED);
         setNoMoreRounds(rounds.length === 0);
         setRounds(rounds);
         setFetchingRounds(false);

@@ -1,5 +1,5 @@
 import classes from './MainApp.module.css';
-import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
+import { House, RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
@@ -18,7 +18,10 @@ const MainApp = () => {
     if (rounds) return;
     const fetchRounds = async () => {
       try {
-        setRounds(await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 }));
+        const rounds = (
+          await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 })
+        ).filter(r => r.state !== Timed.RoundState.CANCELLED);
+        setRounds(rounds);
       } catch (e) {
         console.log(e);
       }
