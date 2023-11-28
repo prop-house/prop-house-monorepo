@@ -5,15 +5,37 @@ import { HiEmojiSad } from 'react-icons/hi';
 import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import LoadingIndicator from '../LoadingIndicator';
+import { useAccount } from 'wagmi';
+import { FaCheckCircle } from 'react-icons/fa';
 
 const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> = props => {
   const { round, proposal } = props;
 
   const propHouse = usePropHouse();
+  const { address: account } = useAccount();
   const [countdown, setCountdown] = useState(
     round.config.votePeriodEndTimestamp + 21600 - Date.now() / 1000,
   );
   const [txState, setTxState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [claimed, setClaimed] = useState<boolean>();
+
+  useEffect(() => {
+    if (!account) return;
+    const fetchClaims = async () => {
+      try {
+        const claims = await propHouse.query.getRoundClaimsByAccount(account);
+        setClaimed(
+          claims.some(
+            claim =>
+              Number(claim.proposalId) === Number(proposal.id) && claim.round === round.address,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchClaims();
+  });
 
   const inClaimPeriod = round.state === Timed.RoundState.IN_CLAIMING_PERIOD;
   const passedSixHoursAfterRoundEnd =
@@ -23,6 +45,7 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
   const minutes = Math.floor((countdown % 3600) / 60);
 
   useEffect(() => {
+    if (claimed) return;
     const interval = setInterval(() => {
       setCountdown(prevCountdown => prevCountdown - 1);
     }, 1000);
@@ -71,7 +94,12 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
         className={clsx(classes.content, inClaimPeriod && classes.inClaimPeriod)}
         onClick={e => e.stopPropagation()}
       >
-        {inClaimPeriod ? (
+        {claimed ? (
+          <>
+            {`Award has been claimed`}
+            <FaCheckCircle />
+          </>
+        ) : inClaimPeriod ? (
           inClaimPeriodContent
         ) : passedSixHoursAfterRoundEnd ? (
           <>
