@@ -7,10 +7,10 @@ import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import { isAddress } from 'viem';
 import { FaArrowRightLong, FaArrowUpRightFromSquare } from 'react-icons/fa6';
-
 import trimEthAddress from '../../utils/trimEthAddress';
 import { openInNewTab } from '../../utils/openInNewTab';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
+import CancelRoundWidget from '../../components/CancelRoundWidget';
 
 const RoundManager = () => {
   const propHouse = usePropHouse();
@@ -77,7 +77,7 @@ const RoundManager = () => {
                   <DepositAssetWidgets round={round} />
                 </Tab>
                 <Tab eventKey="activity" title="Cancel round">
-                  Cancel round
+                  <CancelRoundWidget round={round} />
                 </Tab>
               </Tabs>
             </Row>
