@@ -82,16 +82,11 @@ const RoundsFeed = () => {
             </Row>
           )}
           <Row>
-            {isInitialPage && rounds && (
-              <JumboRoundCard round={rounds[0]} house={rounds[0].house} />
-            )}
-          </Row>
-          <Row>
             {rounds &&
-              rounds.slice(0, isInitialPage ? 4 : 6).map((round, i) => {
+              rounds.map((round, i) => {
                 return (
-                  <Col xl={6} key={i}>
-                    <RoundCard house={round.house} round={round} displayBottomBar={true} />
+                  <Col xl={12} key={i}>
+                    <JumboRoundCard round={round} house={round.house} />
                   </Col>
                 );
               })}

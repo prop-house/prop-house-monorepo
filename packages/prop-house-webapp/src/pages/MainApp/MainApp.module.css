@@ -35,3 +35,10 @@
   border-bottom: 2px solid var(--brand-purple) !important;
   background-color: transparent !important;
 }
+
+.rightCol {
+  position: sticky !important;
+  top: 0 !important;
+  max-height: calc(100vh - 5rem) !important;
+  overflow: auto;
+}

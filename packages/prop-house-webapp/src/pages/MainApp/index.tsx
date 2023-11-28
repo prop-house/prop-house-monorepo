@@ -76,7 +76,7 @@ const MainApp = () => {
             <Col xl={9}>
               <RoundsFeed />
             </Col>
-            <Col xl={3}>
+            <Col xl={3} className={classes.rightCol}>
               <div className={classes.sectionTitle}>Communities</div>
               {houses &&
                 houses
