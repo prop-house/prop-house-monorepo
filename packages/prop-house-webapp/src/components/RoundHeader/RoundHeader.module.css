@@ -1,6 +1,6 @@
 .roundHeaderRow {
   display: flex;
-  padding-bottom: 1rem;
+  padding-bottom: 2rem;
 }
 .profilePicCol img {
   height: 15rem;
