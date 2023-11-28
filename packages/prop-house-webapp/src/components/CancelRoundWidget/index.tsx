@@ -18,7 +18,7 @@ const CancelRoundWidget: React.FC<{ round: Round }> = ({ round }) => {
     try {
       setTxState('loading');
       const tx = await propHouse.round.timed.cancel(round.address);
-      const res = await tx.wait();
+      await tx.wait();
       setTxState('success');
     } catch (e) {
       setTxState('error');

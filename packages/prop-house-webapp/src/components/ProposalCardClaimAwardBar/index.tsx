@@ -52,7 +52,7 @@ const ProposalCardClaimAwardBar: React.FC<{ round: Round; proposal: Proposal }> 
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [claimed]);
 
   const claim = async () => {
     try {
