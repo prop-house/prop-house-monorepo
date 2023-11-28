@@ -4,7 +4,6 @@ import detailedTime from '../../utils/detailedTime';
 import clsx from 'clsx';
 import diffTime from '../../utils/diffTime';
 import EthAddress from '../EthAddress';
-import ReactMarkdown from 'react-markdown';
 import VotesDisplay from '../VotesDisplay';
 import { useDispatch } from 'react-redux';
 import { setOnchainActiveProposal, setModalActive } from '../../state/slices/propHouse';
@@ -14,13 +13,14 @@ import { useEffect, useState } from 'react';
 import { isMobile } from 'web3modal';
 import TimedRoundVotingControls from '../TimedRoundVotingControls';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { Proposal, Round, Timed } from '@prophouse/sdk-react';
+import { Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { useAccount } from 'wagmi';
+import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 const TimedRoundProposalCard: React.FC<{
-  proposal: Proposal;
+  proposal: ProposalWithTldr;
   round: Round;
 }> = props => {
   const { proposal, round } = props;
@@ -75,19 +75,7 @@ const TimedRoundProposalCard: React.FC<{
                   )}
                   <div className={classes.propTitle}>{proposal.title}</div>
                 </div>
-
-                {displayTldr && (
-                  <ReactMarkdown
-                    className={classes.truncatedTldr}
-                    children={proposal.body.substring(0, 120)}
-                    disallowedElements={['img', '']}
-                    components={{
-                      h1: 'p',
-                      h2: 'p',
-                      h3: 'p',
-                    }}
-                  />
-                )}
+                {displayTldr && <div className={classes.truncatedTldr}>{proposal.tldr}</div>}
               </div>
             </div>
 

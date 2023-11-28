@@ -14,6 +14,7 @@ import ReactMarkdown from 'react-markdown';
 import { setOnChainActiveProposals } from '../../state/slices/propHouse';
 import RoundContent from '../../components/RoundContent';
 import { setVoteAllotments } from '../../state/slices/voting';
+import { resolveProposalTldrs } from '../../utils/resolveProposalTldrs';
 
 const Round: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -37,7 +38,8 @@ const Round: React.FC<{}> = () => {
         const proposals = await propHouse.query.getProposalsForRound(round.address, {
           where: { isCancelled: false },
         });
-        dispatch(setOnChainActiveProposals(proposals));
+        const propsWithTldrs = await resolveProposalTldrs(proposals);
+        dispatch(setOnChainActiveProposals(propsWithTldrs));
       } catch (e) {
         setLoadingProposalsFailed(true);
       }

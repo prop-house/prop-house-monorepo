@@ -8,10 +8,10 @@ import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
 import { pipe } from 'ramda';
 import { replaceIpfsGateway } from '../../utils/ipfs';
-import { Proposal } from '@prophouse/sdk-react';
+import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 export interface RenderedProposalProps {
-  proposal: Proposal;
+  proposal: ProposalWithTldr;
   backButton?: React.ReactNode;
 }
 
@@ -56,10 +56,7 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
               <>
                 <hr></hr>
                 <h2>{t('tldr')}</h2>
-                <ReactMarkdown
-                  className={classes.markdown}
-                  children={fields.what.substring(0, 120)}
-                ></ReactMarkdown>
+                <ReactMarkdown className={classes.markdown} children={fields.tldr}></ReactMarkdown>
               </>
             )}
 

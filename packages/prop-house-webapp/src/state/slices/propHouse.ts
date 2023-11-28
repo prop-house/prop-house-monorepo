@@ -1,11 +1,12 @@
 import { StoredProposalWithVotes, InfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
-import { House, Proposal, Round } from '@prophouse/sdk-react';
+import { House, Round } from '@prophouse/sdk-react';
+import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 export interface PropHouseSlice {
-  activeProposal?: Proposal;
-  activeProposals?: Proposal[];
+  activeProposal?: ProposalWithTldr;
+  activeProposals?: ProposalWithTldr[];
   activeRound?: Round;
   activeHouse?: House;
 
@@ -44,17 +45,17 @@ export const propHouseSlice = createSlice({
     setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
       state.activeRound = action.payload;
     },
-    setOnchainActiveProposal: (state, action: PayloadAction<Proposal>) => {
+    setOnchainActiveProposal: (state, action: PayloadAction<ProposalWithTldr | undefined>) => {
       state.activeProposal = action.payload;
     },
 
-    setOnChainActiveProposals: (state, action: PayloadAction<Proposal[] | undefined>) => {
+    setOnChainActiveProposals: (state, action: PayloadAction<ProposalWithTldr[] | undefined>) => {
       state.activeProposals =
         action.payload === undefined
           ? undefined
           : action.payload.sort((a, b) => Number(b.votingPower) - Number(a.votingPower));
     },
-    appendProposal: (state, action: PayloadAction<{ proposal: Proposal }>) => {
+    appendProposal: (state, action: PayloadAction<{ proposal: ProposalWithTldr }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
     sortTimedRoundProposals: (state, action: PayloadAction<TimedRoundSortProps>) => {
