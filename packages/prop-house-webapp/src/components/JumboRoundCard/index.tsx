@@ -153,15 +153,13 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             <div className={classes.headerContainer}>
               <div className={classes.roundCreatorAndTitle}>
                 <div className={classes.roundCreator}>
-                  <EthAddress
-                    address={house.address}
-                    imgSrc={house.imageURI?.replace(
+                  <img
+                    src={house.imageURI?.replace(
                       /prophouse.mypinata.cloud/g,
                       'cloudflare-ipfs.com',
                     )}
-                    addAvatar={true}
-                    className={classes.roundCreator}
                   />
+                  {house.name}
                 </div>
                 <div className={classes.roundTitle}>
                   {round.title[0].toUpperCase() + round.title.slice(1)}
