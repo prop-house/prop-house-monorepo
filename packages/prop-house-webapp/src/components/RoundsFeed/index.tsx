@@ -1,37 +1,38 @@
 import classes from './RoundsFeed.module.css';
-import { RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
-import RoundCard from '../RoundCard';
 import LoadingIndicator from '../LoadingIndicator';
-import { NounImage } from '../../utils/getNounImage';
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import Button, { ButtonColor } from '../Button';
 
 const RoundsFeed = () => {
   const propHouse = usePropHouse();
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
-  const [fetchingRounds, setFetchingRounds] = useState(false);
+  const [fetchingRounds, setFetchingRounds] = useState(true);
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
   const [noMoreRounds, setNoMoreRounds] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
-  const isInitialPage = pageIndex === 1;
 
   useEffect(() => {
     if (!fetchNewRounds) return;
+
     const _fetchRounds = async () => {
       try {
-        setFetchingRounds(true);
-        const rounds = (
-          await propHouse.query.getRoundsWithHouseInfo({
-            page: pageIndex,
-            perPage: isInitialPage ? 5 : 6,
-          })
-        ).filter(r => r.state !== Timed.RoundState.CANCELLED);
-        setNoMoreRounds(rounds.length === 0);
-        setRounds(rounds);
-        setFetchingRounds(false);
+        const fetchedRounds = await propHouse.query.getRoundsWithHouseInfo({
+          page: pageIndex,
+          perPage: 6,
+        });
         setFetchNewRounds(false);
+        setFetchingRounds(false);
+
+        if (fetchedRounds.length === 0) {
+          setNoMoreRounds(false);
+          return;
+        }
+
+        setPageIndex(prev => prev + 1);
+        setRounds(prev => (prev ? [...prev, ...fetchedRounds] : fetchedRounds));
       } catch (e) {
         console.log(e);
         setFetchNewRounds(false);
@@ -39,48 +40,14 @@ const RoundsFeed = () => {
       }
     };
     _fetchRounds();
-  }, [pageIndex, isInitialPage, fetchingRounds, fetchNewRounds, propHouse.query, rounds]);
+  }, [pageIndex, fetchingRounds, fetchNewRounds, propHouse.query, rounds]);
 
   return (
     <>
-      <Row className={classes.titleAndNavBar}>
-        <Col className={classes.title}>Rounds</Col>
-        <Col className={classes.pagesCol}>
-          <button
-            className={classes.pageButton}
-            disabled={isInitialPage || fetchingRounds}
-            onClick={() => {
-              setFetchNewRounds(true);
-              setPageIndex(prev => prev - 1);
-            }}
-          >
-            <FaArrowLeft />
-          </button>
-
-          <button
-            className={classes.pageButton}
-            disabled={noMoreRounds || fetchingRounds}
-            onClick={() => {
-              setFetchNewRounds(true);
-              setPageIndex(prev => prev + 1);
-            }}
-          >
-            <FaArrowRight />
-          </button>
-        </Col>
-      </Row>
       {fetchingRounds ? (
         <LoadingIndicator />
       ) : (
         <>
-          {noMoreRounds && (
-            <Row>
-              <div className={classes.noMoreRoundsContainer}>
-                <img src={NounImage.Blackhole.src} alt={NounImage.Blackhole.alt} />
-                <p>You've reached the end of the rainbow</p>
-              </div>
-            </Row>
-          )}
           <Row>
             {rounds &&
               rounds.map((round, i) => {
@@ -90,6 +57,23 @@ const RoundsFeed = () => {
                   </Col>
                 );
               })}
+          </Row>
+          <Row>
+            <Col>
+              <Button
+                bgColor={ButtonColor.PurpleLight}
+                text={
+                  noMoreRounds
+                    ? 'No more rounds available'
+                    : fetchingRounds
+                    ? 'Loading...'
+                    : 'Load more rounds'
+                }
+                classNames={classes.loadMoreBtn}
+                onClick={() => setFetchNewRounds(true)}
+                disabled={noMoreRounds || fetchingRounds}
+              />
+            </Col>
           </Row>
         </>
       )}
