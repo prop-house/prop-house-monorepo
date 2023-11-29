@@ -5,7 +5,6 @@ import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
-import JumboRoundCard from '../../components/JumboRoundCard';
 import CommunityCard from '../../components/CommunityCard';
 import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';

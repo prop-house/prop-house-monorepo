@@ -10,7 +10,6 @@ import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
-import { HiDocument } from 'react-icons/hi';
 import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
 import RoundStatusPill from '../RoundStatusPill';
@@ -160,6 +159,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                       /prophouse.mypinata.cloud/g,
                       'cloudflare-ipfs.com',
                     )}
+                    alt="house profile"
                   />
                   {house.name}
                 </div>
