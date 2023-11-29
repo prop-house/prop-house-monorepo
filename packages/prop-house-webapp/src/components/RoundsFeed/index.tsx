@@ -19,11 +19,12 @@ const RoundsFeed = () => {
 
     const _fetchRounds = async () => {
       try {
+        setFetchingRounds(true);
+        setFetchNewRounds(false);
         const fetchedRounds = await propHouse.query.getRoundsWithHouseInfo({
           page: pageIndex,
           perPage: 6,
         });
-        setFetchNewRounds(false);
         setFetchingRounds(false);
 
         if (fetchedRounds.length === 0) {
@@ -32,7 +33,10 @@ const RoundsFeed = () => {
         }
 
         setPageIndex(prev => prev + 1);
-        setRounds(prev => (prev ? [...prev, ...fetchedRounds] : fetchedRounds));
+        setRounds(prev => {
+          if (prev) return [...prev, ...fetchedRounds];
+          return fetchedRounds;
+        });
       } catch (e) {
         console.log(e);
         setFetchNewRounds(false);
@@ -44,7 +48,7 @@ const RoundsFeed = () => {
 
   return (
     <>
-      {fetchingRounds ? (
+      {fetchingRounds && !rounds ? (
         <LoadingIndicator />
       ) : (
         <>
