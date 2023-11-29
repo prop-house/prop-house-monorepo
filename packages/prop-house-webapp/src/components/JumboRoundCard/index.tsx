@@ -31,6 +31,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
+  const [numVotes, setNumVotes] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
   const [proposals, setProposals] = useState<Proposal[]>();
   const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
@@ -38,13 +39,29 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const showAwards =
     round.state === Timed.RoundState.NOT_STARTED ||
     round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const showProposed = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const proposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const voting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const notStarted = round.state === Timed.RoundState.NOT_STARTED;
+  const ended =
+    round.state === Timed.RoundState.IN_CLAIMING_PERIOD ||
+    round.state === Timed.RoundState.COMPLETE;
   const showRankings = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
-  const roundNotStarted = round.state === Timed.RoundState.NOT_STARTED;
-  const roundEnded = round.state > Timed.RoundState.IN_VOTING_PERIOD;
+  const showMeta = proposing || voting || ended;
 
   useEffect(() => {
-    if (numProps) return;
+    if (numVotes && (!voting || !ended)) return;
+    const fetchVotes = async () => {
+      try {
+        setNumVotes(100); // replace once sdk has func ready
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchVotes();
+  });
+
+  useEffect(() => {
+    if (numProps || !proposing) return;
     const fetchProps = async () => {
       try {
         setNumProps(await propHouse.query.getRoundProposalCount(round.address));
@@ -77,7 +94,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (proposals || !showProposed) return;
+    if (proposals || !proposing) return;
     const fetchProposals = async () => {
       try {
         const props = await propHouse.query.getProposalsForRound(round.address, {
@@ -150,10 +167,10 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   {round.title[0].toUpperCase() + round.title.slice(1)}
                 </div>
               </div>
-              {isMobile() && <RoundStatusPill round={round} />}
+              {!notStarted && <RoundStatusPill round={round} />}
             </div>
             <div className={classes.statusItemContainer}>
-              {!isMobile() && (
+              {notStarted && (
                 <div className={classes.item}>
                   <div className={classes.title}>
                     <FaClipboardCheck /> Status
@@ -164,7 +181,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 </div>
               )}
 
-              {roundNotStarted && (
+              {notStarted && (
                 <div className={classes.item}>
                   <div className={classes.title}>
                     <IoTime />
@@ -177,22 +194,27 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   </div>
                 </div>
               )}
-              {!roundNotStarted && (
+
+              {showMeta && (
                 <>
                   <div className={classes.item}>
                     <div className={classes.title}>
                       <IoTime />
-                      Deadline
+                      {ended ? 'Ended' : 'Deadline'}
                     </div>
                     <div className={classes.content}>
-                      {timeFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
+                      {dayjs(round.config.proposalPeriodStartTimestamp * 1000).format(
+                        'MMM, D HH:mmA',
+                      )}
                     </div>
                   </div>
                   <div className={classes.item}>
                     <div className={classes.title}>
-                      <HiDocument /> Created
+                      <HiDocument /> {proposing ? 'Created' : 'Casted'}
                     </div>
-                    <div className={classes.content}>{numProps} props</div>
+                    <div className={classes.content}>
+                      {proposing ? numProps : numVotes} {proposing ? 'props' : 'votes'}
+                    </div>
                   </div>
                 </>
               )}
@@ -217,7 +239,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               </div>
             )}
 
-            {proposals && showProposed && (
+            {proposals && proposing && (
               <ProposedSummary proposers={proposals.map(p => p.proposer)} />
             )}
 
@@ -226,9 +248,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 {fetchingTop3Props ? (
                   <LoadingIndicator />
                 ) : (
-                  topThreeProps && (
-                    <ProposalRankings proposals={topThreeProps} areWinners={roundEnded} />
-                  )
+                  topThreeProps && <ProposalRankings proposals={topThreeProps} areWinners={ended} />
                 )}
               </>
             )}
