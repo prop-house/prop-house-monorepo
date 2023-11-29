@@ -15,8 +15,13 @@
 }
 .headerCol {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
+}
+.headerCol .leftCol {
+  display: flex;
+  gap: 20px;
 }
 .houseImg {
   border-radius: 12px;
@@ -71,4 +76,13 @@
   color: var(--brand-black) !important;
 
   background-color: transparent !important;
+}
+@media (max-width: 990px) {
+  .headerCol {
+    flex-direction: column;
+  }
+  .headerCol button {
+    margin-top: 1rem;
+    width: 100%;
+  }
 }

@@ -11,11 +11,13 @@ import trimEthAddress from '../../utils/trimEthAddress';
 import { openInNewTab } from '../../utils/openInNewTab';
 import buildEtherscanPath from '../../utils/buildEtherscanPath';
 import CancelRoundWidget from '../../components/CancelRoundWidget';
+import Button, { ButtonColor } from '../../components/Button';
 
 const RoundManager = () => {
   const propHouse = usePropHouse();
   const navigate = useNavigate();
   const params = useParams();
+
   const { address } = params;
 
   const [round, setRound] = useState<RoundWithHouse>();
@@ -57,17 +59,20 @@ const RoundManager = () => {
             </Row>
             <Row>
               <Col className={classes.headerCol}>
-                <div>
+                <div className={classes.leftCol}>
                   <img src={round.house.imageURI} className={classes.houseImg} alt={round.title} />
-                </div>
-                <div>
-                  <div className={classes.roundName}>{round.title}</div>
-                  <div
-                    className={classes.roundAddress}
-                    onClick={() => openInNewTab(buildEtherscanPath(round.address))}
-                  >
-                    {trimEthAddress(round.address, 'long')} <FaArrowUpRightFromSquare size={12} />
+                  <div>
+                    <div className={classes.roundName}>{round.title}</div>
+                    <div
+                      className={classes.roundAddress}
+                      onClick={() => openInNewTab(buildEtherscanPath(round.address))}
+                    >
+                      {trimEthAddress(round.address, 'long')} <FaArrowUpRightFromSquare size={12} />
+                    </div>
                   </div>
+                </div>
+                <div onClick={() => navigate(`/${round.address}`)}>
+                  <Button text={<>View round</>} bgColor={ButtonColor.Gray} />
                 </div>
               </Col>
             </Row>
