@@ -21,6 +21,7 @@ import ProposedSummary from '../ProposedSummary';
 import { trophyColors } from '../../utils/trophyColors';
 import { isMobile } from 'web3modal';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
+import dayjs from 'dayjs';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -39,6 +40,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
   const showProposed = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
   const showRankings = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
+  const roundNotStarted = round.state === Timed.RoundState.NOT_STARTED;
   const roundEnded = round.state > Timed.RoundState.IN_VOTING_PERIOD;
 
   useEffect(() => {
@@ -162,21 +164,38 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 </div>
               )}
 
-              <div className={classes.item}>
-                <div className={classes.title}>
-                  <IoTime />
-                  Deadline
+              {roundNotStarted && (
+                <div className={classes.item}>
+                  <div className={classes.title}>
+                    <IoTime />
+                    Starts
+                  </div>
+                  <div className={classes.content}>
+                    {dayjs(round.config.proposalPeriodStartTimestamp * 1000).format(
+                      'MMM, D HH:mmA',
+                    )}
+                  </div>
                 </div>
-                <div className={classes.content}>
-                  {timeFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
-                </div>
-              </div>
-              <div className={classes.item}>
-                <div className={classes.title}>
-                  <HiDocument /> Created
-                </div>
-                <div className={classes.content}>{numProps} props</div>
-              </div>
+              )}
+              {!roundNotStarted && (
+                <>
+                  <div className={classes.item}>
+                    <div className={classes.title}>
+                      <IoTime />
+                      Deadline
+                    </div>
+                    <div className={classes.content}>
+                      {timeFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
+                    </div>
+                  </div>
+                  <div className={classes.item}>
+                    <div className={classes.title}>
+                      <HiDocument /> Created
+                    </div>
+                    <div className={classes.content}>{numProps} props</div>
+                  </div>
+                </>
+              )}
             </div>
           </Col>
 
