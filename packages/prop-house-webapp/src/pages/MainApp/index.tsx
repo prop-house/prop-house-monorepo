@@ -1,5 +1,5 @@
 import classes from './MainApp.module.css';
-import { House, RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { House, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
@@ -12,27 +12,11 @@ import { useNavigate } from 'react-router-dom';
 const MainApp = () => {
   const prophouse = usePropHouse();
 
-  const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (rounds) return;
-    const fetchRounds = async () => {
-      try {
-        const rounds = (
-          await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 })
-        ).filter(r => r.state !== Timed.RoundState.CANCELLED);
-        setRounds(rounds);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchRounds();
-  });
-
-  useEffect(() => {
-    if (rounds) return;
+    if (houses) return;
     const fetchHouses = async () => {
       try {
         setHouses(await prophouse.query.getHouses());
