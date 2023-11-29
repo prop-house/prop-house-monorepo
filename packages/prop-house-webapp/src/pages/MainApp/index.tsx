@@ -1,7 +1,7 @@
 import classes from './MainApp.module.css';
 import { House, RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
+import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
@@ -77,11 +77,25 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
+              <div className={classes.roundsHeader}>
+                <div className={classes.sectionTitle}>Rounds</div>
+                <Dropdown drop="down" align="end">
+                  <Dropdown.Toggle id="dropdown-basic" className={classes.dropdown}>
+                    Show: All
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className={classes.dropdownMenu}>
+                    <Dropdown.Item href="#/action-1">Favorite communities</Dropdown.Item>
+                    <Dropdown.Item href="#/action-2">Proposed in</Dropdown.Item>
+                    <Dropdown.Item href="#/action-3">Voted in</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
               <div className={classes.sectionTitle}>
-                Communities{' '}
+                Communities
                 <Button
                   bgColor={ButtonColor.White}
                   text="View all"
@@ -94,7 +108,6 @@ const MainApp = () => {
                   .map((house, index) => <CommunityCard key={index} house={house} />)}
 
               <div className={classes.sectionTitle}>Activity</div>
-
               <ActivityFeed />
             </Col>
           </>
