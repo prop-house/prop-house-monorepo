@@ -1,4 +1,4 @@
-import { Proposal } from '@prophouse/sdk-react';
+import { ProposalWithTldr } from '../types/ProposalWithTldr';
 
 export interface ProposalFields {
   title: string;
@@ -6,12 +6,11 @@ export interface ProposalFields {
   tldr: string;
 }
 
-const proposalFields = (proposal: Proposal): ProposalFields => {
-  // todo: load tldrs from proposal.metdataUri
+const proposalFields = (proposal: ProposalWithTldr): ProposalFields => {
   return {
     title: proposal.title,
     what: proposal.body,
-    tldr: 'insert tldr here',
+    tldr: proposal.tldr,
   };
 };
 

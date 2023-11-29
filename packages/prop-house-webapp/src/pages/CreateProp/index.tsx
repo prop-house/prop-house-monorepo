@@ -79,9 +79,10 @@ const CreateProp: React.FC<{}> = () => {
         body: what,
         isCancelled: false,
         isWinner: false,
-        receivedAt: 0,
+        receivedAt: new Date().getTime() / 1000,
         txHash: propResult.transaction_hash,
         votingPower: '0',
+        tldr,
       };
       setShowLoadingModal(false);
 

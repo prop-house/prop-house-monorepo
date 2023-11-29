@@ -46,7 +46,9 @@ const DepositErc1155Widget: React.FC<{
 
   // parse token balance in round already
   useEffect(() => {
-    const newDepositedAmount = erc1155RoundBalance ? erc1155RoundBalance.balance.toString() : '0';
+    const newDepositedAmount = erc1155RoundBalance
+      ? (erc1155RoundBalance.asset as ERC1155).amount.toString()
+      : '0';
     if (newDepositedAmount !== depositedAmount) setDepositedAmount(newDepositedAmount);
   }, [erc1155RoundBalance, depositedAmount]);
 

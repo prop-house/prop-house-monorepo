@@ -1,8 +1,11 @@
 import { getLastUpdatedDate } from './getLastUpdatedDate';
 import dayjs from 'dayjs';
-import { Proposal } from '@prophouse/sdk-react';
+import { ProposalWithTldr } from '../types/ProposalWithTldr';
 
-export const sortByVotesAndHandleTies = (proposals: Proposal[], ascending: boolean) =>
+export const sortByVotesAndHandleTies = (
+  proposals: ProposalWithTldr[],
+  ascending: boolean,
+): ProposalWithTldr[] =>
   proposals.sort((a, b) => {
     const gt = a.votingPower > b.votingPower;
     const eq = a.votingPower === b.votingPower;

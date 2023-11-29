@@ -1,4 +1,4 @@
-const generateIpfsUri = (ipfsHash: string) => `https://ipfs.io/ipfs/${ipfsHash}`;
+export const generateIpfsUri = (ipfsHash: string) => `https://ipfs.io/ipfs/${ipfsHash}`;
 
 export const resolveUri = async (uriData: string) => {
   if (uriData.startsWith('ipfs://')) {

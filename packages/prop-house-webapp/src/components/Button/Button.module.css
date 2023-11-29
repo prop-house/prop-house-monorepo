@@ -8,6 +8,10 @@
   font-weight: bold;
   line-height: 140%;
 }
+.btn:active,
+.btn:focus {
+  box-shadow: none !important;
+}
 
 .btn div {
   margin: auto;

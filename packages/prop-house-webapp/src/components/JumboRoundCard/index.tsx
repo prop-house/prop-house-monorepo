@@ -127,7 +127,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
         classNames={classes.roundCard}
-        onHoverEffect={true}
+        onHoverEffect={false}
       >
         <Row className={classes.container}>
           <Col className={classes.leftCol} xs={12} md={6}>

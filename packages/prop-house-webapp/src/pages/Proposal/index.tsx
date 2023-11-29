@@ -21,6 +21,7 @@ import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
 import { Timed, usePropHouse } from '@prophouse/sdk-react';
+import { resolveProposalTldrs } from '../../utils/resolveProposalTldrs';
 
 const Proposal = () => {
   const params = useParams();
@@ -49,9 +50,9 @@ const Proposal = () => {
       try {
         const proposal = await propHouse.query.getProposal(roundAddress, Number(id));
         const round = await propHouse.query.getRound(roundAddress);
-
+        const propWithTldr = await resolveProposalTldrs([proposal]);
         document.title = `${proposal.title}`;
-        dispatch(setOnchainActiveProposal(proposal));
+        dispatch(setOnchainActiveProposal(propWithTldr && propWithTldr[0]));
         dispatch(setOnchainActiveRound(round));
       } catch (e) {
         setFailedFetch(true);
