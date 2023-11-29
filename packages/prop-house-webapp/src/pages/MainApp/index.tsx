@@ -7,12 +7,15 @@ import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
 import JumboRoundCard from '../../components/JumboRoundCard';
 import CommunityCard from '../../components/CommunityCard';
+import Button, { ButtonColor } from '../../components/Button';
+import { useNavigate } from 'react-router-dom';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (rounds) return;
@@ -77,7 +80,14 @@ const MainApp = () => {
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
-              <div className={classes.sectionTitle}>Communities</div>
+              <div className={classes.sectionTitle}>
+                Communities{' '}
+                <Button
+                  bgColor={ButtonColor.White}
+                  text="View all"
+                  onClick={() => navigate('/communities')}
+                />
+              </div>
               {houses &&
                 houses
                   .slice(0, 3)

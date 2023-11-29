@@ -8,8 +8,9 @@ const HouseProfImg: React.FC<{
   house?: House;
   inactiveTokenURI?: string;
   hover?: boolean;
+  className?: string;
 }> = props => {
-  const { house, hover } = props;
+  const { house, hover, className } = props;
 
   return house ? (
     <Link to={`/${house.address}}`}>
@@ -17,7 +18,7 @@ const HouseProfImg: React.FC<{
         src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
         crossOrigin="anonymous"
         alt="community profile "
-        className={clsx(classes.img, hover && classes.hoverImg)}
+        className={clsx(classes.img, hover && classes.hoverImg, className && className)}
       />
     </Link>
   ) : (
