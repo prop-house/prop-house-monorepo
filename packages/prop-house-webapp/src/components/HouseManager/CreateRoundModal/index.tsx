@@ -70,7 +70,7 @@ const CreateRoundModal: React.FC<{
     : NounImage.Pencil;
 
   const handleClick = () => {
-    navigate('/manage');
+    navigate('/dashboard');
     setShowCreateRoundModal(false);
     dipsatch(setActiveStep(1));
     dipsatch(updateRound(initialRound));

@@ -49,7 +49,7 @@ const RoundManager = () => {
           <>
             <Row>
               <Col className={classes.linksCol}>
-                <span onClick={() => navigate('/manage')}>
+                <span onClick={() => navigate('/dashboard')}>
                   Manage rounds <FaArrowRightLong size={12} />
                 </span>{' '}
                 <span>{round.title}</span>

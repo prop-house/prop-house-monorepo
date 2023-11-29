@@ -6,7 +6,7 @@ import RoundCard from '../../components/RoundCard';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 
-const Manage = () => {
+const Dashboard = () => {
   const [rounds, setRounds] = useState<Round[]>();
   const [houses, setHouses] = useState<House[]>();
 
@@ -52,4 +52,4 @@ const Manage = () => {
   );
 };
 
-export default Manage;
+export default Dashboard;

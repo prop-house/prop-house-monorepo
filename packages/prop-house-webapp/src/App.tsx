@@ -29,7 +29,7 @@ import CreateRound from './pages/CreateRound';
 import MainApp from './pages/MainApp';
 import RoundOrHouseRouter from './components/RoundOrHouseRouter';
 import bgColorFor, { BgColorElement } from './utils/bgColorFor';
-import Manage from './pages/Manage';
+import Dashboard from './pages/Dashboard';
 import RoundManager from './pages/RoundManager';
 import Communities from './pages/Communities';
 
@@ -91,7 +91,7 @@ function App() {
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
-                    <Route path="/manage" element={<Manage />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/communities" element={<Communities />} />
                     <Route path="/faq" element={<FAQ />} />
