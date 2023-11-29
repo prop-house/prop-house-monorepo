@@ -2,14 +2,12 @@ import classes from './JumboRoundCard.module.css';
 import { House, Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import { OrderByProposalFields } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/starknet/graphql';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
-import { timeFromNow } from '../../utils/timeFromNow';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
 import { HiDocument } from 'react-icons/hi';
@@ -46,7 +44,11 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     round.state === Timed.RoundState.IN_CLAIMING_PERIOD ||
     round.state === Timed.RoundState.COMPLETE;
   const showRankings = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
-  const showMeta = proposing || voting || ended;
+  const timestampToUse = notStarted
+    ? round.config.proposalPeriodStartTimestamp
+    : proposing
+    ? round.config.proposalPeriodEndTimestamp
+    : round.config.votePeriodEndTimestamp;
 
   useEffect(() => {
     if (numVotes && (!voting || !ended)) return;
@@ -165,10 +167,10 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                   {round.title[0].toUpperCase() + round.title.slice(1)}
                 </div>
               </div>
-              {!notStarted && <RoundStatusPill round={round} />}
+              {isMobile() && <RoundStatusPill round={round} />}
             </div>
             <div className={classes.statusItemContainer}>
-              {notStarted && (
+              {!isMobile() && (
                 <div className={classes.item}>
                   <div className={classes.title}>
                     <FaClipboardCheck /> Status
@@ -179,43 +181,17 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 </div>
               )}
 
-              {notStarted && (
+              <>
                 <div className={classes.item}>
                   <div className={classes.title}>
                     <IoTime />
-                    Starts
+                    {notStarted ? 'Starts' : proposing || voting ? 'Deadline' : 'Ended'}
                   </div>
                   <div className={classes.content}>
-                    {dayjs(round.config.proposalPeriodStartTimestamp * 1000).format(
-                      'MMM, D HH:mmA',
-                    )}
+                    {dayjs(timestampToUse * 1000).format('MMM, D hh:mm a')}
                   </div>
                 </div>
-              )}
-
-              {showMeta && (
-                <>
-                  <div className={classes.item}>
-                    <div className={classes.title}>
-                      <IoTime />
-                      {ended ? 'Ended' : 'Deadline'}
-                    </div>
-                    <div className={classes.content}>
-                      {dayjs(round.config.proposalPeriodStartTimestamp * 1000).format(
-                        'MMM, D HH:mmA',
-                      )}
-                    </div>
-                  </div>
-                  <div className={classes.item}>
-                    <div className={classes.title}>
-                      <HiDocument /> {proposing ? 'Created' : 'Casted'}
-                    </div>
-                    <div className={classes.content}>
-                      {proposing ? numProps : numVotes} {proposing ? 'props' : 'votes'}
-                    </div>
-                  </div>
-                </>
-              )}
+              </>
             </div>
           </Col>
 
