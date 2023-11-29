@@ -5,6 +5,9 @@
   background-color: transparent !important;
   border-color: var(--border-med);
 }
+.whiteBg {
+  background-color: white !important;
+}
 .image {
   height: 40px;
   width: 40px;

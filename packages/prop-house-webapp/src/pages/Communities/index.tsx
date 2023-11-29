@@ -6,6 +6,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import Card, { CardBgColor, CardBorderRadius } from '../../components/Card';
 import dayjs from 'dayjs';
 import Button, { ButtonColor } from '../../components/Button';
+import PageHeader from '../../components/PageHeader';
 
 const Communities: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
@@ -69,10 +70,10 @@ const Communities: React.FC = () => {
 
   return (
     <Container>
-      <Row className={classes.headerRow}>
-        <h1 className={classes.pageTitle}>Communities</h1>
-        <p className={classes.pageSubtitle}>Discover all the communities running on Prop House</p>
-      </Row>
+      <PageHeader
+        title="Communities"
+        subtitle="Discover all the communities running on Prop House"
+      />
       <Row>
         {houses &&
           houses.map((house, i) => (

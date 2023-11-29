@@ -4,6 +4,8 @@ import { House } from '@prophouse/sdk-react';
 import Jazzicon from 'react-jazzicon/dist/Jazzicon';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
+import { isMobile } from 'web3modal';
 
 const CommunityCard: React.FC<{
   house: House;
@@ -16,7 +18,7 @@ const CommunityCard: React.FC<{
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.ten}
-        classNames={classes.cardContainer}
+        classNames={clsx(classes.cardContainer, isMobile() && classes.whiteBg)}
         onHoverEffect={true}
       >
         {house.imageURI?.includes('prop.house') ? (

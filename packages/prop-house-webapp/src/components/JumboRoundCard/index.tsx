@@ -2,17 +2,14 @@ import classes from './JumboRoundCard.module.css';
 import { House, Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import { OrderByProposalFields } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/starknet/graphql';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Modal from '../Modal';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
-import { timeFromNow } from '../../utils/timeFromNow';
 import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
-import { HiDocument } from 'react-icons/hi';
 import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
 import RoundStatusPill from '../RoundStatusPill';
@@ -21,6 +18,7 @@ import ProposedSummary from '../ProposedSummary';
 import { trophyColors } from '../../utils/trophyColors';
 import { isMobile } from 'web3modal';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
+import dayjs from 'dayjs';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -30,6 +28,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
+  const [numVotes, setNumVotes] = useState<number | undefined>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
   const [proposals, setProposals] = useState<Proposal[]>();
   const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
@@ -37,12 +36,33 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const showAwards =
     round.state === Timed.RoundState.NOT_STARTED ||
     round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
-  const showProposed = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const proposing = round.state === Timed.RoundState.IN_PROPOSING_PERIOD;
+  const voting = round.state === Timed.RoundState.IN_VOTING_PERIOD;
+  const notStarted = round.state === Timed.RoundState.NOT_STARTED;
+  const ended =
+    round.state === Timed.RoundState.IN_CLAIMING_PERIOD ||
+    round.state === Timed.RoundState.COMPLETE;
   const showRankings = round.state >= Timed.RoundState.IN_VOTING_PERIOD;
-  const roundEnded = round.state > Timed.RoundState.IN_VOTING_PERIOD;
+  const timestampToUse = notStarted
+    ? round.config.proposalPeriodStartTimestamp
+    : proposing
+    ? round.config.proposalPeriodEndTimestamp
+    : round.config.votePeriodEndTimestamp;
 
   useEffect(() => {
-    if (numProps) return;
+    if (numVotes && (!voting || !ended)) return;
+    const fetchVotes = async () => {
+      try {
+        setNumVotes(100); // replace once sdk has func ready
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    fetchVotes();
+  });
+
+  useEffect(() => {
+    if (numProps || !proposing) return;
     const fetchProps = async () => {
       try {
         setNumProps(await propHouse.query.getRoundProposalCount(round.address));
@@ -75,7 +95,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (proposals || !showProposed) return;
+    if (proposals || !proposing) return;
     const fetchProposals = async () => {
       try {
         const props = await propHouse.query.getProposalsForRound(round.address, {
@@ -134,15 +154,14 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             <div className={classes.headerContainer}>
               <div className={classes.roundCreatorAndTitle}>
                 <div className={classes.roundCreator}>
-                  <EthAddress
-                    address={house.address}
-                    imgSrc={house.imageURI?.replace(
+                  <img
+                    src={house.imageURI?.replace(
                       /prophouse.mypinata.cloud/g,
                       'cloudflare-ipfs.com',
                     )}
-                    addAvatar={true}
-                    className={classes.roundCreator}
+                    alt="house profile"
                   />
+                  {house.name}
                 </div>
                 <div className={classes.roundTitle}>
                   {round.title[0].toUpperCase() + round.title.slice(1)}
@@ -162,21 +181,17 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 </div>
               )}
 
-              <div className={classes.item}>
-                <div className={classes.title}>
-                  <IoTime />
-                  Deadline
+              <>
+                <div className={classes.item}>
+                  <div className={classes.title}>
+                    <IoTime />
+                    {notStarted ? 'Starts' : proposing || voting ? 'Deadline' : 'Ended'}
+                  </div>
+                  <div className={classes.content}>
+                    {dayjs(timestampToUse * 1000).format('MMM, D hh:mm a')}
+                  </div>
                 </div>
-                <div className={classes.content}>
-                  {timeFromNow(round.config.proposalPeriodEndTimestamp * 1000)}
-                </div>
-              </div>
-              <div className={classes.item}>
-                <div className={classes.title}>
-                  <HiDocument /> Created
-                </div>
-                <div className={classes.content}>{numProps} props</div>
-              </div>
+              </>
             </div>
           </Col>
 
@@ -198,7 +213,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               </div>
             )}
 
-            {proposals && showProposed && (
+            {proposals && proposing && (
               <ProposedSummary proposers={proposals.map(p => p.proposer)} />
             )}
 
@@ -207,9 +222,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
                 {fetchingTop3Props ? (
                   <LoadingIndicator />
                 ) : (
-                  topThreeProps && (
-                    <ProposalRankings proposals={topThreeProps} areWinners={roundEnded} />
-                  )
+                  topThreeProps && <ProposalRankings proposals={topThreeProps} areWinners={ended} />
                 )}
               </>
             )}

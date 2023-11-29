@@ -5,7 +5,6 @@ import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
-import JumboRoundCard from '../../components/JumboRoundCard';
 import CommunityCard from '../../components/CommunityCard';
 import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';
@@ -52,17 +51,7 @@ const MainApp = () => {
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
                 <Row>
-                  {rounds && (
-                    <>
-                      {rounds.map((round, i) => {
-                        return (
-                          <Col xl={6} key={i}>
-                            <JumboRoundCard round={round} house={round.house} />
-                          </Col>
-                        );
-                      })}
-                    </>
-                  )}
+                  <RoundsFeed />
                 </Row>
               </Tab>
               <Tab eventKey="activity" title="Activity">

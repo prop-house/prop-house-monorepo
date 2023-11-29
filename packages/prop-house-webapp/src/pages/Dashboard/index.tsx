@@ -4,8 +4,9 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
 import RoundCard from '../../components/RoundCard';
 import { useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/PageHeader';
 
-const Manage = () => {
+const Dashboard = () => {
   const [rounds, setRounds] = useState<Round[]>();
   const [houses, setHouses] = useState<House[]>();
 
@@ -32,8 +33,8 @@ const Manage = () => {
   });
   return (
     <Container>
+      <PageHeader title="Dashboard" subtitle="Manage your communities and rounds" />
       <Row>
-        <h5>Manage Rounds</h5>
         {rounds &&
           houses &&
           rounds.map((r, i) => (
@@ -51,4 +52,4 @@ const Manage = () => {
   );
 };
 
-export default Manage;
+export default Dashboard;

@@ -8,6 +8,13 @@ import EthAddress from '../../EthAddress';
 import { useAccount } from 'wagmi';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import {
+  checkStepCriteria,
+  initialRound,
+  setActiveStep,
+  updateRound,
+} from '../../../state/slices/round';
 
 export type TransactionStatus = {
   isLoading: boolean;
@@ -24,6 +31,7 @@ const CreateRoundModal: React.FC<{
 }> = props => {
   const { status, roundName, houseName, setShowCreateRoundModal } = props;
 
+  const dipsatch = useDispatch();
   const { address: account } = useAccount();
   const { t } = useTranslation();
   let navigate = useNavigate();
@@ -44,8 +52,8 @@ const CreateRoundModal: React.FC<{
     ''
   ) : status.isSuccess ? (
     <>
-      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b>. Click
-      the button below to view your rounds. The new one will show up shortly.
+      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b>. Last
+      step: deposit the assets required to get the round started!
     </>
   ) : status.isError ? (
     'There was a problem creating your round. Please try again.'
@@ -56,17 +64,21 @@ const CreateRoundModal: React.FC<{
   const image = status.isLoading
     ? null
     : status.isSuccess
-    ? NounImage.Boxingglove
+    ? NounImage.Crown
     : status.isError
     ? NounImage.Hardhat
     : NounImage.Pencil;
 
   const handleClick = () => {
-    navigate('/manage');
+    navigate('/dashboard');
     setShowCreateRoundModal(false);
+    dipsatch(setActiveStep(1));
+    dipsatch(updateRound(initialRound));
+    dipsatch(checkStepCriteria());
   };
 
   const handleClose = () => {
+    console.log('andling close');
     return status.isLoading
       ? undefined
       : status.isSuccess
