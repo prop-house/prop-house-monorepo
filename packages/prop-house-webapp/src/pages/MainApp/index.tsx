@@ -52,17 +52,7 @@ const MainApp = () => {
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
                 <Row>
-                  {rounds && (
-                    <>
-                      {rounds.map((round, i) => {
-                        return (
-                          <Col xl={6} key={i}>
-                            <JumboRoundCard round={round} house={round.house} />
-                          </Col>
-                        );
-                      })}
-                    </>
-                  )}
+                  <RoundsFeed />
                 </Row>
               </Tab>
               <Tab eventKey="activity" title="Activity">
