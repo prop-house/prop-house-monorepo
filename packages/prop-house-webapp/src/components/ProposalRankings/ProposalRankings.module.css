@@ -8,6 +8,11 @@
   font-weight: 500;
   margin-bottom: 1rem;
   color: var(--brand-gray);
+  display: flex;
+  align-items: center;
+}
+.container .rankingTitle svg {
+  margin-right: 6px;
 }
 .container .item {
   font-size: 16px;
