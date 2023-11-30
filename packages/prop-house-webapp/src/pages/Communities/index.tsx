@@ -7,6 +7,9 @@ import Card, { CardBgColor, CardBorderRadius } from '../../components/Card';
 import dayjs from 'dayjs';
 import Button, { ButtonColor } from '../../components/Button';
 import PageHeader from '../../components/PageHeader';
+import { FaStar } from 'react-icons/fa';
+import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { trophyColors } from '../../utils/trophyColors';
 
 const Communities: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
@@ -16,6 +19,35 @@ const Communities: React.FC = () => {
   const [noMoreAvail, setNoMoreAvail] = useState(false);
 
   const propHouse = usePropHouse();
+
+  const {
+    favoriteCommunities,
+    isFavoriteCommunity,
+    addFavoriteCommunity,
+    removeFavoriteCommunity,
+  } = useFavoriteCommunities();
+
+  const handleFav = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, houseAddress: string) => {
+    e.stopPropagation();
+    isFavoriteCommunity(houseAddress)
+      ? removeFavoriteCommunity(houseAddress)
+      : addFavoriteCommunity(houseAddress);
+  };
+
+  const sortHouses = (houses: House[]) => {
+    return houses.sort((a, b) => {
+      const isAInFavorites = isFavoriteCommunity(a.address);
+      const isBInFavorites = isFavoriteCommunity(b.address);
+
+      if (isAInFavorites && !isBInFavorites) {
+        return -1;
+      } else if (!isAInFavorites && isBInFavorites) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  };
 
   useEffect(() => {
     const fetchHouses = async () => {
@@ -32,8 +64,8 @@ const Communities: React.FC = () => {
 
         setPage(prev => prev + 1);
         setHouses(prev => {
-          if (prev) return [...prev, ...fetchedHouses];
-          return fetchedHouses;
+          const houses = prev ? [...prev, ...fetchedHouses] : fetchedHouses;
+          return sortHouses(houses);
         });
       } catch (error) {
         setFetchMore(false);
@@ -52,6 +84,12 @@ const Communities: React.FC = () => {
         classNames={classes.houseCard}
         onHoverEffect={true}
       >
+        <div className={classes.star} onClick={e => handleFav(e, house.address)}>
+          <FaStar
+            color={isFavoriteCommunity(house.address) ? trophyColors('first') : 'gray'}
+            size={24}
+          />
+        </div>
         <HouseProfImg house={house} className={classes.houseProfImg} />
         <div className={classes.title}>{house.name}</div>
         <div className={classes.houseDataContainer}>

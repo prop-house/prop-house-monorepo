@@ -1,3 +1,16 @@
 .loadMoreBtn {
   width: 100%;
 }
+.emptyContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+.emptyContentContainer p {
+  margin-top: 2rem;
+  font-size: 20px;
+}
+.emptyContentContainer button {
+  margin-top: 1rem;
+}

@@ -5,6 +5,21 @@
   cursor: pointer;
   background-color: white;
   border: 1px solid var(--border-dark);
+  position: relative;
+}
+
+.star {
+  background-color: white;
+  padding: 4px 6px 6px 6px;
+  border-radius: 18px;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  transition: transform 0.3s;
+}
+
+.star:hover {
+  transform: scale(1.1);
 }
 
 .houseProfImg {

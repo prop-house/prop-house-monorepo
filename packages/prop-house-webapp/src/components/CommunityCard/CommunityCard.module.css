@@ -1,9 +1,18 @@
 .cardContainer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 8px;
   background-color: transparent !important;
   border-color: var(--border-med);
+}
+.imgAndName {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.star {
+  margin-right: 12px;
 }
 .whiteBg {
   background-color: white !important;

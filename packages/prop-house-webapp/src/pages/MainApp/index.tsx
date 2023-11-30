@@ -8,23 +8,25 @@ import RoundsFeed from '../../components/RoundsFeed';
 import CommunityCard from '../../components/CommunityCard';
 import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
+  const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
   const [houses, setHouses] = useState<House[]>();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (houses) return;
-    const fetchHouses = async () => {
+    const getHouses = async () => {
       try {
         setHouses(await prophouse.query.getHouses());
       } catch (e) {
         console.log(e);
       }
     };
-    fetchHouses();
+    getHouses();
   });
 
   return (
@@ -34,9 +36,7 @@ const MainApp = () => {
           <Col>
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
-                <Row>
-                  <RoundsFeed />
-                </Row>
+                <RoundsFeed />
               </Tab>
               <Tab eventKey="activity" title="Activity">
                 <ActivityFeed />
@@ -54,13 +54,13 @@ const MainApp = () => {
                 <div className={classes.sectionTitle}>Rounds</div>
                 <Dropdown drop="down" align="end">
                   <Dropdown.Toggle id="dropdown-basic" className={classes.dropdown}>
-                    Show: All
+                    Show: {roundsFilter}
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu className={classes.dropdownMenu}>
-                    <Dropdown.Item href="#/action-1">Favorite communities</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Proposed in</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Voted in</Dropdown.Item>
+                    {[RoundsFilter.Relevant, RoundsFilter.Favorites].map(f => (
+                      <Dropdown.Item onClick={() => updateRoundsFilter(f)}>{f}</Dropdown.Item>
+                    ))}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
