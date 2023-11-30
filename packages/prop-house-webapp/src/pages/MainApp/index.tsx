@@ -1,46 +1,72 @@
 import classes from './MainApp.module.css';
-import { House, RoundWithHouse, Timed, usePropHouse } from '@prophouse/sdk-react';
+import { House, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
+import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';
 import CommunityCard from '../../components/CommunityCard';
 import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
+
+interface QueryOptions {
+  page: number;
+  perPage: number;
+  where?: {
+    id_not_in: string[];
+  };
+}
 
 const MainApp = () => {
   const prophouse = usePropHouse();
 
-  const [rounds, setRounds] = useState<RoundWithHouse[]>();
   const [houses, setHouses] = useState<House[]>();
   const navigate = useNavigate();
+  const favorites = getFavoriteCommunities();
 
   useEffect(() => {
-    if (rounds) return;
-    const fetchRounds = async () => {
+    if (houses) return;
+    const getHouses = async () => {
       try {
-        const rounds = (
-          await prophouse.query.getRoundsWithHouseInfo({ page: 1, perPage: 5 })
-        ).filter(r => r.state !== Timed.RoundState.CANCELLED);
-        setRounds(rounds);
+        // if mobile, fetch all
+        if (isMobile()) {
+          const houses = await prophouse.query.getHouses();
+          setHouses(sortHousesForFavs(houses, favorites));
+          return;
+        }
+
+        // other fetch a mix of favs + non favs
+        const favHouses = await prophouse.query.getHouses({
+          page: 1,
+          perPage: 3,
+          where: {
+            id_in: favorites.map(f => f.toLowerCase()),
+          },
+        });
+        if (favHouses.length >= 3) {
+          setHouses(favHouses);
+          return;
+        }
+
+        const queryOptions: QueryOptions = {
+          page: 1,
+          perPage: 3 - favHouses.length,
+        };
+
+        if (favorites.length > 0)
+          queryOptions.where = {
+            id_not_in: favorites.map(f => f.toLowerCase()),
+          };
+
+        const notFavHouses = await prophouse.query.getHouses(queryOptions);
+        setHouses([...favHouses, ...notFavHouses]);
       } catch (e) {
         console.log(e);
       }
     };
-    fetchRounds();
-  });
-
-  useEffect(() => {
-    if (rounds) return;
-    const fetchHouses = async () => {
-      try {
-        setHouses(await prophouse.query.getHouses());
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    fetchHouses();
+    getHouses();
   });
 
   return (
@@ -50,9 +76,7 @@ const MainApp = () => {
           <Col>
             <Tabs defaultActiveKey="rounds" className={classes.tabs}>
               <Tab eventKey="rounds" title="Rounds">
-                <Row>
-                  <RoundsFeed />
-                </Row>
+                <RoundsFeed />
               </Tab>
               <Tab eventKey="activity" title="Activity">
                 <ActivityFeed />
@@ -66,20 +90,6 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
-              <div className={classes.roundsHeader}>
-                <div className={classes.sectionTitle}>Rounds</div>
-                <Dropdown drop="down" align="end">
-                  <Dropdown.Toggle id="dropdown-basic" className={classes.dropdown}>
-                    Show: All
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu className={classes.dropdownMenu}>
-                    <Dropdown.Item href="#/action-1">Favorite communities</Dropdown.Item>
-                    <Dropdown.Item href="#/action-2">Proposed in</Dropdown.Item>
-                    <Dropdown.Item href="#/action-3">Voted in</Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>

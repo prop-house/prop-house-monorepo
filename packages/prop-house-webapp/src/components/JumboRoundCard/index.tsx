@@ -19,6 +19,7 @@ import { trophyColors } from '../../utils/trophyColors';
 import { isMobile } from 'web3modal';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import dayjs from 'dayjs';
+import { BigNumber } from 'ethers';
 
 const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const { round, house } = props;
@@ -28,7 +29,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
-  const [numVotes, setNumVotes] = useState<number | undefined>();
+  const [numVotes, setNumVotes] = useState<number>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
   const [proposals, setProposals] = useState<Proposal[]>();
   const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
@@ -53,7 +54,8 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
     if (numVotes && (!voting || !ended)) return;
     const fetchVotes = async () => {
       try {
-        setNumVotes(100); // replace once sdk has func ready
+        const voteCount = await propHouse.query.getRoundVoteCount(round.address);
+        setNumVotes(BigNumber.from(voteCount).toNumber());
       } catch (e) {
         console.log(e);
       }

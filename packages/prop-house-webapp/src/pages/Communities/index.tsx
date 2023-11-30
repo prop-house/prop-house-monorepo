@@ -7,22 +7,43 @@ import Card, { CardBgColor, CardBorderRadius } from '../../components/Card';
 import dayjs from 'dayjs';
 import Button, { ButtonColor } from '../../components/Button';
 import PageHeader from '../../components/PageHeader';
+import { FaStar } from 'react-icons/fa';
+import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { trophyColors } from '../../utils/trophyColors';
+import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 
 const Communities: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [fetchMore, setFetchMore] = useState(false);
+  const [fetchMore, setFetchMore] = useState(true);
   const [noMoreAvail, setNoMoreAvail] = useState(false);
 
   const propHouse = usePropHouse();
 
+  const {
+    favoriteCommunities,
+    isFavoriteCommunity,
+    addFavoriteCommunity,
+    removeFavoriteCommunity,
+  } = useFavoriteCommunities();
+
+  const handleFav = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, houseAddress: string) => {
+    e.stopPropagation();
+    isFavoriteCommunity(houseAddress)
+      ? removeFavoriteCommunity(houseAddress)
+      : addFavoriteCommunity(houseAddress);
+  };
+
   useEffect(() => {
     const fetchHouses = async () => {
+      if (!fetchMore) return;
       try {
         setLoading(true);
-        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 8 });
         setFetchMore(false);
+
+        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 8 });
+
         setLoading(false);
 
         if (fetchedHouses.length === 0) {
@@ -32,8 +53,8 @@ const Communities: React.FC = () => {
 
         setPage(prev => prev + 1);
         setHouses(prev => {
-          if (prev) return [...prev, ...fetchedHouses];
-          return fetchedHouses;
+          const houses = prev ? [...prev, ...fetchedHouses] : fetchedHouses;
+          return sortHousesForFavs(houses, favoriteCommunities);
         });
       } catch (error) {
         setFetchMore(false);
@@ -42,7 +63,7 @@ const Communities: React.FC = () => {
       }
     };
     fetchHouses();
-  }, [fetchMore, page, propHouse.query]);
+  }, [fetchMore, page, propHouse.query, isFavoriteCommunity, favoriteCommunities]);
 
   const houseCard = (house: House) => {
     return (
@@ -52,6 +73,12 @@ const Communities: React.FC = () => {
         classNames={classes.houseCard}
         onHoverEffect={true}
       >
+        <div className={classes.star} onClick={e => handleFav(e, house.address)}>
+          <FaStar
+            color={isFavoriteCommunity(house.address) ? trophyColors('first') : 'gray'}
+            size={24}
+          />
+        </div>
         <HouseProfImg house={house} className={classes.houseProfImg} />
         <div className={classes.title}>{house.name}</div>
         <div className={classes.houseDataContainer}>

@@ -6,12 +6,30 @@ import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { isMobile } from 'web3modal';
+import { FaStar } from 'react-icons/fa';
+import { trophyColors } from '../../utils/trophyColors';
+import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 
 const CommunityCard: React.FC<{
   house: House;
 }> = props => {
   const { house } = props;
   const navigate = useNavigate();
+
+  const {
+    // eslint-disable-next-line
+    favoriteCommunities,
+    isFavoriteCommunity,
+    addFavoriteCommunity,
+    removeFavoriteCommunity,
+  } = useFavoriteCommunities();
+
+  const isFav = isFavoriteCommunity(house.address);
+
+  const handleFav = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    isFav ? removeFavoriteCommunity(house.address) : addFavoriteCommunity(house.address);
+  };
 
   return (
     <div onClick={() => navigate(`/${house.address}`)}>
@@ -21,18 +39,23 @@ const CommunityCard: React.FC<{
         classNames={clsx(classes.cardContainer, isMobile() && classes.whiteBg)}
         onHoverEffect={true}
       >
-        {house.imageURI?.includes('prop.house') ? (
-          <img
-            src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
-            alt="house profile"
-            className={classes.image}
-          />
-        ) : (
-          <span style={{ marginRight: 6 }}>
-            <Jazzicon diameter={20} seed={jsNumberForAddress(house.address)} />
-          </span>
-        )}
-        <div className={classes.name}>{house.name}</div>
+        <div className={classes.imgAndName}>
+          {house.imageURI?.includes('prop.house') ? (
+            <img
+              src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
+              alt="house profile"
+              className={classes.image}
+            />
+          ) : (
+            <span style={{ marginRight: 6 }}>
+              <Jazzicon diameter={20} seed={jsNumberForAddress(house.address)} />
+            </span>
+          )}
+          <div className={classes.name}>{house.name}</div>
+        </div>
+        <div className={classes.star} onClick={e => handleFav(e)}>
+          <FaStar color={isFav ? trophyColors('first') : 'gray'} size={20} />
+        </div>
       </Card>
     </div>
   );
