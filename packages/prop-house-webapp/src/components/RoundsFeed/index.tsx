@@ -111,8 +111,9 @@ const RoundsFeed: React.FC<{}> = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu className={classes.dropdownMenu}>
-            {[RoundsFilter.Relevant, RoundsFilter.Favorites].map(filter => (
+            {[RoundsFilter.Relevant, RoundsFilter.Favorites].map((filter, i) => (
               <Dropdown.Item
+                key={i}
                 onClick={() => {
                   handleFilterChange(filter);
                 }}
