@@ -124,7 +124,7 @@ const RoundsFeed: React.FC<{}> = () => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      {(fetchingRounds && !rounds) || rounds?.length === 0 ? (
+      {(fetchingRounds && rounds === undefined) || rounds?.length === 0 ? (
         <LoadingIndicator />
       ) : roundsFilter === RoundsFilter.Favorites && favorites.length === 0 ? (
         <div className={classes.emptyContentContainer}>
