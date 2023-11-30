@@ -21,7 +21,7 @@ const RoundsFeed: React.FC<{}> = () => {
   // eslint-disable-next-line
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
-  const [rounds, setRounds] = useState<RoundWithHouse[]>();
+  const [rounds, setRounds] = useState<RoundWithHouse[] | undefined>();
   const [fetchingRounds, setFetchingRounds] = useState(true);
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
   const [noMoreRounds, setNoMoreRounds] = useState(false);
@@ -36,7 +36,7 @@ const RoundsFeed: React.FC<{}> = () => {
     setPageIndex(1);
     updateRoundsFilter(filter);
     setFetchNewRounds(true);
-    setRounds([]);
+    setRounds(undefined);
   };
 
   useEffect(() => {
@@ -124,9 +124,7 @@ const RoundsFeed: React.FC<{}> = () => {
           </Dropdown.Menu>
         </Dropdown>
       </div>
-      {(fetchingRounds && !rounds) || rounds?.length === 0 ? (
-        <LoadingIndicator />
-      ) : roundsFilter === RoundsFilter.Favorites && favorites.length === 0 ? (
+      {roundsFilter === RoundsFilter.Favorites && favorites.length === 0 ? (
         <div className={classes.emptyContentContainer}>
           <GiSurprisedSkull size={100} />
           <p>You haven't added any communities to your favorites. </p>
@@ -143,6 +141,8 @@ const RoundsFeed: React.FC<{}> = () => {
           <FaRegSurprise />
           <div>Your favorite communites haven't run any rounds yet... awkward.</div>
         </div>
+      ) : fetchingRounds && rounds === undefined ? (
+        <LoadingIndicator />
       ) : (
         <>
           <Row>

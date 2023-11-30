@@ -11,8 +11,10 @@ import { FaStar } from 'react-icons/fa';
 import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { trophyColors } from '../../utils/trophyColors';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
+import { useNavigate } from 'react-router-dom';
 
 const Communities: React.FC = () => {
+  const navigate = useNavigate();
   const [houses, setHouses] = useState<House[]>();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -67,31 +69,33 @@ const Communities: React.FC = () => {
 
   const houseCard = (house: House) => {
     return (
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.ten}
-        classNames={classes.houseCard}
-        onHoverEffect={true}
-      >
-        <div className={classes.star} onClick={e => handleFav(e, house.address)}>
-          <FaStar
-            color={isFavoriteCommunity(house.address) ? trophyColors('first') : 'gray'}
-            size={24}
-          />
-        </div>
-        <HouseProfImg house={house} className={classes.houseProfImg} />
-        <div className={classes.title}>{house.name}</div>
-        <div className={classes.houseDataContainer}>
-          <div className={classes.houseDataItem}>
-            <span>Created </span>
-            <span>{dayjs(house.createdAt * 1000).format('MMM D YYYY')}</span>
+      <div onClick={() => navigate(`/${house.address}`)}>
+        <Card
+          bgColor={CardBgColor.White}
+          borderRadius={CardBorderRadius.ten}
+          classNames={classes.houseCard}
+          onHoverEffect={true}
+        >
+          <div className={classes.star} onClick={e => handleFav(e, house.address)}>
+            <FaStar
+              color={isFavoriteCommunity(house.address) ? trophyColors('first') : 'gray'}
+              size={24}
+            />
           </div>
-          <div className={classes.houseDataItem}>
-            <span>Total rounds </span>
-            <span>{house.roundCount}</span>
+          <HouseProfImg house={house} className={classes.houseProfImg} />
+          <div className={classes.title}>{house.name}</div>
+          <div className={classes.houseDataContainer}>
+            <div className={classes.houseDataItem}>
+              <span>Created </span>
+              <span>{dayjs(house.createdAt * 1000).format('MMM D YYYY')}</span>
+            </div>
+            <div className={classes.houseDataItem}>
+              <span>Total rounds </span>
+              <span>{house.roundCount}</span>
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     );
   };
 
