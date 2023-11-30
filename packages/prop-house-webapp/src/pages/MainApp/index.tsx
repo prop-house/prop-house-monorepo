@@ -1,7 +1,7 @@
 import classes from './MainApp.module.css';
 import { House, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
-import { Col, Container, Dropdown, Row, Tab, Tabs } from 'react-bootstrap';
+import { Col, Container, Row, Tab, Tabs } from 'react-bootstrap';
 import { isMobile } from 'web3modal';
 import ActivityFeed from '../../components/ActivityFeed';
 import RoundsFeed from '../../components/RoundsFeed';

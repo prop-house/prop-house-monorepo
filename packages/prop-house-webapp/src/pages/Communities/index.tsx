@@ -63,7 +63,7 @@ const Communities: React.FC = () => {
       }
     };
     fetchHouses();
-  }, [fetchMore, page, propHouse.query, isFavoriteCommunity]);
+  }, [fetchMore, page, propHouse.query, isFavoriteCommunity, favoriteCommunities]);
 
   const houseCard = (house: House) => {
     return (
