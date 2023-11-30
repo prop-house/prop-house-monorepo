@@ -79,3 +79,12 @@
 .roundsHeader {
   z-index: 1000;
 }
+
+@media (max-width: 575px) {
+  .roundsHeader {
+    position: initial !important;
+    padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+  }
+}
