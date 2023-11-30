@@ -11,6 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 
+interface QueryOptions {
+  page: number;
+  perPage: number;
+  where?: {
+    id_not_in: string[];
+  };
+}
+
 const MainApp = () => {
   const prophouse = usePropHouse();
 
@@ -22,12 +30,14 @@ const MainApp = () => {
     if (houses) return;
     const getHouses = async () => {
       try {
+        // if mobile, fetch all
         if (isMobile()) {
           const houses = await prophouse.query.getHouses();
           setHouses(sortHousesForFavs(houses, favorites));
           return;
         }
 
+        // other fetch a mix of favs + non favs
         const favHouses = await prophouse.query.getHouses({
           page: 1,
           perPage: 3,
@@ -39,13 +49,18 @@ const MainApp = () => {
           setHouses(favHouses);
           return;
         }
-        const notFavHouses = await prophouse.query.getHouses({
+
+        const queryOptions: QueryOptions = {
           page: 1,
           perPage: 3 - favHouses.length,
-          where: {
+        };
+
+        if (favorites.length > 0)
+          queryOptions.where = {
             id_not_in: favorites.map(f => f.toLowerCase()),
-          },
-        });
+          };
+
+        const notFavHouses = await prophouse.query.getHouses(queryOptions);
         setHouses([...favHouses, ...notFavHouses]);
       } catch (e) {
         console.log(e);
