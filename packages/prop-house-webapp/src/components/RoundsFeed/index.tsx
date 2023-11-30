@@ -1,7 +1,7 @@
 import classes from './RoundsFeed.module.css';
 import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import React, { useEffect, useState } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Dropdown, Row } from 'react-bootstrap';
 import JumboRoundCard from '../JumboRoundCard';
 import LoadingIndicator from '../LoadingIndicator';
 import Button, { ButtonColor } from '../Button';
@@ -11,6 +11,7 @@ import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
 import { GiSurprisedSkull } from 'react-icons/gi';
 import { FaRegSurprise } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { isMobile } from 'web3modal';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -25,6 +26,18 @@ const RoundsFeed: React.FC<{}> = () => {
   const [fetchNewRounds, setFetchNewRounds] = useState(true);
   const [noMoreRounds, setNoMoreRounds] = useState(false);
   const [pageIndex, setPageIndex] = useState(1);
+  const [newFilter, setNewFilter] = useState<boolean>();
+
+  const handleFilterChange = (filter: RoundsFilter) => {
+    const isNewFilter = roundsFilter !== filter;
+    if (!isNewFilter) return;
+
+    setNewFilter(isNewFilter);
+    setPageIndex(1);
+    updateRoundsFilter(filter);
+    setFetchNewRounds(true);
+    setRounds([]);
+  };
 
   useEffect(() => {
     if (!fetchNewRounds) return;
@@ -53,19 +66,22 @@ const RoundsFeed: React.FC<{}> = () => {
             : propHouse.query.getRoundsWithHouseInfo(queryParams);
 
         const fetchedRounds = await query;
-
         setFetchingRounds(false);
 
         if (fetchedRounds.length === 0) {
-          setNoMoreRounds(false);
+          setNoMoreRounds(true);
           return;
         }
 
-        setPageIndex(prev => prev + 1);
-        setRounds(prev => {
-          if (prev) return [...prev, ...fetchedRounds];
-          return fetchedRounds;
-        });
+        if (newFilter) {
+          setRounds(fetchedRounds);
+        } else {
+          setPageIndex(prev => prev + 1);
+          setRounds(prev => {
+            if (prev) return [...prev, ...fetchedRounds];
+            return fetchedRounds;
+          });
+        }
       } catch (e) {
         console.log(e);
         setFetchNewRounds(false);
@@ -86,7 +102,27 @@ const RoundsFeed: React.FC<{}> = () => {
 
   return (
     <>
-      {fetchingRounds && !rounds ? (
+      <div className={classes.roundsHeader}>
+        {!isMobile() && <div className={classes.sectionTitle}>Rounds</div>}
+        <Dropdown drop="down" align="end">
+          <Dropdown.Toggle id="dropdown-basic" className={classes.dropdown}>
+            Show: {roundsFilter}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu className={classes.dropdownMenu}>
+            {[RoundsFilter.Relevant, RoundsFilter.Favorites].map(filter => (
+              <Dropdown.Item
+                onClick={() => {
+                  handleFilterChange(filter);
+                }}
+              >
+                {filter}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+      {(fetchingRounds && !rounds) || rounds?.length === 0 ? (
         <LoadingIndicator />
       ) : roundsFilter === RoundsFilter.Favorites && favorites.length === 0 ? (
         <div className={classes.emptyContentContainer}>

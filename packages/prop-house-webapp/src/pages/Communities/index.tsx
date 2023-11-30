@@ -10,18 +10,18 @@ import PageHeader from '../../components/PageHeader';
 import { FaStar } from 'react-icons/fa';
 import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { trophyColors } from '../../utils/trophyColors';
+import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 
 const Communities: React.FC = () => {
   const [houses, setHouses] = useState<House[]>();
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [fetchMore, setFetchMore] = useState(false);
+  const [fetchMore, setFetchMore] = useState(true);
   const [noMoreAvail, setNoMoreAvail] = useState(false);
 
   const propHouse = usePropHouse();
 
   const {
-    // eslint-disable-next-line
     favoriteCommunities,
     isFavoriteCommunity,
     addFavoriteCommunity,
@@ -36,26 +36,14 @@ const Communities: React.FC = () => {
   };
 
   useEffect(() => {
-    const sortHouses = (houses: House[]) => {
-      return houses.sort((a, b) => {
-        const isAInFavorites = isFavoriteCommunity(a.address);
-        const isBInFavorites = isFavoriteCommunity(b.address);
-
-        if (isAInFavorites && !isBInFavorites) {
-          return -1;
-        } else if (!isAInFavorites && isBInFavorites) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-    };
-
     const fetchHouses = async () => {
+      if (!fetchMore) return;
       try {
         setLoading(true);
-        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 8 });
         setFetchMore(false);
+
+        const fetchedHouses = await propHouse.query.getHouses({ page: page, perPage: 8 });
+
         setLoading(false);
 
         if (fetchedHouses.length === 0) {
@@ -66,7 +54,7 @@ const Communities: React.FC = () => {
         setPage(prev => prev + 1);
         setHouses(prev => {
           const houses = prev ? [...prev, ...fetchedHouses] : fetchedHouses;
-          return sortHouses(houses);
+          return sortHousesForFavs(houses, favoriteCommunities);
         });
       } catch (error) {
         setFetchMore(false);

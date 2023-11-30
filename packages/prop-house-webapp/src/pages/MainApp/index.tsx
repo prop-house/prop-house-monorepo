@@ -8,20 +8,45 @@ import RoundsFeed from '../../components/RoundsFeed';
 import CommunityCard from '../../components/CommunityCard';
 import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';
-import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
+import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
 
 const MainApp = () => {
   const prophouse = usePropHouse();
-  const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
   const [houses, setHouses] = useState<House[]>();
   const navigate = useNavigate();
+  const favorites = getFavoriteCommunities();
 
   useEffect(() => {
     if (houses) return;
     const getHouses = async () => {
       try {
-        setHouses(await prophouse.query.getHouses());
+        if (isMobile()) {
+          const houses = await prophouse.query.getHouses();
+          setHouses(sortHousesForFavs(houses, favorites));
+          return;
+        }
+
+        const favHouses = await prophouse.query.getHouses({
+          page: 1,
+          perPage: 3,
+          where: {
+            id_in: favorites.map(f => f.toLowerCase()),
+          },
+        });
+        if (favHouses.length >= 3) {
+          setHouses(favHouses);
+          return;
+        }
+        const notFavHouses = await prophouse.query.getHouses({
+          page: 1,
+          perPage: 3 - favHouses.length,
+          where: {
+            id_not_in: favorites.map(f => f.toLowerCase()),
+          },
+        });
+        setHouses([...favHouses, ...notFavHouses]);
       } catch (e) {
         console.log(e);
       }
@@ -50,20 +75,6 @@ const MainApp = () => {
         ) : (
           <>
             <Col xl={9}>
-              <div className={classes.roundsHeader}>
-                <div className={classes.sectionTitle}>Rounds</div>
-                <Dropdown drop="down" align="end">
-                  <Dropdown.Toggle id="dropdown-basic" className={classes.dropdown}>
-                    Show: {roundsFilter}
-                  </Dropdown.Toggle>
-
-                  <Dropdown.Menu className={classes.dropdownMenu}>
-                    {[RoundsFilter.Relevant, RoundsFilter.Favorites].map(f => (
-                      <Dropdown.Item onClick={() => updateRoundsFilter(f)}>{f}</Dropdown.Item>
-                    ))}
-                  </Dropdown.Menu>
-                </Dropdown>
-              </div>
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
