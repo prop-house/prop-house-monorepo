@@ -59,10 +59,11 @@ const HouseInfoConfig = () => {
         </>
       ) : (
         <>
-          <Header title="Create your house" />
-
+          <Header
+            title="Create your house"
+            subtitle="Think of a house as your profile page where you host rounds."
+          />
           <CreateNewHouse />
-
           <Footer />
         </>
       )}
