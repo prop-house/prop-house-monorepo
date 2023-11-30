@@ -198,41 +198,47 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
           </Col>
 
           <Col className={classes.rightCol} xs={12} md={6}>
-            {showAwards && (
-              <div className={classes.awardsContainer}>
-                <div className={classes.title}>
-                  <HiTrophy size={14} color={trophyColors('second')} />
-                  Awards
+            <div>
+              {showAwards && (
+                <div className={classes.awardsContainer}>
+                  <div className={classes.title}>
+                    <HiTrophy size={14} color={trophyColors('second')} />
+                    Awards
+                  </div>
+                  <RoundAwardsDisplay
+                    round={round}
+                    breakout={false}
+                    hidePlace={true}
+                    slidesOffsetAfter={0}
+                    slidesOffsetBefore={0}
+                    showNav={!isMobile()}
+                  />
                 </div>
-                <RoundAwardsDisplay
-                  round={round}
-                  breakout={false}
-                  hidePlace={true}
-                  slidesOffsetAfter={0}
-                  slidesOffsetBefore={0}
-                  showNav={!isMobile()}
-                />
-              </div>
-            )}
+              )}
 
-            {proposals && proposing && (
-              <ProposedSummary proposers={proposals.map(p => p.proposer)} />
-            )}
+              {showRankings && (
+                <>
+                  {fetchingTop3Props ? (
+                    <LoadingIndicator />
+                  ) : (
+                    topThreeProps && (
+                      <ProposalRankings proposals={topThreeProps} areWinners={ended} />
+                    )
+                  )}
+                </>
+              )}
+            </div>
 
-            {showRankings && (
-              <>
-                {fetchingTop3Props ? (
-                  <LoadingIndicator />
-                ) : (
-                  topThreeProps && <ProposalRankings proposals={topThreeProps} areWinners={ended} />
-                )}
-              </>
-            )}
-            <Button
-              text="View round"
-              bgColor={ButtonColor.Purple}
-              classNames={classes.rightColBtn}
-            />
+            <div>
+              {proposals && proposing && (
+                <ProposedSummary proposers={proposals.map(p => p.proposer)} />
+              )}
+              <Button
+                text="View round"
+                bgColor={ButtonColor.Purple}
+                classNames={classes.rightColBtn}
+              />
+            </div>
           </Col>
         </Row>
       </Card>

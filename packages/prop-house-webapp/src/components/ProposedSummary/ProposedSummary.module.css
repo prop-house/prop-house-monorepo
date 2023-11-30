@@ -1,8 +1,6 @@
 .container {
-  margin-bottom: 8px;
   display: flex;
   align-items: center;
-
   color: var(--brand-gray-transparent);
   font-size: 14px;
 }
@@ -18,4 +16,10 @@
 }
 .container span {
   color: var(--brand-black);
+}
+
+@media (max-width: 575px) {
+  .container {
+    margin-top: 12px;
+  }
 }
