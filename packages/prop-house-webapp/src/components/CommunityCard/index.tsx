@@ -17,7 +17,7 @@ const CommunityCard: React.FC<{
   const navigate = useNavigate();
 
   const {
-    //@ts-ignore
+    // eslint-disable-next-line
     favoriteCommunities,
     isFavoriteCommunity,
     addFavoriteCommunity,

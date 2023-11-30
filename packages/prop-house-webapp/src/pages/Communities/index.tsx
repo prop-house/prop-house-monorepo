@@ -21,6 +21,7 @@ const Communities: React.FC = () => {
   const propHouse = usePropHouse();
 
   const {
+    // eslint-disable-next-line
     favoriteCommunities,
     isFavoriteCommunity,
     addFavoriteCommunity,
@@ -34,22 +35,22 @@ const Communities: React.FC = () => {
       : addFavoriteCommunity(houseAddress);
   };
 
-  const sortHouses = (houses: House[]) => {
-    return houses.sort((a, b) => {
-      const isAInFavorites = isFavoriteCommunity(a.address);
-      const isBInFavorites = isFavoriteCommunity(b.address);
-
-      if (isAInFavorites && !isBInFavorites) {
-        return -1;
-      } else if (!isAInFavorites && isBInFavorites) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-  };
-
   useEffect(() => {
+    const sortHouses = (houses: House[]) => {
+      return houses.sort((a, b) => {
+        const isAInFavorites = isFavoriteCommunity(a.address);
+        const isBInFavorites = isFavoriteCommunity(b.address);
+
+        if (isAInFavorites && !isBInFavorites) {
+          return -1;
+        } else if (!isAInFavorites && isBInFavorites) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+    };
+
     const fetchHouses = async () => {
       try {
         setLoading(true);
@@ -74,7 +75,7 @@ const Communities: React.FC = () => {
       }
     };
     fetchHouses();
-  }, [fetchMore, page, propHouse.query]);
+  }, [fetchMore, page, propHouse.query, isFavoriteCommunity]);
 
   const houseCard = (house: House) => {
     return (

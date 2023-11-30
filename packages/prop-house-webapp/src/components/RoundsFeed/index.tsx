@@ -17,6 +17,7 @@ const RoundsFeed: React.FC<{}> = () => {
   const { address: account } = useAccount();
   const navigate = useNavigate();
   const favorites = getFavoriteCommunities();
+  // eslint-disable-next-line
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
@@ -72,7 +73,16 @@ const RoundsFeed: React.FC<{}> = () => {
       }
     };
     _fetchRounds();
-  }, [pageIndex, fetchingRounds, fetchNewRounds, propHouse.query, rounds]);
+  }, [
+    pageIndex,
+    fetchingRounds,
+    fetchNewRounds,
+    propHouse.query,
+    rounds,
+    account,
+    favorites,
+    roundsFilter,
+  ]);
 
   return (
     <>
