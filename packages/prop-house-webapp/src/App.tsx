@@ -6,7 +6,6 @@ import NavBar from './components/NavBar';
 import CreateProp from './pages/CreateProp';
 import Footer from './components/Footer';
 import './App.css';
-import FAQ from './pages/FAQ';
 import LoadingIndicator from './components/LoadingIndicator';
 import NotFound from './components/NotFound';
 import clsx from 'clsx';
@@ -94,7 +93,6 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/communities" element={<Communities />} />
-                    <Route path="/faq" element={<FAQ />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
 

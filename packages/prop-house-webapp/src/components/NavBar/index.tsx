@@ -40,13 +40,6 @@ const NavBar = () => {
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-            <Nav.Link as="div" className={classes.menuLink} onClick={() => setIsNavExpanded(false)}>
-              <Link to="/faq" className={classes.link}>
-                {t('faq')}
-              </Link>
-              <span className={classes.divider}></span>
-            </Nav.Link>
-
             <div className={classes.buttonGroup}>
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <Button
