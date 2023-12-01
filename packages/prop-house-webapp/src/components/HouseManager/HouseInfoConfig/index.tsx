@@ -1,3 +1,4 @@
+import classes from './HouseInfoConfig.module.css';
 import Header from '../Header';
 import Footer from '../Footer';
 import { useDispatch } from 'react-redux';
@@ -6,6 +7,10 @@ import { saveRound } from '../../../state/thunks';
 import HouseSelection from '../HouseSelection';
 import CreateNewHouse from '../CreateNewHouse';
 import { House, usePropHouse } from '@prophouse/sdk-react';
+import { useAccount } from 'wagmi';
+import { TbPlugConnected } from 'react-icons/tb';
+import Button, { ButtonColor } from '../../Button';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 /**
  * @overview
@@ -23,6 +28,8 @@ const HouseInfoConfig = () => {
   const dispatch = useDispatch();
   const round = useAppSelector(state => state.round.round);
   const propHouse = usePropHouse();
+  const { address: account } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   const handleCreateNewHouse = () =>
     dispatch(saveRound({ ...round, house: { ...round.house, existingHouse: false } }));
@@ -42,31 +49,33 @@ const HouseInfoConfig = () => {
     );
   };
 
-  return (
+  return !account ? (
+    <div className={classes.notConnectedContainer}>
+      <TbPlugConnected size={100} />
+      <p>Please connect your account to continue</p>
+      <Button text="Connect" bgColor={ButtonColor.Pink} onClick={openConnectModal} />
+    </div>
+  ) : round.house.existingHouse ? (
     <>
-      {round.house.existingHouse ? (
-        <>
-          <Header
-            title="Which house is the round for?"
-            subtitle="Think of a house as your profile page where you host rounds."
-          />
+      <Header
+        title="Which house is the round for?"
+        subtitle="Think of a house as your profile page where you host rounds."
+      />
 
-          <HouseSelection
-            propHouse={propHouse}
-            onSelectHouse={handleHouseSelection}
-            handleCreateNewHouse={handleCreateNewHouse}
-          />
-        </>
-      ) : (
-        <>
-          <Header
-            title="Create your house"
-            subtitle="Think of a house as your profile page where you host rounds."
-          />
-          <CreateNewHouse />
-          <Footer />
-        </>
-      )}
+      <HouseSelection
+        propHouse={propHouse}
+        onSelectHouse={handleHouseSelection}
+        handleCreateNewHouse={handleCreateNewHouse}
+      />
+    </>
+  ) : (
+    <>
+      <Header
+        title="Create your house"
+        subtitle="Think of a house as your profile page where you host rounds."
+      />
+      <CreateNewHouse />
+      <Footer />
     </>
   );
 };
