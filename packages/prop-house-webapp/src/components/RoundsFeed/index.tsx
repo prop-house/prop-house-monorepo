@@ -10,15 +10,23 @@ import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { RoundsFilter, useRoundsFilter } from '../../hooks/useRoundsFilter';
 import { GiSurprisedSkull } from 'react-icons/gi';
 import { FaRegSurprise } from 'react-icons/fa';
+import { TbPlugConnected } from 'react-icons/tb';
 import { useNavigate } from 'react-router-dom';
 import { isMobile } from 'web3modal';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { fetchRoundsForFilter } from '../../utils/fetchRoundsForFilter';
 
 const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
-  const { address: account } = useAccount();
+
+  const { address: account } = useAccount({
+    onConnect() {
+      setFetchNewRounds(true);
+    },
+  });
   const navigate = useNavigate();
+  const { openConnectModal } = useConnectModal();
   const favorites = getFavoriteCommunities();
-  // eslint-disable-next-line
   const { roundsFilter, updateRoundsFilter } = useRoundsFilter();
 
   const [rounds, setRounds] = useState<RoundWithHouse[] | undefined>();
@@ -47,25 +55,15 @@ const RoundsFeed: React.FC<{}> = () => {
         setFetchingRounds(true);
         setFetchNewRounds(false);
 
-        const queryParams = {
-          page: pageIndex,
-          perPage: 6,
-        };
-        const query =
-          roundsFilter === RoundsFilter.Relevant && !account
-            ? propHouse.query.getRoundsWithHouseInfo(queryParams)
-            : roundsFilter === RoundsFilter.Relevant && account
-            ? propHouse.query.getRoundsWithHouseInfoRelevantToAccount(account, queryParams)
-            : roundsFilter === RoundsFilter.Favorites
-            ? propHouse.query.getRoundsWithHouseInfo({
-                ...queryParams,
-                where: {
-                  house_in: favorites,
-                },
-              })
-            : propHouse.query.getRoundsWithHouseInfo(queryParams);
+        const fetchedRounds = await fetchRoundsForFilter(
+          propHouse,
+          account,
+          favorites,
+          roundsFilter,
+          pageIndex,
+          6,
+        );
 
-        const fetchedRounds = await query;
         setFetchingRounds(false);
 
         if (fetchedRounds.length === 0) {
@@ -111,16 +109,18 @@ const RoundsFeed: React.FC<{}> = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu className={classes.dropdownMenu}>
-            {[RoundsFilter.Relevant, RoundsFilter.Favorites].map((filter, i) => (
-              <Dropdown.Item
-                key={i}
-                onClick={() => {
-                  handleFilterChange(filter);
-                }}
-              >
-                {filter}
-              </Dropdown.Item>
-            ))}
+            {[RoundsFilter.Active, RoundsFilter.Favorites, RoundsFilter.Relevant].map(
+              (filter, i) => (
+                <Dropdown.Item
+                  key={i}
+                  onClick={() => {
+                    handleFilterChange(filter);
+                  }}
+                >
+                  {filter}
+                </Dropdown.Item>
+              ),
+            )}
           </Dropdown.Menu>
         </Dropdown>
       </div>
@@ -140,6 +140,12 @@ const RoundsFeed: React.FC<{}> = () => {
         <div>
           <FaRegSurprise />
           <div>Your favorite communites haven't run any rounds yet... awkward.</div>
+        </div>
+      ) : roundsFilter === RoundsFilter.Relevant && account === undefined ? (
+        <div className={classes.emptyContentContainer}>
+          <TbPlugConnected size={100} />
+          <p>Please connect your account to see relevant rounds to you!</p>
+          <Button text="Connect" bgColor={ButtonColor.Pink} onClick={openConnectModal} />
         </div>
       ) : fetchingRounds && rounds === undefined ? (
         <LoadingIndicator />
