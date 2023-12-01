@@ -54,7 +54,7 @@ const NavBar = () => {
                 <ConnectButton
                   showBalance={false}
                   label={'Connect'}
-                  accountStatus={'full'}
+                  accountStatus={'avatar'}
                   chainStatus={'icon'}
                 />
               </Nav.Link>
