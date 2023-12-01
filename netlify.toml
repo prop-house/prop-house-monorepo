@@ -1,10 +1,8 @@
 [context.deploy-preview.environment]
     REACT_APP_NODE_ENV = "development"
 
+# Set back to development when merging into prod
 [context.branch-deploy.environment]
-    REACT_APP_NODE_ENV = "development"
-
-[context.offchain]
     REACT_APP_NODE_ENV = "production"
 
 [context.production.environment]
