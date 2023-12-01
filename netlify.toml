@@ -4,7 +4,7 @@
 [context.branch-deploy.environment]
     REACT_APP_NODE_ENV = "development"
     
-[context.offhcain]
+[context.offchain]
     REACT_APP_NODE_ENV = "production"
 
 [context.production.environment]
