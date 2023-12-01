@@ -233,11 +233,6 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               {proposals && proposing && (
                 <ProposedSummary proposers={proposals.map(p => p.proposer)} />
               )}
-              <Button
-                text="View round"
-                bgColor={ButtonColor.Purple}
-                classNames={classes.rightColBtn}
-              />
             </div>
           </Col>
         </Row>
