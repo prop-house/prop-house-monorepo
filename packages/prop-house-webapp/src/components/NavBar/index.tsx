@@ -2,7 +2,6 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
-import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -41,16 +40,7 @@ const NavBar = () => {
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-            <Nav.Link as="div" className={classes.menuLink} onClick={() => setIsNavExpanded(false)}>
-              <Link to="/faq" className={classes.link}>
-                {t('faq')}
-              </Link>
-              <span className={classes.divider}></span>
-            </Nav.Link>
-
             <div className={classes.buttonGroup}>
-              <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
-
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <Button
                   text="Create a round"
@@ -64,7 +54,7 @@ const NavBar = () => {
                 <ConnectButton
                   showBalance={false}
                   label={'Connect'}
-                  accountStatus={'full'}
+                  accountStatus={'avatar'}
                   chainStatus={'icon'}
                 />
               </Nav.Link>

@@ -2,6 +2,19 @@
   display: flex;
   padding-bottom: 2rem;
 }
+.houseNameRow {
+  display: flex;
+  justify-content: space-between;
+}
+.manageRoundBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-black);
+}
+.manageRoundBtn svg {
+  margin-left: 6px;
+}
 .profilePicCol img {
   height: 15rem;
   width: auto;
@@ -73,7 +86,7 @@
   align-items: center;
   font-size: 1rem;
   font-weight: 600;
-  padding-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .backToHouse:hover {
@@ -147,7 +160,7 @@
 
 @media (max-width: 576px) {
   .backToHouse {
-    padding-bottom: 25px;
+    margin-bottom: 12px;
   }
   .awardsSubtitle {
     margin-bottom: 0.5rem;
@@ -157,5 +170,13 @@
 @media (max-width: 575px) {
   .stickyContainer {
     padding: 12px 0px 8px 0px;
+  }
+  .houseNameRow {
+    display: flex;
+    flex-direction: column;
+  }
+  .manageRoundBtn {
+    width: 100%;
+    margin-bottom: 12px;
   }
 }

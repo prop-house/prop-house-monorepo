@@ -45,7 +45,9 @@ const Proposal = () => {
 
   // fetch prop, round and house
   useEffect(() => {
-    if (!roundAddress || !id || proposal) return;
+    const isSameProp =
+      proposal && proposal.id === Number(id) && round && round.address === roundAddress;
+    if (!roundAddress || !id || isSameProp) return;
     const fetchProposal = async () => {
       try {
         const proposal = await propHouse.query.getProposal(roundAddress, Number(id));

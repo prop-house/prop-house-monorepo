@@ -3,9 +3,14 @@ import Card, { CardBgColor, CardBorderRadius } from '../../Card';
 import CreateRoundStep from '../../CreateRoundStep';
 import { useAppSelector } from '../../../hooks';
 import clsx from 'clsx';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper.min.css';
+import { useEffect, useRef } from 'react';
+import SwiperCore from 'swiper';
 
 const SecondaryCard: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
+  const swiperRef = useRef<SwiperCore>();
 
   const steps = [
     {
@@ -34,12 +39,11 @@ const SecondaryCard: React.FC = () => {
     },
   ];
 
-  // If the activeStep is greater than 2, show steps 3-5. Otherwise, show the subset of steps starting from the activeStep.
-  const displayedSteps = activeStep > 2 ? steps.slice(2, 5) : steps.slice(activeStep - 1);
-
-  // Set the start index of the displayed steps based on the activeStep.
-  // If the activeStep is greater than 2, start at step 3. Otherwise, start at the activeStep.
-  const start = activeStep > 2 ? 2 : activeStep - 1;
+  useEffect(() => {
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(activeStep - 1);
+    }
+  }, [activeStep]);
 
   return (
     <>
@@ -66,15 +70,24 @@ const SecondaryCard: React.FC = () => {
         borderRadius={CardBorderRadius.thirty}
         classNames={clsx(classes.secondaryCard, classes.fullCard)}
       >
-        {displayedSteps.map((step, idx) => (
-          <CreateRoundStep
-            activeStep={activeStep}
-            stepNumber={start + idx + 1}
-            title={step.title}
-            text={step.text}
-            key={idx}
-          />
-        ))}
+        <Swiper
+          onSwiper={swiper => {
+            swiperRef.current = swiper;
+          }}
+          initialSlide={0}
+        >
+          {steps.map((step, idx) => (
+            <SwiperSlide>
+              <CreateRoundStep
+                activeStep={activeStep}
+                stepNumber={idx + 1}
+                title={step.title}
+                text={step.text}
+                key={idx}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </Card>
     </>
   );

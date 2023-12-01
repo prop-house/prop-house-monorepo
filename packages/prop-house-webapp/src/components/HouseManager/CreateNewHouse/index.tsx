@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { capitalize } from '../../../utils/capitalize';
 import Group from '../Group';
 import Button, { ButtonColor } from '../../Button';
-import InstructionBox from '../InstructionBox';
-import Divider from '../../Divider';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '../../../hooks';
 import validFileType from '../../../utils/validFileType';
@@ -143,14 +141,6 @@ const CreateNewHouse = () => {
           handleDescriptionChange={handleDescriptionChange}
         />
       </Group>
-
-      <Divider />
-
-      <InstructionBox
-        title="House NFT"
-        text="This is your ownership token for the House. You can send it to anyone, and is there anything else about to we need to say here?"
-        image="/manager/newImage.png"
-      />
     </>
   );
 };
