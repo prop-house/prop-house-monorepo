@@ -129,7 +129,7 @@ const AddVoter: React.FC<{
     } else if (selectedType === StrategyType.ERC1155) {
       setVoter({
         ...newVoter,
-        type: VotingStrategyType.BALANCE_OF,
+        type: VotingStrategyType.BALANCE_OF_ERC1155,
         asset: AssetType.ERC1155,
       });
     } else if (selectedType === StrategyType.Allowlist) {
