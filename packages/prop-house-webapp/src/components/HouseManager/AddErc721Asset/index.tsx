@@ -9,6 +9,7 @@ import { EditableAsset } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import { isAddress } from 'viem';
 import useAddressType from '../../../hooks/useAddressType';
+import { invalidAddressChar } from '../../../utils/invalidAddressChar';
 
 const AddErc721Asset: React.FC<{
   asset: EditableAsset;
@@ -22,6 +23,7 @@ const AddErc721Asset: React.FC<{
   const { data: contractType } = useAddressType(asset.address);
 
   const handleAddressChange = (value: string) => {
+    if (invalidAddressChar(value)) return;
     setIsTyping(true);
     setAsset({ ...asset, address: value });
   };

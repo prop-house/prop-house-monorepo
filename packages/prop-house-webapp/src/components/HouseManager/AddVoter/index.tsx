@@ -23,6 +23,7 @@ import { saveRound } from '../../../state/thunks';
 import createVoterStrategy from '../../../utils/createVoterStrategy';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
 import { LuConstruction } from 'react-icons/lu';
+import { invalidAddressChar } from '../../../utils/invalidAddressChar';
 
 /**
  * @see StrategyType - button options within modal
@@ -216,6 +217,7 @@ const AddVoter: React.FC<{
   };
 
   const handleAddressChange = (value: string) => {
+    if (invalidAddressChar(value)) return;
     setIsTyping(true);
     setVoter({ ...voter, address: value });
   };

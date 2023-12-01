@@ -9,6 +9,7 @@ import ERC20Buttons from '../ERC20Buttons';
 import { useSingleAssetDecimals } from '../../../hooks/useAssetsWithDecimals';
 import { parseUnits, formatUnits, isAddress } from 'viem';
 import useAddressType from '../../../hooks/useAddressType';
+import { invalidAddressChar } from '../../../utils/invalidAddressChar';
 
 const AddErc20Asset: React.FC<{
   asset: EditableAsset;
@@ -77,6 +78,7 @@ const AddErc20Asset: React.FC<{
   };
 
   const handleAddressChange = (value: string) => {
+    if (invalidAddressChar(value)) return;
     setIsTyping(true);
     setAsset({ ...asset, address: value });
   };
