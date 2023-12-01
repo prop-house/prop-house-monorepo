@@ -2,7 +2,6 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
-import LocaleSwitcher from '../LocaleSwitcher';
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -49,8 +48,6 @@ const NavBar = () => {
             </Nav.Link>
 
             <div className={classes.buttonGroup}>
-              <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
-
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <Button
                   text="Create a round"
