@@ -9,10 +9,14 @@ import { ForceOpenInNewTab } from '../ForceOpenInNewTab';
 import { isLongName } from '../../utils/isLongName';
 import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
-import { House, Round } from '@prophouse/sdk-react';
+import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../../utils/getDateFromTimestamp';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import { isMobile } from 'web3modal';
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import Button, { ButtonColor } from '../Button';
+import { IoIosSettings } from 'react-icons/io';
 
 const RoundHeader: React.FC<{
   round: Round;
@@ -21,6 +25,31 @@ const RoundHeader: React.FC<{
   const { round, house } = props;
 
   const navigate = useNavigate();
+  const { address: account } = useAccount();
+  const [isRoundManager, setIsRoundManager] = useState<boolean>();
+  const propHouse = usePropHouse();
+
+  useEffect(() => {
+    if (!account) return;
+    const fetchIsRoundManager = async () => {
+      const rounds = await propHouse.query.getRoundsManagedByAccount(account);
+      setIsRoundManager(rounds.some(r => r.address === round.address));
+    };
+    fetchIsRoundManager();
+  });
+
+  const manageRoundBtn = isRoundManager && (
+    <Button
+      text={
+        <>
+          Manage Round <IoIosSettings />
+        </>
+      }
+      bgColor={ButtonColor.White}
+      classNames={classes.manageRoundBtn}
+      onClick={() => navigate(`/manage/${round.address}`)}
+    />
+  );
 
   const roundDescription = (
     <>
@@ -49,7 +78,7 @@ const RoundHeader: React.FC<{
 
   return (
     <Row className={classes.roundHeaderRow}>
-      <Col lg={12}>
+      <Col lg={12} className={classes.houseNameRow}>
         <div className={classes.backToHouse} onClick={() => navigate(`/${house.address}`)}>
           <img
             src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
@@ -58,6 +87,7 @@ const RoundHeader: React.FC<{
           />
           <div className={classes.commTitle}>{house.name}</div>
         </div>
+        <div>{manageRoundBtn}</div>
       </Col>
       <Row>
         <Col lg={7} className={classes.communityInfoCol}>
