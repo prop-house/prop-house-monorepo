@@ -97,6 +97,7 @@ const RoundsFeed: React.FC<{}> = () => {
     favorites,
     roundsFilter,
     newFilter,
+    propHouse,
   ]);
 
   return (
