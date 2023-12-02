@@ -8,7 +8,6 @@ import Modal from '../Modal';
 import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
-import Button, { ButtonColor } from '../Button';
 import { IoTime } from 'react-icons/io5';
 import { FaClipboardCheck } from 'react-icons/fa';
 import { HiTrophy } from 'react-icons/hi2';
@@ -233,11 +232,6 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               {proposals && proposing && (
                 <ProposedSummary proposers={proposals.map(p => p.proposer)} />
               )}
-              <Button
-                text="View round"
-                bgColor={ButtonColor.Purple}
-                classNames={classes.rightColBtn}
-              />
             </div>
           </Col>
         </Row>

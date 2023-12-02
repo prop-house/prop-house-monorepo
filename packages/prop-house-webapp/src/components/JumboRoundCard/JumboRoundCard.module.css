@@ -5,6 +5,7 @@
   position: relative;
   z-index: 1;
   border: 1px solid var(--border-med);
+  cursor: pointer;
 }
 .container {
   display: flex;

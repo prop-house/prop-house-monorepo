@@ -11,12 +11,19 @@ import Tooltip from '../../Tooltip';
 import VotesPerAddress from '../VotesPerAddress';
 import InfoSymbol from '../../InfoSymbol';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import { AssetType, GovPowerStrategyConfig, VotingStrategyType } from '@prophouse/sdk-react';
+import {
+  AssetType,
+  GovPowerStrategyConfig,
+  GovPowerStrategyType,
+  VotingStrategyType,
+} from '@prophouse/sdk-react';
 import { getTokenInfo } from '../../../utils/getTokenInfo';
 import useAddressType from '../../../hooks/useAddressType';
 import { saveRound } from '../../../state/thunks';
 import createVoterStrategy from '../../../utils/createVoterStrategy';
 import { useEthersProvider } from '../../../hooks/useEthersProvider';
+import { LuConstruction } from 'react-icons/lu';
+import { invalidAddressChar } from '../../../utils/invalidAddressChar';
 
 /**
  * @see StrategyType - button options within modal
@@ -210,6 +217,7 @@ const AddVoter: React.FC<{
   };
 
   const handleAddressChange = (value: string) => {
+    if (invalidAddressChar(value)) return;
     setIsTyping(true);
     setVoter({ ...voter, address: value });
   };
@@ -263,6 +271,8 @@ const AddVoter: React.FC<{
 
     handleTokenIdChange(value.toString());
   };
+
+  const hasBalanceOfStrategy = voters.some(v => v.strategyType !== GovPowerStrategyType.ALLOWLIST);
 
   const strategyContent = {
     [StrategyType.ERC721]: (
@@ -363,7 +373,21 @@ const AddVoter: React.FC<{
 
       <Divider />
 
-      <Group>{renderContent()}</Group>
+      <Group>
+        {/** we dont support more than 1 balanceOf strategy per round on launch, will be avail on upgrades. todo.  */}
+        {hasBalanceOfStrategy &&
+        selectedStrategy.toUpperCase() !== GovPowerStrategyType.ALLOWLIST ? (
+          <div className={classes.noSupport}>
+            <LuConstruction size={100} />
+            <p>
+              We don't currently support more than one <b>ERC20/ERC721/ERC1155</b> strategy per
+              round (yet)
+            </p>
+          </div>
+        ) : (
+          renderContent()
+        )}
+      </Group>
 
       <div className={classes.footer}>
         <div className={classes.buttonContainer}>

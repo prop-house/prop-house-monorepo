@@ -107,7 +107,7 @@ const VotingStrategiesDisplay: React.FC<{
       }}
     />
   ) : oneStratAndAllowListHasOneMember || oneStrat ? (
-    singleStratCopy(votingStrategies[0])
+    singleStratCopy(votingStrategies[0], 0)
   ) : (
     <div onClick={() => setShowModal(true)}>
       {formattedContent(

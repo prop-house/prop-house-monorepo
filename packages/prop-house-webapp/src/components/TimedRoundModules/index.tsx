@@ -1,13 +1,9 @@
 import classes from './TimedRoundModules.module.css';
 import { Col } from 'react-bootstrap';
-import clsx from 'clsx';
 import TimedRoundAcceptingPropsModule from '../TimedRoundAcceptingPropsModule';
 import TimedRoundVotingModule from '../TimedRoundVotingModule';
 import RoundOverModule from '../RoundOverModule';
 import React, { Dispatch, SetStateAction } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper.min.css';
-import { isMobile } from 'web3modal';
 import RoundModuleNotStarted from '../RoundModuleNotStarted';
 import { Proposal, Round, Timed } from '@prophouse/sdk-react';
 import RoundModuleCancelled from '../RoundModuleCancelled';
@@ -74,21 +70,10 @@ const TimedRoundModules: React.FC<{
   ];
 
   return (
-    <Col xl={4} className={clsx(classes.sideCards, classes.breakOut)}>
-      {isMobile() ? (
-        <Swiper slidesPerView={1} className={classes.swiper}>
-          {modules.map(
-            (module, index) =>
-              React.isValidElement(module) && (
-                <SwiperSlide style={{ paddingLeft: '24px', paddingRight: '24px' }} key={index}>
-                  {module}
-                </SwiperSlide>
-              ),
-          )}
-        </Swiper>
-      ) : (
-        modules.map((m, i) => <div key={i}>{m}</div>)
-      )}
+    <Col xl={4} className={classes.sideCards}>
+      {modules.map((m, i) => (
+        <div key={i}>{m}</div>
+      ))}
     </Col>
   );
 };
