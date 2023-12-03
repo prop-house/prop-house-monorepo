@@ -92,7 +92,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
     // Stub `getRoundVotingStrategies`
     gql.QueryWrapper.prototype.getRoundVotingStrategies = () =>
       Promise.resolve({
-        govPowerStrategies: [
+        govPowerStrategiesRaw: [
           {
             id: vanillaGovPowerStrategyId,
             type: GQLGovPowerStrategyType.Vanilla,
@@ -100,6 +100,7 @@ describe('TimedRoundStrategy - ETH Transaction Auth Strategy', () => {
             params: [],
           },
         ],
+        govPowerStrategies: [],
       });
 
     // Override contract addresses

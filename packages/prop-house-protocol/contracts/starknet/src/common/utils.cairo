@@ -1,6 +1,7 @@
 mod array;
 mod constants;
 mod contract;
+mod endian;
 mod hash;
 mod integer;
 mod math;

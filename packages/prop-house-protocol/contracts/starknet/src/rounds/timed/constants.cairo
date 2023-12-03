@@ -23,18 +23,18 @@ mod TypeHash {
     const PROPOSAL_VOTE: u256 = 0xa46ac0403a21fd8fb4a7df35c25609420514e278d87c90014f2065aeeb91dd11;
 
     /// The type hash for the propose function.
-    /// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposer,string metadataUri,UserStrategy[] usedProposingStrategies,uint256 salt)")
-    const PROPOSE: u256 = 0x724212666a31b9d7095b620ba1e97e95a1ad973bec4c7aa47cc541cadf2f1fa0;
+    /// keccak256("Propose(bytes32 authStrategy,bytes32 round,address proposer,uint256[] metadataUri,UserStrategy[] usedProposingStrategies,uint256 salt)UserStrategy(uint256 id,uint256[] userParams)")
+    const PROPOSE: u256 = 0x96af737a59bf9e2c9aa272b216d504cb07fc233e8e886db7329ee917561c07a0;
 
     /// The type hash for the edit proposal function.
-    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,string metadataUri,uint256 salt)")
-    const EDIT_PROPOSAL: u256 = 0x96cde7b06a74d1b06ee7398da5e3bf9d79a7a3c6c8e5f2e3d3bee896929acc7e;
+    /// keccak256("EditProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256[] metadataUri,uint256 salt)")
+    const EDIT_PROPOSAL: u256 = 0x7943530c7e8e1d58a81194a9e511c60d84fb1af59b035602a742fbd15525c7d6;
 
     /// The type hash for the proposal cancellation function.
     /// keccak256("CancelProposal(bytes32 authStrategy,bytes32 round,address proposer,uint32 proposalId,uint256 salt)")
     const CANCEL_PROPOSAL: u256 = 0x028919d8d2d0420b53a157ead1cf69ce411b708959dae9a6acf31f6efee7ef14;
 
     /// The type hash for the vote function.
-    /// keccak256("Vote(bytes32 authStrategy,bytes32 round,address voter,ProposalVote[] proposalVotes,UserStrategy[] usedVotingStrategies,uint256 salt)")
-    const VOTE: u256 = 0x4ffe05782f7a786a66654c624e3e1bef5b322bbe86b6c7ee8cd61ed9f946a6f7;
+    /// keccak256("Vote(bytes32 authStrategy,bytes32 round,address voter,ProposalVote[] proposalVotes,UserStrategy[] usedVotingStrategies,uint256 salt)ProposalVote(uint32 proposalId,uint256 votingPower)UserStrategy(uint256 id,uint256[] userParams)")
+    const VOTE: u256 = 0x6efb90c9f682be1f26749b1160b5bfa3305765946c617ece1e43d9db70cf8065;
 }
