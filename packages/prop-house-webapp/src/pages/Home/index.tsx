@@ -10,9 +10,11 @@ import clsx from 'clsx';
 import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import JumboRoundCard from '../../components/JumboRoundCard';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const propHouse = usePropHouse();
+  const navigate = useNavigate();
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
 
   useEffect(() => {
@@ -34,8 +36,16 @@ const Home = () => {
               magic happen.
             </p>
             <div className={classes.btnContainer}>
-              <Button text="View rounds" bgColor={ButtonColor.White} />
-              <Button text="Create a round" bgColor={ButtonColor.White} />
+              <Button
+                text="Create a round"
+                bgColor={ButtonColor.White}
+                onClick={() => navigate('/create-round')}
+              />
+              <Button
+                text="Launch app"
+                bgColor={ButtonColor.Pink}
+                onClick={() => navigate('/app')}
+              />
             </div>
           </Col>
           <Col>
@@ -72,7 +82,7 @@ const Home = () => {
                   </div>
                   <div className={classes.statsItem}>
                     <div className={classes.stat}>25k+</div>
-                    <div className={classes.title}>votes casted</div>
+                    <div className={classes.title}>votes cast</div>
                   </div>
                 </div>
               </Col>
@@ -96,8 +106,8 @@ const Home = () => {
               <Col sm={12} md={6} className={classes.onchainCityTitleCol}>
                 <div className={classes.title}>Born in Nouns</div>
                 <p className={classes.subtitle}>
-                  Prop House is a project born in Nouns, funded entirely by Nouns and serves as an
-                  open invitation for all onchain communities to build the world they want to see.
+                  Prop House is a project born and funded by Nouns and serves as an open invitation
+                  for all onchain communities to build the world they want to see.
                 </p>
               </Col>
               <Col xs={12}>

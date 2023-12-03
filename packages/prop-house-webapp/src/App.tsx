@@ -89,7 +89,7 @@ function App() {
                   <NavBar />
                   <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/" element={<MainApp />} />
+                    <Route path="/app" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />
