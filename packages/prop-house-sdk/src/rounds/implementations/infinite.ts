@@ -57,7 +57,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'requestedAssets', type: 'Asset[]' },
       { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
@@ -68,7 +68,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       { name: 'proposer', type: 'address' },
       { name: 'proposalId', type: 'uint32' },
       { name: 'requestedAssets', type: 'Asset[]' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'salt', type: 'uint256' },
     ],
     CancelProposal: [
@@ -238,6 +238,7 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -253,7 +254,10 @@ export class InfiniteRound<CS extends void | Custom = void> extends RoundBase<Ro
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(InfiniteRound.EIP_712_TYPES, ['Propose', 'UserStrategy', 'Asset']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,

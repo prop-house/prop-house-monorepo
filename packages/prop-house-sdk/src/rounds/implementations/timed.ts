@@ -73,7 +73,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       { name: 'authStrategy', type: 'bytes32' },
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'usedProposingStrategies', type: 'UserStrategy[]' },
       { name: 'salt', type: 'uint256' },
     ],
@@ -82,7 +82,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       { name: 'round', type: 'bytes32' },
       { name: 'proposer', type: 'address' },
       { name: 'proposalId', type: 'uint32' },
-      { name: 'metadataUri', type: 'string' },
+      { name: 'metadataUri', type: 'uint256[]' },
       { name: 'salt', type: 'uint256' },
     ],
     CancelProposal: [
@@ -321,6 +321,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -332,7 +333,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(TimedRound.EIP_712_TYPES, ['Propose', 'UserStrategy']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,
@@ -366,6 +370,7 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
       config.round = await this._query.getStarknetRoundAddress(config.round);
     }
 
+    const metadataUriIntsSequence = intsSequence.IntsSequence.LEFromString(config.metadataUri);
     const message = {
       round: encoding.hexPadLeft(config.round),
       metadataUri: config.metadataUri,
@@ -377,7 +382,10 @@ export class TimedRound<CS extends void | Custom = void> extends RoundBase<Round
     const signature = await this.signer._signTypedData(
       this.DOMAIN,
       this.pick(TimedRound.EIP_712_TYPES, ['EditProposal']),
-      message,
+      {
+        ...message,
+        metadataUri: metadataUriIntsSequence.values,
+      },
     );
     return {
       address,
