@@ -14,7 +14,7 @@ trait IInfiniteRoundEthereumSigAuthStrategy<TContractState> {
         ref self: TContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -26,7 +26,7 @@ trait IInfiniteRoundEthereumSigAuthStrategy<TContractState> {
         ref self: TContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -38,7 +38,7 @@ trait IInfiniteRoundEthereumSigAuthStrategy<TContractState> {
         ref self: TContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -48,7 +48,7 @@ trait IInfiniteRoundEthereumSigAuthStrategy<TContractState> {
         ref self: TContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         voter: EthAddress,
@@ -72,11 +72,14 @@ impl KeccakTypeHashProposalVote of KeccakTypeHash<ProposalVote> {
 
 #[starknet::contract]
 mod InfiniteRoundEthereumSigAuthStrategy {
-    use starknet::{ContractAddress, EthAddress, get_contract_address};
+    use starknet::{
+        ContractAddress, EthAddress, get_contract_address, secp256k1::Secp256k1Point,
+        secp256_trait::{verify_eth_signature, signature_from_vrs},
+    };
     use prop_house::rounds::infinite::config::{
         IInfiniteRoundDispatcherTrait, IInfiniteRoundDispatcher, ProposalVote
     };
-    use prop_house::common::utils::signature::{KeccakTypeHash, hash_structured_data};
+    use prop_house::common::utils::signature::{hash_typed_data, KeccakTypeHash};
     use prop_house::common::utils::hash::{keccak_u256s_be, LegacyHashEthAddress};
     use prop_house::common::libraries::round::{Asset, UserStrategy};
     use prop_house::common::utils::integer::ContractAddressIntoU256;
@@ -114,7 +117,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             ref self: ContractState,
             r: u256,
             s: u256,
-            v: u8,
+            v: u32,
             salt: u256,
             round: ContractAddress,
             proposer: EthAddress,
@@ -151,7 +154,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             ref self: ContractState,
             r: u256,
             s: u256,
-            v: u8,
+            v: u32,
             salt: u256,
             round: ContractAddress,
             proposer: EthAddress,
@@ -186,7 +189,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             ref self: ContractState,
             r: u256,
             s: u256,
-            v: u8,
+            v: u32,
             salt: u256,
             round: ContractAddress,
             proposer: EthAddress,
@@ -209,7 +212,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             ref self: ContractState,
             r: u256,
             s: u256,
-            v: u8,
+            v: u32,
             salt: u256,
             round: ContractAddress,
             voter: EthAddress,
@@ -243,7 +246,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         ref self: ContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -258,7 +261,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         let metadata_uri_hash = keccak_u256s_be(metadata_uri.into());
 
         // The message data
-        let mut data = array![
+        let encoded_data = array![
             TypeHash::PROPOSE,
             auth_strategy_address.into(),
             round.into(),
@@ -268,10 +271,10 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             used_proposing_strategies.hash(),
             salt,
         ];
-        let hash = hash_structured_data(self._domain_separator.read(), data.span());
+        let message_hash = keccak_u256s_be(encoded_data.span());
+        let digest = hash_typed_data(self._domain_separator.read(), message_hash);
 
-        // TODO: eth signature verification not yet supported
-        // _verify_eth_signature(hash, r, s, v - 27, proposer);
+        verify_eth_signature::<Secp256k1Point>(digest, signature_from_vrs(v, r, s), proposer);
 
         // Write the salt to prevent replay attack
         self._salts.write((proposer, salt), true);
@@ -289,7 +292,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         ref self: ContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -303,7 +306,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         let auth_strategy_address = get_contract_address();
 
         // The message data
-        let mut data = array![
+        let encoded_data = array![
             TypeHash::EDIT_PROPOSAL,
             auth_strategy_address.into(),
             round.into(),
@@ -313,10 +316,10 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             requested_assets.hash(),
             salt,
         ];
-        let hash = hash_structured_data(self._domain_separator.read(), data.span());
+        let message_hash = keccak_u256s_be(encoded_data.span());
+        let digest = hash_typed_data(self._domain_separator.read(), message_hash);
 
-        // TODO: eth signature verification not yet supported
-        // _verify_eth_signature(hash, r, s, v - 27, proposer);
+        verify_eth_signature::<Secp256k1Point>(digest, signature_from_vrs(v, r, s), proposer);
 
         // Write the salt to prevent replay attack
         self._salts.write((proposer, salt), true);
@@ -333,7 +336,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         ref self: ContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         proposer: EthAddress,
@@ -345,7 +348,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         let auth_strategy_address = get_contract_address();
 
         // The message data
-        let mut data = array![
+        let encoded_data = array![
             TypeHash::CANCEL_PROPOSAL,
             auth_strategy_address.into(),
             round.into(),
@@ -353,10 +356,10 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             u256_from_felt252(proposal_id.into()),
             salt,
         ];
-        let hash = hash_structured_data(self._domain_separator.read(), data.span());
+        let message_hash = keccak_u256s_be(encoded_data.span());
+        let digest = hash_typed_data(self._domain_separator.read(), message_hash);
 
-        // TODO: eth signature verification not yet supported
-        // _verify_eth_signature(hash, r, s, v - 27, proposer);
+        verify_eth_signature::<Secp256k1Point>(digest, signature_from_vrs(v, r, s), proposer);
 
         // Write the salt to prevent replay attack
         self._salts.write((proposer, salt), true);
@@ -373,7 +376,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         ref self: ContractState,
         r: u256,
         s: u256,
-        v: u8,
+        v: u32,
         salt: u256,
         round: ContractAddress,
         voter: EthAddress,
@@ -386,7 +389,7 @@ mod InfiniteRoundEthereumSigAuthStrategy {
         let auth_strategy_address = get_contract_address();
 
         // The message data
-        let mut data = array![
+        let encoded_data = array![
             TypeHash::VOTE,
             auth_strategy_address.into(),
             round.into(),
@@ -395,10 +398,10 @@ mod InfiniteRoundEthereumSigAuthStrategy {
             used_voting_strategies.hash(),
             salt,
         ];
-        let hash = hash_structured_data(self._domain_separator.read(), data.span());
+        let message_hash = keccak_u256s_be(encoded_data.span());
+        let digest = hash_typed_data(self._domain_separator.read(), message_hash);
 
-        // TODO: eth signature verification not yet supported
-        // _verify_eth_signature(hash, r, s, v - 27, voter);
+        verify_eth_signature::<Secp256k1Point>(digest, signature_from_vrs(v, r, s), voter);
 
         // Write the salt to prevent replay attack
         self._salts.write((voter, salt), true);
