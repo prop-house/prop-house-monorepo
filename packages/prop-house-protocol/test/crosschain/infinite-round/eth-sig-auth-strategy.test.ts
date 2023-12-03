@@ -97,7 +97,7 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
     for (const func of funcs) {
       gql.QueryWrapper.prototype[func] = () =>
         Promise.resolve({
-          govPowerStrategies: [
+          govPowerStrategiesRaw: [
             {
               id: `0x${poseidonHashMany([BigInt(vanillaGovPowerStrategy.address)]).toString(16)}`,
               type: GQLGovPowerStrategyType.Vanilla,
@@ -105,6 +105,7 @@ describe('InfiniteRoundStrategy - ETH Signature Auth Strategy', () => {
               params: [],
             },
           ],
+          govPowerStrategies: [],
         });
     }
 
