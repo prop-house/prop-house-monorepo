@@ -272,10 +272,10 @@
 @media (max-width: 576px) {
   .headerImg {
     height: 35vh;
-    margin-top: -20vh;
+    margin-top: -17vh;
   }
   .statsRowContainer {
-    margin-top: -8vh;
+    margin-top: 3vh;
   }
   .statsRow .title {
     font-size: 26px;
