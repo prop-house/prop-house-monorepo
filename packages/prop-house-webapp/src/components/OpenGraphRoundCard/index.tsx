@@ -1,78 +1,52 @@
 import classes from './OpenGraphRoundCard.module.css';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
-import formatTime from '../../utils/formatTime';
-import TruncateThousands from '../TruncateThousands';
-import { Community, StoredTimedAuction } from '@nouns/prop-house-wrapper/dist/builders';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { isTimedAuction } from '../../utils/auctionType';
+import { House, Round, usePropHouse } from '@prophouse/sdk-react';
+import dayjs from 'dayjs';
+import HouseProfImg from '../HouseProfImg';
 
 const OpenGraphRoundCard: React.FC = () => {
   const params = useParams();
-  const { id } = params;
+  const { address } = params;
+  const propHouse = usePropHouse();
 
-  const [round, setRound] = useState<StoredTimedAuction>();
-  const [community, setCommunity] = useState<Community>();
-
-  const signer = useEthersSigner();
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
+  const [round, setRound] = useState<Round>();
+  const [house, setHouse] = useState<House>();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  useEffect(() => {
-    if (!id) return;
+    if (!address) return;
 
     const fetch = async () => {
-      const round = await client.current.getAuction(Number(id));
-      const community = await client.current.getCommunityWithId(round.community);
+      const round = await propHouse.query.getRoundWithHouseInfo(address);
       setRound(round);
-      setCommunity(community);
+      setHouse(round.house);
     };
 
     fetch();
-  }, [id]);
+  }, [address, propHouse.query]);
 
   return (
     <>
-      {community && round && (
+      {house && round && (
         <div className={classes.cardContainer}>
           <span className={classes.infoAndImage}>
             <span>
               <div className={classes.cardTitle}>
-                <span className={classes.houseName}>{community.name} House</span>
+                <span className={classes.houseName}>{house.name}</span>
               </div>
 
               <div className={classes.roundName}>{round.title}</div>
-              {isTimedAuction(round) && (
-                <div className={classes.date}>
-                  {`${formatTime(round.startTime)} - ${formatTime(round.proposalEndTime)}`}
-                </div>
-              )}
+
+              <div className={classes.date}>
+                {`${dayjs(round.config.proposalPeriodStartTimestamp * 1000).format(
+                  'MMM D @ h:mmA',
+                )} - ${dayjs(round.config.votePeriodEndTimestamp * 1000).format('MMM D @ h:mmA')}`}
+              </div>
             </span>
 
             <span className={classes.houseImg}>
-              {/* todo: resolve */}
-              {/* <CommunityProfImg community={community} /> */}
+              <HouseProfImg house={house} />
             </span>
-          </span>
-
-          <span className={classes.roundInfoContainer}>
-            <div className={classes.roundInfo}>
-              <span className={classes.title}>Awards:</span>
-              <p className={classes.subtitle}>
-                <TruncateThousands amount={round.fundingAmount} decimals={2} /> {round.currencyType}
-                {isTimedAuction(round) && (
-                  <>
-                    <span className={classes.xDivide}>{' × '}</span> {round.numWinners}
-                  </>
-                )}
-              </p>
-            </div>
           </span>
         </div>
       )}
