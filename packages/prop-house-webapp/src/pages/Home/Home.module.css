@@ -123,17 +123,38 @@
 .onchainCityRowSvgBottom path {
   fill: white;
 }
-.earthRow {
+.alienRow {
   background-color: transparent;
+}
+.alienRow .title {
   display: flex;
-  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+.alienImgCol {
+  display: flex;
   justify-content: center;
 }
-.earthRow img {
-  max-width: 100%;
-  height: auto;
+.alienImgCol img {
+  max-width: 50vh;
+  width: auto;
   position: relative;
   z-index: 999 !important;
+}
+.featuresContainer {
+  padding-bottom: 2rem;
+}
+.featuresContainer b {
+  font-size: 18px;
+}
+.featuresContainer span {
+  font-size: 16px;
+  text-align: left;
+}
+.featureItem {
+  display: flex;
+  flex-direction: column;
+  height: 10rem;
 }
 .roundsvgTopRow img {
   position: absolute;
@@ -159,11 +180,18 @@
 .roundsRowContainer {
   background-color: var(--brand-purple);
 }
+
 .roundsRow {
   display: flex;
   align-items: center;
   justify-content: center;
+  text-align: center;
 }
+.roundsRow .btnContainer {
+  align-items: center;
+  justify-content: center;
+}
+
 .roundRowTitle {
   color: white;
   text-align: center;
@@ -200,6 +228,20 @@
   }
   .roundsvgTopRow .moon {
     margin-top: -4vh;
+  }
+}
+@media (max-width: 992px) {
+  .alienRow {
+    text-align: left;
+    margin-top: 0;
+    padding-top: 2rem;
+  }
+  .alienRow img {
+    max-width: 60vw;
+  }
+  .featureItem {
+    height: initial;
+    align-items: flex-start;
   }
 }
 @media (min-width: 576px) and (max-width: 992px) {
@@ -248,15 +290,7 @@
   .onchainCityRow img {
     width: 100vw;
   }
-  .earthRow {
-    text-align: center;
-    margin-top: 0;
-    padding-top: 2rem;
-    flex-direction: column-reverse;
-  }
-  .earthRow img {
-    max-width: 60vw;
-  }
+
   .statsContainer {
     gap: 40px;
   }
@@ -305,5 +339,8 @@
   }
   .statsItem .title {
     font-size: 12px;
+  }
+  .alienRow .title {
+    justify-content: left;
   }
 }

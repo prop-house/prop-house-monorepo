@@ -7,24 +7,11 @@ import hand from '../../assets/files/hand.png';
 import moon from '../../assets/files/moon.png';
 import Button, { ButtonColor } from '../../components/Button';
 import clsx from 'clsx';
-import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
-import { useEffect, useState } from 'react';
-import JumboRoundCard from '../../components/JumboRoundCard';
 import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
-  const propHouse = usePropHouse();
   const navigate = useNavigate();
-  const [rounds, setRounds] = useState<RoundWithHouse[]>();
 
-  useEffect(() => {
-    if (rounds) return;
-    const getRounds = async () => {
-      const rounds = await propHouse.query.getRoundsWithHouseInfo();
-      setRounds(rounds);
-    };
-    getRounds();
-  });
   return (
     <>
       <Container>
@@ -42,7 +29,7 @@ const Home = () => {
                 onClick={() => navigate('/create-round')}
               />
               <Button
-                text="Launch app"
+                text="View rounds"
                 bgColor={ButtonColor.Pink}
                 onClick={() => navigate('/app')}
               />
@@ -130,18 +117,55 @@ const Home = () => {
           </svg>
         </Row>
 
-        <Row className={clsx(classes.earthRow)}>
-          <Col md={6}>
+        <Row className={classes.alienRow}>
+          <Col md={12} className={classes.alienImgCol}>
             <img src={alien} alt="" />
           </Col>
-          <Col md={6}>
-            <div className={classes.title}>Builders build</div>
-            <div className={classes.subtitle}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-              exercitation ullamco laboris nisi.
-            </div>
-          </Col>
+          <Row>
+            <Col lg={12}>
+              <div className={classes.title}>Empower builders</div>
+            </Col>
+            <Row className={classes.featuresContainer}>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Make it fun</b>
+                <span>
+                  Turn your boring bounty or grants program into a fun experience builders and
+                  voters can can enjoy.
+                </span>
+              </Col>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Awards</b>
+                <span>
+                  Use any type of asset to award builders - ETH, USDC or NFTs (and more). Anything
+                  to get the people going.
+                </span>
+              </Col>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Cross pollinate</b>
+                <span>Let builders from all corners of Ethereum build for your community.</span>
+              </Col>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Transparent</b>
+                <span>
+                  Allow builders to see how winners are decided on through simple and transparent
+                  voting.
+                </span>
+              </Col>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Onchain & open source</b>
+                <span>
+                  From round creation to award claiming — the entire Prop House stack is onchain and
+                  open source.
+                </span>
+              </Col>
+              <Col lg={4} className={classes.featureItem}>
+                <b>Simple</b>
+                <span>
+                  Enjoy an intuitive interace that makes clunky crypto apps a thing of the past.
+                </span>
+              </Col>
+            </Row>
+          </Row>
         </Row>
 
         <Row className={clsx(classes.noPadding, classes.roundsvgTopRow)}>
@@ -163,11 +187,21 @@ const Home = () => {
           <Container>
             <Row className={classes.roundsRow}>
               <Col xl={12} className={classes.roundRowTitle}>
-                <h1>Explore now</h1>
+                <div className={classes.title}>Explore now</div>
+                <div className={classes.subtitle}>Discover rounds being run on Prop House</div>
               </Col>
-              <Col xl={9}>
-                {rounds && <JumboRoundCard round={rounds[0]} house={rounds[0].house} />}
-              </Col>
+              <div className={classes.btnContainer}>
+                <Button
+                  text="Explore rounds"
+                  bgColor={ButtonColor.White}
+                  onClick={() => navigate('/app')}
+                />
+                <Button
+                  text="Discover communities"
+                  bgColor={ButtonColor.Pink}
+                  onClick={() => navigate('/communities')}
+                />
+              </div>
             </Row>
           </Container>
         </div>
