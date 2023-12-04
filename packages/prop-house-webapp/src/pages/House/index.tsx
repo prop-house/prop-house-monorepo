@@ -98,8 +98,6 @@ const House: React.FC<{}> = () => {
           ));
   }, [input, currentRoundStatus, rounds, house, propHouse.query]);
 
-  console.log(cardServiceUrl(CardType.house, house ? house.address : '').href);
-
   return (
     <>
       {house && (
