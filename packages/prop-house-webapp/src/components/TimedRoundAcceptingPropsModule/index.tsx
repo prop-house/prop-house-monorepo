@@ -44,7 +44,9 @@ const TimedRoundAcceptingPropsModule: React.FC<{
       {account ? (
         <Button
           text={
-            errorLoadingCanPropose ? (
+            !round.isFullyFunded ? (
+              <>Round not yet started</>
+            ) : errorLoadingCanPropose ? (
               <>Error loading account requirements</>
             ) : loadingCanPropose ? (
               <div className={classes.loadingCopy}>
@@ -57,13 +59,17 @@ const TimedRoundAcceptingPropsModule: React.FC<{
               'Wallet is ineligible to propose'
             )
           }
-          bgColor={loadingCanPropose || !canPropose ? ButtonColor.Gray : ButtonColor.Green}
+          bgColor={
+            loadingCanPropose || !canPropose || !round.isFullyFunded
+              ? ButtonColor.Gray
+              : ButtonColor.Green
+          }
           onClick={() => {
             dispatch(clearProposal());
             // pass state so that we can re-populate the round with proposals + newly created prop
             navigate('/create-prop', { state: { proposals } });
           }}
-          disabled={!canPropose}
+          disabled={!canPropose || !round.isFullyFunded}
         />
       ) : (
         <ConnectButton color={ButtonColor.Pink} />
@@ -71,7 +77,22 @@ const TimedRoundAcceptingPropsModule: React.FC<{
     </>
   );
 
-  return <RoundModuleCard title={t('acceptingProposals')} content={content} type="proposing" />;
+  const notFundedCopy = (
+    <div>
+      Round will being once awards
+      <br />
+      have been deposited
+    </div>
+  );
+
+  return (
+    <RoundModuleCard
+      title={round.isFullyFunded ? 'Accepting proposals' : 'Pending'}
+      subtitle={!round.isFullyFunded ? notFundedCopy : ''}
+      content={content}
+      type="proposing"
+    />
+  );
 };
 
 export default TimedRoundAcceptingPropsModule;
