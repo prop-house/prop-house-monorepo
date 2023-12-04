@@ -93,7 +93,7 @@ const Home = () => {
               <Col sm={12} md={6} className={classes.onchainCityTitleCol}>
                 <div className={classes.title}>Born in Nouns</div>
                 <p className={classes.subtitle}>
-                  Prop House is a project born and funded by Nouns and serves as an open invitation
+                  Prop House is a project born and funded by Nouns. It serves as an open invitation
                   for all onchain communities to build the world they want to see.
                 </p>
               </Col>
@@ -188,7 +188,7 @@ const Home = () => {
             <Row className={classes.roundsRow}>
               <Col xl={12} className={classes.roundRowTitle}>
                 <div className={classes.title}>Explore now</div>
-                <div className={classes.subtitle}>Discover rounds being run on Prop House</div>
+                <div className={classes.subtitle}>Discover what's being built with Prop House</div>
               </Col>
               <div className={classes.btnContainer}>
                 <Button
