@@ -93,12 +93,6 @@ const MainApp = () => {
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
-              <Button
-                text={<div>Make app the home page? </div>}
-                bgColor={ButtonColor.White}
-                onClick={() => navigate('/create')}
-                classNames={classes.alwaysLandOnAppBtn}
-              />
               <div className={classes.sectionTitle}>
                 Communities
                 <Button
