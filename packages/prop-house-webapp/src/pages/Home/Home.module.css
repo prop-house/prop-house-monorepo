@@ -44,6 +44,7 @@
   object-fit: cover;
   width: auto;
   z-index: 999;
+  pointer-events: none;
 }
 
 .btnContainer {

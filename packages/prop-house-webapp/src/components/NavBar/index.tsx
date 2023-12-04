@@ -8,6 +8,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
+import { IoSettingsSharp } from 'react-icons/io5';
 
 const NavBar = () => {
   const { t } = useTranslation();
@@ -56,6 +57,14 @@ const NavBar = () => {
                   label={'Connect'}
                   accountStatus={'avatar'}
                   chainStatus={'icon'}
+                />
+              </Nav.Link>
+              <Nav.Link>
+                <Button
+                  text={<IoSettingsSharp />}
+                  bgColor={ButtonColor.White}
+                  classNames={classes.createRoundBtn}
+                  onClick={() => navigate('/dashboard')}
                 />
               </Nav.Link>
             </div>

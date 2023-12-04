@@ -1,4 +1,3 @@
-import classes from './HouseInfoConfig.module.css';
 import Header from '../Header';
 import Footer from '../Footer';
 import { useDispatch } from 'react-redux';
@@ -8,9 +7,7 @@ import HouseSelection from '../HouseSelection';
 import CreateNewHouse from '../CreateNewHouse';
 import { House, usePropHouse } from '@prophouse/sdk-react';
 import { useAccount } from 'wagmi';
-import { TbPlugConnected } from 'react-icons/tb';
-import Button, { ButtonColor } from '../../Button';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
+import ConnectToContinue from '../../ConnectToContinue';
 
 /**
  * @overview
@@ -29,7 +26,6 @@ const HouseInfoConfig = () => {
   const round = useAppSelector(state => state.round.round);
   const propHouse = usePropHouse();
   const { address: account } = useAccount();
-  const { openConnectModal } = useConnectModal();
 
   const handleCreateNewHouse = () =>
     dispatch(saveRound({ ...round, house: { ...round.house, existingHouse: false } }));
@@ -50,11 +46,7 @@ const HouseInfoConfig = () => {
   };
 
   return !account ? (
-    <div className={classes.notConnectedContainer}>
-      <TbPlugConnected size={100} />
-      <p>Please connect your account to continue</p>
-      <Button text="Connect" bgColor={ButtonColor.Pink} onClick={openConnectModal} />
-    </div>
+    <ConnectToContinue />
   ) : round.house.existingHouse ? (
     <>
       <Header
