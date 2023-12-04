@@ -40,7 +40,8 @@ const VotingStrategiesDisplay: React.FC<{
     let copy = <></>;
     const stratType = strat.strategyType;
 
-    if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex !== undefined)
+    if (stratType === GovPowerStrategyType.ALLOWLIST && memberIndex !== undefined) {
+      const govPower = strat.members[memberIndex].govPower;
       copy = (
         <>
           <a
@@ -50,9 +51,10 @@ const VotingStrategiesDisplay: React.FC<{
           >
             {trimEthAddress(strat.members[memberIndex].address)}
           </a>{' '}
-          can vote with {strat.members[memberIndex].govPower} votes.
+          can vote with {govPower} vote{Number(govPower) > 1 && 's'}.
         </>
       );
+    }
 
     if (stratType === GovPowerStrategyType.BALANCE_OF)
       copy = (

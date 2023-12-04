@@ -1,3 +1,4 @@
+import classes from './Dashboard.module.css';
 import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
@@ -5,6 +6,9 @@ import { useAccount } from 'wagmi';
 import RoundCard from '../../components/RoundCard';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
+import ConnectToContinue from '../../components/ConnectToContinue';
+import { NounImage } from '../../utils/getNounImage';
+import Button, { ButtonColor } from '../../components/Button';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<Round[]>();
@@ -35,18 +39,36 @@ const Dashboard = () => {
     <Container>
       <PageHeader title="Dashboard" subtitle="Manage your communities and rounds" />
       <Row>
-        {rounds &&
-          houses &&
-          rounds.map((r, i) => (
-            <Col key={i} xl={6}>
-              <RoundCard
-                round={r}
-                house={houses[0]}
-                displayBottomBar={false}
-                onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
+        {!account ? (
+          <ConnectToContinue />
+        ) : (
+          rounds &&
+          (rounds.length === 0 ? (
+            <div className={classes.noRoundsDiv}>
+              <img src={NounImage.Glasses.src} alt={NounImage.Glasses.alt} />
+              <p>Your account hasn't created a round yet. </p>
+              <Button
+                text="Create a round"
+                bgColor={ButtonColor.PurpleLight}
+                onClick={() => navigate('/create-round')}
               />
-            </Col>
-          ))}
+            </div>
+          ) : (
+            <>
+              {houses &&
+                rounds.map((r, i) => (
+                  <Col key={i} xl={6}>
+                    <RoundCard
+                      round={r}
+                      house={houses[0]}
+                      displayBottomBar={false}
+                      onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
+                    />
+                  </Col>
+                ))}
+            </>
+          ))
+        )}
       </Row>
     </Container>
   );
