@@ -13,6 +13,7 @@ import changeFileExtension from '../../../utils/changeFileExtension';
 import removeTags from '../../../utils/removeTags';
 import { saveRound } from '../../../state/thunks';
 import { useEthersSigner } from '../../../hooks/useEthersSigner';
+import LoadingIndicator from '../../LoadingIndicator';
 
 const CreateNewHouse = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,41 @@ const CreateNewHouse = () => {
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
   }, [signer, host]);
+
+  useEffect(() => {
+    // check for when image is avail and loaded
+    const checkImage = async (url: string): Promise<boolean> => {
+      try {
+        await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => {
+            resolve(true);
+          };
+          img.onerror = () => {
+            reject(false);
+          };
+          img.src = url;
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const run = async () => {
+      if (round.house.image) {
+        try {
+          await checkImage(round.house.image);
+          setLoading(false);
+        } catch (e) {
+          console.log('error: ', e);
+        }
+        setLoading(false);
+      }
+    };
+
+    run();
+  }, [round.house.image]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImageError(null);
@@ -57,7 +93,6 @@ const CreateNewHouse = () => {
     } catch {
       setImageError('error uploading file');
     }
-    setLoading(false);
   };
 
   const handleBlur = (field: 'title' | 'description') => {
@@ -124,9 +159,11 @@ const CreateNewHouse = () => {
           <Group gap={4}>
             <Button
               onClick={() => document.getElementById('fileInput')?.click()}
-              text="Upload Image"
+              text={loading ? <LoadingIndicator height={20} width={20} /> : 'Upload image'}
               bgColor={ButtonColor.White}
-            />{' '}
+            />
+            {loading && <p>Pinning file to ipfs, this may take a few long seconds...</p>}
+
             {imageError && <p className={classes.error}>{imageError}</p>}
           </Group>
         </Group>
