@@ -7,10 +7,12 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/swiper.min.css';
 import { useEffect, useRef } from 'react';
 import SwiperCore from 'swiper';
+import { useAccount } from 'wagmi';
 
 const SecondaryCard: React.FC = () => {
   const activeStep = useAppSelector(state => state.round.activeStep);
   const swiperRef = useRef<SwiperCore>();
+  const { address: account } = useAccount();
 
   const steps = [
     {
@@ -65,30 +67,32 @@ const SecondaryCard: React.FC = () => {
       </Card>
 
       {/* Mobile */}
-      <Card
-        bgColor={CardBgColor.White}
-        borderRadius={CardBorderRadius.thirty}
-        classNames={clsx(classes.secondaryCard, classes.fullCard)}
-      >
-        <Swiper
-          onSwiper={swiper => {
-            swiperRef.current = swiper;
-          }}
-          initialSlide={0}
+      {account && (
+        <Card
+          bgColor={CardBgColor.White}
+          borderRadius={CardBorderRadius.thirty}
+          classNames={clsx(classes.secondaryCard, classes.fullCard)}
         >
-          {steps.map((step, idx) => (
-            <SwiperSlide>
-              <CreateRoundStep
-                activeStep={activeStep}
-                stepNumber={idx + 1}
-                title={step.title}
-                text={step.text}
-                key={idx}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Card>
+          <Swiper
+            onSwiper={swiper => {
+              swiperRef.current = swiper;
+            }}
+            initialSlide={0}
+          >
+            {steps.map((step, idx) => (
+              <SwiperSlide>
+                <CreateRoundStep
+                  activeStep={activeStep}
+                  stepNumber={idx + 1}
+                  title={step.title}
+                  text={step.text}
+                  key={idx}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </Card>
+      )}
     </>
   );
 };
