@@ -31,6 +31,7 @@ import bgColorFor, { BgColorElement } from './utils/bgColorFor';
 import Dashboard from './pages/Dashboard';
 import RoundManager from './pages/RoundManager';
 import Communities from './pages/Communities';
+import Home from './pages/Home';
 
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
@@ -82,10 +83,13 @@ function App() {
               initialChain={goerli}
             >
               <Suspense fallback={<LoadingIndicator />}>
-                <div className={clsx(bgColorFor(BgColorElement.App, location.pathname), 'wrapper')}>
+                <div
+                  className={clsx(bgColorFor(BgColorElement.Home, location.pathname), 'wrapper')}
+                >
                   <NavBar />
                   <Routes>
-                    <Route path="/" element={<MainApp />} />
+                    <Route path="/" element={<Home />} />
+                    <Route path="/app" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />

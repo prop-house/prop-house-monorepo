@@ -93,6 +93,12 @@ const MainApp = () => {
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
+              <Button
+                text={<div>Make app the home page? </div>}
+                bgColor={ButtonColor.White}
+                onClick={() => navigate('/create')}
+                classNames={classes.alwaysLandOnAppBtn}
+              />
               <div className={classes.sectionTitle}>
                 Communities
                 <Button
@@ -107,6 +113,7 @@ const MainApp = () => {
                   .map((house, index) => <CommunityCard key={index} house={house} />)}
 
               <div className={classes.sectionTitle}>Activity</div>
+
               <ActivityFeed />
             </Col>
           </>
