@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { clearProposal } from '../../state/slices/editor';
 import Button, { ButtonColor } from '../Button';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import RoundModuleCard from '../RoundModuleCard';
 import ConnectButton from '../ConnectButton';
 import { useAccount } from 'wagmi';
@@ -22,7 +21,6 @@ const TimedRoundAcceptingPropsModule: React.FC<{
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { address: account } = useAccount();
-  const { t } = useTranslation();
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
   const [loadingCanPropose, errorLoadingCanPropose, canPropose] = useCanPropose(round, account);
