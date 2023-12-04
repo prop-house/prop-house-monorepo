@@ -1,6 +1,6 @@
 import { RoundEventState } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/evm/graphql';
 import { RoundsFilter } from '../hooks/useRoundsFilter';
-import { PropHouse, RoundWithHouse } from '@prophouse/sdk-react';
+import { PropHouse, RoundWithHouse, Timed } from '@prophouse/sdk-react';
 
 export const fetchRoundsForFilter = async (
   propHouse: PropHouse,
@@ -47,10 +47,11 @@ export const fetchRoundsForFilter = async (
 
   if (!query) return [];
 
-  const rounds = await query;
-  if (rounds.length === 0) {
-    return await defaultQuery;
-  }
+  let rounds;
+  const queryRounds = await query;
+  rounds = queryRounds.length === 0 ? await defaultQuery : queryRounds;
 
-  return await query;
+  return rounds.filter(
+    r => !(r.isFullyFunded === false && r.state === Timed.RoundState.IN_VOTING_PERIOD),
+  );
 };
