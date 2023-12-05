@@ -4,7 +4,6 @@ import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
 import Group from '../Group';
 import Text from '../Text';
-import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import NumberInput from '../NumberInput';
 import Bullet from '../Bullet';
@@ -175,7 +174,6 @@ const TimedRoundDateSelector: React.FC<{
         <DateTimeInput
           onDateChange={handleSelectStartTime}
           selectedDate={startTime === 0 ? null : getDateFromTimestamp(startTime)}
-          isValidDate={validStartDate}
         />
       </Group>
 
