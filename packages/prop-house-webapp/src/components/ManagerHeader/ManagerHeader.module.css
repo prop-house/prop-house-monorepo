@@ -55,6 +55,7 @@
 @media (max-width: 990px) {
   .headerCol {
     flex-direction: column;
+    align-items: flex-start;
   }
   .headerCol button {
     margin-top: 1rem;

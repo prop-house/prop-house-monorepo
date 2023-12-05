@@ -42,9 +42,12 @@ const ManagerHeader: React.FC<ManagerHeaderProps> = ({ title, imgUrl, address, t
               </div>
             </div>
           </div>
-          <div onClick={() => navigate(`/${address}`)}>
-            <Button text={<>{`View ${type}`}</>} bgColor={ButtonColor.Gray} />
-          </div>
+
+          <Button
+            text={<>{`View ${type}`}</>}
+            bgColor={ButtonColor.Gray}
+            onClick={() => navigate(`/${address}`)}
+          />
         </Col>
       </Row>
     </>
