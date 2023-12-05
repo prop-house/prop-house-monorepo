@@ -4,6 +4,7 @@ export enum RoundsFilter {
   Relevant = 'Relevant',
   Favorites = 'Favorites',
   Active = 'Active',
+  Recent = 'Recent',
 }
 
 const DEFAULT_FILTER = RoundsFilter.Active;

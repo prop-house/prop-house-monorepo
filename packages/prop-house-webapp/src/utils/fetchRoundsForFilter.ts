@@ -1,4 +1,5 @@
 import { RoundEventState } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/evm/graphql';
+import { Round_OrderBy } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/evm/graphql';
 import { RoundsFilter } from '../hooks/useRoundsFilter';
 import { PropHouse, RoundWithHouse, Timed } from '@prophouse/sdk-react';
 
@@ -43,6 +44,8 @@ export const fetchRoundsForFilter = async (
         })
       : filter === RoundsFilter.Relevant && account // relevant + account is connected
       ? propHouse.query.getRoundsWithHouseInfoRelevantToAccount(account, queryParams)
+      : filter === RoundsFilter.Recent
+      ? propHouse.query.getRoundsWithHouseInfo({ ...queryParams, orderBy: Round_OrderBy.CreatedAt })
       : null; // relevant but account is not connected
 
   if (!query) return [];
