@@ -9,7 +9,6 @@ const Footer = () => {
   const location = useLocation();
 
   const twitterURL = externalURL(ExternalURL.twitter);
-  const discordURL = externalURL(ExternalURL.discord);
   const githubURL = externalURL(ExternalURL.github);
 
   return (
@@ -21,11 +20,7 @@ const Footer = () => {
     >
       <div className={classes.footer}>
         <a href={twitterURL} target="_blank" rel="noreferrer">
-          twitter
-        </a>
-        ·
-        <a href={discordURL} target="_blank" rel="noreferrer">
-          discord
+          @nounsprophouse
         </a>
         ·
         <a href={githubURL} target="_blank" rel="noreferrer">
