@@ -5,7 +5,6 @@ import Group from '../Group';
 import clsx from 'clsx';
 import Text from '../Text';
 import { HiOutlineChevronRight as ArrowIcon } from 'react-icons/hi';
-import Divider from '../../Divider';
 import { v4 as uuidv4 } from 'uuid';
 import { buildImageURL } from '../../../utils/buildImageURL';
 import sanitizeHtml from 'sanitize-html';
@@ -98,22 +97,6 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
                   <ArrowIcon className={classes.icon} />
                 </button>
               ))}
-            </Group>
-
-            <Group>
-              <span className={classes.message}>
-                Not seeing a house? You need to have a{' '}
-                <a href="https://prop.house/" target="_blank" rel="noopener noreferrer">
-                  creator pass
-                </a>{' '}
-                or{' '}
-                <a href="https://prop.house/" target="_blank" rel="noopener noreferrer">
-                  house owner nft
-                </a>
-                .
-              </span>
-
-              <Divider />
             </Group>
           </Group>
         ) : (
