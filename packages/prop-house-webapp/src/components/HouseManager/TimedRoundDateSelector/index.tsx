@@ -55,7 +55,7 @@ const TimedRoundDateSelector: React.FC<{
   );
   const voteEndDate = getDateFromDuration(propEndDate, getSecondsFromDays(votingDuration));
 
-  const periods = [5, 7, 14];
+  const periods = [1, 7, 14];
 
   const [customProposingPeriod, setCustomProposingPeriod] = useState(
     startTime === 0
