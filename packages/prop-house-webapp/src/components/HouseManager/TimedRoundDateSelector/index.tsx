@@ -177,8 +177,6 @@ const TimedRoundDateSelector: React.FC<{
           selectedDate={startTime === 0 ? null : getDateFromTimestamp(startTime)}
           isValidDate={validStartDate}
         />
-
-        <Text type="body">Round will need to be started manually</Text>
       </Group>
 
       <Divider />
