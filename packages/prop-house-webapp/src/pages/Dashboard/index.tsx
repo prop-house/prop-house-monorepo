@@ -9,9 +9,11 @@ import PageHeader from '../../components/PageHeader';
 import ConnectToContinue from '../../components/ConnectToContinue';
 import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
+  const [loading, setLoading] = useState(false);
 
   const propHouse = usePropHouse();
   const navigate = useNavigate();
@@ -22,9 +24,12 @@ const Dashboard = () => {
 
     const fetchRounds = async () => {
       try {
+        setLoading(true);
         const rounds = await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account);
+        setLoading(false);
         setRounds(rounds);
       } catch (e) {
+        setLoading(false);
         console.log(e);
       }
     };
@@ -36,6 +41,8 @@ const Dashboard = () => {
       <Row>
         {!account ? (
           <ConnectToContinue />
+        ) : loading ? (
+          <LoadingIndicator />
         ) : (
           rounds &&
           (rounds.length === 0 ? (
