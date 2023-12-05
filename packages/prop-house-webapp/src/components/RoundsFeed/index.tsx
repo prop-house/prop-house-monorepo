@@ -20,8 +20,8 @@ const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
   const { address: account } = useAccount({
-    onConnect() {
-      setFetchNewRounds(true);
+    onConnect({ isReconnected }) {
+      if (!isReconnected) setFetchNewRounds(true);
     },
   });
   const navigate = useNavigate();
