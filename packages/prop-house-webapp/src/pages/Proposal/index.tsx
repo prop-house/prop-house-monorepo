@@ -118,11 +118,11 @@ const Proposal = () => {
         />
       )}
 
-      {proposal && (
+      {round && proposal && (
         <OpenGraphElements
           title={proposal.title}
-          description={proposal.body.substring(0, 120)}
-          imageUrl={cardServiceUrl(CardType.proposal, String(proposal.id)).href}
+          description={proposal.tldr}
+          imageUrl={cardServiceUrl(CardType.proposal, round.address, String(proposal.id)).href}
         />
       )}
 
