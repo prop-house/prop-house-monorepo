@@ -7,7 +7,7 @@ import { isAddress } from 'viem';
 import { Container, Row, Tab, Tabs } from 'react-bootstrap';
 import LoadingIndicator from '../../components/LoadingIndicator';
 
-const HouseManager: React.FC<{}> = ({}) => {
+const HouseManager: React.FC<{}> = () => {
   const propHouse = usePropHouse();
   const params = useParams();
   const location = useLocation();
