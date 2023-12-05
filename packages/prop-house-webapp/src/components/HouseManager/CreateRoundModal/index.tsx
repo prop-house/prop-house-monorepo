@@ -52,8 +52,8 @@ const CreateRoundModal: React.FC<{
     ''
   ) : status.isSuccess ? (
     <>
-      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b>. Last
-      step: deposit the assets required to get the round started!
+      Your round <b>{roundName}</b> has been successfully created.
+      <br /> Last step: deposit the assets required to get the round started!
     </>
   ) : status.isError ? (
     'There was a problem creating your round. Please try again.'
