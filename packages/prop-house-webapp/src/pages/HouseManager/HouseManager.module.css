@@ -23,3 +23,13 @@
 
   background-color: transparent !important;
 }
+.comingSoon {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.comingSoon p {
+  margin-top: 1rem;
+}
