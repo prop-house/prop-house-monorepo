@@ -81,7 +81,9 @@ const Round: React.FC<{}> = () => {
             ) : loadingProposalsFailed ? (
               <NotFound />
             ) : (
-              round && proposals && <RoundContent round={round} proposals={proposals} />
+              round &&
+              house &&
+              proposals && <RoundContent round={round} house={house} proposals={proposals} />
             )}
           </div>
         </Container>

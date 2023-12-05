@@ -22,6 +22,10 @@
   margin: 12px 0px 8px 0px;
   background-color: var(--border-dark);
 }
+.hideButton {
+  margin-left: 6px;
+}
+
 .propTitle {
   font-size: 22px;
   font-weight: 700;

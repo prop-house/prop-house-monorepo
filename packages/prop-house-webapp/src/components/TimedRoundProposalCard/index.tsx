@@ -18,12 +18,15 @@ import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
 import { useAccount } from 'wagmi';
 import { ProposalWithTldr } from '../../types/ProposalWithTldr';
+import Button, { ButtonColor } from '../Button';
 
 const TimedRoundProposalCard: React.FC<{
   proposal: ProposalWithTldr;
   round: Round;
+  mod?: boolean;
+  hideProp?: (propId: number) => void;
 }> = props => {
-  const { proposal, round } = props;
+  const { proposal, round, mod, hideProp } = props;
 
   const dispatch = useDispatch();
   const govPower = useAppSelector(state => state.voting.votingPower);
@@ -73,7 +76,18 @@ const TimedRoundProposalCard: React.FC<{
                       <img src="/heads/crown.png" alt="crown" />
                     </div>
                   )}
-                  <div className={classes.propTitle}>{proposal.title}</div>
+                  <div className={classes.propTitle}>{proposal.title}</div>{' '}
+                  {mod && (
+                    <Button
+                      bgColor={ButtonColor.Gray}
+                      onClick={e => {
+                        e.stopPropagation();
+                        hideProp && hideProp(proposal.id);
+                      }}
+                      text="Hide"
+                      classNames={classes.hideButton}
+                    />
+                  )}
                 </div>
                 {displayTldr && <div className={classes.truncatedTldr}>{proposal.tldr}</div>}
               </div>
