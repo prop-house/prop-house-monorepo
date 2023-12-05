@@ -51,6 +51,7 @@ const RoundManager = () => {
               title={round.title}
               imgUrl={round.house.imageURI ?? ''}
               address={round.address}
+              type="round"
             />
             <Row>
               <Tabs defaultActiveKey="rounds" className={classes.tabs}>

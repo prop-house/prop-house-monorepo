@@ -103,7 +103,7 @@ const Dashboard = () => {
               houses &&
               houses.map(house => (
                 <Col lg={3}>
-                  <HouseCard house={house} />
+                  <HouseCard house={house} pathTo="manager" />
                 </Col>
               ))
             )}

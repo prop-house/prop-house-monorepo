@@ -8,7 +8,11 @@ import HouseProfImg from '../HouseProfImg';
 import dayjs from 'dayjs';
 import { trophyColors } from '../../utils/trophyColors';
 
-const HouseCard: React.FC<{ house: House; favHandling?: boolean }> = ({ house, favHandling }) => {
+const HouseCard: React.FC<{ house: House; favHandling?: boolean; pathTo: 'page' | 'manager' }> = ({
+  house,
+  favHandling,
+  pathTo,
+}) => {
   const navigate = useNavigate();
   const {
     // eslint-disable-next-line
@@ -26,7 +30,13 @@ const HouseCard: React.FC<{ house: House; favHandling?: boolean }> = ({ house, f
   };
 
   return (
-    <div onClick={() => navigate(`/${house.address}`)}>
+    <div
+      onClick={() =>
+        navigate(pathTo === 'page' ? `/${house.address}` : `/manage/house/${house.address}`, {
+          state: { house },
+        })
+      }
+    >
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.ten}

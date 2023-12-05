@@ -12,9 +12,10 @@ interface ManagerHeaderProps {
   title: string;
   imgUrl: string;
   address: string;
+  type: 'round' | 'house';
 }
 
-const ManagerHeader: React.FC<ManagerHeaderProps> = ({ title, imgUrl, address }) => {
+const ManagerHeader: React.FC<ManagerHeaderProps> = ({ title, imgUrl, address, type }) => {
   const navigate = useNavigate();
 
   return (
@@ -42,7 +43,7 @@ const ManagerHeader: React.FC<ManagerHeaderProps> = ({ title, imgUrl, address })
             </div>
           </div>
           <div onClick={() => navigate(`/${address}`)}>
-            <Button text={<>View round</>} bgColor={ButtonColor.Gray} />
+            <Button text={<>{`View ${type}`}</>} bgColor={ButtonColor.Gray} />
           </div>
         </Col>
       </Row>

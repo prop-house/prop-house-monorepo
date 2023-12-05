@@ -59,7 +59,7 @@ const Communities: React.FC = () => {
         {houses &&
           houses.map((house, i) => (
             <Col key={i} xs={6} lg={3}>
-              <HouseCard house={house} favHandling={true} />
+              <HouseCard house={house} favHandling={true} pathTo="page" />
             </Col>
           ))}
       </Row>
