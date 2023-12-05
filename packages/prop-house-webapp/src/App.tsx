@@ -91,11 +91,11 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/app" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
+                    <Route path="/manage/round/:round" element={<RoundManager />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/communities" element={<Communities />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

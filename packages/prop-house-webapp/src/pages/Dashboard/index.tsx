@@ -126,7 +126,9 @@ const Dashboard = () => {
                         round={r}
                         house={r.house}
                         displayBottomBar={false}
-                        onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
+                        onClick={() =>
+                          navigate(`/manage/round/${r.address}`, { state: { round: r } })
+                        }
                       />
                     </Col>
                   ))}
