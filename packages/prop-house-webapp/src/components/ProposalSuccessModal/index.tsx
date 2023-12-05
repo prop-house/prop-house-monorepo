@@ -21,7 +21,7 @@ const ProposalSuccessModal: React.FC<{
   const { t } = useTranslation();
 
   const { address: account } = useAccount();
-  const twitterContent = `I just proposed in ${round.title}: https://prop.house/${round.address}`;
+  const xContent = `I just proposed in ${round.title}: https://prop.house/${round.address}`;
 
   const backToRound = () => {
     navigate(`/${round.address}`, { replace: false });
@@ -56,10 +56,10 @@ const ProposalSuccessModal: React.FC<{
               }}
             />
             <Button
-              text={'Share on Twitter'}
-              bgColor={ButtonColor.Pink}
+              text={'Share on X'}
+              bgColor={ButtonColor.Purple}
               onClick={() => {
-                openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
+                openInNewTab(`https://twitter.com/intent/tweet?text=${xContent}`);
               }}
             />
           </>
