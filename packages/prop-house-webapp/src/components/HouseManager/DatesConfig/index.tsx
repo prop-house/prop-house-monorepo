@@ -23,7 +23,7 @@ const DatesConfig = () => {
 
       <Header
         title="How long should the round run?"
-        subtitle="Rounds are divided into two distinct phases: the proposing period, which starts when the round begins, and the voting period, which follows the proposing period. Once the voting period concludes, the winners are determined."
+        subtitle="Rounds are divided into two phases: the proposing period, which starts when the round begins, and the voting period, which follows the proposing period. Once the voting period concludes, the winners are determined."
       />
       <RoundDatesSelector />
       <Footer />
