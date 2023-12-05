@@ -34,6 +34,9 @@ type Round {
   "The total number of proposals in the round"
   proposalCount: Int!
 
+  "The total number of voting power used in the round"
+  votingPower: BigInt!
+
   "The number of unique proposers in the round"
   uniqueProposers: Int!
 
