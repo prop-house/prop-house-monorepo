@@ -12,6 +12,10 @@ import { RoundStatus } from '../../components/StatusFilters';
 import { useTranslation } from 'react-i18next';
 import { Round, Timed, usePropHouse } from '@prophouse/sdk-react';
 import RoundCard from '../../components/RoundCard';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import ReactMarkdown from 'react-markdown';
+import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
 
 const House: React.FC<{}> = () => {
   const propHouse = usePropHouse();
@@ -96,15 +100,15 @@ const House: React.FC<{}> = () => {
 
   return (
     <>
-      {/* {community && (todo: handle 
+      {house && (
         <OpenGraphElements
-          title={`${community.name} Prop House`}
+          title={house && house.name ? house.name : ''}
           description={markdownComponentToPlainText(
-            <ReactMarkdown children={community.description.toString()} />,
+            <ReactMarkdown children={house?.description ?? ''} />,
           )}
-          imageUrl={cardServiceUrl(CardType.house, community.id).href}
+          imageUrl={cardServiceUrl(CardType.house, house.address).href}
         />
-      )} */}
+      )}
 
       {house && (
         <>

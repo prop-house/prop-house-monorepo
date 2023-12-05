@@ -1,74 +1,55 @@
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import {
-  TimedAuction,
-  Community,
-  StoredProposalWithVotes,
-} from '@nouns/prop-house-wrapper/dist/builders';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
 import classes from './OpenGraphProposalCard.module.css';
 import trimEthAddress from '../../utils/trimEthAddress';
 import { InfuraProvider } from '@ethersproject/providers';
 import AddressAvatar from '../AddressAvatar';
+import { House, Proposal, Round, usePropHouse } from '@prophouse/sdk-react';
 
 const OpenGraphProposalCard: React.FC = () => {
   const params = useParams();
-  const { id } = params;
+  const propHouse = usePropHouse();
+  const { address, id } = params;
 
-  const [proposal, setProposal] = useState<StoredProposalWithVotes>();
-  const [round, setRound] = useState<TimedAuction>();
-  const [community, setCommunity] = useState<Community>();
-  // const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+  const [proposal, setProposal] = useState<Proposal>();
+  const [round, setRound] = useState<Round>();
+  const [house, setHouse] = useState<House>();
   const [ens, setEns] = useState<null | string>(null);
 
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(backendHost));
-
   useEffect(() => {
-    client.current = new PropHouseWrapper(backendHost);
-  }, [backendHost]);
-
-  useEffect(() => {
-    if (!id) return;
+    if (!address || !id) return;
 
     const fetch = async () => {
-      const proposal = (await client.current.getProposal(Number(id))) as StoredProposalWithVotes;
-      const round = await client.current.getAuction(proposal.auctionId);
-      const community = await client.current.getCommunityWithId(round.community);
-
+      const proposal = await propHouse.query.getProposal(address, Number(id));
+      const round = await propHouse.query.getRoundWithHouseInfo(address);
       setProposal(proposal);
       setRound(round);
-      setCommunity(community);
+      setHouse(round.house);
     };
 
     fetch();
-  }, [id]);
+  }, [address, id, propHouse.query]);
 
   useEffect(() => {
     if (!proposal || !process.env.REACT_APP_INFURA_PROJECT_ID) return;
 
     const lookUpEns = async () => {
       const provider = new InfuraProvider(1, process.env.REACT_APP_INFURA_PROJECT_ID);
-      const ens = await provider.lookupAddress(proposal.address);
+      const ens = await provider.lookupAddress(proposal.proposer);
       setEns(ens);
     };
 
     lookUpEns();
-
-    // tood: resolve image
-    // const getImg = async () => setImageUrl(await getFirstImageFromProp(proposal));
-    // getImg();
   }, [proposal]);
 
   return (
     <>
-      {community && round && proposal && (
+      {house && round && proposal && (
         <div className={classes.cardContainer}>
           <span>
             <div className={classes.cardTitle}>
               <div className={classes.houseImg}>
-                <img src={community.profileImageUrl} alt={community.name} />
+                <img src={house.imageURI} alt={house.name} />
               </div>
               <span className={classes.roundName}>{round.title}</span>
             </div>
@@ -77,22 +58,15 @@ const OpenGraphProposalCard: React.FC = () => {
               <div className={classes.propNameContainer}>
                 <div className={classes.propName}>{proposal.title}</div>
               </div>
-
-              {/* {imageUrl && (
-                <div className={classes.propImgContainer}>
-                  <img src={imageUrl} crossOrigin="anonymous" alt="propImage" />
-                </div>
-              )} */}
             </span>
           </span>
 
           <div className={classes.userInfo}>
-            <AddressAvatar address={proposal.address} size={64} />
-
+            <AddressAvatar address={proposal.proposer} size={64} />
             <span>
               <span className={classes.proposedBy}>Proposed by</span>
               <div className={classes.proposerAddress}>
-                {ens ? ens : trimEthAddress(proposal.address)}
+                {ens ? ens : trimEthAddress(proposal.proposer)}
               </div>
             </span>
           </div>

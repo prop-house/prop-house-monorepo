@@ -1,74 +1,52 @@
 import classes from './OpenGraphHouseCard.module.css';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import getHouseCurrency from '../../utils/getHouseCurrency';
-import TruncateThousands from '../TruncateThousands';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
+import { House, usePropHouse } from '@prophouse/sdk-react';
+import HouseProfImg from '../HouseProfImg';
+import dayjs from 'dayjs';
 
 const OpenGraphHouseCard: React.FC = () => {
   const params = useParams();
-  const { id } = params;
+  const { address } = params;
 
-  const [community, setCommunity] = useState<Community>();
-
-  const signer = useEthersSigner();
-
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-  const houseCurrency = community && getHouseCurrency(community.contractAddress);
+  const propHouse = usePropHouse();
+  const [house, setHouse] = useState<House>();
 
   useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  useEffect(() => {
-    if (!id) return;
+    if (!address) return;
     const fetch = async () => {
-      const community = await client.current.getCommunityWithId(Number(id));
-      setCommunity(community);
+      const community = await propHouse.query.getHouse(address);
+      setHouse(community);
     };
     fetch();
-  }, [id]);
+  }, [address, propHouse.query]);
 
   return (
     <>
-      {community && (
+      {house && (
         <div className={classes.cardContainer}>
           <div className={classes.logo}>
-            <img src="/bulb.png" alt="bulb" />
-            <span className={classes.propText}>Prop</span>{' '}
-            <span className={classes.houseText}>House</span>
+            <span className={classes.houseText}>Prop House</span>
           </div>
 
           <span className={classes.infoAndImage}>
             <span className={classes.houseImg}>
-              {/* <CommunityProfImg community={community} /> */}
+              <HouseProfImg house={house} />
             </span>
 
             <span className={classes.houseInfoCountainer}>
-              <div className={classes.roundName}>{community.name}</div>
+              <div className={classes.roundName}>{house.name}</div>
 
               <span className={classes.roundInfoContainer}>
                 <div className={classes.roundInfo}>
-                  <span className={classes.title}>Rounds</span>
-                  <p className={classes.subtitle}>{community.numAuctions ?? 0}</p>
-                </div>
-
-                <div className={classes.roundInfo}>
-                  <span className={classes.title}>Proposals</span>
-                  <p className={classes.subtitle}>{community.numProposals ?? 0}</p>
-                </div>
-                <div className={classes.roundInfo}>
-                  <span className={classes.title}>Funded</span>
+                  <span className={classes.title}>Created on </span>
                   <p className={classes.subtitle}>
-                    <TruncateThousands
-                      amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
-                    />{' '}
-                    {houseCurrency}
+                    {dayjs(house.createdAt * 1000).format('MMM D YYYY')}
                   </p>
+                </div>
+                <div className={classes.roundInfo}>
+                  <span className={classes.title}>Rounds</span>
+                  <p className={classes.subtitle}>{house.roundCount}</p>
                 </div>
               </span>
             </span>

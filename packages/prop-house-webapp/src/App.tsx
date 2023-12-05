@@ -67,14 +67,14 @@ function App() {
   return (
     <>
       <WagmiConfig config={config}>
-        {openGraphCardPath ? (
-          <Routes>
-            <Route path="/proposal/:id/card" element={<OpenGraphProposalCard />} />
-            <Route path="/round/:id/card" element={<OpenGraphRoundCard />} />
-            <Route path="/house/:id/card" element={<OpenGraphHouseCard />} />
-          </Routes>
-        ) : (
-          <PropHouseProvider>
+        <PropHouseProvider>
+          {openGraphCardPath ? (
+            <Routes>
+              <Route path="/proposal/:address/:id/card" element={<OpenGraphProposalCard />} />
+              <Route path="/round/:address/card" element={<OpenGraphRoundCard />} />
+              <Route path="/house/:address/card" element={<OpenGraphHouseCard />} />
+            </Routes>
+          ) : (
             <RainbowKitProvider
               chains={chains}
               theme={lightTheme({
@@ -104,8 +104,8 @@ function App() {
                 </div>
               </Suspense>
             </RainbowKitProvider>
-          </PropHouseProvider>
-        )}
+          )}
+        </PropHouseProvider>
       </WagmiConfig>
     </>
   );
