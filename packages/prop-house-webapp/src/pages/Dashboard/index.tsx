@@ -1,5 +1,5 @@
 import classes from './Dashboard.module.css';
-import { House, Round, usePropHouse } from '@prophouse/sdk-react';
+import { RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
@@ -11,8 +11,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
 
 const Dashboard = () => {
-  const [rounds, setRounds] = useState<Round[]>();
-  const [houses, setHouses] = useState<House[]>();
+  const [rounds, setRounds] = useState<RoundWithHouse[]>();
 
   const propHouse = usePropHouse();
   const navigate = useNavigate();
@@ -23,12 +22,8 @@ const Dashboard = () => {
 
     const fetchRounds = async () => {
       try {
-        const rounds = await propHouse.query.getRoundsManagedByAccount(account);
-        const houses = await propHouse.query.getHousesWhereAccountIsOwnerOrHasCreatorPermissions(
-          account,
-        );
+        const rounds = await propHouse.query.getRoundsWithHouseInfoManagedByAccount(account);
         setRounds(rounds);
-        setHouses(houses);
       } catch (e) {
         console.log(e);
       }
@@ -55,17 +50,16 @@ const Dashboard = () => {
             </div>
           ) : (
             <>
-              {houses &&
-                rounds.map((r, i) => (
-                  <Col key={i} xl={6}>
-                    <RoundCard
-                      round={r}
-                      house={houses[0]}
-                      displayBottomBar={false}
-                      onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
-                    />
-                  </Col>
-                ))}
+              {rounds.map((r, i) => (
+                <Col key={i} xl={6}>
+                  <RoundCard
+                    round={r}
+                    house={r.house}
+                    displayBottomBar={false}
+                    onClick={() => navigate(`/manage/${r.address}`, { replace: true })}
+                  />
+                </Col>
+              ))}
             </>
           ))
         )}
