@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../../hooks';
-import TimedRound from '../TimedRound';
+import TimedRoundDateSelector from '../TimedRoundDateSelector';
 
 /**
  * @function changeTimingType - changes the round timing from timed to infinite or vice versa
@@ -33,7 +33,7 @@ const RoundDatesSelector = () => {
       </Group>
 
       <Divider /> */}
-      <TimedRound round={round} />
+      <TimedRoundDateSelector round={round} />
     </>
   );
 };

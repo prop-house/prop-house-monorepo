@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../../Button';
 import Modal from '../../Modal';
-import TimedRound from '../TimedRound';
+import TimedRound from '../TimedRoundDateSelector';
 import { NewRound } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
 import { useDispatch } from 'react-redux';

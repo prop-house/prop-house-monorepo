@@ -1,4 +1,4 @@
-import classes from './TimedRound.module.css';
+import classes from './TimedRoundDateSelector.module.css';
 import 'react-datetime/css/react-datetime.css';
 import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
@@ -35,7 +35,7 @@ import { saveRound } from '../../../state/thunks';
  * when the user clicks "Save Changes"
  */
 
-const TimedRound: React.FC<{
+const TimedRoundDateSelector: React.FC<{
   round: NewRound;
   editMode?: boolean;
   setEditedRound?: (round: NewRound) => void;
@@ -258,4 +258,4 @@ const TimedRound: React.FC<{
   );
 };
 
-export default TimedRound;
+export default TimedRoundDateSelector;
