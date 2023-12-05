@@ -230,7 +230,6 @@ const CreateProp: React.FC<{}> = () => {
             {showProposalSuccessModal && propSubmissionTxId && (
               <ProposalSuccessModal
                 setShowProposalSuccessModal={setShowProposalSuccessModal}
-                propSubmissionTxId={propSubmissionTxId}
                 house={house}
                 round={round}
               />

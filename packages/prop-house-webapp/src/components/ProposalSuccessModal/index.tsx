@@ -12,11 +12,10 @@ import { House, Round } from '@prophouse/sdk-react';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
-  propSubmissionTxId?: string;
   house: House;
   round: Round;
 }> = props => {
-  const { setShowProposalSuccessModal, propSubmissionTxId, house, round } = props;
+  const { setShowProposalSuccessModal, house, round } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
 

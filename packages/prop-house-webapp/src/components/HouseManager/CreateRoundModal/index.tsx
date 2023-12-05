@@ -26,10 +26,9 @@ export type TransactionStatus = {
 const CreateRoundModal: React.FC<{
   status: TransactionStatus;
   roundName: string;
-  houseName: string;
   setShowCreateRoundModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { status, roundName, houseName, setShowCreateRoundModal } = props;
+  const { status, roundName, setShowCreateRoundModal } = props;
 
   const dipsatch = useDispatch();
   const { address: account } = useAccount();
