@@ -92,6 +92,10 @@
   object-fit: contain;
   border-radius: 8px;
 }
+.awardDisplay .fullImg {
+  width: 88px;
+  height: 88px;
+}
 
 .awardDisplay .amountAndSymbolLabel {
   margin-top: 12px;
