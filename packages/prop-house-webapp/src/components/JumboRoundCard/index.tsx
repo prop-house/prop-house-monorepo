@@ -1,6 +1,6 @@
 import classes from './JumboRoundCard.module.css';
 import { House, Proposal, Round, Timed, usePropHouse } from '@prophouse/sdk-react';
-import { OrderByProposalFields } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/starknet/graphql';
+import { OrderByProposalFields } from '@prophouse/sdk/dist/gql/starknet/graphql';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
