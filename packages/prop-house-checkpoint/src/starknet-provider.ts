@@ -103,7 +103,7 @@ export class StarknetProvider extends BaseProvider {
       );
     }
 
-    block.transactions.forEach(tx => this.processedPoolTransactions.delete(tx.transaction_hash));
+    block.transactions.forEach((tx: any) => this.processedPoolTransactions.delete(tx.transaction_hash));
 
     this.log.debug({ blockNumber: block.block_number }, 'handling block done');
   }
