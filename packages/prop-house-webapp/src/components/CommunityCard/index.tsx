@@ -9,6 +9,7 @@ import { isMobile } from 'web3modal';
 import { FaStar } from 'react-icons/fa';
 import { trophyColors } from '../../utils/trophyColors';
 import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { buildImageURL } from '../../utils/buildImageURL';
 
 const CommunityCard: React.FC<{
   house: House;
@@ -42,7 +43,7 @@ const CommunityCard: React.FC<{
         <div className={classes.imgAndName}>
           {house.imageURI?.includes('prop.house') ? (
             <img
-              src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
+              src={buildImageURL(house.imageURI)}
               alt="house profile"
               className={classes.image}
             />

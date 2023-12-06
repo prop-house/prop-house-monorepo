@@ -15,6 +15,7 @@ import RoundStatusPill from '../RoundStatusPill';
 import ProposalRankings from '../ProposalRankings';
 import ProposedSummary from '../ProposedSummary';
 import { trophyColors } from '../../utils/trophyColors';
+import { buildImageURL } from '../../utils/buildImageURL';
 import { isMobile } from 'web3modal';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import dayjs from 'dayjs';
@@ -156,10 +157,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               <div className={classes.roundCreatorAndTitle}>
                 <div className={classes.roundCreator}>
                   <img
-                    src={house.imageURI?.replace(
-                      /prophouse.mypinata.cloud/g,
-                      'cloudflare-ipfs.com',
-                    )}
+                    src={buildImageURL(house.imageURI)}
                     alt="house profile"
                   />
                   {house.name}

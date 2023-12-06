@@ -1,5 +1,6 @@
 import classes from './HouseManager.module.css';
 import { useAppSelector } from '../../../hooks';
+import { buildImageURL } from '../../../utils/buildImageURL';
 import Text from '../Text';
 import Group from '../Group';
 
@@ -9,7 +10,7 @@ const HouseNameAndImage = () => {
   return (
     <Group row gap={6}>
       <img
-        src={round.house.image.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
+        src={buildImageURL(round.house.image)}
         alt="house"
         className={classes.img}
       />
