@@ -33,13 +33,11 @@ export const newAward: EditableAsset = {
 
 export enum DefaultERC20s {
   USDC = 'USDC',
-  APE = 'APE',
   OTHER = 'Other',
 }
 
 export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
   [DefaultERC20s.USDC]: '0xd35cceead182dcee0f148ebac9447da2c4d449c4',
-  [DefaultERC20s.APE]: '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc',
   [DefaultERC20s.OTHER]: '',
 };
 
@@ -47,10 +45,6 @@ export const erc20img = (tokenAddress: string) => {
   switch (tokenAddress) {
     case '0xd35cceead182dcee0f148ebac9447da2c4d449c4': // goerli
       return '/manager/usdc.svg';
-    case '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc': // goerli
-      return '/manager/ape.png';
-    case '0xdac17f958d2ee523a2206206994597c13d831ec7': // goerli
-      return '/manager/usdt.svg';
     default:
       return '/manager/token.svg';
   }

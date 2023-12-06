@@ -25,8 +25,6 @@ const AddErc20Asset: React.FC<{
   const s =
     asset.address === erc20TokenAddresses[DefaultERC20s.USDC]
       ? DefaultERC20s.USDC
-      : asset.address === erc20TokenAddresses[DefaultERC20s.APE]
-      ? DefaultERC20s.APE
       : isAddress(asset.address)
       ? DefaultERC20s.OTHER
       : undefined;

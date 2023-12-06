@@ -19,7 +19,7 @@ export const ERC20Buttons: React.FC<{
 }> = props => {
   const { asset, handleSelectAward } = props;
 
-  const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.APE, DefaultERC20s.OTHER];
+  const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.OTHER];
   const [selectedOther, setSelectedOther] = useState(false);
 
   return (
