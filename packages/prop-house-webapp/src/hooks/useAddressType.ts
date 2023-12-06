@@ -1,20 +1,19 @@
-import { useChainId, useContractRead } from 'wagmi';
+import { Address, useChainId, useContractRead } from 'wagmi';
 import { addressTypeABI } from '../utils/contractABIs';
+import { ChainId } from '@prophouse/sdk-react';
 
-// TODO - automatically detect network
-// !Mainnet
-// const contractAddress = '0x905429be6e2e07b6a7df6b2acd7806090a8e8915';
-// !Goerli
-const contractAddress = '0xbA17ADA91737eE7530CA846183611c70B63bfB2c';
-
-const functionName = 'getType';
+const TYPE_FETCHER_CONTRACTS: Record<number, Address> = {
+  [ChainId.EthereumMainnet]: '0x905429be6e2e07b6a7df6b2acd7806090a8e8915',
+  [ChainId.EthereumGoerli]: '0xbA17ADA91737eE7530CA846183611c70B63bfB2c',
+};
+const FUNCTION_NAME = 'getType';
 
 export default function useAddressType(address: string) {
   const chainId = useChainId();
   const { data, isLoading, isError } = useContractRead({
-    address: contractAddress,
+    address: TYPE_FETCHER_CONTRACTS[chainId],
     abi: addressTypeABI,
-    functionName,
+    functionName: FUNCTION_NAME,
     args: [address as `0x${string}`],
     chainId: chainId,
   });

@@ -84,7 +84,7 @@ const ActivityFeed: React.FC<{}> = () => {
       </>
     ) : (
       <>
-        casted&nbsp;
+        cast&nbsp;
         {item.votingPower}
         &nbsp;vote{Number(item.votingPower) !== 1 && 's'}
       </>
