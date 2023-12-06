@@ -27,9 +27,10 @@ const AddErc20Asset: React.FC<{
   const ERC20_TOKEN_ADDRESSES = ERC20_TOKEN_ADDRESSES_BY_CHAIN[chainId];
   const ERC20_TOKEN_TO_SYMBOL = {
     [ERC20_TOKEN_ADDRESSES[DefaultERC20s.USDC]]: DefaultERC20s.USDC,
-    [ERC20_TOKEN_ADDRESSES[DefaultERC20s.APE]]: DefaultERC20s.APE
   };
-  const s = ERC20_TOKEN_TO_SYMBOL[asset.address] || (isAddress(asset.address) ? DefaultERC20s.OTHER : undefined);
+  const s =
+    ERC20_TOKEN_TO_SYMBOL[asset.address] ||
+    (isAddress(asset.address) ? DefaultERC20s.OTHER : undefined);
 
   const [selectedErc20, setSelectedErc20] = useState(s);
 
