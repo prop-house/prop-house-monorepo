@@ -4480,14 +4480,14 @@
 
 "@prophouse/sdk-react@1.0.2":
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk-react/-/sdk-react-1.0.2.tgz#cd65d15bdbac6dc1c735d66ae23b0a56d811cf13"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.2.tgz#cd65d15bdbac6dc1c735d66ae23b0a56d811cf13"
   integrity sha512-47WZ1UdH4zKNsTa02+b/O9r2u7Htlkd7aKdkICaOCLvWLJI4P6t9aPwSbQ7T2q6dcL6s+xuYIoDA/dh6yW2Qtg==
   dependencies:
     "@prophouse/sdk" "1.0.4"
 
 "@prophouse/sdk@1.0.4":
   version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@prophouse/sdk/-/sdk-1.0.4.tgz#c1df3b653f42719b55bfc901d8c1504292453b5c"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.4.tgz#c1df3b653f42719b55bfc901d8c1504292453b5c"
   integrity sha512-Mn3rye3FDVEu+CSSV86bUwHe0T5SKTDJsaV7NrQ/E14UwvW6JldjYZoiyRzsyOysKLaeFMHSC7XSyewHa+8HDA==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
