@@ -105,7 +105,7 @@ const Footer: React.FC = () => {
         proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
         votePeriodDurationSecs: round.votePeriodDurationSecs,
         winnerCount: round.numWinners,
-        // metaTx: { ...metaTxArgs },
+        metaTx: { ...metaTxArgs },
       },
     };
 
