@@ -26,13 +26,6 @@ const NavBar = () => {
       >
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
-          <Navbar.Brand>
-            {!isMobile() && (
-              <>
-                <div className={classes.navbarBrand}>{t('propHouse')}</div>
-              </>
-            )}
-          </Navbar.Brand>
         </Link>
 
         <Navbar.Toggle
