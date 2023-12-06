@@ -11,6 +11,7 @@ import dayjs from 'dayjs';
 import formatTime from '../../utils/formatTime';
 import { House, Round, usePropHouse } from '@prophouse/sdk-react';
 import { getDateFromTimestamp } from '../../utils/getDateFromTimestamp';
+import { buildImageURL } from '../../utils/buildImageURL';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import { isMobile } from 'web3modal';
 import { useEffect, useState } from 'react';
@@ -81,7 +82,7 @@ const RoundHeader: React.FC<{
       <Col lg={12} className={classes.houseNameRow}>
         <div className={classes.backToHouse} onClick={() => navigate(`/${house.address}`)}>
           <img
-            src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
+            src={buildImageURL(house.imageURI)}
             alt="community profile"
             className={classes.profImg}
           />

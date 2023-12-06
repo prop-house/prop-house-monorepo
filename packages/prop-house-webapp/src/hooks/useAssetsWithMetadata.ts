@@ -82,7 +82,7 @@ const useAssetsWithMetadata = (assets: Asset[]): UseAssetsWithMetadataResults =>
         asset.symbol === updatedAsset.symbol &&
           asset.decimals === updatedAsset.decimals &&
           asset.parsedAmount === updatedAsset.parsedAmount &&
-          asset.tokenImg === updatedAsset.tokenImg,
+          asset.tokenImg === updatedAsset.tokenImg &&
         asset.name === updatedAsset.name
       );
     });

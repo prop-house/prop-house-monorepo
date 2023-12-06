@@ -14,7 +14,7 @@ import OpenGraphRoundCard from './components/OpenGraphRoundCard';
 import OpenGraphProposalCard from './components/OpenGraphProposalCard';
 import Proposal from './pages/Proposal';
 import { createConfig, configureChains, WagmiConfig } from 'wagmi';
-import { goerli } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import {
   connectorsForWallets,
@@ -33,8 +33,9 @@ import RoundManager from './pages/RoundManager';
 import Communities from './pages/Communities';
 import Home from './pages/Home';
 import HouseManager from './pages/HouseManager';
+import { useAppSelector } from './hooks';
 
-const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
+const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
 const { wallets } = getDefaultWallets({
   appName: 'Prop House',
@@ -66,6 +67,10 @@ function App() {
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
   const showMakeAppHomePage = localStorage.getItem('makeAppHomePage');
 
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
+  const showCreatePropPage = round && house;
+
   return (
     <>
       <WagmiConfig config={config}>
@@ -82,7 +87,7 @@ function App() {
               theme={lightTheme({
                 accentColor: 'var(--brand-purple)',
               })}
-              initialChain={goerli}
+              initialChain={mainnet}
             >
               <Suspense fallback={<LoadingIndicator />}>
                 <div
@@ -99,7 +104,10 @@ function App() {
                     <Route path="/manage/round/:address" element={<RoundManager />} />
                     <Route path="/manage/house/:address" element={<HouseManager />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create-prop" element={<CreateProp />} />
+                    <Route
+                      path="/create-prop"
+                      element={showCreatePropPage ? <CreateProp /> : <MainApp />}
+                    />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/communities" element={<Communities />} />

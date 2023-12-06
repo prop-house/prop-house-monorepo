@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useAppSelector } from '../../../hooks';
-import { AssetType } from '@prophouse/sdk-react';
+import { AssetType, ChainId } from '@prophouse/sdk-react';
 import IndividualAwards from '../IndividualAwards';
 import { v4 as uuidv4 } from 'uuid';
 import { NewRound } from '../../../state/slices/round';
@@ -33,24 +33,25 @@ export const newAward: EditableAsset = {
 
 export enum DefaultERC20s {
   USDC = 'USDC',
-  APE = 'APE',
   OTHER = 'Other',
 }
-
-export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
-  [DefaultERC20s.USDC]: '0xd35cceead182dcee0f148ebac9447da2c4d449c4',
-  [DefaultERC20s.APE]: '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc',
-  [DefaultERC20s.OTHER]: '',
+export const ERC20_TOKEN_ADDRESSES_BY_CHAIN: {
+  [chainId: number]: { [key in DefaultERC20s]: string };
+} = {
+  [ChainId.EthereumMainnet]: {
+    [DefaultERC20s.USDC]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    [DefaultERC20s.OTHER]: '',
+  },
+  [ChainId.EthereumGoerli]: {
+    [DefaultERC20s.USDC]: '0xd35cceead182dcee0f148ebac9447da2c4d449c4',
+    [DefaultERC20s.OTHER]: '',
+  },
 };
 
 export const erc20img = (tokenAddress: string) => {
   switch (tokenAddress) {
-    case '0xd35cceead182dcee0f148ebac9447da2c4d449c4': // goerli
+    case '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':
       return '/manager/usdc.svg';
-    case '0xA68AbBb4e36b18A16732CF6d42E826AAA27F52Fc': // goerli
-      return '/manager/ape.png';
-    case '0xdac17f958d2ee523a2206206994597c13d831ec7': // goerli
-      return '/manager/usdt.svg';
     default:
       return '/manager/token.svg';
   }

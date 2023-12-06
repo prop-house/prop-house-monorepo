@@ -96,6 +96,8 @@ const MainApp = () => {
               <RoundsFeed />
             </Col>
             <Col xl={3} className={classes.rightCol}>
+              {showMakeAppHomePage === null && <MakeAppHomePageButton />}
+
               <div className={classes.sectionTitle}>
                 Communities
                 <Button
@@ -108,8 +110,6 @@ const MainApp = () => {
                 houses
                   .slice(0, 3)
                   .map((house, index) => <CommunityCard key={index} house={house} />)}
-
-              {showMakeAppHomePage === null && <MakeAppHomePageButton />}
 
               <div className={classes.sectionTitle}>Activity</div>
 

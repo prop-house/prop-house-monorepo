@@ -3,13 +3,14 @@ import React, { SetStateAction, useEffect, useState } from 'react';
 import Group from '../Group';
 import Text from '../Text';
 import { AssetType } from '@prophouse/sdk-react';
-import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
+import { DefaultERC20s, EditableAsset, ERC20_TOKEN_ADDRESSES_BY_CHAIN } from '../AssetSelector';
 import AwardAddress from '../AwardAddress';
 import ERC20Buttons from '../ERC20Buttons';
 import { useSingleAssetDecimals } from '../../../hooks/useAssetsWithDecimals';
 import { parseUnits, formatUnits, isAddress } from 'viem';
 import useAddressType from '../../../hooks/useAddressType';
 import { invalidAddressChar } from '../../../utils/invalidAddressChar';
+import { useChainId } from 'wagmi';
 
 const AddErc20Asset: React.FC<{
   asset: EditableAsset;
@@ -21,15 +22,15 @@ const AddErc20Asset: React.FC<{
   const [value, setValue] = useState(''); // used to store the value input by user to update asset.amount once decimals are fetched
   const [formattedValue, setFormattedValue] = useState('');
   const { data: contractType } = useAddressType(asset.address);
+  const chainId = useChainId();
 
+  const ERC20_TOKEN_ADDRESSES = ERC20_TOKEN_ADDRESSES_BY_CHAIN[chainId];
+  const ERC20_TOKEN_TO_SYMBOL = {
+    [ERC20_TOKEN_ADDRESSES[DefaultERC20s.USDC]]: DefaultERC20s.USDC,
+  };
   const s =
-    asset.address === erc20TokenAddresses[DefaultERC20s.USDC]
-      ? DefaultERC20s.USDC
-      : asset.address === erc20TokenAddresses[DefaultERC20s.APE]
-      ? DefaultERC20s.APE
-      : isAddress(asset.address)
-      ? DefaultERC20s.OTHER
-      : undefined;
+    ERC20_TOKEN_TO_SYMBOL[asset.address] ||
+    (isAddress(asset.address) ? DefaultERC20s.OTHER : undefined);
 
   const [selectedErc20, setSelectedErc20] = useState(s);
 
@@ -61,7 +62,7 @@ const AddErc20Asset: React.FC<{
           assetType: AssetType.ERC20,
         })
       : (updated = {
-          address: erc20TokenAddresses[token],
+          address: ERC20_TOKEN_ADDRESSES[token],
           amount: '0',
           assetType: AssetType.ERC20,
         });

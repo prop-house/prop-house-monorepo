@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   OrderByVoteFields,
   OrderByProposalFields,
-} from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/starknet/graphql';
+} from '@prophouse/sdk/dist/gql/starknet/graphql';
 import Button, { ButtonColor } from '../Button';
 
 const ActivityFeed: React.FC<{}> = () => {
@@ -84,7 +84,7 @@ const ActivityFeed: React.FC<{}> = () => {
       </>
     ) : (
       <>
-        casted&nbsp;
+        cast&nbsp;
         {item.votingPower}
         &nbsp;vote{Number(item.votingPower) !== 1 && 's'}
       </>

@@ -77,7 +77,7 @@ const TimedRoundAcceptingPropsModule: React.FC<{
 
   const notFundedCopy = (
     <div>
-      Round will being once awards
+      Round will begin once awards
       <br />
       have been deposited
     </div>

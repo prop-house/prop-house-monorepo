@@ -4,7 +4,8 @@ import Group from '../Group';
 import clsx from 'clsx';
 import { getERC20Image } from '../../../utils/getERC20Image';
 
-import { DefaultERC20s, EditableAsset, erc20TokenAddresses } from '../AssetSelector';
+import { DefaultERC20s, EditableAsset, ERC20_TOKEN_ADDRESSES_BY_CHAIN } from '../AssetSelector';
+import { useChainId } from 'wagmi';
 
 /**
  * @overview
@@ -19,8 +20,9 @@ export const ERC20Buttons: React.FC<{
 }> = props => {
   const { asset, handleSelectAward } = props;
 
-  const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.APE, DefaultERC20s.OTHER];
+  const erc20Tokens: DefaultERC20s[] = [DefaultERC20s.USDC, DefaultERC20s.OTHER];
   const [selectedOther, setSelectedOther] = useState(false);
+  const chainId = useChainId();
 
   return (
     <>
@@ -31,7 +33,8 @@ export const ERC20Buttons: React.FC<{
               className={clsx(
                 classes.strategyButton,
                 classes.tokenButton,
-                (asset.address === erc20TokenAddresses[token] && token !== DefaultERC20s.OTHER) ||
+                (asset.address === ERC20_TOKEN_ADDRESSES_BY_CHAIN[chainId][token] &&
+                  token !== DefaultERC20s.OTHER) ||
                   (selectedOther && token === DefaultERC20s.OTHER)
                   ? classes.btnPurpleBg
                   : classes.btnWhiteBg,

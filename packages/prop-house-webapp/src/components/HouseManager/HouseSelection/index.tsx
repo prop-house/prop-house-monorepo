@@ -59,14 +59,7 @@ const HouseSelection: React.FC<HouseSelectionProps> = ({
                   <Group row gap={8}>
                     <img
                       className={classes.img}
-                      src={
-                        house.imageURI
-                          ? buildImageURL(house.imageURI).replace(
-                              /prophouse.mypinata.cloud/g,
-                              'cloudflare-ipfs.com',
-                            )
-                          : ''
-                      }
+                      src={buildImageURL(house.imageURI) ?? ''}
                       alt={house.name ?? ''}
                     />
                     <Group classNames={classes.textContainer} gap={2}>

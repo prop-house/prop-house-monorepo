@@ -9,7 +9,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.17",
     "@nouns/prop-house-wrapper": "1.0.0",
-    "@prophouse/sdk-react": "0.4.20-alpha",
+    "@prophouse/sdk-react": "1.0.3",
     "@rainbow-me/rainbowkit": "^1.3.0",
     "@reduxjs/toolkit": "^1.7.0",
     "@supabase/supabase-js": "^2.39.0",
