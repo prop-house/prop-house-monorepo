@@ -64,6 +64,7 @@ function App() {
   }, [noActiveCommunity, location.state]);
 
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
+  const showMakeAppHomePage = localStorage.getItem('makeAppHomePage');
 
   return (
     <>
@@ -89,7 +90,10 @@ function App() {
                 >
                   <NavBar />
                   <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route
+                      path="/"
+                      element={showMakeAppHomePage === 'yes' ? <MainApp /> : <Home />}
+                    />
                     <Route path="/app" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
                     <Route path="/manage/round/:address" element={<RoundManager />} />

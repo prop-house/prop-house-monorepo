@@ -1,0 +1,31 @@
+.container {
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-med);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem 0;
+}
+.container p {
+  margin-bottom: 12px !important;
+  font-weight: bold;
+}
+
+.btnContainers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.btnContainers svg:first-child {
+  color: var(--brand-green);
+}
+.btnContainers svg:nth-child(2) {
+  color: var(--brand-red);
+}
+.btnContainers svg:hover {
+  opacity: 0.5;
+  cursor: pointer;
+}
