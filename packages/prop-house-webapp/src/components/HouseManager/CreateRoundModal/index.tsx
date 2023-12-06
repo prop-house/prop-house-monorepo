@@ -26,10 +26,9 @@ export type TransactionStatus = {
 const CreateRoundModal: React.FC<{
   status: TransactionStatus;
   roundName: string;
-  houseName: string;
   setShowCreateRoundModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { status, roundName, houseName, setShowCreateRoundModal } = props;
+  const { status, roundName, setShowCreateRoundModal } = props;
 
   const dipsatch = useDispatch();
   const { address: account } = useAccount();
@@ -52,8 +51,8 @@ const CreateRoundModal: React.FC<{
     ''
   ) : status.isSuccess ? (
     <>
-      Your round <b>{roundName}</b> has been successfully created for the <b>{houseName}</b>. Last
-      step: deposit the assets required to get the round started!
+      Your round <b>{roundName}</b> has been successfully created.
+      <br /> Last step: deposit the assets required to get the round started!
     </>
   ) : status.isError ? (
     'There was a problem creating your round. Please try again.'

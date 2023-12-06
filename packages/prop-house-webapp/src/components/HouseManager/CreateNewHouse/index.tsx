@@ -162,7 +162,9 @@ const CreateNewHouse = () => {
               text={loading ? <LoadingIndicator height={20} width={20} /> : 'Upload image'}
               bgColor={ButtonColor.White}
             />
-            {loading && <p>Pinning file to ipfs, this may take a few long seconds...</p>}
+            {loading && (
+              <p>Pinning file to ipfs... You can continue creating your round in the meantime!</p>
+            )}
 
             {imageError && <p className={classes.error}>{imageError}</p>}
           </Group>

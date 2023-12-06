@@ -12,16 +12,15 @@ import { House, Round } from '@prophouse/sdk-react';
 
 const ProposalSuccessModal: React.FC<{
   setShowProposalSuccessModal: Dispatch<SetStateAction<boolean>>;
-  propSubmissionTxId?: string;
   house: House;
   round: Round;
 }> = props => {
-  const { setShowProposalSuccessModal, propSubmissionTxId, house, round } = props;
+  const { setShowProposalSuccessModal, house, round } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { address: account } = useAccount();
-  const twitterContent = `Check out my @nounsprophouse prop: https://prop.house/proposal/${propSubmissionTxId}`;
+  const xContent = `I just proposed in ${round.title}: https://prop.house/${round.address}`;
 
   const backToRound = () => {
     navigate(`/${round.address}`, { replace: false });
@@ -51,15 +50,15 @@ const ProposalSuccessModal: React.FC<{
               bgColor={ButtonColor.Purple}
               onClick={() => {
                 openInNewTab(
-                  `https://warpcast.com/~/compose?text=Check+out+my+prop:+https://prop.house/${propSubmissionTxId}/`,
+                  `https://warpcast.com/~/compose?text=I+just+proposed+in+${round.title}:+https://prop.house/${round.address}`,
                 );
               }}
             />
             <Button
-              text={'Share on Twitter'}
+              text={'Share on X'}
               bgColor={ButtonColor.Purple}
               onClick={() => {
-                openInNewTab(`https://twitter.com/intent/tweet?text=${twitterContent}`);
+                openInNewTab(`https://twitter.com/intent/tweet?text=${xContent}`);
               }}
             />
           </>

@@ -32,6 +32,7 @@ import Dashboard from './pages/Dashboard';
 import RoundManager from './pages/RoundManager';
 import Communities from './pages/Communities';
 import Home from './pages/Home';
+import HouseManager from './pages/HouseManager';
 
 const { chains, publicClient } = configureChains([goerli], [publicProvider()]);
 
@@ -91,11 +92,12 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/app" element={<MainApp />} />
                     <Route path="/:roundOrHouse" element={<RoundOrHouseRouter />} />
+                    <Route path="/manage/round/:address" element={<RoundManager />} />
+                    <Route path="/manage/house/:address" element={<HouseManager />} />
                     <Route path="/:round/:id" element={<Proposal />} />
                     <Route path="/create-prop" element={<CreateProp />} />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/manage/:address" element={<RoundManager />} />
                     <Route path="/communities" element={<Communities />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

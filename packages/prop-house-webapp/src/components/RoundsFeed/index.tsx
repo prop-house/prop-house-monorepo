@@ -20,8 +20,8 @@ const RoundsFeed: React.FC<{}> = () => {
   const propHouse = usePropHouse();
 
   const { address: account } = useAccount({
-    onConnect() {
-      setFetchNewRounds(true);
+    onConnect({ isReconnected }) {
+      if (!isReconnected) setFetchNewRounds(true);
     },
   });
   const navigate = useNavigate();
@@ -110,18 +110,21 @@ const RoundsFeed: React.FC<{}> = () => {
           </Dropdown.Toggle>
 
           <Dropdown.Menu className={classes.dropdownMenu}>
-            {[RoundsFilter.Active, RoundsFilter.Favorites, RoundsFilter.Relevant].map(
-              (filter, i) => (
-                <Dropdown.Item
-                  key={i}
-                  onClick={() => {
-                    handleFilterChange(filter);
-                  }}
-                >
-                  {filter}
-                </Dropdown.Item>
-              ),
-            )}
+            {[
+              RoundsFilter.Active,
+              RoundsFilter.Recent,
+              RoundsFilter.Favorites,
+              RoundsFilter.Relevant,
+            ].map((filter, i) => (
+              <Dropdown.Item
+                key={i}
+                onClick={() => {
+                  handleFilterChange(filter);
+                }}
+              >
+                {filter}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       </div>

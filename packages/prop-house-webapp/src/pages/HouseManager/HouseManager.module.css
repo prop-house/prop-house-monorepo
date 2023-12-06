@@ -23,12 +23,13 @@
 
   background-color: transparent !important;
 }
-@media (max-width: 990px) {
-  .headerCol {
-    flex-direction: column;
-  }
-  .headerCol button {
-    margin-top: 1rem;
-    width: 100%;
-  }
+.comingSoon {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.comingSoon p {
+  margin-top: 1rem;
 }

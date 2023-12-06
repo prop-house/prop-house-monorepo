@@ -96,7 +96,6 @@ const Footer: React.FC = () => {
       {createRoundModal && (
         <CreateRoundModal
           roundName={round.title}
-          houseName={round.house.title}
           status={{
             isLoading: waitForTransaction.isLoading,
             isSuccess: waitForTransaction.isSuccess,

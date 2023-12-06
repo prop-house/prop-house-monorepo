@@ -13,7 +13,7 @@ const HouseProfImg: React.FC<{
   const { house, hover, className } = props;
 
   return house ? (
-    <Link to={`/${house.address}}`}>
+    <Link to={`/${house.address}`}>
       <img
         src={house.imageURI?.replace(/prophouse.mypinata.cloud/g, 'cloudflare-ipfs.com')}
         crossOrigin="anonymous"

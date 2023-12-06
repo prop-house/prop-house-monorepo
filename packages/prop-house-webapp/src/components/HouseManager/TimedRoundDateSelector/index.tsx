@@ -1,10 +1,9 @@
-import classes from './TimedRound.module.css';
+import classes from './TimedRoundDateSelector.module.css';
 import 'react-datetime/css/react-datetime.css';
 import Divider from '../../Divider';
 import DateTimeInput from '../DateTimeInput';
 import Group from '../Group';
 import Text from '../Text';
-import { validStartDate } from '../../../utils/isValidDate';
 import { TimePeriod, CustomPeriod } from '../TimePeriod';
 import NumberInput from '../NumberInput';
 import Bullet from '../Bullet';
@@ -35,7 +34,7 @@ import { saveRound } from '../../../state/thunks';
  * when the user clicks "Save Changes"
  */
 
-const TimedRound: React.FC<{
+const TimedRoundDateSelector: React.FC<{
   round: NewRound;
   editMode?: boolean;
   setEditedRound?: (round: NewRound) => void;
@@ -56,7 +55,7 @@ const TimedRound: React.FC<{
   );
   const voteEndDate = getDateFromDuration(propEndDate, getSecondsFromDays(votingDuration));
 
-  const periods = [5, 7, 14];
+  const periods = [1, 7, 14];
 
   const [customProposingPeriod, setCustomProposingPeriod] = useState(
     startTime === 0
@@ -175,10 +174,7 @@ const TimedRound: React.FC<{
         <DateTimeInput
           onDateChange={handleSelectStartTime}
           selectedDate={startTime === 0 ? null : getDateFromTimestamp(startTime)}
-          isValidDate={validStartDate}
         />
-
-        <Text type="body">Round will need to be started manually</Text>
       </Group>
 
       <Divider />
@@ -258,4 +254,4 @@ const TimedRound: React.FC<{
   );
 };
 
-export default TimedRound;
+export default TimedRoundDateSelector;

@@ -12,6 +12,7 @@ import { NounImage } from '../../utils/getNounImage';
 import { useDispatch } from 'react-redux';
 import { setOnChainActiveProposals, setOnchainActiveProposal } from '../../state/slices/propHouse';
 import { clearVoteAllotments } from '../../state/slices/voting';
+import { openInNewTab } from '../../utils/openInNewTab';
 
 const VoteConfirmationModal: React.FC<{
   round: Round;
@@ -38,6 +39,8 @@ const VoteConfirmationModal: React.FC<{
     0,
   );
   const sortedVoteAllottments = sortVoteAllotmentsByVotes(voteAllotments);
+
+  const xContent = `I just voted in ${round.title}: https://prop.house/${round.address}`;
 
   const handleSubmitVote = async () => {
     try {
@@ -120,17 +123,30 @@ const VoteConfirmationModal: React.FC<{
   };
 
   const successData: ModalProps = {
-    title: 'Very Nounish',
+    title: 'Nounish',
     subtitle: `You successfully voted for ${numPropsVotedFor} ${
       numPropsVotedFor === 1 ? 'prop' : 'props'
     }`,
     image: NounImage.Glasses,
     button: (
-      <Button
-        text={'Close'}
-        bgColor={ButtonColor.White}
-        onClick={() => setShowVoteConfirmationModal(false)}
-      />
+      <>
+        <Button
+          text={'Share on Warpcast'}
+          bgColor={ButtonColor.Purple}
+          onClick={() => {
+            openInNewTab(
+              `https://warpcast.com/~/compose?text=I+just+voted+in+${round.title}:+https://prop.house/${round.address}`,
+            );
+          }}
+        />
+        <Button
+          text={'Share on X'}
+          bgColor={ButtonColor.Purple}
+          onClick={() => {
+            openInNewTab(`https://twitter.com/intent/tweet?text=${xContent}`);
+          }}
+        />
+      </>
     ),
     setShowModal: setShowVoteConfirmationModal,
   };
