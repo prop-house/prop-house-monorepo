@@ -10,8 +10,6 @@ export const getERC20Image = (token: DefaultERC20s) => {
   switch (token) {
     case DefaultERC20s.USDC:
       return '/manager/usdc.svg';
-    case DefaultERC20s.APE:
-      return '/manager/ape.png';
     default:
       return '/manager/token.svg';
   }
