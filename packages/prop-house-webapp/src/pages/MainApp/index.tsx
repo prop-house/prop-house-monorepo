@@ -10,6 +10,7 @@ import Button, { ButtonColor } from '../../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { getFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
 import { sortHousesForFavs } from '../../utils/sortHousesForFavs';
+import MakeAppHomePageButton from '../../components/MakeAppHomePageButton';
 
 interface QueryOptions {
   page: number;
@@ -25,6 +26,8 @@ const MainApp = () => {
   const [houses, setHouses] = useState<House[]>();
   const navigate = useNavigate();
   const favorites = getFavoriteCommunities();
+
+  const showMakeAppHomePage = localStorage.getItem('makeAppHomePage');
 
   useEffect(() => {
     if (houses) return;
@@ -105,6 +108,8 @@ const MainApp = () => {
                 houses
                   .slice(0, 3)
                   .map((house, index) => <CommunityCard key={index} house={house} />)}
+
+              {showMakeAppHomePage === null && <MakeAppHomePageButton />}
 
               <div className={classes.sectionTitle}>Activity</div>
 

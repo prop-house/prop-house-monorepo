@@ -47,7 +47,7 @@ const RoundHeader: React.FC<{
       }
       bgColor={ButtonColor.White}
       classNames={classes.manageRoundBtn}
-      onClick={() => navigate(`/manage/${round.address}`)}
+      onClick={() => navigate(`/manage/round/${round.address}`)}
     />
   );
 

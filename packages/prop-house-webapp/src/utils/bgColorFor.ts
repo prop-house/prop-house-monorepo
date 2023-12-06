@@ -6,6 +6,8 @@ export enum BgColorElement {
   CreateProp,
 }
 const bgColorFor = (element: BgColorElement, path: string) => {
+  const showMakeAppHomePage = localStorage.getItem('makeAppHomePage') === 'yes';
+
   const lightPurple = 'bgLightPurple';
   const gray = 'bgGray';
   const white = 'bgWhite';
@@ -22,7 +24,7 @@ const bgColorFor = (element: BgColorElement, path: string) => {
   const isPropPath = /^\/0x[0-9a-fA-F]{40}\/\d+$/.test(path);
   const isCreatePropPath = path === '/create-prop';
 
-  if (isHomePath) return footer ? purple : lightPurple;
+  if (isHomePath) return showMakeAppHomePage ? gray : footer ? purple : lightPurple;
   if (isAppPath || isCreatePropPath) return gray;
 
   if (isRoundOrHousePath) {

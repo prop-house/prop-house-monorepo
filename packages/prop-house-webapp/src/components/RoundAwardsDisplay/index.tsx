@@ -45,6 +45,11 @@ const RoundAwardsDisplay: React.FC<{
   }, []);
 
   const awardDisplay = (award: AssetWithMetadata, place: number) => {
+    const erc721 = award.assetType === AssetType.ERC721;
+    const erc1155 = award.assetType === AssetType.ERC1155;
+    const showFullImg =
+      (erc721 || erc1155) && award.tokenImg && !award.tokenImg.includes('manager');
+
     return (
       <div className={clsx(classes.awardDisplay)}>
         {!hidePlace && (
@@ -64,22 +69,20 @@ const RoundAwardsDisplay: React.FC<{
             )}
           </span>
         )}
-        <img src={award.tokenImg} alt="token logo" />
-        <div className={classes.amountAndSymbolLabel}>
-          {award.assetType === AssetType.ERC721 ? (
-            <>
-              {award.symbol} {award.tokenId}
-            </>
-          ) : award.assetType === AssetType.ERC1155 ? (
-            <>
-              {award.parsedAmount} {award.symbol}
-            </>
-          ) : (
-            <>
-              {award.parsedAmount} {award.symbol}
-            </>
-          )}
-        </div>
+        <img src={award.tokenImg} alt="token logo" className={showFullImg ? classes.fullImg : ''} />
+        {!showFullImg && (
+          <div className={classes.amountAndSymbolLabel}>
+            {erc721 ? (
+              <>
+                {award.symbol} {award.tokenId}
+              </>
+            ) : (
+              <>
+                {award.parsedAmount} {award.symbol}
+              </>
+            )}
+          </div>
+        )}
       </div>
     );
   };
