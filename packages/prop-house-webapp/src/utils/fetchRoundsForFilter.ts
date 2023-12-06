@@ -22,6 +22,7 @@ export const fetchRoundsForFilter = async (
     ...queryParams,
     where: {
       eventState_not: RoundEventState.Cancelled,
+      house_not: '0x303979efeac12eca24c8ee1df118e44504ab1d2d', // Solimander Testing 🤫
       timedConfig_: {
         proposalPeriodStartTimestamp_lte: now,
         votePeriodEndTimestamp_gte: now,
