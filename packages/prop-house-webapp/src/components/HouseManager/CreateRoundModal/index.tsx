@@ -77,7 +77,6 @@ const CreateRoundModal: React.FC<{
   };
 
   const handleClose = () => {
-    console.log('andling close');
     return status.isLoading
       ? undefined
       : status.isSuccess
