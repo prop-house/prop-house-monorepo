@@ -26,12 +26,12 @@ const InfRoundVotingControls: React.FC<{
 
   // todo: resolve direction counting for inf round votes
   const submittedUpVotesForProp = countNumVotesForPropWithDirection(
-    proposal.votes,
+    votesByUserInActiveRound,
     proposal.id,
   );
   // todo: resolve direction counting for inf round votes
   const submittedDownVotesForProp = countNumVotesForPropWithDirection(
-    proposal.votes,
+    votesByUserInActiveRound,
     proposal.id,
   );
   const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
