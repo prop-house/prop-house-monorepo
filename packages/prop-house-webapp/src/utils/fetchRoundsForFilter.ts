@@ -1,5 +1,5 @@
-import { RoundEventState } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/evm/graphql';
-import { Round_OrderBy } from '@prophouse/sdk-react/node_modules/@prophouse/sdk/dist/gql/evm/graphql';
+import { RoundEventState } from '@prophouse/sdk/dist/gql/evm/graphql';
+import { Round_OrderBy } from '@prophouse/sdk-react';
 import { RoundsFilter } from '../hooks/useRoundsFilter';
 import { PropHouse, RoundWithHouse, Timed } from '@prophouse/sdk-react';
 
