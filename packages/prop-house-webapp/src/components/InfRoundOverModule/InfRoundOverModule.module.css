@@ -1,0 +1,12 @@
+.winnersText {
+  font-weight: 700;
+  color: var(--brand-gray);
+  font-size: 14px;
+}
+.blackIcon {
+  border: 1px solid var(--border-med);
+}
+
+.divider {
+  margin: 18px 0px;
+}

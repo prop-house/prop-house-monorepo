@@ -1,34 +1,29 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import classes from './NavBar.module.css';
 import clsx from 'clsx';
-import LocaleSwitcher from '../LocaleSwitcher';
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import AdminTool from '../AdminTool';
-import DevEnvDropDown from '../DevEnvDropdown';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'web3modal';
 import Button, { ButtonColor } from '../Button';
+import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
+import { IoSettingsSharp } from 'react-icons/io5';
 
 const NavBar = () => {
-  const { t } = useTranslation();
+  const location = useLocation();
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <Container>
-      <Navbar bg="transparent" expand="lg" className={classes.navbar} expanded={isNavExpanded}>
+    <Container className={bgColorFor(BgColorElement.Nav, location.pathname)}>
+      <Navbar
+        bg="transparent"
+        expand="lg"
+        className={clsx(classes.navbar, isMobile() && classes.mobileNavbar)}
+        expanded={isNavExpanded}
+      >
         <Link to="/" className={classes.logoGroup}>
           <img className={classes.bulbImg} src="/bulb.png" alt="bulb" />
-          <Navbar.Brand>
-            {!isMobile() && (
-              <>
-                <div className={classes.navbarBrand}>{t('propHouse')}</div>
-                <div className={classes.poweredByNouns}>{t('publicInfra')}</div>
-              </>
-            )}
-          </Navbar.Brand>
         </Link>
 
         <Navbar.Toggle
@@ -37,16 +32,7 @@ const NavBar = () => {
         />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className={clsx('ms-auto', classes.navBarCollapse)}>
-            <Nav.Link as="div" className={classes.menuLink} onClick={() => setIsNavExpanded(false)}>
-              <Link to="/faq" className={classes.link}>
-                {t('faq')}
-              </Link>
-              <span className={classes.divider}></span>
-            </Nav.Link>
-
             <div className={classes.buttonGroup}>
-              <LocaleSwitcher setIsNavExpanded={setIsNavExpanded} />
-
               <Nav.Link as="div" className={classes.connectBtnContainer}>
                 <Button
                   text="Create a round"
@@ -57,12 +43,21 @@ const NavBar = () => {
               </Nav.Link>
 
               <Nav.Link as="div" className={classes.connectBtnContainer}>
-                <ConnectButton showBalance={false} label={t('connect')} chainStatus={'none'} />
+                <ConnectButton
+                  showBalance={false}
+                  label={'Connect'}
+                  accountStatus={'avatar'}
+                  chainStatus={'icon'}
+                />
               </Nav.Link>
-
-              <AdminTool>
-                <DevEnvDropDown />
-              </AdminTool>
+              <Nav.Link>
+                <Button
+                  text={<IoSettingsSharp />}
+                  bgColor={ButtonColor.White}
+                  classNames={classes.createRoundBtn}
+                  onClick={() => navigate('/dashboard')}
+                />
+              </Nav.Link>
             </div>
           </Nav>
         </Navbar.Collapse>

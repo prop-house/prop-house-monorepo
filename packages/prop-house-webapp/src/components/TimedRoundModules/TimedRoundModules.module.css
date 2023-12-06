@@ -1,0 +1,55 @@
+.sideCards {
+  position: sticky;
+  align-self: flex-start;
+  top: 0;
+}
+
+.timelineContainer {
+  padding: 12px;
+  margin-bottom: 1rem;
+}
+.timelineContainer div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+.timelineContainer svg {
+  margin-right: 6px;
+  color: var(--brand-gray);
+}
+
+.timelineContainer div:first-child {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px var(--border-light) solid;
+}
+.timelineContainer div:first-child span:first-child {
+  color: var(--brand-green);
+}
+.timelineContainer div:first-child span:nth-child(2) {
+  color: var(--brand-gray-transparent);
+}
+.timelineContainer div:nth-child(2) span:first-child {
+  color: var(--brand-purple);
+}
+.timelineContainer div:nth-child(2) span:nth-child(2) {
+  color: var(--brand-gray-transparent);
+}
+
+@media (max-width: 1200px) {
+  .sideCards {
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+    top: inherit;
+    align-self: inherit;
+  }
+
+  ::-webkit-scrollbar {
+    width: 0; /* Remove scrollbar space */
+    background: transparent; /* Optional: just make scrollbar invisible */
+  }
+}

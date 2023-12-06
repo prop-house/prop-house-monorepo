@@ -1,57 +1,52 @@
 import classes from './VotesVerificationModal.module.css';
-import {
-  Direction,
-  SignatureState,
-  StoredProposalWithVotes,
-  StoredVote,
-} from '@nouns/prop-house-wrapper/dist/builders';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
-import { MdOutlinePendingActions } from 'react-icons/md';
-import { useTranslation } from 'react-i18next';
 import Modal from '../Modal';
+import { ChainId, Proposal, Vote } from '@prophouse/sdk-react';
+import { useChainId } from 'wagmi';
 
 const VotesVerificationModal: React.FC<{
   setDisplayVotesVerifModal: Dispatch<SetStateAction<boolean>>;
-  proposal: StoredProposalWithVotes;
-  votes: StoredVote[];
-  direction?: Direction;
+  proposal: Proposal;
+  votes: Vote[];
 }> = props => {
-  const { proposal, setDisplayVotesVerifModal, votes, direction } = props;
-  const { t } = useTranslation();
+  const { proposal, setDisplayVotesVerifModal, votes } = props;
+
+  const chainId = useChainId();
+  const getBlockExplorerURL = (txHash: string) => {
+    if (chainId !== ChainId.EthereumMainnet) {
+      return `https://testnet.starkscan.co/tx/${txHash}`;
+    }
+    return `https://starkscan.co/tx/${txHash}`;
+  };
 
   const verifiedVotes = (
     <div className={classes.votesContainer}>
-      {votes
-        .filter(v => v.signatureState !== SignatureState.FAILED_VALIDATION)
-        .map((vote, index) => (
-          <div key={index} className={classes.votesRow}>
-            <div className={classes.voteRowTitle}>
-              {`${vote.weight} ${
-                direction ? (direction === Direction.Up ? 'FOR' : 'AGAINST') : ''
-              } ${vote.weight === 1 ? t('vote') : t('votes')} ${t('by')}`}
-              <EthAddress address={vote.address} />
-            </div>
-
-            {vote.signatureState === SignatureState.PENDING_VALIDATION && (
-              <button className={classes.verifyVoteBtn} disabled={true}>
-                {t('pending')} <MdOutlinePendingActions />
-              </button>
-            )}
+      {votes.map((vote, index) => (
+        <div key={index} className={classes.votesRow}>
+          <div className={classes.voteRowTitle}>
+            <a href={getBlockExplorerURL(vote.txHash)} target="_blank" rel="noopener noreferrer">
+            {`${vote.votingPower} FOR  ${Number(vote.votingPower) === 1 ? 'vote' : 'votes'}`}
+            </a>
+            &nbsp;by
+            <EthAddress address={vote.voter} />
           </div>
-        ))}
+        </div>
+      ))}
     </div>
   );
 
   return (
     <div onClick={e => e.stopPropagation()}>
       <Modal
-        title={proposal.title}
-        subtitle={`${proposal.voteCountFor} ${
-          proposal.voteCountFor === 1 ? t('vote') : t('votes')
-        } ${t('haveBeenCast')}`}
-        body={verifiedVotes}
-        setShowModal={setDisplayVotesVerifModal}
+        modalProps={{
+          title: proposal.title,
+          subtitle: `${proposal.votingPower} ${
+            Number(proposal.votingPower) === 1 ? 'vote has been cast' : 'votes have been cast'
+          }`,
+          body: verifiedVotes,
+          setShowModal: setDisplayVotesVerifModal,
+        }}
       />
     </div>
   );

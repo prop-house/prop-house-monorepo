@@ -1,215 +1,89 @@
-import { useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks';
 import RoundHeader from '../../components/RoundHeader';
-import { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import {
-  filterInfRoundProposals,
-  InfRoundFilterType,
-  setActiveCommunity,
-  setActiveProposals,
-  setActiveRound,
-  setInfRoundFilterType,
-  setModalActive,
-  sortTimedRoundProposals,
-  TimedRoundSortType,
-} from '../../state/slices/propHouse';
+import { useEffect, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import classes from './Round.module.css';
-import RoundUtilityBar from '../../components/RoundUtilityBar';
-import RoundContent from '../../components/RoundContent';
-import { nameToSlug, slugToName } from '../../utils/communitySlugs';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
-import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
-import OpenGraphElements from '../../components/OpenGraphElements';
-import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
-import ReactMarkdown from 'react-markdown';
-import ProposalModal from '../../components/ProposalModal';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import NotFound from '../../components/NotFound';
-import { isMobile } from 'web3modal';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import { infRoundBalance } from '../../utils/infRoundBalance';
+import { usePropHouse } from '@prophouse/sdk-react';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import ProposalModal from '../../components/ProposalModal';
+import OpenGraphElements from '../../components/OpenGraphElements';
+import { markdownComponentToPlainText } from '../../utils/markdownToPlainText';
+import { CardType, cardServiceUrl } from '../../utils/cardServiceUrl';
+import ReactMarkdown from 'react-markdown';
+import { setOnChainActiveProposals } from '../../state/slices/propHouse';
+import RoundContent from '../../components/RoundContent';
+import { setVoteAllotments } from '../../state/slices/voting';
+import { resolveProposalTldrs } from '../../utils/resolveProposalTldrs';
 
-const Round = () => {
-  const location = useLocation();
-  const communityName = location.pathname.substring(1).split('/')[0];
-  const roundName = location.pathname.substring(1).split('/')[1];
-
+const Round: React.FC<{}> = () => {
+  const propHouse = usePropHouse();
   const dispatch = useAppDispatch();
-  const signer = useEthersSigner();
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
+  const isModalActive = useAppSelector(state => state.propHouse.modalActive);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const infRoundFilteredProposals = useAppSelector(
-    state => state.propHouse.infRoundFilteredProposals,
-  );
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const modalActive = useAppSelector(state => state.propHouse.modalActive);
-  const client = useRef(new PropHouseWrapper(host));
 
-  const isRoundOver = round && auctionStatus(round) === AuctionStatus.AuctionEnded;
-  const isVotingWindow = round && auctionStatus(round) === AuctionStatus.AuctionVoting;
-
-  const [loadingRound, setLoadingRound] = useState(false);
-  const [loadingComm, setLoadingComm] = useState(false);
-  const [loadingCommFailed, setLoadingCommFailed] = useState(false);
-  const [roundfailedFetch, setRoundFailedFetch] = useState(false);
-
-  const [loadingProps, setLoadingProps] = useState(false);
-  const [propsFailedFetch, setPropsFailedFetch] = useState(false);
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, signer);
-  }, [signer, host]);
-
-  // if no data is found in store (ie round page is entry point), fetch data
-  useEffect(() => {
-    if (community) return;
-
-    const fetchCommunity = async () => {
-      try {
-        setLoadingComm(true);
-        const community = await client.current.getCommunityWithName(slugToName(communityName));
-        dispatch(setActiveCommunity(community));
-
-        setLoadingComm(false);
-      } catch (e) {
-        setLoadingComm(false);
-        setLoadingCommFailed(true);
-      }
-    };
-
-    fetchCommunity();
-  }, [communityName, dispatch, roundName, round, community]);
-
-  // if no data is found in store (ie round page is entry point), fetch data
-  useEffect(() => {
-    if (round || !community) return;
-
-    const fetchRound = async () => {
-      try {
-        setLoadingRound(true);
-
-        const round = await client.current.getAuctionWithNameForCommunity(
-          nameToSlug(roundName),
-          community.id,
-        );
-        dispatch(setActiveRound(round));
-        setLoadingRound(false);
-      } catch (e) {
-        setLoadingRound(false);
-        setRoundFailedFetch(true);
-      }
-    };
-
-    fetchRound();
-  }, [communityName, dispatch, roundName, round, community]);
+  const [loadingProposals, setLoadingProposals] = useState(false);
+  const [loadedProposals, setLoadedProposals] = useState(false);
+  const [loadingProposalsFailed, setLoadingProposalsFailed] = useState(false);
 
   // fetch proposals
   useEffect(() => {
-    if (!round) return;
+    if (proposals || loadedProposals || !round) return;
 
-    const fetchAuctionProposals = async () => {
+    const fetchProposals = async () => {
       try {
-        setLoadingProps(true);
-
-        const proposals = await client.current.getAuctionProposals(round.id);
-        dispatch(setActiveProposals(proposals));
-
-        // set initial state for props (sorted in timed round / filtered in inf round)
-        if (isTimedAuction(round)) {
-          dispatch(
-            sortTimedRoundProposals({
-              sortType:
-                isVotingWindow || isRoundOver
-                  ? TimedRoundSortType.VoteCount
-                  : TimedRoundSortType.CreatedAt,
-              ascending: false,
-            }),
-          );
-        } else {
-          const infRoundOver = infRoundBalance(proposals, round) === 0;
-          const filterType = infRoundOver ? InfRoundFilterType.Winners : InfRoundFilterType.Active;
-          dispatch(setInfRoundFilterType(filterType));
-          dispatch(filterInfRoundProposals({ type: filterType, round }));
-        }
-
-        setLoadingProps(false);
+        setLoadingProposals(true);
+        const proposals = await propHouse.query.getProposalsForRound(round.address, {
+          where: { isCancelled: false },
+        });
+        const propsWithTldrs = await resolveProposalTldrs(proposals);
+        dispatch(setOnChainActiveProposals(propsWithTldrs));
       } catch (e) {
-        setLoadingProps(false);
-        setPropsFailedFetch(true);
+        setLoadingProposalsFailed(true);
       }
+      setLoadingProposals(false);
+      setLoadedProposals(true);
     };
-
-    fetchAuctionProposals();
-
+    fetchProposals();
     return () => {
-      dispatch(setInfRoundFilterType(InfRoundFilterType.Active));
-      dispatch(setModalActive(false));
-      dispatch(setActiveCommunity());
-      dispatch(setActiveRound());
-      dispatch(setActiveProposals([]));
+      dispatch(setVoteAllotments([]));
+      dispatch(setOnChainActiveProposals(undefined));
     };
-  }, [dispatch, isVotingWindow, isRoundOver, round]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
-      {modalActive && <ProposalModal />}
-
+      {isModalActive && proposals && <ProposalModal proposals={proposals} />}
       {round && (
         <OpenGraphElements
           title={round.title}
           description={markdownComponentToPlainText(<ReactMarkdown children={round.description} />)}
-          imageUrl={cardServiceUrl(CardType.round, round.id).href}
+          imageUrl={cardServiceUrl(CardType.round, round.address).href}
         />
       )}
-
-      {loadingComm || loadingRound ? (
-        <LoadingIndicator height={isMobile() ? 416 : 332} />
-      ) : loadingCommFailed || roundfailedFetch ? (
-        <NotFound />
-      ) : (
-        community &&
-        round && (
-          <>
-            <Container>
-              <RoundHeader auction={round} community={community} />
-            </Container>
-            <div className={classes.stickyContainer}>
-              <Container>
-                <RoundUtilityBar auction={round} />
-              </Container>
-            </div>
-          </>
-        )
+      {round && house && (
+        <>
+          <Container>
+            <RoundHeader round={round} house={house} />
+          </Container>
+        </>
       )}
-
       <div className={classes.roundContainer}>
         <Container className={classes.cardsContainer}>
           <div className={classes.propCards}>
-            {loadingProps ? (
+            {loadingProposals ? (
               <div className={classes.loader}>
                 <LoadingIndicator />
               </div>
-            ) : propsFailedFetch ? (
+            ) : loadingProposalsFailed ? (
               <NotFound />
             ) : (
-              round && (
-                <RoundContent
-                  auction={round}
-                  proposals={
-                    isInfAuction(round)
-                      ? infRoundFilteredProposals
-                        ? infRoundFilteredProposals
-                        : []
-                      : proposals
-                      ? proposals
-                      : []
-                  }
-                />
-              )
+              round &&
+              house &&
+              proposals && <RoundContent round={round} house={house} proposals={proposals} />
             )}
           </div>
         </Container>

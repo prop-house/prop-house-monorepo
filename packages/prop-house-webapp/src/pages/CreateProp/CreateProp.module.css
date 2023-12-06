@@ -1,0 +1,52 @@
+.card {
+  margin: 2rem 0;
+}
+
+.proposalHelperWrapper {
+  margin-top: 2rem;
+}
+.proposalHelperWrapper h1 {
+  color: var(--brand-gray);
+  font-size: x-large;
+}
+.proposalHelperWrapper h1 span {
+  font-weight: bold;
+}
+
+.tipCard a {
+  text-decoration: underline !important;
+}
+
+.proposalTitle {
+  font-weight: 500;
+  margin-top: 2rem;
+  font-size: 1.25rem;
+  text-align: left;
+  color: var(--brand-gray);
+  color: black;
+}
+.proposalTitle span {
+  font-weight: bold;
+}
+.boldLabel {
+  font-weight: 700;
+}
+.currencyAmount {
+  border: 1px solid blue;
+}
+.fundingCopy {
+  font-size: 1rem;
+  gap: 5px;
+  display: flex;
+  justify-content: center;
+}
+.btnContainer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+@media (max-width: 767px) {
+  .btnContainer button {
+    width: 100%;
+  }
+}

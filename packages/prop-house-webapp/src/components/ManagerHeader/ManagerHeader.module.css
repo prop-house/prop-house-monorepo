@@ -1,0 +1,64 @@
+.linksCol {
+  display: flex;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.linksCol span:first-child {
+  color: var(--brand-gray-transparent);
+  cursor: pointer;
+}
+
+.linksCol span:nth-child(2) {
+  margin-left: 8px;
+  color: var(--brand-black);
+}
+.headerCol {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.headerCol .leftCol {
+  display: flex;
+  gap: 20px;
+}
+.houseImg {
+  border-radius: 12px;
+  height: 100px;
+  width: 100px;
+}
+.roundName {
+  font-size: 26px;
+  font-weight: 550;
+}
+.address {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 8px 16px;
+  border-radius: 24px;
+  border: 2px var(--border-med) solid;
+  color: var(--brand-gray);
+  font-weight: bold;
+  width: fit-content;
+}
+.address:hover {
+  background-color: var(--border-med) !important;
+  cursor: pointer;
+}
+.address svg {
+  margin-left: 12px;
+}
+
+@media (max-width: 990px) {
+  .headerCol {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .headerCol button {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}

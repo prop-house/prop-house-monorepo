@@ -1,104 +1,57 @@
 import { useEffect, useState } from 'react';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import { execStrategy } from '@prophouse/communities';
-import { AuctionStatus, auctionStatus } from '../utils/auctionStatus';
-import { useEthersProvider } from './useEthersProvider';
+import { Round, usePropHouse } from '@prophouse/sdk-react';
+import { BigNumber } from 'ethers';
 
 export type UseVotingPowerResults = [
   /**
-   * loadingCanVote
+   * loadingVotingPower
+   */
+  boolean,
+  /**
+   * errorLoadingVotingPower
    */
   boolean,
   /**
    * votingPower
    */
   number | undefined | null,
-  /**
-   * number of votes cast
-   */
-  number | undefined | null,
-  /**
-   * Voting Copy
-   */
-  string,
-  /**
-   * Refresh voting power
-   */
-  Refresh,
-  /**
-   * Refresh user grants
-   */
-  Refresh,
 ];
 
-const defaultVotingCopy =
-  "Accounts that meet the round's voting requirements can vote for their favorite props.";
-
-type Refresh = () => Promise<void>;
 const useVotingPower = (
-  round: StoredAuctionBase | undefined,
+  round: Round | undefined,
   account: `0x${string}` | undefined,
 ): UseVotingPowerResults => {
-  const [loadingCanVote, setLoadingCanVote] = useState(false);
+  const [loadingVotingPower, setLoadingVotingPower] = useState(false);
+  const [errorLoadingVotingPower, setErrorLoadingVotingPower] = useState(false);
   const [votingPower, setVotingPower] = useState<null | number>(null);
 
-  const [numVotesCasted, setNumVotesCasted] = useState<number | undefined | null>(undefined);
-  const [votingCopy] = useState(
-    round
-      ? round.voteStrategyDescription
-        ? round.voteStrategyDescription
-        : defaultVotingCopy
-      : defaultVotingCopy,
-  );
-
-  const provider = useEthersProvider({
-    chainId: round ? (round.voteStrategy.chainId ? round.voteStrategy.chainId : 1) : 1,
-  });
-
-  const fetchVotingPower = async () => {
-    if (!round || !(auctionStatus(round) === AuctionStatus.AuctionVoting)) return;
-
-    if (!account) {
-      setVotingPower(null);
-      setNumVotesCasted(null);
-      return;
-    }
-    setLoadingCanVote(true);
-    const params = {
-      strategyName: round.voteStrategy.strategyName,
-      account,
-      provider,
-      ...round.voteStrategy,
-    };
-
-    try {
-      setVotingPower(await execStrategy(params));
-    } catch (e) {
-      console.log(e);
-    }
-    setLoadingCanVote(false);
-  };
-
-  const fetchUserGrants = async () => {
-    await fetchVotingPower();
-  };
+  const propHouse = usePropHouse();
 
   useEffect(() => {
-    fetchUserGrants();
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [round, account]);
+    const fetchVotingPower = async () => {
+      if (!round || !account) return;
 
-  if (!round)
-    return [false, undefined, undefined, defaultVotingCopy, async () => {}, async () => {}];
+      setLoadingVotingPower(true);
+      try {
+        const govPower = await propHouse.govPower.getTotalPower(
+          account as string,
+          round.config.proposalPeriodStartTimestamp,
+          round.votingStrategiesRaw,
+        );
+        setLoadingVotingPower(false);
 
-  return [
-    loadingCanVote,
-    votingPower,
-    numVotesCasted,
-    votingCopy,
-    fetchVotingPower,
-    fetchUserGrants,
-  ];
+        const maxSafeInteger = BigNumber.from(Number.MAX_SAFE_INTEGER.toString());
+        setVotingPower(govPower.gt(maxSafeInteger) ? Number.MAX_SAFE_INTEGER : govPower.toNumber());
+      } catch (e) {
+        console.log('Error fetching voting power: ', e);
+        setLoadingVotingPower(false);
+        setErrorLoadingVotingPower(true);
+      }
+    };
+    fetchVotingPower();
+  }, [round, propHouse.govPower, account]);
+
+  return [loadingVotingPower, errorLoadingVotingPower, votingPower];
 };
 
 export default useVotingPower;

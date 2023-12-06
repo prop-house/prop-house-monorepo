@@ -6,20 +6,17 @@ import ReactMarkdown from 'react-markdown';
 import Markdown from 'markdown-to-jsx';
 import sanitizeHtml from 'sanitize-html';
 import { useTranslation } from 'react-i18next';
-import { StoredAuctionBase, StoredProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import { BiAward } from 'react-icons/bi';
 import { pipe } from 'ramda';
 import { replaceIpfsGateway } from '../../utils/ipfs';
+import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 export interface RenderedProposalProps {
-  proposal: StoredProposal;
+  proposal: ProposalWithTldr;
   backButton?: React.ReactNode;
-  community?: any;
-  round?: StoredAuctionBase;
 }
 
 const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
-  const { proposal, backButton, round } = props;
+  const { proposal, backButton } = props;
   const { t } = useTranslation();
   const fields = proposalFields(proposal);
 
@@ -31,30 +28,31 @@ const RenderedProposalFields: React.FC<RenderedProposalProps> = props => {
             <div className={classes.backBtnContainer}>{backButton && backButton}</div>
             <div className={classes.headerBottomContainer}>
               <div>
-                {proposal.address && proposal.id && (
+                {proposal.proposer && proposal.id && (
                   <div className={classes.subinfo}>
                     <div className={classes.propBy}>
                       <span>{t('propCap')}</span>
                       {t('by')}
                       <div className={classes.submittedBy}>
-                        <EthAddress address={proposal.address} className={classes.submittedBy} />
+                        <EthAddress address={proposal.proposer} className={classes.submittedBy} />
                       </div>
                     </div>
                   </div>
                 )}
                 <h1>{fields.title}</h1>
               </div>
-              {proposal.reqAmount && round && (
+              {/** TODO: adapt to inf rounds */}
+              {/* {proposal.reqAmount && round && (
                 <div className={classes.fundReq}>
                   <BiAward size={'1.8rem'} />
                   {`${proposal.reqAmount} ${round?.currencyType}`}
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 
           <span className={classes.proposalBody}>
-            {fields.tldr && (
+            {fields.what.substring(0, 120) && (
               <>
                 <hr></hr>
                 <h2>{t('tldr')}</h2>

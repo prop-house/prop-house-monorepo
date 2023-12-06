@@ -1,12 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import classes from './VoteAllotmentModal.module.css';
 import { useAppSelector } from '../../hooks';
-import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { buildRoundPath } from '../../utils/buildRoundPath';
-import { openInNewTab } from '../../utils/openInNewTab';
 import { FaLink } from 'react-icons/fa';
-import { useDispatch } from 'react-redux';
-import { setActiveProposal } from '../../state/slices/propHouse';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
 import sortVoteAllotmentsByVotes from '../../utils/sortVoteAllotmentsByVotes';
@@ -16,10 +11,7 @@ const VoteAllotmentModal: React.FC<{
   setShowModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
   const { propId, setShowModal } = props;
-  const dispatch = useDispatch();
-  const proposals = useAppSelector(state => state.propHouse.activeProposals);
 
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
   const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
 
@@ -33,19 +25,20 @@ const VoteAllotmentModal: React.FC<{
           <span className={classes.propTitle}>{v.proposalTitle}</span>
         </span>
 
-        {round && community && (
+        {round && (
           <button
             disabled={v.proposalId === propId}
             className={classes.propLink}
             onClick={e => {
-              if (cmdPlusClicked(e)) {
-                openInNewTab(`${buildRoundPath(community, round)}/${v.proposalId}`);
-                setShowModal(false);
-                return;
-              }
-              const p = proposals && proposals.find(p => p.id === v.proposalId);
-              p && dispatch(setActiveProposal(p));
-              setShowModal(false);
+              // todo: fix this
+              // if (cmdPlusClicked(e)) {
+              //   openInNewTab(`${buildRoundPath(community, round)}/${v.proposalId}`);
+              //   setShowModal(false);
+              //   return;
+              // }
+              // const p = proposals && proposals.find(p => p.id === v.proposalId);
+              // p && dispatch(setOnchainActiveProposal(p));
+              // setShowModal(false);
             }}
           >
             <FaLink />
@@ -59,11 +52,13 @@ const VoteAllotmentModal: React.FC<{
 
   return (
     <Modal
-      title={noVotesAllotted ? 'No votes allotted' : 'Votes allotted'}
-      subtitle={noVotesAllotted ? '' : 'You have allotted votes for the following proposals'}
-      body={!noVotesAllotted && <div className={classes.votesContainer}>{voteAllotmentData}</div>}
-      image={noVotesAllotted && NounImage.Blackhole}
-      setShowModal={setShowModal}
+      modalProps={{
+        title: noVotesAllotted ? 'No votes allotted' : 'Votes allotted',
+        subtitle: noVotesAllotted ? '' : 'You have allotted votes for the following proposals',
+        body: !noVotesAllotted && <div className={classes.votesContainer}>{voteAllotmentData}</div>,
+        image: noVotesAllotted ? NounImage.Blackhole : null,
+        setShowModal: setShowModal,
+      }}
     />
   );
 };

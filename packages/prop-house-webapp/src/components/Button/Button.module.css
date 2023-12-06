@@ -8,10 +8,14 @@
   font-weight: bold;
   line-height: 140%;
 }
+.btn:active,
+.btn:focus {
+  box-shadow: none !important;
+}
+
 .btn div {
   margin: auto;
 }
-
 .btn:disabled {
   background-color: var(--brand-gray);
 }
@@ -37,13 +41,11 @@
   background-color: var(--brand-purple);
   border: none;
 }
-.btnPurpleBg:hover {
-  background-color: var(--brand-purple-semi-transparent);
-}
 .btnPurpleBg:active,
-.btnPurpleBg:focus {
-  background-color: var(--brand-purple-semi-transparent);
-  box-shadow: 0 0 0 0.25rem var(--brand-purple-transparent) !important;
+.btnPurpleBg:focus,
+.btnPurpleBg:hover {
+  background-color: var(--brand-purple-transparent) !important;
+  box-shadow: none !important;
 }
 
 /* PURPLE LIGHT BG */
@@ -83,6 +85,11 @@
   background-color: var(--brand-gray-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-gray-transparent) !important;
   border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.btnWhiteBg:disabled {
+  background-color: white;
+  color: var(--brand-gray-transparent);
+  border: 1px solid var(--border-med);
 }
 
 /* YELLOW BG */
@@ -164,6 +171,27 @@
 .btnRedBg:focus {
   background-color: var(--brand-red-semi-transparent);
   box-shadow: 0 0 0 0.25rem var(--brand-red-semi-transparent) !important;
+}
+
+/* Black BG */
+
+.btnBlackBg {
+  background: var(--brand-black) !important;
+  border: 1px solid var(--brand-black);
+  color: white;
+}
+
+.btnBlackBg:hover {
+  opacity: 0.8;
+}
+
+.btnBlackBg:active,
+.btnBlackBg:focus {
+  color: white;
+}
+
+.btnBlackBg:disabled {
+  color: var(--brand-black-semi-transparent);
 }
 
 /* GRAY BG */

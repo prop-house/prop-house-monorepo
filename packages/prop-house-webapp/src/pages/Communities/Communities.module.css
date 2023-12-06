@@ -1,0 +1,14 @@
+.loadMoreRow {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.loadMoreBtn {
+  width: fit-content;
+}
+@media (max-width: 992px) {
+  .houseProfImg {
+    height: 10rem !important;
+    width: auto;
+  }
+}

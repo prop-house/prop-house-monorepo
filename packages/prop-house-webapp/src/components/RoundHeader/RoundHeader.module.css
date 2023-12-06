@@ -1,3 +1,20 @@
+.roundHeaderRow {
+  display: flex;
+  padding-bottom: 2rem;
+}
+.houseNameRow {
+  display: flex;
+  justify-content: space-between;
+}
+.manageRoundBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-black);
+}
+.manageRoundBtn svg {
+  margin-left: 6px;
+}
 .profilePicCol img {
   height: 15rem;
   width: auto;
@@ -6,13 +23,11 @@
 .communityInfoCol {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 .communityInfoCol > * {
-  margin: 0.75rem 0;
+  margin: 0.2rem 0;
 }
-.date {
-  margin: 0;
+.communityInfoCol .date {
   color: var(--brand-pink) !important;
   font-weight: bold;
 }
@@ -21,10 +36,17 @@
   flex-direction: row;
   align-items: center;
   margin: 0;
+  flex: 0;
 }
 .titleRow .title {
   font-size: xx-large;
   font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 .titleRow .contractAddressPill {
   background-color: rgba(128, 128, 128, 0.1);
@@ -42,8 +64,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 .communityDescriptionRow a {
@@ -56,11 +76,63 @@
   transition: all 0.15s ease-in-out;
 }
 
+.backToHouse {
+  color: rgba(20, 22, 27, 0.6);
+  cursor: pointer;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.backToHouse:hover {
+  color: var(--brand-black);
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.backToHouse .profImg {
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
+}
+.backToHouse .commTitle {
+  margin-left: 5px;
+}
+
+.stickyContainer {
+  background: white;
+  top: 0;
+  position: sticky !important;
+  z-index: 1;
+  padding-top: 12px;
+}
+
+.awardsCol {
+  border-left: 1px var(--border-light) solid;
+  padding-left: 2rem;
+}
+.awardsTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--brand-black);
+}
+.awardsSubtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--brand-gray);
+  margin-bottom: 1.2rem;
+}
 @media (max-width: 992px) {
   .titleRow {
     align-items: flex-start;
   }
-  .profileHeaderRow {
+  .roundHeaderRow {
     margin-bottom: 0rem;
   }
   .profilePicCol {
@@ -81,40 +153,17 @@
   .longName .contractAddressPill {
     margin-left: 0 !important;
   }
-}
-
-.backToAuction {
-  color: rgba(20, 22, 27, 0.6);
-  cursor: pointer;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-  width: max-content;
-  align-items: center;
-  font-size: 1rem;
-  font-weight: 600;
-  padding-bottom: 20px;
-}
-
-.backToAuction:hover {
-  color: var(--brand-black);
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke,
-    opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-.backToAuction .profImg {
-  width: 26px;
-  height: 26px;
-  border-radius: 13px;
-}
-.backToAuction .commTitle {
-  margin-left: 5px;
+  .awardsCol {
+    padding-left: 12px;
+  }
 }
 
 @media (max-width: 576px) {
-  .backToAuction {
-    padding-bottom: 25px;
+  .backToHouse {
+    margin-bottom: 12px;
+  }
+  .awardsSubtitle {
+    margin-bottom: 0.5rem;
   }
 }
 
@@ -122,12 +171,12 @@
   .stickyContainer {
     padding: 12px 0px 8px 0px;
   }
-}
-
-.stickyContainer {
-  background: white;
-  top: 0;
-  position: sticky !important;
-  z-index: 1;
-  padding-top: 12px;
+  .houseNameRow {
+    display: flex;
+    flex-direction: column;
+  }
+  .manageRoundBtn {
+    width: 100%;
+    margin-bottom: 12px;
+  }
 }

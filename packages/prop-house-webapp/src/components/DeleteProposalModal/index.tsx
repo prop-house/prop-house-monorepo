@@ -1,65 +1,66 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import Button, { ButtonColor } from '../Button';
-import { useTranslation } from 'react-i18next';
-import { useAppSelector } from '../../hooks';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
-import { DeleteProposal } from '@nouns/prop-house-wrapper/dist/builders';
-import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../hooks';
 import Modal from '../Modal';
 import { NounImage } from '../../utils/getNounImage';
-import { useWalletClient } from 'wagmi';
+import { usePropHouse } from '@prophouse/sdk-react';
+import LoadingIndicator from '../LoadingIndicator';
+import { setModalActive, setOnChainActiveProposals } from '../../state/slices/propHouse';
 
 const DeleteProposalModal: React.FC<{
   id: number;
   setShowDeletePropModal: Dispatch<SetStateAction<boolean>>;
-  handleClosePropModal: () => void;
-  dismissModalAndRefreshProps: () => void;
 }> = props => {
-  const { id, setShowDeletePropModal, handleClosePropModal, dismissModalAndRefreshProps } = props;
-  const { t } = useTranslation();
-  const { data: walletClient } = useWalletClient();
+  const { id, setShowDeletePropModal } = props;
+
+  const propHouse = usePropHouse();
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const proposals = useAppSelector(state => state.propHouse.activeProposals);
+  const dispatch = useAppDispatch();
 
   const [hasBeenDeleted, setHasBeenDeleted] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [errorDeleting, setErrorDeleting] = useState(false);
 
-  const dispatch = useDispatch();
-
-  const round = useAppSelector(state => state.propHouse.activeRound);
-  const activeProposal = useAppSelector(state => state.propHouse.activeProposal);
-  const host = useAppSelector(state => state.configuration.backendHost);
-  const client = useRef(new PropHouseWrapper(host));
-
-  useEffect(() => {
-    client.current = new PropHouseWrapper(host, walletClient as any);
-  }, [walletClient, host]);
-
   const handleDeleteProposal = async () => {
-    if (!id) return;
+    if (!round) return;
 
     try {
-      await client.current.deleteProposal(new DeleteProposal(id));
-      setErrorDeleting(false);
+      setDeleting(true);
+      await propHouse.round.timed.cancelProposalViaSignature({
+        round: round.address,
+        proposalId: id,
+      });
       setHasBeenDeleted(true);
-    } catch (error) {
+      setDeleting(false);
+    } catch (e) {
+      console.log(e);
+      setDeleting(false);
       setErrorDeleting(true);
-      console.log(error);
     }
   };
 
-  const closeModal = () => () => setShowDeletePropModal(false);
+  const handleClose = () => {
+    if (!proposals) return;
+    const updatedProps = proposals.filter(p => p.id !== id);
+    dispatch(setOnChainActiveProposals(updatedProps));
+    setShowDeletePropModal(false);
+    dispatch(setModalActive(false));
+  };
 
   return (
     <Modal
-      title={
-        errorDeleting
+      modalProps={{
+        title: deleting
+          ? 'Deleting'
+          : errorDeleting
           ? 'Error Deleting'
           : hasBeenDeleted
           ? 'Successfully Deleted!'
-          : 'Delete your prop?'
-      }
-      subtitle={
-        errorDeleting ? (
+          : 'Delete your prop?',
+        subtitle: deleting ? (
+          'Sending the prop to the void...'
+        ) : errorDeleting ? (
           'Your proposal could not be deleted. Please try again.'
         ) : hasBeenDeleted ? (
           <>
@@ -67,48 +68,19 @@ const DeleteProposalModal: React.FC<{
           </>
         ) : (
           'Are you sure you want to delete your proposal? This action cannot be undone.'
-        )
-      }
-      image={errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null}
-      setShowModal={setShowDeletePropModal}
-      onRequestClose={hasBeenDeleted ? dismissModalAndRefreshProps : closeModal}
-      button={
-        errorDeleting ? (
+        ),
+        image: errorDeleting ? NounImage.Computer : hasBeenDeleted ? NounImage.Trashcan : null,
+        setShowModal: setShowDeletePropModal,
+        handleClose: handleClose,
+        body: deleting && <LoadingIndicator />,
+        button: !hasBeenDeleted && !deleting && (
           <Button
-            text={t('Close')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-            }}
+            text={errorDeleting ? 'Retry' : 'Delete Prop'}
+            bgColor={errorDeleting ? ButtonColor.Purple : ButtonColor.Red}
+            onClick={handleDeleteProposal}
           />
-        ) : hasBeenDeleted ? (
-          <Button
-            text={t('Close')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-              refreshActiveProposals(client.current, round!, dispatch);
-              refreshActiveProposal(client.current, activeProposal!, dispatch);
-              handleClosePropModal();
-            }}
-          />
-        ) : (
-          <Button
-            text={t('Cancel')}
-            bgColor={ButtonColor.White}
-            onClick={() => {
-              setShowDeletePropModal(false);
-            }}
-          />
-        )
-      }
-      secondButton={
-        errorDeleting ? (
-          <Button text={'Retry'} bgColor={ButtonColor.Purple} onClick={handleDeleteProposal} />
-        ) : hasBeenDeleted ? null : (
-          <Button text={'Delete Prop'} bgColor={ButtonColor.Red} onClick={handleDeleteProposal} />
-        )
-      }
+        ),
+      }}
     />
   );
 };

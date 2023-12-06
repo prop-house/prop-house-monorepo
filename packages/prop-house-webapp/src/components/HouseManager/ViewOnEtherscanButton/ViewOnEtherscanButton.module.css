@@ -1,0 +1,22 @@
+.container {
+  all: initial;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: max-content;
+}
+.container img {
+  height: 16px;
+  width: 16px;
+}
+.container span {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 19px;
+  letter-spacing: 0.02em;
+  color: #2081e2;
+}
+.container:disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}

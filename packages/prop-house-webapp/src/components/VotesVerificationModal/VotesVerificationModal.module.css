@@ -23,6 +23,9 @@
   font-size: 16px;
   margin-left: 4px;
 }
+.voteRowTitle > a {
+  color: #666666 !important;
+}
 .verifyVoteBtn {
   font-size: 14px;
   font-weight: bold;

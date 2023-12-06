@@ -81,7 +81,12 @@ body {
   letter-spacing: -0.2px;
   background-color: #ffffff;
 }
-
+.bgLightPurple {
+  background-color: #dbd3fd;
+}
+.bgPurple {
+  background-color: #8a2be2;
+}
 .bgGray {
   background-color: #f5f5f5;
 }

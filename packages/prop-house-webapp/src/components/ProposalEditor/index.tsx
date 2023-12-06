@@ -8,8 +8,6 @@ import BlotFormatter from 'quill-blot-formatter';
 import ImageUploadModal from '../ImageUploadModal';
 import ProposalInputs from '../ProposalInputs';
 import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { useLocation } from 'react-router-dom';
-import { isInfAuction } from '../../utils/auctionType';
 
 export interface FormDataType {
   title: string;
@@ -48,6 +46,7 @@ const ProposalEditor: React.FC<{
   duplicateFile: { error: boolean; name: string };
   setDuplicateFile: Dispatch<SetStateAction<{ error: boolean; name: string }>>;
   remainingBal?: number;
+  isInfRound: boolean;
 }> = props => {
   const {
     fields,
@@ -64,6 +63,7 @@ const ProposalEditor: React.FC<{
     setDuplicateFile,
     onFileDrop,
     remainingBal,
+    isInfRound,
   } = props;
   const data = useAppSelector(state => state.editor.proposal);
   const [editorBlurred, setEditorBlurred] = useState(false);
@@ -72,17 +72,6 @@ const ProposalEditor: React.FC<{
 
   const host = useAppSelector(state => state.configuration.backendHost);
   const client = useRef(new PropHouseWrapper(host));
-
-  const location = useLocation();
-  // active round comes from two diff places depending on where inputs are being displayed
-  const roundFromLoc = location.state && location.state.auction; // creating new prop
-  const roundFromStore = useAppSelector(state => state.propHouse.activeRound); // editing old prop
-  const isInfRound = isInfAuction(roundFromLoc ? roundFromLoc : roundFromStore);
-  const roundCurrency = roundFromLoc
-    ? roundFromLoc.currencyType
-    : roundFromStore
-    ? roundFromStore.currencyType
-    : '';
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -125,13 +114,14 @@ const ProposalEditor: React.FC<{
     error: t('descriptionError'),
   };
 
+  // TODO: resolve for round currency
   const fundReqData: FundReqDataType = {
     isInfRound: isInfRound,
     title: 'Funds Request',
-    roundCurrency: roundCurrency,
+    roundCurrency: 'roundCurrency',
     initReqAmount: 0,
     remainingBal: remainingBal ? remainingBal : 0,
-    error: `Exceeds remaining round balance of ${remainingBal} ${roundCurrency}`,
+    error: `Exceeds remaining round balance of ${remainingBal} ${'roundCurrency'}`,
   };
 
   const formats = [

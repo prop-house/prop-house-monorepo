@@ -46,7 +46,6 @@ const ProposalInputs: React.FC<{
   const client = useRef(new PropHouseWrapper(host));
 
   const [blurred, setBlurred] = useState(false);
-  const [fundReq, setFundReq] = useState<number | undefined>();
 
   useEffect(() => {
     client.current = new PropHouseWrapper(host, signer);
@@ -133,12 +132,13 @@ const ProposalInputs: React.FC<{
     <>
       <Row>
         <Col xl={12}>
-          <Form className={classes.form}>
+          <Form>
             <div className={clsx(fundReqData.isInfRound && classes.infRoundSectionsContainer)}>
               {/** TITLE */}
               {titleAndTldrInputs(formData[0], true)}
               {/** FUNDS REQ */}
-              {fundReqData.isInfRound && (
+              {/** todo: resolve when funReq is provided by protocol */}
+              {/* {fundReqData.isInfRound && (
                 <InputFormGroup
                   titleLabel="Funds Request"
                   content={
@@ -165,7 +165,7 @@ const ProposalInputs: React.FC<{
                   }
                   formGroupClasses={classes.fundReqFormGroup}
                 />
-              )}
+              )} */}
             </div>
 
             {/** TLDR */}
@@ -174,6 +174,7 @@ const ProposalInputs: React.FC<{
             {/** DESCRIPTION */}
 
             <InputFormGroup
+              formGroupClasses={classes.editor}
               titleLabel={descriptionData.title}
               content={
                 <>
@@ -189,13 +190,13 @@ const ProposalInputs: React.FC<{
                     onBlur={() => {
                       setEditorBlurred(true);
                     }}
+                    className={classes.editor}
                   />
                   {loading && (
                     <div className={classes.loadingOverlay}>
                       <LoadingIndicator />
                     </div>
                   )}
-
                   {editorBlurred &&
                     quill &&
                     !inputHasImage(descriptionData.fieldValue) &&

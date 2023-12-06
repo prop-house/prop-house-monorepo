@@ -11,15 +11,16 @@ import {
 } from '../../state/slices/propHouse';
 import { infRoundBalance } from '../../utils/infRoundBalance';
 
-const SortToggles: React.FC<{
+const InfRoundSortToggles: React.FC<{
   auction: StoredAuctionBase;
 }> = props => {
   const { auction } = props;
 
   const infRoundFilter = useAppSelector(state => state.propHouse.infRoundFilterType);
   const proposals = useAppSelector(state => state.propHouse.activeProposals);
-  const isInfRoundOver =
-    proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0;
+
+  const isInfRoundOver = false;
+  // proposals && isInfAuction(auction) && infRoundBalance(proposals, auction) === 0; // todo: fix
 
   const dispatch = useDispatch();
 
@@ -86,4 +87,4 @@ const SortToggles: React.FC<{
   );
 };
 
-export default SortToggles;
+export default InfRoundSortToggles;
