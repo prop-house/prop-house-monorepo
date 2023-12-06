@@ -4478,17 +4478,17 @@
   dependencies:
     ethers "~5.7.2"
 
-"@prophouse/sdk-react@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.2.tgz#cd65d15bdbac6dc1c735d66ae23b0a56d811cf13"
-  integrity sha512-47WZ1UdH4zKNsTa02+b/O9r2u7Htlkd7aKdkICaOCLvWLJI4P6t9aPwSbQ7T2q6dcL6s+xuYIoDA/dh6yW2Qtg==
+"@prophouse/sdk-react@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/@prophouse/sdk-react/-/sdk-react-1.0.3.tgz#56e1e67f24e5a5680646d5a2599cacc338929b98"
+  integrity sha512-xUxmD/A/OSj5fzORCeuE9rAKsRy8K0LV7CyY1HlwWIVS/v+K8pbOE8z5FWwI9pUkvzBuMBeSpSVA0s3FczRnWQ==
   dependencies:
-    "@prophouse/sdk" "1.0.4"
+    "@prophouse/sdk" "1.0.5"
 
-"@prophouse/sdk@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.4.tgz#c1df3b653f42719b55bfc901d8c1504292453b5c"
-  integrity sha512-Mn3rye3FDVEu+CSSV86bUwHe0T5SKTDJsaV7NrQ/E14UwvW6JldjYZoiyRzsyOysKLaeFMHSC7XSyewHa+8HDA==
+"@prophouse/sdk@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@prophouse/sdk/-/sdk-1.0.5.tgz#424406a837c63452421bfc19701d59d0ed0c97c4"
+  integrity sha512-JCDj4E16WsTw0m5vt5tPrVoBdCGoscuYaw8gbRS1+Qnw1JgMGccpEi7Aw9ufufD0DPM4m29aA1u4iE3gz3Q4QA==
   dependencies:
     "@ethersproject/abi" "~5.7.0"
     "@ethersproject/abstract-provider" "~5.7.0"
