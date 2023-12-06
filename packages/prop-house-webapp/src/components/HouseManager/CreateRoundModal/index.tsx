@@ -36,7 +36,9 @@ const CreateRoundModal: React.FC<{
   const { t } = useTranslation();
   let navigate = useNavigate();
 
-  const titleText = status.isLoading ? (
+  const titleText = status.isError ? (
+    'Transaction Error'
+  ) : status.isLoading ? (
     'Sending Transaction'
   ) : status.isSuccess && !roundAddress ? (
     'Confirming Round Creation'
@@ -44,34 +46,30 @@ const CreateRoundModal: React.FC<{
     <>
       {t('congrats')} {account && <EthAddress className={classes.address} address={account} />}!
     </>
-  ) : status.isError ? (
-    'Transaction Error'
   ) : (
     'Sign Transaction'
   );
 
-  const subtitleText =
-    status.isLoading || (status.isSuccess && !roundAddress) ? (
-      ''
-    ) : status.isSuccess && roundAddress ? (
-      <>
-        Your round <b>{roundName}</b> has been successfully created.
-        <br /> <b>Now deposit the award assets to get the round started.</b>
-      </>
-    ) : status.isError ? (
-      'There was a problem creating your round. Please try again.'
-    ) : (
-      'Please sign the transaction to create your round.'
-    );
+  const subtitleText = status.isError ? (
+    'There was a problem creating your round. Please try again.'
+  ) : status.isLoading || (status.isSuccess && !roundAddress) ? (
+    ''
+  ) : status.isSuccess && roundAddress ? (
+    <>
+      Your round <b>{roundName}</b> has been successfully created.
+      <br /> <b>Now deposit the award assets to get the round started.</b>
+    </>
+  ) : (
+    'Please sign the transaction to create your round.'
+  );
 
-  const image =
-    status.isLoading || (status.isSuccess && !roundAddress)
-      ? null
-      : status.isSuccess && roundAddress
-      ? NounImage.Crown
-      : status.isError
-      ? NounImage.Hardhat
-      : NounImage.Pencil;
+  const image = status.isError
+    ? NounImage.Hardhat
+    : status.isLoading || (status.isSuccess && !roundAddress)
+    ? null
+    : status.isSuccess && roundAddress
+    ? NounImage.Crown
+    : NounImage.Pencil;
 
   const handleClick = () => {
     navigate(`/manage/round/${roundAddress}`);

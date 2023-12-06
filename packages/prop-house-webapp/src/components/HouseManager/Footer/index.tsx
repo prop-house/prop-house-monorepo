@@ -7,7 +7,7 @@ import { NewRound, setNextStep, setPrevStep } from '../../../state/slices/round'
 import { useAppSelector } from '../../../hooks';
 import { HouseInfo, HouseType, RoundInfo, RoundType } from '@prophouse/sdk-react';
 import { usePropHouse } from '@prophouse/sdk-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
@@ -35,6 +35,9 @@ const Footer: React.FC = () => {
   const [createRoundModal, setShowCreateRoundModal] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [newRoundAddress, setNewRoundAddress] = useState<string | undefined>();
+  const [refetchCount, setRefetchCount] = useState(0);
+  const [fetchNewRound, setFetchNewRound] = useState(false);
+  const [newRoundAvail, setNewRoundAvail] = useState(false);
 
   // Wagmi hook that will wait for a transaction to be mined and
   // `waitForTransaction` is the tx state (loading/success/error)
@@ -48,12 +51,47 @@ const Footer: React.FC = () => {
 
   const handlePrev = () => dispatch(setPrevStep());
 
+  useEffect(() => {
+    if (!fetchNewRound || !newRoundAddress) return;
+
+    if (refetchCount > 4 && !newRoundAvail) waitForTransaction.isError = true;
+
+    const interval = setInterval(() => {
+      setRefetchCount(prevCount => prevCount + 1);
+    }, 3000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [fetchNewRound, newRoundAddress, newRoundAvail, refetchCount, waitForTransaction]);
+
+  useEffect(() => {
+    if (!fetchNewRound || !newRoundAddress) return;
+    const fetchNewRoundIsAvail = async () => {
+      try {
+        const newRoundIsAvail = await propHouse.query.getRoundWithHouseInfo(newRoundAddress);
+        if (newRoundIsAvail) setNewRoundAvail(true);
+      } catch (e) {
+        console.log('round not found: ', e);
+      }
+    };
+
+    if (refetchCount < 5) {
+      fetchNewRoundIsAvail();
+    }
+  }, [refetchCount, newRoundAddress, fetchNewRound, propHouse.query]);
+
   const handleCreateRound = async (round: NewRound) => {
     setShowCreateRoundModal(true);
 
     const houseInfo: HouseInfo<HouseType> = {
       houseType: HouseType.COMMUNITY,
       config: { contractURI: round.house.contractURI },
+    };
+
+    const metaTxArgs = {
+      relayer: '0x2eb240175557a2e795abd424Eb481d282317b102',
+      deposit: parseEther('0.01').toString(), // funds proposing & voting for round
     };
 
     const roundInfo: RoundInfo<RoundType> = {
@@ -67,6 +105,7 @@ const Footer: React.FC = () => {
         proposalPeriodDurationSecs: round.proposalPeriodDurationSecs,
         votePeriodDurationSecs: round.votePeriodDurationSecs,
         winnerCount: round.numWinners,
+        // metaTx: { ...metaTxArgs },
       },
     };
 
@@ -76,6 +115,7 @@ const Footer: React.FC = () => {
         const res = await propHouse.createRoundOnExistingHouse(round.house.address, roundInfo);
         setTransactionHash(res.hash);
         setNewRoundAddress(await getRoundAddressWithContractTx(res));
+        setFetchNewRound(true);
 
         return res;
       } catch (e) {
@@ -100,7 +140,7 @@ const Footer: React.FC = () => {
       {createRoundModal && (
         <CreateRoundModal
           roundName={round.title}
-          roundAddress={newRoundAddress}
+          roundAddress={newRoundAddress && newRoundAvail ? newRoundAddress : undefined}
           status={{
             isLoading: waitForTransaction.isLoading,
             isSuccess: waitForTransaction.isSuccess,

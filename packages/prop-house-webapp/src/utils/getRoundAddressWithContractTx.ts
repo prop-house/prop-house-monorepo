@@ -7,6 +7,7 @@ export const getRoundAddressWithContractTx = async (
   response: ContractTransaction,
 ): Promise<string | undefined> => {
   const result = await response.wait();
+  // eslint-disable-next-line
   const roundCreationLog = result.events?.find(event => {
     try {
       const log = PROP_HOUSE_IFACE.parseLog(event);
