@@ -33,6 +33,7 @@ import RoundManager from './pages/RoundManager';
 import Communities from './pages/Communities';
 import Home from './pages/Home';
 import HouseManager from './pages/HouseManager';
+import { useAppSelector } from './hooks';
 
 const { chains, publicClient } = configureChains([mainnet], [publicProvider()]);
 
@@ -65,6 +66,10 @@ function App() {
 
   const openGraphCardPath = new RegExp('.+?/card').test(location.pathname);
   const showMakeAppHomePage = localStorage.getItem('makeAppHomePage');
+
+  const round = useAppSelector(state => state.propHouse.activeRound);
+  const house = useAppSelector(state => state.propHouse.activeHouse);
+  const showCreatePropPage = round && house;
 
   return (
     <>
@@ -99,7 +104,10 @@ function App() {
                     <Route path="/manage/round/:address" element={<RoundManager />} />
                     <Route path="/manage/house/:address" element={<HouseManager />} />
                     <Route path="/:round/:id" element={<Proposal />} />
-                    <Route path="/create-prop" element={<CreateProp />} />
+                    <Route
+                      path="/create-prop"
+                      element={showCreatePropPage ? <CreateProp /> : <MainApp />}
+                    />
                     <Route path="/create-round" element={<CreateRound />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/communities" element={<Communities />} />
