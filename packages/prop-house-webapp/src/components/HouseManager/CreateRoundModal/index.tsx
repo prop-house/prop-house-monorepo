@@ -26,9 +26,10 @@ export type TransactionStatus = {
 const CreateRoundModal: React.FC<{
   status: TransactionStatus;
   roundName: string;
+  roundAddress: string | undefined;
   setShowCreateRoundModal: Dispatch<SetStateAction<boolean>>;
 }> = props => {
-  const { status, roundName, setShowCreateRoundModal } = props;
+  const { status, roundName, roundAddress, setShowCreateRoundModal } = props;
 
   const dipsatch = useDispatch();
   const { address: account } = useAccount();
@@ -37,7 +38,9 @@ const CreateRoundModal: React.FC<{
 
   const titleText = status.isLoading ? (
     'Sending Transaction'
-  ) : status.isSuccess ? (
+  ) : status.isSuccess && !roundAddress ? (
+    'Confirming Round Creation'
+  ) : status.isSuccess && roundAddress ? (
     <>
       {t('congrats')} {account && <EthAddress className={classes.address} address={account} />}!
     </>
@@ -47,29 +50,31 @@ const CreateRoundModal: React.FC<{
     'Sign Transaction'
   );
 
-  const subtitleText = status.isLoading ? (
-    ''
-  ) : status.isSuccess ? (
-    <>
-      Your round <b>{roundName}</b> has been successfully created.
-      <br /> Last step: deposit the assets required to get the round started!
-    </>
-  ) : status.isError ? (
-    'There was a problem creating your round. Please try again.'
-  ) : (
-    'Please sign the transaction to create your round.'
-  );
+  const subtitleText =
+    status.isLoading || (status.isSuccess && !roundAddress) ? (
+      ''
+    ) : status.isSuccess && roundAddress ? (
+      <>
+        Your round <b>{roundName}</b> has been successfully created.
+        <br /> <b>Now deposit the award assets to get the round started.</b>
+      </>
+    ) : status.isError ? (
+      'There was a problem creating your round. Please try again.'
+    ) : (
+      'Please sign the transaction to create your round.'
+    );
 
-  const image = status.isLoading
-    ? null
-    : status.isSuccess
-    ? NounImage.Crown
-    : status.isError
-    ? NounImage.Hardhat
-    : NounImage.Pencil;
+  const image =
+    status.isLoading || (status.isSuccess && !roundAddress)
+      ? null
+      : status.isSuccess && roundAddress
+      ? NounImage.Crown
+      : status.isError
+      ? NounImage.Hardhat
+      : NounImage.Pencil;
 
   const handleClick = () => {
-    navigate('/dashboard');
+    navigate(`/manage/round/${roundAddress}`);
     setShowCreateRoundModal(false);
     dipsatch(setActiveStep(1));
     dipsatch(updateRound(initialRound));
@@ -90,11 +95,11 @@ const CreateRoundModal: React.FC<{
         title: titleText,
         subtitle: subtitleText,
         handleClose: handleClose,
-        body: status.isLoading && <LoadingIndicator />,
+        body: (status.isSuccess && !roundAddress) || status.isLoading ? <LoadingIndicator /> : '',
         image: image,
         setShowModal: setShowCreateRoundModal,
-        button: status.isSuccess && (
-          <Button text="View my rounds" bgColor={ButtonColor.Pink} onClick={handleClick} />
+        button: status.isSuccess && roundAddress && (
+          <Button text="Deposit awards" bgColor={ButtonColor.Pink} onClick={handleClick} />
         ),
       }}
     />

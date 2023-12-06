@@ -11,6 +11,8 @@ import { useState } from 'react';
 import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
+import { parseEther } from 'viem';
+import { getRoundAddressWithContractTx } from '../../../utils/getRoundAddressWithContractTx';
 
 /**
  * @overview
@@ -32,6 +34,7 @@ const Footer: React.FC = () => {
 
   const [createRoundModal, setShowCreateRoundModal] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [newRoundAddress, setNewRoundAddress] = useState<string | undefined>();
 
   // Wagmi hook that will wait for a transaction to be mined and
   // `waitForTransaction` is the tx state (loading/success/error)
@@ -67,12 +70,13 @@ const Footer: React.FC = () => {
       },
     };
 
-    // If depositing funds is not enabled, use the original "non-funding" functions
     if (round.house.existingHouse) {
       // If the house already exists, use the `createRoundOnExistingHouse` function
       try {
         const res = await propHouse.createRoundOnExistingHouse(round.house.address, roundInfo);
         setTransactionHash(res.hash);
+        setNewRoundAddress(await getRoundAddressWithContractTx(res));
+
         return res;
       } catch (e) {
         console.log('error', e);
@@ -96,6 +100,7 @@ const Footer: React.FC = () => {
       {createRoundModal && (
         <CreateRoundModal
           roundName={round.title}
+          roundAddress={newRoundAddress}
           status={{
             isLoading: waitForTransaction.isLoading,
             isSuccess: waitForTransaction.isSuccess,
