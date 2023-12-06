@@ -37,13 +37,13 @@ export enum DefaultERC20s {
 }
 
 export const erc20TokenAddresses: { [key in DefaultERC20s]: string } = {
-  [DefaultERC20s.USDC]: '0xd35cceead182dcee0f148ebac9447da2c4d449c4',
+  [DefaultERC20s.USDC]: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
   [DefaultERC20s.OTHER]: '',
 };
 
 export const erc20img = (tokenAddress: string) => {
   switch (tokenAddress) {
-    case '0xd35cceead182dcee0f148ebac9447da2c4d449c4': // goerli
+    case '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':
       return '/manager/usdc.svg';
     default:
       return '/manager/token.svg';
