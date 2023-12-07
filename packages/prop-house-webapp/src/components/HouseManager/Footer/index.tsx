@@ -2,6 +2,7 @@ import classes from './Footer.module.css';
 import Button, { ButtonColor } from '../../Button';
 import Divider from '../../Divider';
 import clsx from 'clsx';
+import Text from '../Text';
 import { useDispatch } from 'react-redux';
 import { NewRound, setNextStep, setPrevStep } from '../../../state/slices/round';
 import { useAppSelector } from '../../../hooks';
@@ -150,12 +151,17 @@ const Footer: React.FC = () => {
           setShowCreateRoundModal={setShowCreateRoundModal}
         />
       )}
-
       <Divider />
+
+      {activeStep === 6 && (
+        <Text type="body" classNames={classes.noEditingCopy}>
+          Rounds are final and cannot be edited once created. They may only be cancelled before
+          voting ends.
+        </Text>
+      )}
 
       <div className={clsx(classes.footer, activeStep < 3 && classes.justifyEnd)}>
         {activeStep > 2 && <Button text="Back" bgColor={ButtonColor.Black} onClick={handlePrev} />}
-
         {activeStep < 6 && (
           <Button
             text="Next"
@@ -164,7 +170,6 @@ const Footer: React.FC = () => {
             onClick={handleNext}
           />
         )}
-
         {activeStep === 6 && (
           <Button
             text={
