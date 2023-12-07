@@ -22,6 +22,8 @@ const VotingStrategiesDisplay: React.FC<{
   };
 
   const oneStrat = votingStrategies.length === 1;
+  const oneStratAndNotAllowList =
+    oneStrat && votingStrategies[0].strategyType !== GovPowerStrategyType.ALLOWLIST;
   const oneStratAndAllowListHasOneMember =
     oneStrat &&
     votingStrategies[0].strategyType === GovPowerStrategyType.ALLOWLIST &&
@@ -108,7 +110,7 @@ const VotingStrategiesDisplay: React.FC<{
         setShowModal: setShowModal,
       }}
     />
-  ) : oneStratAndAllowListHasOneMember || oneStrat ? (
+  ) : oneStratAndAllowListHasOneMember || oneStratAndNotAllowList ? (
     singleStratCopy(votingStrategies[0], 0)
   ) : (
     <div onClick={() => setShowModal(true)}>

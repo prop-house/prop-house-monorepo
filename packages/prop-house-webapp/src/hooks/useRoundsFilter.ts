@@ -7,7 +7,7 @@ export enum RoundsFilter {
   Recent = 'Recent',
 }
 
-const DEFAULT_FILTER = RoundsFilter.Active;
+const DEFAULT_FILTER = RoundsFilter.Recent;
 
 const getFilter = (): RoundsFilter => {
   const filter = localStorage.getItem('filter');
