@@ -3,7 +3,6 @@ import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
-import RoundCard from '../../components/RoundCard';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import ConnectToContinue from '../../components/ConnectToContinue';
