@@ -97,7 +97,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
   });
 
   useEffect(() => {
-    if (proposals || !proposing) return;
+    if (proposals) return;
     const fetchProposals = async () => {
       try {
         const props = await propHouse.query.getProposalsForRound(round.address, {
@@ -156,10 +156,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             <div className={classes.headerContainer}>
               <div className={classes.roundCreatorAndTitle}>
                 <div className={classes.roundCreator}>
-                  <img
-                    src={buildImageURL(house.imageURI)}
-                    alt="house profile"
-                  />
+                  <img src={buildImageURL(house.imageURI)} alt="house profile" />
                   {house.name}
                 </div>
                 <div className={classes.roundTitle}>
@@ -227,7 +224,7 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             </div>
 
             <div>
-              {proposals && proposing && (
+              {proposals && (proposing || voting) && (
                 <ProposedSummary proposers={proposals.map(p => p.proposer)} />
               )}
             </div>
