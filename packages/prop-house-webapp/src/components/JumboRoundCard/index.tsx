@@ -26,8 +26,9 @@ const JumboRoundCard: React.FC<{
   round: Round;
   house: House;
   displayHorizontal?: boolean;
+  onClick?: () => void;
 }> = props => {
-  const { round, house, displayHorizontal } = props;
+  const { round, house, displayHorizontal, onClick } = props;
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -149,7 +150,7 @@ const JumboRoundCard: React.FC<{
       }}
     />
   ) : (
-    <div onClick={e => navigate(`/${round.address}`)}>
+    <div onClick={onClick ? onClick : e => navigate(`/${round.address}`)}>
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
