@@ -3,7 +3,6 @@ import { House, RoundWithHouse, usePropHouse } from '@prophouse/sdk-react';
 import { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useAccount } from 'wagmi';
-import RoundCard from '../../components/RoundCard';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import ConnectToContinue from '../../components/ConnectToContinue';
@@ -11,6 +10,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import HouseCard from '../../components/HouseCard';
+import JumboRoundCard from '../../components/JumboRoundCard';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
@@ -93,7 +93,7 @@ const Dashboard = () => {
         <>
           <Row className={classes.row}>
             <Col xl={12}>
-              <div className={classes.subheading}>Communities</div>
+              <div className={classes.subheading}>Houses</div>
             </Col>
             {loadingHouses ? (
               <LoadingIndicator />
@@ -121,11 +121,10 @@ const Dashboard = () => {
               ) : (
                 <>
                   {rounds.map((r, i) => (
-                    <Col key={i} xl={6}>
-                      <RoundCard
+                    <Col key={i} lg={6}>
+                      <JumboRoundCard
                         round={r}
                         house={r.house}
-                        displayBottomBar={false}
                         onClick={() =>
                           navigate(`/manage/round/${r.address}`, { state: { round: r } })
                         }

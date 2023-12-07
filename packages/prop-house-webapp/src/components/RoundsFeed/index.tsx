@@ -160,7 +160,7 @@ const RoundsFeed: React.FC<{}> = () => {
               rounds.map((round, i) => {
                 return (
                   <Col xl={12} key={i}>
-                    <JumboRoundCard round={round} house={round.house} />
+                    <JumboRoundCard round={round} house={round.house} displayHorizontal />
                   </Col>
                 );
               })}

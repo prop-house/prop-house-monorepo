@@ -161,8 +161,6 @@ const CreateRound = () => {
         </OverflowScroll>
       </Group>
 
-      <Divider />
-
       <Footer />
     </>
   );

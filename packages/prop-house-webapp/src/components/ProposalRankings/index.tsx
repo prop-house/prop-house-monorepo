@@ -12,6 +12,7 @@ const ProposalRankings: React.FC<{ proposals: Proposal[]; areWinners?: boolean }
         <HiTrophy size={14} color={trophyColors('first')} />
         {`${areWinners ? 'Winners' : 'Rankings'}`}
       </div>
+      {proposals.length === 0 && <div className={classes.noProps}>No proposals were voted on.</div>}
       {proposals.map((p, index) => (
         <div key={index} className={classes.item}>
           <span className={classes.place}>{index + 1}.</span>{' '}

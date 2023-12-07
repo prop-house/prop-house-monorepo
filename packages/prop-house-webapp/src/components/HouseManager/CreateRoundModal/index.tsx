@@ -60,7 +60,13 @@ const CreateRoundModal: React.FC<{
       <br /> <b>Now deposit the award assets to get the round started.</b>
     </>
   ) : (
-    'Please sign the transaction to create your round.'
+    <>
+      Please sign the transaction to create your round.
+      <br />
+      <span style={{ fontStyle: 'italic', fontSize: '12px' }}>
+        Note: 0.01 ETH is added in the tx to cover gas for proposers and voters.
+      </span>
+    </>
   );
 
   const image = status.isError

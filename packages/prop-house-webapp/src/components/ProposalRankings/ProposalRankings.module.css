@@ -45,3 +45,7 @@
   flex-shrink: 0;
   margin-left: auto;
 }
+.noProps {
+  font-style: italic;
+  color: var(--brand-gray);
+}

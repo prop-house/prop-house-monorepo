@@ -6,6 +6,8 @@
   z-index: 1;
   border: 1px solid var(--border-med);
   cursor: pointer;
+  height: auto;
+  max-height: 30rem;
 }
 .container {
   display: flex;
@@ -61,6 +63,7 @@
   flex-direction: row;
   width: 100%;
   gap: 1.2rem;
+  margin-top: 1rem;
 }
 .container .leftCol .statusItemContainer .item {
   display: flex;
@@ -105,6 +108,10 @@
   flex-direction: column;
   justify-content: space-between;
   padding-left: 1.5rem;
+  border-top: 1px solid var(--border-med);
+  padding-top: 1rem;
+  margin-top: 1rem;
+  padding-left: 12px;
 }
 
 .container .rightCol .awardsContainer .title {
@@ -123,25 +130,18 @@
   width: 100%;
   margin-top: 12px;
 }
-
-@media (max-width: 768px) {
-  .roundCard {
-    height: auto;
-    max-height: 30rem;
+@media (min-width: 768px) {
+  .roundCard.displayHorizontal {
+    height: 17rem;
+    max-height: 17rem;
   }
-  .container .leftCol .statusItemContainer {
-    margin-top: 1rem;
+  .container .leftCol .statusItemContainer.displayHorizontal {
+    margin-top: 0rem;
   }
-  .container .rightCol {
-    border-top: 1px solid var(--border-med);
-    padding-top: 1rem;
-    margin-top: 1rem;
-    padding-left: 12px;
-  }
-  .container .rightCol .awardsContainer .title {
-    margin-bottom: 0px;
-  }
-  .container .rightCol button {
-    margin-top: 10px;
+  .container .rightCol.displayHorizontal {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+    padding-left: 0;
   }
 }
