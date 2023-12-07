@@ -13,7 +13,16 @@ const RoundModuleCard: React.FC<{
   title: string | ReactElement;
   subtitle?: string | ReactElement;
   content: ReactElement;
-  type: 'proposing' | 'voting' | 'ended' | 'winner' | 'rejected' | 'stale' | 'not started';
+  type:
+    | 'unknown'
+    | 'cancelled'
+    | 'proposing'
+    | 'voting'
+    | 'ended'
+    | 'winner'
+    | 'rejected'
+    | 'stale'
+    | 'not started';
 }> = props => {
   const { title, subtitle, content, type } = props;
   return (
@@ -31,7 +40,10 @@ const RoundModuleCard: React.FC<{
                 ? classes.greenIcon
                 : type === 'voting'
                 ? classes.purpleIcon
-                : type === 'stale' || type === 'rejected'
+                : type === 'stale' ||
+                  type === 'rejected' ||
+                  type === 'cancelled' ||
+                  type === 'unknown'
                 ? classes.grayIcon
                 : classes.blackIcon,
             )}
@@ -40,7 +52,7 @@ const RoundModuleCard: React.FC<{
               <BulbIcon />
             ) : type === 'winner' ? (
               <FiAward />
-            ) : type === 'rejected' ? (
+            ) : type === 'rejected' || type === 'cancelled' || type === 'unknown' ? (
               <GiDeadHead />
             ) : type === 'stale' ? (
               <AiOutlineClockCircle />

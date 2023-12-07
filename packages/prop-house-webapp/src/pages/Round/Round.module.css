@@ -10,7 +10,7 @@
 @media (max-width: 767px) {
   .cardsContainer {
     max-width: none;
-    margin-top: 40px;
+    margin-top: 20px;
   }
   .propCards {
     padding-top: 0px;

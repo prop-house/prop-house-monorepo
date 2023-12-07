@@ -1,0 +1,23 @@
+.container {
+  flex: 1;
+  height: 100%;
+  padding: 10px;
+}
+.active {
+  transform: scale(1.05);
+  border-radius: 8px;
+  background: white !important;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-high);
+}
+.active:hover {
+  cursor: default;
+}
+.active .textContainer {
+  transform: scale(0.95);
+}
+@media (max-width: 500px) {
+  .active {
+    transform: scale(1.02);
+  }
+}

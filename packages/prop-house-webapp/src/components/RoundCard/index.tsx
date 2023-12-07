@@ -1,145 +1,101 @@
 import classes from './RoundCard.module.css';
+import { House, Round } from '@prophouse/sdk-react';
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
-import { StoredAuctionBase } from '@nouns/prop-house-wrapper/dist/builders';
-import clsx from 'clsx';
-import {
-  auctionStatus,
-  AuctionStatus,
-  deadlineCopy,
-  deadlineTime,
-} from '../../utils/auctionStatus';
+import EthAddress from '../EthAddress';
 import { useNavigate } from 'react-router-dom';
-import StatusPill from '../StatusPill';
-import { nameToSlug } from '../../utils/communitySlugs';
-import diffTime from '../../utils/diffTime';
-import { useTranslation } from 'react-i18next';
-import Tooltip from '../Tooltip';
-import dayjs from 'dayjs';
-import { cmdPlusClicked } from '../../utils/cmdPlusClicked';
-import { openInNewTab } from '../../utils/openInNewTab';
-import { useAppDispatch } from '../../hooks';
-import { setActiveRound } from '../../state/slices/propHouse';
-import TruncateThousands from '../TruncateThousands';
-import Markdown from 'markdown-to-jsx';
-import sanitizeHtml from 'sanitize-html';
-import { isInfAuction, isTimedAuction } from '../../utils/auctionType';
-import { countDecimals } from '../../utils/countDecimals';
+import AwardLabels from '../AwardLabels';
+import { useState } from 'react';
+import Modal from '../Modal';
+import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
+import LoadingIndicator from '../LoadingIndicator';
+import RoundCardStatusBar from '../RoundCardStatusBar';
+import RoundStatusPill from '../RoundStatusPill';
 
 const RoundCard: React.FC<{
-  round: StoredAuctionBase;
+  round: Round;
+  house: House;
+  displayBottomBar: boolean;
+  onClick?: () => void;
 }> = props => {
-  const { round } = props;
-  const { t } = useTranslation();
+  const { round, house, displayBottomBar, onClick } = props;
+
   let navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const [showModal, setShowModal] = useState(false);
+  const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
 
-  interface changeTagProps {
-    children: React.ReactNode;
-  }
+  const awardsModalContent = (
+    <div className={classes.awardsModalContentContainer}>
+      {loading ? (
+        <LoadingIndicator />
+      ) : (
+        assetsWithMetadata &&
+        assetsWithMetadata.map((asset, i) => {
+          return (
+            <div key={i}>
+              <span className={classes.place}>
+                {i + 1}
+                {i < 2 ? 'st' : 'th'} place:
+              </span>{' '}
+              <span className={classes.amountAndSymbol}>
+                {asset.parsedAmount} {asset.symbol}
+              </span>
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
 
-  // overrides any tag to become a <p> tag
-  const changeTagToParagraph = ({ children }: changeTagProps) => <p>{children}</p>;
-
-  // overrides any tag to become a <span> tag
-  const changeTagToSpan = ({ children }: changeTagProps) => <span>{children}</span>;
-
-  return (
-    <>
-      <div
-        onClick={e => {
-          dispatch(setActiveRound(round));
-          if (cmdPlusClicked(e)) {
-            openInNewTab(`${window.location.href}/${nameToSlug(round.title)}`);
-            return;
-          }
-          navigate(`${nameToSlug(round.title)}`);
-        }}
+  return showModal ? (
+    <Modal
+      modalProps={{
+        title: 'Awards',
+        subtitle: 'See all awards',
+        setShowModal: setShowModal,
+        body: awardsModalContent,
+      }}
+    />
+  ) : (
+    <div
+      onClick={e => {
+        if (onClick) {
+          onClick();
+          return;
+        }
+        navigate(`/${round.address}`);
+      }}
+    >
+      <Card
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.twenty}
+        classNames={classes.roundCard}
+        onHoverEffect={true}
       >
-        <Card
-          bgColor={CardBgColor.White}
-          borderRadius={CardBorderRadius.twenty}
-          classNames={clsx(
-            auctionStatus(round) === AuctionStatus.AuctionEnded && classes.roundEnded,
-            classes.roundCard,
-          )}
-        >
-          <div className={classes.textContainer}>
-            <div className={classes.titleContainer}>
-              <div className={classes.authorContainer}>{round.title}</div>
-              <StatusPill status={auctionStatus(round)} />
+        <div className={classes.container}>
+          <div className={classes.headerContainer}>
+            <div className={classes.roundCreatorAndTitle}>
+              <div className={classes.roundCreator}>
+                <EthAddress
+                  address={house.address}
+                  imgSrc={house.imageURI?.replace(
+                    /prophouse.mypinata.cloud/g,
+                    'cloudflare-ipfs.com',
+                  )}
+                  addAvatar={true}
+                  className={classes.roundCreator}
+                />
+              </div>
+              <div className={classes.roundTitle}>
+                {round.title[0].toUpperCase() + round.title.slice(1)}
+              </div>
             </div>
-
-            {/* support both markdown & html in round's description.  */}
-            <Markdown
-              className={classes.truncatedTldr}
-              options={{
-                overrides: {
-                  h1: changeTagToParagraph,
-                  h2: changeTagToParagraph,
-                  h3: changeTagToParagraph,
-                  a: changeTagToSpan,
-                  br: changeTagToSpan,
-                },
-              }}
-            >
-              {sanitizeHtml(round.description)}
-            </Markdown>
+            <RoundStatusPill round={round} />
           </div>
-
-          <div className={classes.roundInfo}>
-            <div className={clsx(classes.section, classes.funding)}>
-              <p className={classes.title}>{'Awards'}</p>
-              <p className={classes.info}>
-                <span className="">
-                  <TruncateThousands
-                    amount={round.fundingAmount}
-                    decimals={countDecimals(round.fundingAmount) === 3 ? 3 : 2}
-                  />
-                  {` ${round.currencyType}`}
-                </span>
-                {isTimedAuction(round) && (
-                  <>
-                    <span className={classes.xDivide}>{' × '}</span>
-                    <span className="">{round.numWinners}</span>
-                  </>
-                )}
-              </p>
-            </div>
-
-            <div className={classes.divider}></div>
-
-            <div className={classes.section}>
-              <Tooltip
-                content={
-                  <>
-                    <p className={classes.title}>
-                      {isInfAuction(round) ? 'Quorum' : deadlineCopy(round)}
-                    </p>
-                    <p className={classes.info}>
-                      {isInfAuction(round)
-                        ? round.quorumFor
-                        : diffTime(deadlineTime(round)).replace('months', 'mos')}{' '}
-                    </p>
-                  </>
-                }
-                tooltipContent={
-                  isInfAuction(round)
-                    ? `The number of votes required for a prop to be funded`
-                    : `${dayjs(deadlineTime(round)).tz().format('MMMM D, YYYY h:mm A z')}`
-                }
-              />
-            </div>
-
-            <div className={clsx(classes.divider, classes.propSection)}></div>
-
-            <div className={clsx(classes.section, classes.propSection)}>
-              <p className={classes.title}> {t('proposalsCap')}</p>
-              <p className={classes.info}>{round.numProposals}</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-    </>
+          <AwardLabels awards={round.config.awards} setShowModal={setShowModal} />
+        </div>
+      </Card>
+      {displayBottomBar && <RoundCardStatusBar round={round} />}
+    </div>
   );
 };
 

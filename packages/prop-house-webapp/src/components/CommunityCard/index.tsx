@@ -1,44 +1,63 @@
+import { jsNumberForAddress } from 'react-jazzicon';
 import classes from './CommunityCard.module.css';
-import { Community } from '@nouns/prop-house-wrapper/dist/builders';
-import CommunityProfImg from '../CommunityProfImg';
-import { useTranslation } from 'react-i18next';
-import TruncateThousands from '../TruncateThousands';
-import getHouseCurrency from '../../utils/getHouseCurrency';
+import { House } from '@prophouse/sdk-react';
+import Jazzicon from 'react-jazzicon/dist/Jazzicon';
+import Card, { CardBgColor, CardBorderRadius } from '../Card';
+import { useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
+import { isMobile } from 'web3modal';
+import { FaStar } from 'react-icons/fa';
+import { trophyColors } from '../../utils/trophyColors';
+import { useFavoriteCommunities } from '../../hooks/useFavoriteCommunities';
+import { buildImageURL } from '../../utils/buildImageURL';
 
 const CommunityCard: React.FC<{
-  community: Community;
+  house: House;
 }> = props => {
-  const { community } = props;
-  const { t } = useTranslation();
+  const { house } = props;
+  const navigate = useNavigate();
 
-  const houseCurrency = getHouseCurrency(community.contractAddress);
+  const {
+    // eslint-disable-next-line
+    favoriteCommunities,
+    isFavoriteCommunity,
+    addFavoriteCommunity,
+    removeFavoriteCommunity,
+  } = useFavoriteCommunities();
+
+  const isFav = isFavoriteCommunity(house.address);
+
+  const handleFav = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    e.stopPropagation();
+    isFav ? removeFavoriteCommunity(house.address) : addFavoriteCommunity(house.address);
+  };
 
   return (
-    <div className={classes.container}>
-      <CommunityProfImg community={community} />
-      <div className={classes.title}>{community.name}</div>
-      <div className={classes.infoContainer}>
-        <hr className={classes.divider} />
-        <div className={classes.cardInfo}>
-          <div className={classes.infoWithSymbol}>
-            <div className={classes.infoText}>
-              <span className={classes.infoAmount}>
-                <TruncateThousands
-                  amount={houseCurrency === 'Ξ' ? community.ethFunded : community.totalFunded}
-                />{' '}
-                {houseCurrency}
-              </span>{' '}
-              <span className={classes.infoCopy}>{t('funded')}</span>
-            </div>
-          </div>
-          <div className={classes.infoText}>
-            <span className={classes.infoAmount}>{community.numAuctions}</span>{' '}
-            <span className={classes.infoCopy}>
-              {community.numAuctions === 1 ? t('round') : t('rounds')}
+    <div onClick={() => navigate(`/${house.address}`)}>
+      <Card
+        bgColor={CardBgColor.White}
+        borderRadius={CardBorderRadius.ten}
+        classNames={clsx(classes.cardContainer, isMobile() && classes.whiteBg)}
+        onHoverEffect={true}
+      >
+        <div className={classes.imgAndName}>
+          {house.imageURI?.includes('prop.house') ? (
+            <img
+              src={buildImageURL(house.imageURI)}
+              alt="house profile"
+              className={classes.image}
+            />
+          ) : (
+            <span style={{ marginRight: 6 }}>
+              <Jazzicon diameter={20} seed={jsNumberForAddress(house.address)} />
             </span>
-          </div>
+          )}
+          <div className={classes.name}>{house.name}</div>
         </div>
-      </div>
+        <div className={classes.star} onClick={e => handleFav(e)}>
+          <FaStar color={isFav ? trophyColors('first') : 'gray'} size={20} />
+        </div>
+      </Card>
     </div>
   );
 };

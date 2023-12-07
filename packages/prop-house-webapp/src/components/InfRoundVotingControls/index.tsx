@@ -24,15 +24,15 @@ const InfRoundVotingControls: React.FC<{
   const modalActive = useAppSelector(state => state.propHouse.modalActive);
   const dispatch = useAppDispatch();
 
+  // todo: resolve direction counting for inf round votes
   const submittedUpVotesForProp = countNumVotesForPropWithDirection(
-    proposal.votes,
+    votesByUserInActiveRound,
     proposal.id,
-    Direction.Up,
   );
+  // todo: resolve direction counting for inf round votes
   const submittedDownVotesForProp = countNumVotesForPropWithDirection(
-    proposal.votes,
+    votesByUserInActiveRound,
     proposal.id,
-    Direction.Down,
   );
   const allottedVotesForProp = proposal && countVotesAllottedToProp(voteAllotments, proposal.id);
   const allotedUpVotesForProp =

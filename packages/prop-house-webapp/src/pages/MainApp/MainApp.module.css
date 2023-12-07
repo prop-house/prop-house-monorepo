@@ -1,0 +1,98 @@
+.housesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+.houseAddress {
+  font-weight: bold;
+  font-size: 16px;
+}
+.tabs {
+  border-bottom: none;
+  justify-content: center;
+}
+.tabs li button {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--brand-gray);
+  transition: none !important;
+}
+.tabs li button[aria-selected='true'] {
+  border: none !important;
+  font-weight: bold !important;
+  color: var(--brand-black) !important;
+  border-bottom: 2px solid var(--brand-purple) !important;
+  background-color: transparent !important;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 550;
+  color: var(--brand-black);
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.roundsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+}
+.dropdown {
+  border-radius: 10px;
+  padding: 0.575rem 0.65rem 0.525rem;
+  padding: 6px 12px !important;
+  white-space: normal;
+  text-align: center;
+  font-size: 16px !important;
+  font-weight: bold;
+  line-height: 140%;
+  background-color: white !important;
+  box-shadow: none !important;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.dropdown:hover {
+  color: gray;
+  background-color: white !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.dropdown:active,
+.dropdown:focus {
+  color: gray !important;
+  background-color: var(--brand-gray-semi-transparent);
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+.dropdown:disabled {
+  background-color: white;
+  color: var(--brand-gray-transparent);
+  border: 1px solid var(--border-med);
+}
+.dropdownMenu {
+  border-radius: 10px;
+}
+
+.roundsHeader,
+.rightCol {
+  position: sticky !important;
+  top: 0 !important;
+  max-height: calc(100vh) !important;
+}
+.roundsHeader {
+  z-index: 1000;
+}
+
+@media (max-width: 575px) {
+  .tabs {
+    position: sticky !important;
+    top: 0 !important;
+    max-height: calc(100vh) !important;
+    z-index: 1000;
+    background-color: #f5f5f5;
+  }
+}

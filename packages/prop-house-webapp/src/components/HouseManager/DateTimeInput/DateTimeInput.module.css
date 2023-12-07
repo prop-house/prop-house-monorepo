@@ -1,0 +1,18 @@
+.container {
+  max-width: 200px;
+}
+.container input {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  height: 36px;
+  width: 100%;
+  border: 1px solid var(--border-med);
+}
+.container input:hover {
+  cursor: pointer;
+}
+.placeholder {
+  color: var(--brand-black-transparent);
+}

@@ -3,150 +3,82 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../hooks';
 import NotFound from '../../components/NotFound';
-import { useEffect, useRef, useState } from 'react';
-import { PropHouseWrapper } from '@nouns/prop-house-wrapper';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  setActiveCommunity,
-  setActiveProposal,
-  setActiveProposals,
-  setActiveRound,
-} from '../../state/slices/propHouse';
+import { setOnchainActiveProposal, setOnchainActiveRound } from '../../state/slices/propHouse';
 import { IoArrowBackCircleOutline } from 'react-icons/io5';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import { StoredProposalWithVotes } from '@nouns/prop-house-wrapper/dist/builders';
 import { Container } from 'react-bootstrap';
-import { buildRoundPath } from '../../utils/buildRoundPath';
 import { cardServiceUrl, CardType } from '../../utils/cardServiceUrl';
 import OpenGraphElements from '../../components/OpenGraphElements';
 import RenderedProposalFields from '../../components/RenderedProposalFields';
-import { useEthersSigner } from '../../hooks/useEthersSigner';
-import { useAccount, useBlockNumber } from 'wagmi';
-import ProposalModalVotingModule from '../../components/ProposalModalVotingModule';
-import { AuctionStatus, auctionStatus } from '../../utils/auctionStatus';
+import { useAccount } from 'wagmi';
+import ProposalModalVotingModule from '../../components/ProposalModalTimedVotingModule';
 import { ButtonColor } from '../../components/Button';
 import ConnectButton from '../../components/ConnectButton';
 import { useTranslation } from 'react-i18next';
 import { useAccountModal } from '@rainbow-me/rainbowkit';
 import useVotingPower from '../../hooks/useVotingPower';
-import { clearVoteAllotments } from '../../state/slices/voting';
 import VoteConfirmationModal from '../../components/VoteConfirmationModal';
-import { submitVotes } from '../../utils/submitVotes';
-import ErrorVotingModal from '../../components/ErrorVotingModal';
-import SuccessVotingModal from '../../components/SuccessVotingModal';
-import { signerIsContract } from '../../utils/signerIsContract';
-import refreshActiveProposal, { refreshActiveProposals } from '../../utils/refreshActiveProposal';
-import { useEthersProvider } from '../../hooks/useEthersProvider';
+import { Timed, usePropHouse } from '@prophouse/sdk-react';
+import { resolveProposalTldrs } from '../../utils/resolveProposalTldrs';
 
 const Proposal = () => {
   const params = useParams();
-  const { id } = params;
+  const { round: roundAddress, id } = params;
 
-  const signer = useEthersSigner();
   const navigate = useNavigate();
   const { address: account, isConnected } = useAccount();
   const { t } = useTranslation();
   const { openAccountModal } = useAccountModal();
-  const provider = useEthersProvider();
 
   const dispatch = useDispatch();
   const proposal = useAppSelector(state => state.propHouse.activeProposal);
-  const community = useAppSelector(state => state.propHouse.activeCommunity);
   const round = useAppSelector(state => state.propHouse.activeRound);
-  const backendHost = useAppSelector(state => state.configuration.backendHost);
-  const voteAllotments = useAppSelector(state => state.voting.voteAllotments);
-  const backendClient = useRef(new PropHouseWrapper(backendHost, signer));
-  const { data: blocknumber } = useBlockNumber({
-    chainId: round?.voteStrategy?.chainId ?? 1,
-  });
 
   const [failedFetch, setFailedFetch] = useState(false);
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [showSuccessVotingModal, setShowSuccessVotingModal] = useState(false);
-  const [showErrorVotingModal, setShowErrorVotingModal] = useState(false);
-  const [numPropsVotedFor, setNumPropsVotedFor] = useState(0);
-  const [isContract, setIsContract] = useState(false);
-  const [loading, votingPower] = useVotingPower(round, account);
 
-  const handleBackClick = () => {
-    if (!community || !round) return;
-    navigate(buildRoundPath(community, round), { replace: false });
-  };
+  const [loadingVotingPower, errorLoadingVotingPower, votingPower] = useVotingPower(round, account);
 
+  const propHouse = usePropHouse();
+
+  // fetch prop, round and house
   useEffect(() => {
-    backendClient.current = new PropHouseWrapper(backendHost, signer);
-  }, [signer, backendHost]);
-
-  // fetch proposal
-  useEffect(() => {
-    if (!id) return;
-
-    const fetch = async () => {
+    const isSameProp =
+      proposal && proposal.id === Number(id) && round && round.address === roundAddress;
+    if (!roundAddress || !id || isSameProp) return;
+    const fetchProposal = async () => {
       try {
-        const proposal = (await backendClient.current.getProposal(
-          Number(id),
-        )) as StoredProposalWithVotes;
+        const proposal = await propHouse.query.getProposal(roundAddress, Number(id));
+        const round = await propHouse.query.getRound(roundAddress);
+        const propWithTldr = await resolveProposalTldrs([proposal]);
         document.title = `${proposal.title}`;
-        dispatch(setActiveProposal(proposal));
+        dispatch(setOnchainActiveProposal(propWithTldr && propWithTldr[0]));
+        dispatch(setOnchainActiveRound(round));
       } catch (e) {
         setFailedFetch(true);
+        console.log('Error fetching prop: ', e);
       }
     };
-
-    fetch();
+    fetchProposal();
 
     return () => {
       document.title = 'Prop House';
     };
-  }, [id, dispatch, failedFetch]);
+  });
 
-  /**
-   * when page is entry point, community, round and proposals are not yet avail in store
-   */
-  useEffect(() => {
-    if (!proposal) return;
-    const fetchCommunity = async () => {
-      const round = await backendClient.current.getAuction(proposal.auctionId);
-      const community = await backendClient.current.getCommunityWithId(round.community);
-      const proposals = await backendClient.current.getAuctionProposals(round.id);
-      dispatch(setActiveProposals(proposals));
-      dispatch(setActiveCommunity(community));
-      dispatch(setActiveRound(round));
-    };
-
-    fetchCommunity();
-  }, [id, dispatch, proposal]);
-
-  const handleSubmitVote = async () => {
-    if (!proposal || !round || !community || !blocknumber) return;
-    try {
-      setIsContract(
-        await signerIsContract(
-          signer ? signer : undefined,
-          provider,
-          account ? account : undefined,
-        ),
-      );
-      await submitVotes(voteAllotments, Number(blocknumber), community, backendClient.current);
-
-      setShowErrorVotingModal(false);
-      setNumPropsVotedFor(voteAllotments.length);
-      setShowSuccessVotingModal(true);
-      refreshActiveProposals(backendClient.current, round, dispatch);
-      refreshActiveProposal(backendClient.current, proposal, dispatch);
-      dispatch(clearVoteAllotments());
-      setShowVoteConfirmationModal(false);
-    } catch (e) {
-      console.log(e);
-      setShowVoteConfirmationModal(false);
-      setShowErrorVotingModal(true);
-    }
+  const handleBackClick = () => {
+    if (!round) return;
+    navigate(`/${round.address}`, { replace: false });
   };
 
-  const votingBar = proposal && round && auctionStatus(round) === AuctionStatus.AuctionVoting && (
+  const votingBar = proposal && round && round.state === Timed.RoundState.IN_VOTING_PERIOD && (
     <div className={classes.votingBar}>
       {isConnected ? (
-        loading ? (
+        errorLoadingVotingPower ? (
+          <>Error loading voting power.</>
+        ) : loadingVotingPower ? (
           <div className={classes.loadingVoting}>
             <LoadingIndicator height={50} width={50} />
           </div>
@@ -182,35 +114,21 @@ const Proposal = () => {
       {showVoteConfirmationModal && round && (
         <VoteConfirmationModal
           setShowVoteConfirmationModal={setShowVoteConfirmationModal}
-          submitVote={handleSubmitVote}
+          round={round}
         />
       )}
 
-      {showSuccessVotingModal && (
-        <SuccessVotingModal
-          setShowSuccessVotingModal={setShowSuccessVotingModal}
-          numPropsVotedFor={numPropsVotedFor}
-          signerIsContract={isContract}
-        />
-      )}
-
-      {showErrorVotingModal && (
-        <ErrorVotingModal setShowErrorVotingModal={setShowErrorVotingModal} />
-      )}
-
-      {proposal && (
+      {round && proposal && (
         <OpenGraphElements
           title={proposal.title}
           description={proposal.tldr}
-          imageUrl={cardServiceUrl(CardType.proposal, proposal.id).href}
+          imageUrl={cardServiceUrl(CardType.proposal, round.address, String(proposal.id)).href}
         />
       )}
 
       {proposal ? (
         <RenderedProposalFields
           proposal={proposal}
-          community={community}
-          round={round && round}
           backButton={
             <div className={classes.backToAuction} onClick={() => handleBackClick()}>
               <IoArrowBackCircleOutline size={'1.5rem'} /> View round{' '}

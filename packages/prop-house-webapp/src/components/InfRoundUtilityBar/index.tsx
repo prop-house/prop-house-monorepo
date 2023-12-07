@@ -1,6 +1,5 @@
 import { RoundUtilBarItemBalance, RoundUtilBarItemTooltip } from '../RoundUtilBarItem';
 import TruncateThousands from '../TruncateThousands';
-
 import { countDecimals } from '../../utils/countDecimals';
 import {
   StoredInfiniteAuction,
@@ -31,16 +30,17 @@ const InfRoundUtilityBar: React.FC<{
       <RoundUtilBarItemBalance
         content={
           <>
-            <TruncateThousands
+            {/* <TruncateThousands
               amount={proposals ? infRoundBalance(proposals, infRound) : 0}
               decimals={countDecimals(infRound.fundingAmount) === 3 ? 3 : 2}
             />{' '}
-            {infRound.currencyType}
+            {infRound.currencyType} */}
           </>
         }
-        progress={
-          proposals ? (infRoundBalance(proposals, infRound) / infRound.fundingAmount) * 100 : 0
-        }
+        // progress={
+        //   proposals ? (infRoundBalance(proposals, infRound) / infRound.fundingAmount) * 100 : 0
+        // }
+        progress={50}
       />
     </>
   );

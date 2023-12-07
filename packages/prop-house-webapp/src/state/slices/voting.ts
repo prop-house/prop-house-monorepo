@@ -1,6 +1,7 @@
-import { Direction, StoredVote } from '@nouns/prop-house-wrapper/dist/builders';
+import { Direction } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { VoteAllotment } from '../../types/VoteAllotment';
+import { Vote } from '@prophouse/sdk-react';
 
 export interface VotingSlice {
   // votes user is alloting to potentially vote
@@ -8,7 +9,7 @@ export interface VotingSlice {
   // number of votes user can cast
   votingPower: number;
   // votes already submitted by user
-  votesByUserInActiveRound: StoredVote[];
+  votesByUserInActiveRound: Vote[];
 }
 
 const initialState: VotingSlice = {
@@ -61,7 +62,7 @@ export const votingSlice = createSlice({
     setVotingPower: (state, action: PayloadAction<number>) => {
       state.votingPower = action.payload;
     },
-    setVotesByUserInActiveRound: (state, action: PayloadAction<StoredVote[]>) => {
+    setVotesByUserInActiveRound: (state, action: PayloadAction<Vote[]>) => {
       state.votesByUserInActiveRound = action.payload;
     },
     allotVotes: (

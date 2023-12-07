@@ -1,18 +1,15 @@
-import {
-  StoredProposalWithVotes,
-  Community,
-  StoredAuctionBase,
-  InfiniteAuction,
-} from '@nouns/prop-house-wrapper/dist/builders';
+import { StoredProposalWithVotes, InfiniteAuction } from '@nouns/prop-house-wrapper/dist/builders';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { sortTimedRoundProps } from '../../utils/sortTimedRoundProps';
-import { filterInfRoundProps } from '../../utils/filterInfRoundProps';
+import { House, Round } from '@prophouse/sdk-react';
+import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 
 export interface PropHouseSlice {
-  activeRound?: StoredAuctionBase;
-  activeProposal?: StoredProposalWithVotes;
-  activeProposals?: StoredProposalWithVotes[];
-  activeCommunity?: Community;
+  activeProposal?: ProposalWithTldr;
+  activeProposals?: ProposalWithTldr[];
+  activeRound?: Round;
+  activeHouse?: House;
+
   modalActive: boolean;
   infRoundFilteredProposals?: StoredProposalWithVotes[];
   infRoundFilterType: InfRoundFilterType;
@@ -45,20 +42,20 @@ export const propHouseSlice = createSlice({
   name: 'propHouse',
   initialState,
   reducers: {
-    setActiveRound: (state, action: PayloadAction<StoredAuctionBase | undefined>) => {
+    setOnchainActiveRound: (state, action: PayloadAction<Round | undefined>) => {
       state.activeRound = action.payload;
     },
-    setActiveProposal: (state, action: PayloadAction<StoredProposalWithVotes>) => {
+    setOnchainActiveProposal: (state, action: PayloadAction<ProposalWithTldr | undefined>) => {
       state.activeProposal = action.payload;
     },
-    setActiveProposals: (state, action: PayloadAction<StoredProposalWithVotes[]>) => {
-      state.activeProposals = sortTimedRoundProps(action.payload, {
-        sortType: TimedRoundSortType.CreatedAt,
-        ascending: false,
-      });
-      state.infRoundFilteredProposals = action.payload;
+
+    setOnChainActiveProposals: (state, action: PayloadAction<ProposalWithTldr[] | undefined>) => {
+      state.activeProposals =
+        action.payload === undefined
+          ? undefined
+          : action.payload.sort((a, b) => Number(b.votingPower) - Number(a.votingPower));
     },
-    appendProposal: (state, action: PayloadAction<{ proposal: StoredProposalWithVotes }>) => {
+    appendProposal: (state, action: PayloadAction<{ proposal: ProposalWithTldr }>) => {
       state.activeProposals?.push(action.payload.proposal);
     },
     sortTimedRoundProposals: (state, action: PayloadAction<TimedRoundSortProps>) => {
@@ -69,19 +66,19 @@ export const propHouseSlice = createSlice({
       state,
       action: PayloadAction<{ type: InfRoundFilterType; round: InfiniteAuction }>,
     ) => {
-      if (!state.activeProposals) return;
-
-      state.infRoundFilteredProposals = filterInfRoundProps(
-        state.activeProposals,
-        action.payload.type,
-        action.payload.round,
-      );
+      // todo: fix once sdk support is available
+      // if (!state.onchainActiveProposals) return;
+      // state.infRoundFilteredProposals = filterInfRoundProps(
+      //   state.onchainActiveProposals,
+      //   action.payload.type,
+      //   action.payload.round,
+      // );
     },
     setInfRoundFilterType: (state, action: PayloadAction<InfRoundFilterType>) => {
       state.infRoundFilterType = action.payload;
     },
-    setActiveCommunity: (state, action: PayloadAction<Community | undefined>) => {
-      state.activeCommunity = action.payload;
+    setOnchainActiveHouse: (state, action: PayloadAction<House | undefined>) => {
+      state.activeHouse = action.payload;
     },
     setModalActive: (state, action: PayloadAction<boolean>) => {
       state.modalActive = action.payload;
@@ -91,13 +88,14 @@ export const propHouseSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const {
-  setActiveRound,
-  setActiveProposal,
-  setActiveProposals,
+  setOnchainActiveProposal,
+  setOnChainActiveProposals,
+  setOnchainActiveRound,
+  setOnchainActiveHouse,
+
   appendProposal,
   sortTimedRoundProposals,
   filterInfRoundProposals,
-  setActiveCommunity,
   setModalActive,
   setInfRoundFilterType,
 } = propHouseSlice.actions;

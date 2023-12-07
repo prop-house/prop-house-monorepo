@@ -2,6 +2,7 @@ import { StoredVote } from '@nouns/prop-house-wrapper/dist/builders';
 import { VoteAllotment } from '../types/VoteAllotment';
 import { countNumVotesForProp } from './countNumVotesForProp';
 import { countVotesAllottedToProp } from './countVotesAllottedToProp';
+import { Vote } from '@prophouse/sdk-react';
 
 /**
  * Vote remaining to be alloted after substracting already casted and alloted votes.
@@ -9,7 +10,7 @@ import { countVotesAllottedToProp } from './countVotesAllottedToProp';
 export const countVotesRemainingForInfRound = (
   proposalId: number,
   votingPower: number,
-  votesAlreadyCasted: StoredVote[],
+  votesAlreadyCasted: Vote[],
   voteAllotments: VoteAllotment[],
 ): number =>
   votingPower -
