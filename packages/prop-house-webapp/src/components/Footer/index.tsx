@@ -8,9 +8,6 @@ import tos from '../../assets/files/prophouse-tos.pdf';
 const Footer = () => {
   const location = useLocation();
 
-  const twitterURL = externalURL(ExternalURL.twitter);
-  const githubURL = externalURL(ExternalURL.github);
-
   return (
     <div
       className={clsx(
@@ -19,11 +16,19 @@ const Footer = () => {
       )}
     >
       <div className={classes.footer}>
-        <a href={twitterURL} target="_blank" rel="noreferrer">
+        <a href={externalURL(ExternalURL.gitbook)} target="_blank" rel="noreferrer">
+          FAQs
+        </a>
+        ·
+        <a href={externalURL(ExternalURL.offchain)} target="_blank" rel="noreferrer">
+          offchain app
+        </a>
+        ·
+        <a href={externalURL(ExternalURL.twitter)} target="_blank" rel="noreferrer">
           @nounsprophouse
         </a>
         ·
-        <a href={githubURL} target="_blank" rel="noreferrer">
+        <a href={externalURL(ExternalURL.github)} target="_blank" rel="noreferrer">
           github
         </a>
         ·
