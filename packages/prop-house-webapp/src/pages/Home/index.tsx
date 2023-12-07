@@ -193,13 +193,8 @@ const Home = () => {
               <div className={classes.btnContainer}>
                 <Button
                   text="Explore rounds"
-                  bgColor={ButtonColor.White}
-                  onClick={() => navigate('/app')}
-                />
-                <Button
-                  text="Discover communities"
                   bgColor={ButtonColor.Pink}
-                  onClick={() => navigate('/communities')}
+                  onClick={() => navigate('/app')}
                 />
               </div>
             </Row>
