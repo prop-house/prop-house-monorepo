@@ -20,9 +20,14 @@ import { isMobile } from 'web3modal';
 import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import dayjs from 'dayjs';
 import { BigNumber } from 'ethers';
+import clsx from 'clsx';
 
-const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
-  const { round, house } = props;
+const JumboRoundCard: React.FC<{
+  round: Round;
+  house: House;
+  displayHorizontal?: boolean;
+}> = props => {
+  const { round, house, displayHorizontal } = props;
 
   let navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
@@ -148,11 +153,11 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
       <Card
         bgColor={CardBgColor.White}
         borderRadius={CardBorderRadius.twenty}
-        classNames={classes.roundCard}
+        classNames={clsx(classes.roundCard, displayHorizontal && classes.displayHorizontal)}
         onHoverEffect={false}
       >
         <Row className={classes.container}>
-          <Col className={classes.leftCol} xs={12} md={6}>
+          <Col className={classes.leftCol} md={displayHorizontal ? 6 : 12}>
             <div className={classes.headerContainer}>
               <div className={classes.roundCreatorAndTitle}>
                 <div className={classes.roundCreator}>
@@ -165,7 +170,12 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
               </div>
               {isMobile() && <RoundStatusPill round={round} />}
             </div>
-            <div className={classes.statusItemContainer}>
+            <div
+              className={clsx(
+                classes.statusItemContainer,
+                displayHorizontal && classes.displayHorizontal,
+              )}
+            >
               {!isMobile() && (
                 <div className={classes.item}>
                   <div className={classes.title}>
@@ -191,7 +201,10 @@ const JumboRoundCard: React.FC<{ round: Round; house: House }> = props => {
             </div>
           </Col>
 
-          <Col className={classes.rightCol} xs={12} md={6}>
+          <Col
+            className={clsx(classes.rightCol, displayHorizontal && classes.displayHorizontal)}
+            md={displayHorizontal ? 6 : 12}
+          >
             <div>
               {showAwards && (
                 <div className={classes.awardsContainer}>
