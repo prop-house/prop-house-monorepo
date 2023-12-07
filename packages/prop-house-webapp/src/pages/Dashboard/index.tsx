@@ -93,7 +93,7 @@ const Dashboard = () => {
         <>
           <Row className={classes.row}>
             <Col xl={12}>
-              <div className={classes.subheading}>Communities</div>
+              <div className={classes.subheading}>Houses</div>
             </Col>
             {loadingHouses ? (
               <LoadingIndicator />
