@@ -4,12 +4,10 @@ import { useLocation } from 'react-router-dom';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { externalURL, ExternalURL } from '../../utils/externalURLs';
 import tos from '../../assets/files/prophouse-tos.pdf';
+import { isMobile } from 'web3modal';
 
 const Footer = () => {
   const location = useLocation();
-
-  const twitterURL = externalURL(ExternalURL.twitter);
-  const githubURL = externalURL(ExternalURL.github);
 
   return (
     <div
@@ -19,16 +17,20 @@ const Footer = () => {
       )}
     >
       <div className={classes.footer}>
-        <a href={twitterURL} target="_blank" rel="noreferrer">
+        <a href={externalURL(ExternalURL.gitbook)} target="_blank" rel="noreferrer">
+          FAQs
+        </a>
+        ·
+        <a href={externalURL(ExternalURL.twitter)} target="_blank" rel="noreferrer">
           @nounsprophouse
         </a>
         ·
-        <a href={githubURL} target="_blank" rel="noreferrer">
+        <a href={externalURL(ExternalURL.github)} target="_blank" rel="noreferrer">
           github
         </a>
         ·
         <a href={tos} download>
-          terms of service
+          {isMobile() ? 'ToS' : 'terms of service'}
         </a>
       </div>
     </div>

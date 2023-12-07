@@ -5,3 +5,7 @@
   background-color: var(--brand-purple);
   color: white;
 }
+.banner div a {
+  font-weight: bold;
+  text-decoration: underline !important;
+}
