@@ -12,7 +12,9 @@ import CreateRoundModal from '../CreateRoundModal';
 import { useWaitForTransaction } from 'wagmi';
 import { isRoundFullyFunded } from '../../../utils/isRoundFullyFunded';
 import { parseEther } from 'viem';
+import Modal from '../../Modal';
 import { getRoundAddressWithContractTx } from '../../../utils/getRoundAddressWithContractTx';
+import { NounImage } from '../../../utils/getNounImage';
 
 /**
  * @overview
@@ -33,6 +35,7 @@ const Footer: React.FC = () => {
   const propHouse = usePropHouse();
 
   const [createRoundModal, setShowCreateRoundModal] = useState(false);
+  const [creationError, setCreationError] = useState<string | undefined>();
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [newRoundAddress, setNewRoundAddress] = useState<string | undefined>();
   const [refetchCount, setRefetchCount] = useState(0);
@@ -118,8 +121,10 @@ const Footer: React.FC = () => {
         setFetchNewRound(true);
 
         return res;
-      } catch (e) {
+      } catch (e: any) {
         console.log('error', e);
+        setShowCreateRoundModal(false);
+        setCreationError(e.message);
       }
     } else if (round.house.contractURI !== '') {
       // If the house doesn't exist yet, use the `createRoundOnNewHouse` function
@@ -127,8 +132,10 @@ const Footer: React.FC = () => {
         const res = await propHouse.createRoundOnNewHouse(houseInfo, roundInfo);
         setTransactionHash(res.hash);
         return res;
-      } catch (e) {
+      } catch (e: any) {
         console.log('error', e);
+        setShowCreateRoundModal(false);
+        setCreationError(e.message);
       }
     }
   };
@@ -148,6 +155,17 @@ const Footer: React.FC = () => {
             error: waitForTransaction.error,
           }}
           setShowCreateRoundModal={setShowCreateRoundModal}
+        />
+      )}
+
+      {!!creationError && (
+        <Modal
+          modalProps={{
+            title: 'Error',
+            subtitle: `Error creating round: ${creationError || 'Unknown error'}`,
+            image: NounImage.Banana,
+            setShowModal: () => setCreationError(undefined),
+          }}
         />
       )}
 
