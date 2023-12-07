@@ -2,7 +2,8 @@ import classes from './VotesVerificationModal.module.css';
 import EthAddress from '../EthAddress';
 import { Dispatch, SetStateAction } from 'react';
 import Modal from '../Modal';
-import { ChainId, Proposal, Vote } from '@prophouse/sdk-react';
+import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
+import { Proposal, Vote } from '@prophouse/sdk-react';
 import { useChainId } from 'wagmi';
 
 const VotesVerificationModal: React.FC<{
@@ -11,21 +12,14 @@ const VotesVerificationModal: React.FC<{
   votes: Vote[];
 }> = props => {
   const { proposal, setDisplayVotesVerifModal, votes } = props;
-
   const chainId = useChainId();
-  const getBlockExplorerURL = (txHash: string) => {
-    if (chainId !== ChainId.EthereumMainnet) {
-      return `https://testnet.starkscan.co/tx/${txHash}`;
-    }
-    return `https://starkscan.co/tx/${txHash}`;
-  };
 
   const verifiedVotes = (
     <div className={classes.votesContainer}>
       {votes.map((vote, index) => (
         <div key={index} className={classes.votesRow}>
           <div className={classes.voteRowTitle}>
-            <a href={getBlockExplorerURL(vote.txHash)} target="_blank" rel="noopener noreferrer">
+            <a href={getBlockExplorerURL(chainId, vote.txHash)} target="_blank" rel="noopener noreferrer">
             {`${vote.votingPower} FOR  ${Number(vote.votingPower) === 1 ? 'vote' : 'votes'}`}
             </a>
             &nbsp;by

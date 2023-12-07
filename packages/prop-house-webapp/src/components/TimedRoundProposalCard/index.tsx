@@ -16,7 +16,8 @@ import { replaceIpfsGateway } from '../../utils/ipfs';
 import { Round, Timed } from '@prophouse/sdk-react';
 import { useAppSelector } from '../../hooks';
 import ProposalCardClaimAwardBar from '../ProposalCardClaimAwardBar';
-import { useAccount } from 'wagmi';
+import { getBlockExplorerURL } from '../../utils/getBlockExplorerUrl';
+import { useAccount, useChainId } from 'wagmi';
 import { ProposalWithTldr } from '../../types/ProposalWithTldr';
 import Button, { ButtonColor } from '../Button';
 
@@ -42,6 +43,8 @@ const TimedRoundProposalCard: React.FC<{
 
   const [imgUrlFromProp, setImgUrlFromProp] = useState<string | undefined>(undefined);
   const [displayTldr, setDisplayTldr] = useState<boolean | undefined>();
+
+  const chainId = useChainId();
 
   useEffect(() => {
     let imgUrl;
@@ -118,7 +121,9 @@ const TimedRoundProposalCard: React.FC<{
                 className={clsx(classes.date, roundIsActive && classes.hideDate)}
                 title={detailedTime(new Date(proposal.receivedAt))}
               >
-                {diffTime(new Date(proposal.receivedAt * 1000))}
+                <a href={getBlockExplorerURL(chainId, proposal.txHash)} target="_blank" rel="noopener noreferrer">
+                  {diffTime(new Date(proposal.receivedAt * 1000))}
+                </a>
               </div>
             </div>
             <div className={classes.timestampAndlinkContainer}>
