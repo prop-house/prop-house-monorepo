@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import bgColorFor, { BgColorElement } from '../../utils/bgColorFor';
 import { externalURL, ExternalURL } from '../../utils/externalURLs';
 import tos from '../../assets/files/prophouse-tos.pdf';
+import { isMobile } from 'web3modal';
 
 const Footer = () => {
   const location = useLocation();
@@ -20,10 +21,6 @@ const Footer = () => {
           FAQs
         </a>
         ·
-        <a href={externalURL(ExternalURL.offchain)} target="_blank" rel="noreferrer">
-          offchain app
-        </a>
-        ·
         <a href={externalURL(ExternalURL.twitter)} target="_blank" rel="noreferrer">
           @nounsprophouse
         </a>
@@ -33,7 +30,7 @@ const Footer = () => {
         </a>
         ·
         <a href={tos} download>
-          terms of service
+          {isMobile() ? 'ToS' : 'terms of service'}
         </a>
       </div>
     </div>
