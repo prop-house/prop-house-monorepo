@@ -1,5 +1,5 @@
 import classes from './RoundContent.module.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ErrorMessageCard from '../ErrorMessageCard';
 import VoteConfirmationModal from '../VoteConfirmationModal';
 import { Row, Col } from 'react-bootstrap';
@@ -8,8 +8,7 @@ import TimedRoundProposalCard from '../TimedRoundProposalCard';
 import TimedRoundModules from '../TimedRoundModules';
 import InfRoundModules from '../InfRoundModules';
 import { ProposalWithTldr } from '../../types/ProposalWithTldr';
-import { useAccount } from 'wagmi';
-import { getHiddenPropIds, getIsMod, hideProp } from '../../utils/supabaseModeration';
+import { useContentModeration, useHiddenPropIds } from '../../utils/supabaseModeration';
 
 const RoundContent: React.FC<{
   round: Round;
@@ -18,34 +17,10 @@ const RoundContent: React.FC<{
 }> = props => {
   const { round, proposals, house } = props;
 
-  const { address: account } = useAccount();
   const [showVoteConfirmationModal, setShowVoteConfirmationModal] = useState(false);
-  const [hiddenPropIds, setHiddenPropIds] = useState<number[] | undefined>();
-  const [refreshHiddenProps, setRefreshHiddenProps] = useState<boolean>(true);
-
-  const [isMod, setIsMod] = useState<boolean>();
-
-  useEffect(() => {
-    if (!account) return;
-    const fetchModData = async () => {
-      setIsMod(await getIsMod(house.address, account));
-    };
-    fetchModData();
-  }, [account, house.address]);
-
-  useEffect(() => {
-    if (!account || !refreshHiddenProps) return;
-    const fetchHiddenPropIds = async () => {
-      setRefreshHiddenProps(false);
-      setHiddenPropIds(await getHiddenPropIds(round.address));
-    };
-    fetchHiddenPropIds();
-  }, [hiddenPropIds, account, round.address, house.address, refreshHiddenProps]);
-
-  const _hideProp = async (propId: number) => {
-    await hideProp(round.address, propId);
-    setRefreshHiddenProps(true);
-  };
+  const { hiddenPropIds, refresh } = useHiddenPropIds(round.address);
+  // eslint-disable-next-line
+  const { isMod, hideProp, hideRound } = useContentModeration(house);
 
   return (
     <>
@@ -80,7 +55,10 @@ const RoundContent: React.FC<{
                         proposal={prop}
                         round={round}
                         mod={isMod}
-                        hideProp={_hideProp}
+                        hideProp={async (propId: number) => {
+                          await hideProp(round.address, propId);
+                          setTimeout(() => refresh(), 1000);
+                        }}
                       />
                     </Col>
                   ))}

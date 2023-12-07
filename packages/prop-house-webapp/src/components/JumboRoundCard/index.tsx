@@ -4,8 +4,6 @@ import { OrderByProposalFields } from '@prophouse/sdk/dist/gql/starknet/graphql'
 import Card, { CardBgColor, CardBorderRadius } from '../Card';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Modal from '../Modal';
-import useAssetsWithMetadata from '../../hooks/useAssetsWithMetadata';
 import LoadingIndicator from '../LoadingIndicator';
 import { Col, Row } from 'react-bootstrap';
 import { IoTime } from 'react-icons/io5';
@@ -21,6 +19,8 @@ import RoundAwardsDisplay from '../RoundAwardsDisplay';
 import dayjs from 'dayjs';
 import { BigNumber } from 'ethers';
 import clsx from 'clsx';
+import { useContentModeration, useIsHiddenRound } from '../../utils/supabaseModeration';
+import Button, { ButtonColor } from '../Button';
 
 const JumboRoundCard: React.FC<{
   round: Round;
@@ -31,14 +31,15 @@ const JumboRoundCard: React.FC<{
   const { round, house, displayHorizontal, onClick } = props;
 
   let navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  const [loading, assetsWithMetadata] = useAssetsWithMetadata(round.config.awards);
   const propHouse = usePropHouse();
   const [numProps, setNumProps] = useState<number | undefined>();
   const [numVotes, setNumVotes] = useState<number>();
   const [topThreeProps, setTopThreeProps] = useState<Proposal[]>();
   const [proposals, setProposals] = useState<Proposal[]>();
   const [fetchingTop3Props, setFetchingTop3Props] = useState(false);
+  // eslint-disable-next-line
+  const { isMod, hideProp, hideRound } = useContentModeration(house);
+  const { isHidden, refresh } = useIsHiddenRound(round.address);
 
   const showAwards =
     round.state === Timed.RoundState.NOT_STARTED ||
@@ -117,38 +118,8 @@ const JumboRoundCard: React.FC<{
     fetchProposals();
   });
 
-  const awardsModalContent = (
-    <div className={classes.awardsModalContentContainer}>
-      {loading ? (
-        <LoadingIndicator />
-      ) : (
-        assetsWithMetadata &&
-        assetsWithMetadata.map((award, i) => {
-          return (
-            <div key={i}>
-              <span className={classes.place}>
-                {i + 1}
-                {i < 2 ? 'st' : 'th'} place:
-              </span>{' '}
-              <span className={classes.amountAndSymbol}>
-                {award.parsedAmount} {award.symbol}
-              </span>
-            </div>
-          );
-        })
-      )}
-    </div>
-  );
-
-  return showModal ? (
-    <Modal
-      modalProps={{
-        title: 'Awards',
-        subtitle: 'See all awards',
-        setShowModal: setShowModal,
-        body: awardsModalContent,
-      }}
-    />
+  return isHidden === undefined || isHidden ? (
+    <></>
   ) : (
     <div onClick={onClick ? onClick : e => navigate(`/${round.address}`)}>
       <Card
@@ -164,6 +135,18 @@ const JumboRoundCard: React.FC<{
                 <div className={classes.roundCreator}>
                   <img src={buildImageURL(house.imageURI)} alt="house profile" />
                   {house.name}
+                  {isMod && (
+                    <Button
+                      bgColor={ButtonColor.Gray}
+                      onClick={e => {
+                        e.stopPropagation();
+                        hideRound(round.address);
+                        setTimeout(() => refresh(), 1000);
+                      }}
+                      text="Hide"
+                      classNames={classes.hideButton}
+                    />
+                  )}
                 </div>
                 <div className={classes.roundTitle}>
                   {round.title[0].toUpperCase() + round.title.slice(1)}
