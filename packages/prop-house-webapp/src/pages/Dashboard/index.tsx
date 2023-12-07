@@ -11,6 +11,7 @@ import { NounImage } from '../../utils/getNounImage';
 import Button, { ButtonColor } from '../../components/Button';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import HouseCard from '../../components/HouseCard';
+import JumboRoundCard from '../../components/JumboRoundCard';
 
 const Dashboard = () => {
   const [rounds, setRounds] = useState<RoundWithHouse[]>();
@@ -121,11 +122,10 @@ const Dashboard = () => {
               ) : (
                 <>
                   {rounds.map((r, i) => (
-                    <Col key={i} xl={6}>
-                      <RoundCard
+                    <Col key={i} lg={6}>
+                      <JumboRoundCard
                         round={r}
                         house={r.house}
-                        displayBottomBar={false}
                         onClick={() =>
                           navigate(`/manage/round/${r.address}`, { state: { round: r } })
                         }
