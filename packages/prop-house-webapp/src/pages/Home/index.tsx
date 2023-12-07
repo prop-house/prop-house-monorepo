@@ -130,7 +130,7 @@ const Home = () => {
                 <b>Make it fun</b>
                 <span>
                   Turn your boring bounty or grants program into a fun experience builders and
-                  voters can can enjoy.
+                  voters can enjoy.
                 </span>
               </Col>
               <Col lg={4} className={classes.featureItem}>
